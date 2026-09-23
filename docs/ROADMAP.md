@@ -1,0 +1,103 @@
+# UDEKS roadmap
+
+This roadmap is organized around demonstrable capability gates. Dates are not
+assigned until the bring-up measurements expose the true hardware costs.
+
+## Phase 0 — Foundation
+
+- [x] Select `GPL-3.0-or-later`.
+- [x] Select cc65/ca65/ld65 for the 8502.
+- [x] Select SDCC plus RASM for Z80 development.
+- [x] Establish source layout, build entry points, and host checks.
+- [x] Draft the mailbox ABI and architecture plan.
+- [x] Install cc65 in `my-distrobox` and validate the initial 8502 link.
+- [ ] Pin the release toolchain independently of distribution package updates.
+- [ ] Install a VICE C128 build and `c1541` as the independent oracle/tooling.
+- [ ] Record exact tool commits and artifact checksums.
+
+**Exit gate:** a fresh reference container can build byte-identical 8502 and Z80
+scaffold images and run `make check`.
+
+## Phase 1 — Machine bring-up
+
+- [ ] Define the reset/loader contract and final bootstrap load address.
+- [ ] Establish a known MMU state without relying on undocumented ROM state.
+- [ ] Bring up a polled VDC text console.
+- [ ] Add a panic screen and emulator-visible diagnostic codes.
+- [ ] Detect PAL/NTSC, model, VDC RAM size, and optional memory expansions.
+- [ ] Produce the first bootable D71 image.
+
+**Exit gate:** a stock configuration boots to the same diagnostic console in
+`1986`, VICE, and real hardware.
+
+## Phase 2 — Memory and interrupts
+
+- [ ] Adopt the permanent bank/common-RAM map through an architecture decision.
+- [ ] Implement atomic MMU configuration primitives.
+- [ ] Implement IRQ/NMI entry, CIA tick, and monotonic time.
+- [ ] Define kernel, task, and interrupt stack bounds with canaries.
+- [ ] Implement bank-aware allocators and buffer ownership.
+- [ ] Verify VIC-visible and VDC-transfer buffers on PAL and NTSC.
+
+**Exit gate:** interrupt soak tests run for one hour without stack, bank, or
+display corruption.
+
+## Phase 3 — 8502 executive
+
+- [ ] Freeze the initial syscall jump-table ABI.
+- [ ] Implement task creation, exit, yield, sleep, and event wait.
+- [ ] Save and restore cc65 software-stack and zero-page runtime state.
+- [ ] Add cooperative scheduling, then timer-driven preemption.
+- [ ] Add message queues and capability-based device handles.
+- [ ] Add host tests for scheduler and queue policy.
+
+**Exit gate:** at least four C tasks survive repeated preemption while performing
+banked-memory and display operations.
+
+## Phase 4 — Z80 execution engine
+
+- [ ] Prove the MMU CPU-switch sequence in a minimal assembly spike.
+- [ ] Implement mailbox validation, sequence numbers, and error results.
+- [ ] Implement `NOP`, copy, checksum, and one decompression operation.
+- [ ] Measure handoff cost and define per-operation size thresholds.
+- [ ] Add repeated handoff and malformed-request tests.
+- [ ] Confirm behavior on real hardware.
+
+**Exit gate:** 100,000 mixed worker transactions complete without deadlock or
+mailbox corruption, with published benchmark results.
+
+## Phase 5 — Dual-display and input system
+
+- [ ] Define display surface and mode APIs.
+- [ ] Implement queued VDC text and bitmap transfers.
+- [ ] Implement VIC text/bitmap surfaces, sprites, and raster service.
+- [ ] Support VDC-only, VIC-only, mirrored, and extended desktop modes.
+- [ ] Add keyboard, joystick, mouse/paddle, and light-pen event sources.
+- [ ] Demonstrate a two-monitor collaborative application.
+
+**Exit gate:** both displays update independently under task and storage load
+without missing input events.
+
+## Phase 6 — Storage and executable environment
+
+- [ ] Implement IEC device discovery and baseline serial operations.
+- [ ] Add 1571 burst support only after baseline correctness.
+- [ ] Define filesystem and executable/module formats.
+- [ ] Implement file, directory, and stream syscalls.
+- [ ] Add disk-error recovery and media-change handling.
+- [ ] Load and terminate relocatable C applications.
+
+**Exit gate:** applications can be installed, launched, exchange files, and exit
+without rebooting or corrupting media.
+
+## Phase 7 — System services and release
+
+- [ ] SID audio service and timer-safe sound queues.
+- [ ] REU and GeoRAM acceleration/paging backends.
+- [ ] Shell, system monitor, file manager, editor, and SDK examples.
+- [ ] Programmer and driver documentation.
+- [ ] Automated image builds and release provenance.
+- [ ] Compatibility matrix across C128, C128D, and C128DCR configurations.
+
+**Exit gate:** UDEKS 1.0 boots and performs its documented core workflows on the
+supported stock hardware matrix, with reproducible GPL source releases.
