@@ -53,6 +53,7 @@ unsigned char udeks_framebuffer_draw_char(
     unsigned int x, unsigned char y, unsigned char character);
 unsigned char udeks_framebuffer_draw_text(
     unsigned int x, unsigned char y, const unsigned char *text);
+unsigned char udeks_framebuffer_refresh_root_console(void);
 unsigned char udeks_framebuffer_flush(void);
 
 #endif

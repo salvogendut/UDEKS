@@ -84,6 +84,11 @@ and a static future-shell prompt and cursor. Its 64x21 characters and cursor
 are retained independently of the VDC pixels, making it the initial root
 console window described in `docs/WINDOW-SYSTEM.md`.
 
+The retained model now implements the provisional
+[terminal API](../abi/terminal.md): sequential output, control characters,
+wrapping, scrolling, cursor damage, and row-damaged framebuffer refresh. It
+does not yet scan the keyboard or provide an editable command line.
+
 The framebuffer owns a 16,000-byte system-RAM backing surface. Client changes
 are clipped, accumulated as byte spans per scanline, copied through the bounded
 assembly VDC transport, and retired only after the complete span is accepted.

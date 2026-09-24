@@ -27,11 +27,16 @@ window's content.
 
 ### 2. Terminal behavior
 
-- Add sequential character output, carriage return, newline, tab, backspace,
+- [x] Add sequential character output, carriage return, newline, tab, backspace,
   clear, cursor movement, wrapping, and scrolling.
-- Track dirty text rows and render only changed cells.
-- Preserve output while the root console is obscured.
-- Define stream endpoints so standard output can target a terminal handle.
+- [x] Track dirty text rows and render only changed rows.
+- [x] Preserve output while the root console is obscured.
+- [ ] Define stream endpoints so standard output can target a terminal handle.
+
+The provisional resident API and exact control-character behavior are defined
+in the [retained terminal API](../abi/terminal.md). It targets the implicit
+root console until scheduler identities and IPC make terminal handles
+meaningful.
 
 ### 3. Window registry and compositor
 

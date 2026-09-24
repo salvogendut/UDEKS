@@ -258,24 +258,37 @@ static unsigned char activate_bitmap_mode(void)
     return UDEKS_VDC_OK;
 }
 
-static unsigned char compose_boot_console(void)
+static unsigned char render_root_console_rows(
+    unsigned char render_all, unsigned char update_checksum)
 {
     const unsigned char *row_text;
     unsigned int cursor_x;
     unsigned char cursor_y;
 
-    if (udeks_boot_console_build() != UDEKS_ROOT_CONSOLE_OK) {
-        return UDEKS_VDC_TIMEOUT;
-    }
-    text_checksum = 0;
     for (console_row = 0; console_row < UDEKS_ROOT_CONSOLE_ROWS;
          ++console_row) {
+        if (render_all == 0 &&
+            udeks_root_console_row_dirty(console_row) == 0) {
+            continue;
+        }
+        if (render_all == 0) {
+            if (udeks_surface_fill_rect(
+                    CONSOLE_CONTENT_X,
+                    (unsigned char)(CONSOLE_CONTENT_Y +
+                        console_row * UDEKS_FONT_CELL_HEIGHT),
+                    UDEKS_ROOT_CONSOLE_COLUMNS * UDEKS_FONT_CELL_WIDTH,
+                    UDEKS_FONT_CELL_HEIGHT, 0) != UDEKS_FRAMEBUFFER_OK) {
+                return UDEKS_VDC_TIMEOUT;
+            }
+        }
         row_text = udeks_root_console_row(console_row);
         for (console_column = 0;
             console_column < UDEKS_ROOT_CONSOLE_COLUMNS;
              ++console_column) {
             if (row_text[console_column] != ' ') {
-                text_checksum += row_text[console_column];
+                if (update_checksum != 0) {
+                    text_checksum += row_text[console_column];
+                }
                 if (udeks_surface_draw_char(
                         CONSOLE_CONTENT_X +
                             (unsigned int)console_column *
@@ -288,6 +301,32 @@ static unsigned char compose_boot_console(void)
                 }
             }
         }
+        if (udeks_root_console_cursor_visible() != 0 &&
+            udeks_root_console_cursor_row() == console_row) {
+            cursor_x = CONSOLE_CONTENT_X +
+                (unsigned int)udeks_root_console_cursor_column() *
+                    UDEKS_FONT_CELL_WIDTH;
+            cursor_y = (unsigned char)(CONSOLE_CONTENT_Y +
+                console_row * UDEKS_FONT_CELL_HEIGHT);
+            if (udeks_surface_fill_rect(
+                    cursor_x, cursor_y, UDEKS_FONT_CELL_WIDTH,
+                    UDEKS_FONT_CELL_HEIGHT, 1) != UDEKS_FRAMEBUFFER_OK) {
+                return UDEKS_VDC_TIMEOUT;
+            }
+        }
+        udeks_root_console_mark_row_clean(console_row);
+    }
+    return UDEKS_VDC_OK;
+}
+
+static unsigned char compose_boot_console(void)
+{
+    if (udeks_boot_console_build() != UDEKS_ROOT_CONSOLE_OK) {
+        return UDEKS_VDC_TIMEOUT;
+    }
+    text_checksum = 0;
+    if (render_root_console_rows(1, 1) != UDEKS_VDC_OK) {
+        return UDEKS_VDC_TIMEOUT;
     }
     if (udeks_surface_hline(
             CONSOLE_FRAME_X, CONSOLE_FRAME_Y,
@@ -304,18 +343,6 @@ static unsigned char compose_boot_console(void)
             CONSOLE_FRAME_Y, 1, CONSOLE_FRAME_HEIGHT,
             1) != UDEKS_FRAMEBUFFER_OK) {
         return UDEKS_VDC_TIMEOUT;
-    }
-    if (udeks_root_console_cursor_visible() != 0) {
-        cursor_x = CONSOLE_CONTENT_X +
-            (unsigned int)udeks_root_console_cursor_column() *
-                UDEKS_FONT_CELL_WIDTH;
-        cursor_y = (unsigned char)(CONSOLE_CONTENT_Y +
-            udeks_root_console_cursor_row() * UDEKS_FONT_CELL_HEIGHT);
-        if (udeks_surface_fill_rect(
-                cursor_x, cursor_y, UDEKS_FONT_CELL_WIDTH,
-                UDEKS_FONT_CELL_HEIGHT, 1) != UDEKS_FRAMEBUFFER_OK) {
-            return UDEKS_VDC_TIMEOUT;
-        }
     }
     return UDEKS_VDC_OK;
 }
@@ -417,6 +444,20 @@ unsigned char udeks_framebuffer_draw_text(
         return result;
     }
     return udeks_surface_draw_text(x, y, text);
+}
+
+unsigned char udeks_framebuffer_refresh_root_console(void)
+{
+    unsigned char result;
+
+    result = framebuffer_client_ready();
+    if (result != UDEKS_FRAMEBUFFER_OK) {
+        return result;
+    }
+    if (render_root_console_rows(0, 0) != UDEKS_VDC_OK) {
+        return UDEKS_FRAMEBUFFER_IO_ERROR;
+    }
+    return UDEKS_FRAMEBUFFER_OK;
 }
 
 unsigned char udeks_framebuffer_flush(void)

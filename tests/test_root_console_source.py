@@ -20,6 +20,10 @@ class RootConsoleSourceTests(unittest.TestCase):
         self.assertIn("cells\n    [UDEKS_ROOT_CONSOLE_ROWS]", source)
         self.assertIn("udeks_root_console_write_at", source)
         self.assertIn("udeks_root_console_set_cursor", source)
+        self.assertIn("udeks_root_console_write", source)
+        self.assertIn("udeks_root_console_write_string", source)
+        self.assertIn("udeks_root_console_row_dirty", source)
+        self.assertIn("scroll_up", source)
 
     def test_boot_messages_populate_model_outside_renderer(self):
         boot = (ROOT / "src/services/window/boot_console.c").read_text(
@@ -41,6 +45,8 @@ class RootConsoleSourceTests(unittest.TestCase):
         self.assertIn("udeks_boot_console_build()", renderer)
         self.assertIn("udeks_root_console_row(console_row)", renderer)
         self.assertIn("udeks_root_console_cursor_visible()", renderer)
+        self.assertIn("udeks_framebuffer_refresh_root_console", renderer)
+        self.assertIn("udeks_root_console_mark_row_clean", renderer)
         self.assertIn("UDEKS_FRAMEBUFFER_API_FLAGS", renderer)
 
     def test_model_is_linked_into_production_and_panic_images(self):

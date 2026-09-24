@@ -19,6 +19,7 @@ class FramebufferSurfaceTests(unittest.TestCase):
             "udeks_framebuffer_fill_rect",
             "udeks_framebuffer_draw_char",
             "udeks_framebuffer_draw_text",
+            "udeks_framebuffer_refresh_root_console",
             "udeks_framebuffer_flush",
         ):
             self.assertIn(symbol, header)

@@ -125,5 +125,6 @@ the display-memory and physical-hardware gates in ADR 0003 pass.
 - [Mailbox ABI](abi/mailbox.md)
 - [Service-module ABI](abi/services.md)
 - [Framebuffer client API](abi/framebuffer.md)
+- [Retained terminal API](abi/terminal.md)
 - [Dedication](DEDICATION.md)
 - [Contributing](CONTRIBUTING.md)

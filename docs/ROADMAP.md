@@ -146,8 +146,10 @@ mailbox corruption, with published benchmark results.
   of its VDC rendering.
 - [x] Enter and verify VDC-only 2 MHz operation after VIC-based hardware
   discovery and before display composition.
-- [ ] Add terminal output, cursor movement, wrapping, and scrolling to the root
+- [x] Add terminal output, cursor movement, wrapping, and scrolling to the root
   console model.
+- [x] Track root-console row damage and re-render only changed rows through the
+  owned framebuffer surface.
 - [ ] Add bounded window descriptors, z-order, clipping, damage, and
   back-to-front recomposition for overlapping text and bitmap windows.
 - [ ] Route normalized input events to the focused window.
