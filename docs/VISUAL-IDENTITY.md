@@ -5,7 +5,9 @@ It applies consistently to the boot splash, software-defined fonts, system
 console, hardware-information screen, widgets, and text-mode fallback.
 
 The canonical boot composition reference is `assets/bootscreen.png`: a pipe
-logo rail on the left and a bordered system console on the right. Target
+logo rail on the left and a bordered system console on the right. The native
+boot rail adds the Japanese UDEKS wordmark from `assets/udekusu-64.xpm`
+directly below the pipe. Target
 implementations preserve this hierarchy while adapting it to native resolution
 and available font metrics.
 

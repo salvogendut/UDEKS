@@ -59,23 +59,27 @@ as 640x225, interlace, per-cell colour, and page flipping are later capability-
 gated extensions rather than assumptions made by the baseline API.
 
 The first end-to-end client is the boot splash. A host-side build tool converts
-`assets/udekspipe-64.xpm` into packed VDC scanlines while preserving the PNG
-and both XPM sizes as source artwork. The service places the compact 64x64 pipe
-mark at the upper left of the baseline surface and verifies it in VDC RAM. No
-PNG decoder belongs in the kernel. The 160x160 variant remains available for
-future layouts with more room. The present transitional service runs after the
+`assets/udekspipe-64.xpm` and `assets/udekusu-64.xpm` into packed VDC
+scanlines while preserving their PNG sources and the larger pipe XPM as source
+artwork. The service places the compact 64x64 pipe mark at the upper left and
+the 64x21 Japanese UDEKS wordmark directly below it. Dirty-span readback
+verifies both assets in VDC RAM. No PNG decoder belongs in the kernel. The
+160x160 pipe variant remains available for future layouts with more room. The
+present transitional service runs after the
 text console and takes final display ownership; the software-font milestone
 removes that split ownership by making console output a framebuffer client.
 
 The second client installs an original software-defined 5x7 font in 8x8 cells.
 Following `assets/bootscreen.png`, the pipe occupies a left rail and a 528x184
-bordered boot console occupies the right. Seventeen rendered lines provide the
-UDEKS identity and version, `HCAP` hardware results, accurate executive/worker
-state, explicit deferred storage/filesystem services, and a static future-shell
-prompt and cursor. The display client must not touch probe registers itself.
-This makes glyph rendering, text-over-bitmap composition, clipping, dirty-span
-flushing, and cross-service data consumption part of the same visible
-qualification.
+bordered boot console occupies the right. Its 64x21 text grid and cursor are now
+retained independently of VDC pixels as the first root-window state. Seventeen
+populated lines provide the UDEKS identity and version, `HCAP` hardware results,
+accurate executive/worker state, explicit deferred storage/filesystem services,
+and a static future-shell prompt. A separate boot-content producer populates
+the model and the VDC backend renders it. The display client must not touch
+probe registers itself. This makes state retention, glyph rendering,
+text-over-bitmap composition, clipping, dirty-span flushing, and cross-service
+data consumption part of the same visible qualification.
 
 ## VDC operating rules
 
@@ -132,7 +136,7 @@ The first implementation publishes a 32-byte `VFBR` record at `$F0E0`:
 | Offset | Size | Meaning |
 |---:|---:|---|
 | 0 | 4 | ASCII magic `VFBR` |
-| 4 | 1 | Format (`6`; formats 1–5 preserve earlier milestones) |
+| 4 | 1 | Format (`7`; formats 1–6 preserve earlier milestones) |
 | 5 | 1 | Starting (`1`), ready (`2`), or error (`$80 | code`) |
 | 6 | 1 | Failure code |
 | 7 | 1 | Bitmap stride (`80` bytes) |
@@ -151,10 +155,10 @@ The first implementation publishes a 32-byte `VFBR` record at `$F0E0`:
 | 27 | 1 | Rendered boot-console lines (`17`) |
 | 28–29 | 2 | Verified font-panel byte-sum |
 | 30 | 1 | Consumed `HCAP` field mask (`$1F`) |
-| 31 | 1 | Graphics API flags (`$1F`: backing, primitives, text, dirty flush, ownership) |
+| 31 | 1 | Graphics API flags (`$3F`: backing, primitives, text, dirty flush, ownership, retained root text) |
 
 The service reads every uploaded splash byte back before making bitmap mode
 visible. Every dirty span, including software-font and console-frame pixels,
 is also read back after it is written. `tools/framebuffer_decode.py` strictly
-validates all six record versions so preserved qualification evidence remains
+validates all seven record versions so preserved qualification evidence remains
 readable.

@@ -140,6 +140,13 @@ mailbox corruption, with published benchmark results.
   and expansion-memory results as the second framebuffer client.
 - [x] Adapt `assets/bootscreen.png` into a logo rail and full-height bordered
   boot console drawn through the public graphics primitives.
+- [x] Retain the bordered root console as a 64x21 text-cell model independent
+  of its VDC rendering.
+- [ ] Add terminal output, cursor movement, wrapping, and scrolling to the root
+  console model.
+- [ ] Add bounded window descriptors, z-order, clipping, damage, and
+  back-to-front recomposition for overlapping text and bitmap windows.
+- [ ] Route normalized input events to the focused window.
 - [ ] Implement queued VDC text and bitmap transfers.
 - [ ] Implement VIC text/bitmap surfaces, sprites, and raster service.
 - [ ] Support VDC-only, VIC-only, mirrored, and extended desktop modes.

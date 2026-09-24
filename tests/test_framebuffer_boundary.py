@@ -32,10 +32,12 @@ class FramebufferBoundaryTests(unittest.TestCase):
         self.assertLess(console, framebuffer)
         self.assertIn(".byte $03", source)
 
-    def test_linked_asset_is_exactly_512_bytes(self):
+    def test_linked_assets_have_exact_sizes(self):
         source = (ROOT / "src/assets/vdc_splash.s").read_text(encoding="utf-8")
         self.assertIn('.incbin "build/assets/udekspipe-64.vdc"', source)
         self.assertIn("= 512, error", source)
+        self.assertIn('.incbin "build/assets/udekusu-64.vdc"', source)
+        self.assertIn("= 168, error", source)
 
     def test_hardware_panel_consumes_capability_record(self):
         source = (ROOT / "src/services/framebuffer/vdc_framebuffer.c").read_text(

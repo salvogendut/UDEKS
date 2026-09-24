@@ -49,3 +49,9 @@ the corresponding dirty bits only after successful comparison.
 The bring-up kernel runs with interrupts disabled, so the first lease is a
 simple global guard. The scheduler milestone must make acquisition atomic and
 associate ownership with a task before concurrent clients are admitted.
+
+Capability bit `$20` reports that the boot console is sourced from a retained
+64x21 text-cell model rather than existing only as framebuffer pixels. That
+model is the first root-window state and is intentionally outside the VDC
+backend. The public window and terminal ABI will supersede direct framebuffer
+access for ordinary applications once handles and task identities exist.

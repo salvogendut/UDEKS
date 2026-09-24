@@ -71,12 +71,15 @@ kernel will consume those bytes without carrying an image decoder.
 The current production image starts three services in order: hardware
 capability discovery, the qualified text-mode fallback, and the baseline VDC
 framebuffer. The framebuffer takes final display ownership, enters 640x200
-monochrome bitmap mode, and shows the compact UDEKS pipe at the upper left in
-the default black-on-yellow theme. Following `assets/bootscreen.png`, it uses
+monochrome bitmap mode, and shows the compact UDEKS pipe with its Japanese
+wordmark below it at the upper left in the default black-on-yellow theme.
+Following `assets/bootscreen.png`, it uses
 the original UDEKS 5x7 software font to render a nearly full-height bordered
 boot console to the logo's right. The console contains identity, version,
 truthful hardware and service states, aligned status fields, a welcome line,
-and a static future-shell prompt and cursor.
+and a static future-shell prompt and cursor. Its 64x21 characters and cursor
+are retained independently of the VDC pixels, making it the initial root
+console window described in `docs/WINDOW-SYSTEM.md`.
 
 The framebuffer owns a 16,000-byte system-RAM backing surface. Client changes
 are clipped, accumulated as byte spans per scanline, copied through the bounded
@@ -167,7 +170,9 @@ python3 tools/snapshot_extract.py run.vsf result.bin \
 ```
 
 Pass `--screenshot output.bmp` to `tools/vice_capture.py` to capture the active
-VICE canvas after the requested result record reaches its completed state.
+VICE canvas after the requested result record reaches its completed state. A
+small `--screenshot-delay` lets a newly activated display complete a raster
+refresh before capture.
 
 For disk-loaded 2 MHz runs, issue BASIC `FAST` immediately before `RUN` or
 `SYS`; in the qualified launch path, the emulator's `--fast` startup option

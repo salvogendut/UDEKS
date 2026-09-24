@@ -52,7 +52,19 @@ class XpmToVdcTests(unittest.TestCase):
         self.assertEqual(len(packed), 3200)
         self.assertEqual(
             hashlib.sha256(packed).hexdigest(),
-            "fd9a48e23bee4b7e58c9c6c5de40120bcf9c27dfdecdbbfb7c94a64d79aec6f6",
+            "f3b2786c2a0d0208de2a882d5251a1a6077cc032b93f797623a0f5d34a71166b",
+        )
+
+    def test_udekusu_wordmark_is_stable_and_vdc_sized(self):
+        image = parse_xpm(
+            (ROOT / "assets" / "udekusu-64.xpm").read_text(encoding="ascii")
+        )
+        packed = pack_vdc(image)
+        self.assertEqual((image.width, image.height), (64, 21))
+        self.assertEqual(len(packed), 168)
+        self.assertEqual(
+            hashlib.sha256(packed).hexdigest(),
+            "9329b035d1cc3a3fd445ca96a982ec18bdd09ade8e2bfde5c9b546a87b4f468b",
         )
 
     def test_rejects_more_than_two_colours(self):

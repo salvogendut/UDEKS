@@ -128,6 +128,13 @@ truthful hardware states, deferred unfinished services, and the future-shell
 prompt. Display code consumes `HCAP` and never repeats hardware probes, keeping
 discovery policy in one service while proving text-over-graphics composition.
 
+The bordered boot console is retained as the UDEKS root console window rather
+than treated as one-shot pixels. Boot diagnostics populate its text-cell model;
+the native CLI will continue in the same window. Text and bitmap windows may
+later overlap it through clipped, damage-driven composition while its obscured
+content remains recoverable. ADR 0005 and `docs/WINDOW-SYSTEM.md` define the
+window, focus, input, stream, and memory model.
+
 The default system visual identity is black foreground on yellow background,
 shared by bitmap and fallback text paths. Applications may later select other
 themes without changing this system default; see

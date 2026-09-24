@@ -6,6 +6,9 @@ two-colour pipe XPM files are prepared source variants for constrained targets:
 
 - `udekspipe-64.xpm` is the active upper-left VDC boot mark;
 - `udekspipe-160.xpm` is the larger layout variant.
+- `udekusu-64.xpm` is the active Japanese UDEKS wordmark below the pipe.
+
+`udekusu.png` is the high-resolution source for the Japanese wordmark.
 
 `bootscreen.png` is the authoritative high-resolution composition reference:
 a logo rail at the left and a bordered boot console at the right. The VDC

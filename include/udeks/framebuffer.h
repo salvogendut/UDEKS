@@ -19,6 +19,12 @@
 #define UDEKS_SPLASH_X_BYTES                2u
 #define UDEKS_SPLASH_Y                      12u
 
+#define UDEKS_WORDMARK_WIDTH_BYTES         8u
+#define UDEKS_WORDMARK_HEIGHT              21u
+#define UDEKS_WORDMARK_SIZE                168u
+#define UDEKS_WORDMARK_X_BYTES             2u
+#define UDEKS_WORDMARK_Y                   82u
+
 #define UDEKS_FRAMEBUFFER_OK                0u
 #define UDEKS_FRAMEBUFFER_NOT_READY         1u
 #define UDEKS_FRAMEBUFFER_BUSY              2u
@@ -30,7 +36,8 @@
 #define UDEKS_FRAMEBUFFER_API_TEXT          0x04u
 #define UDEKS_FRAMEBUFFER_API_DIRTY_FLUSH   0x08u
 #define UDEKS_FRAMEBUFFER_API_OWNERSHIP     0x10u
-#define UDEKS_FRAMEBUFFER_API_FLAGS         0x1Fu
+#define UDEKS_FRAMEBUFFER_API_RETAINED_TEXT 0x20u
+#define UDEKS_FRAMEBUFFER_API_FLAGS         0x3Fu
 
 unsigned char udeks_framebuffer_start(void);
 unsigned char udeks_framebuffer_acquire(void);

@@ -136,6 +136,8 @@ def capture(args: argparse.Namespace) -> None:
         raise SystemExit("result block must fit in 64 KiB")
     if not 0 <= args.state_offset < args.result_size:
         raise SystemExit("state offset must lie inside the result block")
+    if args.screenshot_delay < 0:
+        raise SystemExit("screenshot delay must be non-negative")
 
     work = Path("build/vice").resolve()
     work.mkdir(parents=True, exist_ok=True)
@@ -267,6 +269,8 @@ def capture(args: argparse.Namespace) -> None:
             args.result_size,
         )
         if screenshot is not None:
+            if args.screenshot_delay != 0:
+                time.sleep(args.screenshot_delay)
             monitor_command(port, f"screenshot {quote_monitor_path(screenshot)} 0")
             if not screenshot.is_file():
                 raise RuntimeError("VICE monitor did not create the requested screenshot")
@@ -331,6 +335,12 @@ def main() -> None:
         "--screenshot",
         type=Path,
         help="save the active VICE canvas as a BMP after the result is ready",
+    )
+    parser.add_argument(
+        "--screenshot-delay",
+        type=float,
+        default=0.0,
+        help="seconds to let the display refresh after the result is ready",
     )
     parser.add_argument(
         "--vice-arg",

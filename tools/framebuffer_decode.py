@@ -23,7 +23,7 @@ def parse_result(data: bytes) -> dict[str, int]:
     block = data[:RESULT_SIZE]
     if block[:4] != b"VFBR":
         raise ValueError("framebuffer status magic is not VFBR")
-    if block[4] not in (1, 2, 3, 4, 5, 6):
+    if block[4] not in (1, 2, 3, 4, 5, 6, 7):
         raise ValueError(f"unsupported framebuffer status format {block[4]}")
     if block[5] != 2:
         if block[5] & 0x80:
@@ -106,7 +106,8 @@ def parse_result(data: bytes) -> dict[str, int]:
             raise ValueError("font render checksum is zero")
         if block[4] < 5 and block[31] != 0:
             raise ValueError("reserved framebuffer byte is nonzero")
-        if block[4] >= 5 and block[31] != 0x1F:
+        expected_api_flags = 0x3F if block[4] >= 7 else 0x1F
+        if block[4] >= 5 and block[31] != expected_api_flags:
             raise ValueError("framebuffer API capability flags are incomplete")
     return {
         "format": block[4],
@@ -128,6 +129,9 @@ def parse_result(data: bytes) -> dict[str, int]:
             block[28] | (block[29] << 8) if block[4] >= 2 else 0
         ),
         "api_flags": block[31] if block[4] >= 5 else 0,
+        "retained_text": (
+            1 if block[4] >= 7 and (block[31] & 0x20) != 0 else 0
+        ),
     }
 
 
@@ -168,6 +172,8 @@ def main() -> None:
         )
     if result["format"] >= 5:
         print(f"Graphics API capabilities: ${result['api_flags']:02X}")
+    if result["retained_text"] != 0:
+        print("Root console: retained text model")
 
 
 if __name__ == "__main__":

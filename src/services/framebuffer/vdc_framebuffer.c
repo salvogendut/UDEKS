@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
+#include "udeks/boot_console.h"
 #include "udeks/capability.h"
 #include "udeks/font.h"
 #include "udeks/framebuffer.h"
 #include "udeks/framebuffer_surface.h"
+#include "udeks/root_console.h"
 #include "udeks/theme.h"
 #include "udeks/vdc.h"
 
@@ -49,11 +51,11 @@
 #define CONSOLE_FRAME_Y               8u
 #define CONSOLE_FRAME_WIDTH           528u
 #define CONSOLE_FRAME_HEIGHT          184u
-#define CONSOLE_TEXT_COLUMN           13u
-#define CONSOLE_STATUS_COLUMN         71u
-#define CONSOLE_CURSOR_X              176u
+#define CONSOLE_CONTENT_X             104u
+#define CONSOLE_CONTENT_Y             16u
 
 extern const unsigned char udeks_splash_bitmap[];
+extern const unsigned char udeks_wordmark_bitmap[];
 
 static unsigned char saved_registers[VDC_REGISTER_COUNT];
 static unsigned int vdc_address;
@@ -70,34 +72,8 @@ static unsigned char dirty_column;
 static unsigned char dirty_start;
 static unsigned char framebuffer_active;
 static unsigned char framebuffer_owned;
-
-static const unsigned char text_title[] =
-    "UDEKS - UNIFIED DUAL ENGINE EXECUTIVE KERNEL SYSTEM";
-static const unsigned char text_version[] = "V0.1.0  (C) 2026";
-static const unsigned char text_hardware[] =
-    "INITIALIZING SYSTEM HARDWARE ...";
-static const unsigned char text_memory[] = "DETECTING MEMORY ...";
-static const unsigned char text_base_ram[] = "BASE RAM : 128 KB";
-static const unsigned char text_vdc_ram_16k[] = "VDC RAM : 16 KB";
-static const unsigned char text_vdc_ram_64k[] = "VDC RAM : 64 KB";
-static const unsigned char text_console[] = "INITIALIZING CONSOLE ...";
-static const unsigned char text_video_pal_8563[] = "VIDEO : PAL / VDC 8563";
-static const unsigned char text_video_pal_8568[] = "VIDEO : PAL / VDC 8568";
-static const unsigned char text_video_ntsc_8563[] = "VIDEO : NTSC / VDC 8563";
-static const unsigned char text_video_ntsc_8568[] = "VIDEO : NTSC / VDC 8568";
-static const unsigned char text_reu_yes[] = "REU : PRESENT";
-static const unsigned char text_reu_no[] = "REU : NOT PRESENT";
-static const unsigned char text_georam_yes[] = "GEORAM : PRESENT";
-static const unsigned char text_georam_no[] = "GEORAM : NOT PRESENT";
-static const unsigned char text_8502[] = "8502 EXECUTIVE : NATIVE MODE";
-static const unsigned char text_z80[] = "Z80 WORKER : STAGED";
-static const unsigned char text_storage[] = "STORAGE SERVICES : DEFERRED";
-static const unsigned char text_filesystem[] = "FILESYSTEM SERVICES : DEFERRED";
-static const unsigned char text_ready[] = "SYSTEM READY.";
-static const unsigned char text_welcome[] = "WELCOME TO UDEKS.";
-static const unsigned char text_prompt[] = "UDEKS:~>";
-static const unsigned char text_status_ok[] = "[ OK ]";
-static const unsigned char text_status_deferred[] = "[ -- ]";
+static unsigned char console_row;
+static unsigned char console_column;
 
 static unsigned char vdc_write_register(
     unsigned char reg, unsigned char value)
@@ -241,6 +217,10 @@ static unsigned char upload_splash(void)
         UDEKS_SPLASH_X_BYTES, UDEKS_SPLASH_Y,
         UDEKS_SPLASH_WIDTH_BYTES, UDEKS_SPLASH_HEIGHT,
         udeks_splash_bitmap);
+    udeks_surface_blit_packed(
+        UDEKS_WORDMARK_X_BYTES, UDEKS_WORDMARK_Y,
+        UDEKS_WORDMARK_WIDTH_BYTES, UDEKS_WORDMARK_HEIGHT,
+        udeks_wordmark_bitmap);
     return flush_surface();
 }
 
@@ -301,96 +281,50 @@ static unsigned char activate_bitmap_mode(void)
     return UDEKS_VDC_OK;
 }
 
-static void checksum_text(const unsigned char *text)
+static void checksum_character(unsigned char character)
 {
-    while (*text != 0) {
-        for (font_scanline = 0; font_scanline < UDEKS_FONT_CELL_HEIGHT;
-             ++font_scanline) {
-            text_checksum += udeks_font_row(*text, font_scanline);
-        }
-        ++text;
+    for (font_scanline = 0; font_scanline < UDEKS_FONT_CELL_HEIGHT;
+         ++font_scanline) {
+        text_checksum += udeks_font_row(character, font_scanline);
     }
-}
-
-static unsigned char compose_text(
-    unsigned char column, unsigned char y, const unsigned char *text)
-{
-    checksum_text(text);
-    return udeks_framebuffer_draw_text(
-        (unsigned int)column * UDEKS_FONT_CELL_WIDTH, y, text);
-}
-
-static unsigned char compose_status_line(
-    unsigned char y, const unsigned char *text,
-    const unsigned char *status)
-{
-    if (compose_text(CONSOLE_TEXT_COLUMN, y, text) !=
-        UDEKS_FRAMEBUFFER_OK) {
-        return UDEKS_FRAMEBUFFER_IO_ERROR;
-    }
-    return compose_text(CONSOLE_STATUS_COLUMN, y, status);
 }
 
 static unsigned char render_boot_console(void)
 {
-    volatile unsigned char *capability;
-    const unsigned char *video_text;
+    const unsigned char *row_text;
+    unsigned int cursor_x;
+    unsigned char cursor_y;
 
-    capability = (volatile unsigned char *)UDEKS_CAPABILITY_STATUS_BASE;
-    if (capability[7] == UDEKS_VIDEO_PAL) {
-        video_text = capability[9] == UDEKS_VDC_FAMILY_8568 ?
-            text_video_pal_8568 : text_video_pal_8563;
-    } else {
-        video_text = capability[9] == UDEKS_VDC_FAMILY_8568 ?
-            text_video_ntsc_8568 : text_video_ntsc_8563;
+    if (udeks_boot_console_build() != UDEKS_ROOT_CONSOLE_OK) {
+        return UDEKS_VDC_TIMEOUT;
     }
     text_checksum = 0;
     if (udeks_framebuffer_acquire() != UDEKS_FRAMEBUFFER_OK) {
         return UDEKS_VDC_TIMEOUT;
     }
-    if (compose_text(CONSOLE_TEXT_COLUMN, 16, text_title) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        compose_text(CONSOLE_TEXT_COLUMN, 24, text_version) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        compose_status_line(40, text_hardware, text_status_ok) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        compose_status_line(48, text_memory, text_status_ok) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        compose_status_line(56, text_base_ram, text_status_ok) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        compose_status_line(
-            64, capability[10] == 64 ?
-                text_vdc_ram_64k : text_vdc_ram_16k,
-            text_status_ok) != UDEKS_FRAMEBUFFER_OK ||
-        compose_status_line(72, text_console, text_status_ok) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        compose_status_line(80, video_text, text_status_ok) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        compose_status_line(
-            88, capability[12] != 0 ? text_reu_yes : text_reu_no,
-            capability[12] != 0 ?
-                text_status_ok : text_status_deferred) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        compose_status_line(
-            96, capability[13] != 0 ? text_georam_yes : text_georam_no,
-            capability[13] != 0 ?
-                text_status_ok : text_status_deferred) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        compose_status_line(104, text_8502, text_status_ok) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        compose_status_line(112, text_z80, text_status_deferred) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        compose_status_line(120, text_storage, text_status_deferred) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        compose_status_line(128, text_filesystem, text_status_deferred) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        compose_text(CONSOLE_TEXT_COLUMN, 144, text_ready) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        compose_text(CONSOLE_TEXT_COLUMN, 160, text_welcome) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        compose_text(CONSOLE_TEXT_COLUMN, 176, text_prompt) !=
-            UDEKS_FRAMEBUFFER_OK ||
-        udeks_framebuffer_hline(
+    for (console_row = 0; console_row < UDEKS_ROOT_CONSOLE_ROWS;
+         ++console_row) {
+        row_text = udeks_root_console_row(console_row);
+        for (console_column = 0;
+             console_column < UDEKS_ROOT_CONSOLE_COLUMNS;
+             ++console_column) {
+            if (row_text[console_column] != ' ') {
+                checksum_character(row_text[console_column]);
+                if (udeks_framebuffer_draw_char(
+                        CONSOLE_CONTENT_X +
+                            (unsigned int)console_column *
+                                UDEKS_FONT_CELL_WIDTH,
+                        (unsigned char)(CONSOLE_CONTENT_Y +
+                            console_row * UDEKS_FONT_CELL_HEIGHT),
+                        row_text[console_column]) !=
+                    UDEKS_FRAMEBUFFER_OK) {
+                    framebuffer_owned = 0;
+                    return UDEKS_VDC_TIMEOUT;
+                }
+            }
+        }
+    }
+    if (udeks_framebuffer_hline(
             CONSOLE_FRAME_X, CONSOLE_FRAME_Y,
             CONSOLE_FRAME_WIDTH, 1) != UDEKS_FRAMEBUFFER_OK ||
         udeks_framebuffer_hline(
@@ -403,12 +337,22 @@ static unsigned char render_boot_console(void)
         udeks_framebuffer_fill_rect(
             CONSOLE_FRAME_X + CONSOLE_FRAME_WIDTH - 1u,
             CONSOLE_FRAME_Y, 1, CONSOLE_FRAME_HEIGHT,
-            1) != UDEKS_FRAMEBUFFER_OK ||
-        udeks_framebuffer_fill_rect(
-            CONSOLE_CURSOR_X, 176, UDEKS_FONT_CELL_WIDTH,
-            UDEKS_FONT_CELL_HEIGHT, 1) != UDEKS_FRAMEBUFFER_OK) {
+            1) != UDEKS_FRAMEBUFFER_OK) {
         framebuffer_owned = 0;
         return UDEKS_VDC_TIMEOUT;
+    }
+    if (udeks_root_console_cursor_visible() != 0) {
+        cursor_x = CONSOLE_CONTENT_X +
+            (unsigned int)udeks_root_console_cursor_column() *
+                UDEKS_FONT_CELL_WIDTH;
+        cursor_y = (unsigned char)(CONSOLE_CONTENT_Y +
+            udeks_root_console_cursor_row() * UDEKS_FONT_CELL_HEIGHT);
+        if (udeks_framebuffer_fill_rect(
+                cursor_x, cursor_y, UDEKS_FONT_CELL_WIDTH,
+                UDEKS_FONT_CELL_HEIGHT, 1) != UDEKS_FRAMEBUFFER_OK) {
+            framebuffer_owned = 0;
+            return UDEKS_VDC_TIMEOUT;
+        }
     }
     if (udeks_framebuffer_release() != UDEKS_FRAMEBUFFER_OK) {
         framebuffer_owned = 0;
@@ -553,7 +497,7 @@ static void status_begin(void)
     STATUS_BYTE(1) = 'F';
     STATUS_BYTE(2) = 'B';
     STATUS_BYTE(3) = 'R';
-    STATUS_BYTE(4) = 6;
+    STATUS_BYTE(4) = 7;
     STATUS_BYTE(5) = UDEKS_FRAMEBUFFER_STATE_STARTING;
     STATUS_BYTE(7) = UDEKS_FRAMEBUFFER_STRIDE;
     STATUS_BYTE(8) = UDEKS_FRAMEBUFFER_HEIGHT;
@@ -569,7 +513,7 @@ static void status_begin(void)
     STATUS_BYTE(24) = UDEKS_THEME_VDC_COLOR;
     STATUS_BYTE(25) = UDEKS_FONT_WIDTH;
     STATUS_BYTE(26) = UDEKS_FONT_HEIGHT;
-    STATUS_BYTE(27) = 17;
+    STATUS_BYTE(27) = UDEKS_BOOT_CONSOLE_LINES;
     STATUS_BYTE(30) = 0x1F;
     STATUS_BYTE(31) = UDEKS_FRAMEBUFFER_API_FLAGS;
 }
