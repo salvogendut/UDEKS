@@ -175,6 +175,10 @@ mailbox corruption, with published benchmark results.
   cursor and custom upper-half glyphs for the logo and window edges.
 - [x] Preserve mixed-case terminal text with per-cell VDC primary/alternate
   character-set attributes.
+- [x] Add a bounded native shell parser and command registry with initial
+  console, version, hardware, service, and CPU-role commands.
+- [x] Give shell commands Unix-like `argc`/`argv`, exit status, and standard
+  stream descriptors without coupling commands to VDC hardware.
 - [ ] Benchmark equivalent VIC-IIe and VDC graphics primitives, including CPU
   draw cost, transfer cost, display-cycle contention, and perceived latency.
 - [ ] Implement a VIC-IIe graphics service as the preferred interactive-pixel

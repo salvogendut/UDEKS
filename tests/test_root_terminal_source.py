@@ -41,6 +41,19 @@ class RootTerminalSourceTests(unittest.TestCase):
         self.assertIn(".addr _udeks_root_terminal_start", descriptor)
         self.assertIn(".addr _udeks_root_terminal_poll", descriptor)
 
+    def test_terminal_accepts_initial_input_and_shell_rearms_later_prompts(self):
+        source = (ROOT / "src/services/terminal/root_terminal.c").read_text(
+            encoding="utf-8"
+        )
+        start = source.split("unsigned char udeks_root_terminal_start(void)", 1)[1]
+        start = start.split("unsigned char udeks_root_terminal_poll(void)", 1)[0]
+        refresh = source.split("static unsigned char refresh_display(void)", 1)[1]
+        refresh = refresh.split("unsigned char udeks_root_terminal_start(void)", 1)[0]
+        self.assertIn("accepting_input = 1;", start)
+        self.assertNotIn("accepting_input = 1;", refresh)
+        self.assertIn("accepting_input = 0;", source)
+        self.assertIn("unsigned char udeks_root_terminal_prompt(void)", source)
+
 
 if __name__ == "__main__":
     unittest.main()

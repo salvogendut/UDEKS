@@ -24,6 +24,7 @@ static const unsigned char prompt[] = "UDEKS:~> ";
 static unsigned char input_row;
 static unsigned char input_column;
 static unsigned char pending_refresh;
+static unsigned char accepting_input;
 static struct udeks_key_event event;
 
 static void increment_counter(unsigned char low_offset)
@@ -102,13 +103,26 @@ static unsigned char submit_line(void)
     }
     increment_counter(STATUS_SUBMISSIONS_LO);
     udeks_root_console_write('\n');
+    accepting_input = 0;
+    udeks_root_console_set_cursor(
+        udeks_root_console_cursor_column(),
+        udeks_root_console_cursor_row(), 0);
+    pending_refresh = 1;
+    return UDEKS_ROOT_TERMINAL_OK;
+}
+
+unsigned char udeks_root_terminal_prompt(void)
+{
     udeks_root_console_write_string(prompt);
     input_column = udeks_root_console_cursor_column();
     input_row = udeks_root_console_cursor_row();
     if ((unsigned int)input_column + INPUT_FIELD_WIDTH >
-            UDEKS_ROOT_CONSOLE_COLUMNS) {
-        return terminal_fail(UDEKS_ROOT_TERMINAL_RENDER);
+            UDEKS_ROOT_CONSOLE_COLUMNS ||
+        udeks_root_console_set_cursor(input_column, input_row, 1) !=
+            UDEKS_ROOT_CONSOLE_OK) {
+        return UDEKS_ROOT_TERMINAL_RENDER;
     }
+    accepting_input = 1;
     pending_refresh = 1;
     return UDEKS_ROOT_TERMINAL_OK;
 }
@@ -153,6 +167,7 @@ unsigned char udeks_root_terminal_start(void)
     input_column = udeks_root_console_cursor_column();
     input_row = udeks_root_console_cursor_row();
     pending_refresh = 0;
+    accepting_input = 1;
     publish_editor_state();
     STATUS_BYTE(5) = UDEKS_ROOT_TERMINAL_READY;
     return UDEKS_ROOT_TERMINAL_OK;
@@ -169,6 +184,9 @@ unsigned char udeks_root_terminal_poll(void)
 
     while (udeks_keyboard_event_get(&event) == UDEKS_KEYBOARD_OK) {
         if (event.type != UDEKS_KEY_EVENT_PRESS) {
+            continue;
+        }
+        if (accepting_input == 0) {
             continue;
         }
         increment_counter(STATUS_PRESSES_LO);

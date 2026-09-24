@@ -23,6 +23,10 @@ See [LICENSE](LICENSE).
 > freestanding scaffolding and a qualified native boot path, not yet a usable
 > operating system.
 
+<p align="center">
+  <img src="screenshot/udeks-boot.png" alt="UDEKS native C128 boot console running in the 1986 emulator" width="640">
+</p>
+
 ## Hardware model
 
 - The 8502 and Z80 share the system bus and do **not** execute concurrently;
@@ -129,5 +133,7 @@ the display-memory and physical-hardware gates in ADR 0003 pass.
 - [Retained terminal API](abi/terminal.md)
 - [C128 keyboard API](abi/keyboard.md)
 - [Root-terminal line editor API](abi/line-editor.md)
+- [Native shell contract](abi/shell.md)
+- [Standard stream interface](include/udeks/stream.h)
 - [Dedication](DEDICATION.md)
 - [Contributing](CONTRIBUTING.md)

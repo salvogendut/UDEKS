@@ -77,10 +77,13 @@ meaningful.
 
 - [x] Build the bounded insertion/deletion and cursor-motion core as a terminal
   client.
+- [x] Add a bounded tokenizer and registry-based shell service.
+- [x] Add Unix-like `argc`/`argv`, exit-status, stdin/stdout/stderr, and stream
+  conventions with the root terminal as the first binding.
+- [x] Add `help`, `clear`, `echo`, `uname`, `lshw`, `lsmod`, and `lscpu` as the
+  first bash-like command vocabulary.
 - [ ] Add history and completion.
-- Use registry-based command dispatch rather than a monolithic command chain.
-- Begin with `help`, `clear`, `echo`, `version`, `sysinfo`, `services`,
-  `devices`, `memory`, and `reboot`.
+- Add `devices`, `memory`, and `reboot` after their kernel interfaces exist.
 - Add filesystem, process, and module commands only when their service APIs
   exist.
 

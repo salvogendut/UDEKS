@@ -210,6 +210,21 @@ $(BUILD_8502)/root_terminal.s: src/services/terminal/root_terminal.c \
 		include/udeks/root_terminal.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/terminal_stream.s: src/services/terminal/stream.c \
+		include/udeks/root_console.h include/udeks/stream.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/shell_parser.s: src/services/shell/parser.c \
+		include/udeks/shell.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/shell.s: src/services/shell/shell.c \
+		include/udeks/capability.h include/udeks/line_editor.h \
+		include/udeks/root_console.h include/udeks/root_terminal.h \
+		include/udeks/service.h include/udeks/shell.h \
+		include/udeks/stream.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/framebuffer_font.s: src/services/framebuffer/font.c \
 		include/udeks/font.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
@@ -241,6 +256,15 @@ $(BUILD_8502)/line_editor.o: $(BUILD_8502)/line_editor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/root_terminal.o: $(BUILD_8502)/root_terminal.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/terminal_stream.o: $(BUILD_8502)/terminal_stream.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/shell_parser.o: $(BUILD_8502)/shell_parser.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/shell.o: $(BUILD_8502)/shell.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/framebuffer_font.o: $(BUILD_8502)/framebuffer_font.s | $(BUILD_8502)
@@ -277,6 +301,9 @@ $(BUILD_8502)/keyboard_descriptor.o: src/services/input/descriptor.s | $(BUILD_8
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/root_terminal_descriptor.o: src/services/terminal/descriptor.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/shell_descriptor.o: src/services/shell/descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/vdc_splash.o: src/assets/vdc_splash.s $(VDC_SPLASH_BIN) \
@@ -316,11 +343,14 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/framebuffer_descriptor.o \
 		$(BUILD_8502)/keyboard_descriptor.o \
 		$(BUILD_8502)/root_terminal_descriptor.o \
+		$(BUILD_8502)/shell_descriptor.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/vdc_console.o \
 		$(BUILD_8502)/vdc_framebuffer.o $(BUILD_8502)/framebuffer_font.o \
 		$(BUILD_8502)/framebuffer_surface.o $(BUILD_8502)/root_console.o \
 		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
+		$(BUILD_8502)/terminal_stream.o \
+		$(BUILD_8502)/shell_parser.o $(BUILD_8502)/shell.o \
 		$(BUILD_8502)/vdc_splash.o $(BUILD_8502)/vdc_text_assets.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $@ $(filter %.o,$^)
@@ -335,11 +365,14 @@ $(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/framebuffer_descriptor.o \
 		$(BUILD_8502)/keyboard_descriptor.o \
 		$(BUILD_8502)/root_terminal_descriptor.o \
+		$(BUILD_8502)/shell_descriptor.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/vdc_console.o \
 		$(BUILD_8502)/vdc_framebuffer.o $(BUILD_8502)/framebuffer_font.o \
 		$(BUILD_8502)/framebuffer_surface.o $(BUILD_8502)/root_console.o \
 		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
+		$(BUILD_8502)/terminal_stream.o \
+		$(BUILD_8502)/shell_parser.o $(BUILD_8502)/shell.o \
 		$(BUILD_8502)/vdc_splash.o $(BUILD_8502)/vdc_text_assets.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 -C cfg/8502-bootstrap.cfg \

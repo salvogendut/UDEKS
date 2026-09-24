@@ -38,6 +38,8 @@ only after its transfer succeeds.
 
 The separate [root-terminal line editor](line-editor.md) now consumes keyboard
 events and applies destructive Backspace, insertion, cursor movement, and line
-submission as terminal policy. This output API still has no stream attachment,
-terminal handles, or concurrency; its own Backspace control remains
-intentionally non-destructive.
+submission as terminal policy. After submission it hides the cursor and waits
+for the [native shell](shell.md) to consume the line, render command output,
+and rearm the prompt. This output API still has no stream attachment, terminal
+handles, or concurrency; its own Backspace control remains intentionally
+non-destructive.
