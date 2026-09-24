@@ -23,6 +23,19 @@ def valid_record() -> bytearray:
     return block
 
 
+def font_record() -> bytearray:
+    block = valid_record()
+    block[4] = 2
+    block[23] = 0x7F
+    block[25] = 5
+    block[26] = 7
+    block[27] = 9
+    block[28] = 0x34
+    block[29] = 0x12
+    block[30] = 0x1F
+    return block
+
+
 class FramebufferDecodeTests(unittest.TestCase):
     def test_accepts_verified_splash(self):
         result = parse_result(valid_record())
@@ -33,6 +46,12 @@ class FramebufferDecodeTests(unittest.TestCase):
         block = valid_record()
         block[10] = 64
         self.assertEqual(parse_result(block)["vdc_ram_kib"], 64)
+
+    def test_accepts_verified_software_font_panel(self):
+        result = parse_result(font_record())
+        self.assertEqual(result["format"], 2)
+        self.assertEqual(result["font_width"], 5)
+        self.assertEqual(result["font_checksum"], 0x1234)
 
     def test_reports_service_failure(self):
         block = valid_record()
@@ -58,6 +77,15 @@ class FramebufferDecodeTests(unittest.TestCase):
         block[24] = 0x0F
         with self.assertRaisesRegex(ValueError, "field 24"):
             parse_result(block)
+
+    def test_preserved_font_records_pass(self):
+        result_root = ROOT / "bench/results/2026-09-24-vdc-font/raw"
+        names = ("vice-64.bin", "vice-16.bin", "1986-64.bin", "1986-16.bin")
+        for name in names:
+            with self.subTest(result=name):
+                result = parse_result((result_root / name).read_bytes())
+                self.assertEqual(result["format"], 2)
+                self.assertEqual(result["flags"], 0x7F)
 
 
 if __name__ == "__main__":

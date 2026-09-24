@@ -23,7 +23,7 @@ def parse_result(data: bytes) -> dict[str, int]:
     block = data[:RESULT_SIZE]
     if block[:4] != b"VFBR":
         raise ValueError("framebuffer status magic is not VFBR")
-    if block[4] != 1:
+    if block[4] not in (1, 2):
         raise ValueError(f"unsupported framebuffer status format {block[4]}")
     if block[5] != 2:
         if block[5] & 0x80:
@@ -42,9 +42,11 @@ def parse_result(data: bytes) -> dict[str, int]:
         20: 0x06,
         21: 0x2E,
         22: 0x28,
-        23: 0x1F,
         24: 0x0D,
     }
+    expected[23] = 0x1F if block[4] == 1 else 0x7F
+    if block[4] == 2:
+        expected.update({25: 5, 26: 7, 27: 9, 30: 0x1F})
     for offset, value in expected.items():
         if block[offset] != value:
             raise ValueError(
@@ -58,8 +60,14 @@ def parse_result(data: bytes) -> dict[str, int]:
         raise ValueError(
             f"bitmap mode is {block[12]:#04x}; expected {expected_mode:#04x}"
         )
-    if any(block[25:32]):
-        raise ValueError("reserved framebuffer bytes are nonzero")
+    if block[4] == 1:
+        if any(block[25:32]):
+            raise ValueError("reserved framebuffer bytes are nonzero")
+    else:
+        if block[28] == 0 and block[29] == 0:
+            raise ValueError("font render checksum is zero")
+        if block[31] != 0:
+            raise ValueError("reserved framebuffer byte is nonzero")
     return {
         "format": block[4],
         "state": block[5],
@@ -73,6 +81,11 @@ def parse_result(data: bytes) -> dict[str, int]:
         "splash_checksum": block[21] | (block[22] << 8),
         "flags": block[23],
         "color": block[24],
+        "font_width": block[25] if block[4] == 2 else 0,
+        "font_height": block[26] if block[4] == 2 else 0,
+        "font_checksum": (
+            block[28] | (block[29] << 8) if block[4] == 2 else 0
+        ),
     }
 
 
@@ -102,6 +115,11 @@ def main() -> None:
         f"Splash verified at ${result['splash_address']:04X}; "
         f"checksum ${result['splash_checksum']:04X}"
     )
+    if result["format"] == 2:
+        print(
+            f"Software font: {result['font_width']}x{result['font_height']}, "
+            f"hardware panel checksum ${result['font_checksum']:04X}"
+        )
 
 
 if __name__ == "__main__":

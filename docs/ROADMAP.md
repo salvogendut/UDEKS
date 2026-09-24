@@ -135,7 +135,7 @@ mailbox corruption, with published benchmark results.
 - [x] Convert the 160x160 project artwork at build time and use it as the first
   framebuffer-backed boot splash.
 - [ ] Degrade cleanly to the text console when framebuffer initialization fails.
-- [ ] Add a software-defined bitmap font, then render the `HCAP` PAL/NTSC, VDC,
+- [x] Add a software-defined bitmap font, then render the `HCAP` PAL/NTSC, VDC,
   and expansion-memory results as the second framebuffer client.
 - [ ] Implement queued VDC text and bitmap transfers.
 - [ ] Implement VIC text/bitmap surfaces, sprites, and raster service.

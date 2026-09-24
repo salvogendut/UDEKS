@@ -37,6 +37,14 @@ class FramebufferBoundaryTests(unittest.TestCase):
         self.assertIn('.incbin "build/assets/udeksdroid-160.vdc"', source)
         self.assertIn("= 3200, error", source)
 
+    def test_hardware_panel_consumes_capability_record(self):
+        source = (ROOT / "src/services/framebuffer/vdc_framebuffer.c").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("UDEKS_CAPABILITY_STATUS_BASE", source)
+        self.assertIn("render_hardware_info()", source)
+        self.assertNotIn("udeks_probe_", source)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -107,6 +107,7 @@ the display-memory and physical-hardware gates in ADR 0003 pass.
 - [Assembly panic-path qualification](bench/results/2026-09-24-panic/README.md)
 - [Hardware-capability qualification](bench/results/2026-09-24-capabilities/README.md)
 - [VDC framebuffer and boot-splash qualification](bench/results/2026-09-24-vdc-framebuffer/README.md)
+- [VDC software-font and hardware-panel qualification](bench/results/2026-09-24-vdc-font/README.md)
 - [Corrected preserved benchmark PRGs for VICE and hardware](bench/artifacts/2026-09-24-r2/README.md)
 - [Building UDEKS](docs/BUILDING.md)
 - [Toolchain decision](docs/decisions/0001-toolchain.md)

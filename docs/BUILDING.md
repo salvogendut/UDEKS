@@ -72,7 +72,8 @@ The current production image starts three services in order: hardware
 capability discovery, the qualified text-mode fallback, and the baseline VDC
 framebuffer. The framebuffer takes final display ownership, enters 640x200
 monochrome bitmap mode, and shows the linked UDEKS splash in the default
-black-on-yellow theme.
+black-on-yellow theme. It then uses the original UDEKS 5x7 software font to
+render the capability service's hardware inventory around the logo.
 
 The resident 8502 image links the small subset of cc65's `none` runtime needed
 by its C services. Startup initializes cc65's downward-growing software stack

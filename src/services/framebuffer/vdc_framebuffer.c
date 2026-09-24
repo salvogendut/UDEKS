@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "udeks/capability.h"
+#include "udeks/font.h"
 #include "udeks/framebuffer.h"
 #include "udeks/theme.h"
 #include "udeks/vdc.h"
@@ -29,12 +30,15 @@
 #define FRAMEBUFFER_ERROR_UPLOAD      4u
 #define FRAMEBUFFER_ERROR_VERIFY      5u
 #define FRAMEBUFFER_ERROR_MODE        6u
+#define FRAMEBUFFER_ERROR_FONT        7u
 
 #define FRAMEBUFFER_FLAG_CLEARED     0x01u
 #define FRAMEBUFFER_FLAG_UPLOADED    0x02u
 #define FRAMEBUFFER_FLAG_VERIFIED    0x04u
 #define FRAMEBUFFER_FLAG_ACTIVE      0x08u
 #define FRAMEBUFFER_FLAG_STATE_SAVED 0x10u
+#define FRAMEBUFFER_FLAG_FONT_DRAWN   0x20u
+#define FRAMEBUFFER_FLAG_FONT_VERIFIED 0x40u
 
 #define FRAMEBUFFER_CHECKSUM_LO       21u
 #define FRAMEBUFFER_CHECKSUM_HI       22u
@@ -48,6 +52,23 @@ static unsigned int splash_checksum;
 static unsigned char splash_row;
 static unsigned char splash_column;
 static unsigned char register_index;
+static unsigned int text_checksum;
+static unsigned char font_scanline;
+
+static const unsigned char text_hardware[] = "HARDWARE";
+static const unsigned char text_video_pal[] = "VIDEO PAL";
+static const unsigned char text_video_ntsc[] = "VIDEO NTSC";
+static const unsigned char text_vdc_8563[] = "VDC 8563";
+static const unsigned char text_vdc_8568[] = "VDC 8568";
+static const unsigned char text_vram_16k[] = "VRAM 16K";
+static const unsigned char text_vram_64k[] = "VRAM 64K";
+static const unsigned char text_reu_yes[] = "REU YES";
+static const unsigned char text_reu_no[] = "REU NO";
+static const unsigned char text_georam_yes[] = "GEORAM YES";
+static const unsigned char text_georam_no[] = "GEORAM NO";
+static const unsigned char text_8502[] = "8502 CORE";
+static const unsigned char text_z80[] = "Z80 WORKER";
+static const unsigned char text_dual[] = "DUAL ENGINE";
 
 static unsigned char vdc_write_register(
     unsigned char reg, unsigned char value)
@@ -216,6 +237,78 @@ static unsigned char activate_bitmap_mode(void)
     return UDEKS_VDC_OK;
 }
 
+static unsigned char write_byte_verified(
+    unsigned int address, unsigned char value)
+{
+    unsigned char readback;
+
+    if (vdc_set_address(address) != UDEKS_VDC_OK ||
+        vdc_write_register(VDC_REG_DATA, value) != UDEKS_VDC_OK ||
+        vdc_set_address(address) != UDEKS_VDC_OK ||
+        vdc_read_register(VDC_REG_DATA, &readback) != UDEKS_VDC_OK ||
+        readback != value) {
+        return UDEKS_VDC_TIMEOUT;
+    }
+    text_checksum += value;
+    return UDEKS_VDC_OK;
+}
+
+static unsigned char draw_glyph(
+    unsigned char column, unsigned char y, unsigned char character)
+{
+    unsigned char value;
+    unsigned int address;
+
+    for (font_scanline = 0; font_scanline < UDEKS_FONT_CELL_HEIGHT;
+         ++font_scanline) {
+        value = udeks_font_row(character, font_scanline);
+        address = (unsigned int)(y + font_scanline) *
+            UDEKS_FRAMEBUFFER_STRIDE + column;
+        if (write_byte_verified(address, value) != UDEKS_VDC_OK) {
+            return UDEKS_VDC_TIMEOUT;
+        }
+    }
+    return UDEKS_VDC_OK;
+}
+
+static unsigned char draw_text(
+    unsigned char column, unsigned char y, const unsigned char *text)
+{
+    while (*text != 0) {
+        if (draw_glyph(column, y, *text) != UDEKS_VDC_OK) {
+            return UDEKS_VDC_TIMEOUT;
+        }
+        ++column;
+        ++text;
+    }
+    return UDEKS_VDC_OK;
+}
+
+static unsigned char render_hardware_info(void)
+{
+    volatile unsigned char *capability;
+
+    capability = (volatile unsigned char *)UDEKS_CAPABILITY_STATUS_BASE;
+    text_checksum = 0;
+    if (draw_text(2, 24, text_hardware) != UDEKS_VDC_OK ||
+        draw_text(2, 40, capability[7] == UDEKS_VIDEO_PAL ?
+                  text_video_pal : text_video_ntsc) != UDEKS_VDC_OK ||
+        draw_text(2, 56, capability[9] == UDEKS_VDC_FAMILY_8568 ?
+                  text_vdc_8568 : text_vdc_8563) != UDEKS_VDC_OK ||
+        draw_text(2, 72, capability[10] == 64 ?
+                  text_vram_64k : text_vram_16k) != UDEKS_VDC_OK ||
+        draw_text(2, 88, capability[12] != 0 ?
+                  text_reu_yes : text_reu_no) != UDEKS_VDC_OK ||
+        draw_text(2, 104, capability[13] != 0 ?
+                  text_georam_yes : text_georam_no) != UDEKS_VDC_OK ||
+        draw_text(61, 40, text_8502) != UDEKS_VDC_OK ||
+        draw_text(61, 56, text_z80) != UDEKS_VDC_OK ||
+        draw_text(61, 72, text_dual) != UDEKS_VDC_OK) {
+        return UDEKS_VDC_TIMEOUT;
+    }
+    return UDEKS_VDC_OK;
+}
+
 static unsigned char framebuffer_fail(unsigned char code)
 {
     if ((STATUS_BYTE(FRAMEBUFFER_FLAGS) & FRAMEBUFFER_FLAG_STATE_SAVED) != 0) {
@@ -237,7 +330,7 @@ static void status_begin(void)
     STATUS_BYTE(1) = 'F';
     STATUS_BYTE(2) = 'B';
     STATUS_BYTE(3) = 'R';
-    STATUS_BYTE(4) = 1;
+    STATUS_BYTE(4) = 2;
     STATUS_BYTE(5) = UDEKS_FRAMEBUFFER_STATE_STARTING;
     STATUS_BYTE(7) = UDEKS_FRAMEBUFFER_STRIDE;
     STATUS_BYTE(8) = UDEKS_FRAMEBUFFER_HEIGHT;
@@ -251,6 +344,10 @@ static void status_begin(void)
     STATUS_BYTE(19) = (unsigned char)vdc_address;
     STATUS_BYTE(20) = (unsigned char)(vdc_address >> 8);
     STATUS_BYTE(24) = UDEKS_THEME_VDC_COLOR;
+    STATUS_BYTE(25) = UDEKS_FONT_WIDTH;
+    STATUS_BYTE(26) = UDEKS_FONT_HEIGHT;
+    STATUS_BYTE(27) = 9;
+    STATUS_BYTE(30) = 0x1F;
 }
 
 unsigned char udeks_framebuffer_start(void)
@@ -292,6 +389,13 @@ unsigned char udeks_framebuffer_start(void)
         return framebuffer_fail(FRAMEBUFFER_ERROR_MODE);
     }
     STATUS_BYTE(FRAMEBUFFER_FLAGS) |= FRAMEBUFFER_FLAG_ACTIVE;
+    if (render_hardware_info() != UDEKS_VDC_OK) {
+        return framebuffer_fail(FRAMEBUFFER_ERROR_FONT);
+    }
+    STATUS_BYTE(28) = (unsigned char)text_checksum;
+    STATUS_BYTE(29) = (unsigned char)(text_checksum >> 8);
+    STATUS_BYTE(FRAMEBUFFER_FLAGS) |=
+        FRAMEBUFFER_FLAG_FONT_DRAWN | FRAMEBUFFER_FLAG_FONT_VERIFIED;
     STATUS_BYTE(5) = UDEKS_FRAMEBUFFER_STATE_READY;
     return 0;
 }

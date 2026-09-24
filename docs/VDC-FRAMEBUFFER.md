@@ -38,8 +38,8 @@ owning VDC layout directly.
 
 The baseline mode transition, hardware clear, linked splash upload, complete
 readback, and black-on-yellow activation are implemented and qualified on both
-VDC RAM tiers. Surface drawing, dirty tracking, the software font, and the
-public client API remain the next layer.
+VDC RAM tiers. The software font and hardware panel are also qualified; general
+surface drawing, dirty tracking, and the public client API remain the next layer.
 
 The initial display service deliberately targets the conservative mode that
 works with either VDC memory tier: 640x200, one bit per pixel, 80 bytes per
@@ -64,10 +64,10 @@ in the kernel. The present transitional service runs after the text console and
 takes final display ownership; the software-font milestone removes that split
 ownership by making console output a framebuffer client.
 
-The second client will install a software-defined 8x8 font and render a hardware
-inventory beside or after the splash. It reads the published `HCAP` record; it
-must not touch probe registers itself. The first screen reports PAL/NTSC, VDC
-family and memory, and REU/GeoRAM presence. This makes glyph rendering,
+The second client installs an original software-defined 5x7 font in 8x8 cells
+and renders a hardware inventory beside the splash. It reads the published
+`HCAP` record; it must not touch probe registers itself. The first screen
+reports PAL/NTSC, VDC family and memory, and REU/GeoRAM presence. This makes glyph rendering,
 text-over-bitmap composition, clipping, dirty-span flushing, and cross-service
 data consumption part of the same visible qualification.
 
@@ -126,7 +126,7 @@ The first implementation publishes a 32-byte `VFBR` record at `$F0E0`:
 | Offset | Size | Meaning |
 |---:|---:|---|
 | 0 | 4 | ASCII magic `VFBR` |
-| 4 | 1 | Format (`1`) |
+| 4 | 1 | Format (`2`; format 1 is the splash-only milestone) |
 | 5 | 1 | Starting (`1`), ready (`2`), or error (`$80 | code`) |
 | 6 | 1 | Failure code |
 | 7 | 1 | Bitmap stride (`80` bytes) |
@@ -139,9 +139,14 @@ The first implementation publishes a 32-byte `VFBR` record at `$F0E0`:
 | 15–18 | 4 | Splash width in bytes, height, x-byte, and y |
 | 19–20 | 2 | Splash VDC address (`$065E`, little-endian) |
 | 21–22 | 2 | Verified byte-sum (`$282E`, little-endian) |
-| 23 | 1 | State saved, cleared, uploaded, verified, and active flags (`$1F`) |
+| 23 | 1 | Display and verified-font flags (`$7F`) |
 | 24 | 1 | VDC colour register (`$0D`, black on yellow) |
-| 25–31 | 7 | Reserved; zero |
+| 25–26 | 2 | Font width (`5`) and height (`7`) |
+| 27 | 1 | Rendered hardware-information lines (`9`) |
+| 28–29 | 2 | Verified font-panel byte-sum |
+| 30 | 1 | Consumed `HCAP` field mask (`$1F`) |
+| 31 | 1 | Reserved; zero |
 
 The service reads every uploaded splash byte back before making bitmap mode
-visible. `tools/framebuffer_decode.py` strictly validates the record.
+visible. Every software-font scanline is also read back immediately after it is
+written. `tools/framebuffer_decode.py` strictly validates both record versions.
