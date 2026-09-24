@@ -21,7 +21,7 @@ def parse_result(data: bytes) -> dict[str, int]:
     block = data[:RESULT_SIZE]
     if block[:4] != b"VCON":
         raise ValueError("console status magic is not VCON")
-    if block[4] != 1:
+    if block[4] not in (1, 2):
         raise ValueError(f"unsupported console status format {block[4]}")
     if block[5] != 2:
         if block[5] & 0x80:
@@ -31,13 +31,14 @@ def parse_result(data: bytes) -> dict[str, int]:
         6: 0x00,
         7: 80,
         8: 25,
-        9: 0x0F,
         10: 0x00,
         11: 0x08,
         12: 0x15,
-        13: 0x0F,
-        16: 0xF0,
     }
+    if block[4] == 1:
+        expected.update({9: 0x0F, 13: 0x0F, 16: 0xF0})
+    else:
+        expected.update({9: 0x00, 13: 0x00, 16: 0x0D})
     for offset, value in expected.items():
         if block[offset] != value:
             raise ValueError(

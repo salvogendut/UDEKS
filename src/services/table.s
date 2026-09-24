@@ -6,6 +6,7 @@
         .setcpu "6502"
         .import _udeks_capability_service_descriptor
         .import _udeks_console_service_descriptor
+        .import _udeks_framebuffer_service_descriptor
         .export _udeks_service_table
         .export _udeks_service_count
 
@@ -13,5 +14,6 @@
 _udeks_service_table:
         .addr _udeks_capability_service_descriptor
         .addr _udeks_console_service_descriptor
+        .addr _udeks_framebuffer_service_descriptor
 _udeks_service_count:
-        .byte $02
+        .byte $03

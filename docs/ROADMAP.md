@@ -130,8 +130,11 @@ mailbox corruption, with published benchmark results.
 - [ ] Define display surface and mode APIs.
 - [ ] Implement the capability-tiered VDC framebuffer/compositor described in
   `docs/VDC-FRAMEBUFFER.md`.
-- [ ] Convert the 160x160 project artwork at build time and use it as the first
-  framebuffer-backed boot splash, with a text-console fallback.
+- [x] Bring up and qualify the baseline 640x200 one-bit VDC framebuffer on 16
+  and 64 KiB VDC configurations in VICE and `1986`.
+- [x] Convert the 160x160 project artwork at build time and use it as the first
+  framebuffer-backed boot splash.
+- [ ] Degrade cleanly to the text console when framebuffer initialization fails.
 - [ ] Add a software-defined bitmap font, then render the `HCAP` PAL/NTSC, VDC,
   and expansion-memory results as the second framebuffer client.
 - [ ] Implement queued VDC text and bitmap transfers.

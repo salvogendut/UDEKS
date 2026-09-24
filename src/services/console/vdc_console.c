@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "udeks/console.h"
+#include "udeks/theme.h"
 #include "udeks/vdc.h"
 
 #define STATUS_BYTE(offset) \
@@ -16,7 +17,7 @@
 #define VDC_REG_COLOR              26u
 #define VDC_REG_DATA               31u
 
-#define SCREEN_ATTRIBUTE           0x0Fu
+#define SCREEN_ATTRIBUTE           UDEKS_THEME_VDC_ATTRIBUTE
 #define SCREEN_WIDTH               80u
 #define SCREEN_HEIGHT              25u
 
@@ -45,7 +46,7 @@ static void status_begin(void)
     STATUS_BYTE(1) = 'C';
     STATUS_BYTE(2) = 'O';
     STATUS_BYTE(3) = 'N';
-    STATUS_BYTE(4) = 1;
+    STATUS_BYTE(4) = 2;
     STATUS_BYTE(5) = UDEKS_CONSOLE_STATE_STARTING;
     STATUS_BYTE(7) = SCREEN_WIDTH;
     STATUS_BYTE(8) = SCREEN_HEIGHT;
@@ -207,10 +208,10 @@ unsigned char udeks_console_start(void)
     }
     STATUS_BYTE(15) = (unsigned char)(value | 0x40);
 
-    if (vdc_register_write(VDC_REG_COLOR, 0xF0) != UDEKS_VDC_OK) {
+    if (vdc_register_write(VDC_REG_COLOR, UDEKS_THEME_VDC_COLOR) != UDEKS_VDC_OK) {
         return console_fail(3);
     }
-    STATUS_BYTE(16) = 0xF0;
+    STATUS_BYTE(16) = UDEKS_THEME_VDC_COLOR;
 
     value = vdc_register_read(VDC_REG_CURSOR_START);
     if (udeks_vdc_status != UDEKS_VDC_OK ||

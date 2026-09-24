@@ -123,6 +123,7 @@ def save_result_block(
 def capture(args: argparse.Namespace) -> None:
     program = args.program.resolve()
     output = args.output.resolve()
+    screenshot = None if args.screenshot is None else args.screenshot.resolve()
     if not program.is_file():
         raise SystemExit(f"input image does not exist: {program}")
     if args.autostart and args.native_disk:
@@ -139,6 +140,11 @@ def capture(args: argparse.Namespace) -> None:
     work = Path("build/vice").resolve()
     work.mkdir(parents=True, exist_ok=True)
     output.parent.mkdir(parents=True, exist_ok=True)
+    if screenshot is not None:
+        if screenshot.suffix.lower() != ".bmp":
+            raise SystemExit("VICE monitor screenshots must use a .bmp output name")
+        screenshot.parent.mkdir(parents=True, exist_ok=True)
+        screenshot.unlink(missing_ok=True)
     tag = f"{output.stem}-{os.getpid()}"
     commands_path = work / f"{tag}.mon"
     vice_output = work / f"{tag}.prg"
@@ -260,6 +266,10 @@ def capture(args: argparse.Namespace) -> None:
             args.result_address,
             args.result_size,
         )
+        if screenshot is not None:
+            monitor_command(port, f"screenshot {quote_monitor_path(screenshot)} 0")
+            if not screenshot.is_file():
+                raise RuntimeError("VICE monitor did not create the requested screenshot")
         succeeded = True
         print(
             f"captured {args.result_size} bytes from "
@@ -317,6 +327,11 @@ def main() -> None:
         help="attach a C128 native-autoboot disk instead of autostarting a PRG",
     )
     parser.add_argument("--timeout", type=float, default=20.0)
+    parser.add_argument(
+        "--screenshot",
+        type=Path,
+        help="save the active VICE canvas as a BMP after the result is ready",
+    )
     parser.add_argument(
         "--vice-arg",
         action="append",

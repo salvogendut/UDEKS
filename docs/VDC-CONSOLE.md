@@ -1,6 +1,6 @@
 # VDC console service
 
-The first UDEKS system service is an 80-column text console split across the
+The initial UDEKS display service is an 80-column text console split across the
 microkernel boundary defined by ADR 0004.
 
 `src/8502/vdc.s` is the assembly transport. It alone touches `$D600/$D601`,
@@ -12,6 +12,11 @@ register, and read it.
 and attribute bases, enables attributes, clears the 80×25 screen, converts the
 banner text to VDC screen codes, and hides the cursor. It then reads the first
 title character and its attribute back from independent VDC RAM.
+
+Record format 2 changes the system-owned palette to the UDEKS default: black
+foreground attribute `$00` on the yellow register-26 background `$0D`. The
+decoder continues to accept preserved format-1 white-on-black qualification
+records.
 
 The service publishes a 24-byte `VCON` diagnostic record at `$F070`. State 2
 means the screen and attribute readbacks both matched. Error states have bit 7

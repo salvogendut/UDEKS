@@ -68,6 +68,12 @@ VDC revision and RAM tier, and expansion presence for later service policy.
 artwork into row-major, MSB-first scanlines under `build/assets/`; the target
 kernel will consume those bytes without carrying an image decoder.
 
+The current production image starts three services in order: hardware
+capability discovery, the qualified text-mode fallback, and the baseline VDC
+framebuffer. The framebuffer takes final display ownership, enters 640x200
+monochrome bitmap mode, and shows the linked UDEKS splash in the default
+black-on-yellow theme.
+
 The resident 8502 image links the small subset of cc65's `none` runtime needed
 by its C services. Startup initializes cc65's downward-growing software stack
 at `$EFF0`; the 6502 hardware stack remains on physical bank-0 page one. The
@@ -149,6 +155,9 @@ compact decoder-ready address range from those snapshots, for example:
 python3 tools/snapshot_extract.py run.vsf result.bin \
   --address 0xf180 --size 320
 ```
+
+Pass `--screenshot output.bmp` to `tools/vice_capture.py` to capture the active
+VICE canvas after the requested result record reaches its completed state.
 
 For disk-loaded 2 MHz runs, issue BASIC `FAST` immediately before `RUN` or
 `SYS`; in the qualified launch path, the emulator's `--fast` startup option

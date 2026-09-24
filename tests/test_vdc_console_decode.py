@@ -17,6 +17,15 @@ def valid_record() -> bytearray:
     )
 
 
+def themed_record() -> bytearray:
+    block = valid_record()
+    block[4] = 2
+    block[9] = 0
+    block[13] = 0
+    block[16] = 0x0D
+    return block
+
+
 class VdcConsoleDecodeTests(unittest.TestCase):
     def test_accepts_verified_console(self):
         result = parse_result(valid_record())
@@ -29,6 +38,12 @@ class VdcConsoleDecodeTests(unittest.TestCase):
         block[6] = 8
         with self.assertRaisesRegex(ValueError, "code 0x08"):
             parse_result(block)
+
+    def test_accepts_black_on_yellow_theme(self):
+        result = parse_result(themed_record())
+        self.assertEqual(result["format"], 2)
+        self.assertEqual(result["attribute"], 0)
+        self.assertEqual(result["color"], 0x0D)
 
     def test_rejects_screen_readback_failure(self):
         block = valid_record()

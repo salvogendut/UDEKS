@@ -125,6 +125,11 @@ published hardware inventory. Display code consumes `HCAP` and never repeats
 hardware probes, keeping discovery policy in one service while proving
 text-over-graphics composition.
 
+The default system visual identity is black foreground on yellow background,
+shared by bitmap and fallback text paths. Applications may later select other
+themes without changing this system default; see
+[VISUAL-IDENTITY.md](VISUAL-IDENTITY.md).
+
 The display server must support VDC-only, VIC-only, mirrored, extended, and
 application-owned secondary modes. Full-time 2 MHz 8502 operation and an active
 VIC display are competing requirements; mode policy must expose that tradeoff.
