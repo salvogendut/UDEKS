@@ -58,8 +58,12 @@ a material contradiction.
 
 ## Phase 1 — Machine bring-up
 
-- [ ] Define the reset/loader contract and final bootstrap load address.
-- [ ] Establish a known MMU state without relying on undocumented ROM state.
+- [x] Define the proposed stage-0/stage-1 loader contract and fixed bootstrap
+  addresses in ADR 0003.
+- [x] Make the direct-load 8502 entry establish the kernel MMU profiles, top
+  common RAM, and initial page-zero/page-one locations explicitly.
+- [ ] Implement and validate native D71 stage 0 and stage 1, then accept ADR
+  0003.
 - [ ] Bring up a polled VDC text console.
 - [ ] Add a panic screen and emulator-visible diagnostic codes.
 - [ ] Detect PAL/NTSC, model, VDC RAM size, and optional memory expansions.
@@ -70,7 +74,8 @@ a material contradiction.
 
 ## Phase 2 — Memory and interrupts
 
-- [ ] Adopt the permanent bank/common-RAM map through an architecture decision.
+- [ ] Accept ADR 0003 as the permanent bank/common-RAM map after its emulator
+  and hardware validation gates pass.
 - [ ] Implement atomic MMU configuration primitives.
 - [ ] Implement IRQ/NMI entry, CIA tick, and monotonic time.
 - [ ] Define kernel, task, and interrupt stack bounds with canaries.

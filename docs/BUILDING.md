@@ -32,7 +32,7 @@ environment bootstrap will be added before the Phase 0 exit gate.
 ```sh
 make doctor     # report every required program and fail if one is absent
 make check      # host-side unit and utility checks; no target compiler needed
-make 8502       # build build/8502/udeks-8502.bin
+make 8502       # build build/8502/udeks-8502.bin and .prg
 make z80        # build build/z80/udeks-z80.bin through SDCC
 make z80-asm    # build the independent RASM smoke image
 make bench      # build comparable 8502 and Z80 benchmark payloads
@@ -45,9 +45,12 @@ make bench-offload  # build copy/checksum/transform crossover sweep
 make            # build all three target images
 ```
 
-The 8502 artifact is a 97-byte raw bring-up image linked at `$2000`. The SDCC
+The 8502 artifacts are a raw resident image and a development PRG linked/loaded
+at `$2000`. Its linker region ends before the `$D000` I/O aperture. The SDCC
 artifact is a fixed 8 KiB raw window covering `$2000`–`$3FFF`; only its leading
-bytes currently contain code. Neither is bootable yet.
+bytes currently contain code. The PRG supports direct emulator loading but is
+not the future native disk bootstrap described by
+[ADR 0003](decisions/0003-memory-bootstrap.md).
 
 `tools/ihx_to_bin.py` performs strict Intel HEX checksum validation and rejects
 addresses outside the declared output window. This avoids silently creating an

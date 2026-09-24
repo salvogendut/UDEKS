@@ -93,8 +93,14 @@ VIC display are competing requirements; mode policy must expose that tradeoff.
 
 ## Memory plan
 
-The current `$2000` link addresses and `$F000` mailbox are provisional bring-up
-choices. The final map will define:
+[ADR 0003](decisions/0003-memory-bootstrap.md) proposes bank 0 for the 8502
+kernel, bank 1 for the Z80 worker and initial task/data space, and bank-0
+`$F000-$FFFF` as 4 KiB of top common RAM. The ordinary kernel links at
+`$2000-$CFFF`; `$D000-$DFFF` remains the I/O aperture, and `$E000-$EFFF` is
+reserved until stack and allocator work assigns it. Bank 1 initially reserves
+`$2000-$3FFF` for Z80 code and `$4000-$7FFF` as a VIC-visible window.
+
+The final map must define and validate:
 
 - permanently visible kernel code and data;
 - common RAM and the mailbox;
@@ -105,8 +111,13 @@ choices. The final map will define:
 - load versus run addresses for banked modules;
 - optional REU/GeoRAM paging and swap policy.
 
-No permanent address is accepted until it survives 8502, Z80, VIC, VDC,
-interrupt, ROM-overlay, and model-compatibility tests.
+The MMU uses four preconfigured maps for bank-0/bank-1 execution with I/O shown
+or hidden. Only top common RAM is enabled, because bottom common RAM would
+override relocated zero-page and stack-page pointers. `$FF00-$FF04` are MMU
+registers in every native map and must remain a hole in common code.
+
+ADR 0003 remains proposed until the map survives 8502, Z80, VIC, VDC,
+interrupt, ROM-overlay, emulator, and physical-machine tests.
 
 ## Kernel interfaces
 

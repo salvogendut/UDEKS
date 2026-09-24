@@ -24,6 +24,7 @@ BUILD_OFFLOAD_8502 := $(BUILD_DIR)/bench/offload/8502
 BUILD_OFFLOAD_Z80 := $(BUILD_DIR)/bench/offload/z80
 
 KERNEL_BIN := $(BUILD_8502)/udeks-8502.bin
+KERNEL_PRG := $(BUILD_8502)/udeks-8502.prg
 Z80_IHX := $(BUILD_Z80)/udeks-z80.ihx
 Z80_BIN := $(BUILD_Z80)/udeks-z80.bin
 Z80_RASM_BIN := $(BUILD_Z80)/rasm-smoke.bin
@@ -76,7 +77,7 @@ OFFLOAD_PRG := $(BUILD_OFFLOAD_8502)/offload.prg
 
 all: 8502 z80 z80-asm
 
-8502: $(KERNEL_BIN)
+8502: $(KERNEL_BIN) $(KERNEL_PRG)
 
 z80: $(Z80_BIN)
 
@@ -123,17 +124,21 @@ $(BUILD_8502) $(BUILD_Z80) $(BUILD_BENCH_8502) $(BUILD_BENCH_Z80) \
 		$(BUILD_HANDOFF_Z80) $(BUILD_OFFLOAD_8502) $(BUILD_OFFLOAD_Z80):
 	mkdir -p $@
 
-$(BUILD_8502)/kernel.s: src/8502/kernel.c include/udeks/mailbox.h | $(BUILD_8502)
+$(BUILD_8502)/kernel.s: src/8502/kernel.c include/udeks/mailbox.h \
+		include/udeks/memory.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/kernel.o: $(BUILD_8502)/kernel.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(BUILD_8502)/crt0.o: src/8502/crt0.s | $(BUILD_8502)
+$(BUILD_8502)/crt0.o: src/8502/crt0.s src/8502/mmu.inc | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/kernel.o cfg/8502-bootstrap.cfg
 	$(LD65) $(LDFLAGS_8502) -o $@ $(BUILD_8502)/crt0.o $(BUILD_8502)/kernel.o
+
+$(KERNEL_PRG): $(KERNEL_BIN) tools/bin_to_prg.py
+	$(PYTHON) tools/bin_to_prg.py --load-address 0x2000 $< $@
 
 $(BUILD_Z80)/worker.rel: src/z80/worker.c include/udeks/mailbox.h | $(BUILD_Z80)
 	$(SDCC) $(CFLAGS_Z80) -c -o $@ $<
@@ -436,7 +441,8 @@ check:
 		tools/bench_decode.py tools/irq_probe_decode.py \
 		tools/irq_service_decode.py tools/context_decode.py \
 		tools/kernel_decode.py tools/handoff_decode.py \
-		tools/offload_decode.py tools/snapshot_extract.py \
+		tools/offload_decode.py tools/boot_status_decode.py \
+		tools/snapshot_extract.py \
 		tools/vice_capture.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-r2 && sha256sum -c SHA256SUMS
@@ -446,6 +452,7 @@ check:
 	cd bench/results/1986-7556c23-2026-09-24-r2/raw && sha256sum -c SHA256SUMS
 	cd bench/results/1986-7556c23-2026-09-24-r2/repeats && sha256sum -c SHA256SUMS
 	cd bench/results/1986-7556c23-2026-09-24-r2/diagnostics && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-24-memory-map-smoke/raw && sha256sum -c SHA256SUMS
 
 doctor:
 	@missing=0; \

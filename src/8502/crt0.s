@@ -1,7 +1,9 @@
 ; SPDX-License-Identifier: GPL-3.0-or-later
 ;
-; Provisional RAM-loaded 8502 entry point. The real boot contract, MMU state,
-; interrupt vectors, and image format are roadmap work.
+; RAM-loaded 8502 entry point. The loader contract guarantees that this image
+; is resident in RAM bank 0 at $2000 before control arrives here.
+
+        .include "mmu.inc"
 
         .export _start
         .import _kernel_main
@@ -17,6 +19,61 @@ _start:
         cld
         ldx #$ff
         txs
+
+        ; Establish the four native configurations before C code observes the
+        ; machine. $FF00 remains reachable regardless of the inherited I/O map.
+        lda #UDEKS_MMU_KERNEL_IO
+        sta MMU_CR_ALWAYS
+        sta MMU_PCR_KERNEL_IO
+        lda #UDEKS_MMU_KERNEL_FLAT
+        sta MMU_PCR_KERNEL_FLAT
+        lda #UDEKS_MMU_WORKER_IO
+        sta MMU_PCR_WORKER_IO
+        lda #UDEKS_MMU_WORKER_FLAT
+        sta MMU_PCR_WORKER_FLAT
+
+        ; Share bank-0 $F000-$FFFF at the top of both bank views. Leave the
+        ; VIC on bank 0 until the display service assigns its bank-1 window.
+        lda #UDEKS_MMU_RCR_TOP_4K
+        sta MMU_RCR
+
+        ; Start with the architectural zero page and hardware stack in bank 0.
+        ; The high-byte latches must be written before their low-byte commits.
+        lda #$00
+        sta MMU_PAGE0_BANK
+        sta MMU_PAGE0_PAGE
+        sta MMU_PAGE1_BANK
+        lda #$01
+        sta MMU_PAGE1_PAGE
+
+        ; Publish a compact readback record in common RAM. Emulator and
+        ; hardware smoke tests use this before any console exists.
+        lda #'U'
+        sta BOOT_STATUS+0
+        lda #'M'
+        sta BOOT_STATUS+1
+        sta BOOT_STATUS+2
+        lda #'U'
+        sta BOOT_STATUS+3
+        lda #$01
+        sta BOOT_STATUS+4
+        sta BOOT_STATUS_STATE
+        lda MMU_CR_ALWAYS
+        sta BOOT_STATUS+6
+        lda MMU_RCR
+        sta BOOT_STATUS+7
+        lda MMU_PAGE0_PAGE
+        sta BOOT_STATUS+8
+        lda MMU_PAGE0_BANK
+        sta BOOT_STATUS+9
+        lda MMU_PAGE1_PAGE
+        sta BOOT_STATUS+10
+        lda MMU_PAGE1_BANK
+        sta BOOT_STATUS+11
+        lda MMU_MODE
+        sta BOOT_STATUS+12
+        lda #$02
+        sta BOOT_STATUS_STATE
 
         lda #<__BSS_RUN__
         sta bss_ptr

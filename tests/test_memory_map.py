@@ -1,0 +1,96 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+import re
+import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def c_defines(path: Path) -> dict[str, int]:
+    values = {}
+    pattern = re.compile(r"^#define\s+(UDEKS_[A-Z0-9_]+)\s+(0x[0-9A-Fa-f]+)(?:u|ul)?$")
+    for line in path.read_text(encoding="utf-8").splitlines():
+        match = pattern.match(line)
+        if match:
+            values[match.group(1)] = int(match.group(2), 16)
+    return values
+
+
+def asm_defines(path: Path) -> dict[str, int]:
+    values = {}
+    pattern = re.compile(r"^(UDEKS_[A-Z0-9_]+)\s*=\s*\$([0-9A-Fa-f]+)$")
+    for line in path.read_text(encoding="utf-8").splitlines():
+        match = pattern.match(line)
+        if match:
+            values[match.group(1)] = int(match.group(2), 16)
+    return values
+
+
+class MemoryMapTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.memory = c_defines(ROOT / "include/udeks/memory.h")
+
+    def test_primary_regions_are_ordered_and_non_overlapping(self):
+        memory = self.memory
+        self.assertLess(memory["UDEKS_BOOT_SECTOR_BASE"], memory["UDEKS_BOOTSTRAP_BASE"])
+        self.assertLess(memory["UDEKS_BOOTSTRAP_BASE"], memory["UDEKS_KERNEL_BASE"])
+        self.assertLess(memory["UDEKS_KERNEL_BASE"], memory["UDEKS_KERNEL_LIMIT"])
+        self.assertEqual(memory["UDEKS_KERNEL_LIMIT"], memory["UDEKS_IO_BASE"])
+        self.assertEqual(memory["UDEKS_IO_LIMIT"], memory["UDEKS_KERNEL_HIGH_BASE"])
+        self.assertEqual(memory["UDEKS_KERNEL_HIGH_LIMIT"], memory["UDEKS_COMMON_BASE"])
+        self.assertEqual(
+            memory["UDEKS_COMMON_BASE"] + memory["UDEKS_COMMON_SIZE"],
+            memory["UDEKS_COMMON_LIMIT"],
+        )
+
+    def test_common_region_contains_protocol_and_hardware_windows(self):
+        memory = self.memory
+        common_base = memory["UDEKS_COMMON_BASE"]
+        common_limit = memory["UDEKS_COMMON_LIMIT"]
+        for name in (
+            "UDEKS_GATEWAY_BASE",
+            "UDEKS_MMU_MIRROR_BASE",
+            "UDEKS_HANDOFF_BASE",
+            "UDEKS_VECTOR_BASE",
+        ):
+            self.assertGreaterEqual(memory[name], common_base)
+            self.assertLess(memory[name], common_limit)
+        self.assertEqual(memory["UDEKS_MMU_MIRROR_LIMIT"] - memory["UDEKS_MMU_MIRROR_BASE"], 5)
+
+    def test_worker_and_vic_reservations_do_not_overlap(self):
+        memory = self.memory
+        self.assertLessEqual(memory["UDEKS_Z80_CODE_LIMIT"], memory["UDEKS_VIC_WINDOW_BASE"])
+        self.assertLess(memory["UDEKS_VIC_WINDOW_BASE"], memory["UDEKS_VIC_WINDOW_LIMIT"])
+        self.assertEqual(memory["UDEKS_VIC_WINDOW_LIMIT"] - memory["UDEKS_VIC_WINDOW_BASE"], 0x4000)
+        self.assertLess(memory["UDEKS_Z80_STACK_TOP"], memory["UDEKS_COMMON_BASE"])
+
+    def test_assembly_mmu_profiles_match_c_contract(self):
+        assembly = asm_defines(ROOT / "src/8502/mmu.inc")
+        for name in (
+            "UDEKS_MMU_KERNEL_IO",
+            "UDEKS_MMU_KERNEL_FLAT",
+            "UDEKS_MMU_WORKER_IO",
+            "UDEKS_MMU_WORKER_FLAT",
+            "UDEKS_MMU_RCR_TOP_4K",
+        ):
+            self.assertEqual(assembly[name], self.memory[name])
+
+    def test_linker_kernel_region_matches_public_contract(self):
+        linker = (ROOT / "cfg/8502-bootstrap.cfg").read_text(encoding="utf-8")
+        match = re.search(
+            r"KERNEL:\s+start\s*=\s*\$([0-9A-Fa-f]+),\s*"
+            r"size\s*=\s*\$([0-9A-Fa-f]+)",
+            linker,
+        )
+        self.assertIsNotNone(match)
+        start = int(match.group(1), 16)
+        size = int(match.group(2), 16)
+        self.assertEqual(start, self.memory["UDEKS_KERNEL_BASE"])
+        self.assertEqual(start + size, self.memory["UDEKS_KERNEL_LIMIT"])
+
+
+if __name__ == "__main__":
+    unittest.main()
