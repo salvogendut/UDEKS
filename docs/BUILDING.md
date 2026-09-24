@@ -68,9 +68,12 @@ VDC revision and RAM tier, and expansion presence for later service policy.
 artwork into row-major, MSB-first scanlines under `build/assets/`; the target
 kernel will consume those bytes without carrying an image decoder.
 
-The current production image starts three services in order: hardware
-capability discovery, the qualified text-mode fallback, and the baseline VDC
-framebuffer. The framebuffer takes final display ownership, enters 640x200
+The current production image starts four services in order: hardware
+capability discovery, the VDC-only 2 MHz machine-clock transition, the
+qualified text-mode fallback, and the baseline VDC framebuffer. Capability
+discovery finishes its VIC raster probe first; the clock service then blanks
+the VIC display and verifies `$D030` before either display service starts. The
+framebuffer takes final display ownership, enters 640x200
 monochrome bitmap mode, and shows the compact UDEKS pipe with its Japanese
 wordmark below it at the upper left in the default black-on-yellow theme.
 Following `assets/bootscreen.png`, it uses

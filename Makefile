@@ -225,7 +225,13 @@ $(BUILD_8502)/service_registry.o: $(BUILD_8502)/service_registry.s | $(BUILD_850
 $(BUILD_8502)/hardware_capability.o: $(BUILD_8502)/hardware_capability.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/clock.o: src/8502/clock.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/capability_descriptor.o: src/services/capability/descriptor.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/clock_descriptor.o: src/services/clock/descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/console_descriptor.o: src/services/console/descriptor.s | $(BUILD_8502)
@@ -257,10 +263,11 @@ $(BUILD_8502)/probe.o: src/8502/probe.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
-		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o \
+		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o $(BUILD_8502)/clock.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o \
 		$(BUILD_8502)/capability_descriptor.o \
+		$(BUILD_8502)/clock_descriptor.o \
 		$(BUILD_8502)/console_descriptor.o \
 		$(BUILD_8502)/framebuffer_descriptor.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/vdc_console.o \
@@ -272,9 +279,10 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $@ $(filter %.o,$^)
 
 $(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
-		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o \
+		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o $(BUILD_8502)/clock.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o $(BUILD_8502)/capability_descriptor.o \
+		$(BUILD_8502)/clock_descriptor.o \
 		$(BUILD_8502)/console_descriptor_fault.o \
 		$(BUILD_8502)/framebuffer_descriptor.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/vdc_console.o \
@@ -643,7 +651,7 @@ check:
 		tools/memory_map_decode.py tools/boot_chain_decode.py \
 		tools/vdc_console_decode.py tools/service_registry_decode.py \
 		tools/panic_decode.py tools/capability_decode.py \
-		tools/framebuffer_decode.py tools/xpm_to_vdc.py \
+		tools/framebuffer_decode.py tools/clock_decode.py tools/xpm_to_vdc.py \
 		tools/build_d71.py \
 		tools/snapshot_extract.py \
 		tools/vice_capture.py
@@ -680,6 +688,9 @@ check:
 	cd bench/results/2026-09-24-reference-bootscreen/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-root-console-r1 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-root-console/raw && sha256sum -c SHA256SUMS
+	cd bench/artifacts/2026-09-24-clock-2mhz-r1 && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-24-clock-2mhz/raw && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-24-clock-2mhz/timing && sha256sum -c SHA256SUMS
 
 doctor:
 	@missing=0; \

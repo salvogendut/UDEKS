@@ -27,10 +27,12 @@ The initial flags are:
 - bit 1: critical to system bring-up.
 
 Initial service classes are console (`1`), hardware capability discovery (`2`),
-and display (`3`). Capability discovery precedes the console, and the first
-framebuffer display instance temporarily follows the qualified text console.
-The next display milestone makes that console a framebuffer client instead of
-a separate VDC owner.
+display (`3`), and machine policy (`4`). Capability discovery precedes the
+machine-clock transition so PAL/NTSC probing can use the VIC raster. The clock
+service then blanks the VIC and verifies 2 MHz operation before the console;
+the first framebuffer display instance temporarily follows the qualified text
+console. The next display milestone makes that console a framebuffer client
+instead of a separate VDC owner.
 
 The display service's provisional resident-C request surface is specified in
 the [framebuffer client API](framebuffer.md). It is not yet a compiler-neutral

@@ -27,6 +27,7 @@ class ServiceAbiTests(unittest.TestCase):
 
     def test_image_table_is_separate_from_registry(self):
         table = (ROOT / "src/services/table.s").read_text(encoding="utf-8")
+        self.assertIn("_udeks_clock_service_descriptor", table)
         self.assertIn("_udeks_console_service_descriptor", table)
         self.assertIn("_udeks_service_count", table)
 

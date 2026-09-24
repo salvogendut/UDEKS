@@ -142,6 +142,8 @@ mailbox corruption, with published benchmark results.
   boot console drawn through the public graphics primitives.
 - [x] Retain the bordered root console as a 64x21 text-cell model independent
   of its VDC rendering.
+- [x] Enter and verify VDC-only 2 MHz operation after VIC-based hardware
+  discovery and before display composition.
 - [ ] Add terminal output, cursor movement, wrapping, and scrolling to the root
   console model.
 - [ ] Add bounded window descriptors, z-order, clipping, damage, and

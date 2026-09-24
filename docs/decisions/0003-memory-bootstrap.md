@@ -73,7 +73,8 @@ The common area is partitioned conservatively:
 | `$F0B0-$F0BF` | Panic diagnostics |
 | `$F0C0-$F0DF` | Hardware-capability diagnostics |
 | `$F0E0-$F0FF` | VDC framebuffer diagnostics |
-| `$F100-$F7FF` | Future queues, job descriptors, and shared transfer metadata |
+| `$F100-$F10F` | 8502 clock-policy diagnostics |
+| `$F110-$F7FF` | Future queues, job descriptors, and shared transfer metadata |
 | `$F800-$FEFF` | 8502/Z80 gateway code and common kernel mechanisms |
 | `$FF00-$FF04` | Permanent MMU register hole; never RAM or code |
 | `$FF05-$FFCF` | Common gateway state/code, to be allocated explicitly |
@@ -98,6 +99,9 @@ The native disk path uses two small stages before the resident kernel:
 5. The 8502 entry repeats the safe MMU/profile initialization idempotently,
    clears BSS, initializes the mailbox, and enters C. No BASIC or KERNAL service
    is part of the resident-kernel ABI after that point.
+6. Service startup discovers video timing at the inherited 1 MHz rate, then
+   blanks the VIC and verifies VDC-only 2 MHz operation before display
+   composition begins.
 
 For development, `udeks-8502.prg` may be loaded directly at `$2000` and entered
 with `SYS 8192`. This bypasses disk stages 0 and 1 but must satisfy the same

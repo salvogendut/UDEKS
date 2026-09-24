@@ -143,6 +143,9 @@ themes without changing this system default; see
 The display server must support VDC-only, VIC-only, mirrored, extended, and
 application-owned secondary modes. Full-time 2 MHz 8502 operation and an active
 VIC display are competing requirements; mode policy must expose that tradeoff.
+The bring-up image now enters a verified VDC-only 2 MHz state after VIC-based
+PAL/NTSC discovery and before console composition. A future VIC lease must use
+the paired slow-mode transition rather than writing `$D030` privately.
 
 ## Memory plan
 
