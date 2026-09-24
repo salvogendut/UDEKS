@@ -22,6 +22,7 @@ BUILD_HANDOFF_8502 := $(BUILD_DIR)/bench/handoff/8502
 BUILD_HANDOFF_Z80 := $(BUILD_DIR)/bench/handoff/z80
 BUILD_OFFLOAD_8502 := $(BUILD_DIR)/bench/offload/8502
 BUILD_OFFLOAD_Z80 := $(BUILD_DIR)/bench/offload/z80
+BUILD_MEMORY_MAP := $(BUILD_DIR)/bench/memory-map
 
 KERNEL_BIN := $(BUILD_8502)/udeks-8502.bin
 KERNEL_PRG := $(BUILD_8502)/udeks-8502.prg
@@ -68,12 +69,16 @@ OFFLOAD_Z80_IHX := $(BUILD_OFFLOAD_Z80)/offload-z80.ihx
 OFFLOAD_Z80_BIN := $(BUILD_OFFLOAD_Z80)/offload-z80.bin
 OFFLOAD_LAUNCH_BIN := $(BUILD_OFFLOAD_8502)/offload-launch.bin
 OFFLOAD_PRG := $(BUILD_OFFLOAD_8502)/offload.prg
+MEMORY_MAP_GATEWAY_BIN := $(BUILD_MEMORY_MAP)/gateway.bin
+MEMORY_MAP_LAUNCH_BIN := $(BUILD_MEMORY_MAP)/memory-map.bin
+MEMORY_MAP_PRG := $(BUILD_MEMORY_MAP)/memory-map.prg
 
 .PHONY: all 8502 z80 z80-asm bench bench-8502 bench-z80 bench-irq \
 	bench-irq-8502 bench-irq-z80 bench-irq-service \
 	bench-irq-service-8502 bench-irq-service-z80 bench-context \
 	bench-context-8502 bench-context-z80 bench-kernel bench-kernel-8502 \
-	bench-kernel-z80 bench-handoff bench-offload check doctor clean help
+	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
+	check doctor clean help
 
 all: 8502 z80 z80-asm
 
@@ -117,11 +122,14 @@ bench-handoff: $(HANDOFF_PRG)
 
 bench-offload: $(OFFLOAD_PRG)
 
+bench-memory-map: $(MEMORY_MAP_PRG)
+
 $(BUILD_8502) $(BUILD_Z80) $(BUILD_BENCH_8502) $(BUILD_BENCH_Z80) \
 		$(BUILD_IRQ_8502) $(BUILD_IRQ_Z80) $(BUILD_IRQ_SERVICE_8502) \
 		$(BUILD_IRQ_SERVICE_Z80) $(BUILD_CONTEXT_8502) $(BUILD_CONTEXT_Z80) \
 		$(BUILD_KERNEL_8502) $(BUILD_KERNEL_Z80) $(BUILD_HANDOFF_8502) \
-		$(BUILD_HANDOFF_Z80) $(BUILD_OFFLOAD_8502) $(BUILD_OFFLOAD_Z80):
+		$(BUILD_HANDOFF_Z80) $(BUILD_OFFLOAD_8502) $(BUILD_OFFLOAD_Z80) \
+		$(BUILD_MEMORY_MAP):
 	mkdir -p $@
 
 $(BUILD_8502)/kernel.s: src/8502/kernel.c include/udeks/mailbox.h \
@@ -435,6 +443,24 @@ $(OFFLOAD_LAUNCH_BIN): $(BUILD_OFFLOAD_8502)/launcher.o \
 $(OFFLOAD_PRG): $(OFFLOAD_LAUNCH_BIN) tools/bin_to_prg.py
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x1c01 $< $@
 
+$(BUILD_MEMORY_MAP)/gateway.o: bench/memory-map/gateway.s | $(BUILD_MEMORY_MAP)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(MEMORY_MAP_GATEWAY_BIN): $(BUILD_MEMORY_MAP)/gateway.o \
+		cfg/8502-common-gateway.cfg
+	$(LD65) -C cfg/8502-common-gateway.cfg -o $@ $<
+
+$(BUILD_MEMORY_MAP)/launcher.o: bench/memory-map/launcher.s \
+		$(MEMORY_MAP_GATEWAY_BIN) | $(BUILD_MEMORY_MAP)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(MEMORY_MAP_LAUNCH_BIN): $(BUILD_MEMORY_MAP)/launcher.o \
+		cfg/8502-memory-map-probe.cfg
+	$(LD65) -C cfg/8502-memory-map-probe.cfg -o $@ $<
+
+$(MEMORY_MAP_PRG): $(MEMORY_MAP_LAUNCH_BIN) tools/bin_to_prg.py
+	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
+
 check:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
 	$(PYTHON) -m py_compile tools/ihx_to_bin.py tools/bin_to_prg.py \
@@ -442,6 +468,7 @@ check:
 		tools/irq_service_decode.py tools/context_decode.py \
 		tools/kernel_decode.py tools/handoff_decode.py \
 		tools/offload_decode.py tools/boot_status_decode.py \
+		tools/memory_map_decode.py \
 		tools/snapshot_extract.py \
 		tools/vice_capture.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
@@ -453,6 +480,8 @@ check:
 	cd bench/results/1986-7556c23-2026-09-24-r2/repeats && sha256sum -c SHA256SUMS
 	cd bench/results/1986-7556c23-2026-09-24-r2/diagnostics && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-memory-map-smoke/raw && sha256sum -c SHA256SUMS
+	cd bench/artifacts/2026-09-24-memory-map-r1 && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-24-memory-map-profiles/raw && sha256sum -c SHA256SUMS
 
 doctor:
 	@missing=0; \
@@ -487,6 +516,7 @@ help:
 		'make bench-kernel  Build the syscall, queue, MMU, and device suite' \
 		'make bench-handoff  Build the bidirectional ownership/mailbox suite' \
 		'make bench-offload  Build the dual-CPU offload crossover sweep' \
+		'make bench-memory-map  Build the native MMU profile/relocation probe' \
 		'make check      Run host-side tests' \
 		'make doctor     Report missing build tools' \
 		'make clean      Remove generated build artifacts'

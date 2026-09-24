@@ -62,6 +62,8 @@ a material contradiction.
   addresses in ADR 0003.
 - [x] Make the direct-load 8502 entry establish the kernel MMU profiles, top
   common RAM, and initial page-zero/page-one locations explicitly.
+- [x] Qualify all four MMU profiles, bank-private RAM, common RAM, and relocated
+  page zero/page one in VICE and `1986`.
 - [ ] Implement and validate native D71 stage 0 and stage 1, then accept ADR
   0003.
 - [ ] Bring up a polled VDC text console.
@@ -76,7 +78,8 @@ a material contradiction.
 
 - [ ] Accept ADR 0003 as the permanent bank/common-RAM map after its emulator
   and hardware validation gates pass.
-- [ ] Implement atomic MMU configuration primitives.
+- [x] Prove atomic preconfiguration-register MMU switching from common RAM.
+- [ ] Expose the qualified MMU-switch primitive through the kernel API.
 - [ ] Implement IRQ/NMI entry, CIA tick, and monotonic time.
 - [ ] Define kernel, task, and interrupt stack bounds with canaries.
 - [ ] Implement bank-aware allocators and buffer ownership.

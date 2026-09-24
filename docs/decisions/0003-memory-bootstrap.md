@@ -100,19 +100,21 @@ bank-0 placement contract.
 - [x] Linker and host tests enforce the bank-0 kernel limit and MMU constants.
 - [x] A direct-load smoke image reaches C with the expected MMU readback and
   mailbox signature in both `1986` and VICE.
-- Bank switching through all four profiles leaves common signatures and the
+- [x] Bank switching through all four profiles leaves common signatures and the
   `$FF00-$FF04` hole behaving as specified.
-- Page-zero/page-one relocation works with top common enabled and is shown not
+- [x] Page-zero/page-one relocation works with top common enabled and is shown not
   to alias bank-0 pages accidentally.
-- A D71 autoboot image executes stage 0 at `$0B00`, stage 1 at `$1C00`, and the
+- [ ] A D71 autoboot image executes stage 0 at `$0B00`, stage 1 at `$1C00`, and the
   kernel at `$2000` without a BASIC command.
-- VIC bank-1 selection and VDC-only 2 MHz operation do not corrupt either CPU
+- [ ] VIC bank-1 selection and VDC-only 2 MHz operation do not corrupt either CPU
   image or common RAM.
-- At least one physical C128 completes the bootstrap and map probe.
+- [ ] At least one physical C128 completes the bootstrap and map probe.
 
 The preserved [direct-load smoke results](../../bench/results/2026-09-24-memory-map-smoke/README.md)
-record the two completed validation items. The remaining items keep this ADR
-proposed.
+record the initial entry state. The subsequent
+[profile and relocation results](../../bench/results/2026-09-24-memory-map-profiles/README.md)
+record identical 23/23 passes in `1986` and VICE. The D71, display-memory, and
+physical-machine gates keep this ADR proposed.
 
 ## Consequences while proposed
 
