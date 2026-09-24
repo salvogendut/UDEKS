@@ -4,7 +4,7 @@
 #include "udeks/line_editor.h"
 #include "udeks/root_console.h"
 #include "udeks/root_terminal.h"
-#include "udeks/xclock.h"
+#include "udeks/shell.h"
 
 #define STATUS_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_ROOT_TERMINAL_STATUS_BASE + (offset)))
@@ -193,11 +193,11 @@ unsigned char udeks_root_terminal_poll(void)
         if (event.type != UDEKS_KEY_EVENT_PRESS) {
             continue;
         }
-        if (accepting_input == 0) {
+        if (event.character == 3u &&
+            udeks_shell_interrupt_foreground() != 0) {
             continue;
         }
-        if (event.character == 3u && udeks_xclock_is_running() != 0) {
-            udeks_xclock_stop();
+        if (accepting_input == 0) {
             continue;
         }
         increment_counter(STATUS_PRESSES_LO);

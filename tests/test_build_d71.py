@@ -8,6 +8,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
 from build_d71 import (
+    APP1_Z80_OFFSET,
+    APP2_Z80_OFFSET,
+    APP_IMAGE_SIZE,
     PAYLOAD_BLOCKS,
     PAYLOAD_SIZE,
     SECTOR_SIZE,
@@ -48,6 +51,28 @@ class BuildD71Tests(unittest.TestCase):
         self.assertEqual(image[bam + 4], 0)
         self.assertEqual(image[bam + 8], 0)
         self.assertEqual(image[bam + 44], 18)
+
+    def test_application_slots_are_packed_into_unused_z80_staging(self):
+        app1 = b"clock"
+        app2 = b"wave"
+        image = build_image(stage0(), b"", b"", b"", app1, app2)
+        payload = b"".join(
+            image[sector_offset(track, sector) : sector_offset(track, sector) + SECTOR_SIZE]
+            for track, sector in list(boot_locations(1 + PAYLOAD_BLOCKS))[1:]
+        )
+        z80 = payload[0xB400 : 0xB400 + 0x2000]
+        self.assertEqual(z80[APP1_Z80_OFFSET : APP1_Z80_OFFSET + len(app1)], app1)
+        self.assertEqual(z80[APP2_Z80_OFFSET : APP2_Z80_OFFSET + len(app2)], app2)
+
+    def test_rejects_application_staging_collision(self):
+        z80 = bytearray(0x2000)
+        z80[APP1_Z80_OFFSET] = 1
+        with self.assertRaisesRegex(ValueError, "overlaps Z80"):
+            build_image(stage0(), b"", b"", bytes(z80), b"app")
+
+    def test_rejects_oversize_application(self):
+        with self.assertRaisesRegex(ValueError, "2560-byte"):
+            build_image(stage0(), b"", b"", b"", bytes(APP_IMAGE_SIZE + 1))
 
     def test_rejects_header_layout_drift(self):
         bad = bytearray(stage0())

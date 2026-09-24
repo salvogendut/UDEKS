@@ -42,8 +42,10 @@ class MemoryMapTests(unittest.TestCase):
         )
         self.assertEqual(
             memory["UDEKS_RECLAIMED_STATE_LIMIT"],
-            memory["UDEKS_BOOTSTRAP_BASE"],
+            memory["UDEKS_APP2_BASE"],
         )
+        self.assertEqual(memory["UDEKS_APP1_LIMIT"], memory["UDEKS_RECLAIMED_STATE_BASE"])
+        self.assertEqual(memory["UDEKS_APP2_LIMIT"], memory["UDEKS_BOOTSTRAP_BASE"])
         self.assertLess(memory["UDEKS_BOOTSTRAP_BASE"], memory["UDEKS_KERNEL_BASE"])
         self.assertLess(memory["UDEKS_KERNEL_BASE"], memory["UDEKS_KERNEL_LIMIT"])
         self.assertEqual(memory["UDEKS_KERNEL_LIMIT"], memory["UDEKS_IO_BASE"])
@@ -139,6 +141,20 @@ class MemoryMapTests(unittest.TestCase):
             low_start + low_size,
             self.memory["UDEKS_RECLAIMED_STATE_LIMIT"],
         )
+        for region, base_name, limit_name in (
+            ("APP1", "UDEKS_APP1_BASE", "UDEKS_APP1_LIMIT"),
+            ("APP2", "UDEKS_APP2_BASE", "UDEKS_APP2_LIMIT"),
+        ):
+            app = re.search(
+                rf"{region}:\s+start\s*=\s*\$([0-9A-Fa-f]+),\s*"
+                rf"size\s*=\s*\$([0-9A-Fa-f]+)",
+                linker,
+            )
+            self.assertIsNotNone(app)
+            app_start = int(app.group(1), 16)
+            app_size = int(app.group(2), 16)
+            self.assertEqual(app_start, self.memory[base_name])
+            self.assertEqual(app_start + app_size, self.memory[limit_name])
         high = re.search(
             r"HIGHMEM:\s+start\s*=\s*\$([0-9A-Fa-f]+),\s*"
             r"size\s*=\s*\$([0-9A-Fa-f]+)",

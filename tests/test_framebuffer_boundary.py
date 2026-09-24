@@ -30,7 +30,7 @@ class FramebufferBoundaryTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertNotIn("_udeks_framebuffer_service_descriptor", source)
         self.assertIn("_udeks_framebuffer_service_descriptor", descriptor)
-        self.assertIn(".byte $0b", source)
+        self.assertIn(".byte $0c", source)
 
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
         production_link = makefile.split("$(KERNEL_BIN):", 1)[1].split(

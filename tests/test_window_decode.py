@@ -16,7 +16,7 @@ def valid_record() -> bytearray:
     block[:4] = b"WMGR"
     block[4:6] = bytes((1, 2))
     block[6:9] = bytes((1, 1, 0))
-    block[14:16] = bytes((4, 0x1F))
+    block[14:16] = bytes((4, 0x3F))
     block[16:18] = (1).to_bytes(2, "little")
     block[20:22] = (1).to_bytes(2, "little")
     block[30:32] = (1).to_bytes(2, "little")

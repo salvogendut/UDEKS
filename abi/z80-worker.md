@@ -1,4 +1,4 @@
-# Bounded Z80 worker service 0.1
+# Bounded Z80 worker service 0.2
 
 The resident 8502 remains the UDEKS executive and grants the Z80 one
 synchronous, bounded mailbox operation per lease. The CPUs do not run
@@ -20,16 +20,19 @@ The common return gateway is mandatory. Returning CPU ownership while bank 1
 remains selected would resume the 8502 at the right logical program counter in
 the wrong physical RAM bank.
 
-`udeks_z80_submit()` publishes one ABI 0.1 mailbox request, transfers
+`udeks_z80_submit()` publishes one ABI 0.2 mailbox request, transfers
 ownership, and validates response state, status, and sequence. It is currently
 synchronous because the C128 arbitration hardware stops the 8502 completely
 while the Z80 owns the bus. There is no executive-side timeout capable of
 recovering from a wedged worker; admitted Z80 operations therefore belong to
 the trusted kernel and must have statically bounded paths.
 
-Only `NOP` is admitted in this revision. It returns result zero. Unsupported
-opcodes and malformed requests publish an error before returning ownership.
-The worker does not enable interrupts or access devices.
+`NOP` returns result zero. `WAVE_SAMPLES` accepts an eight-bit phase, an
+eight-bit step, and a length from 1 through 64. It writes signed sine-table
+samples to `$F300-$F33F` and returns the next phase. This bounded compute lease
+is used by `xwave`; axes, clipping, and VIC-IIe rasterization stay with the
+8502. Unsupported opcodes and malformed requests publish an error before
+returning ownership. The worker does not enable interrupts or access devices.
 
 The implementation assumes stock C128 Z80 timing. It does not enable or
 depend on emulator-specific doubled/8 MHz modes. Emulator qualification must

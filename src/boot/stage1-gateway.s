@@ -97,7 +97,9 @@ source_verify:
 destination_verify:
         lda $2000,y
         cmp transfer_byte
-        bne copy_failure
+        beq verify_matches
+        jmp copy_failure
+verify_matches:
         clc
         adc destination_sum_low
         sta destination_sum_low
@@ -113,16 +115,38 @@ destination_sum_ready:
 
         lda source_sum_low
         cmp destination_sum_low
-        bne checksum_failure
+        beq checksum_low_matches
+        jmp checksum_failure
+checksum_low_matches:
         sta BOOT_CHAIN_SOURCE_SUM
         lda source_sum_high
         cmp destination_sum_high
-        bne checksum_failure
+        beq checksum_high_matches
+        jmp checksum_failure
+checksum_high_matches:
         sta BOOT_CHAIN_SOURCE_SUM+1
         lda destination_sum_low
         sta BOOT_CHAIN_DEST_SUM
         lda destination_sum_high
         sta BOOT_CHAIN_DEST_SUM+1
+
+        ; Install the two boot-preloaded application slots after the verified
+        ; Z80 image has reached bank 1. Their staging ranges are unused by the
+        ; worker and are copied into low RAM that the boot chain has vacated.
+        lda #$00
+        sta MMU_LCR_KERNEL_FLAT
+        lda #$d4
+        sta low_copy_source+2
+        lda #$02
+        sta low_copy_destination+2
+        ldx #$0a
+        jsr copy_low_pages
+        lda #$e6
+        sta low_copy_source+2
+        lda #$12
+        sta low_copy_destination+2
+        ldx #$0a
+        jsr copy_low_pages
 
         lda #'Z'
         sta BOOT_CHAIN+8
@@ -139,6 +163,21 @@ destination_sum_ready:
         lda #$00
         sta MMU_LCR_KERNEL_IO
         jmp $2000
+
+copy_low_pages:
+        ldy #$00
+copy_low_byte:
+low_copy_source:
+        lda $d400,y
+low_copy_destination:
+        sta $0200,y
+        iny
+        bne copy_low_byte
+        inc low_copy_source+2
+        inc low_copy_destination+2
+        dex
+        bne copy_low_pages
+        rts
 
 bank1_failure:
         lda #$02

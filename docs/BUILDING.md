@@ -68,12 +68,12 @@ VDC revision and RAM tier, and expansion presence for later service policy.
 artwork into row-major, MSB-first scanlines under `build/assets/`; the target
 kernel will consume those bytes without carrying an image decoder.
 
-The current production image starts eleven statically linked modules in order: hardware
+The current production image starts twelve statically linked modules in order: hardware
 capability discovery, CIA time, the bounded Z80 worker, the VDC text console,
 the frame-paced pointer source, the passive VIC-IIe graphics service, the
 window manager, the polled keyboard source, the fixed-focus root-terminal
-editor, the native shell, and a temporary cooperative `xclock` application
-adapter. Static placement is a bootstrap detail: each entry has a separate
+editor, the native shell, and temporary cooperative `xclock` and `xwave`
+application adapters. Static placement is a bootstrap detail: each entry has a separate
 descriptor and lifecycle, and the display module does not drive window or
 application policy. The image stays at
 1 MHz, leaving the VIC-IIe active for the future graphics/second-display
@@ -81,7 +81,7 @@ service. The previously qualified VDC-only 2 MHz transition and VDC
 framebuffer remain optional modules.
 
 The worker boot self-test completes a real `8502 -> Z80 -> 8502` `NOP`
-transaction through the ABI 0.1 mailbox. `z80ctl status` reports the common-RAM
+transaction through the ABI 0.2 mailbox. `z80ctl status` reports the common-RAM
 diagnostics and `z80ctl test` requests another bounded lease. The Z80 runs at
 stock timing; no optional doubled/8 MHz emulator mode is used. See the
 [worker contract](../abi/z80-worker.md).
@@ -91,19 +91,27 @@ yellow 320x200 bank-1 bitmap with a centered black X pointer; `xinit -q`
 terminates that display session. Neither transition replaces or suspends the
 VDC console. The compact X pointer accepts a proportional 1351 mouse on control
 port 1 and a digital joystick on control port 2. `xclock` starts the first
-managed analog-clock window. Dragging hides its contents and transfers only an
-outline until release; `xclock -q` or VDC `Ctrl+C` closes it. See the
+managed analog-clock window. `xwave` opens another managed window and uses
+bounded Z80 sine-sample leases while the 8502 plots on the VIC-IIe. A command
+without `&` owns the foreground and accepts `Ctrl+C`; `xclock &` or `xwave &`
+returns the prompt immediately. Moving or resizing hides window contents and
+transfers only an outline until release. See the
 [`window-manager contract`](../abi/window.md) and
-[`xclock` design and status](XCLOCK.md). The [`xwave` dual-engine plotter](XWAVE.md)
-is the next application milestone, followed by the GEOBENCH-XAOS-inspired
+[`xclock` design and status](XCLOCK.md) and the
+[`xwave` dual-engine plotter](XWAVE.md), followed by the GEOBENCH-XAOS-inspired
 [`xmandel` viewer](XMANDEL.md).
 
-Window Manager 0.2 supports four overlapping bitmap windows. Clicking an
+Window Manager 0.3 supports four overlapping, movable, resizable bitmap windows. Clicking an
 exposed area raises and focuses that window; moving or closing one recomposes
 only the bounding damage region from back to front. The current modules remain
 statically linked into one bootstrap kernel payload even though each has an
 independent descriptor and lifecycle. Disk-loadable modules require the later
 allocator, filesystem, and executable loader milestones.
+
+The two initial applications are emitted as separate 2560-byte linker images
+and boot-preloaded into reclaimed low-memory slots at `$0200-$0BFF` and
+`$1200-$1BFF`. This removes their code and state from the resident `$2000`
+kernel range, but is not yet a filesystem loader or a process address space.
 
 The text console displays the compact UDEKS pipe and Japanese wordmark in a
 left rail and a bordered 64x21 root terminal to the right. Build tooling packs

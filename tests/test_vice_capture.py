@@ -4,9 +4,16 @@ import sys
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
-from vice_capture import make_basic_wrapper, parse_monitor_byte
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+
+from vice_capture import (
+    make_basic_wrapper,
+    parse_keybuf,
+    parse_monitor_byte,
+    quote_monitor_text,
+)
 
 
 class ViceCaptureTests(unittest.TestCase):
@@ -33,6 +40,14 @@ class ViceCaptureTests(unittest.TestCase):
     def test_make_basic_wrapper_rejects_overlap(self):
         with self.assertRaises(ValueError):
             make_basic_wrapper(b"\x05\x1c\xaa", 0x1C05)
+
+    def test_keybuf_escape_is_safe_for_monitor_command(self):
+        text = parse_keybuf(r'xwave\n')
+        self.assertEqual(text, "xwave\n")
+        self.assertEqual(quote_monitor_text(text), r'"xwave\n"')
+
+    def test_keybuf_quotes_and_backslashes_are_escaped(self):
+        self.assertEqual(quote_monitor_text('a"b\\c'), r'"a\"b\\c"')
 
 
 if __name__ == "__main__":

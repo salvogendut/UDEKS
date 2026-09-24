@@ -28,6 +28,8 @@ BUILD_ASSETS := $(BUILD_DIR)/assets
 
 KERNEL_BIN := $(BUILD_8502)/udeks-8502.bin
 KERNEL_PRG := $(BUILD_8502)/udeks-8502.prg
+APP1_BIN := $(BUILD_8502)/udeks-app1.bin
+APP2_BIN := $(BUILD_8502)/udeks-app2.bin
 PANIC_PROBE_KERNEL_BIN := $(BUILD_8502)/udeks-8502-panic-probe.bin
 Z80_IHX := $(BUILD_Z80)/udeks-z80.ihx
 Z80_BIN := $(BUILD_Z80)/udeks-z80.bin
@@ -229,7 +231,7 @@ $(BUILD_8502)/line_editor.s: src/services/terminal/line_editor.c \
 $(BUILD_8502)/root_terminal.s: src/services/terminal/root_terminal.c \
 		include/udeks/console.h include/udeks/keyboard.h \
 		include/udeks/line_editor.h include/udeks/root_console.h \
-		include/udeks/root_terminal.h include/udeks/xclock.h | $(BUILD_8502)
+		include/udeks/root_terminal.h include/udeks/shell.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/terminal_stream.s: src/services/terminal/stream.c \
@@ -246,7 +248,8 @@ $(BUILD_8502)/shell.s: src/services/shell/shell.c \
 		include/udeks/service.h include/udeks/shell.h \
 		include/udeks/stream.h include/udeks/mailbox.h \
 		include/udeks/z80_worker.h include/udeks/vic_graphics.h \
-		include/udeks/window.h include/udeks/xclock.h | $(BUILD_8502)
+		include/udeks/window.h include/udeks/xclock.h \
+		include/udeks/xwave.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/z80_worker.s: src/services/engine/z80_worker.c \
@@ -262,6 +265,12 @@ $(BUILD_8502)/vic_graphics.s: src/services/display/vic_graphics.c \
 $(BUILD_8502)/xclock.s: src/apps/xclock.c \
 		include/udeks/time.h include/udeks/vic_graphics.h \
 		include/udeks/window.h include/udeks/xclock.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/xwave.s: src/apps/xwave.c include/udeks/mailbox.h \
+		include/udeks/vic_graphics.h \
+		include/udeks/window.h include/udeks/xwave.h \
+		include/udeks/z80_worker.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/framebuffer_font.s: src/services/framebuffer/font.c \
@@ -327,6 +336,9 @@ $(BUILD_8502)/vic_graphics.o: $(BUILD_8502)/vic_graphics.s | $(BUILD_8502)
 $(BUILD_8502)/xclock.o: $(BUILD_8502)/xclock.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/xwave.o: $(BUILD_8502)/xwave.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/framebuffer_font.o: $(BUILD_8502)/framebuffer_font.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -387,6 +399,9 @@ $(BUILD_8502)/window_descriptor.o: src/services/window/descriptor.s | $(BUILD_85
 $(BUILD_8502)/xclock_descriptor.o: src/apps/xclock_descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/xwave_descriptor.o: src/apps/xwave_descriptor.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/vdc_splash.o: src/assets/vdc_splash.s $(VDC_SPLASH_BIN) \
 		$(VDC_WORDMARK_BIN) | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
@@ -441,6 +456,7 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/vic_graphics_descriptor.o \
 		$(BUILD_8502)/window_descriptor.o \
 		$(BUILD_8502)/xclock_descriptor.o \
+		$(BUILD_8502)/xwave_descriptor.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/time.o \
 		$(BUILD_8502)/vdc_console.o \
 		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o \
@@ -453,11 +469,13 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/z80_worker.o \
 		$(BUILD_8502)/vic_graphics.o \
 		$(BUILD_8502)/xclock.o \
+		$(BUILD_8502)/xwave.o \
 		$(BUILD_8502)/vdc_text_assets.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $@ $(filter %.o,$^)
 
-$(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
+$(PANIC_PROBE_KERNEL_BIN): $(BOOT_D71) \
+		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
 		$(BUILD_8502)/z80_handoff.o \
 		$(BUILD_8502)/vic_graphics_transport.o \
@@ -475,6 +493,7 @@ $(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/vic_graphics_descriptor.o \
 		$(BUILD_8502)/window_descriptor.o \
 		$(BUILD_8502)/xclock_descriptor.o \
+		$(BUILD_8502)/xwave_descriptor.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/time.o \
 		$(BUILD_8502)/vdc_console.o \
 		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o \
@@ -487,6 +506,7 @@ $(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/z80_worker.o \
 		$(BUILD_8502)/vic_graphics.o \
 		$(BUILD_8502)/xclock.o \
+		$(BUILD_8502)/xwave.o \
 		$(BUILD_8502)/vdc_text_assets.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 -C cfg/8502-bootstrap.cfg \
@@ -495,6 +515,9 @@ $(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 
 $(KERNEL_PRG): $(KERNEL_BIN) tools/bin_to_prg.py
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x2000 $< $@
+
+$(APP1_BIN) $(APP2_BIN): $(KERNEL_BIN)
+	test -s $@
 
 $(BUILD_Z80)/worker.rel: src/z80/worker.c include/udeks/mailbox.h | $(BUILD_Z80)
 	$(SDCC) $(CFLAGS_Z80) -c -o $@ $<
@@ -832,16 +855,18 @@ $(BUILD_BOOT)/stage1.o: src/boot/stage1.s $(STAGE1_GATEWAY_BIN) | $(BUILD_BOOT)
 $(STAGE1_BIN): $(BUILD_BOOT)/stage1.o cfg/8502-stage1.cfg
 	$(LD65) -C cfg/8502-stage1.cfg -o $@ $<
 
-$(BOOT_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) $(Z80_BIN) \
+$(BOOT_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
+		$(APP1_BIN) $(APP2_BIN) $(Z80_BIN) \
 		tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
-		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) $@
+		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
+		--app1 $(APP1_BIN) --app2 $(APP2_BIN) $@
 
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
-		$(Z80_BIN) tools/build_d71.py
+		$(APP1_BIN) $(APP2_BIN) $(Z80_BIN) tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(PANIC_PROBE_KERNEL_BIN) \
-		--z80 $(Z80_BIN) $@
+		--z80 $(Z80_BIN) --app1 $(APP1_BIN) --app2 $(APP2_BIN) $@
 
 check:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
@@ -861,6 +886,7 @@ check:
 		tools/vic_graphics_decode.py \
 		tools/pointer_decode.py \
 		tools/time_decode.py tools/window_decode.py tools/xclock_decode.py \
+		tools/xwave_decode.py \
 		tools/build_d71.py \
 		tools/snapshot_extract.py \
 		tools/vice_capture.py

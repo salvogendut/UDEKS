@@ -29,7 +29,7 @@ def parse_result(data: bytes) -> dict[str, int]:
         raise ValueError("xclock state is invalid")
     if block[7] != 7:
         raise ValueError("xclock capability flags are invalid")
-    if block[10:12] != bytes((72, 77)):
+    if block[10] < 48 or block[11] < 48:
         raise ValueError("xclock window dimensions are invalid")
     if block[8] + block[10] > 320 or block[9] + block[11] > 200:
         raise ValueError("xclock window lies outside the surface")

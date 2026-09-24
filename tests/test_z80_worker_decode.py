@@ -18,7 +18,7 @@ def valid_record() -> bytearray:
     block[5] = 2
     block[8:10] = (2).to_bytes(2, "little")
     block[12:14] = (2).to_bytes(2, "little")
-    block[16:18] = b"\x00\x01"
+    block[16:18] = b"\x00\x02"
     block[18:21] = b"\x01\x01\x01"
     block[21] = 3
     return block

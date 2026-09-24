@@ -28,6 +28,8 @@ class WindowManagerSourceTests(unittest.TestCase):
         self.assertIn("draw_title", source)
         self.assertIn("close_hit", source)
         self.assertIn("title_hit", source)
+        self.assertIn("resize_hit", source)
+        self.assertIn("UDEKS_WINDOW_FLAG_RESIZABLE", source)
         self.assertIn("udeks_vic_bitmap_set_clip", source)
         self.assertIn("udeks_pointer_buttons()", source)
 
@@ -54,6 +56,22 @@ class WindowManagerSourceTests(unittest.TestCase):
             finish.index("udeks_vic_bitmap_outline_toggle"),
             finish.index("compose_damage(UDEKS_WINDOW_NONE)"),
         )
+
+    def test_lower_right_grip_resizes_with_outline_only_until_release(self):
+        source = (ROOT / "src/services/window/window_manager.c").read_text(
+            encoding="utf-8"
+        )
+        resize = source.split("static void resize_drag", 1)[1].split(
+            "static void finish_drag", 1
+        )[0]
+        self.assertIn("right - 6, bottom, right, bottom - 6", source)
+        self.assertIn("DRAG_RESIZE", source)
+        self.assertIn("MINIMUM_WIDTH", resize)
+        self.assertIn("MINIMUM_HEIGHT", resize)
+        self.assertEqual(resize.count("udeks_vic_bitmap_outline_toggle"), 2)
+        self.assertNotIn("compose_damage", resize)
+        self.assertIn("window->width = drag_width", source)
+        self.assertIn("window->height = drag_height", source)
 
     def test_damage_is_recomposed_back_to_front_with_normalized_z_order(self):
         source = (ROOT / "src/services/window/window_manager.c").read_text(

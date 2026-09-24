@@ -32,7 +32,7 @@ shell (`7`), bounded Z80 worker (`8`), window manager (`9`), and temporary
 static-application adapter (`10`). The default image starts capability
 discovery, CIA time, the Z80 worker, VDC text console, pointer input, the
 VIC-IIe graphics service, window manager, keyboard, root-terminal policy,
-shell, and the temporary `xclock` application adapter in that order. It
+shell, and the temporary `xclock` and `xwave` application adapters in that order. It
 remains at 1 MHz so the VIC-IIe stays available.
 The machine-clock and VDC framebuffer descriptors remain optional modules:
 2 MHz requires an explicit VIC-blanking policy, and VDC bitmap mode requires
@@ -63,8 +63,8 @@ registered.
 
 Static linking during bring-up does not merge module responsibilities. The
 VIC-IIe display module owns hardware state and its 8502 assembly transport;
-the window module owns composition and pointer policy; `xclock` is an
-application. The application adapter exists only to obtain a cooperative poll
+the window module owns composition and pointer policy; `xclock` and `xwave`
+are applications. Their adapters exist only to obtain a cooperative poll
 until the task loader and scheduler replace it.
 
 The registry publishes this 24-byte `SREG` diagnostic record at `$F090`:

@@ -10,6 +10,7 @@
 #include "udeks/vic_graphics.h"
 #include "udeks/window.h"
 #include "udeks/xclock.h"
+#include "udeks/xwave.h"
 
 #define STATUS_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_SHELL_STATUS_BASE + (offset)))
@@ -18,6 +19,15 @@
 #define STATUS_COMMANDS_LO       14u
 #define STATUS_UNKNOWN_LO        16u
 #define STATUS_PARSE_ERRORS_LO   18u
+#define STATUS_FOREGROUND        20u
+#define STATUS_BACKGROUND_JOBS   21u
+#define STATUS_INTERRUPTS        22u
+
+#define JOB_NONE                 0u
+#define JOB_XCLOCK               1u
+#define JOB_XWAVE                2u
+#define BACKGROUND_XCLOCK        0x01u
+#define BACKGROUND_XWAVE         0x02u
 
 typedef unsigned char (*command_handler)(
     unsigned char count, unsigned char **arguments);
@@ -32,6 +42,10 @@ struct shell_command {
 static unsigned char command_line[UDEKS_LINE_EDITOR_CAPACITY + 1u];
 static unsigned char argument_offsets[UDEKS_SHELL_MAX_ARGUMENTS];
 static unsigned char *arguments[UDEKS_SHELL_MAX_ARGUMENTS];
+static unsigned char foreground_job;
+static unsigned char launch_background;
+static unsigned char foreground_interrupted;
+static unsigned char background_jobs;
 #pragma bss-name(pop)
 
 static void write_text(
@@ -72,6 +86,25 @@ static unsigned char strings_equal(
         ++right;
     }
     return *left == *right;
+}
+
+static void publish_background_jobs(void)
+{
+    unsigned char count;
+
+    if ((background_jobs & BACKGROUND_XCLOCK) != 0 &&
+        udeks_xclock_is_running() == 0) {
+        background_jobs &= (unsigned char)~BACKGROUND_XCLOCK;
+    }
+    if ((background_jobs & BACKGROUND_XWAVE) != 0 &&
+        udeks_xwave_is_running() == 0) {
+        background_jobs &= (unsigned char)~BACKGROUND_XWAVE;
+    }
+    count = (background_jobs & BACKGROUND_XCLOCK) != 0 ? 1u : 0u;
+    if ((background_jobs & BACKGROUND_XWAVE) != 0) {
+        ++count;
+    }
+    STATUS_BYTE(STATUS_BACKGROUND_JOBS) = count;
 }
 
 static unsigned char command_clear(
@@ -232,6 +265,12 @@ static unsigned char command_xinit(
         if (udeks_xclock_is_running() != 0) {
             udeks_xclock_stop();
         }
+        if (udeks_xwave_is_running() != 0) {
+            udeks_xwave_stop();
+        }
+        foreground_job = JOB_NONE;
+        background_jobs = 0;
+        publish_background_jobs();
         udeks_window_manager_reset();
         result = udeks_vic_graphics_shutdown();
         if (result == UDEKS_VIC_GRAPHICS_OK) {
@@ -271,6 +310,8 @@ static unsigned char command_xclock(
             arguments[1], (const unsigned char *)"-q")) {
         result = udeks_xclock_stop();
         if (result == UDEKS_XCLOCK_OK) {
+            background_jobs &= (unsigned char)~BACKGROUND_XCLOCK;
+            publish_background_jobs();
             write_line(UDEKS_STDOUT, (const unsigned char *)"xclock stopped");
         } else {
             write_line(UDEKS_STDERR, (const unsigned char *)"xclock: not running");
@@ -291,12 +332,68 @@ static unsigned char command_xclock(
     }
     result = udeks_xclock_start();
     if (result == UDEKS_XCLOCK_OK) {
-        write_line(UDEKS_STDOUT,
-            (const unsigned char *)"xclock started; Ctrl+C or xclock -q stops it");
+        if (launch_background != 0) {
+            background_jobs |= BACKGROUND_XCLOCK;
+            publish_background_jobs();
+            write_line(UDEKS_STDOUT,
+                (const unsigned char *)"xclock started in background");
+        } else {
+            foreground_job = JOB_XCLOCK;
+            write_line(UDEKS_STDOUT,
+                (const unsigned char *)"xclock running; Ctrl+C stops it");
+        }
     } else if (result == UDEKS_XCLOCK_ALREADY_RUNNING) {
         write_line(UDEKS_STDERR, (const unsigned char *)"xclock: already running");
     } else {
         write_line(UDEKS_STDERR, (const unsigned char *)"xclock: start failed");
+    }
+    return UDEKS_SHELL_OK;
+}
+
+static unsigned char command_xwave(
+    unsigned char count, unsigned char **arguments)
+{
+    unsigned char result;
+
+    if (count == 2 && strings_equal(
+            arguments[1], (const unsigned char *)"-q")) {
+        result = udeks_xwave_stop();
+        if (result == UDEKS_XWAVE_OK) {
+            background_jobs &= (unsigned char)~BACKGROUND_XWAVE;
+            publish_background_jobs();
+        }
+        write_line(result == UDEKS_XWAVE_OK ? UDEKS_STDOUT : UDEKS_STDERR,
+            result == UDEKS_XWAVE_OK ?
+                (const unsigned char *)"xwave stopped" :
+                (const unsigned char *)"xwave: not running");
+        return UDEKS_SHELL_OK;
+    }
+    if (count != 1) {
+        write_line(UDEKS_STDERR, (const unsigned char *)"Usage: xwave [-q] [&]");
+        return UDEKS_SHELL_OK;
+    }
+    if (udeks_vic_graphics_is_active() == 0 &&
+        udeks_vic_graphics_initialize() != UDEKS_VIC_GRAPHICS_OK) {
+        write_line(UDEKS_STDERR,
+            (const unsigned char *)"xwave: VIC-II graphics unavailable");
+        return UDEKS_SHELL_OK;
+    }
+    result = udeks_xwave_start();
+    if (result == UDEKS_XWAVE_OK) {
+        if (launch_background != 0) {
+            background_jobs |= BACKGROUND_XWAVE;
+            publish_background_jobs();
+            write_line(UDEKS_STDOUT,
+                (const unsigned char *)"xwave started in background");
+        } else {
+            foreground_job = JOB_XWAVE;
+            write_line(UDEKS_STDOUT,
+                (const unsigned char *)"xwave running; Ctrl+C stops it");
+        }
+    } else if (result == UDEKS_XWAVE_ALREADY_RUNNING) {
+        write_line(UDEKS_STDERR, (const unsigned char *)"xwave: already running");
+    } else {
+        write_line(UDEKS_STDERR, (const unsigned char *)"xwave: start failed");
     }
     return UDEKS_SHELL_OK;
 }
@@ -314,7 +411,8 @@ static const struct shell_command commands[] = {
     {(const unsigned char *)"lscpu", (const unsigned char *)"Show CPU roles", command_lscpu},
     {(const unsigned char *)"z80ctl", (const unsigned char *)"Inspect or test Z80 worker", command_z80ctl},
     {(const unsigned char *)"xinit", (const unsigned char *)"Start VIC-II graphics", command_xinit},
-    {(const unsigned char *)"xclock", (const unsigned char *)"Run analog clock", command_xclock}
+    {(const unsigned char *)"xclock", (const unsigned char *)"Run analog clock", command_xclock},
+    {(const unsigned char *)"xwave", (const unsigned char *)"Run dual-engine wave plotter", command_xwave}
 };
 
 #define COMMAND_COUNT ((unsigned char)(sizeof(commands) / sizeof(commands[0])))
@@ -369,6 +467,13 @@ static unsigned char dispatch_line(void)
     for (index = 0; index < count; ++index) {
         arguments[index] = command_line + argument_offsets[index];
     }
+    launch_background = 0;
+    if (count > 1u && strings_equal(
+            arguments[count - 1u], (const unsigned char *)"&")) {
+        launch_background = 1;
+        --count;
+    }
+    STATUS_BYTE(8) = count;
     for (index = 0; index < COMMAND_COUNT; ++index) {
         if (strings_equal(
                 arguments[0], commands[index].name)) {
@@ -400,6 +505,10 @@ unsigned char udeks_shell_start(void)
     STATUS_BYTE(4) = 1;
     STATUS_BYTE(5) = UDEKS_SHELL_STATE_STARTING;
     STATUS_BYTE(7) = COMMAND_COUNT;
+    foreground_job = JOB_NONE;
+    launch_background = 0;
+    foreground_interrupted = 0;
+    background_jobs = 0;
     if (*(volatile unsigned char *)(UDEKS_ROOT_TERMINAL_STATUS_BASE + 5u) !=
             UDEKS_ROOT_TERMINAL_READY) {
         return shell_fail(UDEKS_SHELL_DEPENDENCY);
@@ -413,6 +522,27 @@ unsigned char udeks_shell_poll(void)
     unsigned char result;
 
     increment_counter(STATUS_POLLS_LO);
+    publish_background_jobs();
+    if (foreground_job != JOB_NONE) {
+        STATUS_BYTE(STATUS_FOREGROUND) = foreground_job;
+        if ((foreground_job == JOB_XCLOCK &&
+             udeks_xclock_is_running() != 0) ||
+            (foreground_job == JOB_XWAVE &&
+             udeks_xwave_is_running() != 0)) {
+            return UDEKS_SHELL_OK;
+        }
+        foreground_job = JOB_NONE;
+        STATUS_BYTE(STATUS_FOREGROUND) = JOB_NONE;
+        if (foreground_interrupted != 0) {
+            write_line(UDEKS_STDOUT, (const unsigned char *)"Interrupted");
+            foreground_interrupted = 0;
+        }
+        if (udeks_root_terminal_prompt() != UDEKS_ROOT_TERMINAL_OK) {
+            return shell_fail(UDEKS_SHELL_PROMPT);
+        }
+        return UDEKS_SHELL_OK;
+    }
+
     result = udeks_line_editor_get_line(
         command_line, sizeof(command_line));
     if (result == UDEKS_LINE_EDITOR_EMPTY) {
@@ -425,8 +555,27 @@ unsigned char udeks_shell_poll(void)
     if (result != UDEKS_SHELL_OK) {
         return shell_fail(result);
     }
-    if (udeks_root_terminal_prompt() != UDEKS_ROOT_TERMINAL_OK) {
+    STATUS_BYTE(STATUS_FOREGROUND) = foreground_job;
+    if (foreground_job == JOB_NONE &&
+        udeks_root_terminal_prompt() != UDEKS_ROOT_TERMINAL_OK) {
         return shell_fail(UDEKS_SHELL_PROMPT);
     }
     return UDEKS_SHELL_OK;
+}
+
+unsigned char udeks_shell_interrupt_foreground(void)
+{
+    unsigned char stopped;
+
+    stopped = 0;
+    if (foreground_job == JOB_XCLOCK) {
+        stopped = udeks_xclock_stop() == UDEKS_XCLOCK_OK;
+    } else if (foreground_job == JOB_XWAVE) {
+        stopped = udeks_xwave_stop() == UDEKS_XWAVE_OK;
+    }
+    if (stopped != 0) {
+        foreground_interrupted = 1;
+        ++STATUS_BYTE(STATUS_INTERRUPTS);
+    }
+    return stopped;
 }

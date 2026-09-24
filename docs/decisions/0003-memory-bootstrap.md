@@ -45,9 +45,10 @@ The initial physical allocation is:
 | Logical range | Bank 0 | Bank 1 / non-common view |
 |---|---|---|
 | `$0000-$01FF` | Initial executive zero page and stack | Relocatable task-page pool |
-| `$0200-$0AFF` | ROM-bootstrap workspace; reclaimable later | Task/worker low workspace |
-| `$0B00-$0BFF` | KERNAL boot-sector buffer and stage 0 | Task/worker space |
-| `$0C00-$1BFF` | Reclaimed root-console state after stage 1 exits | Task/worker space |
+| `$0200-$0AFF` | Boot-preloaded application slot 1 | Task/worker low workspace |
+| `$0B00-$0BFF` | Application slot 1 after stage 0 exits | Task/worker space |
+| `$0C00-$11FF` | Reclaimed root-console state after stage 1 exits | Task/worker space |
+| `$1200-$1BFF` | Boot-preloaded application slot 2 | Task/worker space |
 | `$1C00-$1FFF` | Stage-1 loader | Task/worker space |
 | `$2000-$3FFF` | 8502 kernel image | Resident Z80 dispatcher and code |
 | `$4000-$7FFF` | 8502 kernel image | Reserved 16 KiB VIC-visible window |
@@ -67,8 +68,10 @@ VIC-IIe module's scanline table, dirty-page map, and clip state, and reserves
 downward-growing 8502 C software stack. The initial Z80
 stack top is `$EFF0` in its non-common bank view.
 
-Stage 1 transfers control from `$1C00-$1FFF` and never returns. The kernel then
-reclaims the adjacent `$0C00-$1BFF` bootstrap/KERNAL workspace as a linker-
+Stage 1 transfers control from `$1C00-$1FFF` and never returns. Before doing
+so it installs two 2560-byte application images from bank-0 staging ranges
+`$D400-$DDFF` and `$E600-$EFFF` into `$0200-$0BFF` and `$1200-$1BFF`.
+The kernel reclaims the adjacent `$0C00-$11FF` bootstrap/KERNAL workspace as a linker-
 bounded `LOWBSS` segment. The retained root-console module owns its initial
 allocation there and explicitly initializes every byte in
 `udeks_root_console_reset()` before the renderer or terminal can observe it.
@@ -77,7 +80,7 @@ The common area is partitioned conservatively:
 
 | Range | Contract |
 |---|---|
-| `$F000-$F03F` | Mailbox ABI 0.1 |
+| `$F000-$F03F` | Mailbox ABI 0.2 |
 | `$F040-$F06F` | Native boot-chain diagnostics |
 | `$F070-$F087` | VDC console diagnostics |
 | `$F088-$F08F` | Reserved diagnostic alignment gap |
@@ -90,7 +93,11 @@ The common area is partitioned conservatively:
 | `$F110-$F11F` | Reserved diagnostic alignment gap |
 | `$F120-$F14F` | C128 keyboard diagnostics |
 | `$F150-$F16F` | Root-terminal line-editor diagnostics |
-| `$F170-$F7FF` | Future queues, job descriptors, and shared transfer metadata |
+| `$F170-$F18F` | Shell diagnostics and foreground-job state |
+| `$F190-$F27F` | Worker, graphics, pointer, time, window, and application diagnostics |
+| `$F280-$F2FF` | Reserved diagnostic space |
+| `$F300-$F33F` | Bounded Z80/8502 wave-sample buffer |
+| `$F340-$F7FF` | Future queues, job descriptors, and shared transfer metadata |
 | `$F800-$FEFF` | 8502/Z80 gateway code and common kernel mechanisms |
 | `$FF00-$FF04` | Permanent MMU register hole; never RAM or code |
 | `$FF05-$FFCF` | Common gateway state/code, to be allocated explicitly |

@@ -9,6 +9,10 @@
 #define POINTER_X_BIAS       12u
 #define POINTER_Y_BIAS       40u
 #define ACTION_BUTTONS       0x05u
+#define DRAG_MOVE            1u
+#define DRAG_RESIZE          2u
+#define MINIMUM_WIDTH        48u
+#define MINIMUM_HEIGHT       48u
 
 struct udeks_window {
     unsigned char active;
@@ -35,6 +39,9 @@ static unsigned int drag_pointer_x;
 static unsigned char drag_pointer_y;
 static unsigned int drag_x;
 static unsigned char drag_y;
+static unsigned int drag_width;
+static unsigned char drag_height;
+static unsigned char drag_mode;
 static unsigned int damage_left;
 static unsigned char damage_top;
 static unsigned int damage_right;
@@ -78,7 +85,7 @@ static void publish_state(void)
     STATUS_BYTE(7) = focused_handle;
     STATUS_BYTE(8) = dragging_handle;
     STATUS_BYTE(14) = UDEKS_WINDOW_MAX;
-    STATUS_BYTE(15) = 0x1Fu;
+    STATUS_BYTE(15) = 0x3Fu;
     if (dragging_handle == UDEKS_WINDOW_NONE) {
         STATUS_BYTE(9) = 0;
         STATUS_BYTE(10) = 0;
@@ -94,7 +101,7 @@ static void publish_state(void)
     STATUS_BYTE(9) = (unsigned char)drag_x;
     STATUS_BYTE(10) = (unsigned char)(drag_x >> 8);
     STATUS_BYTE(11) = drag_y;
-    STATUS_BYTE(12) = (unsigned char)window->width;
+    STATUS_BYTE(12) = (unsigned char)drag_width;
     STATUS_BYTE(13) = previous_buttons;
 }
 
@@ -197,6 +204,8 @@ static void draw_title(const struct udeks_window *window)
 static void draw_chrome(const struct udeks_window *window)
 {
     int close_x;
+    int right;
+    int bottom;
 
     udeks_vic_bitmap_rectangle(
         window->x, window->y, window->width, window->height,
@@ -211,18 +220,26 @@ static void draw_chrome(const struct udeks_window *window)
         window->y + UDEKS_WINDOW_TITLE_HEIGHT,
         UDEKS_VIC_COLOR_BLACK);
     draw_title(window);
-    if ((window->flags & UDEKS_WINDOW_FLAG_CLOSABLE) == 0) {
+    if ((window->flags & UDEKS_WINDOW_FLAG_CLOSABLE) != 0) {
+        close_x = (int)(window->x + window->width) - 12;
+        udeks_vic_bitmap_rectangle(
+            close_x, window->y + 3, 8, 8, UDEKS_VIC_COLOR_BLACK);
+        udeks_vic_bitmap_line(
+            close_x + 2, window->y + 5,
+            close_x + 5, window->y + 8, UDEKS_VIC_COLOR_BLACK);
+        udeks_vic_bitmap_line(
+            close_x + 5, window->y + 5,
+            close_x + 2, window->y + 8, UDEKS_VIC_COLOR_BLACK);
+    }
+    if ((window->flags & UDEKS_WINDOW_FLAG_RESIZABLE) == 0) {
         return;
     }
-    close_x = (int)(window->x + window->width) - 12;
-    udeks_vic_bitmap_rectangle(
-        close_x, window->y + 3, 8, 8, UDEKS_VIC_COLOR_BLACK);
+    right = window->x + window->width - 5;
+    bottom = window->y + window->height - 5;
     udeks_vic_bitmap_line(
-        close_x + 2, window->y + 5,
-        close_x + 5, window->y + 8, UDEKS_VIC_COLOR_BLACK);
+        right - 6, bottom, right, bottom - 6, UDEKS_VIC_COLOR_BLACK);
     udeks_vic_bitmap_line(
-        close_x + 5, window->y + 5,
-        close_x + 2, window->y + 8, UDEKS_VIC_COLOR_BLACK);
+        right - 3, bottom, right, bottom - 3, UDEKS_VIC_COLOR_BLACK);
 }
 
 static unsigned char paint_window_damage(unsigned char handle);
@@ -382,8 +399,17 @@ static unsigned char title_hit(
         y >= window->y && y < window->y + UDEKS_WINDOW_TITLE_HEIGHT;
 }
 
+static unsigned char resize_hit(
+    unsigned int x, unsigned char y, const struct udeks_window *window)
+{
+    return (window->flags & UDEKS_WINDOW_FLAG_RESIZABLE) != 0 &&
+        x >= window->x + window->width - 10u &&
+        y >= window->y + window->height - 10u;
+}
+
 static void begin_drag(
-    unsigned char handle, unsigned int pointer_x, unsigned char pointer_y)
+    unsigned char handle, unsigned int pointer_x, unsigned char pointer_y,
+    unsigned char mode)
 {
     struct udeks_window *window;
 
@@ -392,10 +418,13 @@ static void begin_drag(
         return;
     }
     dragging_handle = handle;
+    drag_mode = mode;
     drag_pointer_x = pointer_x - window->x;
     drag_pointer_y = (unsigned char)(pointer_y - window->y);
     drag_x = window->x;
     drag_y = window->y;
+    drag_width = window->width;
+    drag_height = window->height;
     damage_set(window);
     compose_damage(handle);
     udeks_vic_bitmap_outline_toggle(
@@ -436,6 +465,39 @@ static void move_drag(unsigned int pointer_x, unsigned char pointer_y)
     increment_counter(22u);
 }
 
+static void resize_drag(unsigned int pointer_x, unsigned char pointer_y)
+{
+    unsigned int new_width;
+    unsigned char new_height;
+
+    new_width = pointer_x > drag_x ? pointer_x - drag_x + 1u : MINIMUM_WIDTH;
+    new_height = pointer_y > drag_y ?
+        (unsigned char)(pointer_y - drag_y + 1u) : MINIMUM_HEIGHT;
+    if (new_width < MINIMUM_WIDTH) {
+        new_width = MINIMUM_WIDTH;
+    }
+    if (new_height < MINIMUM_HEIGHT) {
+        new_height = MINIMUM_HEIGHT;
+    }
+    if (new_width > UDEKS_VIC_WIDTH - drag_x) {
+        new_width = UDEKS_VIC_WIDTH - drag_x;
+    }
+    if (new_height > UDEKS_VIC_HEIGHT - drag_y) {
+        new_height = (unsigned char)(UDEKS_VIC_HEIGHT - drag_y);
+    }
+    if (new_width == drag_width && new_height == drag_height) {
+        return;
+    }
+    udeks_vic_bitmap_reset_clip();
+    udeks_vic_bitmap_outline_toggle(
+        drag_x, drag_y, drag_width, drag_height);
+    udeks_vic_bitmap_outline_toggle(
+        drag_x, drag_y, new_width, new_height);
+    drag_width = new_width;
+    drag_height = new_height;
+    increment_counter(22u);
+}
+
 static void finish_drag(void)
 {
     struct udeks_window *window;
@@ -449,12 +511,15 @@ static void finish_drag(void)
     }
     udeks_vic_bitmap_reset_clip();
     udeks_vic_bitmap_outline_toggle(
-        drag_x, drag_y, window->width, window->height);
+        drag_x, drag_y, drag_width, drag_height);
     damage_set(window);
     window->x = drag_x;
     window->y = drag_y;
+    window->width = drag_width;
+    window->height = drag_height;
     damage_add(window);
     dragging_handle = UDEKS_WINDOW_NONE;
+    drag_mode = 0;
     compose_damage(UDEKS_WINDOW_NONE);
     increment_counter(26u);
 }
@@ -478,6 +543,7 @@ unsigned char udeks_window_manager_start(void)
     active_count = 0;
     focused_handle = UDEKS_WINDOW_NONE;
     dragging_handle = UDEKS_WINDOW_NONE;
+    drag_mode = 0;
     previous_buttons = 0;
     publish_state();
     return UDEKS_WINDOW_OK;
@@ -493,6 +559,7 @@ void udeks_window_manager_reset(void)
     active_count = 0;
     focused_handle = UDEKS_WINDOW_NONE;
     dragging_handle = UDEKS_WINDOW_NONE;
+    drag_mode = 0;
     previous_buttons = 0;
     publish_state();
 }
@@ -530,7 +597,8 @@ unsigned char udeks_window_create(
     window->active = 1;
     window->owner = owner;
     window->surface = surface;
-    window->flags = (unsigned char)(flags | UDEKS_WINDOW_FLAG_VISIBLE);
+    window->flags = (unsigned char)(flags | UDEKS_WINDOW_FLAG_VISIBLE |
+        UDEKS_WINDOW_FLAG_RESIZABLE);
     window->x = x;
     window->y = y;
     window->width = width;
@@ -565,8 +633,9 @@ unsigned char udeks_window_destroy(unsigned char handle)
     if (dragging_handle == handle) {
         udeks_vic_bitmap_reset_clip();
         udeks_vic_bitmap_outline_toggle(
-            drag_x, drag_y, window->width, window->height);
+            drag_x, drag_y, drag_width, drag_height);
         dragging_handle = UDEKS_WINDOW_NONE;
+        drag_mode = 0;
     }
     window->active = 0;
     --active_count;
@@ -613,8 +682,8 @@ unsigned char udeks_window_get_geometry(
     }
     *x = dragging_handle == handle ? drag_x : window->x;
     *y = dragging_handle == handle ? drag_y : window->y;
-    *width = window->width;
-    *height = window->height;
+    *width = dragging_handle == handle ? drag_width : window->width;
+    *height = dragging_handle == handle ? drag_height : window->height;
     return UDEKS_WINDOW_OK;
 }
 
@@ -658,8 +727,11 @@ unsigned char udeks_window_manager_poll(void)
                 publish_state();
                 return UDEKS_WINDOW_OK;
             }
-            if (title_hit(pointer_x, pointer_y, window) != 0) {
-                begin_drag(handle, pointer_x, pointer_y);
+            if (resize_hit(pointer_x, pointer_y, window) != 0) {
+                begin_drag(
+                    handle, pointer_x, pointer_y, DRAG_RESIZE);
+            } else if (title_hit(pointer_x, pointer_y, window) != 0) {
+                begin_drag(handle, pointer_x, pointer_y, DRAG_MOVE);
             } else if (raised != 0) {
                 damage_set(window);
                 compose_damage(UDEKS_WINDOW_NONE);
@@ -671,7 +743,11 @@ unsigned char udeks_window_manager_poll(void)
     if (pressed == 0 && dragging_handle != UDEKS_WINDOW_NONE) {
         finish_drag();
     } else if (pressed != 0 && dragging_handle != UDEKS_WINDOW_NONE) {
-        move_drag(pointer_x, pointer_y);
+        if (drag_mode == DRAG_RESIZE) {
+            resize_drag(pointer_x, pointer_y);
+        } else {
+            move_drag(pointer_x, pointer_y);
+        }
     }
     previous_buttons = pressed;
     publish_state();

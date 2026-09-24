@@ -29,6 +29,13 @@ class XclockDecodeTests(unittest.TestCase):
         self.assertEqual(result["width"], 72)
         self.assertEqual(result["ticks"], 4)
 
+    def test_accepts_resized_clock(self):
+        block = valid_record()
+        block[8:12] = bytes((80, 40, 120, 100))
+        result = parse_result(block)
+        self.assertEqual(result["width"], 120)
+        self.assertEqual(result["height"], 100)
+
     def test_rejects_unrendered_running_clock(self):
         block = valid_record()
         block[16:18] = b"\x00\x00"

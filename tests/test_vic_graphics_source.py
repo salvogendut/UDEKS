@@ -18,7 +18,7 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertLess(console, pointer)
         self.assertLess(pointer, graphics)
         self.assertLess(graphics, keyboard)
-        self.assertIn(".byte $0b", table)
+        self.assertIn(".byte $0c", table)
 
         descriptor = (ROOT / "src/services/display/descriptor.s").read_text(
             encoding="utf-8"

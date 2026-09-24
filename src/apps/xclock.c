@@ -4,6 +4,9 @@
 #include "udeks/window.h"
 #include "udeks/xclock.h"
 
+#pragma code-name(push, "APP1CODE")
+#pragma rodata-name(push, "APP1RODATA")
+
 #define STATUS_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_XCLOCK_STATUS_BASE + (offset)))
 
@@ -38,13 +41,13 @@ static const unsigned char digit_glyphs[11][5] = {
 
 static const unsigned char window_title[] = "XCLOCK";
 
-#pragma bss-name(push, "HIGHBSS")
+#pragma bss-name(push, "APP1BSS")
 static unsigned char window_handle;
 static unsigned int window_x;
 static unsigned char window_y;
 static unsigned int window_width;
 static unsigned char window_height;
-static unsigned char face_x;
+static unsigned int face_x;
 static unsigned char face_y;
 static unsigned char previous_hour;
 static unsigned char previous_minute;
@@ -188,7 +191,7 @@ static void paint_clock(unsigned char handle)
         return;
     }
     udeks_time_now(&hour, &minute, &second);
-    face_x = (unsigned char)(window_x + window_width / 2u);
+    face_x = window_x + window_width / 2u;
     face_y = (unsigned char)(window_y + 40u);
     draw_face();
     draw_hands(hour, minute, UDEKS_VIC_COLOR_BLACK);
@@ -312,3 +315,6 @@ unsigned char udeks_xclock_is_running(void)
 {
     return STATUS_BYTE(5) == UDEKS_XCLOCK_RUNNING ? 1u : 0u;
 }
+
+#pragma rodata-name(pop)
+#pragma code-name(pop)

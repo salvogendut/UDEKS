@@ -14,6 +14,9 @@ STAGE1_ADDRESS = 0x1C00
 KERNEL_ADDRESS = 0x2000
 Z80_STAGING_ADDRESS = 0xD000
 Z80_SIZE = 0x2000
+APP_IMAGE_SIZE = 0x0A00
+APP1_Z80_OFFSET = 0x0400
+APP2_Z80_OFFSET = 0x1600
 PAYLOAD_SIZE = 0xD400
 PAYLOAD_BLOCKS = PAYLOAD_SIZE // SECTOR_SIZE
 
@@ -106,7 +109,18 @@ def boot_locations(blocks: int):
             sector = 0
 
 
-def build_image(stage0: bytes, stage1: bytes, kernel: bytes, z80: bytes) -> bytes:
+def install_app_image(z80: bytearray, image: bytes, offset: int, name: str) -> None:
+    if len(image) > APP_IMAGE_SIZE:
+        raise ValueError(f"{name} image exceeds its 2560-byte reservation")
+    if any(z80[offset : offset + APP_IMAGE_SIZE]):
+        raise ValueError(f"{name} staging range overlaps Z80 code or data")
+    z80[offset : offset + APP_IMAGE_SIZE] = image.ljust(APP_IMAGE_SIZE, b"\x00")
+
+
+def build_image(
+    stage0: bytes, stage1: bytes, kernel: bytes, z80: bytes,
+    app1: bytes = b"", app2: bytes = b""
+) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
     if stage0[:3] != b"CBM":
@@ -120,10 +134,14 @@ def build_image(stage0: bytes, stage1: bytes, kernel: bytes, z80: bytes) -> byte
     if len(z80) > Z80_SIZE:
         raise ValueError("Z80 image exceeds its 8 KiB reservation")
 
+    staged_z80 = bytearray(z80.ljust(Z80_SIZE, b"\x00"))
+    install_app_image(staged_z80, app1, APP1_Z80_OFFSET, "application 1")
+    install_app_image(staged_z80, app2, APP2_Z80_OFFSET, "application 2")
+
     payload = (
         stage1.ljust(KERNEL_ADDRESS - STAGE1_ADDRESS, b"\x00")
         + kernel.ljust(Z80_STAGING_ADDRESS - KERNEL_ADDRESS, b"\x00")
-        + z80.ljust(Z80_SIZE, b"\x00")
+        + staged_z80
     )
     if len(payload) != PAYLOAD_SIZE:
         raise AssertionError("native boot payload layout drifted")
@@ -149,6 +167,8 @@ def main() -> None:
     parser.add_argument("--stage1", type=Path, required=True)
     parser.add_argument("--kernel", type=Path, required=True)
     parser.add_argument("--z80", type=Path, required=True)
+    parser.add_argument("--app1", type=Path)
+    parser.add_argument("--app2", type=Path)
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
 
@@ -158,6 +178,8 @@ def main() -> None:
             args.stage1.read_bytes(),
             args.kernel.read_bytes(),
             args.z80.read_bytes(),
+            b"" if args.app1 is None else args.app1.read_bytes(),
+            b"" if args.app2 is None else args.app2.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

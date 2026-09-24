@@ -1,4 +1,4 @@
-# VIC-IIe window manager 0.2
+# VIC-IIe window manager 0.3
 
 The first UDEKS graphical window manager owns VIC-IIe bitmap-window policy.
 Applications register bounded descriptors and repaint callbacks; they do not
@@ -7,7 +7,7 @@ buttons themselves.
 
 Each descriptor records a handle, owner, surface type, flags, geometry,
 z-order, title, repaint callback, and close callback. The initial registry has
-four static slots and performs no dynamic allocation. Version 0.2 admits
+four static slots and performs no dynamic allocation. Version 0.3 admits
 bitmap surfaces and supports four overlapping visible application windows.
 Damage is cleared and recomposed through repaint callbacks from the lowest
 intersecting window to the highest; no save-under buffer is allocated.
@@ -23,6 +23,14 @@ Clicking an exposed part of a window focuses and raises it. Z values are kept
 as the compact range 1 through the active-window count, so repeated switching
 cannot wrap an ever-growing sequence number. Destroying a window recomposes
 its old rectangle and focuses the remaining top window.
+
+Every current application window is resizable. Two diagonal marks in its
+lower-right corner identify a ten-by-ten-pixel resize grip. Pressing the grip
+hides the window contents and starts the same direct-to-VIC outline operation
+used for movement. The outline is constrained to the 320x200 surface and a
+48x48 minimum. Releasing the button commits the new width and height, then
+recomposes the union of the old and new rectangles. Client paint callbacks
+obtain the new geometry and remain clipped to the resized client area.
 
 ## Outline dragging
 
@@ -65,7 +73,7 @@ The 32-byte `WMGR` record begins at `$F240`:
 | 12 | 1 | Current outline width |
 | 13 | 1 | Normalized action-button state |
 | 14 | 1 | Registry capacity (`4`) |
-| 15 | 1 | Capabilities: registry, z-order, clipping, outline drag, damage recomposition (`$1f`) |
+| 15 | 1 | Capabilities: registry, z-order, clipping, outline drag, damage recomposition, resize grip (`$3f`) |
 | 16–17 | 2 | Windows created |
 | 18–19 | 2 | Windows destroyed |
 | 20–21 | 2 | Window repaint callbacks invoked by composition |

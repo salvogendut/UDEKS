@@ -165,9 +165,12 @@ offset table, `$E190-$E1AF` for its dirty-page map, and `$E1B0-$E1B7` for clip
 state. `$E1B8-$E2FF` holds linker-bounded module-private high BSS; the C
 software stack is constrained to `$E300-$EFF0`. This is an explicit module
 workspace assignment, not expansion of the ordinary resident kernel image.
-The retained root-console state occupies the linker-bounded `$0C00-$1BFF`
-`LOWBSS` region after the native stage-1 loader has vacated it; its reset path
-initializes the complete allocation before first use.
+The retained root-console state occupies the linker-bounded `$0C00-$11FF`
+`LOWBSS` region after the native stage-1 loader has vacated it. Boot-preloaded
+application slots occupy `$0200-$0BFF` and `$1200-$1BFF`; their disk bytes ride
+in unused portions of the bank-0 Z80 staging payload and stage 1 installs them
+after worker-image verification. Each reset path initializes its complete
+allocation before first use.
 
 The final map must define and validate:
 

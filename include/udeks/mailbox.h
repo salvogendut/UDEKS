@@ -35,7 +35,7 @@
 #define UDEKS_MB_RESULT_HI         19u
 
 #define UDEKS_MAILBOX_ABI_MAJOR     0u
-#define UDEKS_MAILBOX_ABI_MINOR     1u
+#define UDEKS_MAILBOX_ABI_MINOR     2u
 
 #define UDEKS_MB_STATE_IDLE         0u
 #define UDEKS_MB_STATE_SUBMITTED    1u
@@ -47,6 +47,10 @@
 #define UDEKS_MB_OP_COPY            1u
 #define UDEKS_MB_OP_CHECKSUM16      2u
 #define UDEKS_MB_OP_XOR_ROL         3u
+#define UDEKS_MB_OP_WAVE_SAMPLES    4u
+
+#define UDEKS_WAVE_BUFFER_BASE      0xF300u
+#define UDEKS_WAVE_BUFFER_SIZE      64u
 
 /* Worker result status. Zero is success; nonzero values reject the request. */
 #define UDEKS_MB_STATUS_OK           0u
@@ -55,5 +59,6 @@
 #define UDEKS_MB_STATUS_STATE        3u
 #define UDEKS_MB_STATUS_OPCODE       4u
 #define UDEKS_MB_STATUS_RESERVED     5u
+#define UDEKS_MB_STATUS_LENGTH       6u
 
 #endif

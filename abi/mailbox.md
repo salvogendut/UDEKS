@@ -1,6 +1,6 @@
 # 8502/Z80 mailbox ABI
 
-Status: **provisional**, ABI version 0.1.
+Status: **provisional**, ABI version 0.2.
 
 The mailbox is the only state transferred implicitly across a CPU ownership
 change. Both processors access the same physical bytes, but never at the same
@@ -38,16 +38,20 @@ are in `include/udeks/mailbox.h`; no compiler-native structure is normative.
 | 1 | `COPY` | arg0 source, arg1 destination, length byte count | copied byte count |
 | 2 | `CHECKSUM16` | arg0 source, length byte count | unsigned sum of bytes modulo 65,536 |
 | 3 | `XOR_ROL` | arg0 source, arg1 destination, length byte count | transformed byte count |
+| 4 | `WAVE_SAMPLES` | arg0 low byte phase, arg1 low byte phase step, length 1–64 | next phase; signed samples at `$F300-$F33F` |
 
 `NOP` is implemented by the resident production worker and is used for boot
-self-test and explicit lease testing. `COPY`, `CHECKSUM16`, and `XOR_ROL`
+self-test and explicit lease testing. `WAVE_SAMPLES` is the first production
+compute operation. It writes no more than 64 signed eight-bit sine samples to
+the fixed common-RAM transfer buffer and has a statically bounded loop.
+`COPY`, `CHECKSUM16`, and `XOR_ROL`
 remain benchmark-only contracts; submitting them to the production worker
 returns `ERROR` with status `4` until their buffer-ownership rules are defined.
 `XOR_ROL` writes `ROL8(source[i] XOR $A5)` to each destination byte.
 
 Worker status values are zero for success, `1` for bad magic, `2` for an
 unsupported ABI, `3` for an invalid state, `4` for an unsupported opcode, and
-`5` for nonzero reserved bytes.
+`5` for nonzero reserved bytes, and `6` for an invalid bounded length.
 
 ## Publication protocol
 
@@ -70,5 +74,5 @@ sequence after ownership returns. The first working implementation is
 specified by the [Z80 worker service contract](z80-worker.md).
 
 ADR 0002 establishes the 8502 executive as the normal requester and the Z80 as
-the worker. ABI 0.1 continues to exercise both directions for diagnostics, but
+the worker. ABI 0.2 continues to exercise both directions for diagnostics, but
 production Z80-to-8502 requests are not part of the normal scheduling model.

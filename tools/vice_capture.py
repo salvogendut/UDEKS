@@ -34,6 +34,10 @@ def parse_poke(value: str) -> tuple[int, int]:
     return address, byte
 
 
+def parse_keybuf(value: str) -> str:
+    return value.replace(r"\n", "\n").replace(r"\r", "\r")
+
+
 def parse_monitor_byte(reply: bytes, address: int) -> int:
     pattern = re.compile(
         rb">[A-Za-z0-9]+:" + f"{address:04x}".encode() + rb"\s+([0-9a-fA-F]{2})",
@@ -77,6 +81,19 @@ def quote_monitor_path(path: Path) -> str:
     if '"' in text or "\n" in text or "\r" in text:
         raise ValueError("VICE monitor paths cannot contain quotes or newlines")
     return f'"{text}"'
+
+
+def quote_monitor_text(text: str) -> str:
+    if any(ord(character) < 0x20 and character not in "\n\r\t" for character in text):
+        raise ValueError("VICE key buffer text contains an unsupported control byte")
+    escaped = (
+        text.replace("\\", "\\\\")
+        .replace('"', '\\"')
+        .replace("\n", "\\n")
+        .replace("\r", "\\r")
+        .replace("\t", "\\t")
+    )
+    return f'"{escaped}"'
 
 
 def make_basic_wrapper(program: bytes, entry: int) -> bytes:
@@ -228,6 +245,22 @@ def capture(args: argparse.Namespace) -> None:
         # redirected logs, so a short fixed grace period is more reliable than
         # waiting for a log marker.
         time.sleep(min(5.0, max(0.0, deadline - time.monotonic())))
+        if args.keybuf is not None:
+            if args.keybuf_ready is not None:
+                ready_address, ready_value = args.keybuf_ready
+                while time.monotonic() < deadline:
+                    try:
+                        reply = monitor_command(
+                            port, f"m {ready_address:04x} {ready_address:04x}"
+                        )
+                        if parse_monitor_byte(reply, ready_address) == ready_value:
+                            break
+                    except (ConnectionError, OSError, RuntimeError, ValueError):
+                        pass
+                    time.sleep(0.1)
+                else:
+                    raise TimeoutError("VICE key-buffer readiness byte did not match")
+            monitor_command(port, f"keybuf {quote_monitor_text(args.keybuf)}")
         state = None
         last_error: Exception | None = None
         while time.monotonic() < deadline:
@@ -319,6 +352,17 @@ def main() -> None:
         type=parse_poke,
         metavar="ADDRESS=BYTE",
         help="write one launcher-owned byte before entering the benchmark",
+    )
+    parser.add_argument(
+        "--keybuf",
+        type=parse_keybuf,
+        help=r"type text after launch; use \n for Return",
+    )
+    parser.add_argument(
+        "--keybuf-ready",
+        type=parse_poke,
+        metavar="ADDRESS=BYTE",
+        help="wait for a memory byte before typing --keybuf text",
     )
     parser.add_argument(
         "--autostart",

@@ -22,5 +22,6 @@ unsigned char udeks_shell_tokenize(
     unsigned char capacity);
 unsigned char udeks_shell_start(void);
 unsigned char udeks_shell_poll(void);
+unsigned char udeks_shell_interrupt_foreground(void);
 
 #endif

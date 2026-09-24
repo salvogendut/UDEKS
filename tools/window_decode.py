@@ -25,7 +25,7 @@ def parse_result(data: bytes) -> dict[str, int]:
     block = data[:RESULT_SIZE]
     if block[:4] != b"WMGR" or block[4] != 1:
         raise ValueError("window-manager record magic or format is invalid")
-    if block[5] != 2 or block[14] != 4 or block[15] != 0x1F:
+    if block[5] != 2 or block[14] != 4 or block[15] != 0x3F:
         raise ValueError("window-manager state or capabilities are invalid")
     if block[6] > block[14]:
         raise ValueError("active window count exceeds capacity")

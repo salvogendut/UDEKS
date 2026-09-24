@@ -9,7 +9,11 @@
 /* Native boot and resident-image addresses. */
 #define UDEKS_BOOT_SECTOR_BASE        0x0B00u
 #define UDEKS_RECLAIMED_STATE_BASE    0x0C00u
-#define UDEKS_RECLAIMED_STATE_LIMIT   0x1C00u
+#define UDEKS_RECLAIMED_STATE_LIMIT   0x1200u
+#define UDEKS_APP1_BASE               0x0200u
+#define UDEKS_APP1_LIMIT              0x0C00u
+#define UDEKS_APP2_BASE               0x1200u
+#define UDEKS_APP2_LIMIT              0x1C00u
 #define UDEKS_BOOTSTRAP_BASE          0x1C00u
 #define UDEKS_KERNEL_BASE             0x2000u
 #define UDEKS_KERNEL_LIMIT            0xD000u
@@ -34,6 +38,10 @@
 #define UDEKS_VIC_WINDOW_BASE         0x4000u
 #define UDEKS_VIC_WINDOW_LIMIT        0x8000u
 #define UDEKS_Z80_STACK_TOP           0xEFF0u
+
+/* App images ride in unused portions of the bank-0 Z80 staging payload. */
+#define UDEKS_APP1_STAGING_BASE       0xD400u
+#define UDEKS_APP2_STAGING_BASE       0xE600u
 
 /* Four KiB of bank-0 RAM shared at the top of every RAM-bank view. */
 #define UDEKS_COMMON_BASE             0xF000u

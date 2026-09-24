@@ -15,7 +15,12 @@ initial binding for descriptors 1 and 2.
 The parser accepts spaces and tabs as separators. It performs no allocation,
 supports at most eight arguments including the command name, and deliberately
 does not yet implement quoting, escaping, variables, pipelines, redirection,
-or completion. The terminal editor independently retains six volatile command
+or completion. A standalone final `&` requests background execution for a
+graphical command; it must be separated by whitespace. Without it, the shell
+keeps the graphical command in the foreground, withholds the next prompt, and
+routes VDC-console `Ctrl+C` to that job. Pointer focus on the VIC-IIe does not
+change which process owns the controlling VDC terminal. The terminal editor
+independently retains six volatile command
 lines for Up/Down recall. Empty lines simply produce a new prompt. Parser
 limits are errors reported on standard error rather than reasons to fail the
 service.
@@ -33,6 +38,8 @@ The first command registry contains:
 | `lscpu` | Report the honest current CPU roles. |
 | `z80ctl` | Show worker status or run a bounded `NOP` lease with `z80ctl test`. |
 | `xinit` | Initialize the independent VIC-IIe graphics screen; `-q` stops it. |
+| `xclock` | Run the managed analog clock; `-q` stops it and `&` backgrounds it. |
+| `xwave` | Run the dual-engine wireframe wave plot; `-q` stops it and `&` backgrounds it. |
 
 `lscpu` reports the 8502 as the resident executive and claims a ready bounded
 Z80 worker only after the production mailbox self-test has completed. `z80ctl`
@@ -41,6 +48,6 @@ raw MMU or mailbox access to the command layer.
 
 The provisional `SHLL` diagnostic record occupies 24 bytes at `$F170`. It
 contains format/state/error bytes, the command count, last argument count and
-command/result identifiers, plus 16-bit poll, command, unknown-command, and
-parse-error counters. A compiler-neutral request ABI and stream handles remain
-future work.
+command/result identifiers, 16-bit poll, command, unknown-command, and
+parse-error counters, the foreground job identifier, background-job count,
+and interrupt count. A compiler-neutral request ABI remains future work.

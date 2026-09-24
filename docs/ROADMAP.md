@@ -168,6 +168,8 @@ mailbox corruption, with published benchmark results.
 - [x] Advance the VIC-IIe Window Manager to 0.2 with bounded damage-region
   recomposition, compact z-order, click-to-focus/raise, and overlap-safe
   managed client painting.
+- [x] Advance the VIC-IIe Window Manager to 0.3 with a visible lower-right
+  resize grip and content-hidden outline resizing before release-time repaint.
 - [x] Separate VIC-IIe display, window-manager, and temporary application-poll
   lifecycles into independently registered modules.
 - [x] Route normalized keyboard events to a fixed-focus root-terminal editor.
@@ -181,8 +183,10 @@ mailbox corruption, with published benchmark results.
   port 2 for a digital joystick, and merge both into a frame-paced pointer.
 - [x] Build the first fixed-window `xclock` graphical application, following the bounded
   analog-clock design proven in GEOBENCH.
-- [ ] Build `xwave` later as a wireframe function plotter using bounded Z80 sample
+- [x] Build `xwave` as a wireframe function plotter using bounded Z80 sample
   computation, 8502 VIC-IIe rendering, and VDC-console `Ctrl+C` cancellation.
+- [x] Add shell foreground jobs and a whitespace-delimited trailing `&` for
+  background `xclock` and `xwave` execution.
 - [ ] Build `xmandel` from the GEOBENCH `XAOS.APP` fixed-point design as a
   tiled Z80-compute/8502-present stress test with zoom and recenter controls.
 - [ ] Support VDC-only, VIC-only, mirrored, and extended desktop modes.

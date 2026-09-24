@@ -38,8 +38,13 @@ class XclockSourceTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("event.character == 3u", terminal)
-        self.assertIn("udeks_xclock_is_running()", terminal)
-        self.assertIn("udeks_xclock_stop()", terminal)
+        self.assertIn("udeks_shell_interrupt_foreground()", terminal)
+        self.assertNotIn('"udeks/xclock.h"', terminal)
+        poll = terminal.split("unsigned char udeks_root_terminal_poll", 1)[1]
+        self.assertLess(
+            poll.index("event.character == 3u"),
+            poll.index("accepting_input == 0"),
+        )
 
 
 if __name__ == "__main__":

@@ -13,7 +13,7 @@ class ShellSourceTests(unittest.TestCase):
         terminal = table.index(".addr _udeks_root_terminal_service_descriptor")
         shell = table.index(".addr _udeks_shell_service_descriptor")
         self.assertLess(terminal, shell)
-        self.assertIn(".byte $0b", table)
+        self.assertIn(".byte $0c", table)
 
     def test_shell_uses_registry_dispatch_and_rearms_terminal_prompt(self):
         source = (ROOT / "src/services/shell/shell.c").read_text(encoding="utf-8")
@@ -31,6 +31,7 @@ class ShellSourceTests(unittest.TestCase):
             "z80ctl",
             "xinit",
             "xclock",
+            "xwave",
         ):
             self.assertIn(f'*)"{command}"', source)
         self.assertIn("unsigned char count, unsigned char **arguments", source)
@@ -41,6 +42,13 @@ class ShellSourceTests(unittest.TestCase):
         self.assertIn("udeks_vic_graphics_shutdown", source)
         self.assertIn("udeks_xclock_start", source)
         self.assertIn("udeks_xclock_stop", source)
+        self.assertIn("udeks_xwave_start", source)
+        self.assertIn("udeks_xwave_stop", source)
+        self.assertIn("launch_background", source)
+        self.assertIn("publish_background_jobs", source)
+        self.assertIn('*)"&"', source)
+        self.assertIn("foreground_job", source)
+        self.assertIn("udeks_shell_interrupt_foreground", source)
         self.assertIn('*)"-q"', source)
 
     def test_shell_is_a_resident_polled_service(self):
