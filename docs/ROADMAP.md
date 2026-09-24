@@ -162,8 +162,14 @@ mailbox corruption, with published benchmark results.
   full-surface dirty-map scan and full-row redraw.
 - [ ] Add bounded window descriptors, z-order, clipping, damage, and
   back-to-front recomposition for overlapping text and bitmap windows.
+- [x] Add Window Manager 0.1 with a bounded registry, managed bitmap chrome,
+  client clipping, pointer routing, and content-hidden assembly-blitted outline
+  dragging.
+- [x] Separate VIC-IIe display, window-manager, and temporary application-poll
+  lifecycles into independently registered modules.
 - [x] Route normalized keyboard events to a fixed-focus root-terminal editor.
-- [ ] Generalize input routing to arbitrary focused windows.
+- [ ] Generalize keyboard input routing to arbitrary focused windows; pointer
+  routing to managed VIC-IIe windows is complete.
 - [ ] Implement queued VDC text and bitmap transfers.
 - [ ] Implement VIC text/bitmap surfaces, sprites, and raster service.
 - [x] Add `xinit` with an initial bank-1 VIC-IIe hires surface and centered
@@ -174,6 +180,8 @@ mailbox corruption, with published benchmark results.
   analog-clock design proven in GEOBENCH.
 - [ ] Build `xwave` later as a wireframe function plotter using bounded Z80 sample
   computation, 8502 VIC-IIe rendering, and VDC-console `Ctrl+C` cancellation.
+- [ ] Build `xmandel` from the GEOBENCH `XAOS.APP` fixed-point design as a
+  tiled Z80-compute/8502-present stress test with zoom and recenter controls.
 - [ ] Support VDC-only, VIC-only, mirrored, and extended desktop modes.
 - [x] Add a polled full-matrix C128 keyboard source with normalized queued
   press/release events.

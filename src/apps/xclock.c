@@ -1,18 +1,17 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
-#include "udeks/pointer.h"
 #include "udeks/time.h"
 #include "udeks/vic_graphics.h"
+#include "udeks/window.h"
 #include "udeks/xclock.h"
 
 #define STATUS_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_XCLOCK_STATUS_BASE + (offset)))
 
-#define WINDOW_WIDTH       144u
-#define WINDOW_HEIGHT      154u
-#define TITLE_HEIGHT       13u
-#define POINTER_X_BIAS     12u
-#define POINTER_Y_BIAS     40u
-#define ACTION_BUTTONS     0x05u
+#define WINDOW_WIDTH       72u
+#define WINDOW_HEIGHT      77u
+#define WINDOW_INITIAL_X   124u
+#define WINDOW_INITIAL_Y   61u
+#define WINDOW_OWNER       1u
 
 static const signed char sin64[60] = {
       0,  7, 13, 20, 26, 32, 38, 43, 48, 52, 55, 58,
@@ -37,22 +36,22 @@ static const unsigned char digit_glyphs[11][5] = {
     {7, 5, 7, 1, 7}, {0, 2, 0, 2, 0}
 };
 
-static const unsigned char title_glyphs[6][5] = {
-    {5, 5, 2, 5, 5}, {7, 4, 4, 4, 7}, {4, 4, 4, 4, 7},
-    {7, 5, 5, 5, 7}, {7, 4, 4, 4, 7}, {5, 5, 6, 5, 5}
-};
+static const unsigned char window_title[] = "XCLOCK";
 
-static unsigned char window_x;
+#pragma bss-name(push, "HIGHBSS")
+static unsigned char window_handle;
+static unsigned int window_x;
 static unsigned char window_y;
+static unsigned int window_width;
+static unsigned char window_height;
 static unsigned char face_x;
 static unsigned char face_y;
 static unsigned char previous_hour;
 static unsigned char previous_minute;
 static unsigned char previous_second;
-static unsigned char previous_buttons;
-static unsigned char dragging;
-static unsigned char drag_x;
-static unsigned char drag_y;
+static unsigned int last_window_x;
+static unsigned char last_window_y;
+#pragma bss-name(pop)
 
 static void increment_counter(unsigned char low_offset)
 {
@@ -64,11 +63,16 @@ static void increment_counter(unsigned char low_offset)
 
 static void publish_geometry(void)
 {
+    if (window_handle != UDEKS_WINDOW_NONE) {
+        udeks_window_get_geometry(
+            window_handle, &window_x, &window_y,
+            &window_width, &window_height);
+    }
     STATUS_BYTE(8) = window_x;
     STATUS_BYTE(9) = window_y;
-    STATUS_BYTE(10) = WINDOW_WIDTH;
-    STATUS_BYTE(11) = WINDOW_HEIGHT;
-    STATUS_BYTE(24) = dragging;
+    STATUS_BYTE(10) = (unsigned char)window_width;
+    STATUS_BYTE(11) = window_height;
+    STATUS_BYTE(24) = udeks_window_is_dragging(window_handle);
 }
 
 static int point_x(unsigned char position, unsigned char radius)
@@ -110,17 +114,6 @@ static void draw_glyph(
     }
 }
 
-static void draw_title(void)
-{
-    unsigned char index;
-
-    for (index = 0; index < 6u; ++index) {
-        draw_glyph(
-            window_x + 4 + (int)index * 4, window_y + 4,
-            title_glyphs[index], UDEKS_VIC_COLOR_BLACK);
-    }
-}
-
 static void draw_two_digits(int x, int y, unsigned char value)
 {
     draw_glyph(x, y, digit_glyphs[value / 10u], UDEKS_VIC_COLOR_BLACK);
@@ -133,8 +126,8 @@ static void draw_digital(
     int x;
     int y;
 
-    x = window_x + (WINDOW_WIDTH - 19u) / 2u;
-    y = window_y + WINDOW_HEIGHT - 11u;
+    x = window_x + (window_width - 19u) / 2u;
+    y = window_y + window_height - 11u;
     udeks_vic_bitmap_fill(
         x - 2, y - 2, 23, 9, UDEKS_VIC_COLOR_YELLOW);
     draw_two_digits(x, y, hour);
@@ -159,8 +152,8 @@ static unsigned char hour_position(
 static void draw_hands(
     unsigned char hour, unsigned char minute, unsigned char color)
 {
-    draw_hand(hour_position(hour, minute), 25u, color);
-    draw_hand(minute, 36u, color);
+    draw_hand(hour_position(hour, minute), 11u, color);
+    draw_hand(minute, 16u, color);
 }
 
 static void draw_face(void)
@@ -171,57 +164,35 @@ static void draw_face(void)
     for (position = 0; position < 60u; position += 2u) {
         next = (unsigned char)((position + 2u) % 60u);
         udeks_vic_bitmap_line(
-            point_x(position, 48u), point_y(position, 48u),
-            point_x(next, 48u), point_y(next, 48u),
+            point_x(position, 21u), point_y(position, 21u),
+            point_x(next, 21u), point_y(next, 21u),
             UDEKS_VIC_COLOR_BLACK);
     }
     for (position = 0; position < 60u; position += 5u) {
         udeks_vic_bitmap_line(
-            point_x(position, 48u), point_y(position, 48u),
-            point_x(position, 42u), point_y(position, 42u),
+            point_x(position, 21u), point_y(position, 21u),
+            point_x(position, 18u), point_y(position, 18u),
             UDEKS_VIC_COLOR_BLACK);
     }
 }
 
-static void draw_frame(void)
-{
-    int close_x;
-
-    udeks_vic_bitmap_rectangle(
-        window_x, window_y, WINDOW_WIDTH, WINDOW_HEIGHT,
-        UDEKS_VIC_COLOR_BLACK);
-    udeks_vic_bitmap_rectangle(
-        window_x + 2, window_y + 2, WINDOW_WIDTH - 4,
-        WINDOW_HEIGHT - 4, UDEKS_VIC_COLOR_BLACK);
-    udeks_vic_bitmap_line(
-        window_x + 2, window_y + TITLE_HEIGHT,
-        window_x + WINDOW_WIDTH - 3, window_y + TITLE_HEIGHT,
-        UDEKS_VIC_COLOR_BLACK);
-    draw_title();
-    close_x = window_x + WINDOW_WIDTH - 12;
-    udeks_vic_bitmap_rectangle(close_x, window_y + 3, 8, 8,
-        UDEKS_VIC_COLOR_BLACK);
-    udeks_vic_bitmap_line(close_x + 2, window_y + 5,
-        close_x + 5, window_y + 8, UDEKS_VIC_COLOR_BLACK);
-    udeks_vic_bitmap_line(close_x + 5, window_y + 5,
-        close_x + 2, window_y + 8, UDEKS_VIC_COLOR_BLACK);
-}
-
-static void full_repaint(void)
+static void paint_clock(unsigned char handle)
 {
     unsigned char hour;
     unsigned char minute;
     unsigned char second;
 
+    if (udeks_window_get_geometry(
+            handle, &window_x, &window_y,
+            &window_width, &window_height) != UDEKS_WINDOW_OK) {
+        return;
+    }
     udeks_time_now(&hour, &minute, &second);
-    face_x = (unsigned char)(window_x + WINDOW_WIDTH / 2u);
-    face_y = (unsigned char)(window_y + 75u);
-    udeks_vic_bitmap_clear(UDEKS_VIC_COLOR_YELLOW);
-    draw_frame();
+    face_x = (unsigned char)(window_x + window_width / 2u);
+    face_y = (unsigned char)(window_y + 40u);
     draw_face();
     draw_hands(hour, minute, UDEKS_VIC_COLOR_BLACK);
     draw_digital(hour, minute);
-    udeks_vic_bitmap_commit();
     previous_hour = hour;
     previous_minute = minute;
     previous_second = second;
@@ -229,6 +200,12 @@ static void full_repaint(void)
     STATUS_BYTE(13) = minute;
     STATUS_BYTE(14) = second;
     increment_counter(16u);
+    if (window_x != last_window_x || window_y != last_window_y) {
+        increment_counter(20u);
+    }
+    last_window_x = window_x;
+    last_window_y = window_y;
+    publish_geometry();
 }
 
 static void update_time(void)
@@ -241,11 +218,15 @@ static void update_time(void)
     if (hour == previous_hour && minute == previous_minute) {
         return;
     }
+    if (udeks_window_begin_paint(window_handle) != UDEKS_WINDOW_OK) {
+        return;
+    }
     draw_hands(
         previous_hour, previous_minute, UDEKS_VIC_COLOR_YELLOW);
     draw_hands(hour, minute, UDEKS_VIC_COLOR_BLACK);
     udeks_vic_bitmap_pixel(face_x, face_y, UDEKS_VIC_COLOR_BLACK);
     draw_digital(hour, minute);
+    udeks_window_end_paint();
     udeks_vic_bitmap_commit();
     previous_hour = hour;
     previous_minute = minute;
@@ -256,69 +237,13 @@ static void update_time(void)
     increment_counter(18u);
 }
 
-static unsigned char point_inside(
-    unsigned int x, unsigned char y, unsigned char left,
-    unsigned char top, unsigned char width, unsigned char height)
+static void close_clock(unsigned char handle)
 {
-    return x >= left && x < (unsigned int)(left + width) &&
-        y >= top && y < (unsigned char)(top + height);
-}
-
-static void update_window_input(void)
-{
-    unsigned int pointer_x;
-    unsigned char pointer_y;
-    unsigned char buttons;
-    unsigned char pressed;
-    unsigned char new_x;
-    unsigned char new_y;
-
-    pointer_x = udeks_pointer_x() - POINTER_X_BIAS;
-    pointer_y = (unsigned char)(udeks_pointer_y() - POINTER_Y_BIAS);
-    buttons = udeks_pointer_buttons();
-    pressed = (unsigned char)(buttons & ACTION_BUTTONS);
-    STATUS_BYTE(25) = (unsigned char)pointer_x;
-    STATUS_BYTE(26) = (unsigned char)(pointer_x >> 8);
-    STATUS_BYTE(27) = pointer_y;
-    if (pressed != 0 && previous_buttons == 0) {
-        if (point_inside(
-                pointer_x, pointer_y,
-                (unsigned char)(window_x + WINDOW_WIDTH - 12u),
-                (unsigned char)(window_y + 3u), 8u, 8u)) {
-            udeks_xclock_stop();
-            previous_buttons = pressed;
-            return;
-        }
-        if (point_inside(
-                pointer_x, pointer_y, window_x, window_y,
-                WINDOW_WIDTH, TITLE_HEIGHT)) {
-            dragging = 1;
-            drag_x = (unsigned char)(pointer_x - window_x);
-            drag_y = (unsigned char)(pointer_y - window_y);
-        }
-    }
-    if (pressed == 0) {
-        dragging = 0;
-    } else if (dragging != 0) {
-        new_x = pointer_x > drag_x ?
-            (unsigned char)(pointer_x - drag_x) : 0u;
-        new_y = pointer_y > drag_y ?
-            (unsigned char)(pointer_y - drag_y) : 0u;
-        if (new_x > UDEKS_VIC_WIDTH - WINDOW_WIDTH) {
-            new_x = UDEKS_VIC_WIDTH - WINDOW_WIDTH;
-        }
-        if (new_y > UDEKS_VIC_HEIGHT - WINDOW_HEIGHT) {
-            new_y = UDEKS_VIC_HEIGHT - WINDOW_HEIGHT;
-        }
-        if (new_x != window_x || new_y != window_y) {
-            window_x = new_x;
-            window_y = new_y;
-            full_repaint();
-            increment_counter(20u);
-        }
-    }
-    previous_buttons = pressed;
-    publish_geometry();
+    (void)handle;
+    window_handle = UDEKS_WINDOW_NONE;
+    STATUS_BYTE(5) = UDEKS_XCLOCK_READY;
+    STATUS_BYTE(24) = 0;
+    increment_counter(22u);
 }
 
 unsigned char udeks_xclock_initialize(void)
@@ -335,10 +260,13 @@ unsigned char udeks_xclock_initialize(void)
     STATUS_BYTE(4) = 1;
     STATUS_BYTE(5) = UDEKS_XCLOCK_READY;
     STATUS_BYTE(7) = 0x07u;
-    window_x = 88u;
-    window_y = 22u;
-    previous_buttons = 0;
-    dragging = 0;
+    window_handle = UDEKS_WINDOW_NONE;
+    window_x = WINDOW_INITIAL_X;
+    window_y = WINDOW_INITIAL_Y;
+    window_width = WINDOW_WIDTH;
+    window_height = WINDOW_HEIGHT;
+    last_window_x = window_x;
+    last_window_y = window_y;
     publish_geometry();
     return UDEKS_XCLOCK_OK;
 }
@@ -355,7 +283,17 @@ unsigned char udeks_xclock_start(void)
         return UDEKS_XCLOCK_NOT_READY;
     }
     STATUS_BYTE(5) = UDEKS_XCLOCK_RUNNING;
-    full_repaint();
+    window_handle = udeks_window_create(
+        WINDOW_OWNER, UDEKS_WINDOW_SURFACE_BITMAP,
+        UDEKS_WINDOW_FLAG_MOVABLE | UDEKS_WINDOW_FLAG_CLOSABLE,
+        WINDOW_INITIAL_X, WINDOW_INITIAL_Y,
+        WINDOW_WIDTH, WINDOW_HEIGHT, window_title,
+        paint_clock, close_clock);
+    if (window_handle == UDEKS_WINDOW_NONE) {
+        STATUS_BYTE(5) = UDEKS_XCLOCK_READY;
+        return UDEKS_XCLOCK_NOT_READY;
+    }
+    publish_geometry();
     return UDEKS_XCLOCK_OK;
 }
 
@@ -364,8 +302,9 @@ unsigned char udeks_xclock_poll(void)
     if (STATUS_BYTE(5) != UDEKS_XCLOCK_RUNNING) {
         return UDEKS_XCLOCK_OK;
     }
-    update_window_input();
-    if (STATUS_BYTE(5) == UDEKS_XCLOCK_RUNNING) {
+    publish_geometry();
+    if (STATUS_BYTE(5) == UDEKS_XCLOCK_RUNNING &&
+        udeks_window_is_dragging(window_handle) == 0) {
         update_time();
     }
     return UDEKS_XCLOCK_OK;
@@ -376,12 +315,9 @@ unsigned char udeks_xclock_stop(void)
     if (STATUS_BYTE(5) != UDEKS_XCLOCK_RUNNING) {
         return UDEKS_XCLOCK_NOT_READY;
     }
-    dragging = 0;
-    udeks_vic_bitmap_clear(UDEKS_VIC_COLOR_YELLOW);
-    udeks_vic_bitmap_commit();
-    STATUS_BYTE(5) = UDEKS_XCLOCK_READY;
-    STATUS_BYTE(24) = 0;
-    increment_counter(22u);
+    if (udeks_window_destroy(window_handle) != UDEKS_WINDOW_OK) {
+        return UDEKS_XCLOCK_NOT_READY;
+    }
     return UDEKS_XCLOCK_OK;
 }
 

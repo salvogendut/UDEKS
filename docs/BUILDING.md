@@ -68,10 +68,14 @@ VDC revision and RAM tier, and expansion presence for later service policy.
 artwork into row-major, MSB-first scanlines under `build/assets/`; the target
 kernel will consume those bytes without carrying an image decoder.
 
-The current production image starts nine services in order: hardware
+The current production image starts eleven statically linked modules in order: hardware
 capability discovery, CIA time, the bounded Z80 worker, the VDC text console,
 the frame-paced pointer source, the passive VIC-IIe graphics service, the
-polled keyboard source, the fixed-focus root-terminal editor, and the native shell. It stays at
+window manager, the polled keyboard source, the fixed-focus root-terminal
+editor, the native shell, and a temporary cooperative `xclock` application
+adapter. Static placement is a bootstrap detail: each entry has a separate
+descriptor and lifecycle, and the display module does not drive window or
+application policy. The image stays at
 1 MHz, leaving the VIC-IIe active for the future graphics/second-display
 service. The previously qualified VDC-only 2 MHz transition and VDC
 framebuffer remain optional modules.
@@ -87,9 +91,12 @@ yellow 320x200 bank-1 bitmap with a centered black X pointer; `xinit -q`
 terminates that display session. Neither transition replaces or suspends the
 VDC console. The compact X pointer accepts a proportional 1351 mouse on control
 port 1 and a digital joystick on control port 2. `xclock` starts the first
-movable analog-clock window, and `xclock -q` or VDC `Ctrl+C` closes it. See the
+managed analog-clock window. Dragging hides its contents and transfers only an
+outline until release; `xclock -q` or VDC `Ctrl+C` closes it. See the
+[`window-manager contract`](../abi/window.md) and
 [`xclock` design and status](XCLOCK.md). The [`xwave` dual-engine plotter](XWAVE.md)
-is the next application milestone.
+is the next application milestone, followed by the GEOBENCH-XAOS-inspired
+[`xmandel` viewer](XMANDEL.md).
 
 The text console displays the compact UDEKS pipe and Japanese wordmark in a
 left rail and a bordered 64x21 root terminal to the right. Build tooling packs

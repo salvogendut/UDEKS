@@ -10,6 +10,7 @@
         .export _udeks_vic_pointer_set_x
         .export _udeks_vic_pointer_set_y
         .export _udeks_vic_bitmap_commit_page
+        .export _udeks_vic_bitmap_outline_blit
         .import _udeks_vic_bitmap_shadow
 
 MMU_LCR_KERNEL_IO       = $ff01
@@ -34,7 +35,10 @@ VIC_SPRITE0_COLOR       = $d027
 
 COMMON_GATEWAY          = $f800
 COMMON_PAGE             = $f8f0
+OUTLINE_GATEWAY_TAG     = $f7fe
+OUTLINE_COUNT           = $f7ff
 COMMON_BUFFER           = $f900
+OUTLINE_BUFFER          = $fa00
 VIC_SCREEN              = $5c00
 VIC_BITMAP              = $6000
 VIC_SPRITE              = $7fc0
@@ -42,6 +46,8 @@ VIC_SPRITE_POINTER      = $5ff8
 
         .segment "CODE"
 _udeks_vic_graphics_enable:
+        lda #$00
+        sta OUTLINE_GATEWAY_TAG
         ldx #$00
 copy_gateway:
         lda vic_gateway,x
@@ -87,6 +93,8 @@ _udeks_vic_pointer_set_y:
 
 _udeks_vic_bitmap_commit_page:
         pha
+        lda #$00
+        sta OUTLINE_GATEWAY_TAG
         ldx #$00
 copy_page_gateway:
         lda page_gateway,x
@@ -96,6 +104,29 @@ copy_page_gateway:
         bne copy_page_gateway
         pla
         sta COMMON_PAGE
+        jsr COMMON_GATEWAY
+        rts
+
+_udeks_vic_bitmap_outline_blit:
+        lda OUTLINE_GATEWAY_TAG
+        cmp #$a5
+        beq run_outline_gateway
+        ldx #$00
+copy_outline_gateway_0:
+        lda outline_gateway,x
+        sta COMMON_GATEWAY,x
+        inx
+        bne copy_outline_gateway_0
+        ldx #$00
+copy_outline_gateway_1:
+        lda outline_gateway+$100,x
+        sta COMMON_GATEWAY+$100,x
+        inx
+        cpx #outline_gateway_end-outline_gateway-$100
+        bne copy_outline_gateway_1
+        lda #$a5
+        sta OUTLINE_GATEWAY_TAG
+run_outline_gateway:
         jsr COMMON_GATEWAY
         rts
 
@@ -241,3 +272,177 @@ page_copy_done:
         rts
 page_gateway_end:
         .assert page_gateway_end-page_gateway < $f0, error, "VIC page gateway overlaps parameters"
+
+; Each 15-byte record in OUTLINE_BUFFER contains precomputed bitmap addresses:
+; top, bottom, horizontal byte count/masks, left/right vertical start/mask,
+; vertical pixel count, and the starting scanline within its character row.
+outline_gateway:
+        lda #$00
+        sta MMU_LCR_WORKER_FLAT
+        sta COMMON_GATEWAY+(outline_record-outline_gateway)
+        lda OUTLINE_COUNT
+        sta COMMON_GATEWAY+(outline_left-outline_gateway)
+        bne outline_next
+        jmp COMMON_GATEWAY+(outline_done-outline_gateway)
+
+outline_next:
+        ldy COMMON_GATEWAY+(outline_record-outline_gateway)
+        lda OUTLINE_BUFFER+4,y
+        sta COMMON_GATEWAY+(horizontal_count-outline_gateway)
+        lda OUTLINE_BUFFER+5,y
+        sta COMMON_GATEWAY+(horizontal_first-outline_gateway)
+        lda OUTLINE_BUFFER+6,y
+        sta COMMON_GATEWAY+(horizontal_last-outline_gateway)
+
+        lda OUTLINE_BUFFER,y
+        sta COMMON_GATEWAY+(horizontal_load-outline_gateway)+1
+        sta COMMON_GATEWAY+(horizontal_store-outline_gateway)+1
+        lda OUTLINE_BUFFER+1,y
+        sta COMMON_GATEWAY+(horizontal_load-outline_gateway)+2
+        sta COMMON_GATEWAY+(horizontal_store-outline_gateway)+2
+        jsr COMMON_GATEWAY+(draw_horizontal-outline_gateway)
+
+        lda OUTLINE_BUFFER+2,y
+        sta COMMON_GATEWAY+(horizontal_load-outline_gateway)+1
+        sta COMMON_GATEWAY+(horizontal_store-outline_gateway)+1
+        lda OUTLINE_BUFFER+3,y
+        sta COMMON_GATEWAY+(horizontal_load-outline_gateway)+2
+        sta COMMON_GATEWAY+(horizontal_store-outline_gateway)+2
+        jsr COMMON_GATEWAY+(draw_horizontal-outline_gateway)
+
+        lda OUTLINE_BUFFER+13,y
+        sta COMMON_GATEWAY+(vertical_count-outline_gateway)
+        lda OUTLINE_BUFFER+14,y
+        sta COMMON_GATEWAY+(vertical_row-outline_gateway)
+        lda OUTLINE_BUFFER+7,y
+        sta COMMON_GATEWAY+(vertical_load-outline_gateway)+1
+        sta COMMON_GATEWAY+(vertical_store-outline_gateway)+1
+        lda OUTLINE_BUFFER+8,y
+        sta COMMON_GATEWAY+(vertical_load-outline_gateway)+2
+        sta COMMON_GATEWAY+(vertical_store-outline_gateway)+2
+        lda OUTLINE_BUFFER+9,y
+        sta COMMON_GATEWAY+(vertical_mask-outline_gateway)
+        jsr COMMON_GATEWAY+(draw_vertical-outline_gateway)
+
+        ldy COMMON_GATEWAY+(outline_record-outline_gateway)
+        lda OUTLINE_BUFFER+13,y
+        sta COMMON_GATEWAY+(vertical_count-outline_gateway)
+        lda OUTLINE_BUFFER+14,y
+        sta COMMON_GATEWAY+(vertical_row-outline_gateway)
+        lda OUTLINE_BUFFER+10,y
+        sta COMMON_GATEWAY+(vertical_load-outline_gateway)+1
+        sta COMMON_GATEWAY+(vertical_store-outline_gateway)+1
+        lda OUTLINE_BUFFER+11,y
+        sta COMMON_GATEWAY+(vertical_load-outline_gateway)+2
+        sta COMMON_GATEWAY+(vertical_store-outline_gateway)+2
+        lda OUTLINE_BUFFER+12,y
+        sta COMMON_GATEWAY+(vertical_mask-outline_gateway)
+        jsr COMMON_GATEWAY+(draw_vertical-outline_gateway)
+
+        lda COMMON_GATEWAY+(outline_record-outline_gateway)
+        clc
+        adc #$0f
+        sta COMMON_GATEWAY+(outline_record-outline_gateway)
+        dec COMMON_GATEWAY+(outline_left-outline_gateway)
+        beq outline_done
+        jmp COMMON_GATEWAY+(outline_next-outline_gateway)
+outline_done:
+        lda #$00
+        sta MMU_LCR_KERNEL_IO
+        rts
+
+draw_horizontal:
+        ldx COMMON_GATEWAY+(horizontal_count-outline_gateway)
+        cpx #$01
+        bne horizontal_multiple
+        lda COMMON_GATEWAY+(horizontal_first-outline_gateway)
+        and COMMON_GATEWAY+(horizontal_last-outline_gateway)
+        sta COMMON_GATEWAY+(horizontal_mask-outline_gateway)
+        jmp COMMON_GATEWAY+(horizontal_toggle-outline_gateway)
+horizontal_multiple:
+        lda COMMON_GATEWAY+(horizontal_first-outline_gateway)
+        sta COMMON_GATEWAY+(horizontal_mask-outline_gateway)
+        jsr COMMON_GATEWAY+(horizontal_toggle-outline_gateway)
+        jsr COMMON_GATEWAY+(horizontal_advance-outline_gateway)
+        dex
+horizontal_middle:
+        cpx #$01
+        beq horizontal_final
+        lda #$ff
+        sta COMMON_GATEWAY+(horizontal_mask-outline_gateway)
+        jsr COMMON_GATEWAY+(horizontal_toggle-outline_gateway)
+        jsr COMMON_GATEWAY+(horizontal_advance-outline_gateway)
+        dex
+        bne horizontal_middle
+horizontal_final:
+        lda COMMON_GATEWAY+(horizontal_last-outline_gateway)
+        sta COMMON_GATEWAY+(horizontal_mask-outline_gateway)
+horizontal_toggle:
+horizontal_load:
+        lda $ffff
+        eor COMMON_GATEWAY+(horizontal_mask-outline_gateway)
+horizontal_store:
+        sta $ffff
+        rts
+
+horizontal_advance:
+        clc
+        lda COMMON_GATEWAY+(horizontal_load-outline_gateway)+1
+        adc #$08
+        sta COMMON_GATEWAY+(horizontal_load-outline_gateway)+1
+        sta COMMON_GATEWAY+(horizontal_store-outline_gateway)+1
+        bcc horizontal_advance_done
+        inc COMMON_GATEWAY+(horizontal_load-outline_gateway)+2
+        inc COMMON_GATEWAY+(horizontal_store-outline_gateway)+2
+horizontal_advance_done:
+        rts
+
+draw_vertical:
+        ldx COMMON_GATEWAY+(vertical_count-outline_gateway)
+        beq vertical_done
+vertical_next:
+vertical_load:
+        lda $ffff
+        eor COMMON_GATEWAY+(vertical_mask-outline_gateway)
+vertical_store:
+        sta $ffff
+        dex
+        beq vertical_done
+        inc COMMON_GATEWAY+(vertical_row-outline_gateway)
+        lda COMMON_GATEWAY+(vertical_row-outline_gateway)
+        cmp #$08
+        bne vertical_advance_one
+        lda #$00
+        sta COMMON_GATEWAY+(vertical_row-outline_gateway)
+        clc
+        lda COMMON_GATEWAY+(vertical_load-outline_gateway)+1
+        adc #$39
+        sta COMMON_GATEWAY+(vertical_load-outline_gateway)+1
+        sta COMMON_GATEWAY+(vertical_store-outline_gateway)+1
+        lda COMMON_GATEWAY+(vertical_load-outline_gateway)+2
+        adc #$01
+        sta COMMON_GATEWAY+(vertical_load-outline_gateway)+2
+        sta COMMON_GATEWAY+(vertical_store-outline_gateway)+2
+        jmp COMMON_GATEWAY+(vertical_next-outline_gateway)
+vertical_advance_one:
+        inc COMMON_GATEWAY+(vertical_load-outline_gateway)+1
+        inc COMMON_GATEWAY+(vertical_store-outline_gateway)+1
+        bne vertical_next
+        inc COMMON_GATEWAY+(vertical_load-outline_gateway)+2
+        inc COMMON_GATEWAY+(vertical_store-outline_gateway)+2
+        jmp COMMON_GATEWAY+(vertical_next-outline_gateway)
+vertical_done:
+        rts
+
+outline_record:          .byte $00
+outline_left:            .byte $00
+horizontal_count:        .byte $00
+horizontal_first:        .byte $00
+horizontal_last:         .byte $00
+horizontal_mask:         .byte $00
+vertical_count:          .byte $00
+vertical_row:            .byte $00
+vertical_mask:           .byte $00
+outline_gateway_end:
+        .assert outline_gateway_end-outline_gateway > $100, error, "VIC outline gateway unexpectedly fits one page"
+        .assert outline_gateway_end-outline_gateway < $200, error, "VIC outline gateway exceeds common workspace"

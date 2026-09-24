@@ -8,6 +8,7 @@
 #include "udeks/mailbox.h"
 #include "udeks/z80_worker.h"
 #include "udeks/vic_graphics.h"
+#include "udeks/window.h"
 #include "udeks/xclock.h"
 
 #define STATUS_BYTE(offset) \
@@ -27,9 +28,11 @@ struct shell_command {
     command_handler handler;
 };
 
+#pragma bss-name(push, "HIGHBSS")
 static unsigned char command_line[UDEKS_LINE_EDITOR_CAPACITY + 1u];
 static unsigned char argument_offsets[UDEKS_SHELL_MAX_ARGUMENTS];
 static unsigned char *arguments[UDEKS_SHELL_MAX_ARGUMENTS];
+#pragma bss-name(pop)
 
 static void write_text(
     unsigned char descriptor, const unsigned char *text)
@@ -226,6 +229,10 @@ static unsigned char command_xinit(
 
     if (count == 2 && strings_equal(
             arguments[1], (const unsigned char *)"-q")) {
+        if (udeks_xclock_is_running() != 0) {
+            udeks_xclock_stop();
+        }
+        udeks_window_manager_reset();
         result = udeks_vic_graphics_shutdown();
         if (result == UDEKS_VIC_GRAPHICS_OK) {
             write_line(UDEKS_STDOUT,

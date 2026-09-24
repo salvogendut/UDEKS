@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import unittest
+import re
 from pathlib import Path
 
 
@@ -17,7 +18,7 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertLess(console, pointer)
         self.assertLess(pointer, graphics)
         self.assertLess(graphics, keyboard)
-        self.assertIn(".byte $09", table)
+        self.assertIn(".byte $0b", table)
 
         descriptor = (ROOT / "src/services/display/descriptor.s").read_text(
             encoding="utf-8"
@@ -43,8 +44,24 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("lda #$3b", source)
         self.assertIn("VIC common gateway exceeds one-page installer", source)
         self.assertIn("_udeks_vic_bitmap_commit_page", source)
+        self.assertIn("_udeks_vic_bitmap_outline_blit", source)
         self.assertIn("COMMON_BUFFER           = $f900", source)
+        self.assertIn("OUTLINE_BUFFER          = $fa00", source)
+        self.assertIn("OUTLINE_GATEWAY_TAG     = $f7fe", source)
+        self.assertIn("cmp #$a5", source)
         self.assertIn("cmp #$1f", source)
+        self.assertIn("outline_gateway:", source)
+        self.assertIn("draw_horizontal:", source)
+        self.assertIn("draw_vertical:", source)
+        self.assertIn("sta $ffff", source)
+
+        gateway = source.split("outline_gateway:", 1)[1].split(
+            "outline_gateway_end:", 1
+        )[0]
+        bare_jumps = re.findall(
+            r"^\s+jmp\s+(?!COMMON_GATEWAY\+)[A-Za-z_]", gateway, re.MULTILINE
+        )
+        self.assertEqual(bare_jumps, [])
 
     def test_shadow_surface_is_aligned_and_commits_only_dirty_pages(self):
         source = (ROOT / "src/services/display/vic_graphics.c").read_text(
@@ -55,8 +72,32 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("udeks_vic_bitmap_shadow[8192]", source)
         self.assertIn("dirty_pages[pixel_offset >> 8] = 1", source)
         self.assertIn("udeks_vic_bitmap_commit_page(page)", source)
+        self.assertIn("udeks_vic_bitmap_outline_toggle", source)
+        self.assertIn("udeks_vic_bitmap_outline_move", source)
+        self.assertIn("OUTLINE_RECORD_SIZE", source)
+        self.assertIn("UDEKS_VIC_ROW_TABLE_BASE", source)
+        rectangle = source.split("void udeks_vic_bitmap_rectangle", 1)[1].split(
+            "void udeks_vic_bitmap_fill", 1
+        )[0]
+        self.assertIn("last_x = x + width - 1", rectangle)
+        self.assertIn("last_y = y + height - 1", rectangle)
+        self.assertIn("x, last_y, last_x, last_y", rectangle)
+        fill = source.split("void udeks_vic_bitmap_fill", 1)[1].split(
+            "void udeks_vic_bitmap_set_clip", 1
+        )[0]
+        self.assertIn("offset += 8u", fill)
+        self.assertNotIn("for (column", fill)
         self.assertIn("VICSHADOW:", config)
         self.assertIn("align = $100", config)
+
+    def test_display_module_does_not_drive_window_or_application_policy(self):
+        source = (ROOT / "src/services/display/vic_graphics.c").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn('"udeks/window.h"', source)
+        self.assertNotIn('"udeks/xclock.h"', source)
+        self.assertNotIn("udeks_window_manager_poll", source)
+        self.assertNotIn("udeks_xclock_poll", source)
 
     def test_pointer_is_black_centered_sprite_and_shutdown_is_bounded(self):
         source = (ROOT / "src/8502/vic_graphics.s").read_text(encoding="utf-8")

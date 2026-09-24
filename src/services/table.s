@@ -10,6 +10,8 @@
         .import _udeks_console_service_descriptor
         .import _udeks_pointer_service_descriptor
         .import _udeks_vic_graphics_service_descriptor
+        .import _udeks_window_service_descriptor
+        .import _udeks_xclock_service_descriptor
         .import _udeks_keyboard_service_descriptor
         .import _udeks_root_terminal_service_descriptor
         .import _udeks_shell_service_descriptor
@@ -24,8 +26,10 @@ _udeks_service_table:
         .addr _udeks_console_service_descriptor
         .addr _udeks_pointer_service_descriptor
         .addr _udeks_vic_graphics_service_descriptor
+        .addr _udeks_window_service_descriptor
         .addr _udeks_keyboard_service_descriptor
         .addr _udeks_root_terminal_service_descriptor
         .addr _udeks_shell_service_descriptor
+        .addr _udeks_xclock_service_descriptor
 _udeks_service_count:
-        .byte $09
+        .byte $0b

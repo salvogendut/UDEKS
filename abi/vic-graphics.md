@@ -28,6 +28,20 @@ uses a common-RAM staging page to transfer only those pages into physical bank
 1. The partial final bitmap page ends at `$7F3F` and cannot overwrite the
 reserved sprite. This is the first C display surface used by `xclock`.
 
+The module additionally exposes a dedicated XOR-outline operation for the
+window service. C publishes compact precomputed geometry records in common
+RAM. A relocated 8502 assembly blitter switches to physical bank 1 once per
+motion, removes the previous outline and draws the new outline directly in
+VIC bitmap RAM, then restores bank 0. These transient pixels deliberately do
+not modify the retained shadow; the window service performs one ordinary
+repaint after release. The relocated blitter remains cached for consecutive
+drag updates; dirty-page commits invalidate it because they reuse the common
+gateway workspace.
+
+The display service does not drive compositor or application policy. The
+window manager and the temporary `xclock` polling adapter have independent
+service descriptors and lifecycle entries.
+
 The initial pointer is a compact, unexpanded, high-resolution foreground
 sprite, approximately half the original X design, at the center of the visible
 area. The [pointer-input service](pointer-input.md) moves it with a 1351 mouse

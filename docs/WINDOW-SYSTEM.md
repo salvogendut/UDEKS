@@ -45,10 +45,13 @@ meaningful.
 
 ### 3. Window registry and compositor
 
-- Define bounded window descriptors with handles, geometry, visibility,
+- [x] Define bounded window descriptors with handles, geometry, visibility,
   surface type, z-order, owner, and damage.
-- Add create, destroy, move, resize, show, hide, raise, and lower operations.
-- Clip every client operation to its window and screen bounds.
+- [x] Add the initial create, destroy, managed repaint, and outline-move
+  operations; resize, show, hide, raise, and lower remain pending.
+- [x] Clip the first bitmap client's operations to its content bounds.
+- [x] Hide client content during a drag, move only an assembly-blitted XOR outline, and
+  repaint once on release.
 - Recompose damaged regions back-to-front without save-under buffers.
 - Treat display mode and target controller as explicit window/workspace
   properties; do not imply text/bitmap overlay on one VDC screen.
@@ -67,8 +70,8 @@ meaningful.
 
 - [x] Implement a complete polled C128 keyboard event source and bounded FIFO.
 - [x] Route normalized key events to the provisionally focused root terminal.
-- [ ] Generalize event routing to the focused window after the window registry
-  exists.
+- [x] Route normalized pointer motion and buttons to the focused graphical
+  window manager; keyboard focus generalization remains pending.
 - Add focus traversal and explicit focus changes through the window manager.
 - [x] Add one normalized pointer source backed by a 1351 mouse on control port
   1 and a digital joystick on control port 2.

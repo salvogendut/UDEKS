@@ -17,7 +17,7 @@ class ClockSourceTests(unittest.TestCase):
         self.assertNotIn("_udeks_clock_service_descriptor", table)
         self.assertNotIn("_udeks_framebuffer_service_descriptor", table)
         self.assertIn("_udeks_time_service_descriptor", table)
-        self.assertIn(".byte $09", table)
+        self.assertIn(".byte $0b", table)
 
     def test_transition_blanks_vic_and_selects_fast_clock(self):
         source = (ROOT / "src/8502/clock.s").read_text(encoding="utf-8")

@@ -15,12 +15,14 @@ The visual and lifecycle reference is GEOBENCH's analog Clock application:
 
 The first UDEKS edition uses a fixed-size window while the general window
 manager is still being established. Its geometry is derived from a 60-entry
-fixed-point sine/cosine table, and every line is clipped to the screen. It uses
-display, pointer, and time service APIs rather than direct VIC-IIe, CIA, or SID
-access.
+fixed-point sine/cosine table, and every line is clipped to its managed client
+area. It uses window, display, and time service APIs rather than direct pointer,
+VIC-IIe, CIA, or SID access.
 
-The current window is 144x154 pixels and can be dragged by its title bar with
-the port-1 mouse button or port-2 joystick fire. Its close box, `xclock -q`, or
+The current compact managed window is 72x77 pixels and can be dragged by its title
+bar with the port-1 mouse button or port-2 joystick fire. During a drag its
+contents disappear and only an 8502 assembly-blitted outline follows the pointer;
+one complete repaint occurs on release. Its close box, `xclock -q`, or
 VDC-console `Ctrl+C` terminates it. `xclock` starts VIC graphics automatically
 when needed. The shell remains responsive on the independent VDC display.
 
@@ -38,12 +40,17 @@ bounded interactive update, so handing it to the Z80 would cost more than it
 saves. `xwave` remains the first application intended to demonstrate measured
 Z80 computation with 8502 plotting.
 
+For the static bootstrap image, `xclock` has its own class-10 lifecycle adapter
+so the service registry can poll it independently. This is not a claim that an
+application belongs in the microkernel: the task loader will replace the
+adapter once application scheduling exists.
+
 ## Delivery gates
 
 - [x] Add bounded VIC-IIe pixel, line, rectangle, and fill primitives.
 - [x] Add a CIA TOD service suitable for clock applications.
 - [x] Create, move, and close one fixed-size graphical window.
-- [ ] Route normalized pointer motion and buttons to the window manager.
+- [x] Route normalized pointer motion and buttons to the window manager.
 - [x] Draw the face, hour/minute hands, and digital readout.
 - [x] Add bounded incremental hand repaint.
 - [ ] Add an optional seconds hand and per-second readout.

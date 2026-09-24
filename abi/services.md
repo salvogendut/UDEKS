@@ -28,10 +28,11 @@ The initial flags are:
 
 Initial service classes are console (`1`), hardware capability discovery (`2`),
 display (`3`), machine policy/time (`4`), input (`5`), terminal policy (`6`), native
-shell (`7`), and bounded Z80 worker (`8`). The default image starts capability
+shell (`7`), bounded Z80 worker (`8`), window manager (`9`), and temporary
+static-application adapter (`10`). The default image starts capability
 discovery, CIA time, the Z80 worker, VDC text console, pointer input, the
-VIC-IIe graphics service, keyboard, root-terminal policy, and shell services
-in that order. It
+VIC-IIe graphics service, window manager, keyboard, root-terminal policy,
+shell, and the temporary `xclock` application adapter in that order. It
 remains at 1 MHz so the VIC-IIe stays available.
 The machine-clock and VDC framebuffer descriptors remain optional modules:
 2 MHz requires an explicit VIC-blanking policy, and VDC bitmap mode requires
@@ -59,6 +60,12 @@ addresses are linker-resolved without relying on compiler packing. The C
 registry validates every descriptor before invoking it. Future disk-loaded
 modules must submit the same bytes to the same validation path before being
 registered.
+
+Static linking during bring-up does not merge module responsibilities. The
+VIC-IIe display module owns hardware state and its 8502 assembly transport;
+the window module owns composition and pointer policy; `xclock` is an
+application. The application adapter exists only to obtain a cooperative poll
+until the task loader and scheduler replace it.
 
 The registry publishes this 24-byte `SREG` diagnostic record at `$F090`:
 

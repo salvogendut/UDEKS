@@ -15,6 +15,15 @@
 #define UDEKS_IO_LIMIT                0xE000u
 #define UDEKS_KERNEL_HIGH_BASE        0xE000u
 #define UDEKS_KERNEL_HIGH_LIMIT       0xF000u
+#define UDEKS_VIC_ROW_TABLE_BASE      0xE000u
+#define UDEKS_VIC_ROW_TABLE_LIMIT     0xE190u
+#define UDEKS_VIC_DIRTY_MAP_BASE      0xE190u
+#define UDEKS_VIC_DIRTY_MAP_LIMIT     0xE1B0u
+#define UDEKS_VIC_CLIP_STATE_BASE     0xE1B0u
+#define UDEKS_VIC_CLIP_STATE_LIMIT    0xE1B8u
+#define UDEKS_MODULE_HIGH_BSS_BASE    0xE1B8u
+#define UDEKS_MODULE_HIGH_BSS_LIMIT   0xE300u
+#define UDEKS_C_STACK_BOTTOM          0xE300u
 #define UDEKS_C_STACK_TOP             0xEFF0u
 
 /* Bank-1 resident worker and the initial VIC-visible 16 KiB reservation. */

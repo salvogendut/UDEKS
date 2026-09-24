@@ -15,7 +15,7 @@ def valid_record() -> bytearray:
     block = bytearray(32)
     block[:4] = b"XCLK"
     block[4:8] = bytes((1, 3, 0, 7))
-    block[8:12] = bytes((88, 22, 144, 154))
+    block[8:12] = bytes((124, 61, 72, 77))
     block[12:15] = bytes((13, 45, 27))
     block[16:18] = (1).to_bytes(2, "little")
     block[18:20] = (4).to_bytes(2, "little")
@@ -26,7 +26,7 @@ class XclockDecodeTests(unittest.TestCase):
     def test_accepts_running_clock(self):
         result = parse_result(valid_record())
         self.assertEqual(result["state"], 3)
-        self.assertEqual(result["width"], 144)
+        self.assertEqual(result["width"], 72)
         self.assertEqual(result["ticks"], 4)
 
     def test_rejects_unrendered_running_clock(self):

@@ -69,6 +69,27 @@ class MemoryMapTests(unittest.TestCase):
 
     def test_initial_c_stack_uses_reserved_kernel_high_ram(self):
         memory = self.memory
+        self.assertEqual(
+            memory["UDEKS_VIC_ROW_TABLE_BASE"],
+            memory["UDEKS_KERNEL_HIGH_BASE"],
+        )
+        self.assertEqual(
+            memory["UDEKS_VIC_ROW_TABLE_LIMIT"],
+            memory["UDEKS_VIC_DIRTY_MAP_BASE"],
+        )
+        self.assertEqual(
+            memory["UDEKS_VIC_DIRTY_MAP_LIMIT"],
+            memory["UDEKS_VIC_CLIP_STATE_BASE"],
+        )
+        self.assertEqual(
+            memory["UDEKS_VIC_CLIP_STATE_LIMIT"],
+            memory["UDEKS_MODULE_HIGH_BSS_BASE"],
+        )
+        self.assertEqual(
+            memory["UDEKS_MODULE_HIGH_BSS_LIMIT"],
+            memory["UDEKS_C_STACK_BOTTOM"],
+        )
+        self.assertLess(memory["UDEKS_C_STACK_BOTTOM"], memory["UDEKS_C_STACK_TOP"])
         self.assertGreaterEqual(
             memory["UDEKS_C_STACK_TOP"], memory["UDEKS_KERNEL_HIGH_BASE"]
         )
@@ -97,6 +118,18 @@ class MemoryMapTests(unittest.TestCase):
         size = int(match.group(2), 16)
         self.assertEqual(start, self.memory["UDEKS_KERNEL_BASE"])
         self.assertEqual(start + size, self.memory["UDEKS_KERNEL_LIMIT"])
+        high = re.search(
+            r"HIGHMEM:\s+start\s*=\s*\$([0-9A-Fa-f]+),\s*"
+            r"size\s*=\s*\$([0-9A-Fa-f]+)",
+            linker,
+        )
+        self.assertIsNotNone(high)
+        high_start = int(high.group(1), 16)
+        high_size = int(high.group(2), 16)
+        self.assertEqual(high_start, self.memory["UDEKS_MODULE_HIGH_BSS_BASE"])
+        self.assertEqual(
+            high_start + high_size, self.memory["UDEKS_MODULE_HIGH_BSS_LIMIT"]
+        )
 
 
 if __name__ == "__main__":

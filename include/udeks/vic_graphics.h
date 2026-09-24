@@ -36,6 +36,15 @@ void udeks_vic_bitmap_rectangle(
     int x, int y, int width, int height, unsigned char color);
 void udeks_vic_bitmap_fill(
     int x, int y, int width, int height, unsigned char color);
+void udeks_vic_bitmap_set_clip(int x, int y, int width, int height);
+void udeks_vic_bitmap_reset_clip(void);
+void udeks_vic_bitmap_outline_toggle(
+    unsigned int x, unsigned char y,
+    unsigned int width, unsigned char height);
+void udeks_vic_bitmap_outline_move(
+    unsigned int old_x, unsigned char old_y,
+    unsigned int new_x, unsigned char new_y,
+    unsigned int width, unsigned char height);
 void udeks_vic_bitmap_commit(void);
 
 #endif

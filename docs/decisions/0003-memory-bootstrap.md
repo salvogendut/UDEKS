@@ -53,12 +53,19 @@ The initial physical allocation is:
 | `$4000-$7FFF` | 8502 kernel image | Reserved 16 KiB VIC-visible window |
 | `$8000-$CFFF` | 8502 kernel image | Application, worker, and transfer data |
 | `$D000-$DFFF` | I/O normally; bank-0 RAM in flat profile | I/O or bank-1 RAM by profile |
-| `$E000-$EFFF` | Reserved kernel high memory/stacks | Worker data and stack |
+| `$E000-$E18F` | VIC-IIe module scanline-offset table | Worker data |
+| `$E190-$E1AF` | VIC-IIe module dirty-page map | Worker data |
+| `$E1B0-$E1B7` | VIC-IIe module clip state | Worker data |
+| `$E1B8-$E2FF` | Statically linked module-private high BSS | Worker data |
+| `$E300-$EFFF` | 8502 C software stack | Worker data and stack |
 | `$F000-$FFFF` | 4 KiB common RAM | Bank-0 common RAM replaces bank 1 |
 
 The bank-0 kernel linker range is `$2000-$CFFF`; it cannot grow into I/O or
-common RAM. `$E000-$EFFF` remains separately reserved until stack, allocator,
-and ROM-removal work assigns it. The initial Z80 stack top is `$EFF0`.
+common RAM. The first high-memory assignment gives `$E000-$E1B7` to the
+VIC-IIe module's scanline table, dirty-page map, and clip state, and reserves
+`$E1B8-$E2FF` for bounded module-private BSS, and `$E300-$EFF0` for the
+downward-growing 8502 C software stack. The initial Z80
+stack top is `$EFF0` in its non-common bank view.
 
 The common area is partitioned conservatively:
 

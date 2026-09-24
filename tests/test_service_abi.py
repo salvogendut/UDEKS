@@ -34,6 +34,8 @@ class ServiceAbiTests(unittest.TestCase):
         self.assertNotIn("_udeks_clock_service_descriptor", table)
         self.assertIn("_udeks_clock_service_descriptor", optional_clock)
         self.assertIn("_udeks_console_service_descriptor", table)
+        self.assertIn("_udeks_window_service_descriptor", table)
+        self.assertIn("_udeks_xclock_service_descriptor", table)
         self.assertIn("_udeks_service_count", table)
 
 

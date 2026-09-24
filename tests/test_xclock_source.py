@@ -11,8 +11,8 @@ class XclockSourceTests(unittest.TestCase):
     def test_clock_uses_service_apis_and_fixed_point_geometry(self):
         source = (ROOT / "src/apps/xclock.c").read_text(encoding="utf-8")
         self.assertIn('#include "udeks/time.h"', source)
-        self.assertIn('#include "udeks/pointer.h"', source)
         self.assertIn('#include "udeks/vic_graphics.h"', source)
+        self.assertIn('#include "udeks/window.h"', source)
         self.assertIn("sin64[60]", source)
         self.assertIn("cos64[60]", source)
         self.assertIn("draw_face()", source)
@@ -20,11 +20,15 @@ class XclockSourceTests(unittest.TestCase):
         self.assertIn("draw_digital(", source)
         self.assertNotIn("z80", source.lower())
 
-    def test_window_supports_drag_close_and_incremental_ticks(self):
+    def test_clock_is_a_managed_window_with_incremental_ticks(self):
         source = (ROOT / "src/apps/xclock.c").read_text(encoding="utf-8")
-        self.assertIn("dragging = 1", source)
-        self.assertIn("udeks_pointer_buttons()", source)
-        self.assertIn("udeks_xclock_stop()", source)
+        self.assertIn("udeks_window_create(", source)
+        self.assertIn("UDEKS_WINDOW_FLAG_MOVABLE", source)
+        self.assertIn("UDEKS_WINDOW_FLAG_CLOSABLE", source)
+        self.assertIn("paint_clock, close_clock", source)
+        self.assertIn("udeks_window_begin_paint(window_handle)", source)
+        self.assertNotIn("udeks_pointer_buttons()", source)
+        self.assertNotIn("draw_frame", source)
         self.assertIn("previous_second", source)
         self.assertIn("UDEKS_VIC_COLOR_YELLOW", source)
         self.assertIn("udeks_vic_bitmap_commit()", source)

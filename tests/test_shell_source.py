@@ -13,7 +13,7 @@ class ShellSourceTests(unittest.TestCase):
         terminal = table.index(".addr _udeks_root_terminal_service_descriptor")
         shell = table.index(".addr _udeks_shell_service_descriptor")
         self.assertLess(terminal, shell)
-        self.assertIn(".byte $09", table)
+        self.assertIn(".byte $0b", table)
 
     def test_shell_uses_registry_dispatch_and_rearms_terminal_prompt(self):
         source = (ROOT / "src/services/shell/shell.c").read_text(encoding="utf-8")

@@ -195,6 +195,11 @@ $(BUILD_8502)/root_console.s: src/services/window/root_console.c \
 		include/udeks/root_console.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/window_manager.s: src/services/window/window_manager.c \
+		include/udeks/pointer.h include/udeks/vic_graphics.h \
+		include/udeks/window.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/boot_console.s: src/services/window/boot_console.c \
 		include/udeks/boot_console.h include/udeks/capability.h \
 		include/udeks/root_console.h include/udeks/z80_worker.h | $(BUILD_8502)
@@ -241,7 +246,7 @@ $(BUILD_8502)/shell.s: src/services/shell/shell.c \
 		include/udeks/service.h include/udeks/shell.h \
 		include/udeks/stream.h include/udeks/mailbox.h \
 		include/udeks/z80_worker.h include/udeks/vic_graphics.h \
-		include/udeks/xclock.h | $(BUILD_8502)
+		include/udeks/window.h include/udeks/xclock.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/z80_worker.s: src/services/engine/z80_worker.c \
@@ -250,13 +255,13 @@ $(BUILD_8502)/z80_worker.s: src/services/engine/z80_worker.c \
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/vic_graphics.s: src/services/display/vic_graphics.c \
-		include/udeks/pointer.h include/udeks/vic_graphics.h \
-		include/udeks/xclock.h | $(BUILD_8502)
+		include/udeks/memory.h include/udeks/pointer.h \
+		include/udeks/vic_graphics.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
-$(BUILD_8502)/xclock.s: src/apps/xclock.c include/udeks/pointer.h \
+$(BUILD_8502)/xclock.s: src/apps/xclock.c \
 		include/udeks/time.h include/udeks/vic_graphics.h \
-		include/udeks/xclock.h | $(BUILD_8502)
+		include/udeks/window.h include/udeks/xclock.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/framebuffer_font.s: src/services/framebuffer/font.c \
@@ -278,6 +283,9 @@ $(BUILD_8502)/vdc_framebuffer.o: $(BUILD_8502)/vdc_framebuffer.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/root_console.o: $(BUILD_8502)/root_console.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/window_manager.o: $(BUILD_8502)/window_manager.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/boot_console.o: $(BUILD_8502)/boot_console.s | $(BUILD_8502)
@@ -373,6 +381,12 @@ $(BUILD_8502)/z80_worker_descriptor.o: src/services/engine/descriptor.s | $(BUIL
 $(BUILD_8502)/vic_graphics_descriptor.o: src/services/display/descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/window_descriptor.o: src/services/window/descriptor.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/xclock_descriptor.o: src/apps/xclock_descriptor.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/vdc_splash.o: src/assets/vdc_splash.s $(VDC_SPLASH_BIN) \
 		$(VDC_WORDMARK_BIN) | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
@@ -425,9 +439,11 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/shell_descriptor.o \
 		$(BUILD_8502)/z80_worker_descriptor.o \
 		$(BUILD_8502)/vic_graphics_descriptor.o \
+		$(BUILD_8502)/window_descriptor.o \
+		$(BUILD_8502)/xclock_descriptor.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/time.o \
 		$(BUILD_8502)/vdc_console.o \
-		$(BUILD_8502)/root_console.o \
+		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o \
 		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/joystick.o $(BUILD_8502)/mouse1351.o \
 		$(BUILD_8502)/pointer.o \
@@ -457,9 +473,11 @@ $(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/shell_descriptor.o \
 		$(BUILD_8502)/z80_worker_descriptor.o \
 		$(BUILD_8502)/vic_graphics_descriptor.o \
+		$(BUILD_8502)/window_descriptor.o \
+		$(BUILD_8502)/xclock_descriptor.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/time.o \
 		$(BUILD_8502)/vdc_console.o \
-		$(BUILD_8502)/root_console.o \
+		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o \
 		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/joystick.o $(BUILD_8502)/mouse1351.o \
 		$(BUILD_8502)/pointer.o \
@@ -842,7 +860,7 @@ check:
 		tools/z80_worker_decode.py \
 		tools/vic_graphics_decode.py \
 		tools/pointer_decode.py \
-		tools/time_decode.py tools/xclock_decode.py \
+		tools/time_decode.py tools/window_decode.py tools/xclock_decode.py \
 		tools/build_d71.py \
 		tools/snapshot_extract.py \
 		tools/vice_capture.py

@@ -157,8 +157,14 @@ privately.
 kernel, bank 1 for the Z80 worker and initial task/data space, and bank-0
 `$F000-$FFFF` as 4 KiB of top common RAM. The ordinary kernel links at
 `$2000-$CFFF`; `$D000-$DFFF` remains the I/O aperture, and `$E000-$EFFF` is
-reserved until stack and allocator work assigns it. Bank 1 initially reserves
+the assigned module-workspace and C-stack region. Bank 1 initially reserves
 `$2000-$3FFF` for Z80 code and `$4000-$7FFF` as a VIC-visible window.
+
+The VIC-IIe module currently owns `$E000-$E18F` for its 200-entry scanline
+offset table, `$E190-$E1AF` for its dirty-page map, and `$E1B0-$E1B7` for clip
+state. `$E1B8-$E2FF` holds linker-bounded module-private high BSS; the C
+software stack is constrained to `$E300-$EFF0`. This is an explicit module
+workspace assignment, not expansion of the ordinary resident kernel image.
 
 The final map must define and validate:
 
