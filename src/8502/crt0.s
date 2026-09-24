@@ -8,6 +8,7 @@
         .export _start
         .import _kernel_main
         .import __BSS_RUN__, __BSS_SIZE__
+        .importzp sp
 
         .segment "ZEROPAGE"
 bss_ptr:
@@ -45,6 +46,14 @@ _start:
         sta MMU_PAGE1_BANK
         lda #$01
         sta MMU_PAGE1_PAGE
+
+        ; cc65's parameter/local stack lives in the reserved bank-0 high-RAM
+        ; window and grows downward. This makes ordinary C service code legal;
+        ; the hardware stack remains on physical bank-0 page one.
+        lda #<UDEKS_C_STACK_TOP
+        sta sp
+        lda #>UDEKS_C_STACK_TOP
+        sta sp+1
 
         ; Publish a compact readback record in common RAM. Emulator and
         ; hardware smoke tests use this before any console exists.

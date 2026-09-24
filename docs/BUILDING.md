@@ -54,6 +54,12 @@ D71 implementing the stage-0/stage-1 path in
 [ADR 0003](decisions/0003-memory-bootstrap.md). The direct-load PRG remains
 useful for focused bring-up tests.
 
+The resident 8502 image links the small subset of cc65's `none` runtime needed
+by its C services. Startup initializes cc65's downward-growing software stack
+at `$EFF0`; the 6502 hardware stack remains on physical bank-0 page one. The
+first service is the [VDC console](VDC-CONSOLE.md), with bounded assembly port
+access and C display policy.
+
 `tools/ihx_to_bin.py` performs strict Intel HEX checksum validation and rejects
 addresses outside the declared output window. This avoids silently creating an
 unexpectedly large or truncated Z80 payload.

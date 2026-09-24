@@ -20,6 +20,7 @@ UDEKS_MMU_KERNEL_FLAT      = $3f
 UDEKS_MMU_WORKER_IO        = $7e
 UDEKS_MMU_WORKER_FLAT      = $7f
 UDEKS_MMU_RCR_TOP_4K       = $09
+UDEKS_C_STACK_TOP          = $eff0
 
 BOOT_STATUS                = $f040
 BOOT_STATUS_STATE          = BOOT_STATUS + 5

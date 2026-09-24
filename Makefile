@@ -139,18 +139,31 @@ $(BUILD_8502) $(BUILD_Z80) $(BUILD_BENCH_8502) $(BUILD_BENCH_Z80) \
 		$(BUILD_MEMORY_MAP) $(BUILD_BOOT):
 	mkdir -p $@
 
-$(BUILD_8502)/kernel.s: src/8502/kernel.c include/udeks/mailbox.h \
-		include/udeks/memory.h | $(BUILD_8502)
+$(BUILD_8502)/kernel.s: src/8502/kernel.c include/udeks/console.h \
+		include/udeks/mailbox.h include/udeks/memory.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/vdc_console.s: src/services/console/vdc_console.c \
+		include/udeks/compiler.h include/udeks/console.h include/udeks/vdc.h \
+		| $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/kernel.o: $(BUILD_8502)/kernel.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/vdc_console.o: $(BUILD_8502)/vdc_console.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/crt0.o: src/8502/crt0.s src/8502/mmu.inc | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/kernel.o cfg/8502-bootstrap.cfg
-	$(LD65) $(LDFLAGS_8502) -o $@ $(BUILD_8502)/crt0.o $(BUILD_8502)/kernel.o
+$(BUILD_8502)/vdc.o: src/8502/vdc.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
+		$(BUILD_8502)/kernel.o $(BUILD_8502)/vdc_console.o \
+		cfg/8502-bootstrap.cfg
+	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $@ $(filter %.o,$^)
 
 $(KERNEL_PRG): $(KERNEL_BIN) tools/bin_to_prg.py
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x2000 $< $@
@@ -500,7 +513,7 @@ check:
 		tools/kernel_decode.py tools/handoff_decode.py \
 		tools/offload_decode.py tools/boot_status_decode.py \
 		tools/memory_map_decode.py tools/boot_chain_decode.py \
-		tools/build_d71.py \
+		tools/vdc_console_decode.py tools/build_d71.py \
 		tools/snapshot_extract.py \
 		tools/vice_capture.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
@@ -516,6 +529,8 @@ check:
 	cd bench/results/2026-09-24-memory-map-profiles/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-native-boot-r1 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-native-boot/raw && sha256sum -c SHA256SUMS
+	cd bench/artifacts/2026-09-24-vdc-console-r1 && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-24-vdc-console/raw && sha256sum -c SHA256SUMS
 
 doctor:
 	@missing=0; \

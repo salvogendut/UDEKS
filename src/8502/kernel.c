@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
+#include "udeks/console.h"
 #include "udeks/mailbox.h"
 #include "udeks/memory.h"
 
@@ -21,8 +22,9 @@ static void mailbox_initialize(void)
 void kernel_main(void)
 {
     mailbox_initialize();
+    (void)udeks_console_start();
 
-    /* Bring-up halt. Scheduler and interrupt enablement come in Phase 2. */
+    /* Bring-up halt. Service scheduling and interrupt enablement come next. */
     for (;;) {
     }
 }

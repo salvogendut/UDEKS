@@ -71,6 +71,7 @@ include/udeks/        Public C headers shared across CPU builds
 mk/                   Make configuration
 src/8502/             8502 C and ca65 sources
 src/boot/             Native C128 stage-0/stage-1 bootstrap
+src/services/         Predominantly C system-service modules
 src/z80/              Z80 C, SDAS, and RASM sources
 tests/                Host-side tests and future emulator tests
 tools/                Deterministic build utilities
@@ -96,6 +97,8 @@ the display-memory and physical-hardware gates in ADR 0003 pass.
 - [VICE 3.10 r2 benchmark results](bench/results/vice-3.10-2026-09-24-r2/README.md)
 - [Native memory-map direct-load smoke test](bench/results/2026-09-24-memory-map-smoke/README.md)
 - [Native D71 boot results](bench/results/2026-09-24-native-boot/README.md)
+- [VDC console service](docs/VDC-CONSOLE.md)
+- [VDC console qualification](bench/results/2026-09-24-vdc-console/README.md)
 - [Corrected preserved benchmark PRGs for VICE and hardware](bench/artifacts/2026-09-24-r2/README.md)
 - [Building UDEKS](docs/BUILDING.md)
 - [Toolchain decision](docs/decisions/0001-toolchain.md)

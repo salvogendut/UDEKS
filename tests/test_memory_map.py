@@ -67,6 +67,13 @@ class MemoryMapTests(unittest.TestCase):
         self.assertEqual(memory["UDEKS_VIC_WINDOW_LIMIT"] - memory["UDEKS_VIC_WINDOW_BASE"], 0x4000)
         self.assertLess(memory["UDEKS_Z80_STACK_TOP"], memory["UDEKS_COMMON_BASE"])
 
+    def test_initial_c_stack_uses_reserved_kernel_high_ram(self):
+        memory = self.memory
+        self.assertGreaterEqual(
+            memory["UDEKS_C_STACK_TOP"], memory["UDEKS_KERNEL_HIGH_BASE"]
+        )
+        self.assertLess(memory["UDEKS_C_STACK_TOP"], memory["UDEKS_KERNEL_HIGH_LIMIT"])
+
     def test_assembly_mmu_profiles_match_c_contract(self):
         assembly = asm_defines(ROOT / "src/8502/mmu.inc")
         for name in (

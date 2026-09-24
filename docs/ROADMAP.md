@@ -68,7 +68,8 @@ a material contradiction.
   page zero/page one in VICE and `1986`.
 - [x] Implement and validate native D71 stage 0 and stage 1 in VICE and `1986`.
 - [ ] Accept ADR 0003 after its display-memory and physical-hardware gates pass.
-- [ ] Bring up a polled VDC text console.
+- [x] Bring up a polled VDC text console as a modular C service over bounded
+  assembly transport, qualified in VICE and `1986`.
 - [ ] Add a panic screen and emulator-visible diagnostic codes.
 - [ ] Detect PAL/NTSC, model, VDC RAM size, and optional memory expansions.
 - [x] Produce the first bootable D71 image.
@@ -84,6 +85,8 @@ a material contradiction.
 - [ ] Expose the qualified MMU-switch primitive through the kernel API.
 - [ ] Implement IRQ/NMI entry, CIA tick, and monotonic time.
 - [ ] Define kernel, task, and interrupt stack bounds with canaries.
+- [x] Establish and initialize the first cc65 software stack at `$EFF0` for C
+  service execution; task-specific stacks and canaries remain pending.
 - [ ] Implement bank-aware allocators and buffer ownership.
 - [ ] Verify VIC-visible and VDC-transfer buffers on PAL and NTSC.
 

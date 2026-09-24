@@ -15,6 +15,7 @@
 #define UDEKS_IO_LIMIT                0xE000u
 #define UDEKS_KERNEL_HIGH_BASE        0xE000u
 #define UDEKS_KERNEL_HIGH_LIMIT       0xF000u
+#define UDEKS_C_STACK_TOP             0xEFF0u
 
 /* Bank-1 resident worker and the initial VIC-visible 16 KiB reservation. */
 #define UDEKS_Z80_CODE_BASE           0x2000u
