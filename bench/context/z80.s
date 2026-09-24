@@ -330,6 +330,9 @@ timer_start:
         ret
 
 timer_elapsed:
+        xor     a
+        ld      bc, #0xdc0f
+        out     (c), a
         ld      bc, #0xdc06
         in      a, (c)
         cpl
@@ -338,9 +341,6 @@ timer_elapsed:
         in      a, (c)
         cpl
         ld      d, a
-        xor     a
-        ld      bc, #0xdc0f
-        out     (c), a
         ld      bc, #0xdc0d
         in      a, (c)
         and     #0x02

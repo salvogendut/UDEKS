@@ -21,7 +21,8 @@ Each handler also records 32 raw latency samples. A sample is the number of
 one-megahertz system ticks between Timer A reloading at underflow and the first
 timestamp after the handler has preserved its admitted register set. This is
 therefore an executive-relevant entry-plus-prologue measurement, not the bare
-CPU interrupt-accept cycle count.
+CPU interrupt-accept cycle count. The running CIA counter is sampled with a
+stable high/low/high sequence so a low-byte rollover cannot tear the value.
 
 ```sh
 make bench-irq
@@ -32,5 +33,5 @@ The 8502 PRG loads at `$2800` and starts with `SYS 10240`. The Z80 PRG contains
 an 8502 launcher at `$27D0` and starts with `SYS 10192`.
 
 The decoder reports the raw sample distribution and its minimum, median, and
-maximum. Emulator results qualify the harness; VICE and real hardware remain
-required before the figures influence ADR 0002.
+maximum. VICE 3.10 has qualified the corrected r2 images; real hardware remains
+required before the figures can finalize ADR 0002.

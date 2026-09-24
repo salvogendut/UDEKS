@@ -64,12 +64,20 @@ code and must therefore be recorded externally.
 
 ## VICE and physical C128 capture
 
-Use the archived PRG under `bench/artifacts/2026-09-24/` so a comparison runs
-the exact tested bytes. In VICE, load and run the PRG in C128 mode with stock
-Z80 timing, then save `$F400-$F59F` as a 416-byte binary block or take a
-snapshot from which that bank-zero range can be extracted. The decoder accepts
-a bare block with no offset option, a 64 KiB memory image, or a `1986` VSF.
-VICE snapshot-module support will be added when the independent run is made.
+Use the corrected archived PRG under `bench/artifacts/2026-09-24-r2/` so a
+comparison runs the exact qualified bytes. The VICE 3.10 runner selects stock
+Z80 timing and captures `$F400-$F59F` directly:
+
+```sh
+python3 tools/vice_capture.py \
+  bench/artifacts/2026-09-24-r2/offload-dual.prg /tmp/offload.bin \
+  --autostart --fast --entry 0x27d0 \
+  --result-address 0xf400 --result-size 416 --state-offset 5
+python3 tools/offload_decode.py /tmp/offload.bin
+```
+
+Omit `--fast` for the 1 MHz run. The decoder also accepts a 64 KiB memory image
+or a `1986` VSF.
 
 On real hardware, run the same PRG from disk or SD storage, wait for the green
 border, and capture exactly `$F400-$F59F` with a monitor cartridge, debugger,

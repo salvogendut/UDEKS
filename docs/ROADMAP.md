@@ -12,8 +12,9 @@ assigned until the bring-up measurements expose the true hardware costs.
 - [x] Draft the mailbox ABI and architecture plan.
 - [x] Install cc65 in `my-distrobox` and validate the initial 8502 link.
 - [ ] Pin the release toolchain independently of distribution package updates.
-- [ ] Install a VICE C128 build and `c1541` as the independent oracle/tooling.
-- [ ] Record exact tool commits and artifact checksums.
+- [x] Install VICE 3.10 C128 and `c1541` via Flatpak as the independent
+  oracle/tooling.
+- [x] Record exact emulator/tool versions and artifact/result checksums.
 
 **Exit gate:** a fresh reference container can build byte-identical 8502 and Z80
 scaffold images and run `make check`.
@@ -35,10 +36,15 @@ scaffold images and run `make check`.
   both directions from 16 bytes through 2 KiB in `1986`.
 - [x] Preserve the exact result-set PRGs and hashes for later VICE and physical
   C128 runs.
+- [x] Run the corrected r2 suite in VICE 3.10 and preserve all 19 canonical
+  result blocks plus focused repeats.
+- [ ] Rerun the corrected r2 suite in `1986`; r1 results are no longer directly
+  comparable after the timer-read qualification fix.
 - [ ] Measure compiled-C and handwritten-assembly workloads separately.
 - [ ] Broaden memory-access and device-I/O coverage beyond the initial slices.
 - [ ] Exercise VDC-only, VIC-active, and dual-display conditions on PAL and NTSC.
-- [ ] Cross-check `1986` and VICE results against at least one real C128.
+- [ ] Cross-check corrected `1986` and VICE results against at least one real
+  C128.
 - [ ] Publish raw results, tool versions, test binaries, and the scoring rationale.
 - [ ] Accept ADR 0002 and update the permanent execution and memory plans.
 

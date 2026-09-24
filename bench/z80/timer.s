@@ -23,6 +23,9 @@ _bench_timer_start::
         ret
 
 _bench_timer_elapsed::
+        xor     a
+        ld      bc, #0xdc0f
+        out     (c), a
         ld      bc, #0xdc06
         in      a, (c)
         cpl

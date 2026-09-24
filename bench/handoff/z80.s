@@ -264,6 +264,9 @@ timer_start:
 
 ; Return elapsed ticks in DE. Carry set means timer underflow.
 timer_elapsed:
+        xor     a
+        ld      bc, #CIA1_CRB
+        out     (c), a
         ld      bc, #CIA1_TB_LO
         in      a, (c)
         cpl

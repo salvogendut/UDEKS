@@ -95,6 +95,8 @@ complete cross-CPU copy, checksum, and transform requests from 16 bytes through
 2 KiB, deriving the first profitable size in each direction.
 
 Exact PRGs used for published result sets are retained under [`artifacts/`](artifacts/).
-Each dated bundle contains hashes, entry commands, result ranges, and decoder
-mapping for later VICE and physical-hardware runs. Generated files in `build/`
+Each dated/revisioned bundle contains hashes, entry commands, result ranges,
+and decoder mapping for VICE and physical-hardware runs. The original
+`2026-09-24` bundle is historical r1 input; `2026-09-24-r2` corrects timer-read
+qualification and explicit Z80 IM1 selection. Generated files in `build/`
 remain disposable; preserved benchmark inputs do not.

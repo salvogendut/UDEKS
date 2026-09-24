@@ -414,6 +414,8 @@ timer_start:
 
 ; Return elapsed ticks in X:A. Carry set means timer underflow.
 timer_elapsed:
+        lda #$00
+        sta CIA1_CRB
         lda CIA1_TB_LO
         eor #$ff
         pha

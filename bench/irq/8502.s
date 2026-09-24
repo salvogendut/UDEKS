@@ -123,12 +123,10 @@ irq_handler:
         tya
         pha
 
-        ; First ABI-safe timestamp: P, A, X and Y are preserved before the
-        ; two timer-counter reads. Timer A reloaded at the underflow.
-        lda CIA1_TA_LO
-        sta TIMER_LOW
-        lda CIA1_TA_HI
-        sta TIMER_HIGH
+        ; First ABI-safe timestamp after preserving the admitted registers.
+        ; The two-byte CIA counter is not latched on read, so sample it until
+        ; the high byte is stable around the low-byte read.
+        jsr read_timer_a
         lda CIA1_ICR
         ldx RESULT_COUNT
         bne not_first
@@ -162,3 +160,14 @@ count_done:
         tax
         pla
         rti
+
+read_timer_a:
+read_timer_retry:
+        lda CIA1_TA_HI
+        tax
+        lda CIA1_TA_LO
+        sta TIMER_LOW
+        cpx CIA1_TA_HI
+        bne read_timer_retry
+        stx TIMER_HIGH
+        rts

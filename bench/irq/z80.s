@@ -140,13 +140,9 @@ irq_handler:
         push    ix
         push    iy
 
-        ; First ABI-safe timestamp after preserving the admitted register set.
-        ld      bc, #0xdc04
-        in      a, (c)
-        ld      (TIMER_LOW), a
-        inc     c
-        in      a, (c)
-        ld      (TIMER_HIGH), a
+        ; The CIA counter is not latched on read. Sample high/low/high until
+        ; the high byte is stable around the low-byte read.
+        call    read_timer_a
         ld      bc, #0xdc0d
         in      a, (c)
         ld      hl, #RESULT_COUNT
@@ -195,6 +191,24 @@ count_done:
         pop     af
         ei
         reti
+
+read_timer_a:
+read_timer_retry:
+        ld      bc, #0xdc05
+        in      a, (c)
+        ld      d, a
+        dec     c
+        in      a, (c)
+        ld      e, a
+        inc     c
+        in      a, (c)
+        cp      d
+        jr      nz, read_timer_retry
+        ld      a, e
+        ld      (TIMER_LOW), a
+        ld      a, d
+        ld      (TIMER_HIGH), a
+        ret
 
         ; SDCC's linker expects the standard data area even when this probe
         ; deliberately contains no C data.

@@ -42,6 +42,7 @@ _start::
         ld      (0x0038), a
         ld      hl, #irq_handler
         ld      (0x0039), hl
+        im      1
 
         ; Clear the 320-byte result block.
         xor     a
@@ -128,12 +129,7 @@ wait_irq:
 
 resume_irq:
         ; First timestamp after RETI and the patched wait jump.
-        ld      bc, #0xdc04
-        in      a, (c)
-        ld      (TIMER_LOW), a
-        inc     c
-        in      a, (c)
-        ld      (TIMER_HIGH), a
+        call    read_timer_a
         di
         xor     a
         ld      bc, #0xdc0e
@@ -180,12 +176,7 @@ irq_handler:
         push    ix
         push    iy
 
-        ld      bc, #0xdc04
-        in      a, (c)
-        ld      (TIMER_LOW), a
-        inc     c
-        in      a, (c)
-        ld      (TIMER_HIGH), a
+        call    read_timer_a
         ld      bc, #0xdc0d
         in      a, (c)
         ld      (RESULT_LAST), a
@@ -245,12 +236,7 @@ dispatch_variant:
         call    dispatch_thunk
 
 variant_done:
-        ld      bc, #0xdc04
-        in      a, (c)
-        ld      (TIMER_LOW), a
-        inc     c
-        in      a, (c)
-        ld      (TIMER_HIGH), a
+        call    read_timer_a
         ld      de, (TIMER_LOW)
         ld      hl, #TIMER_PERIOD
         or      a
@@ -281,6 +267,24 @@ count_done:
         pop     af
         ei
         reti
+
+read_timer_a:
+read_timer_retry:
+        ld      bc, #0xdc05
+        in      a, (c)
+        ld      d, a
+        dec     c
+        in      a, (c)
+        ld      e, a
+        inc     c
+        in      a, (c)
+        cp      d
+        jr      nz, read_timer_retry
+        ld      a, e
+        ld      (TIMER_LOW), a
+        ld      a, d
+        ld      (TIMER_HIGH), a
+        ret
 
 ; Return DE = ((variant * 16) + sample) * 2.
 sample_offset:

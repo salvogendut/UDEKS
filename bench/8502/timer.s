@@ -21,6 +21,8 @@ _bench_timer_start:
         rts
 
 _bench_timer_elapsed:
+        lda #$00
+        sta CIA1_CRB
         lda CIA1_TB_LO
         eor #$ff
         pha

@@ -104,6 +104,11 @@ Do not attempt to feed SDCC `.rel` files to RASM.
 ## Emulator plan
 
 The local `../1986` C128DCR emulator is the primary integration target. VICE
-`x128sc` and `c1541` are planned as an independent behavior oracle and disk
-image tool. Real-hardware verification gates MMU, timing, video, IEC, and
-CPU-handoff milestones.
+3.10 is installed as Flatpak `net.sf.VICE`; it supplies `x128` and `c1541` as
+the independent behavior oracle and disk-image tool. `tools/vice_capture.py`
+loads preserved PRGs, selects native 1/2 MHz mode when requested, waits for the
+result-state byte, and saves a raw decoder-ready block. It uses a temporary
+BASIC wrapper for pure machine-code PRGs without changing their payload bytes
+or addresses. See the [r2 VICE results](../bench/results/vice-3.10-2026-09-24-r2/README.md)
+for a complete command. Real-hardware verification still gates MMU, timing,
+video, IEC, and CPU-handoff milestones.

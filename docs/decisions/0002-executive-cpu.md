@@ -56,6 +56,13 @@ behavior.
 
 ## Preliminary evidence — 2026-09-24
 
+The detailed `1986` figures below are the historical r1 baseline. A later VICE
+qualification pass exposed non-atomic running-CIA timer reads throughout the
+suite and a missing explicit `IM 1` in the Z80 interrupt-service case. Those
+preconditions are corrected in the preserved r2 binaries. The qualitative r1
+directions remain useful, but the numeric values must not be compared directly
+with r2 until `1986` is rerun.
+
 The first shared-C suite has run in the `1986` emulator using CIA1 Timer B.
 Three runs per configuration were identical and all workload checksums passed.
 At stock Z80 timing, SDCC output completed every substantive case faster than
@@ -82,8 +89,9 @@ its 8 KiB raw artifact is a padded transport window and is not its code size.
 This is evidence that the Z80 remains a serious executive candidate, not a
 decision in its favor. The suite does not yet measure interrupt latency, full
 task-context switching, syscall dispatch, MMU transitions, device drivers,
-display pressure, or complete handoff cost. It has not yet run in VICE or on
-real hardware. See the [raw samples and provenance](../../bench/results/2026-09-24-1986-initial.md).
+display pressure, or complete handoff cost. At this r1 stage it had not yet run
+in VICE or on real hardware. See the
+[raw samples and provenance](../../bench/results/2026-09-24-1986-initial.md).
 
 The accumulated emulator evidence is therefore deliberately split:
 
@@ -94,8 +102,8 @@ The accumulated emulator evidence is therefore deliberately split:
   2 MHz.
 - **8502 implementation-risk advantage:** C128-specific interrupt, MMU, I/O,
   and example-code documentation.
-- **Unresolved deciding evidence:** display coexistence, independent-emulator
-  agreement, and real-hardware verification.
+- **Unresolved deciding evidence:** corrected r2 agreement between `1986` and
+  VICE, display coexistence, and real-hardware verification.
 
 ### Initial interrupt probe
 
@@ -148,8 +156,9 @@ This strengthens the technical case for an 8502 executive: in the current
 assembly implementations, its interrupt-service paths are about 3.4–3.5 times
 less expensive even though the earlier SDCC workloads favored the Z80. It is
 not conclusive because the ISR contracts intentionally preserve different
-register sets, instrumentation is included, and the suite has not run in VICE
-or on hardware. Task-context transfer is evaluated separately below.
+register sets and instrumentation is included. The later corrected VICE r2
+qualification is recorded below; hardware remains outstanding. Task-context
+transfer is evaluated separately below.
 See the [raw service results](../../bench/results/2026-09-24-1986-irq-service.md).
 
 ### Task-context save and restore
@@ -261,6 +270,43 @@ engine needs operation- and mode-specific thresholds; “large job” is not a
 sufficient dispatch policy. See the
 [raw offload results](../../bench/results/2026-09-24-1986-offload.md) and the
 [preserved PRGs](../../bench/artifacts/2026-09-24/README.md).
+
+### Independent VICE 3.10 qualification (r2)
+
+VICE first served its intended purpose as an independent oracle by rejecting
+assumptions that `1986` had masked. The original Z80 interrupt-service image
+stalled after three of 48 interrupts because it did not explicitly select
+IM1. A 1 MHz 8502 service run also produced a non-monotonic timestamp when the
+running CIA counter crossed a low-byte boundary between separate low/high
+reads. Revision 2 explicitly selects IM1, samples a running Timer A with a
+stable high/low/high sequence, and stops Timer B before elapsed-time reads.
+
+All 19 corrected VICE configurations then completed and passed their strict
+decoders. Selected 2 MHz 8502 versus stock-Z80 results are:
+
+| Measurement | 8502 | Z80 | Faster/lower candidate |
+|---|---:|---:|---|
+| IRQ entry median | 20 | 77.5 | 8502 |
+| Minimal IRQ service median | 149 | 527.5 | 8502 |
+| Kernel-tick IRQ service median | 162 | 556.5 | 8502 |
+| Compiler context operation | 214.516 | 97.688 | Z80 |
+| Full context operation | 214.516 | 149.328 | Z80 |
+| Switch dispatch, 128 iterations | 19,255 | 12,619 | Z80 |
+| Event queue, 32 round trips | 17,451 | 20,966 | 8502 |
+| MMU, CIA, VDC, 128 each | 1,308 / 1,363 / 2,418 | 4,092 / 3,883 / 9,204 | 8502 |
+
+VICE therefore independently confirms the important qualitative split. It
+also makes Z80-to-8502 offload less attractive than the r1 `1986` result did:
+with the 8502 at 2 MHz, copy never crosses over through 2 KiB and checksum plus
+transform first cross at 1 KiB. In the opposite direction, an 8502 executive
+never benefits from delegating these three assembly kernels to the Z80 through
+2 KiB.
+
+This evidence currently strengthens the working preference for an **8502
+executive with selective, measured Z80 jobs**. It does not accept the decision:
+the corrected r2 images still need `1986`, display-pressure, and physical-C128
+runs. See the [full VICE result set](../../bench/results/vice-3.10-2026-09-24-r2/README.md)
+and [r2 artifacts](../../bench/artifacts/2026-09-24-r2/README.md).
 
 ## Evidence sources
 

@@ -9,6 +9,9 @@ handler paths on each CPU:
    kernel jump-table entry.
 
 Each variant runs 16 times with a 4,000-system-tick continuous Timer-A period.
+Both implementations explicitly establish their interrupt mode (including
+`IM 1` on Z80). Running Timer A is sampled high/low/high and retried if the
+high byte changes, preventing a torn 16-bit timestamp at a low-byte rollover.
 For every interrupt the suite records:
 
 - underflow to the first timestamp after the admitted register prologue;
@@ -34,5 +37,5 @@ python3 tools/irq_service_decode.py run.vsf
 The 8502 PRG starts with `SYS 10240`; the Z80 launcher starts with `SYS 10192`.
 The result block is 320 bytes at `$F180` and uses the `IRQS` magic.
 
-As with the qualification probe, emulator results validate the harness. VICE
-and real C128 runs are required before timing affects the executive decision.
+VICE 3.10 has validated the corrected r2 harness. Physical-C128 runs are still
+required before the timing can finalize the executive decision.

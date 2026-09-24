@@ -759,6 +759,8 @@ timer_start:
         rts
 
 timer_elapsed:
+        lda #$00
+        sta CIA1_CRB
         lda CIA1_TB_LO
         eor #$ff
         pha

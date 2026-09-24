@@ -136,10 +136,7 @@ wait_irq:
 
 resume_irq:
         ; First timestamp after RTI and the patched wait jump.
-        lda CIA1_TA_LO
-        sta TIMER_LOW
-        lda CIA1_TA_HI
-        sta TIMER_HIGH
+        jsr read_timer_a
         sei
         lda #$00
         sta CIA1_CRA
@@ -181,10 +178,7 @@ irq_handler:
         pha
 
         ; Entry timestamp after the admitted ISR register set is safe.
-        lda CIA1_TA_LO
-        sta TIMER_LOW
-        lda CIA1_TA_HI
-        sta TIMER_HIGH
+        jsr read_timer_a
         lda CIA1_ICR
         sta RESULT_LAST
         ldx RESULT_OBSERVED
@@ -233,10 +227,7 @@ dispatch_variant:
 
 variant_done:
         ; Timestamp after acknowledgement, bookkeeping, and variant work.
-        lda CIA1_TA_LO
-        sta TIMER_LOW
-        lda CIA1_TA_HI
-        sta TIMER_HIGH
+        jsr read_timer_a
         jsr sample_offset
         sec
         lda #<TIMER_PERIOD
@@ -262,6 +253,17 @@ count_done:
         tax
         pla
         rti
+
+read_timer_a:
+read_timer_retry:
+        lda CIA1_TA_HI
+        tax
+        lda CIA1_TA_LO
+        sta TIMER_LOW
+        cpx CIA1_TA_HI
+        bne read_timer_retry
+        stx TIMER_HIGH
+        rts
 
 ; Return X = ((variant * 16) + sample) * 2.
 sample_offset:

@@ -1,5 +1,10 @@
 # Preserved benchmark PRGs — 2026-09-24
 
+> **Historical r1 bundle:** VICE exposed a missing explicit `IM 1` in the Z80
+> interrupt-service case and non-atomic reads of running 16-bit CIA timers.
+> Keep these files for provenance, but use
+> [`../2026-09-24-r2/`](../2026-09-24-r2/) for new measurements.
+
 These are the exact benchmark images used for the initial `1986` result set.
 They are deliberately checked in even though normal build output is ignored,
 so later VICE and physical-C128 runs can execute identical bytes. Verify them

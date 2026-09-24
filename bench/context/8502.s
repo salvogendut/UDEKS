@@ -304,14 +304,14 @@ timer_start:
         rts
 
 timer_elapsed:
+        lda #$00
+        sta CIA1_CRB
         lda CIA1_TB_LO
         eor #$ff
         pha
         lda CIA1_TB_HI
         eor #$ff
         tax
-        lda #$00
-        sta CIA1_CRB
         lda CIA1_ICR
         and #$02
         bne timer_overflow

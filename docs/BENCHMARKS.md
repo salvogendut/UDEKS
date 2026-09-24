@@ -215,9 +215,22 @@ wins in the tested range. In the reverse direction, Z80-to-8502 delegation
 first wins at 256 bytes for copy and 32 bytes for checksum and transform. At
 1 MHz, the directions are more mixed: Z80 copy first helps an 8502 requester at
 128 bytes, while 8502 checksum and transform first help a Z80 requester at 256
-and 128 bytes. Exact PRGs are retained under `bench/artifacts/2026-09-24/` for
-the pending VICE and real-hardware comparisons.
+and 128 bytes. Those historical r1 PRGs remain under
+`bench/artifacts/2026-09-24/`; corrected r2 images are used for current VICE
+and future real-hardware comparisons.
 
-These results are recorded under [`bench/results`](../bench/results/) and in
-ADR 0002. They are preliminary: the executive-specific and real-hardware gates
-above remain open.
+VICE 3.10 has now run the full corrected r2 matrix. The first pass exposed a
+missing explicit Z80 `IM 1` and torn low/high reads of running CIA timers; both
+were corrected without overwriting the original artifacts. All 19 r2 VICE
+configurations pass strict decoding. VICE preserves the broad split—Z80 for
+compiled C and compiler context, 8502 for interrupts, queues, and direct device
+traffic—and strengthens the current preference for an 8502 executive. At
+2 MHz, none of the three tested assembly kernels benefits from 8502-to-Z80
+offload through 2 KiB. Reverse offload first wins only at 1 KiB for checksum
+and transform, and not for copy in that range.
+
+The detailed [VICE r2 results](../bench/results/vice-3.10-2026-09-24-r2/README.md)
+and [corrected PRGs](../bench/artifacts/2026-09-24-r2/README.md) are preserved.
+The original `1986` figures used r1 instrumentation and must be rerun with r2
+before numeric emulator agreement can be claimed. Real-hardware and display-
+pressure gates also remain open.
