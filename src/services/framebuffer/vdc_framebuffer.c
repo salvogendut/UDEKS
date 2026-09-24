@@ -301,9 +301,9 @@ static unsigned char render_hardware_info(void)
                   text_reu_yes : text_reu_no) != UDEKS_VDC_OK ||
         draw_text(2, 104, capability[13] != 0 ?
                   text_georam_yes : text_georam_no) != UDEKS_VDC_OK ||
-        draw_text(61, 40, text_8502) != UDEKS_VDC_OK ||
-        draw_text(61, 56, text_z80) != UDEKS_VDC_OK ||
-        draw_text(61, 72, text_dual) != UDEKS_VDC_OK) {
+        draw_text(61, 92, text_8502) != UDEKS_VDC_OK ||
+        draw_text(61, 108, text_z80) != UDEKS_VDC_OK ||
+        draw_text(61, 124, text_dual) != UDEKS_VDC_OK) {
         return UDEKS_VDC_TIMEOUT;
     }
     return UDEKS_VDC_OK;
@@ -330,7 +330,7 @@ static void status_begin(void)
     STATUS_BYTE(1) = 'F';
     STATUS_BYTE(2) = 'B';
     STATUS_BYTE(3) = 'R';
-    STATUS_BYTE(4) = 2;
+    STATUS_BYTE(4) = 3;
     STATUS_BYTE(5) = UDEKS_FRAMEBUFFER_STATE_STARTING;
     STATUS_BYTE(7) = UDEKS_FRAMEBUFFER_STRIDE;
     STATUS_BYTE(8) = UDEKS_FRAMEBUFFER_HEIGHT;

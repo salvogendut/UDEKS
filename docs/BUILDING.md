@@ -37,7 +37,7 @@ make z80        # build build/z80/udeks-z80.bin through SDCC
 make z80-asm    # build the independent RASM smoke image
 make boot       # build build/boot/udeks.d71 for native C128 autoboot
 make panic-probe  # build a non-release D71 that injects descriptor failure
-make framebuffer-assets  # pack the 160x160 XPM as a 3,200-byte VDC bitmap
+make framebuffer-assets  # pack the 64x64 XPM as a 512-byte VDC bitmap
 make bench      # build comparable 8502 and Z80 benchmark payloads
 make bench-irq  # build both CIA interrupt-entry probes
 make bench-irq-service  # build the three-path interrupt-service suite
@@ -71,9 +71,10 @@ kernel will consume those bytes without carrying an image decoder.
 The current production image starts three services in order: hardware
 capability discovery, the qualified text-mode fallback, and the baseline VDC
 framebuffer. The framebuffer takes final display ownership, enters 640x200
-monochrome bitmap mode, and shows the linked UDEKS splash in the default
-black-on-yellow theme. It then uses the original UDEKS 5x7 software font to
-render the capability service's hardware inventory around the logo.
+monochrome bitmap mode, and shows the compact UDEKS pipe at the upper right in
+the default black-on-yellow theme. It then uses the original UDEKS 5x7 software
+font to render the capability service's hardware inventory without overlapping
+the logo.
 
 The resident 8502 image links the small subset of cc65's `none` runtime needed
 by its C services. Startup initializes cc65's downward-growing software stack

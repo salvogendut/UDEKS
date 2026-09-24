@@ -23,7 +23,7 @@ def parse_result(data: bytes) -> dict[str, int]:
     block = data[:RESULT_SIZE]
     if block[:4] != b"VFBR":
         raise ValueError("framebuffer status magic is not VFBR")
-    if block[4] not in (1, 2):
+    if block[4] not in (1, 2, 3):
         raise ValueError(f"unsupported framebuffer status format {block[4]}")
     if block[5] != 2:
         if block[5] & 0x80:
@@ -34,18 +34,36 @@ def parse_result(data: bytes) -> dict[str, int]:
         7: 80,
         8: 200,
         9: 1,
-        15: 20,
-        16: 160,
-        17: 30,
-        18: 20,
-        19: 0x5E,
-        20: 0x06,
-        21: 0x2E,
-        22: 0x28,
         24: 0x0D,
     }
+    if block[4] < 3:
+        expected.update(
+            {
+                15: 20,
+                16: 160,
+                17: 30,
+                18: 20,
+                19: 0x5E,
+                20: 0x06,
+                21: 0x2E,
+                22: 0x28,
+            }
+        )
+    else:
+        expected.update(
+            {
+                15: 8,
+                16: 64,
+                17: 70,
+                18: 12,
+                19: 0x06,
+                20: 0x04,
+                21: 0x73,
+                22: 0x58,
+            }
+        )
     expected[23] = 0x1F if block[4] == 1 else 0x7F
-    if block[4] == 2:
+    if block[4] >= 2:
         expected.update({25: 5, 26: 7, 27: 9, 30: 0x1F})
     for offset, value in expected.items():
         if block[offset] != value:
@@ -81,10 +99,10 @@ def parse_result(data: bytes) -> dict[str, int]:
         "splash_checksum": block[21] | (block[22] << 8),
         "flags": block[23],
         "color": block[24],
-        "font_width": block[25] if block[4] == 2 else 0,
-        "font_height": block[26] if block[4] == 2 else 0,
+        "font_width": block[25] if block[4] >= 2 else 0,
+        "font_height": block[26] if block[4] >= 2 else 0,
         "font_checksum": (
-            block[28] | (block[29] << 8) if block[4] == 2 else 0
+            block[28] | (block[29] << 8) if block[4] >= 2 else 0
         ),
     }
 
@@ -115,7 +133,7 @@ def main() -> None:
         f"Splash verified at ${result['splash_address']:04X}; "
         f"checksum ${result['splash_checksum']:04X}"
     )
-    if result["format"] == 2:
+    if result["format"] >= 2:
         print(
             f"Software font: {result['font_width']}x{result['font_height']}, "
             f"hardware panel checksum ${result['font_checksum']:04X}"

@@ -1,10 +1,14 @@
 # UDEKS artwork
 
-`udeksdroid.png` is the high-resolution project logo. The two-colour XPM files
-are prepared source variants for constrained targets:
+`udekspipe.png` is the high-resolution pipe-and-name mark. The root
+`UDEKS.png` adds the expanded project name and is the README logo. The
+two-colour pipe XPM files are prepared source variants for constrained targets:
 
-- `udeksdroid-160.xpm` is the planned 160x160 VDC boot splash;
-- `udeksdroid-64.xpm` is the compact icon variant.
+- `udekspipe-64.xpm` is the active upper-right VDC boot mark;
+- `udekspipe-160.xpm` is the larger layout variant.
+
+The earlier `udeksdroid` PNG and XPM variants remain as project-history source
+artwork but are no longer linked into the boot image.
 
 Target-specific packed bitmaps are generated during the build and must not
 replace these source assets. The C128 kernel does not decode PNG or XPM files

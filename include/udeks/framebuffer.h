@@ -13,11 +13,11 @@
 #define UDEKS_FRAMEBUFFER_HEIGHT            200u
 #define UDEKS_FRAMEBUFFER_SIZE              16000u
 
-#define UDEKS_SPLASH_WIDTH_BYTES            20u
-#define UDEKS_SPLASH_HEIGHT                 160u
-#define UDEKS_SPLASH_SIZE                   3200u
-#define UDEKS_SPLASH_X_BYTES                30u
-#define UDEKS_SPLASH_Y                      20u
+#define UDEKS_SPLASH_WIDTH_BYTES            8u
+#define UDEKS_SPLASH_HEIGHT                 64u
+#define UDEKS_SPLASH_SIZE                   512u
+#define UDEKS_SPLASH_X_BYTES                70u
+#define UDEKS_SPLASH_Y                      12u
 
 unsigned char udeks_framebuffer_start(void);
 

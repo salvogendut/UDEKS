@@ -33,14 +33,26 @@ class XpmToVdcTests(unittest.TestCase):
 
     def test_project_splash_is_stable_and_vdc_sized(self):
         image = parse_xpm(
-            (ROOT / "assets" / "udeksdroid-160.xpm").read_text(encoding="ascii")
+            (ROOT / "assets" / "udekspipe-64.xpm").read_text(encoding="ascii")
+        )
+        packed = pack_vdc(image)
+        self.assertEqual((image.width, image.height), (64, 64))
+        self.assertEqual(len(packed), 512)
+        self.assertEqual(
+            hashlib.sha256(packed).hexdigest(),
+            "310c1f047fcaa8485707609e3a40678c594ebd0bbf5149fe185e7b4c065f98bc",
+        )
+
+    def test_larger_pipe_variant_is_stable_and_vdc_sized(self):
+        image = parse_xpm(
+            (ROOT / "assets" / "udekspipe-160.xpm").read_text(encoding="ascii")
         )
         packed = pack_vdc(image)
         self.assertEqual((image.width, image.height), (160, 160))
         self.assertEqual(len(packed), 3200)
         self.assertEqual(
             hashlib.sha256(packed).hexdigest(),
-            "2a1cf72c17eba0703bb7f41624579952cbdaa4f232c5e7bb1c884af6061711c6",
+            "fd9a48e23bee4b7e58c9c6c5de40120bcf9c27dfdecdbbfb7c94a64d79aec6f6",
         )
 
     def test_rejects_more_than_two_colours(self):

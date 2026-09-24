@@ -80,7 +80,7 @@ STAGE1_GATEWAY_BIN := $(BUILD_BOOT)/stage1-gateway.bin
 STAGE1_BIN := $(BUILD_BOOT)/stage1.bin
 BOOT_D71 := $(BUILD_BOOT)/udeks.d71
 PANIC_PROBE_D71 := $(BUILD_BOOT)/udeks-panic-probe.d71
-VDC_SPLASH_BIN := $(BUILD_ASSETS)/udeksdroid-160.vdc
+VDC_SPLASH_BIN := $(BUILD_ASSETS)/udekspipe-64.vdc
 
 .PHONY: all 8502 z80 z80-asm bench bench-8502 bench-z80 bench-irq \
 	bench-irq-8502 bench-irq-z80 bench-irq-service \
@@ -147,7 +147,7 @@ $(BUILD_8502) $(BUILD_Z80) $(BUILD_BENCH_8502) $(BUILD_BENCH_Z80) \
 		$(BUILD_MEMORY_MAP) $(BUILD_BOOT) $(BUILD_ASSETS):
 	mkdir -p $@
 
-$(VDC_SPLASH_BIN): assets/udeksdroid-160.xpm tools/xpm_to_vdc.py | $(BUILD_ASSETS)
+$(VDC_SPLASH_BIN): assets/udekspipe-64.xpm tools/xpm_to_vdc.py | $(BUILD_ASSETS)
 	$(PYTHON) tools/xpm_to_vdc.py $< $@
 
 $(BUILD_8502)/kernel.s: src/8502/kernel.c include/udeks/mailbox.h \
@@ -638,6 +638,8 @@ check:
 	cd bench/results/2026-09-24-vdc-framebuffer/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-vdc-font-r1 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-vdc-font/raw && sha256sum -c SHA256SUMS
+	cd bench/artifacts/2026-09-24-vdc-pipe-logo-r1 && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-24-vdc-pipe-logo/raw && sha256sum -c SHA256SUMS
 
 doctor:
 	@missing=0; \
