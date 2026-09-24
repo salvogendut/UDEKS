@@ -35,6 +35,7 @@ make check      # host-side unit and utility checks; no target compiler needed
 make 8502       # build build/8502/udeks-8502.bin and .prg
 make z80        # build build/z80/udeks-z80.bin through SDCC
 make z80-asm    # build the independent RASM smoke image
+make boot       # build build/boot/udeks.d71 for native C128 autoboot
 make bench      # build comparable 8502 and Z80 benchmark payloads
 make bench-irq  # build both CIA interrupt-entry probes
 make bench-irq-service  # build the three-path interrupt-service suite
@@ -48,9 +49,10 @@ make            # build all three target images
 The 8502 artifacts are a raw resident image and a development PRG linked/loaded
 at `$2000`. Its linker region ends before the `$D000` I/O aperture. The SDCC
 artifact is a fixed 8 KiB raw window covering `$2000`–`$3FFF`; only its leading
-bytes currently contain code. The PRG supports direct emulator loading but is
-not the future native disk bootstrap described by
-[ADR 0003](decisions/0003-memory-bootstrap.md).
+bytes currently contain code. `make boot` packages both into a deterministic
+D71 implementing the stage-0/stage-1 path in
+[ADR 0003](decisions/0003-memory-bootstrap.md). The direct-load PRG remains
+useful for focused bring-up tests.
 
 `tools/ihx_to_bin.py` performs strict Intel HEX checksum validation and rejects
 addresses outside the declared output window. This avoids silently creating an
@@ -116,7 +118,9 @@ or addresses. See the [r2 VICE results](../bench/results/vice-3.10-2026-09-24-r2
 for a complete command. Real-hardware verification still gates MMU, timing,
 video, IEC, and CPU-handoff milestones.
 
-`1986` saves complete VSF snapshots. `tools/snapshot_extract.py` extracts a
+For native disk tests, `tools/vice_capture.py --native-disk` attaches the D71
+at power-on instead of injecting a BASIC launcher. `1986` saves complete VSF
+snapshots. `tools/snapshot_extract.py` extracts a
 compact decoder-ready address range from those snapshots, for example:
 
 ```sh

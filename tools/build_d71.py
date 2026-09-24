@@ -1,0 +1,169 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+"""Build the deterministic native-boot UDEKS D71 image."""
+
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+
+SECTOR_SIZE = 256
+TRACK_COUNT = 70
+STAGE1_ADDRESS = 0x1C00
+KERNEL_ADDRESS = 0x2000
+Z80_STAGING_ADDRESS = 0xD000
+Z80_SIZE = 0x2000
+PAYLOAD_SIZE = 0xD400
+PAYLOAD_BLOCKS = PAYLOAD_SIZE // SECTOR_SIZE
+
+
+def sectors_per_track(track: int) -> int:
+    if not 1 <= track <= TRACK_COUNT:
+        raise ValueError(f"track {track} is outside a D71")
+    side_track = track if track <= 35 else track - 35
+    if side_track <= 17:
+        return 21
+    if side_track <= 24:
+        return 19
+    if side_track <= 30:
+        return 18
+    return 17
+
+
+def sector_offset(track: int, sector: int) -> int:
+    count = sectors_per_track(track)
+    if not 0 <= sector < count:
+        raise ValueError(f"sector {track}/{sector} is outside a D71")
+    earlier = sum(sectors_per_track(number) for number in range(1, track))
+    return (earlier + sector) * SECTOR_SIZE
+
+
+def blank_d71(name: str = "UDEKS", disk_id: str = "01") -> bytearray:
+    if not 1 <= len(name) <= 16 or len(disk_id) != 2:
+        raise ValueError("disk name must be 1..16 characters and id exactly 2")
+    image = bytearray(
+        sum(sectors_per_track(track) for track in range(1, TRACK_COUNT + 1))
+        * SECTOR_SIZE
+    )
+    bam = sector_offset(18, 0)
+    image[bam : bam + 4] = bytes((18, 1, 0x41, 0x80))
+    for track in range(1, 36):
+        count = sectors_per_track(track)
+        bits = (1 << count) - 1
+        entry = bam + 4 + (track - 1) * 4
+        image[entry] = count
+        image[entry + 1 : entry + 4] = bits.to_bytes(3, "little")
+
+    encoded_name = name.upper().encode("ascii")
+    image[bam + 0x90 : bam + 0xA0] = encoded_name.ljust(16, b"\xa0")
+    image[bam + 0xA2 : bam + 0xA4] = disk_id.encode("ascii")
+    image[bam + 0xA4 : bam + 0xA8] = b"\xa02A\xa0"
+
+    bam2 = sector_offset(53, 0)
+    for track in range(36, 71):
+        count = sectors_per_track(track)
+        bits = (1 << count) - 1
+        bitmap = bam2 + (track - 36) * 3
+        image[bitmap : bitmap + 3] = bits.to_bytes(3, "little")
+        image[bam + 0xDD + (track - 36)] = count
+
+    # DOS reserves the primary BAM, first directory sector, and all of the
+    # secondary-side BAM track exactly as a freshly formatted D71 does.
+    mark_used(image, 18, 0)
+    mark_used(image, 18, 1)
+    directory = sector_offset(18, 1)
+    image[directory : directory + 2] = b"\x00\xff"
+    for sector in range(sectors_per_track(53)):
+        mark_used(image, 53, sector)
+    return image
+
+
+def mark_used(image: bytearray, track: int, sector: int) -> None:
+    bam = sector_offset(18, 0)
+    if track <= 35:
+        entry = bam + 4 + (track - 1) * 4
+        count_offset = entry
+        bitmap = entry + 1
+    else:
+        count_offset = bam + 0xDD + (track - 36)
+        bitmap = sector_offset(53, 0) + (track - 36) * 3
+    byte_offset = bitmap + sector // 8
+    mask = 1 << (sector & 7)
+    if image[byte_offset] & mask:
+        image[byte_offset] &= ~mask
+        image[count_offset] -= 1
+
+
+def boot_locations(blocks: int):
+    track = 1
+    sector = 0
+    for _ in range(blocks):
+        yield track, sector
+        sector += 1
+        if sector == sectors_per_track(track):
+            track += 1
+            sector = 0
+
+
+def build_image(stage0: bytes, stage1: bytes, kernel: bytes, z80: bytes) -> bytes:
+    if len(stage0) > SECTOR_SIZE:
+        raise ValueError("stage 0 exceeds one sector")
+    if stage0[:3] != b"CBM":
+        raise ValueError("stage 0 is missing the CBM autoboot signature")
+    if stage0[3:7] != b"\x00\x1c\x00\xd4":
+        raise ValueError("stage-0 load address, bank, or block count is wrong")
+    if len(stage1) > KERNEL_ADDRESS - STAGE1_ADDRESS:
+        raise ValueError("stage 1 exceeds $1C00-$1FFF")
+    if len(kernel) > Z80_STAGING_ADDRESS - KERNEL_ADDRESS:
+        raise ValueError("kernel overlaps the bank-0 Z80 staging area")
+    if len(z80) > Z80_SIZE:
+        raise ValueError("Z80 image exceeds its 8 KiB reservation")
+
+    payload = (
+        stage1.ljust(KERNEL_ADDRESS - STAGE1_ADDRESS, b"\x00")
+        + kernel.ljust(Z80_STAGING_ADDRESS - KERNEL_ADDRESS, b"\x00")
+        + z80.ljust(Z80_SIZE, b"\x00")
+    )
+    if len(payload) != PAYLOAD_SIZE:
+        raise AssertionError("native boot payload layout drifted")
+
+    image = blank_d71()
+    sectors = [stage0.ljust(SECTOR_SIZE, b"\x00")]
+    sectors.extend(
+        payload[offset : offset + SECTOR_SIZE]
+        for offset in range(0, len(payload), SECTOR_SIZE)
+    )
+    for (track, sector), data in zip(
+        boot_locations(1 + PAYLOAD_BLOCKS), sectors, strict=True
+    ):
+        offset = sector_offset(track, sector)
+        image[offset : offset + SECTOR_SIZE] = data
+        mark_used(image, track, sector)
+    return bytes(image)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--stage0", type=Path, required=True)
+    parser.add_argument("--stage1", type=Path, required=True)
+    parser.add_argument("--kernel", type=Path, required=True)
+    parser.add_argument("--z80", type=Path, required=True)
+    parser.add_argument("output", type=Path)
+    args = parser.parse_args()
+
+    try:
+        image = build_image(
+            args.stage0.read_bytes(),
+            args.stage1.read_bytes(),
+            args.kernel.read_bytes(),
+            args.z80.read_bytes(),
+        )
+    except ValueError as error:
+        raise SystemExit(f"cannot build D71: {error}") from error
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_bytes(image)
+
+
+if __name__ == "__main__":
+    main()

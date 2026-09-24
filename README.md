@@ -20,7 +20,8 @@ See [LICENSE](LICENSE).
 
 > [!IMPORTANT]
 > UDEKS is in its architecture and bring-up phase. The current binaries are
-> freestanding scaffolding, not a bootable or usable operating system.
+> freestanding scaffolding and a qualified native boot path, not yet a usable
+> operating system.
 
 ## Hardware model
 
@@ -28,6 +29,9 @@ See [LICENSE](LICENSE).
   ownership passes explicitly between them.
 - The 8502 runs the resident executive; the Z80 is a bounded secondary
   execution engine for workloads that demonstrate an end-to-end benefit.
+- The resident kernel is a small assembly-oriented microkernel. I/O,
+  filesystems, graphics, consoles, and other policy live in modular services
+  written predominantly in C.
 - The VDC is the primary high-resolution/text display engine.
 - The VIC-IIe is a first-class secondary display and timing/sprite engine.
 - A stock 128 KiB C128 with 16 KiB VDC RAM is the baseline. A 64 KiB VDC, REU,
@@ -66,14 +70,15 @@ docs/                Architecture plan, roadmap, and decisions
 include/udeks/        Public C headers shared across CPU builds
 mk/                   Make configuration
 src/8502/             8502 C and ca65 sources
+src/boot/             Native C128 stage-0/stage-1 bootstrap
 src/z80/              Z80 C, SDAS, and RASM sources
 tests/                Host-side tests and future emulator tests
 tools/                Deterministic build utilities
 ```
 
-The provisional scaffold links both CPU images at `$2000`. This is only a
-bring-up convention. The final boot and memory maps must be justified by
-hardware tests and recorded as architecture decisions.
+`make boot` produces a native-autoboot D71 with the 8502 kernel and Z80 worker
+at their proposed `$2000` locations. The memory map remains provisional until
+the display-memory and physical-hardware gates in ADR 0003 pass.
 
 ## Documents
 
@@ -90,11 +95,13 @@ hardware tests and recorded as architecture decisions.
 - [`1986` r2 benchmark results](bench/results/1986-7556c23-2026-09-24-r2/README.md)
 - [VICE 3.10 r2 benchmark results](bench/results/vice-3.10-2026-09-24-r2/README.md)
 - [Native memory-map direct-load smoke test](bench/results/2026-09-24-memory-map-smoke/README.md)
+- [Native D71 boot results](bench/results/2026-09-24-native-boot/README.md)
 - [Corrected preserved benchmark PRGs for VICE and hardware](bench/artifacts/2026-09-24-r2/README.md)
 - [Building UDEKS](docs/BUILDING.md)
 - [Toolchain decision](docs/decisions/0001-toolchain.md)
 - [Executive CPU decision](docs/decisions/0002-executive-cpu.md)
 - [Proposed native memory and bootstrap contract](docs/decisions/0003-memory-bootstrap.md)
+- [Microkernel and service-module decision](docs/decisions/0004-microkernel-modules.md)
 - [Mailbox ABI](abi/mailbox.md)
 - [Dedication](DEDICATION.md)
 - [Contributing](CONTRIBUTING.md)

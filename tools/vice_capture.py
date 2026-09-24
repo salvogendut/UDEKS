@@ -124,7 +124,9 @@ def capture(args: argparse.Namespace) -> None:
     program = args.program.resolve()
     output = args.output.resolve()
     if not program.is_file():
-        raise SystemExit(f"benchmark PRG does not exist: {program}")
+        raise SystemExit(f"input image does not exist: {program}")
+    if args.autostart and args.native_disk:
+        raise SystemExit("--autostart and --native-disk are mutually exclusive")
     if not 0 <= args.entry <= 0xFFFF:
         raise SystemExit("entry address must fit in 16 bits")
     if not 0 <= args.result_address <= 0xFFFF:
@@ -145,7 +147,7 @@ def capture(args: argparse.Namespace) -> None:
     port = choose_port()
 
     launch_program = program
-    if not args.autostart:
+    if not args.autostart and not args.native_disk:
         try:
             wrapper_path.write_bytes(make_basic_wrapper(program.read_bytes(), args.entry))
         except ValueError as error:
@@ -179,7 +181,10 @@ def capture(args: argparse.Namespace) -> None:
         "-moncommands",
         str(commands_path),
     ]
-    command.extend(("-autostart", str(launch_program)))
+    if args.native_disk:
+        command.extend(("-8", str(launch_program)))
+    else:
+        command.extend(("-autostart", str(launch_program)))
     log_file = log_path.open("wb")
     master_fd, slave_fd = pty.openpty()
     process = subprocess.Popen(
@@ -304,6 +309,11 @@ def main() -> None:
         "--autostart",
         action="store_true",
         help="input already contains a BASIC autostart stub",
+    )
+    parser.add_argument(
+        "--native-disk",
+        action="store_true",
+        help="attach a C128 native-autoboot disk instead of autostarting a PRG",
     )
     parser.add_argument("--timeout", type=float, default=20.0)
     parser.add_argument(

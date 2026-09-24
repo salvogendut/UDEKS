@@ -27,6 +27,26 @@ C64-mode environment, or an attempt to imitate modern symmetric multiprocessing.
    behavior is tested first in `1986`, cross-checked in VICE, and confirmed on
    real C128 hardware.
 
+## Microkernel structure
+
+UDEKS uses a modular microkernel architecture. The resident kernel keeps only
+the mechanisms that must remain authoritative and always available: interrupt
+and trap entry, context switching, scheduling primitives, IPC, MMU and bank
+arbitration, capability/handle validation, and CPU ownership transfer. These
+machine-facing core paths are implemented primarily in 8502 assembly and
+export narrow C-callable interfaces.
+
+I/O stacks, filesystems, graphics, display composition, consoles, protocols,
+and other system policy are service modules written predominantly in C. They
+communicate through versioned messages and handles rather than reaching into
+kernel internals. Early images may link essential services statically, but
+static placement does not permit private calls across module boundaries; the
+same interfaces must support loadable and replaceable modules later.
+
+The C128 has no memory-protection unit, so “microkernel” describes responsibility,
+dependency direction, and failure containment by validation—not hardware-enforced
+address-space isolation. ADR 0004 records this boundary.
+
 ## Supported hardware
 
 The baseline target is a PAL or NTSC Commodore 128 with 128 KiB RAM, a 16 KiB
@@ -129,6 +149,7 @@ The first stable interfaces will be:
 - byte-oriented filesystem and executable headers;
 - display surfaces independent of a particular video chip;
 - event queues for keyboard, pointer, timers, storage, and inter-task messages.
+- a versioned service-module descriptor and lifecycle protocol.
 
 Applications initially share the kernel address space but receive distinct
 stacks, banked workspaces, and where practical distinct page-zero/page-one

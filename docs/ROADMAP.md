@@ -10,6 +10,8 @@ assigned until the bring-up measurements expose the true hardware costs.
 - [x] Select SDCC plus RASM for Z80 development.
 - [x] Establish source layout, build entry points, and host checks.
 - [x] Draft the mailbox ABI and architecture plan.
+- [x] Accept ADR 0004: assembly-oriented microkernel with predominantly C
+  service modules.
 - [x] Install cc65 in `my-distrobox` and validate the initial 8502 link.
 - [ ] Pin the release toolchain independently of distribution package updates.
 - [x] Install VICE 3.10 C128 and `c1541` via Flatpak as the independent
@@ -64,12 +66,12 @@ a material contradiction.
   common RAM, and initial page-zero/page-one locations explicitly.
 - [x] Qualify all four MMU profiles, bank-private RAM, common RAM, and relocated
   page zero/page one in VICE and `1986`.
-- [ ] Implement and validate native D71 stage 0 and stage 1, then accept ADR
-  0003.
+- [x] Implement and validate native D71 stage 0 and stage 1 in VICE and `1986`.
+- [ ] Accept ADR 0003 after its display-memory and physical-hardware gates pass.
 - [ ] Bring up a polled VDC text console.
 - [ ] Add a panic screen and emulator-visible diagnostic codes.
 - [ ] Detect PAL/NTSC, model, VDC RAM size, and optional memory expansions.
-- [ ] Produce the first bootable D71 image.
+- [x] Produce the first bootable D71 image.
 
 **Exit gate:** a stock configuration boots to the same diagnostic console in
 `1986`, VICE, and real hardware.
@@ -95,6 +97,9 @@ display corruption.
 - [ ] Save and restore the selected compiler runtime and CPU context.
 - [ ] Add cooperative scheduling, then timer-driven preemption.
 - [ ] Add message queues and capability-based device handles.
+- [ ] Define the service-module descriptor, version negotiation, and lifecycle.
+- [ ] Move console, graphics, storage, and filesystem policy into C service
+  modules with no private microkernel dependencies.
 - [ ] Add host tests for scheduler and queue policy.
 
 **Exit gate:** at least four C tasks survive repeated preemption while performing

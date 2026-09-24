@@ -104,7 +104,7 @@ bank-0 placement contract.
   `$FF00-$FF04` hole behaving as specified.
 - [x] Page-zero/page-one relocation works with top common enabled and is shown not
   to alias bank-0 pages accidentally.
-- [ ] A D71 autoboot image executes stage 0 at `$0B00`, stage 1 at `$1C00`, and the
+- [x] A D71 autoboot image executes stage 0 at `$0B00`, stage 1 at `$1C00`, and the
   kernel at `$2000` without a BASIC command.
 - [ ] VIC bank-1 selection and VDC-only 2 MHz operation do not corrupt either CPU
   image or common RAM.
@@ -113,8 +113,10 @@ bank-0 placement contract.
 The preserved [direct-load smoke results](../../bench/results/2026-09-24-memory-map-smoke/README.md)
 record the initial entry state. The subsequent
 [profile and relocation results](../../bench/results/2026-09-24-memory-map-profiles/README.md)
-record identical 23/23 passes in `1986` and VICE. The D71, display-memory, and
-physical-machine gates keep this ADR proposed.
+record identical 23/23 passes in `1986` and VICE. The
+[native D71 results](../../bench/results/2026-09-24-native-boot/README.md)
+record the complete stage-0/stage-1/kernel path and verified Z80 installation.
+The display-memory and physical-machine gates keep this ADR proposed.
 
 ## Consequences while proposed
 

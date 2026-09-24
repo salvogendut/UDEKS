@@ -23,6 +23,7 @@ BUILD_HANDOFF_Z80 := $(BUILD_DIR)/bench/handoff/z80
 BUILD_OFFLOAD_8502 := $(BUILD_DIR)/bench/offload/8502
 BUILD_OFFLOAD_Z80 := $(BUILD_DIR)/bench/offload/z80
 BUILD_MEMORY_MAP := $(BUILD_DIR)/bench/memory-map
+BUILD_BOOT := $(BUILD_DIR)/boot
 
 KERNEL_BIN := $(BUILD_8502)/udeks-8502.bin
 KERNEL_PRG := $(BUILD_8502)/udeks-8502.prg
@@ -72,15 +73,21 @@ OFFLOAD_PRG := $(BUILD_OFFLOAD_8502)/offload.prg
 MEMORY_MAP_GATEWAY_BIN := $(BUILD_MEMORY_MAP)/gateway.bin
 MEMORY_MAP_LAUNCH_BIN := $(BUILD_MEMORY_MAP)/memory-map.bin
 MEMORY_MAP_PRG := $(BUILD_MEMORY_MAP)/memory-map.prg
+STAGE0_BIN := $(BUILD_BOOT)/stage0.bin
+STAGE1_GATEWAY_BIN := $(BUILD_BOOT)/stage1-gateway.bin
+STAGE1_BIN := $(BUILD_BOOT)/stage1.bin
+BOOT_D71 := $(BUILD_BOOT)/udeks.d71
 
 .PHONY: all 8502 z80 z80-asm bench bench-8502 bench-z80 bench-irq \
 	bench-irq-8502 bench-irq-z80 bench-irq-service \
 	bench-irq-service-8502 bench-irq-service-z80 bench-context \
 	bench-context-8502 bench-context-z80 bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
-	check doctor clean help
+	boot check doctor clean help
 
 all: 8502 z80 z80-asm
+
+boot: $(BOOT_D71)
 
 8502: $(KERNEL_BIN) $(KERNEL_PRG)
 
@@ -129,7 +136,7 @@ $(BUILD_8502) $(BUILD_Z80) $(BUILD_BENCH_8502) $(BUILD_BENCH_Z80) \
 		$(BUILD_IRQ_SERVICE_Z80) $(BUILD_CONTEXT_8502) $(BUILD_CONTEXT_Z80) \
 		$(BUILD_KERNEL_8502) $(BUILD_KERNEL_Z80) $(BUILD_HANDOFF_8502) \
 		$(BUILD_HANDOFF_Z80) $(BUILD_OFFLOAD_8502) $(BUILD_OFFLOAD_Z80) \
-		$(BUILD_MEMORY_MAP):
+		$(BUILD_MEMORY_MAP) $(BUILD_BOOT):
 	mkdir -p $@
 
 $(BUILD_8502)/kernel.s: src/8502/kernel.c include/udeks/mailbox.h \
@@ -461,6 +468,30 @@ $(MEMORY_MAP_LAUNCH_BIN): $(BUILD_MEMORY_MAP)/launcher.o \
 $(MEMORY_MAP_PRG): $(MEMORY_MAP_LAUNCH_BIN) tools/bin_to_prg.py
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
 
+$(BUILD_BOOT)/stage0.o: src/boot/stage0.s | $(BUILD_BOOT)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(STAGE0_BIN): $(BUILD_BOOT)/stage0.o cfg/8502-stage0.cfg
+	$(LD65) -C cfg/8502-stage0.cfg -o $@ $<
+
+$(BUILD_BOOT)/stage1-gateway.o: src/boot/stage1-gateway.s | $(BUILD_BOOT)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(STAGE1_GATEWAY_BIN): $(BUILD_BOOT)/stage1-gateway.o \
+		cfg/8502-stage1-gateway.cfg
+	$(LD65) -C cfg/8502-stage1-gateway.cfg -o $@ $<
+
+$(BUILD_BOOT)/stage1.o: src/boot/stage1.s $(STAGE1_GATEWAY_BIN) | $(BUILD_BOOT)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(STAGE1_BIN): $(BUILD_BOOT)/stage1.o cfg/8502-stage1.cfg
+	$(LD65) -C cfg/8502-stage1.cfg -o $@ $<
+
+$(BOOT_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) $(Z80_BIN) \
+		tools/build_d71.py
+	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
+		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) $@
+
 check:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
 	$(PYTHON) -m py_compile tools/ihx_to_bin.py tools/bin_to_prg.py \
@@ -468,7 +499,8 @@ check:
 		tools/irq_service_decode.py tools/context_decode.py \
 		tools/kernel_decode.py tools/handoff_decode.py \
 		tools/offload_decode.py tools/boot_status_decode.py \
-		tools/memory_map_decode.py \
+		tools/memory_map_decode.py tools/boot_chain_decode.py \
+		tools/build_d71.py \
 		tools/snapshot_extract.py \
 		tools/vice_capture.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
@@ -482,6 +514,8 @@ check:
 	cd bench/results/2026-09-24-memory-map-smoke/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-memory-map-r1 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-memory-map-profiles/raw && sha256sum -c SHA256SUMS
+	cd bench/artifacts/2026-09-24-native-boot-r1 && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-24-native-boot/raw && sha256sum -c SHA256SUMS
 
 doctor:
 	@missing=0; \
@@ -507,6 +541,7 @@ help:
 		'make 8502       Build the freestanding 8502 scaffold' \
 		'make z80        Build the SDCC Z80 worker scaffold' \
 		'make z80-asm    Build the standalone RASM smoke image' \
+		'make boot       Build the native autoboot D71 image' \
 		'make bench      Build comparable 8502 and Z80 benchmark images' \
 		'make bench-8502 Build only the 8502 benchmark image' \
 		'make bench-z80  Build only the Z80 benchmark image' \
