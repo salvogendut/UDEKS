@@ -4,7 +4,7 @@
 `UDEKS.png` adds the expanded project name and is the README logo. The
 two-colour pipe XPM files are prepared source variants for constrained targets:
 
-- `udekspipe-64.xpm` is the active upper-right VDC boot mark;
+- `udekspipe-64.xpm` is the active upper-left VDC boot mark;
 - `udekspipe-160.xpm` is the larger layout variant.
 
 The earlier `udeksdroid` PNG and XPM variants remain as project-history source

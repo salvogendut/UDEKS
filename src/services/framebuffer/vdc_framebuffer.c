@@ -290,20 +290,20 @@ static unsigned char render_hardware_info(void)
 
     capability = (volatile unsigned char *)UDEKS_CAPABILITY_STATUS_BASE;
     text_checksum = 0;
-    if (draw_text(2, 24, text_hardware) != UDEKS_VDC_OK ||
-        draw_text(2, 40, capability[7] == UDEKS_VIDEO_PAL ?
+    if (draw_text(2, 92, text_hardware) != UDEKS_VDC_OK ||
+        draw_text(2, 108, capability[7] == UDEKS_VIDEO_PAL ?
                   text_video_pal : text_video_ntsc) != UDEKS_VDC_OK ||
-        draw_text(2, 56, capability[9] == UDEKS_VDC_FAMILY_8568 ?
+        draw_text(2, 124, capability[9] == UDEKS_VDC_FAMILY_8568 ?
                   text_vdc_8568 : text_vdc_8563) != UDEKS_VDC_OK ||
-        draw_text(2, 72, capability[10] == 64 ?
+        draw_text(2, 140, capability[10] == 64 ?
                   text_vram_64k : text_vram_16k) != UDEKS_VDC_OK ||
-        draw_text(2, 88, capability[12] != 0 ?
+        draw_text(2, 156, capability[12] != 0 ?
                   text_reu_yes : text_reu_no) != UDEKS_VDC_OK ||
-        draw_text(2, 104, capability[13] != 0 ?
+        draw_text(2, 172, capability[13] != 0 ?
                   text_georam_yes : text_georam_no) != UDEKS_VDC_OK ||
-        draw_text(61, 92, text_8502) != UDEKS_VDC_OK ||
-        draw_text(61, 108, text_z80) != UDEKS_VDC_OK ||
-        draw_text(61, 124, text_dual) != UDEKS_VDC_OK) {
+        draw_text(20, 92, text_8502) != UDEKS_VDC_OK ||
+        draw_text(20, 108, text_z80) != UDEKS_VDC_OK ||
+        draw_text(20, 124, text_dual) != UDEKS_VDC_OK) {
         return UDEKS_VDC_TIMEOUT;
     }
     return UDEKS_VDC_OK;
@@ -330,7 +330,7 @@ static void status_begin(void)
     STATUS_BYTE(1) = 'F';
     STATUS_BYTE(2) = 'B';
     STATUS_BYTE(3) = 'R';
-    STATUS_BYTE(4) = 3;
+    STATUS_BYTE(4) = 4;
     STATUS_BYTE(5) = UDEKS_FRAMEBUFFER_STATE_STARTING;
     STATUS_BYTE(7) = UDEKS_FRAMEBUFFER_STRIDE;
     STATUS_BYTE(8) = UDEKS_FRAMEBUFFER_HEIGHT;

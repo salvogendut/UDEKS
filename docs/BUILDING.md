@@ -71,10 +71,9 @@ kernel will consume those bytes without carrying an image decoder.
 The current production image starts three services in order: hardware
 capability discovery, the qualified text-mode fallback, and the baseline VDC
 framebuffer. The framebuffer takes final display ownership, enters 640x200
-monochrome bitmap mode, and shows the compact UDEKS pipe at the upper right in
+monochrome bitmap mode, and shows the compact UDEKS pipe at the upper left in
 the default black-on-yellow theme. It then uses the original UDEKS 5x7 software
-font to render the capability service's hardware inventory without overlapping
-the logo.
+font to render the capability service's hardware inventory beneath the logo.
 
 The resident 8502 image links the small subset of cc65's `none` runtime needed
 by its C services. Startup initializes cc65's downward-growing software stack

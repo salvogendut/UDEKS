@@ -59,14 +59,14 @@ gated extensions rather than assumptions made by the baseline API.
 The first end-to-end client is the boot splash. A host-side build tool converts
 `assets/udekspipe-64.xpm` into packed VDC scanlines while preserving the PNG
 and both XPM sizes as source artwork. The service places the compact 64x64 pipe
-mark at the upper right of the baseline surface and verifies it in VDC RAM. No
+mark at the upper left of the baseline surface and verifies it in VDC RAM. No
 PNG decoder belongs in the kernel. The 160x160 variant remains available for
 future layouts with more room. The present transitional service runs after the
 text console and takes final display ownership; the software-font milestone
 removes that split ownership by making console output a framebuffer client.
 
 The second client installs an original software-defined 5x7 font in 8x8 cells
-and renders a hardware inventory beside the splash. It reads the published
+and renders a two-column hardware inventory beneath the splash. It reads the published
 `HCAP` record; it must not touch probe registers itself. The first screen
 reports PAL/NTSC, VDC family and memory, and REU/GeoRAM presence. This makes glyph rendering,
 text-over-bitmap composition, clipping, dirty-span flushing, and cross-service
@@ -127,7 +127,7 @@ The first implementation publishes a 32-byte `VFBR` record at `$F0E0`:
 | Offset | Size | Meaning |
 |---:|---:|---|
 | 0 | 4 | ASCII magic `VFBR` |
-| 4 | 1 | Format (`3`; formats 1 and 2 preserve earlier milestones) |
+| 4 | 1 | Format (`4`; formats 1–3 preserve earlier milestones) |
 | 5 | 1 | Starting (`1`), ready (`2`), or error (`$80 | code`) |
 | 6 | 1 | Failure code |
 | 7 | 1 | Bitmap stride (`80` bytes) |
@@ -138,7 +138,7 @@ The first implementation publishes a 32-byte `VFBR` record at `$F0E0`:
 | 12 | 1 | Active bitmap register 25 |
 | 13–14 | 2 | Saved display address |
 | 15–18 | 4 | Splash width in bytes, height, x-byte, and y |
-| 19–20 | 2 | Splash VDC address (`$0406`, little-endian) |
+| 19–20 | 2 | Splash VDC address (`$03C2`, little-endian) |
 | 21–22 | 2 | Verified byte-sum (`$5873`, little-endian) |
 | 23 | 1 | Display and verified-font flags (`$7F`) |
 | 24 | 1 | VDC colour register (`$0D`, black on yellow) |
@@ -150,5 +150,5 @@ The first implementation publishes a 32-byte `VFBR` record at `$F0E0`:
 
 The service reads every uploaded splash byte back before making bitmap mode
 visible. Every software-font scanline is also read back immediately after it is
-written. `tools/framebuffer_decode.py` strictly validates all three record
+written. `tools/framebuffer_decode.py` strictly validates all four record
 versions so preserved qualification evidence remains readable.

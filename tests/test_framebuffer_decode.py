@@ -43,6 +43,13 @@ def pipe_logo_record() -> bytearray:
     return block
 
 
+def left_pipe_logo_record() -> bytearray:
+    block = pipe_logo_record()
+    block[4] = 4
+    block[17:21] = bytes((2, 12, 0xC2, 0x03))
+    return block
+
+
 class FramebufferDecodeTests(unittest.TestCase):
     def test_accepts_verified_splash(self):
         result = parse_result(valid_record())
@@ -64,6 +71,12 @@ class FramebufferDecodeTests(unittest.TestCase):
         result = parse_result(pipe_logo_record())
         self.assertEqual(result["format"], 3)
         self.assertEqual(result["splash_address"], 0x0406)
+        self.assertEqual(result["splash_checksum"], 0x5873)
+
+    def test_accepts_compact_pipe_logo_at_top_left(self):
+        result = parse_result(left_pipe_logo_record())
+        self.assertEqual(result["format"], 4)
+        self.assertEqual(result["splash_address"], 0x03C2)
         self.assertEqual(result["splash_checksum"], 0x5873)
 
     def test_reports_service_failure(self):

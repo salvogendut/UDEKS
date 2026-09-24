@@ -23,7 +23,7 @@ def parse_result(data: bytes) -> dict[str, int]:
     block = data[:RESULT_SIZE]
     if block[:4] != b"VFBR":
         raise ValueError("framebuffer status magic is not VFBR")
-    if block[4] not in (1, 2, 3):
+    if block[4] not in (1, 2, 3, 4):
         raise ValueError(f"unsupported framebuffer status format {block[4]}")
     if block[5] != 2:
         if block[5] & 0x80:
@@ -49,7 +49,7 @@ def parse_result(data: bytes) -> dict[str, int]:
                 22: 0x28,
             }
         )
-    else:
+    elif block[4] == 3:
         expected.update(
             {
                 15: 8,
@@ -58,6 +58,19 @@ def parse_result(data: bytes) -> dict[str, int]:
                 18: 12,
                 19: 0x06,
                 20: 0x04,
+                21: 0x73,
+                22: 0x58,
+            }
+        )
+    else:
+        expected.update(
+            {
+                15: 8,
+                16: 64,
+                17: 2,
+                18: 12,
+                19: 0xC2,
+                20: 0x03,
                 21: 0x73,
                 22: 0x58,
             }

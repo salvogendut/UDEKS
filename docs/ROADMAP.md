@@ -133,7 +133,7 @@ mailbox corruption, with published benchmark results.
 - [x] Bring up and qualify the baseline 640x200 one-bit VDC framebuffer on 16
   and 64 KiB VDC configurations in VICE and `1986`.
 - [x] Convert the compact 64x64 pipe artwork at build time and place it at the
-  upper right as the framebuffer-backed boot splash.
+  upper left, with system information below, as the framebuffer-backed splash.
 - [ ] Degrade cleanly to the text console when framebuffer initialization fails.
 - [x] Add a software-defined bitmap font, then render the `HCAP` PAL/NTSC, VDC,
   and expansion-memory results as the second framebuffer client.

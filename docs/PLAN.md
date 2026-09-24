@@ -115,13 +115,13 @@ banked system-RAM backing surface and dirty uploads; 64 KiB VDCs may add an
 attribute plane and VDC-resident staging or back buffers. The detailed proposal
 is in [VDC-FRAMEBUFFER.md](VDC-FRAMEBUFFER.md).
 
-The first framebuffer integration is a compact boot mark at the upper right,
+The first framebuffer integration is a compact boot mark at the upper left,
 generated at build time from the 64x64 pipe artwork in `assets/`. It doubles as
 a visual test of mode entry, clipping, packed scanline upload, and clean
 ownership transfer to the console; text-only boot remains the failure fallback.
 
-After the splash, a software-defined font renders the capability service's
-published hardware inventory. Display code consumes `HCAP` and never repeats
+Below the splash, a software-defined font renders the capability service's
+published hardware inventory in two columns. Display code consumes `HCAP` and never repeats
 hardware probes, keeping discovery policy in one service while proving
 text-over-graphics composition.
 
