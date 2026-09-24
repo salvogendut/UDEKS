@@ -69,12 +69,42 @@ class KeyboardBehaviorTests(unittest.TestCase):
         self.assertEqual(self.normalized(56, 0x01), ord("!"))
         self.assertEqual(self.normalized(44, 0x01), ord(">"))
         self.assertEqual(self.normalized(55, 0x01), ord("?"))
+        self.assertEqual(self.normalized(35, 0x01), 0)
 
     def test_c128_extended_text_keys_are_normalized(self):
         self.assertEqual(self.normalized(67), ord("\t"))
         self.assertEqual(self.normalized(72), 0x1B)
         self.assertEqual(self.normalized(76), ord("\n"))
         self.assertEqual(self.normalized(65), ord("8"))
+
+    def test_complete_base_matrix_matches_c128_physical_rows(self):
+        rows = (
+            ("\b", "\n", None, None, None, None, None, None),
+            ("3", "w", "a", "4", "z", "s", "e", None),
+            ("5", "r", "d", "6", "c", "f", "t", "x"),
+            ("7", "y", "g", "8", "b", "h", "u", "v"),
+            ("9", "i", "j", "0", "m", "k", "o", "n"),
+            ("+", "p", "l", "-", ".", ":", "@", ","),
+            (None, "*", ";", None, None, "=", None, "/"),
+            ("1", None, None, "2", " ", None, "q", None),
+        )
+        for row, values in enumerate(rows):
+            for bit, expected in enumerate(values):
+                with self.subTest(row=row, bit=bit):
+                    actual = self.normalized(row * 8 + bit)
+                    self.assertEqual(actual, 0 if expected is None else ord(expected))
+
+    def test_complete_extended_matrix_matches_c128_physical_rows(self):
+        rows = (
+            (None, "8", "5", "\t", "2", "4", "7", "1"),
+            ("\x1b", "+", "-", "\n", "\n", "6", "9", "3"),
+            (None, "0", ".", None, None, None, None, None),
+        )
+        for row, values in enumerate(rows, start=8):
+            for bit, expected in enumerate(values):
+                with self.subTest(row=row, bit=bit):
+                    actual = self.normalized(row * 8 + bit)
+                    self.assertEqual(actual, 0 if expected is None else ord(expected))
 
     def test_non_text_and_invalid_keys_return_zero(self):
         self.assertEqual(self.normalized(2), 0)

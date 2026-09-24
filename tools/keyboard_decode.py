@@ -23,7 +23,7 @@ def parse_result(data: bytes) -> dict[str, int | list[int]]:
     block = data[:RESULT_SIZE]
     if block[:4] != b"KEYB":
         raise ValueError("keyboard status magic is not KEYB")
-    if block[4] != 1:
+    if block[4] not in (1, 2):
         raise ValueError(f"unsupported keyboard status format {block[4]}")
     if block[5] != 2:
         if block[5] & 0x80:
@@ -39,7 +39,8 @@ def parse_result(data: bytes) -> dict[str, int | list[int]]:
         raise ValueError("keyboard queue depth exceeds capacity")
     if block[15] not in (0, 1) or block[16] not in (0, 1):
         raise ValueError("keyboard switch state is not Boolean")
-    if block[17] != 0x0F:
+    expected_flags = 0x0F if block[4] == 1 else 0x1F
+    if block[17] != expected_flags:
         raise ValueError(f"keyboard capability flags are {block[17]:#04x}")
     if block[11] not in (0, 1, 2):
         raise ValueError(f"invalid last-event type {block[11]}")

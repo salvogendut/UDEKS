@@ -10,9 +10,9 @@ have been: a system that deliberately coordinates its 8502 and Z80 and treats
 the VIC-IIe and VDC as independent, simultaneously useful display engines.
 
 The name also echoes the Latin word *iudex*, “judge.” UDEKS is dedicated to
-Lo Giudice, the teacher who introduced its creator to programming as a child
-and embodied authority, knowledge, insight, firm direction, and paternal
-sweetness. This project is developed in his memory. Read the full
+“Professor Lo Giudice,” the teacher who introduced its creator to programming
+as a child and embodied authority, knowledge, insight, firm direction, and
+paternal sweetness. This project is developed in his memory. Read the full
 [dedication](DEDICATION.md).
 
 UDEKS is licensed under the GNU General Public License, version 3 or later.

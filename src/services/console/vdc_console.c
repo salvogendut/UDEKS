@@ -28,6 +28,7 @@
 #define SCREEN_BASE                0x0000u
 #define ATTRIBUTE_BASE             0x0800u
 #define SCREEN_ATTRIBUTE           UDEKS_THEME_VDC_ATTRIBUTE
+#define SCREEN_ATTRIBUTE_ALT       0x80u
 #define SCREEN_WIDTH               UDEKS_CONSOLE_COLUMNS
 #define SCREEN_HEIGHT              UDEKS_CONSOLE_ROWS
 
@@ -61,6 +62,7 @@ static unsigned char address_high;
 static unsigned char address_low;
 static unsigned char service_failure;
 static unsigned char row_buffer[UDEKS_ROOT_CONSOLE_COLUMNS];
+static unsigned char attribute_buffer[UDEKS_ROOT_CONSOLE_COLUMNS];
 static unsigned char frame_buffer[UDEKS_ROOT_CONSOLE_COLUMNS + 2u];
 
 static void status_begin(void)
@@ -328,11 +330,21 @@ unsigned char udeks_console_refresh_root(void)
         length = (unsigned char)(last - first + 1u);
         for (column = 0; column < length; ++column) {
             row_buffer[column] = screen_code(source[first + column]);
+            attribute_buffer[column] = (unsigned char)(
+                SCREEN_ATTRIBUTE |
+                (source[first + column] >= 'a' &&
+                 source[first + column] <= 'z' ?
+                    SCREEN_ATTRIBUTE_ALT : 0u));
         }
         if (vdc_write_block_at(
                 (unsigned int)(UDEKS_CONSOLE_ROOT_Y + row) * SCREEN_WIDTH +
                     UDEKS_CONSOLE_ROOT_X + first,
-                row_buffer, length) != UDEKS_VDC_OK) {
+                row_buffer, length) != UDEKS_VDC_OK ||
+            vdc_write_block_at(
+                ATTRIBUTE_BASE +
+                    (unsigned int)(UDEKS_CONSOLE_ROOT_Y + row) * SCREEN_WIDTH +
+                    UDEKS_CONSOLE_ROOT_X + first,
+                attribute_buffer, length) != UDEKS_VDC_OK) {
             return UDEKS_CONSOLE_VDC_ERROR;
         }
         udeks_root_console_mark_row_clean(row);

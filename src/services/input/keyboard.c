@@ -20,6 +20,7 @@
 #define KEYBOARD_FLAG_EXTENDED   0x02u
 #define KEYBOARD_FLAG_PRESERVED  0x04u
 #define KEYBOARD_FLAG_QUEUED     0x08u
+#define KEYBOARD_FLAG_DEBOUNCED   0x10u
 
 static const unsigned char normal_map[88] = {
     '\b', '\n', 0, 0, 0, 0, 0, 0,
@@ -40,7 +41,7 @@ static const unsigned char shifted_map[88] = {
     '#', 'W', 'A', '$', 'Z', 'S', 'E', 0,
     '%', 'R', 'D', '&', 'C', 'F', 'T', 'X',
     '\'', 'Y', 'G', '(', 'B', 'H', 'U', 'V',
-    ')', 'I', 'J', '0', 'M', 'K', 'O', 'N',
+    ')', 'I', 'J', 0, 'M', 'K', 'O', 'N',
     '+', 'P', 'L', '-', '>', '[', '@', '<',
     0, '*', ']', 0, 0, '=', 0, '?',
     '!', 0, 0, '"', ' ', 0, 'Q', 0,
@@ -50,6 +51,8 @@ static const unsigned char shifted_map[88] = {
 };
 
 static unsigned char previous_matrix[UDEKS_KEYBOARD_MATRIX_LINES];
+static unsigned char candidate_matrix[UDEKS_KEYBOARD_MATRIX_LINES];
+static unsigned char changed_matrix[UDEKS_KEYBOARD_MATRIX_LINES];
 static struct udeks_key_event event_queue[UDEKS_KEYBOARD_QUEUE_CAPACITY];
 static unsigned char queue_head;
 static unsigned char queue_tail;
@@ -59,10 +62,10 @@ static unsigned char sense_bit;
 static unsigned char scan_code;
 static unsigned char modifiers;
 
-static unsigned char key_pressed(unsigned char code)
+static unsigned char stable_key_pressed(unsigned char code)
 {
     return (unsigned char)(
-        udeks_keyboard_matrix[code >> 3] & (1u << (code & 7u)));
+        previous_matrix[code >> 3] & (1u << (code & 7u)));
 }
 
 static unsigned char current_modifiers(void)
@@ -70,17 +73,17 @@ static unsigned char current_modifiers(void)
     unsigned char result;
 
     result = 0;
-    if (key_pressed(UDEKS_KEY_SCAN_LEFT_SHIFT) != 0 ||
-        key_pressed(UDEKS_KEY_SCAN_RIGHT_SHIFT) != 0) {
+    if (stable_key_pressed(UDEKS_KEY_SCAN_LEFT_SHIFT) != 0 ||
+        stable_key_pressed(UDEKS_KEY_SCAN_RIGHT_SHIFT) != 0) {
         result |= UDEKS_KEY_MOD_SHIFT;
     }
-    if (key_pressed(UDEKS_KEY_SCAN_CONTROL) != 0) {
+    if (stable_key_pressed(UDEKS_KEY_SCAN_CONTROL) != 0) {
         result |= UDEKS_KEY_MOD_CONTROL;
     }
-    if (key_pressed(UDEKS_KEY_SCAN_COMMODORE) != 0) {
+    if (stable_key_pressed(UDEKS_KEY_SCAN_COMMODORE) != 0) {
         result |= UDEKS_KEY_MOD_COMMODORE;
     }
-    if (key_pressed(UDEKS_KEY_SCAN_ALT) != 0) {
+    if (stable_key_pressed(UDEKS_KEY_SCAN_ALT) != 0) {
         result |= UDEKS_KEY_MOD_ALT;
     }
     if (udeks_keyboard_caps != 0) {
@@ -163,7 +166,7 @@ static void publish_switches_and_matrix(void)
     STATUS_BYTE(16) = udeks_keyboard_display_80;
     for (scan_line = 0; scan_line < UDEKS_KEYBOARD_MATRIX_LINES; ++scan_line) {
         STATUS_BYTE(STATUS_MATRIX + scan_line) =
-            udeks_keyboard_matrix[scan_line];
+            previous_matrix[scan_line];
     }
 }
 
@@ -178,19 +181,22 @@ unsigned char udeks_keyboard_start(void)
     STATUS_BYTE(1) = 'E';
     STATUS_BYTE(2) = 'Y';
     STATUS_BYTE(3) = 'B';
-    STATUS_BYTE(4) = 1;
+    STATUS_BYTE(4) = 2;
     STATUS_BYTE(5) = UDEKS_KEYBOARD_STATE_STARTING;
     STATUS_BYTE(7) = UDEKS_KEYBOARD_MATRIX_LINES;
     STATUS_BYTE(8) = UDEKS_KEYBOARD_QUEUE_CAPACITY;
     STATUS_BYTE(STATUS_FLAGS) =
         KEYBOARD_FLAG_STANDARD | KEYBOARD_FLAG_EXTENDED |
-        KEYBOARD_FLAG_PRESERVED | KEYBOARD_FLAG_QUEUED;
+        KEYBOARD_FLAG_PRESERVED | KEYBOARD_FLAG_QUEUED |
+        KEYBOARD_FLAG_DEBOUNCED;
     queue_head = 0;
     queue_tail = 0;
     queue_count = 0;
     udeks_keyboard_scan();
     for (scan_line = 0; scan_line < UDEKS_KEYBOARD_MATRIX_LINES; ++scan_line) {
         previous_matrix[scan_line] = udeks_keyboard_matrix[scan_line];
+        candidate_matrix[scan_line] = udeks_keyboard_matrix[scan_line];
+        changed_matrix[scan_line] = 0;
     }
     publish_switches_and_matrix();
     STATUS_BYTE(5) = UDEKS_KEYBOARD_STATE_READY;
@@ -203,22 +209,30 @@ unsigned char udeks_keyboard_poll(void)
     unsigned char mask;
 
     udeks_keyboard_scan();
+    for (scan_line = 0; scan_line < UDEKS_KEYBOARD_MATRIX_LINES; ++scan_line) {
+        if (udeks_keyboard_matrix[scan_line] != candidate_matrix[scan_line]) {
+            candidate_matrix[scan_line] = udeks_keyboard_matrix[scan_line];
+            changed_matrix[scan_line] = 0;
+            continue;
+        }
+        changed_matrix[scan_line] = (unsigned char)(
+            candidate_matrix[scan_line] ^ previous_matrix[scan_line]);
+        previous_matrix[scan_line] = candidate_matrix[scan_line];
+    }
     modifiers = current_modifiers();
     for (scan_line = 0; scan_line < UDEKS_KEYBOARD_MATRIX_LINES; ++scan_line) {
-        changed = (unsigned char)(
-            udeks_keyboard_matrix[scan_line] ^ previous_matrix[scan_line]);
+        changed = changed_matrix[scan_line];
         mask = 1;
         for (sense_bit = 0; sense_bit < 8u; ++sense_bit) {
             if ((changed & mask) != 0) {
                 scan_code = (unsigned char)(scan_line * 8u + sense_bit);
                 enqueue_event(
-                    (udeks_keyboard_matrix[scan_line] & mask) != 0 ?
+                    (previous_matrix[scan_line] & mask) != 0 ?
                         UDEKS_KEY_EVENT_PRESS : UDEKS_KEY_EVENT_RELEASE,
                     scan_code);
             }
             mask <<= 1;
         }
-        previous_matrix[scan_line] = udeks_keyboard_matrix[scan_line];
     }
     publish_switches_and_matrix();
     increment_counter(STATUS_POLL_LO);

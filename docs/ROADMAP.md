@@ -167,10 +167,14 @@ mailbox corruption, with published benchmark results.
 - [ ] Support VDC-only, VIC-only, mirrored, and extended desktop modes.
 - [x] Add a polled full-matrix C128 keyboard source with normalized queued
   press/release events.
+- [x] Debounce matrix rows across consecutive scans and derive modifiers from
+  stable state before exposing keyboard input to the terminal.
 - [x] Add a bounded root-terminal line editor with insertion, Backspace,
   horizontal cursor movement, retained submission, and VDC repaint.
 - [x] Make the root terminal a direct VDC text-mode client with a hardware
   cursor and custom upper-half glyphs for the logo and window edges.
+- [x] Preserve mixed-case terminal text with per-cell VDC primary/alternate
+  character-set attributes.
 - [ ] Benchmark equivalent VIC-IIe and VDC graphics primitives, including CPU
   draw cost, transfer cost, display-cycle contention, and perceived latency.
 - [ ] Implement a VIC-IIe graphics service as the preferred interactive-pixel

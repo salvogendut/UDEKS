@@ -53,6 +53,15 @@ class RootConsoleSourceTests(unittest.TestCase):
         self.assertIn("udeks_root_console_mark_row_clean", renderer)
         self.assertIn("VDC_REG_CURSOR_HI", renderer)
 
+    def test_vdc_renderer_preserves_mixed_case_with_alternate_charset(self):
+        renderer = (
+            ROOT / "src/services/console/vdc_console.c"
+        ).read_text(encoding="utf-8")
+        self.assertIn("SCREEN_ATTRIBUTE_ALT", renderer)
+        self.assertIn("attribute_buffer", renderer)
+        self.assertIn("source[first + column] >= 'a'", renderer)
+        self.assertIn("ATTRIBUTE_BASE +", renderer)
+
     def test_model_is_linked_into_production_and_panic_images(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
         self.assertGreaterEqual(makefile.count("root_console.o"), 2)

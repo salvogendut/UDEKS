@@ -39,8 +39,12 @@ class KeyboardSourceTests(unittest.TestCase):
         self.assertIn("UDEKS_KEY_EVENT_PRESS", source)
         self.assertIn("UDEKS_KEY_EVENT_RELEASE", source)
         self.assertIn("previous_matrix", source)
-        self.assertNotIn("candidate_matrix", source)
-        self.assertNotIn("stable_sample", source)
+        self.assertIn("candidate_matrix", source)
+        self.assertIn(
+            "udeks_keyboard_matrix[scan_line] != candidate_matrix[scan_line]",
+            source,
+        )
+        self.assertIn("KEYBOARD_FLAG_DEBOUNCED", source)
 
 
 if __name__ == "__main__":

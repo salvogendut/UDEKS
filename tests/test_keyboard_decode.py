@@ -23,6 +23,13 @@ def valid_record():
     return block
 
 
+def debounced_record():
+    block = valid_record()
+    block[4] = 2
+    block[17] = 0x1F
+    return block
+
+
 class KeyboardDecodeTests(unittest.TestCase):
     def test_accepts_idle_full_matrix_driver(self):
         result = parse_result(valid_record())
@@ -41,6 +48,11 @@ class KeyboardDecodeTests(unittest.TestCase):
         self.assertEqual(result["last_scan_code"], 10)
         self.assertEqual(result["last_character"], ord("a"))
         self.assertEqual(result["last_press_character"], ord("a"))
+
+    def test_accepts_debounced_driver_record(self):
+        result = parse_result(debounced_record())
+        self.assertEqual(result["format"], 2)
+        self.assertEqual(result["flags"], 0x1F)
 
     def test_rejects_queue_overflow(self):
         block = valid_record()

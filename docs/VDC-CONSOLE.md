@@ -20,6 +20,9 @@ current package contains 63 glyphs. They replace only codes `$80-$BE` in the
 upper half of the already-active VDC character generator; the stock lower 128
 characters remain available for ordinary console text. The boot layout uses
 the logo rail at left and custom line-drawing cells around the root console.
+Lowercase cells select the VDC's alternate character set through attribute
+bit 7 while uppercase cells retain the primary set, so one row can display
+mixed case without switching the console-wide character generator.
 
 Record format 2 changes the system-owned palette to the UDEKS default: black
 foreground attribute `$00` on the yellow register-26 background `$0D`. The
