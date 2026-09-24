@@ -3,6 +3,9 @@
 - Status: accepted
 - Date: 2026-09-24
 
+ADR 0006 supersedes the assumption below that a full-screen bitmap is always
+the final VDC output. The retained window and focus model remains accepted.
+
 ## Context
 
 The reference UDEKS boot screen established a bordered area containing boot
@@ -41,8 +44,8 @@ Memory policy depends on content:
   attributes;
 - bitmap windows use bounded owned surfaces, banked allocations, or repaint
   callbacks rather than an unconditional full-screen buffer;
-- the existing 16,000-byte system-RAM framebuffer remains the final composed
-  VDC image and recovery copy;
+- the display backend chooses a retained text-cell target or an explicitly
+  acquired bitmap surface; no unconditional full-screen bitmap is required;
 - a display backend owns physical video memory and register access.
 
 Keyboard and pointer events go to the focused window. Window management and

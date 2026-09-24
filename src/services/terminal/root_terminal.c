@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
-#include "udeks/framebuffer.h"
+#include "udeks/console.h"
 #include "udeks/keyboard.h"
 #include "udeks/line_editor.h"
 #include "udeks/root_console.h"
@@ -120,18 +120,8 @@ static unsigned char refresh_display(void)
     if (pending_refresh == 0) {
         return UDEKS_ROOT_TERMINAL_OK;
     }
-    result = udeks_framebuffer_acquire();
-    if (result == UDEKS_FRAMEBUFFER_BUSY) {
-        return UDEKS_ROOT_TERMINAL_OK;
-    }
-    if (result != UDEKS_FRAMEBUFFER_OK) {
-        return UDEKS_ROOT_TERMINAL_RENDER;
-    }
-    result = udeks_framebuffer_refresh_root_console();
-    if (result == UDEKS_FRAMEBUFFER_OK) {
-        result = udeks_framebuffer_release();
-    }
-    if (result != UDEKS_FRAMEBUFFER_OK) {
+    result = udeks_console_refresh_root();
+    if (result != UDEKS_CONSOLE_OK) {
         return UDEKS_ROOT_TERMINAL_RENDER;
     }
     pending_refresh = 0;
@@ -155,8 +145,8 @@ unsigned char udeks_root_terminal_start(void)
     STATUS_BYTE(7) = UDEKS_LINE_EDITOR_CAPACITY;
     if (*(volatile unsigned char *)(UDEKS_KEYBOARD_STATUS_BASE + 5u) !=
             UDEKS_KEYBOARD_STATE_READY ||
-        *(volatile unsigned char *)(UDEKS_FRAMEBUFFER_STATUS_BASE + 5u) !=
-            UDEKS_FRAMEBUFFER_STATE_READY) {
+        *(volatile unsigned char *)(UDEKS_CONSOLE_STATUS_BASE + 5u) !=
+            UDEKS_CONSOLE_STATE_READY) {
         return terminal_fail(UDEKS_ROOT_TERMINAL_DEPENDENCY);
     }
     udeks_line_editor_initialize();

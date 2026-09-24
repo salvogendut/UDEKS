@@ -1,9 +1,10 @@
 # VDC framebuffer and compositor
 
-The VDC can provide a genuine 640×200 one-bit bitmap front buffer. UDEKS will
-use it as the basis of a C graphics/compositor service so applications can mix
-text and graphics on one surface. Text in this mode is rendered from fonts by
-software; the VDC does not overlay its character mode on bitmap mode.
+The VDC can provide a genuine 640×200 one-bit bitmap front buffer. UDEKS keeps
+this as an optional C graphics service for applications that need VDC
+resolution or an independent second screen. Text in this mode is rendered from
+fonts by software; the VDC does not overlay its character mode on bitmap mode.
+It is no longer the default root-console surface; see ADR 0006.
 
 ## Memory tiers
 
@@ -13,7 +14,7 @@ A 640×200 bitmap occupies 16,000 bytes at an 80-byte stride. An optional
 - **16 KiB VDC:** one monochrome front buffer nearly fills VDC RAM. The
   canonical backing surface lives in banked system RAM, and dirty rows or
   rectangles are uploaded through bounded VDC transfers. Hardware text mode
-  remains available as the low-memory console fallback.
+  remains the normal console.
 - **64 KiB VDC:** the service may add the attribute plane, VDC-resident staging
   areas, cached fonts, and front/back buffers while retaining a system-RAM
   backing surface for recovery and composition.
@@ -29,10 +30,9 @@ remain limited to bounded VDC register access and measured block-transfer fast
 paths. Applications will target a surface API, never `$D600/$D601` or a fixed
 VDC address.
 
-The C text console predates this compositor and remains the recovery display
-service. The framebuffer is now the first substantial graphics C module; the
-next console milestone will route ordinary console output through its public
-surface API rather than retaining a separate VDC layout owner.
+The C text console is the primary VDC display service. The framebuffer remains
+the first substantial graphics C module, but applications acquire it
+explicitly rather than making ordinary terminal output a bitmap client.
 
 ## First implementation slice
 
@@ -52,12 +52,11 @@ scanline. Its first public operations are deliberately small:
 4. track dirty byte spans per scanline and flush only those spans;
 5. retire a span only after its bounded assembly transfer completes.
 
-Cold boot deliberately uses a different repaint policy. UDEKS blanks the VDC
-before touching its RAM, builds the complete root-window image in system RAM,
-and sends all 16,000 bytes through one auto-incrementing assembly transfer.
-The display is enabled only after upload and splash verification, so no
-top-to-bottom border or text construction is exposed. Interactive clients
-continue to use incremental dirty spans rather than uploading a full screen.
+The historical framebuffer-backed boot implementation built the complete
+root-window image in system RAM and revealed one atomic 16,000-byte upload.
+That removed visible construction but remained too slow for interactive use on
+physical hardware. It is preserved as graphics-service qualification evidence,
+not used by the production boot.
 
 The initial API uses a single global ownership lease; task-associated opaque
 handles follow once scheduler identities exist. Mode tables, VDC addresses,
@@ -73,9 +72,8 @@ the 64x21 Japanese UDEKS wordmark directly below it. Per-span readback is not
 used by the production renderer; the splash region is sampled back as the boot
 transfer's integrity check. No PNG decoder belongs in the kernel. The
 160x160 pipe variant remains available for future layouts with more room. The
-present transitional service runs after the
-text console and takes final display ownership; the software-font milestone
-removes that split ownership by making console output a framebuffer client.
+production text console now derives programmable-character tiles from the same
+artwork. The framebuffer no longer takes display ownership during normal boot.
 
 The second client installs an original software-defined 5x7 font in 8x8 cells.
 Following `assets/bootscreen.png`, the pipe occupies a left rail and a 528x184

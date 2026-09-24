@@ -9,9 +9,17 @@ three narrow C-callable operations: select a VDC register, write the selected
 register, and read it.
 
 `src/services/console/vdc_console.c` owns policy in C. It establishes display
-and attribute bases, enables attributes, clears the 80×25 screen, converts the
-banner text to VDC screen codes, and hides the cursor. It then reads the first
-title character and its attribute back from independent VDC RAM.
+and attribute bases, enables attributes, clears the 80×25 screen with hardware
+block fill, and renders the retained 64×21 root terminal into direct VDC text
+cells. Dirty spans are the unit of later repaint, and registers 14/15 drive the
+hardware cursor.
+
+`tools/xpm_to_vdc_text.py` converts the pipe and Japanese wordmark into 8×8
+tiles, deduplicates identical patterns, and adds six window-edge glyphs. The
+current package contains 63 glyphs. They replace only codes `$80-$BE` in the
+upper half of the already-active VDC character generator; the stock lower 128
+characters remain available for ordinary console text. The boot layout uses
+the logo rail at left and custom line-drawing cells around the root console.
 
 Record format 2 changes the system-owned palette to the UDEKS default: black
 foreground attribute `$00` on the yellow register-26 background `$0D`. The
@@ -27,9 +35,10 @@ python3 tools/vdc_console_decode.py console.bin
 python3 tools/vdc_console_decode.py run.vsf
 ```
 
-This is a polled bring-up service. IRQ-safe serialization, output queues,
-scrolling, cursor policy, terminal controls, and VDC-size detection remain
-future service work.
+This is currently a polled service. The retained model already provides
+scrolling and terminal controls; IRQ-safe serialization, output queues, and
+multiple terminal handles remain future work. It deliberately owns the VDC
+directly rather than depending on the C128 ROM screen editor.
 
 The register and RAM-access sequences follow chapter 10 of the
 [Commodore 128 Programmer's Reference

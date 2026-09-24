@@ -44,14 +44,14 @@ class RootConsoleSourceTests(unittest.TestCase):
 
     def test_vdc_renderer_consumes_retained_rows_and_cursor(self):
         renderer = (
-            ROOT / "src/services/framebuffer/vdc_framebuffer.c"
+            ROOT / "src/services/console/vdc_console.c"
         ).read_text(encoding="utf-8")
         self.assertIn("udeks_boot_console_build()", renderer)
-        self.assertIn("udeks_root_console_row(console_row)", renderer)
+        self.assertIn("udeks_root_console_row(row)", renderer)
         self.assertIn("udeks_root_console_cursor_visible()", renderer)
-        self.assertIn("udeks_framebuffer_refresh_root_console", renderer)
+        self.assertIn("udeks_console_refresh_root", renderer)
         self.assertIn("udeks_root_console_mark_row_clean", renderer)
-        self.assertIn("UDEKS_FRAMEBUFFER_API_FLAGS", renderer)
+        self.assertIn("VDC_REG_CURSOR_HI", renderer)
 
     def test_model_is_linked_into_production_and_panic_images(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")

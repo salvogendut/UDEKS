@@ -23,17 +23,14 @@ class FramebufferBoundaryTests(unittest.TestCase):
         self.assertIn("snapshot_registers()", source)
         self.assertIn("restore_display_state()", source)
 
-    def test_service_runs_after_qualified_text_console(self):
+    def test_service_is_optional_and_not_in_default_boot_registry(self):
         source = (ROOT / "src/services/table.s").read_text(encoding="utf-8")
-        capability = source.index(".addr _udeks_capability_service_descriptor")
-        clock = source.index(".addr _udeks_clock_service_descriptor")
-        console = source.index(".addr _udeks_console_service_descriptor")
-        framebuffer = source.index(".addr _udeks_framebuffer_service_descriptor")
-        self.assertLess(capability, console)
-        self.assertLess(capability, clock)
-        self.assertLess(clock, console)
-        self.assertLess(console, framebuffer)
-        self.assertIn(".byte $06", source)
+        descriptor = (
+            ROOT / "src/services/framebuffer/descriptor.s"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("_udeks_framebuffer_service_descriptor", source)
+        self.assertIn("_udeks_framebuffer_service_descriptor", descriptor)
+        self.assertIn(".byte $04", source)
 
     def test_linked_assets_have_exact_sizes(self):
         source = (ROOT / "src/assets/vdc_splash.s").read_text(encoding="utf-8")

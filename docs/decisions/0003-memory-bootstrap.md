@@ -102,9 +102,9 @@ The native disk path uses two small stages before the resident kernel:
 5. The 8502 entry repeats the safe MMU/profile initialization idempotently,
    clears BSS, initializes the mailbox, and enters C. No BASIC or KERNAL service
    is part of the resident-kernel ABI after that point.
-6. Service startup discovers video timing at the inherited 1 MHz rate, then
-   blanks the VIC and verifies VDC-only 2 MHz operation before display
-   composition begins.
+6. Service startup discovers video timing and remains at the inherited 1 MHz
+   rate, allowing the VDC text console and VIC-IIe to stay active together.
+   The qualified VDC-only 2 MHz transition is an optional later policy.
 
 For development, `udeks-8502.prg` may be loaded directly at `$2000` and entered
 with `SYS 8192`. This bypasses disk stages 0 and 1 but must satisfy the same

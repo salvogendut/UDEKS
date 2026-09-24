@@ -149,6 +149,9 @@ mailbox corruption, with published benchmark results.
   of its VDC rendering.
 - [x] Enter and verify VDC-only 2 MHz operation after VIC-based hardware
   discovery and before display composition.
+- [x] Return the production boot policy to 1 MHz after adopting the native VDC
+  text console, preserving VIC-IIe display availability; retain 2 MHz as an
+  explicit VDC-only lease.
 - [x] Add terminal output, cursor movement, wrapping, and scrolling to the root
   console model.
 - [x] Track root-console row damage and re-render only changed rows through the
@@ -166,6 +169,13 @@ mailbox corruption, with published benchmark results.
   press/release events.
 - [x] Add a bounded root-terminal line editor with insertion, Backspace,
   horizontal cursor movement, retained submission, and VDC repaint.
+- [x] Make the root terminal a direct VDC text-mode client with a hardware
+  cursor and custom upper-half glyphs for the logo and window edges.
+- [ ] Benchmark equivalent VIC-IIe and VDC graphics primitives, including CPU
+  draw cost, transfer cost, display-cycle contention, and perceived latency.
+- [ ] Implement a VIC-IIe graphics service as the preferred interactive-pixel
+  candidate while retaining VDC bitmap modes for high-resolution/second-screen
+  use.
 - [ ] Add joystick, mouse/paddle, and light-pen event sources.
 - [ ] Demonstrate a two-monitor collaborative application.
 

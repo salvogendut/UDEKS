@@ -7,16 +7,16 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ClockSourceTests(unittest.TestCase):
-    def test_clock_follows_capability_and_precedes_displays(self):
+    def test_fast_clock_is_optional_in_the_text_console_boot(self):
         table = (ROOT / "src/services/table.s").read_text(encoding="utf-8")
         capability = table.index("_udeks_capability_service_descriptor")
-        clock = table.index("_udeks_clock_service_descriptor", capability)
-        console = table.index("_udeks_console_service_descriptor", clock)
-        framebuffer = table.index("_udeks_framebuffer_service_descriptor", console)
-        self.assertLess(capability, clock)
-        self.assertLess(clock, console)
-        self.assertLess(console, framebuffer)
-        self.assertIn(".byte $06", table)
+        console = table.index("_udeks_console_service_descriptor", capability)
+        keyboard = table.index("_udeks_keyboard_service_descriptor", console)
+        self.assertLess(capability, console)
+        self.assertLess(console, keyboard)
+        self.assertNotIn("_udeks_clock_service_descriptor", table)
+        self.assertNotIn("_udeks_framebuffer_service_descriptor", table)
+        self.assertIn(".byte $04", table)
 
     def test_transition_blanks_vic_and_selects_fast_clock(self):
         source = (ROOT / "src/8502/clock.s").read_text(encoding="utf-8")

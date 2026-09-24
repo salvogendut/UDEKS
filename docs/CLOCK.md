@@ -1,13 +1,17 @@
 # 8502 clock policy
 
-UDEKS boots conservatively at the C128 ROM's inherited 1 MHz rate because
-hardware capability discovery must first observe the VIC-IIe raster to identify
-PAL or NTSC timing. Immediately after that service reaches ready state, the
-machine-clock service blanks the VIC display and selects 2 MHz operation before
-the text-console and framebuffer services run.
+UDEKS boots and remains at the C128's stock 1 MHz rate by default. Native VDC
+text mode makes the root console responsive without sacrificing the VIC-IIe,
+so both display engines can remain active. Hardware capability discovery may
+therefore observe the VIC raster and later graphics services can use its
+directly addressable video RAM.
 
-The transition is an assembly mechanism registered as critical resident service
-class 4. It performs this ordered sequence:
+The qualified 2 MHz transition is retained as an optional machine-policy
+mechanism. A workload may request it only when policy permits the VIC display
+to be blanked; it is not in the production boot service table.
+
+The transition is an assembly mechanism with a service-class-4 descriptor. It
+performs this ordered sequence when explicitly registered or invoked:
 
 1. require a ready `HCAP` record;
 2. clear display-enable bit 4 in `$D011` and verify readback;
@@ -19,8 +23,8 @@ The VIC-IIe remains responsible for DRAM refresh, but it is unavailable as a
 display processor while fast mode is selected. The VDC remains independent and
 active. I/O accesses are synchronized to the 1 MHz peripheral clock, so 2 MHz
 primarily accelerates CPU-side composition and memory work rather than doubling
-raw VDC-port throughput. A future VIC display lease must first provide a paired,
-validated return to 1 MHz and must arbitrate that clock change centrally.
+raw VDC-port throughput. A future fast-clock lease must provide a paired,
+validated return to 1 MHz and arbitrate that clock change centrally.
 
 ## Diagnostic record
 

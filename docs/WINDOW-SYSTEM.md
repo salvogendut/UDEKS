@@ -7,9 +7,10 @@ boot diagnostics and becomes the default interactive console. New text or
 graphics windows can be created above it, moved through z-order, and hidden or
 closed without destroying the console content underneath.
 
-The logo rail and desktop background sit behind the root console. The VDC
-framebuffer is a composed output surface, not the authoritative copy of any
-window's content.
+The logo rail and root console are initially composed as VDC text cells. The
+retained model, not VDC RAM, is authoritative. Pixel-oriented windows target a
+separately owned graphics mode or the VIC-IIe; the VDC cannot overlay its text
+and bitmap modes.
 
 ## Implementation stages
 
@@ -20,6 +21,10 @@ window's content.
 - [x] Retain characters and cursor position independently of VDC pixels.
 - [x] Move boot-message construction out of the VDC renderer.
 - [x] Render the retained rows through the owned framebuffer API.
+- [x] Replace the bitmap boot renderer with direct VDC text cells after
+  physical-hardware testing found interactive bitmap text unusably slow.
+- [x] Redefine only upper-half character codes for the logo and window edges,
+  preserving the stock text set.
 - [x] Advertise retained text in framebuffer diagnostic format 8; format 7
   remains readable as preserved historical evidence.
 - [x] Qualify an unchanged visual result on 16 KiB and 64 KiB VDC tiers in
@@ -45,6 +50,8 @@ meaningful.
 - Add create, destroy, move, resize, show, hide, raise, and lower operations.
 - Clip every client operation to its window and screen bounds.
 - Recompose damaged regions back-to-front without save-under buffers.
+- Treat display mode and target controller as explicit window/workspace
+  properties; do not imply text/bitmap overlay on one VDC screen.
 
 ### 4. Text and graphics clients
 
@@ -52,6 +59,9 @@ meaningful.
 - Add bounded one-bit bitmap windows and repaint callbacks.
 - Add window chrome and optional title/border policy outside client surfaces.
 - Keep display-controller details behind VDC and VIC backends.
+- Prefer VIC-IIe for directly addressable interactive graphics until a
+  controller benchmark says otherwise; retain VDC bitmap modes for
+  high-resolution and independent-screen applications.
 
 ### 5. Input and focus
 

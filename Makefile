@@ -82,6 +82,7 @@ BOOT_D71 := $(BUILD_BOOT)/udeks.d71
 PANIC_PROBE_D71 := $(BUILD_BOOT)/udeks-panic-probe.d71
 VDC_SPLASH_BIN := $(BUILD_ASSETS)/udekspipe-64.vdc
 VDC_WORDMARK_BIN := $(BUILD_ASSETS)/udekusu-64.vdc
+VDC_TEXT_ASSETS_BIN := $(BUILD_ASSETS)/udeks-vdc-text.bin
 
 .PHONY: all 8502 z80 z80-asm bench bench-8502 bench-z80 bench-irq \
 	bench-irq-8502 bench-irq-z80 bench-irq-service \
@@ -96,7 +97,7 @@ boot: $(BOOT_D71)
 
 panic-probe: $(PANIC_PROBE_D71)
 
-framebuffer-assets: $(VDC_SPLASH_BIN) $(VDC_WORDMARK_BIN)
+framebuffer-assets: $(VDC_SPLASH_BIN) $(VDC_WORDMARK_BIN) $(VDC_TEXT_ASSETS_BIN)
 
 8502: $(KERNEL_BIN) $(KERNEL_PRG)
 
@@ -154,6 +155,11 @@ $(VDC_SPLASH_BIN): assets/udekspipe-64.xpm tools/xpm_to_vdc.py | $(BUILD_ASSETS)
 $(VDC_WORDMARK_BIN): assets/udekusu-64.xpm tools/xpm_to_vdc.py | $(BUILD_ASSETS)
 	$(PYTHON) tools/xpm_to_vdc.py $< $@
 
+$(VDC_TEXT_ASSETS_BIN): assets/udekspipe-64.xpm assets/udekusu-64.xpm \
+		tools/xpm_to_vdc.py tools/xpm_to_vdc_text.py | $(BUILD_ASSETS)
+	$(PYTHON) tools/xpm_to_vdc_text.py \
+		assets/udekspipe-64.xpm assets/udekusu-64.xpm $@
+
 $(BUILD_8502)/kernel.s: src/8502/kernel.c include/udeks/mailbox.h \
 		include/udeks/memory.h include/udeks/panic.h include/udeks/compiler.h \
 		include/udeks/service.h | $(BUILD_8502)
@@ -168,8 +174,9 @@ $(BUILD_8502)/hardware_capability.s: src/services/capability/hardware.c \
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/vdc_console.s: src/services/console/vdc_console.c \
-		include/udeks/compiler.h include/udeks/console.h include/udeks/theme.h \
-		include/udeks/vdc.h \
+		include/udeks/boot_console.h include/udeks/compiler.h \
+		include/udeks/console.h include/udeks/root_console.h \
+		include/udeks/theme.h include/udeks/vdc.h \
 		| $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
@@ -198,7 +205,7 @@ $(BUILD_8502)/line_editor.s: src/services/terminal/line_editor.c \
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/root_terminal.s: src/services/terminal/root_terminal.c \
-		include/udeks/framebuffer.h include/udeks/keyboard.h \
+		include/udeks/console.h include/udeks/keyboard.h \
 		include/udeks/line_editor.h include/udeks/root_console.h \
 		include/udeks/root_terminal.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
@@ -276,6 +283,10 @@ $(BUILD_8502)/vdc_splash.o: src/assets/vdc_splash.s $(VDC_SPLASH_BIN) \
 		$(VDC_WORDMARK_BIN) | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/vdc_text_assets.o: src/assets/vdc_text_assets.s \
+		$(VDC_TEXT_ASSETS_BIN) | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/service_table.o: src/services/table.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -310,7 +321,7 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/framebuffer_surface.o $(BUILD_8502)/root_console.o \
 		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
-		$(BUILD_8502)/vdc_splash.o \
+		$(BUILD_8502)/vdc_splash.o $(BUILD_8502)/vdc_text_assets.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $@ $(filter %.o,$^)
 
@@ -329,7 +340,7 @@ $(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/framebuffer_surface.o $(BUILD_8502)/root_console.o \
 		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
-		$(BUILD_8502)/vdc_splash.o \
+		$(BUILD_8502)/vdc_splash.o $(BUILD_8502)/vdc_text_assets.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 -C cfg/8502-bootstrap.cfg \
 		-m $(BUILD_8502)/udeks-8502-panic-probe.map -o $@ \
@@ -692,6 +703,7 @@ check:
 		tools/vdc_console_decode.py tools/service_registry_decode.py \
 		tools/panic_decode.py tools/capability_decode.py \
 		tools/framebuffer_decode.py tools/clock_decode.py tools/xpm_to_vdc.py \
+		tools/xpm_to_vdc_text.py \
 		tools/keyboard_decode.py \
 		tools/root_terminal_decode.py \
 		tools/build_d71.py \

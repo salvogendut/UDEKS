@@ -9,7 +9,16 @@
 #define UDEKS_CONSOLE_STATE_READY       2u
 #define UDEKS_CONSOLE_STATE_ERROR       0x80u
 
+#define UDEKS_CONSOLE_OK                0u
+#define UDEKS_CONSOLE_VDC_ERROR         1u
+
+#define UDEKS_CONSOLE_COLUMNS           80u
+#define UDEKS_CONSOLE_ROWS              25u
+#define UDEKS_CONSOLE_ROOT_X            14u
+#define UDEKS_CONSOLE_ROOT_Y            2u
+
 /* Static service lifecycle entry used by the bring-up registry. */
 unsigned char udeks_console_start(void);
+unsigned char udeks_console_refresh_root(void);
 
 #endif

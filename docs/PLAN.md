@@ -109,44 +109,47 @@ The VDC is the default system console and desktop. The VIC-IIe is not merely a
 fallback: it can host a secondary console, preview, status surface, collaborative
 view, or sprite-oriented application.
 
-The VDC graphics service exposes a 640×200 one-bit framebuffer surface and
-software text composition. Its system-RAM backing store, clipped primitives,
-single-client lease, bounded dirty-span uploads, and atomic full-screen boot
-transaction work with both VDC memory tiers. A 64 KiB VDC may later add an
-attribute plane and VDC-resident staging
-or back buffers. The detailed design is in
+The VDC's native 80×25 text mode is the default root console. Stock characters
+render ordinary output; a deduplicated upper-half character set renders the
+pipe, Japanese wordmark, and PETSCII-style window edges. Dirty character runs
+and the hardware cursor make interactive output practical at the stock 1 MHz
+CPU clock. The high-resolution `assets/bootscreen.png` remains the composition
+reference, but its console is made from character cells rather than a painted
+bitmap.
+
+The VDC graphics service still exposes an optional 640×200 one-bit framebuffer
+surface. Its system-RAM backing store, clipped primitives, single-client lease,
+bounded dirty-span uploads, and atomic full-screen transactions work with both
+VDC memory tiers. It is an explicit graphical display mode, not the boot
+console's backing store. The detailed design is in
 [VDC-FRAMEBUFFER.md](VDC-FRAMEBUFFER.md).
 
-The first framebuffer integration is a compact boot mark at the upper left,
-generated at build time from the 64x64 pipe artwork in `assets/`. It doubles as
-a visual test of mode entry, clipping, packed scanline upload, and clean
-ownership transfer to the console; text-only boot remains the failure fallback.
-
-The high-resolution `assets/bootscreen.png` is the composition reference. Its
-VDC adaptation keeps the logo in a left rail and places a nearly full-height
-boot console to its right. A software-defined font renders project identity,
-truthful hardware states, deferred unfinished services, and the future-shell
-prompt. Display code consumes `HCAP` and never repeats hardware probes, keeping
-discovery policy in one service while proving text-over-graphics composition.
+The VIC-IIe is the preferred candidate for responsive pixel graphics because
+the 8502 can access its RAM directly. It trades resolution and display-cycle
+bandwidth for that lower access overhead. A direct VDC-versus-VIC drawing
+benchmark will set final policy; high-resolution and independent second-screen
+work remain valid VDC bitmap roles.
 
 The bordered boot console is retained as the UDEKS root console window rather
 than treated as one-shot pixels. Boot diagnostics populate its text-cell model;
-the native CLI will continue in the same window. Text and bitmap windows may
-later overlap it through clipped, damage-driven composition while its obscured
-content remains recoverable. ADR 0005 and `docs/WINDOW-SYSTEM.md` define the
-window, focus, input, stream, and memory model.
+the native CLI will continue in the same window. Text windows can overlap by
+retaining and recomposing cells. Pixel graphics on the same VDC require an
+explicit whole-display mode transition; simultaneous graphics should normally
+target the VIC-IIe. ADRs 0005/0006 and `docs/WINDOW-SYSTEM.md` define the
+window, focus, input, stream, display-mode, and memory model.
 
 The default system visual identity is black foreground on yellow background,
-shared by bitmap and fallback text paths. Applications may later select other
+shared by bitmap and primary text paths. Applications may later select other
 themes without changing this system default; see
 [VISUAL-IDENTITY.md](VISUAL-IDENTITY.md).
 
 The display server must support VDC-only, VIC-only, mirrored, extended, and
 application-owned secondary modes. Full-time 2 MHz 8502 operation and an active
 VIC display are competing requirements; mode policy must expose that tradeoff.
-The bring-up image now enters a verified VDC-only 2 MHz state after VIC-based
-PAL/NTSC discovery and before console composition. A future VIC lease must use
-the paired slow-mode transition rather than writing `$D030` privately.
+The production boot stays at 1 MHz so the VIC-IIe remains active alongside the
+VDC console. The verified VDC-only 2 MHz transition remains an optional policy
+for a workload that explicitly blanks the VIC; clients must not write `$D030`
+privately.
 
 ## Memory plan
 

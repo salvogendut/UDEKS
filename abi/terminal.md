@@ -30,11 +30,11 @@ The existing `write_at` operation remains available for boot diagnostics and
 other positioned producers; it does not move the terminal cursor. `clear`
 homes the cursor while preserving its visibility. `reset` also hides it.
 
-Every text change and cursor movement marks the affected row as damaged.
-The framebuffer owner calls `udeks_framebuffer_refresh_root_console()` while
-holding its lease, then flushes or releases normally. Only damaged rows are
-cleared and re-rendered into the canonical framebuffer; physical VDC transfer
-remains the framebuffer service's responsibility.
+Every text change and cursor movement marks the affected row as damaged. The
+VDC text-console owner calls `udeks_console_refresh_root()`, translates only
+the damaged character spans to screen codes, transfers them through the
+bounded VDC transport, and moves the hardware cursor. A row is marked clean
+only after its transfer succeeds.
 
 The separate [root-terminal line editor](line-editor.md) now consumes keyboard
 events and applies destructive Backspace, insertion, cursor movement, and line

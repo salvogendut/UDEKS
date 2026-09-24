@@ -122,6 +122,7 @@ the display-memory and physical-hardware gates in ADR 0003 pass.
 - [Proposed native memory and bootstrap contract](docs/decisions/0003-memory-bootstrap.md)
 - [Microkernel and service-module decision](docs/decisions/0004-microkernel-modules.md)
 - [Root-console and overlapping-window decision](docs/decisions/0005-root-window-and-compositor.md)
+- [Text-console and 1 MHz boot decision](docs/decisions/0006-text-console-default.md)
 - [Mailbox ABI](abi/mailbox.md)
 - [Service-module ABI](abi/services.md)
 - [Framebuffer client API](abi/framebuffer.md)

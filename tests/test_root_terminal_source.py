@@ -18,9 +18,8 @@ class RootTerminalSourceTests(unittest.TestCase):
         self.assertLess(keyboard, terminal)
         self.assertNotIn("0xd600", source.lower())
         self.assertNotIn("0xd601", source.lower())
-        self.assertIn("udeks_framebuffer_acquire()", source)
-        self.assertIn("udeks_framebuffer_refresh_root_console()", source)
-        self.assertIn("udeks_framebuffer_release()", source)
+        self.assertIn("udeks_console_refresh_root()", source)
+        self.assertNotIn("udeks_framebuffer_", source)
 
     def test_service_routes_press_events_into_bounded_editor(self):
         source = (ROOT / "src/services/terminal/root_terminal.c").read_text(

@@ -28,10 +28,11 @@ The initial flags are:
 
 Initial service classes are console (`1`), hardware capability discovery (`2`),
 display (`3`), machine policy (`4`), input (`5`), and terminal policy (`6`).
-Capability discovery precedes the machine-clock transition so PAL/NTSC probing
-can use the VIC raster. The clock service then blanks the VIC and verifies
-2 MHz operation before either display service starts. The framebuffer becomes
-the final VDC owner and renders the retained root terminal as a client.
+The default image starts capability discovery, VDC text console, keyboard, and
+root-terminal services in that order. It remains at 1 MHz so the VIC-IIe stays
+available. The machine-clock and framebuffer descriptors remain optional
+modules: 2 MHz requires an explicit VIC-blanking policy, and VDC bitmap mode
+requires explicit display ownership.
 
 The display service's provisional resident-C request surface is specified in
 the [framebuffer client API](framebuffer.md). It is not yet a compiler-neutral
