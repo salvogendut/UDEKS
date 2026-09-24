@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "udeks/root_console.h"
 
+/* Stage 1 has vacated this linker-owned low-RAM segment before kernel_main. */
+#pragma bss-name(push, "LOWBSS")
 static unsigned char cells
     [UDEKS_ROOT_CONSOLE_ROWS][UDEKS_ROOT_CONSOLE_ROW_STRIDE];
 static unsigned char cursor_column;
@@ -9,6 +11,7 @@ static unsigned char cursor_visible;
 static unsigned char dirty_rows[UDEKS_ROOT_CONSOLE_ROWS];
 static unsigned char dirty_first[UDEKS_ROOT_CONSOLE_ROWS];
 static unsigned char dirty_last[UDEKS_ROOT_CONSOLE_ROWS];
+#pragma bss-name(pop)
 
 static void mark_cell_dirty(unsigned char row, unsigned char column)
 {

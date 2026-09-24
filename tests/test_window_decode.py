@@ -16,9 +16,10 @@ def valid_record() -> bytearray:
     block[:4] = b"WMGR"
     block[4:6] = bytes((1, 2))
     block[6:9] = bytes((1, 1, 0))
-    block[14:16] = bytes((4, 0x0F))
+    block[14:16] = bytes((4, 0x1F))
     block[16:18] = (1).to_bytes(2, "little")
     block[20:22] = (1).to_bytes(2, "little")
+    block[30:32] = (1).to_bytes(2, "little")
     return block
 
 
@@ -27,6 +28,7 @@ class WindowDecodeTests(unittest.TestCase):
         result = parse_result(valid_record())
         self.assertEqual(result["active"], 1)
         self.assertEqual(result["repaints"], 1)
+        self.assertEqual(result["compositions"], 1)
 
     def test_accepts_active_outline_drag(self):
         block = valid_record()

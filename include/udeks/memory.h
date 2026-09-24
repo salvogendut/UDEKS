@@ -8,6 +8,8 @@
 
 /* Native boot and resident-image addresses. */
 #define UDEKS_BOOT_SECTOR_BASE        0x0B00u
+#define UDEKS_RECLAIMED_STATE_BASE    0x0C00u
+#define UDEKS_RECLAIMED_STATE_LIMIT   0x1C00u
 #define UDEKS_BOOTSTRAP_BASE          0x1C00u
 #define UDEKS_KERNEL_BASE             0x2000u
 #define UDEKS_KERNEL_LIMIT            0xD000u

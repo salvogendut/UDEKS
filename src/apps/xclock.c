@@ -218,23 +218,10 @@ static void update_time(void)
     if (hour == previous_hour && minute == previous_minute) {
         return;
     }
-    if (udeks_window_begin_paint(window_handle) != UDEKS_WINDOW_OK) {
-        return;
+    if (udeks_window_repaint(window_handle) == UDEKS_WINDOW_OK &&
+        hour == previous_hour && minute == previous_minute) {
+        increment_counter(18u);
     }
-    draw_hands(
-        previous_hour, previous_minute, UDEKS_VIC_COLOR_YELLOW);
-    draw_hands(hour, minute, UDEKS_VIC_COLOR_BLACK);
-    udeks_vic_bitmap_pixel(face_x, face_y, UDEKS_VIC_COLOR_BLACK);
-    draw_digital(hour, minute);
-    udeks_window_end_paint();
-    udeks_vic_bitmap_commit();
-    previous_hour = hour;
-    previous_minute = minute;
-    previous_second = second;
-    STATUS_BYTE(12) = hour;
-    STATUS_BYTE(13) = minute;
-    STATUS_BYTE(14) = second;
-    increment_counter(18u);
 }
 
 static void close_clock(unsigned char handle)

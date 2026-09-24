@@ -36,6 +36,14 @@ class MemoryMapTests(unittest.TestCase):
     def test_primary_regions_are_ordered_and_non_overlapping(self):
         memory = self.memory
         self.assertLess(memory["UDEKS_BOOT_SECTOR_BASE"], memory["UDEKS_BOOTSTRAP_BASE"])
+        self.assertEqual(
+            memory["UDEKS_RECLAIMED_STATE_BASE"],
+            memory["UDEKS_BOOT_SECTOR_BASE"] + 0x100,
+        )
+        self.assertEqual(
+            memory["UDEKS_RECLAIMED_STATE_LIMIT"],
+            memory["UDEKS_BOOTSTRAP_BASE"],
+        )
         self.assertLess(memory["UDEKS_BOOTSTRAP_BASE"], memory["UDEKS_KERNEL_BASE"])
         self.assertLess(memory["UDEKS_KERNEL_BASE"], memory["UDEKS_KERNEL_LIMIT"])
         self.assertEqual(memory["UDEKS_KERNEL_LIMIT"], memory["UDEKS_IO_BASE"])
@@ -118,6 +126,19 @@ class MemoryMapTests(unittest.TestCase):
         size = int(match.group(2), 16)
         self.assertEqual(start, self.memory["UDEKS_KERNEL_BASE"])
         self.assertEqual(start + size, self.memory["UDEKS_KERNEL_LIMIT"])
+        low = re.search(
+            r"LOWMEM:\s+start\s*=\s*\$([0-9A-Fa-f]+),\s*"
+            r"size\s*=\s*\$([0-9A-Fa-f]+)",
+            linker,
+        )
+        self.assertIsNotNone(low)
+        low_start = int(low.group(1), 16)
+        low_size = int(low.group(2), 16)
+        self.assertEqual(low_start, self.memory["UDEKS_RECLAIMED_STATE_BASE"])
+        self.assertEqual(
+            low_start + low_size,
+            self.memory["UDEKS_RECLAIMED_STATE_LIMIT"],
+        )
         high = re.search(
             r"HIGHMEM:\s+start\s*=\s*\$([0-9A-Fa-f]+),\s*"
             r"size\s*=\s*\$([0-9A-Fa-f]+)",

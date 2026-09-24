@@ -47,7 +47,7 @@ The initial physical allocation is:
 | `$0000-$01FF` | Initial executive zero page and stack | Relocatable task-page pool |
 | `$0200-$0AFF` | ROM-bootstrap workspace; reclaimable later | Task/worker low workspace |
 | `$0B00-$0BFF` | KERNAL boot-sector buffer and stage 0 | Task/worker space |
-| `$0C00-$1BFF` | Bootstrap/KERNAL workspace; reclaimable | Task/worker space |
+| `$0C00-$1BFF` | Reclaimed root-console state after stage 1 exits | Task/worker space |
 | `$1C00-$1FFF` | Stage-1 loader | Task/worker space |
 | `$2000-$3FFF` | 8502 kernel image | Resident Z80 dispatcher and code |
 | `$4000-$7FFF` | 8502 kernel image | Reserved 16 KiB VIC-visible window |
@@ -66,6 +66,12 @@ VIC-IIe module's scanline table, dirty-page map, and clip state, and reserves
 `$E1B8-$E2FF` for bounded module-private BSS, and `$E300-$EFF0` for the
 downward-growing 8502 C software stack. The initial Z80
 stack top is `$EFF0` in its non-common bank view.
+
+Stage 1 transfers control from `$1C00-$1FFF` and never returns. The kernel then
+reclaims the adjacent `$0C00-$1BFF` bootstrap/KERNAL workspace as a linker-
+bounded `LOWBSS` segment. The retained root-console module owns its initial
+allocation there and explicitly initializes every byte in
+`udeks_root_console_reset()` before the renderer or terminal can observe it.
 
 The common area is partitioned conservatively:
 

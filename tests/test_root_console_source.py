@@ -28,6 +28,8 @@ class RootConsoleSourceTests(unittest.TestCase):
         self.assertIn("dirty_first", source)
         self.assertIn("dirty_last", source)
         self.assertIn("scroll_up", source)
+        self.assertIn('#pragma bss-name(push, "LOWBSS")', source)
+        self.assertIn('#pragma bss-name(pop)', source)
 
     def test_boot_messages_populate_model_outside_renderer(self):
         boot = (ROOT / "src/services/window/boot_console.c").read_text(

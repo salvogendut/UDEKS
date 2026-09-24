@@ -10,7 +10,8 @@ The visual and lifecycle reference is GEOBENCH's analog Clock application:
 - a circular segmented rim and twelve hour marks;
 - hour and minute hands, with an optional seconds hand;
 - a small digital readout;
-- bounded updates that erase and redraw only the old and new hands;
+- bounded managed updates that repaint the clock and preserve occluding
+  windows;
 - complete repaint after damage, move, or reveal.
 
 The first UDEKS edition uses a fixed-size window while the general window
@@ -29,11 +30,11 @@ when needed. The shell remains responsive on the independent VDC display.
 Rendering is prepared in an aligned 8 KiB bank-0 shadow bitmap. Pixel, line,
 rectangle, and fill operations mark dirty 256-byte pages; a common-RAM gateway
 copies only those pages into the bank-1 VIC bitmap. The final page copy stops
-at `$7F3F`, preserving the pointer sprite at `$7FC0`. Clock ticks erase and
-redraw only the old/new hour and minute hands and digital digits before
-committing their dirty pages. The default `HH:MM` clock refreshes once per
-minute, matching GEOBENCH's responsive default. A move performs a complete
-off-screen repaint followed by a page commit.
+at `$7F3F`, preserving the pointer sprite at `$7FC0`. The default `HH:MM`
+clock requests one managed damage repaint per minute. This costs more than an
+isolated incremental hand update, but allows the compositor to reconstruct the
+clock and every intersecting higher window in correct z-order. A move uses the
+same managed repaint after its outline is released.
 
 `xclock` is deliberately an 8502-owned application. A clock tick is a small,
 bounded interactive update, so handing it to the Z80 would cost more than it
@@ -52,7 +53,7 @@ adapter once application scheduling exists.
 - [x] Create, move, and close one fixed-size graphical window.
 - [x] Route normalized pointer motion and buttons to the window manager.
 - [x] Draw the face, hour/minute hands, and digital readout.
-- [x] Add bounded incremental hand repaint.
+- [x] Add bounded, overlap-safe managed clock repaint.
 - [ ] Add an optional seconds hand and per-second readout.
 - [x] Support VDC `Ctrl+C`, `xclock -q`, and graphical close-box termination.
 - [x] Verify timekeeping, repaint, and command lifecycle in 1986.

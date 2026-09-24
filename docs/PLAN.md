@@ -165,6 +165,9 @@ offset table, `$E190-$E1AF` for its dirty-page map, and `$E1B0-$E1B7` for clip
 state. `$E1B8-$E2FF` holds linker-bounded module-private high BSS; the C
 software stack is constrained to `$E300-$EFF0`. This is an explicit module
 workspace assignment, not expansion of the ordinary resident kernel image.
+The retained root-console state occupies the linker-bounded `$0C00-$1BFF`
+`LOWBSS` region after the native stage-1 loader has vacated it; its reset path
+initializes the complete allocation before first use.
 
 The final map must define and validate:
 

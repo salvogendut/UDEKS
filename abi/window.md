@@ -1,4 +1,4 @@
-# VIC-IIe window manager 0.1
+# VIC-IIe window manager 0.2
 
 The first UDEKS graphical window manager owns VIC-IIe bitmap-window policy.
 Applications register bounded descriptors and repaint callbacks; they do not
@@ -7,25 +7,32 @@ buttons themselves.
 
 Each descriptor records a handle, owner, surface type, flags, geometry,
 z-order, title, repaint callback, and close callback. The initial registry has
-four static slots and performs no dynamic allocation. Version 0.1 admits only
-bitmap surfaces and qualifies one visible application window. The registry
-already records z-order, but overlapping-window recomposition remains the next
-compositor milestone; applications must not infer complete overlap support
-from the four available descriptor slots.
+four static slots and performs no dynamic allocation. Version 0.2 admits
+bitmap surfaces and supports four overlapping visible application windows.
+Damage is cleared and recomposed through repaint callbacks from the lowest
+intersecting window to the highest; no save-under buffer is allocated.
 
 The manager draws the double-line frame, title bar, three-by-five title, and
 optional close box. It establishes a client-area clip before invoking a
 repaint callback. Incremental client drawing uses the same clip through the
-bounded begin/end-paint calls.
+bounded begin/end-paint calls only while the client is the top window. A
+background client requests a managed repaint instead, allowing the compositor
+to reconstruct its damage and every intersecting window above it in order.
+
+Clicking an exposed part of a window focuses and raises it. Z values are kept
+as the compact range 1 through the active-window count, so repeated switching
+cannot wrap an ever-growing sequence number. Destroying a window recomposes
+its old rectangle and focuses the remaining top window.
 
 ## Outline dragging
 
-A press on a movable title bar begins an outline drag. The manager clears the
-complete window at its old location, commits that damage, and installs a
-one-pixel XOR outline. While the button remains held, only the old and new
-outlines are transferred; the client callback is not invoked and the window
-contents stay hidden. Releasing the button removes the outline, commits the
-new descriptor geometry, and invokes one complete repaint.
+A press on a movable title bar begins an outline drag. The manager recomposes
+the old rectangle without the dragged window, exposing any windows beneath,
+then installs a one-pixel XOR outline. While the button remains held, only the
+old and new outlines are transferred; the client callback is not invoked and
+the window contents stay hidden. Releasing the button removes the outline,
+commits the new descriptor geometry, and recomposes the union of the old and
+new rectangles.
 
 Outline motion calls the VIC graphics module's dedicated 8502 assembly
 blitter. C prepares one compact 15-byte geometry record per outline. The
@@ -58,12 +65,12 @@ The 32-byte `WMGR` record begins at `$F240`:
 | 12 | 1 | Current outline width |
 | 13 | 1 | Normalized action-button state |
 | 14 | 1 | Registry capacity (`4`) |
-| 15 | 1 | Capabilities: registry, z-order, clipping, outline drag |
+| 15 | 1 | Capabilities: registry, z-order, clipping, outline drag, damage recomposition (`$1f`) |
 | 16–17 | 2 | Windows created |
 | 18–19 | 2 | Windows destroyed |
-| 20–21 | 2 | Complete managed repaints |
+| 20–21 | 2 | Window repaint callbacks invoked by composition |
 | 22–23 | 2 | Outline movement updates |
 | 24–25 | 2 | Drags started |
 | 26–27 | 2 | Drags completed |
 | 28–29 | 2 | Graphical close-box requests |
-| 30–31 | 2 | Reserved |
+| 30–31 | 2 | Damage-composition passes |

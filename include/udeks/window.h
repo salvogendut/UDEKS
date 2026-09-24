@@ -43,5 +43,6 @@ unsigned char udeks_window_get_geometry(
     unsigned char handle, unsigned int *x, unsigned char *y,
     unsigned int *width, unsigned char *height);
 unsigned char udeks_window_is_dragging(unsigned char handle);
+unsigned char udeks_window_is_focused(unsigned char handle);
 
 #endif

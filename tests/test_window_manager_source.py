@@ -31,7 +31,7 @@ class WindowManagerSourceTests(unittest.TestCase):
         self.assertIn("udeks_vic_bitmap_set_clip", source)
         self.assertIn("udeks_pointer_buttons()", source)
 
-    def test_drag_hides_content_moves_outline_and_repaints_on_release(self):
+    def test_drag_recomposes_underlay_moves_outline_and_repaints_on_release(self):
         source = (ROOT / "src/services/window/window_manager.c").read_text(
             encoding="utf-8"
         )
@@ -44,10 +44,43 @@ class WindowManagerSourceTests(unittest.TestCase):
         finish = source.split("static void finish_drag", 1)[1].split(
             "unsigned char udeks_window_manager_start", 1
         )[0]
-        self.assertLess(begin.index("clear_window(window)"), begin.index("udeks_vic_bitmap_outline_toggle"))
+        self.assertLess(
+            begin.index("compose_damage(handle)"),
+            begin.index("udeks_vic_bitmap_outline_toggle"),
+        )
         self.assertEqual(move.count("udeks_vic_bitmap_outline_move"), 1)
-        self.assertNotIn("paint_window", move)
-        self.assertLess(finish.index("udeks_vic_bitmap_outline_toggle"), finish.index("paint_window(handle)"))
+        self.assertNotIn("compose_damage", move)
+        self.assertLess(
+            finish.index("udeks_vic_bitmap_outline_toggle"),
+            finish.index("compose_damage(UDEKS_WINDOW_NONE)"),
+        )
+
+    def test_damage_is_recomposed_back_to_front_with_normalized_z_order(self):
+        source = (ROOT / "src/services/window/window_manager.c").read_text(
+            encoding="utf-8"
+        )
+        compose = source.split("static void compose_damage", 1)[1].split(
+            "static unsigned char top_window", 1
+        )[0]
+        raise_window = source.split("static unsigned char raise_window", 1)[1].split(
+            "static unsigned char top_window_at", 1
+        )[0]
+        self.assertIn("for (rank = 1u; rank <= active_count; ++rank)", compose)
+        self.assertIn("paint_window_damage", compose)
+        self.assertIn("compose_damage(UDEKS_WINDOW_NONE)", source)
+        self.assertIn("--windows[index].z", raise_window)
+        self.assertIn("window->z = active_count", raise_window)
+        self.assertNotIn("next_z", source)
+
+    def test_incremental_paint_is_limited_to_the_top_window(self):
+        source = (ROOT / "src/services/window/window_manager.c").read_text(
+            encoding="utf-8"
+        )
+        begin_paint = source.split("unsigned char udeks_window_begin_paint", 1)[1].split(
+            "void udeks_window_end_paint", 1
+        )[0]
+        self.assertIn("window->z != active_count", begin_paint)
+        self.assertIn("dragging_handle != UDEKS_WINDOW_NONE", begin_paint)
 
     def test_manager_is_an_independent_registered_module(self):
         table = (ROOT / "src/services/table.s").read_text(encoding="utf-8")

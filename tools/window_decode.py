@@ -25,7 +25,7 @@ def parse_result(data: bytes) -> dict[str, int]:
     block = data[:RESULT_SIZE]
     if block[:4] != b"WMGR" or block[4] != 1:
         raise ValueError("window-manager record magic or format is invalid")
-    if block[5] != 2 or block[14] != 4 or block[15] != 0x0F:
+    if block[5] != 2 or block[14] != 4 or block[15] != 0x1F:
         raise ValueError("window-manager state or capabilities are invalid")
     if block[6] > block[14]:
         raise ValueError("active window count exceeds capacity")
@@ -49,6 +49,7 @@ def parse_result(data: bytes) -> dict[str, int]:
         "drag_starts": word(block, 24),
         "drag_finishes": word(block, 26),
         "close_requests": word(block, 28),
+        "compositions": word(block, 30),
     }
 
 
@@ -71,7 +72,8 @@ def main() -> None:
         print(
             f"window manager: {result['active']} active; "
             f"{result['repaints']} repaint(s); "
-            f"{result['drag_finishes']} completed drag(s)"
+            f"{result['drag_finishes']} completed drag(s); "
+            f"{result['compositions']} composition pass(es)"
         )
 
 

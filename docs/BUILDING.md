@@ -98,6 +98,13 @@ outline until release; `xclock -q` or VDC `Ctrl+C` closes it. See the
 is the next application milestone, followed by the GEOBENCH-XAOS-inspired
 [`xmandel` viewer](XMANDEL.md).
 
+Window Manager 0.2 supports four overlapping bitmap windows. Clicking an
+exposed area raises and focuses that window; moving or closing one recomposes
+only the bounding damage region from back to front. The current modules remain
+statically linked into one bootstrap kernel payload even though each has an
+independent descriptor and lifecycle. Disk-loadable modules require the later
+allocator, filesystem, and executable loader milestones.
+
 The text console displays the compact UDEKS pipe and Japanese wordmark in a
 left rail and a bordered 64x21 root terminal to the right. Build tooling packs
 the artwork and six line-drawing shapes into 63 deduplicated upper-half VDC

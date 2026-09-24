@@ -47,12 +47,13 @@ meaningful.
 
 - [x] Define bounded window descriptors with handles, geometry, visibility,
   surface type, z-order, owner, and damage.
-- [x] Add the initial create, destroy, managed repaint, and outline-move
-  operations; resize, show, hide, raise, and lower remain pending.
+- [x] Add create, destroy, managed repaint, click-to-raise/focus, and
+  outline-move operations; resize, explicit show/hide, and lower remain
+  pending.
 - [x] Clip the first bitmap client's operations to its content bounds.
 - [x] Hide client content during a drag, move only an assembly-blitted XOR outline, and
   repaint once on release.
-- Recompose damaged regions back-to-front without save-under buffers.
+- [x] Recompose damaged regions back-to-front without save-under buffers.
 - Treat display mode and target controller as explicit window/workspace
   properties; do not imply text/bitmap overlay on one VDC screen.
 
@@ -70,9 +71,10 @@ meaningful.
 
 - [x] Implement a complete polled C128 keyboard event source and bounded FIFO.
 - [x] Route normalized key events to the provisionally focused root terminal.
-- [x] Route normalized pointer motion and buttons to the focused graphical
-  window manager; keyboard focus generalization remains pending.
-- Add focus traversal and explicit focus changes through the window manager.
+- [x] Route normalized pointer motion and buttons to the graphical window
+  manager and focus/raise the clicked window; keyboard focus generalization
+  remains pending.
+- Add keyboard focus traversal; explicit pointer focus changes are complete.
 - [x] Add one normalized pointer source backed by a 1351 mouse on control port
   1 and a digital joystick on control port 2.
 - Add light-pen and future pointer drivers without changing client input

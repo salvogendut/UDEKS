@@ -160,11 +160,14 @@ mailbox corruption, with published benchmark results.
   owned framebuffer surface.
 - [x] Track bounded row and cell damage so interactive terminal edits avoid a
   full-surface dirty-map scan and full-row redraw.
-- [ ] Add bounded window descriptors, z-order, clipping, damage, and
+- [x] Add bounded window descriptors, z-order, clipping, damage, and
   back-to-front recomposition for overlapping text and bitmap windows.
 - [x] Add Window Manager 0.1 with a bounded registry, managed bitmap chrome,
   client clipping, pointer routing, and content-hidden assembly-blitted outline
   dragging.
+- [x] Advance the VIC-IIe Window Manager to 0.2 with bounded damage-region
+  recomposition, compact z-order, click-to-focus/raise, and overlap-safe
+  managed client painting.
 - [x] Separate VIC-IIe display, window-manager, and temporary application-poll
   lifecycles into independently registered modules.
 - [x] Route normalized keyboard events to a fixed-focus root-terminal editor.

@@ -31,11 +31,14 @@ static unsigned char active_count;
 static unsigned char focused_handle;
 static unsigned char dragging_handle;
 static unsigned char previous_buttons;
-static unsigned char next_z;
 static unsigned int drag_pointer_x;
 static unsigned char drag_pointer_y;
 static unsigned int drag_x;
 static unsigned char drag_y;
+static unsigned int damage_left;
+static unsigned char damage_top;
+static unsigned int damage_right;
+static unsigned char damage_bottom;
 #pragma bss-name(pop)
 
 static const unsigned char title_glyphs[26][5] = {
@@ -75,7 +78,7 @@ static void publish_state(void)
     STATUS_BYTE(7) = focused_handle;
     STATUS_BYTE(8) = dragging_handle;
     STATUS_BYTE(14) = UDEKS_WINDOW_MAX;
-    STATUS_BYTE(15) = 0x0Fu;
+    STATUS_BYTE(15) = 0x1Fu;
     if (dragging_handle == UDEKS_WINDOW_NONE) {
         STATUS_BYTE(9) = 0;
         STATUS_BYTE(10) = 0;
@@ -100,6 +103,56 @@ static unsigned char point_inside(
 {
     return x >= window->x && x < window->x + window->width &&
         y >= window->y && y < (unsigned char)(window->y + window->height);
+}
+
+static void damage_set(const struct udeks_window *window)
+{
+    damage_left = window->x;
+    damage_top = window->y;
+    damage_right = window->x + window->width;
+    damage_bottom = (unsigned char)(window->y + window->height);
+}
+
+static void damage_add(const struct udeks_window *window)
+{
+    unsigned int right;
+    unsigned char bottom;
+
+    right = window->x + window->width;
+    bottom = (unsigned char)(window->y + window->height);
+    if (window->x < damage_left) {
+        damage_left = window->x;
+    }
+    if (window->y < damage_top) {
+        damage_top = window->y;
+    }
+    if (right > damage_right) {
+        damage_right = right;
+    }
+    if (bottom > damage_bottom) {
+        damage_bottom = bottom;
+    }
+}
+
+static unsigned char set_damage_intersection(
+    unsigned int x, unsigned char y,
+    unsigned int width, unsigned char height)
+{
+    unsigned int left;
+    unsigned char top;
+    unsigned int right;
+    unsigned char bottom;
+
+    left = x > damage_left ? x : damage_left;
+    top = y > damage_top ? y : damage_top;
+    right = x + width < damage_right ? x + width : damage_right;
+    bottom = (unsigned char)(y + height) < damage_bottom ?
+        (unsigned char)(y + height) : damage_bottom;
+    if (left >= right || top >= bottom) {
+        return 0;
+    }
+    udeks_vic_bitmap_set_clip(left, top, right - left, bottom - top);
+    return 1;
 }
 
 static void draw_glyph(
@@ -172,12 +225,15 @@ static void draw_chrome(const struct udeks_window *window)
         close_x + 2, window->y + 8, UDEKS_VIC_COLOR_BLACK);
 }
 
+static unsigned char paint_window_damage(unsigned char handle);
+
 unsigned char udeks_window_begin_paint(unsigned char handle)
 {
     struct udeks_window *window;
 
     window = window_by_handle(handle);
-    if (window == 0) {
+    if (window == 0 || dragging_handle != UDEKS_WINDOW_NONE ||
+        window->z != active_count) {
         return UDEKS_WINDOW_INVALID;
     }
     udeks_vic_bitmap_set_clip(
@@ -192,34 +248,97 @@ void udeks_window_end_paint(void)
     udeks_vic_bitmap_reset_clip();
 }
 
-static void paint_window(unsigned char handle)
+static unsigned char paint_window_damage(unsigned char handle)
 {
     struct udeks_window *window;
 
     window = window_by_handle(handle);
-    if (window == 0) {
-        return;
+    if (window == 0 ||
+        (window->flags & UDEKS_WINDOW_FLAG_VISIBLE) == 0) {
+        return 0;
     }
-    udeks_vic_bitmap_reset_clip();
+    if (set_damage_intersection(
+            window->x, window->y,
+            window->width, window->height) == 0) {
+        return 0;
+    }
     udeks_vic_bitmap_fill(
         window->x, window->y, window->width, window->height,
         UDEKS_VIC_COLOR_YELLOW);
     draw_chrome(window);
     if (window->paint != 0 &&
-        udeks_window_begin_paint(handle) == UDEKS_WINDOW_OK) {
+        set_damage_intersection(
+            window->x + 3,
+            (unsigned char)(window->y + UDEKS_WINDOW_TITLE_HEIGHT + 1u),
+            window->width - 6u,
+            (unsigned char)(window->height -
+                UDEKS_WINDOW_TITLE_HEIGHT - 4u)) != 0) {
         window->paint(handle);
-        udeks_window_end_paint();
     }
-    udeks_vic_bitmap_commit();
     increment_counter(20u);
+    return 1;
 }
 
-static void clear_window(const struct udeks_window *window)
+static void compose_damage(unsigned char skip_handle)
 {
-    udeks_vic_bitmap_reset_clip();
+    unsigned char rank;
+    unsigned char index;
+
+    udeks_vic_bitmap_set_clip(
+        damage_left, damage_top,
+        damage_right - damage_left,
+        (unsigned char)(damage_bottom - damage_top));
     udeks_vic_bitmap_fill(
-        window->x, window->y, window->width, window->height,
+        damage_left, damage_top,
+        damage_right - damage_left,
+        (unsigned char)(damage_bottom - damage_top),
         UDEKS_VIC_COLOR_YELLOW);
+    for (rank = 1u; rank <= active_count; ++rank) {
+        for (index = 0; index < UDEKS_WINDOW_MAX; ++index) {
+            if (windows[index].active != 0 && windows[index].z == rank) {
+                if ((unsigned char)(index + 1u) != skip_handle) {
+                    paint_window_damage((unsigned char)(index + 1u));
+                }
+                break;
+            }
+        }
+    }
+    udeks_vic_bitmap_reset_clip();
+    udeks_vic_bitmap_commit();
+    increment_counter(30u);
+}
+
+static unsigned char top_window(void)
+{
+    unsigned char index;
+
+    for (index = 0; index < UDEKS_WINDOW_MAX; ++index) {
+        if (windows[index].active != 0 &&
+            windows[index].z == active_count) {
+            return (unsigned char)(index + 1u);
+        }
+    }
+    return UDEKS_WINDOW_NONE;
+}
+
+static unsigned char raise_window(unsigned char handle)
+{
+    unsigned char index;
+    unsigned char old_z;
+    struct udeks_window *window;
+
+    window = window_by_handle(handle);
+    if (window == 0 || window->z == active_count) {
+        return 0;
+    }
+    old_z = window->z;
+    for (index = 0; index < UDEKS_WINDOW_MAX; ++index) {
+        if (windows[index].active != 0 && windows[index].z > old_z) {
+            --windows[index].z;
+        }
+    }
+    window->z = active_count;
+    return 1;
 }
 
 static unsigned char top_window_at(unsigned int x, unsigned char y)
@@ -277,8 +396,8 @@ static void begin_drag(
     drag_pointer_y = (unsigned char)(pointer_y - window->y);
     drag_x = window->x;
     drag_y = window->y;
-    clear_window(window);
-    udeks_vic_bitmap_commit();
+    damage_set(window);
+    compose_damage(handle);
     udeks_vic_bitmap_outline_toggle(
         drag_x, drag_y, window->width, window->height);
     increment_counter(24u);
@@ -331,10 +450,12 @@ static void finish_drag(void)
     udeks_vic_bitmap_reset_clip();
     udeks_vic_bitmap_outline_toggle(
         drag_x, drag_y, window->width, window->height);
+    damage_set(window);
     window->x = drag_x;
     window->y = drag_y;
+    damage_add(window);
     dragging_handle = UDEKS_WINDOW_NONE;
-    paint_window(handle);
+    compose_damage(UDEKS_WINDOW_NONE);
     increment_counter(26u);
 }
 
@@ -358,7 +479,6 @@ unsigned char udeks_window_manager_start(void)
     focused_handle = UDEKS_WINDOW_NONE;
     dragging_handle = UDEKS_WINDOW_NONE;
     previous_buttons = 0;
-    next_z = 1;
     publish_state();
     return UDEKS_WINDOW_OK;
 }
@@ -415,7 +535,7 @@ unsigned char udeks_window_create(
     window->y = y;
     window->width = width;
     window->height = height;
-    window->z = next_z++;
+    window->z = (unsigned char)(active_count + 1u);
     window->title = title;
     window->paint = paint;
     window->close = close;
@@ -423,7 +543,8 @@ unsigned char udeks_window_create(
     focused_handle = (unsigned char)(index + 1u);
     increment_counter(16u);
     publish_state();
-    paint_window(focused_handle);
+    damage_set(window);
+    compose_damage(UDEKS_WINDOW_NONE);
     return focused_handle;
 }
 
@@ -431,25 +552,31 @@ unsigned char udeks_window_destroy(unsigned char handle)
 {
     struct udeks_window *window;
     udeks_window_close_fn close;
+    unsigned char index;
+    unsigned char old_z;
 
     window = window_by_handle(handle);
     if (window == 0) {
         return UDEKS_WINDOW_INVALID;
     }
     close = window->close;
+    old_z = window->z;
+    damage_set(window);
     if (dragging_handle == handle) {
         udeks_vic_bitmap_reset_clip();
         udeks_vic_bitmap_outline_toggle(
             drag_x, drag_y, window->width, window->height);
         dragging_handle = UDEKS_WINDOW_NONE;
     }
-    clear_window(window);
     window->active = 0;
     --active_count;
-    if (focused_handle == handle) {
-        focused_handle = UDEKS_WINDOW_NONE;
+    for (index = 0; index < UDEKS_WINDOW_MAX; ++index) {
+        if (windows[index].active != 0 && windows[index].z > old_z) {
+            --windows[index].z;
+        }
     }
-    udeks_vic_bitmap_commit();
+    focused_handle = top_window();
+    compose_damage(UDEKS_WINDOW_NONE);
     increment_counter(18u);
     publish_state();
     if (close != 0) {
@@ -460,10 +587,17 @@ unsigned char udeks_window_destroy(unsigned char handle)
 
 unsigned char udeks_window_repaint(unsigned char handle)
 {
-    if (window_by_handle(handle) == 0) {
+    struct udeks_window *window;
+
+    window = window_by_handle(handle);
+    if (window == 0) {
         return UDEKS_WINDOW_INVALID;
     }
-    paint_window(handle);
+    if (dragging_handle != UDEKS_WINDOW_NONE) {
+        return UDEKS_WINDOW_OK;
+    }
+    damage_set(window);
+    compose_damage(UDEKS_WINDOW_NONE);
     return UDEKS_WINDOW_OK;
 }
 
@@ -489,6 +623,11 @@ unsigned char udeks_window_is_dragging(unsigned char handle)
     return handle != UDEKS_WINDOW_NONE && dragging_handle == handle ? 1u : 0u;
 }
 
+unsigned char udeks_window_is_focused(unsigned char handle)
+{
+    return handle != UDEKS_WINDOW_NONE && focused_handle == handle ? 1u : 0u;
+}
+
 unsigned char udeks_window_manager_poll(void)
 {
     unsigned int pointer_x;
@@ -496,6 +635,7 @@ unsigned char udeks_window_manager_poll(void)
     unsigned char buttons;
     unsigned char pressed;
     unsigned char handle;
+    unsigned char raised;
     struct udeks_window *window;
 
     if (udeks_vic_graphics_is_active() == 0) {
@@ -510,7 +650,7 @@ unsigned char udeks_window_manager_poll(void)
         window = window_by_handle(handle);
         if (window != 0) {
             focused_handle = handle;
-            window->z = next_z++;
+            raised = raise_window(handle);
             if (close_hit(pointer_x, pointer_y, window) != 0) {
                 increment_counter(28u);
                 previous_buttons = pressed;
@@ -520,7 +660,12 @@ unsigned char udeks_window_manager_poll(void)
             }
             if (title_hit(pointer_x, pointer_y, window) != 0) {
                 begin_drag(handle, pointer_x, pointer_y);
+            } else if (raised != 0) {
+                damage_set(window);
+                compose_damage(UDEKS_WINDOW_NONE);
             }
+        } else {
+            focused_handle = UDEKS_WINDOW_NONE;
         }
     }
     if (pressed == 0 && dragging_handle != UDEKS_WINDOW_NONE) {
