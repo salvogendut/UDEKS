@@ -23,7 +23,7 @@ def parse_result(data: bytes) -> dict[str, int]:
     block = data[:RESULT_SIZE]
     if block[:4] != b"VFBR":
         raise ValueError("framebuffer status magic is not VFBR")
-    if block[4] not in (1, 2, 3, 4):
+    if block[4] not in (1, 2, 3, 4, 5):
         raise ValueError(f"unsupported framebuffer status format {block[4]}")
     if block[5] != 2:
         if block[5] & 0x80:
@@ -97,8 +97,10 @@ def parse_result(data: bytes) -> dict[str, int]:
     else:
         if block[28] == 0 and block[29] == 0:
             raise ValueError("font render checksum is zero")
-        if block[31] != 0:
+        if block[4] < 5 and block[31] != 0:
             raise ValueError("reserved framebuffer byte is nonzero")
+        if block[4] >= 5 and block[31] != 0x1F:
+            raise ValueError("framebuffer API capability flags are incomplete")
     return {
         "format": block[4],
         "state": block[5],
@@ -117,6 +119,7 @@ def parse_result(data: bytes) -> dict[str, int]:
         "font_checksum": (
             block[28] | (block[29] << 8) if block[4] >= 2 else 0
         ),
+        "api_flags": block[31] if block[4] >= 5 else 0,
     }
 
 
@@ -151,6 +154,8 @@ def main() -> None:
             f"Software font: {result['font_width']}x{result['font_height']}, "
             f"hardware panel checksum ${result['font_checksum']:04X}"
         )
+    if result["format"] >= 5:
+        print(f"Graphics API capabilities: ${result['api_flags']:02X}")
 
 
 if __name__ == "__main__":

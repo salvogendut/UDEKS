@@ -32,6 +32,10 @@ framebuffer display instance temporarily follows the qualified text console.
 The next display milestone makes that console a framebuffer client instead of
 a separate VDC owner.
 
+The display service's provisional resident-C request surface is specified in
+the [framebuffer client API](framebuffer.md). It is not yet a compiler-neutral
+or cross-CPU service request ABI.
+
 The static image emits descriptors and a pointer table in assembly so vector
 addresses are linker-resolved without relying on compiler packing. The C
 registry validates every descriptor before invoking it. Future disk-loaded

@@ -50,6 +50,13 @@ def left_pipe_logo_record() -> bytearray:
     return block
 
 
+def graphics_api_record() -> bytearray:
+    block = left_pipe_logo_record()
+    block[4] = 5
+    block[31] = 0x1F
+    return block
+
+
 class FramebufferDecodeTests(unittest.TestCase):
     def test_accepts_verified_splash(self):
         result = parse_result(valid_record())
@@ -78,6 +85,11 @@ class FramebufferDecodeTests(unittest.TestCase):
         self.assertEqual(result["format"], 4)
         self.assertEqual(result["splash_address"], 0x03C2)
         self.assertEqual(result["splash_checksum"], 0x5873)
+
+    def test_accepts_backed_graphics_api(self):
+        result = parse_result(graphics_api_record())
+        self.assertEqual(result["format"], 5)
+        self.assertEqual(result["api_flags"], 0x1F)
 
     def test_reports_service_failure(self):
         block = valid_record()
@@ -122,6 +134,15 @@ class FramebufferDecodeTests(unittest.TestCase):
                 self.assertEqual(result["format"], 3)
                 self.assertEqual(result["splash_address"], 0x0406)
                 self.assertEqual(result["splash_checksum"], 0x5873)
+
+    def test_preserved_framebuffer_api_records_pass(self):
+        result_root = ROOT / "bench/results/2026-09-24-framebuffer-api/raw"
+        names = ("vice-64.bin", "vice-16.bin", "1986-64.bin", "1986-16.bin")
+        for name in names:
+            with self.subTest(result=name):
+                result = parse_result((result_root / name).read_bytes())
+                self.assertEqual(result["format"], 5)
+                self.assertEqual(result["api_flags"], 0x1F)
 
 
 if __name__ == "__main__":

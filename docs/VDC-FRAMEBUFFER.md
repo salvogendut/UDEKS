@@ -29,29 +29,31 @@ remain limited to bounded VDC register access and measured block-transfer fast
 paths. Applications will target a surface API, never `$D600/$D601` or a fixed
 VDC address.
 
-The present C text console predates this compositor and is the first C display service.
-The framebuffer/compositor is planned as the first substantial graphics C
-module; once it is usable, the console becomes one of its clients rather than
-owning VDC layout directly.
+The C text console predates this compositor and remains the recovery display
+service. The framebuffer is now the first substantial graphics C module; the
+next console milestone will route ordinary console output through its public
+surface API rather than retaining a separate VDC layout owner.
 
 ## First implementation slice
 
 The baseline mode transition, hardware clear, linked splash upload, complete
 readback, and black-on-yellow activation are implemented and qualified on both
-VDC RAM tiers. The software font and hardware panel are also qualified; general
-surface drawing, dirty tracking, and the public client API remain the next layer.
+VDC RAM tiers. A 16,000-byte system-RAM backing surface, clipped drawing
+primitives, software text, dirty-span tracking, verified flushing, and a
+single-client ownership lease now form the first public graphics API.
 
 The initial display service deliberately targets the conservative mode that
 works with either VDC memory tier: 640x200, one bit per pixel, 80 bytes per
-scanline. Its first public operations will be small and stable:
+scanline. Its first public operations are deliberately small:
 
 1. acquire and release the display;
-2. enter and leave the baseline bitmap mode;
-3. clear, plot, draw an 8-bit span, and fill a clipped rectangle;
-4. draw one software glyph and a string;
-5. mark dirty scanline spans and flush them to VDC RAM.
+2. plot a pixel, draw a clipped horizontal span, and fill a clipped rectangle;
+3. draw one software glyph or a string at pixel coordinates;
+4. track dirty byte spans per scanline and flush only those spans;
+5. read every flushed byte back before declaring the operation complete.
 
-The API will use opaque surface and display handles. Mode tables, VDC addresses,
+The initial API uses a single global ownership lease; task-associated opaque
+handles follow once scheduler identities exist. Mode tables, VDC addresses,
 and register numbers remain private to the service. More ambitious modes such
 as 640x225, interlace, per-cell colour, and page flipping are later capability-
 gated extensions rather than assumptions made by the baseline API.
@@ -65,12 +67,14 @@ future layouts with more room. The present transitional service runs after the
 text console and takes final display ownership; the software-font milestone
 removes that split ownership by making console output a framebuffer client.
 
-The second client installs an original software-defined 5x7 font in 8x8 cells
-and renders a two-column hardware inventory beneath the splash. It reads the published
-`HCAP` record; it must not touch probe registers itself. The first screen
-reports PAL/NTSC, VDC family and memory, and REU/GeoRAM presence. This makes glyph rendering,
-text-over-bitmap composition, clipping, dirty-span flushing, and cross-service
-data consumption part of the same visible qualification.
+The second client installs an original software-defined 5x7 font in 8x8 cells.
+The pipe remains at the upper left while the `HCAP` hardware inventory and CPU
+roles occupy the header to its right. A 608x96 rectangle drawn through the span
+and fill primitives reserves the lower portion as the future console viewport.
+The display client reads the published `HCAP` record; it must not touch probe
+registers itself. This makes glyph rendering, text-over-bitmap composition,
+clipping, dirty-span flushing, and cross-service data consumption part of the
+same visible qualification.
 
 ## VDC operating rules
 
@@ -127,7 +131,7 @@ The first implementation publishes a 32-byte `VFBR` record at `$F0E0`:
 | Offset | Size | Meaning |
 |---:|---:|---|
 | 0 | 4 | ASCII magic `VFBR` |
-| 4 | 1 | Format (`4`; formats 1–3 preserve earlier milestones) |
+| 4 | 1 | Format (`5`; formats 1–4 preserve earlier milestones) |
 | 5 | 1 | Starting (`1`), ready (`2`), or error (`$80 | code`) |
 | 6 | 1 | Failure code |
 | 7 | 1 | Bitmap stride (`80` bytes) |
@@ -146,9 +150,10 @@ The first implementation publishes a 32-byte `VFBR` record at `$F0E0`:
 | 27 | 1 | Rendered hardware-information lines (`9`) |
 | 28–29 | 2 | Verified font-panel byte-sum |
 | 30 | 1 | Consumed `HCAP` field mask (`$1F`) |
-| 31 | 1 | Reserved; zero |
+| 31 | 1 | Graphics API flags (`$1F`: backing, primitives, text, dirty flush, ownership) |
 
 The service reads every uploaded splash byte back before making bitmap mode
-visible. Every software-font scanline is also read back immediately after it is
-written. `tools/framebuffer_decode.py` strictly validates all four record
-versions so preserved qualification evidence remains readable.
+visible. Every dirty span, including software-font and console-frame pixels,
+is also read back after it is written. `tools/framebuffer_decode.py` strictly
+validates all five record versions so preserved qualification evidence remains
+readable.

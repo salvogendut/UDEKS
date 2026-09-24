@@ -72,8 +72,15 @@ The current production image starts three services in order: hardware
 capability discovery, the qualified text-mode fallback, and the baseline VDC
 framebuffer. The framebuffer takes final display ownership, enters 640x200
 monochrome bitmap mode, and shows the compact UDEKS pipe at the upper left in
-the default black-on-yellow theme. It then uses the original UDEKS 5x7 software
-font to render the capability service's hardware inventory beneath the logo.
+the default black-on-yellow theme. It uses the original UDEKS 5x7 software font
+to render the hardware inventory to the logo's right and draws a bordered
+console viewport below through the public graphics primitives.
+
+The framebuffer owns a 16,000-byte system-RAM backing surface. Client changes
+are clipped, accumulated as byte spans per scanline, copied through the bounded
+VDC transport, and read back before the dirty span is retired. The initial
+single-client lease exposes pixel, horizontal-line, filled-rectangle, glyph,
+string, and flush operations from `include/udeks/framebuffer.h`.
 
 The resident 8502 image links the small subset of cc65's `none` runtime needed
 by its C services. Startup initializes cc65's downward-growing software stack

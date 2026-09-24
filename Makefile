@@ -178,6 +178,11 @@ $(BUILD_8502)/framebuffer_font.s: src/services/framebuffer/font.c \
 		include/udeks/font.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/framebuffer_surface.s: src/services/framebuffer/surface.c \
+		include/udeks/font.h include/udeks/framebuffer.h \
+		include/udeks/framebuffer_surface.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/kernel.o: $(BUILD_8502)/kernel.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -188,6 +193,9 @@ $(BUILD_8502)/vdc_framebuffer.o: $(BUILD_8502)/vdc_framebuffer.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/framebuffer_font.o: $(BUILD_8502)/framebuffer_font.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/framebuffer_surface.o: $(BUILD_8502)/framebuffer_surface.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/service_registry.o: $(BUILD_8502)/service_registry.s | $(BUILD_8502)
@@ -235,6 +243,7 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/framebuffer_descriptor.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/vdc_console.o \
 		$(BUILD_8502)/vdc_framebuffer.o $(BUILD_8502)/framebuffer_font.o \
+		$(BUILD_8502)/framebuffer_surface.o \
 		$(BUILD_8502)/vdc_splash.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $@ $(filter %.o,$^)
@@ -247,6 +256,7 @@ $(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/framebuffer_descriptor.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/vdc_console.o \
 		$(BUILD_8502)/vdc_framebuffer.o $(BUILD_8502)/framebuffer_font.o \
+		$(BUILD_8502)/framebuffer_surface.o \
 		$(BUILD_8502)/vdc_splash.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 -C cfg/8502-bootstrap.cfg \
@@ -640,6 +650,8 @@ check:
 	cd bench/results/2026-09-24-vdc-font/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-vdc-pipe-logo-r1 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-vdc-pipe-logo/raw && sha256sum -c SHA256SUMS
+	cd bench/artifacts/2026-09-24-framebuffer-api-r1 && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-24-framebuffer-api/raw && sha256sum -c SHA256SUMS
 
 doctor:
 	@missing=0; \

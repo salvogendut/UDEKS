@@ -127,8 +127,9 @@ mailbox corruption, with published benchmark results.
 
 ## Phase 5 — Dual-display and input system
 
-- [ ] Define display surface and mode APIs.
-- [ ] Implement the capability-tiered VDC framebuffer/compositor described in
+- [x] Define the initial owned VDC surface API with pixel, span, rectangle,
+  software-text, dirty tracking, and verified flush operations.
+- [ ] Complete the capability-tiered VDC compositor described in
   `docs/VDC-FRAMEBUFFER.md`.
 - [x] Bring up and qualify the baseline 640x200 one-bit VDC framebuffer on 16
   and 64 KiB VDC configurations in VICE and `1986`.
@@ -137,6 +138,8 @@ mailbox corruption, with published benchmark results.
 - [ ] Degrade cleanly to the text console when framebuffer initialization fails.
 - [x] Add a software-defined bitmap font, then render the `HCAP` PAL/NTSC, VDC,
   and expansion-memory results as the second framebuffer client.
+- [x] Draw the reserved framebuffer-console viewport through the public
+  horizontal-span and clipped-rectangle primitives.
 - [ ] Implement queued VDC text and bitmap transfers.
 - [ ] Implement VIC text/bitmap surfaces, sprites, and raster service.
 - [ ] Support VDC-only, VIC-only, mirrored, and extended desktop modes.

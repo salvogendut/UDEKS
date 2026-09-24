@@ -110,20 +110,22 @@ fallback: it can host a secondary console, preview, status surface, collaborativ
 view, or sprite-oriented application.
 
 The VDC graphics service exposes a 640×200 one-bit framebuffer surface and
-software text composition. On 16 KiB VDCs the front buffer is paired with a
-banked system-RAM backing surface and dirty uploads; 64 KiB VDCs may add an
-attribute plane and VDC-resident staging or back buffers. The detailed proposal
-is in [VDC-FRAMEBUFFER.md](VDC-FRAMEBUFFER.md).
+software text composition. Its system-RAM backing store, clipped primitives,
+single-client lease, and verified dirty-span uploads work with both VDC memory
+tiers. A 64 KiB VDC may later add an attribute plane and VDC-resident staging
+or back buffers. The detailed design is in
+[VDC-FRAMEBUFFER.md](VDC-FRAMEBUFFER.md).
 
 The first framebuffer integration is a compact boot mark at the upper left,
 generated at build time from the 64x64 pipe artwork in `assets/`. It doubles as
 a visual test of mode entry, clipping, packed scanline upload, and clean
 ownership transfer to the console; text-only boot remains the failure fallback.
 
-Below the splash, a software-defined font renders the capability service's
-published hardware inventory in two columns. Display code consumes `HCAP` and never repeats
-hardware probes, keeping discovery policy in one service while proving
-text-over-graphics composition.
+To the splash's right, a software-defined font renders the capability service's
+published hardware inventory and CPU roles. A graphics-primitive-drawn viewport
+below reserves most of the screen for the next framebuffer-backed console.
+Display code consumes `HCAP` and never repeats hardware probes, keeping
+discovery policy in one service while proving text-over-graphics composition.
 
 The default system visual identity is black foreground on yellow background,
 shared by bitmap and fallback text paths. Applications may later select other
