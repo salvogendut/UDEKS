@@ -41,7 +41,9 @@ and other system policy are service modules written predominantly in C. They
 communicate through versioned messages and handles rather than reaching into
 kernel internals. Early images may link essential services statically, but
 static placement does not permit private calls across module boundaries; the
-same interfaces must support loadable and replaceable modules later.
+same interfaces must support loadable and replaceable modules later. The
+[service-module ABI](../abi/services.md) defines the compiler-neutral descriptor
+and initial startup lifecycle used by the static bring-up registry.
 
 The C128 has no memory-protection unit, so “microkernel” describes responsibility,
 dependency direction, and failure containment by validation—not hardware-enforced

@@ -100,7 +100,8 @@ display corruption.
 - [ ] Save and restore the selected compiler runtime and CPU context.
 - [ ] Add cooperative scheduling, then timer-driven preemption.
 - [ ] Add message queues and capability-based device handles.
-- [ ] Define the service-module descriptor, version negotiation, and lifecycle.
+- [x] Define service-module descriptor ABI 0.1, version negotiation, and the
+  startup lifecycle; poll, stop, and dynamic loading remain future work.
 - [ ] Move console, graphics, storage, and filesystem policy into C service
   modules with no private microkernel dependencies.
 - [ ] Add host tests for scheduler and queue policy.

@@ -139,8 +139,12 @@ $(BUILD_8502) $(BUILD_Z80) $(BUILD_BENCH_8502) $(BUILD_BENCH_Z80) \
 		$(BUILD_MEMORY_MAP) $(BUILD_BOOT):
 	mkdir -p $@
 
-$(BUILD_8502)/kernel.s: src/8502/kernel.c include/udeks/console.h \
-		include/udeks/mailbox.h include/udeks/memory.h | $(BUILD_8502)
+$(BUILD_8502)/kernel.s: src/8502/kernel.c include/udeks/mailbox.h \
+		include/udeks/memory.h include/udeks/service.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/service_registry.s: src/kernel/service_registry.c \
+		include/udeks/service.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/vdc_console.s: src/services/console/vdc_console.c \
@@ -154,6 +158,15 @@ $(BUILD_8502)/kernel.o: $(BUILD_8502)/kernel.s | $(BUILD_8502)
 $(BUILD_8502)/vdc_console.o: $(BUILD_8502)/vdc_console.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/service_registry.o: $(BUILD_8502)/service_registry.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/console_descriptor.o: src/services/console/descriptor.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/service_table.o: src/services/table.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/crt0.o: src/8502/crt0.s src/8502/mmu.inc | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -161,7 +174,9 @@ $(BUILD_8502)/vdc.o: src/8502/vdc.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
-		$(BUILD_8502)/kernel.o $(BUILD_8502)/vdc_console.o \
+		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
+		$(BUILD_8502)/service_table.o $(BUILD_8502)/console_descriptor.o \
+		$(BUILD_8502)/vdc_console.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $@ $(filter %.o,$^)
 
@@ -513,7 +528,8 @@ check:
 		tools/kernel_decode.py tools/handoff_decode.py \
 		tools/offload_decode.py tools/boot_status_decode.py \
 		tools/memory_map_decode.py tools/boot_chain_decode.py \
-		tools/vdc_console_decode.py tools/build_d71.py \
+		tools/vdc_console_decode.py tools/service_registry_decode.py \
+		tools/build_d71.py \
 		tools/snapshot_extract.py \
 		tools/vice_capture.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
@@ -531,6 +547,8 @@ check:
 	cd bench/results/2026-09-24-native-boot/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-vdc-console-r1 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-vdc-console/raw && sha256sum -c SHA256SUMS
+	cd bench/artifacts/2026-09-24-service-registry-r1 && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-24-service-registry/raw && sha256sum -c SHA256SUMS
 
 doctor:
 	@missing=0; \

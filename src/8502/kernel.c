@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
-#include "udeks/console.h"
 #include "udeks/mailbox.h"
 #include "udeks/memory.h"
+#include "udeks/service.h"
 
 #define MAILBOX_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_MAILBOX_BASE + (offset)))
@@ -22,7 +22,7 @@ static void mailbox_initialize(void)
 void kernel_main(void)
 {
     mailbox_initialize();
-    (void)udeks_console_start();
+    (void)udeks_service_start_all();
 
     /* Bring-up halt. Service scheduling and interrupt enablement come next. */
     for (;;) {

@@ -1,0 +1,15 @@
+; SPDX-License-Identifier: GPL-3.0-or-later
+;
+; Static bring-up registry. Later loadable modules feed the same descriptor ABI
+; into the registry without changing its validation or lifecycle semantics.
+
+        .setcpu "6502"
+        .import _udeks_console_service_descriptor
+        .export _udeks_service_table
+        .export _udeks_service_count
+
+        .segment "RODATA"
+_udeks_service_table:
+        .addr _udeks_console_service_descriptor
+_udeks_service_count:
+        .byte $01

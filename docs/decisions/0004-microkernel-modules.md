@@ -49,6 +49,11 @@ replaceable as the loader and allocator mature.
 The Z80 worker is exposed as a kernel-mediated service, not as a second kernel.
 Its operations remain bounded and selected by measured benefit.
 
+The first implementation is service ABI 0.1: a fixed 16-byte, compiler-neutral
+descriptor with version, class, flags, and start/poll/stop vectors. The static
+image table is deliberately separate from generic C validation and lifecycle
+dispatch, so adding a service does not add a private dependency to the kernel.
+
 ## Consequences
 
 - Assembly is concentrated in boot, interrupt, context, MMU, IPC fast paths,
@@ -67,3 +72,5 @@ Its operations remain bounded and selected by measured benefit.
 
 - [ADR 0002](0002-executive-cpu.md): 8502 executive and bounded Z80 worker.
 - [ADR 0003](0003-memory-bootstrap.md): native memory and bootstrap contract.
+- [Service-module ABI 0.1](../../abi/services.md): descriptor and lifecycle
+  contract.
