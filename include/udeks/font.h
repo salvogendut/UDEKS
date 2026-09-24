@@ -8,5 +8,6 @@
 #define UDEKS_FONT_CELL_HEIGHT 8u
 
 unsigned char udeks_font_row(unsigned char character, unsigned char row);
+const unsigned char *udeks_font_glyph(unsigned char character);
 
 #endif

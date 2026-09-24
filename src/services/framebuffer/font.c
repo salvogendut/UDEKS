@@ -118,3 +118,8 @@ unsigned char udeks_font_row(unsigned char character, unsigned char row)
     }
     return (unsigned char)(glyphs[glyph_index(character)][row] << 3);
 }
+
+const unsigned char *udeks_font_glyph(unsigned char character)
+{
+    return glyphs[glyph_index(character)];
+}

@@ -23,10 +23,8 @@
 #define VDC_REG_VERTICAL_SCROLL     24u
 #define VDC_REG_HORIZONTAL_SCROLL   25u
 #define VDC_REG_COLOR               26u
-#define VDC_REG_WORD_COUNT          30u
 #define VDC_REG_DATA                31u
 
-#define FRAMEBUFFER_PAGE_COUNT      63u
 #define FRAMEBUFFER_ERROR_CAPABILITY  1u
 #define FRAMEBUFFER_ERROR_SNAPSHOT    2u
 #define FRAMEBUFFER_ERROR_CLEAR       3u
@@ -41,7 +39,6 @@
 #define FRAMEBUFFER_FLAG_ACTIVE      0x08u
 #define FRAMEBUFFER_FLAG_STATE_SAVED 0x10u
 #define FRAMEBUFFER_FLAG_FONT_DRAWN   0x20u
-#define FRAMEBUFFER_FLAG_FONT_VERIFIED 0x40u
 
 #define FRAMEBUFFER_CHECKSUM_LO       21u
 #define FRAMEBUFFER_CHECKSUM_HI       22u
@@ -64,11 +61,9 @@ static unsigned char splash_row;
 static unsigned char splash_column;
 static unsigned char register_index;
 static unsigned int text_checksum;
-static unsigned char font_scanline;
 static unsigned char dirty_row;
 static unsigned char dirty_first;
 static unsigned char dirty_last;
-static unsigned char dirty_column;
 static unsigned char dirty_start;
 static unsigned char framebuffer_active;
 static unsigned char framebuffer_owned;
@@ -137,34 +132,38 @@ static void restore_display_state(void)
                        saved_registers[VDC_REG_VERTICAL_DISPLAYED]);
 }
 
-static unsigned char clear_framebuffer(void)
+static unsigned char blank_display(void)
 {
-    unsigned char page;
     unsigned char vertical_scroll;
 
     vertical_scroll = (unsigned char)(
         saved_registers[VDC_REG_VERTICAL_SCROLL] & 0x7Fu);
-    if (vdc_write_register(VDC_REG_VERTICAL_SCROLL, vertical_scroll) !=
-            UDEKS_VDC_OK ||
-        vdc_set_address(0) != UDEKS_VDC_OK ||
-        vdc_write_register(VDC_REG_DATA, 0) != UDEKS_VDC_OK ||
-        vdc_set_address(0) != UDEKS_VDC_OK ||
-        udeks_vdc_select(VDC_REG_WORD_COUNT) != UDEKS_VDC_OK) {
+    if (vdc_write_register(VDC_REG_VERTICAL_DISPLAYED, 0) != UDEKS_VDC_OK ||
+        vdc_write_register(VDC_REG_VERTICAL_SCROLL, vertical_scroll) !=
+            UDEKS_VDC_OK) {
         return UDEKS_VDC_TIMEOUT;
     }
+    return UDEKS_VDC_OK;
+}
 
-    for (page = 0; page < FRAMEBUFFER_PAGE_COUNT; ++page) {
-        if (udeks_vdc_write_selected(0) != UDEKS_VDC_OK) {
-            return UDEKS_VDC_TIMEOUT;
-        }
+static unsigned char upload_complete_surface(void)
+{
+    udeks_vdc_block_address = 0;
+    udeks_vdc_block_source = udeks_surface_data();
+    udeks_vdc_block_length = UDEKS_FRAMEBUFFER_SIZE;
+    if (udeks_vdc_write_block() != UDEKS_VDC_OK) {
+        return UDEKS_VDC_TIMEOUT;
     }
+    udeks_surface_clean_all();
+    udeks_surface_set_dirty_tracking(1);
     return UDEKS_VDC_OK;
 }
 
 static unsigned char flush_surface(void)
 {
-    unsigned char value;
+    const unsigned char *surface;
 
+    surface = udeks_surface_data();
     for (dirty_row = 0; dirty_row < UDEKS_FRAMEBUFFER_HEIGHT; ++dirty_row) {
         dirty_start = 0;
         while (udeks_surface_dirty_span(
@@ -172,33 +171,12 @@ static unsigned char flush_surface(void)
                    &dirty_first, &dirty_last) != 0) {
             vdc_address = (unsigned int)dirty_row * UDEKS_FRAMEBUFFER_STRIDE +
                 dirty_first;
-            if (vdc_set_address(vdc_address) != UDEKS_VDC_OK ||
-                udeks_vdc_select(VDC_REG_DATA) != UDEKS_VDC_OK) {
+            udeks_vdc_block_address = vdc_address;
+            udeks_vdc_block_source = surface + vdc_address;
+            udeks_vdc_block_length =
+                (unsigned int)(dirty_last - dirty_first) + 1u;
+            if (udeks_vdc_write_block() != UDEKS_VDC_OK) {
                 return UDEKS_VDC_TIMEOUT;
-            }
-            for (dirty_column = dirty_first;
-                 dirty_column <= dirty_last; ++dirty_column) {
-                if (udeks_vdc_write_selected(
-                        udeks_surface_byte(vdc_address)) != UDEKS_VDC_OK) {
-                    return UDEKS_VDC_TIMEOUT;
-                }
-                ++vdc_address;
-            }
-
-            vdc_address = (unsigned int)dirty_row *
-                UDEKS_FRAMEBUFFER_STRIDE + dirty_first;
-            if (vdc_set_address(vdc_address) != UDEKS_VDC_OK ||
-                udeks_vdc_select(VDC_REG_DATA) != UDEKS_VDC_OK) {
-                return UDEKS_VDC_TIMEOUT;
-            }
-            for (dirty_column = dirty_first;
-                 dirty_column <= dirty_last; ++dirty_column) {
-                value = udeks_vdc_read_selected();
-                if (udeks_vdc_status != UDEKS_VDC_OK ||
-                    value != udeks_surface_byte(vdc_address)) {
-                    return UDEKS_VDC_TIMEOUT;
-                }
-                ++vdc_address;
             }
             udeks_surface_clean_span(
                 dirty_row, dirty_first, dirty_last);
@@ -211,7 +189,7 @@ static unsigned char flush_surface(void)
     return UDEKS_VDC_OK;
 }
 
-static unsigned char upload_splash(void)
+static void compose_splash(void)
 {
     udeks_surface_blit_packed(
         UDEKS_SPLASH_X_BYTES, UDEKS_SPLASH_Y,
@@ -221,7 +199,6 @@ static unsigned char upload_splash(void)
         UDEKS_WORDMARK_X_BYTES, UDEKS_WORDMARK_Y,
         UDEKS_WORDMARK_WIDTH_BYTES, UDEKS_WORDMARK_HEIGHT,
         udeks_wordmark_bitmap);
-    return flush_surface();
 }
 
 static unsigned char verify_splash(void)
@@ -281,15 +258,7 @@ static unsigned char activate_bitmap_mode(void)
     return UDEKS_VDC_OK;
 }
 
-static void checksum_character(unsigned char character)
-{
-    for (font_scanline = 0; font_scanline < UDEKS_FONT_CELL_HEIGHT;
-         ++font_scanline) {
-        text_checksum += udeks_font_row(character, font_scanline);
-    }
-}
-
-static unsigned char render_boot_console(void)
+static unsigned char compose_boot_console(void)
 {
     const unsigned char *row_text;
     unsigned int cursor_x;
@@ -299,18 +268,15 @@ static unsigned char render_boot_console(void)
         return UDEKS_VDC_TIMEOUT;
     }
     text_checksum = 0;
-    if (udeks_framebuffer_acquire() != UDEKS_FRAMEBUFFER_OK) {
-        return UDEKS_VDC_TIMEOUT;
-    }
     for (console_row = 0; console_row < UDEKS_ROOT_CONSOLE_ROWS;
          ++console_row) {
         row_text = udeks_root_console_row(console_row);
         for (console_column = 0;
-             console_column < UDEKS_ROOT_CONSOLE_COLUMNS;
+            console_column < UDEKS_ROOT_CONSOLE_COLUMNS;
              ++console_column) {
             if (row_text[console_column] != ' ') {
-                checksum_character(row_text[console_column]);
-                if (udeks_framebuffer_draw_char(
+                text_checksum += row_text[console_column];
+                if (udeks_surface_draw_char(
                         CONSOLE_CONTENT_X +
                             (unsigned int)console_column *
                                 UDEKS_FONT_CELL_WIDTH,
@@ -318,27 +284,25 @@ static unsigned char render_boot_console(void)
                             console_row * UDEKS_FONT_CELL_HEIGHT),
                         row_text[console_column]) !=
                     UDEKS_FRAMEBUFFER_OK) {
-                    framebuffer_owned = 0;
                     return UDEKS_VDC_TIMEOUT;
                 }
             }
         }
     }
-    if (udeks_framebuffer_hline(
+    if (udeks_surface_hline(
             CONSOLE_FRAME_X, CONSOLE_FRAME_Y,
             CONSOLE_FRAME_WIDTH, 1) != UDEKS_FRAMEBUFFER_OK ||
-        udeks_framebuffer_hline(
+        udeks_surface_hline(
             CONSOLE_FRAME_X,
             CONSOLE_FRAME_Y + CONSOLE_FRAME_HEIGHT - 1u,
             CONSOLE_FRAME_WIDTH, 1) != UDEKS_FRAMEBUFFER_OK ||
-        udeks_framebuffer_fill_rect(
+        udeks_surface_fill_rect(
             CONSOLE_FRAME_X, CONSOLE_FRAME_Y, 1,
             CONSOLE_FRAME_HEIGHT, 1) != UDEKS_FRAMEBUFFER_OK ||
-        udeks_framebuffer_fill_rect(
+        udeks_surface_fill_rect(
             CONSOLE_FRAME_X + CONSOLE_FRAME_WIDTH - 1u,
             CONSOLE_FRAME_Y, 1, CONSOLE_FRAME_HEIGHT,
             1) != UDEKS_FRAMEBUFFER_OK) {
-        framebuffer_owned = 0;
         return UDEKS_VDC_TIMEOUT;
     }
     if (udeks_root_console_cursor_visible() != 0) {
@@ -347,16 +311,11 @@ static unsigned char render_boot_console(void)
                 UDEKS_FONT_CELL_WIDTH;
         cursor_y = (unsigned char)(CONSOLE_CONTENT_Y +
             udeks_root_console_cursor_row() * UDEKS_FONT_CELL_HEIGHT);
-        if (udeks_framebuffer_fill_rect(
+        if (udeks_surface_fill_rect(
                 cursor_x, cursor_y, UDEKS_FONT_CELL_WIDTH,
                 UDEKS_FONT_CELL_HEIGHT, 1) != UDEKS_FRAMEBUFFER_OK) {
-            framebuffer_owned = 0;
             return UDEKS_VDC_TIMEOUT;
         }
-    }
-    if (udeks_framebuffer_release() != UDEKS_FRAMEBUFFER_OK) {
-        framebuffer_owned = 0;
-        return UDEKS_VDC_TIMEOUT;
     }
     return UDEKS_VDC_OK;
 }
@@ -497,7 +456,7 @@ static void status_begin(void)
     STATUS_BYTE(1) = 'F';
     STATUS_BYTE(2) = 'B';
     STATUS_BYTE(3) = 'R';
-    STATUS_BYTE(4) = 7;
+    STATUS_BYTE(4) = 8;
     STATUS_BYTE(5) = UDEKS_FRAMEBUFFER_STATE_STARTING;
     STATUS_BYTE(7) = UDEKS_FRAMEBUFFER_STRIDE;
     STATUS_BYTE(8) = UDEKS_FRAMEBUFFER_HEIGHT;
@@ -540,12 +499,20 @@ unsigned char udeks_framebuffer_start(void)
     STATUS_BYTE(14) = saved_registers[VDC_REG_DISPLAY_LO];
     STATUS_BYTE(FRAMEBUFFER_FLAGS) |= FRAMEBUFFER_FLAG_STATE_SAVED;
 
-    if (clear_framebuffer() != UDEKS_VDC_OK) {
+    if (blank_display() != UDEKS_VDC_OK) {
         return framebuffer_fail(FRAMEBUFFER_ERROR_CLEAR);
     }
     udeks_surface_reset();
+    udeks_surface_set_dirty_tracking(0);
     STATUS_BYTE(FRAMEBUFFER_FLAGS) |= FRAMEBUFFER_FLAG_CLEARED;
-    if (upload_splash() != UDEKS_VDC_OK) {
+    compose_splash();
+    if (compose_boot_console() != UDEKS_VDC_OK) {
+        return framebuffer_fail(FRAMEBUFFER_ERROR_FONT);
+    }
+    STATUS_BYTE(28) = (unsigned char)text_checksum;
+    STATUS_BYTE(29) = (unsigned char)(text_checksum >> 8);
+    STATUS_BYTE(FRAMEBUFFER_FLAGS) |= FRAMEBUFFER_FLAG_FONT_DRAWN;
+    if (upload_complete_surface() != UDEKS_VDC_OK) {
         return framebuffer_fail(FRAMEBUFFER_ERROR_UPLOAD);
     }
     STATUS_BYTE(FRAMEBUFFER_FLAGS) |= FRAMEBUFFER_FLAG_UPLOADED;
@@ -561,13 +528,6 @@ unsigned char udeks_framebuffer_start(void)
     }
     STATUS_BYTE(FRAMEBUFFER_FLAGS) |= FRAMEBUFFER_FLAG_ACTIVE;
     framebuffer_active = 1;
-    if (render_boot_console() != UDEKS_VDC_OK) {
-        return framebuffer_fail(FRAMEBUFFER_ERROR_FONT);
-    }
-    STATUS_BYTE(28) = (unsigned char)text_checksum;
-    STATUS_BYTE(29) = (unsigned char)(text_checksum >> 8);
-    STATUS_BYTE(FRAMEBUFFER_FLAGS) |=
-        FRAMEBUFFER_FLAG_FONT_DRAWN | FRAMEBUFFER_FLAG_FONT_VERIFIED;
     STATUS_BYTE(5) = UDEKS_FRAMEBUFFER_STATE_READY;
     return 0;
 }

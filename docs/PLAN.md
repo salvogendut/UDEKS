@@ -111,8 +111,9 @@ view, or sprite-oriented application.
 
 The VDC graphics service exposes a 640×200 one-bit framebuffer surface and
 software text composition. Its system-RAM backing store, clipped primitives,
-single-client lease, and verified dirty-span uploads work with both VDC memory
-tiers. A 64 KiB VDC may later add an attribute plane and VDC-resident staging
+single-client lease, bounded dirty-span uploads, and atomic full-screen boot
+transaction work with both VDC memory tiers. A 64 KiB VDC may later add an
+attribute plane and VDC-resident staging
 or back buffers. The detailed design is in
 [VDC-FRAMEBUFFER.md](VDC-FRAMEBUFFER.md).
 

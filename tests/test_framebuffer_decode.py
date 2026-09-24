@@ -71,6 +71,13 @@ def retained_root_console_record() -> bytearray:
     return block
 
 
+def atomic_fast_upload_record() -> bytearray:
+    block = retained_root_console_record()
+    block[4] = 8
+    block[23] = 0x3F
+    return block
+
+
 class FramebufferDecodeTests(unittest.TestCase):
     def test_accepts_verified_splash(self):
         result = parse_result(valid_record())
@@ -115,6 +122,12 @@ class FramebufferDecodeTests(unittest.TestCase):
         self.assertEqual(result["format"], 7)
         self.assertEqual(result["api_flags"], 0x3F)
         self.assertEqual(result["retained_text"], 1)
+
+    def test_accepts_atomic_fast_upload(self):
+        result = parse_result(atomic_fast_upload_record())
+        self.assertEqual(result["format"], 8)
+        self.assertEqual(result["flags"], 0x3F)
+        self.assertEqual(result["atomic_fast_upload"], 1)
 
     def test_reports_service_failure(self):
         block = valid_record()
@@ -188,6 +201,16 @@ class FramebufferDecodeTests(unittest.TestCase):
                 self.assertEqual(result["text_lines"], 17)
                 self.assertEqual(result["api_flags"], 0x3F)
                 self.assertEqual(result["retained_text"], 1)
+
+    def test_preserved_atomic_framebuffer_records_pass(self):
+        result_root = ROOT / "bench/results/2026-09-24-atomic-framebuffer/raw"
+        names = ("vice-64.bin", "vice-16.bin", "1986-64.bin", "1986-16.bin")
+        for name in names:
+            with self.subTest(result=name):
+                result = parse_result((result_root / name).read_bytes())
+                self.assertEqual(result["format"], 8)
+                self.assertEqual(result["flags"], 0x3F)
+                self.assertEqual(result["atomic_fast_upload"], 1)
 
 
 if __name__ == "__main__":

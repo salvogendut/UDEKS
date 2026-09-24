@@ -36,10 +36,10 @@ surface API rather than retaining a separate VDC layout owner.
 
 ## First implementation slice
 
-The baseline mode transition, hardware clear, linked splash upload, complete
-readback, and black-on-yellow activation are implemented and qualified on both
-VDC RAM tiers. A 16,000-byte system-RAM backing surface, clipped drawing
-primitives, software text, dirty-span tracking, verified flushing, and a
+The baseline mode transition, linked splash upload, sampled readback, and
+black-on-yellow activation are implemented and qualified on both VDC RAM
+tiers. A 16,000-byte system-RAM backing surface, clipped drawing primitives,
+software text, dirty-span tracking, bounded assembly flushing, and a
 single-client ownership lease now form the first public graphics API.
 
 The initial display service deliberately targets the conservative mode that
@@ -50,7 +50,14 @@ scanline. Its first public operations are deliberately small:
 2. plot a pixel, draw a clipped horizontal span, and fill a clipped rectangle;
 3. draw one software glyph or a string at pixel coordinates;
 4. track dirty byte spans per scanline and flush only those spans;
-5. read every flushed byte back before declaring the operation complete.
+5. retire a span only after its bounded assembly transfer completes.
+
+Cold boot deliberately uses a different repaint policy. UDEKS blanks the VDC
+before touching its RAM, builds the complete root-window image in system RAM,
+and sends all 16,000 bytes through one auto-incrementing assembly transfer.
+The display is enabled only after upload and splash verification, so no
+top-to-bottom border or text construction is exposed. Interactive clients
+continue to use incremental dirty spans rather than uploading a full screen.
 
 The initial API uses a single global ownership lease; task-associated opaque
 handles follow once scheduler identities exist. Mode tables, VDC addresses,
@@ -62,8 +69,9 @@ The first end-to-end client is the boot splash. A host-side build tool converts
 `assets/udekspipe-64.xpm` and `assets/udekusu-64.xpm` into packed VDC
 scanlines while preserving their PNG sources and the larger pipe XPM as source
 artwork. The service places the compact 64x64 pipe mark at the upper left and
-the 64x21 Japanese UDEKS wordmark directly below it. Dirty-span readback
-verifies both assets in VDC RAM. No PNG decoder belongs in the kernel. The
+the 64x21 Japanese UDEKS wordmark directly below it. Per-span readback is not
+used by the production renderer; the splash region is sampled back as the boot
+transfer's integrity check. No PNG decoder belongs in the kernel. The
 160x160 pipe variant remains available for future layouts with more room. The
 present transitional service runs after the
 text console and takes final display ownership; the software-font milestone
@@ -136,7 +144,7 @@ The first implementation publishes a 32-byte `VFBR` record at `$F0E0`:
 | Offset | Size | Meaning |
 |---:|---:|---|
 | 0 | 4 | ASCII magic `VFBR` |
-| 4 | 1 | Format (`7`; formats 1–6 preserve earlier milestones) |
+| 4 | 1 | Format (`8`; formats 1–7 preserve earlier milestones) |
 | 5 | 1 | Starting (`1`), ready (`2`), or error (`$80 | code`) |
 | 6 | 1 | Failure code |
 | 7 | 1 | Bitmap stride (`80` bytes) |
@@ -149,16 +157,16 @@ The first implementation publishes a 32-byte `VFBR` record at `$F0E0`:
 | 15–18 | 4 | Splash width in bytes, height, x-byte, and y |
 | 19–20 | 2 | Splash VDC address (`$03C2`, little-endian) |
 | 21–22 | 2 | Verified byte-sum (`$5873`, little-endian) |
-| 23 | 1 | Display and verified-font flags (`$7F`) |
+| 23 | 1 | Display flags (`$3F`: RAM cleared, uploaded, splash verified, active, state saved, font drawn) |
 | 24 | 1 | VDC colour register (`$0D`, black on yellow) |
 | 25–26 | 2 | Font width (`5`) and height (`7`) |
 | 27 | 1 | Rendered boot-console lines (`17`) |
-| 28–29 | 2 | Verified font-panel byte-sum |
+| 28–29 | 2 | Retained boot-console character checksum |
 | 30 | 1 | Consumed `HCAP` field mask (`$1F`) |
 | 31 | 1 | Graphics API flags (`$3F`: backing, primitives, text, dirty flush, ownership, retained root text) |
 
 The service reads every uploaded splash byte back before making bitmap mode
-visible. Every dirty span, including software-font and console-frame pixels,
-is also read back after it is written. `tools/framebuffer_decode.py` strictly
-validates all seven record versions so preserved qualification evidence remains
-readable.
+visible. The rest of the production transfer relies on the bounded ready poll
+for every byte and does not pay for a second 16,000-byte read pass.
+`tools/framebuffer_decode.py` strictly validates all eight record versions so
+preserved qualification evidence remains readable.

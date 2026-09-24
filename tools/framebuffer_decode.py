@@ -23,7 +23,7 @@ def parse_result(data: bytes) -> dict[str, int]:
     block = data[:RESULT_SIZE]
     if block[:4] != b"VFBR":
         raise ValueError("framebuffer status magic is not VFBR")
-    if block[4] not in (1, 2, 3, 4, 5, 6, 7):
+    if block[4] not in (1, 2, 3, 4, 5, 6, 7, 8):
         raise ValueError(f"unsupported framebuffer status format {block[4]}")
     if block[5] != 2:
         if block[5] & 0x80:
@@ -75,7 +75,9 @@ def parse_result(data: bytes) -> dict[str, int]:
                 22: 0x58,
             }
         )
-    expected[23] = 0x1F if block[4] == 1 else 0x7F
+    expected[23] = (
+        0x1F if block[4] == 1 else 0x3F if block[4] >= 8 else 0x7F
+    )
     if block[4] >= 2:
         expected.update(
             {
@@ -103,7 +105,10 @@ def parse_result(data: bytes) -> dict[str, int]:
             raise ValueError("reserved framebuffer bytes are nonzero")
     else:
         if block[28] == 0 and block[29] == 0:
-            raise ValueError("font render checksum is zero")
+            checksum_name = (
+                "root-console model" if block[4] >= 8 else "font render"
+            )
+            raise ValueError(f"{checksum_name} checksum is zero")
         if block[4] < 5 and block[31] != 0:
             raise ValueError("reserved framebuffer byte is nonzero")
         expected_api_flags = 0x3F if block[4] >= 7 else 0x1F
@@ -132,6 +137,7 @@ def parse_result(data: bytes) -> dict[str, int]:
         "retained_text": (
             1 if block[4] >= 7 and (block[31] & 0x20) != 0 else 0
         ),
+        "atomic_fast_upload": 1 if block[4] >= 8 else 0,
     }
 
 
@@ -162,9 +168,12 @@ def main() -> None:
         f"checksum ${result['splash_checksum']:04X}"
     )
     if result["format"] >= 2:
-        panel_name = (
-            "boot console" if result["format"] >= 6 else "hardware panel"
-        )
+        if result["format"] >= 8:
+            panel_name = "root model"
+        elif result["format"] >= 6:
+            panel_name = "boot console"
+        else:
+            panel_name = "hardware panel"
         print(
             f"Software font: {result['font_width']}x{result['font_height']}, "
             f"{panel_name} checksum ${result['font_checksum']:04X}, "
@@ -174,6 +183,8 @@ def main() -> None:
         print(f"Graphics API capabilities: ${result['api_flags']:02X}")
     if result["retained_text"] != 0:
         print("Root console: retained text model")
+    if result["atomic_fast_upload"] != 0:
+        print("Transfer: atomic assembly upload; splash readback verified")
 
 
 if __name__ == "__main__":

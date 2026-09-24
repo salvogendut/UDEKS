@@ -13,9 +13,13 @@
  * bounded ready wait and updates udeks_vdc_status.
  */
 extern volatile unsigned char udeks_vdc_status;
+extern const unsigned char *udeks_vdc_block_source;
+extern unsigned int udeks_vdc_block_address;
+extern unsigned int udeks_vdc_block_length;
 
 unsigned char UDEKS_FASTCALL udeks_vdc_select(unsigned char reg);
 unsigned char UDEKS_FASTCALL udeks_vdc_write_selected(unsigned char value);
 unsigned char udeks_vdc_read_selected(void);
+unsigned char udeks_vdc_write_block(void);
 
 #endif

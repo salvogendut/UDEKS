@@ -21,7 +21,10 @@ unsigned char udeks_surface_dirty_span(
     unsigned char y, unsigned char start,
     unsigned char *first, unsigned char *last);
 unsigned char udeks_surface_byte(unsigned int offset);
+const unsigned char *udeks_surface_data(void);
+void udeks_surface_set_dirty_tracking(unsigned char enabled);
 void udeks_surface_clean_span(
     unsigned char y, unsigned char first, unsigned char last);
+void udeks_surface_clean_all(void);
 
 #endif

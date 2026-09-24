@@ -20,7 +20,8 @@ window's content.
 - [x] Retain characters and cursor position independently of VDC pixels.
 - [x] Move boot-message construction out of the VDC renderer.
 - [x] Render the retained rows through the owned framebuffer API.
-- [x] Advertise retained text in framebuffer diagnostic format 7.
+- [x] Advertise retained text in framebuffer diagnostic format 8; format 7
+  remains readable as preserved historical evidence.
 - [x] Qualify an unchanged visual result on 16 KiB and 64 KiB VDC tiers in
   VICE and `1986`, within a 1,800-frame cold-boot window.
 

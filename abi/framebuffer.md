@@ -14,7 +14,7 @@ unsigned char udeks_framebuffer_release(void);
 
 Acquisition returns `UDEKS_FRAMEBUFFER_NOT_READY` before successful display
 startup and `UDEKS_FRAMEBUFFER_BUSY` while another client holds the lease.
-Release performs a verified flush before relinquishing ownership. A failed
+Release performs a bounded flush before relinquishing ownership. A failed
 flush retains the lease so the client can retry or report the device error.
 
 While holding the lease, a client may call:
@@ -43,8 +43,16 @@ eight pixels per character.
 Drawing changes the 16,000-byte system-RAM backing surface, not VDC RAM
 directly. A 2,000-byte bitmap tracks each changed byte independently, retaining
 multiple disjoint spans on the same scanline. `flush` writes only contiguous
-dirty spans through the bounded VDC transport, reads each byte back, and clears
-the corresponding dirty bits only after successful comparison.
+dirty spans through the bounded assembly VDC transport and clears the
+corresponding dirty bits only after every write in the span was accepted. The
+production fast path does not perform a per-byte readback; qualification and
+diagnostic builds may add exhaustive verification outside this client ABI.
+
+Boot is a special full-repaint transaction. The service composes the complete
+16,000-byte image in system RAM with dirty tracking suspended, blanks the VDC,
+uploads the image in one auto-incrementing assembly transfer, verifies the
+splash sample, and reveals bitmap mode only after the transfer succeeds. Later
+client updates use the incremental dirty-span path instead.
 
 The bring-up kernel runs with interrupts disabled, so the first lease is a
 simple global guard. The scheduler milestone must make acquisition atomic and

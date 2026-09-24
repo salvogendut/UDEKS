@@ -25,6 +25,16 @@ class VdcBoundaryTests(unittest.TestCase):
         self.assertIn("iny", transport)
         self.assertIn("VDC_TIMEOUT", transport)
 
+    def test_block_writer_selects_data_once_and_loops_in_assembly(self):
+        transport = (ROOT / "src/8502/vdc.s").read_text(encoding="utf-8")
+        block = transport[transport.index("_udeks_vdc_write_block:") :]
+        self.assertIn("VDC_REG_UPDATE_HI", block)
+        self.assertIn("VDC_REG_UPDATE_LO", block)
+        self.assertIn("VDC_REG_DATA", block)
+        self.assertIn("block_wait:", block)
+        self.assertIn("sta VDC_DATA", block)
+        self.assertIn("(vdc_block_source_zp),y", block)
+
 
 if __name__ == "__main__":
     unittest.main()

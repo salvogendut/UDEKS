@@ -86,7 +86,10 @@ console window described in `docs/WINDOW-SYSTEM.md`.
 
 The framebuffer owns a 16,000-byte system-RAM backing surface. Client changes
 are clipped, accumulated as byte spans per scanline, copied through the bounded
-VDC transport, and read back before the dirty span is retired. The initial
+assembly VDC transport, and retired only after the complete span is accepted.
+The cold-boot image is composed in RAM and uploaded as one hidden full-surface
+transaction before bitmap mode is revealed; only the splash sample is read
+back on the production path. The initial
 single-client lease exposes pixel, horizontal-line, filled-rectangle, glyph,
 string, and flush operations from `include/udeks/framebuffer.h`.
 

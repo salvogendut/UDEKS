@@ -3,11 +3,14 @@
 #include "udeks/framebuffer.h"
 #include "udeks/framebuffer_surface.h"
 
+#include <string.h>
+
 #define DIRTY_MAP_STRIDE 10u
 #define DIRTY_MAP_SIZE   2000u
 
 static unsigned char pixels[UDEKS_FRAMEBUFFER_SIZE];
 static unsigned char dirty_map[DIRTY_MAP_SIZE];
+static unsigned char dirty_tracking;
 
 static void mark_dirty(
     unsigned char y, unsigned char first, unsigned char last)
@@ -24,14 +27,9 @@ static void mark_dirty(
 
 void udeks_surface_reset(void)
 {
-    unsigned int offset;
-
-    for (offset = 0; offset < UDEKS_FRAMEBUFFER_SIZE; ++offset) {
-        pixels[offset] = 0;
-    }
-    for (offset = 0; offset < DIRTY_MAP_SIZE; ++offset) {
-        dirty_map[offset] = 0;
-    }
+    memset(pixels, 0, sizeof(pixels));
+    memset(dirty_map, 0, sizeof(dirty_map));
+    dirty_tracking = 1;
 }
 
 unsigned char udeks_surface_plot(
@@ -56,7 +54,9 @@ unsigned char udeks_surface_plot(
     }
     if (value != pixels[offset]) {
         pixels[offset] = value;
-        mark_dirty(y, column, column);
+        if (dirty_tracking != 0) {
+            mark_dirty(y, column, column);
+        }
     }
     return UDEKS_FRAMEBUFFER_OK;
 }
@@ -104,7 +104,7 @@ unsigned char udeks_surface_hline(
         }
         ++offset;
     }
-    if (changed != 0) {
+    if (changed != 0 && dirty_tracking != 0) {
         mark_dirty(y, first, last);
     }
     return UDEKS_FRAMEBUFFER_OK;
@@ -132,23 +132,28 @@ unsigned char udeks_surface_fill_rect(
 unsigned char udeks_surface_draw_char(
     unsigned int x, unsigned char y, unsigned char character)
 {
+    const unsigned char *glyph;
     unsigned char row;
     unsigned char column;
     unsigned char value;
     unsigned int offset;
 
+    glyph = udeks_font_glyph(character);
     if ((x & 7u) == 0 && x <= 632u) {
         column = (unsigned char)(x >> 3);
         for (row = 0; row < UDEKS_FONT_CELL_HEIGHT; ++row) {
             if ((unsigned int)y + row >= UDEKS_FRAMEBUFFER_HEIGHT) {
                 break;
             }
-            value = udeks_font_row(character, row);
+            value = row < UDEKS_FONT_HEIGHT ?
+                (unsigned char)(glyph[row] << 3) : 0;
             offset = (unsigned int)(y + row) *
                 UDEKS_FRAMEBUFFER_STRIDE + column;
             if (pixels[offset] != value) {
                 pixels[offset] = value;
-                mark_dirty((unsigned char)(y + row), column, column);
+                if (dirty_tracking != 0) {
+                    mark_dirty((unsigned char)(y + row), column, column);
+                }
             }
         }
         return UDEKS_FRAMEBUFFER_OK;
@@ -158,7 +163,8 @@ unsigned char udeks_surface_draw_char(
         if ((unsigned int)y + row >= UDEKS_FRAMEBUFFER_HEIGHT) {
             break;
         }
-        value = udeks_font_row(character, row);
+        value = row < UDEKS_FONT_HEIGHT ?
+            (unsigned char)(glyph[row] << 3) : 0;
         for (column = 0; column < UDEKS_FONT_CELL_WIDTH; ++column) {
             udeks_surface_plot(
                 x + column, (unsigned char)(y + row),
@@ -204,7 +210,7 @@ void udeks_surface_blit_packed(
         for (column = 0; column < copied; ++column) {
             pixels[offset + column] = source[column];
         }
-        if (copied != 0) {
+        if (copied != 0 && dirty_tracking != 0) {
             mark_dirty(y + row, x_byte, (unsigned char)(x_byte + copied - 1u));
         }
         source += width_bytes;
@@ -245,6 +251,16 @@ unsigned char udeks_surface_byte(unsigned int offset)
     return pixels[offset];
 }
 
+const unsigned char *udeks_surface_data(void)
+{
+    return pixels;
+}
+
+void udeks_surface_set_dirty_tracking(unsigned char enabled)
+{
+    dirty_tracking = enabled != 0;
+}
+
 void udeks_surface_clean_span(
     unsigned char y, unsigned char first, unsigned char last)
 {
@@ -256,4 +272,9 @@ void udeks_surface_clean_span(
             (unsigned char)~(0x80u >> (first & 7u));
         ++first;
     }
+}
+
+void udeks_surface_clean_all(void)
+{
+    memset(dirty_map, 0, sizeof(dirty_map));
 }

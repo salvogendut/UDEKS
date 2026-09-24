@@ -36,15 +36,38 @@ class FramebufferSurfaceTests(unittest.TestCase):
         self.assertNotIn("0xd600", source.lower())
         self.assertNotIn("0xd601", source.lower())
 
-    def test_vdc_owner_flushes_and_verifies_surface_bytes(self):
+    def test_vdc_owner_flushes_surface_runs_through_assembly(self):
         source = (ROOT / "src/services/framebuffer/vdc_framebuffer.c").read_text(
             encoding="utf-8"
         )
         self.assertIn("flush_surface()", source)
         self.assertIn("udeks_surface_dirty_span", source)
-        self.assertIn("udeks_surface_byte", source)
-        self.assertIn("value != udeks_surface_byte(vdc_address)", source)
+        self.assertIn("udeks_surface_data", source)
+        self.assertIn("udeks_vdc_write_block", source)
+        self.assertNotIn("value != udeks_surface_byte(vdc_address)", source)
         self.assertIn("UDEKS_FRAMEBUFFER_API_FLAGS", source)
+
+    def test_boot_surface_is_composed_before_bitmap_activation(self):
+        source = (ROOT / "src/services/framebuffer/vdc_framebuffer.c").read_text(
+            encoding="utf-8"
+        )
+        compose = source.index("compose_boot_console()")
+        upload = source.index("upload_complete_surface()", compose)
+        activate = source.index("activate_bitmap_mode()", upload)
+        self.assertLess(compose, upload)
+        self.assertLess(upload, activate)
+
+    def test_boot_blanks_before_touching_vdc_ram(self):
+        source = (ROOT / "src/services/framebuffer/vdc_framebuffer.c").read_text(
+            encoding="utf-8"
+        )
+        blank = source.index("blank_display()")
+        compose = source.index("compose_splash()", blank)
+        upload = source.index("upload_complete_surface()", compose)
+        activate = source.index("activate_bitmap_mode()", upload)
+        self.assertLess(blank, compose)
+        self.assertLess(compose, upload)
+        self.assertLess(upload, activate)
 
     def test_surface_is_linked_into_production_and_panic_images(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")

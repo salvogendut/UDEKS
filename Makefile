@@ -691,6 +691,9 @@ check:
 	cd bench/artifacts/2026-09-24-clock-2mhz-r1 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-clock-2mhz/raw && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-clock-2mhz/timing && sha256sum -c SHA256SUMS
+	cd bench/artifacts/2026-09-24-atomic-framebuffer-r1 && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-24-atomic-framebuffer/raw && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-24-atomic-framebuffer/timing && sha256sum -c SHA256SUMS
 
 doctor:
 	@missing=0; \

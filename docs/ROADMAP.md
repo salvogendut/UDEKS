@@ -128,7 +128,9 @@ mailbox corruption, with published benchmark results.
 ## Phase 5 — Dual-display and input system
 
 - [x] Define the initial owned VDC surface API with pixel, span, rectangle,
-  software-text, dirty tracking, and verified flush operations.
+  software-text, dirty tracking, and bounded assembly flush operations.
+- [x] Compose the cold-boot surface in system RAM, upload it as one hidden
+  16,000-byte transfer, and reveal the completed bitmap atomically.
 - [ ] Complete the capability-tiered VDC compositor described in
   `docs/VDC-FRAMEBUFFER.md`.
 - [x] Bring up and qualify the baseline 640x200 one-bit VDC framebuffer on 16
