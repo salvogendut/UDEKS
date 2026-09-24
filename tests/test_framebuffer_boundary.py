@@ -33,7 +33,7 @@ class FramebufferBoundaryTests(unittest.TestCase):
         self.assertLess(capability, clock)
         self.assertLess(clock, console)
         self.assertLess(console, framebuffer)
-        self.assertIn(".byte $05", source)
+        self.assertIn(".byte $06", source)
 
     def test_linked_assets_have_exact_sizes(self):
         source = (ROOT / "src/assets/vdc_splash.s").read_text(encoding="utf-8")

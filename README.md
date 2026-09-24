@@ -127,5 +127,6 @@ the display-memory and physical-hardware gates in ADR 0003 pass.
 - [Framebuffer client API](abi/framebuffer.md)
 - [Retained terminal API](abi/terminal.md)
 - [C128 keyboard API](abi/keyboard.md)
+- [Root-terminal line editor API](abi/line-editor.md)
 - [Dedication](DEDICATION.md)
 - [Contributing](CONTRIBUTING.md)

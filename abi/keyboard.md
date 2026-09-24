@@ -10,9 +10,9 @@ Each scan saves and restores CIA1 port A, both CIA data-direction registers,
 and `$D02F`. The unused column selector is held at `$FF` while the other matrix
 is scanned. UDEKS therefore does not depend on the inherited KERNAL port setup
 and does not leave keyboard or joystick-shared CIA pins reconfigured.
-The scanner discards the first port-B sample after each column change, and the
-C service requires two identical complete matrix snapshots before publishing
-transitions. This supplies settling and minimal debounce protection at 2 MHz.
+The scanner discards the first port-B sample after each column change before
+publishing the second sample. This supplies settling time at 2 MHz without
+making event capture depend on a second cooperative scheduling pass.
 
 ## Events
 
@@ -41,9 +41,9 @@ maps belong above the raw scan service and remain future work.
 
 `udeks_keyboard_event_get()` removes the oldest event and returns
 `UDEKS_KEYBOARD_EMPTY` when the queue is empty. If the queue is full, new
-transitions are dropped and the diagnostic drop counter advances. The scanner
-only applies the two-snapshot stability check described above; typematic repeat
-and any longer debounce policy belong to the input/terminal policy layer.
+transitions are dropped and the diagnostic drop counter advances. Typematic
+repeat and debounce policy belong to the input/terminal policy layer rather
+than the raw hardware event source.
 
 ## Diagnostic record
 

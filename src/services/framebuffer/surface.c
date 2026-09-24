@@ -11,12 +11,25 @@
 static unsigned char pixels[UDEKS_FRAMEBUFFER_SIZE];
 static unsigned char dirty_map[DIRTY_MAP_SIZE];
 static unsigned char dirty_tracking;
+static unsigned char dirty_first_row;
+static unsigned char dirty_last_row;
 
 static void mark_dirty(
     unsigned char y, unsigned char first, unsigned char last)
 {
     unsigned int base;
 
+    if (dirty_first_row >= UDEKS_FRAMEBUFFER_HEIGHT) {
+        dirty_first_row = y;
+        dirty_last_row = y;
+    } else {
+        if (y < dirty_first_row) {
+            dirty_first_row = y;
+        }
+        if (y > dirty_last_row) {
+            dirty_last_row = y;
+        }
+    }
     base = (unsigned int)y * DIRTY_MAP_STRIDE;
     while (first <= last) {
         dirty_map[base + (first >> 3)] |=
@@ -29,6 +42,8 @@ void udeks_surface_reset(void)
 {
     memset(pixels, 0, sizeof(pixels));
     memset(dirty_map, 0, sizeof(dirty_map));
+    dirty_first_row = UDEKS_FRAMEBUFFER_HEIGHT;
+    dirty_last_row = 0;
     dirty_tracking = 1;
 }
 
@@ -251,6 +266,17 @@ unsigned char udeks_surface_byte(unsigned int offset)
     return pixels[offset];
 }
 
+unsigned char udeks_surface_dirty_bounds(
+    unsigned char *first_row, unsigned char *last_row)
+{
+    if (dirty_first_row >= UDEKS_FRAMEBUFFER_HEIGHT) {
+        return 0;
+    }
+    *first_row = dirty_first_row;
+    *last_row = dirty_last_row;
+    return 1;
+}
+
 const unsigned char *udeks_surface_data(void)
 {
     return pixels;
@@ -277,4 +303,6 @@ void udeks_surface_clean_span(
 void udeks_surface_clean_all(void)
 {
     memset(dirty_map, 0, sizeof(dirty_map));
+    dirty_first_row = UDEKS_FRAMEBUFFER_HEIGHT;
+    dirty_last_row = 0;
 }

@@ -14,12 +14,16 @@ void udeks_root_console_reset(void);
 void udeks_root_console_clear(void);
 unsigned char udeks_root_console_write_at(
     unsigned char column, unsigned char row, const unsigned char *text);
+unsigned char udeks_root_console_put(
+    unsigned char column, unsigned char row, unsigned char character);
 void udeks_root_console_write(unsigned char character);
 void udeks_root_console_write_string(const unsigned char *text);
 unsigned char udeks_root_console_set_cursor(
     unsigned char column, unsigned char row, unsigned char visible);
 const unsigned char *udeks_root_console_row(unsigned char row);
 unsigned char udeks_root_console_row_dirty(unsigned char row);
+unsigned char udeks_root_console_dirty_span(
+    unsigned char row, unsigned char *first, unsigned char *last);
 void udeks_root_console_mark_row_clean(unsigned char row);
 void udeks_root_console_mark_all_clean(void);
 unsigned char udeks_root_console_cursor_column(void);

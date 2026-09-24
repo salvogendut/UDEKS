@@ -50,7 +50,6 @@ static const unsigned char shifted_map[88] = {
 };
 
 static unsigned char previous_matrix[UDEKS_KEYBOARD_MATRIX_LINES];
-static unsigned char candidate_matrix[UDEKS_KEYBOARD_MATRIX_LINES];
 static struct udeks_key_event event_queue[UDEKS_KEYBOARD_QUEUE_CAPACITY];
 static unsigned char queue_head;
 static unsigned char queue_tail;
@@ -59,7 +58,6 @@ static unsigned char scan_line;
 static unsigned char sense_bit;
 static unsigned char scan_code;
 static unsigned char modifiers;
-static unsigned char stable_sample;
 
 static unsigned char key_pressed(unsigned char code)
 {
@@ -193,7 +191,6 @@ unsigned char udeks_keyboard_start(void)
     udeks_keyboard_scan();
     for (scan_line = 0; scan_line < UDEKS_KEYBOARD_MATRIX_LINES; ++scan_line) {
         previous_matrix[scan_line] = udeks_keyboard_matrix[scan_line];
-        candidate_matrix[scan_line] = udeks_keyboard_matrix[scan_line];
     }
     publish_switches_and_matrix();
     STATUS_BYTE(5) = UDEKS_KEYBOARD_STATE_READY;
@@ -206,18 +203,6 @@ unsigned char udeks_keyboard_poll(void)
     unsigned char mask;
 
     udeks_keyboard_scan();
-    stable_sample = 1;
-    for (scan_line = 0; scan_line < UDEKS_KEYBOARD_MATRIX_LINES; ++scan_line) {
-        if (udeks_keyboard_matrix[scan_line] != candidate_matrix[scan_line]) {
-            stable_sample = 0;
-            candidate_matrix[scan_line] = udeks_keyboard_matrix[scan_line];
-        }
-    }
-    if (stable_sample == 0) {
-        publish_switches_and_matrix();
-        increment_counter(STATUS_POLL_LO);
-        return UDEKS_KEYBOARD_OK;
-    }
     modifiers = current_modifiers();
     for (scan_line = 0; scan_line < UDEKS_KEYBOARD_MATRIX_LINES; ++scan_line) {
         changed = (unsigned char)(

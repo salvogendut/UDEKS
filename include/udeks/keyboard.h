@@ -29,6 +29,7 @@
 #define UDEKS_KEY_SCAN_F5                 6u
 #define UDEKS_KEY_SCAN_CURSOR_DOWN        7u
 #define UDEKS_KEY_SCAN_LEFT_SHIFT         15u
+#define UDEKS_KEY_SCAN_HOME               51u
 #define UDEKS_KEY_SCAN_RIGHT_SHIFT        52u
 #define UDEKS_KEY_SCAN_CONTROL            58u
 #define UDEKS_KEY_SCAN_COMMODORE          61u

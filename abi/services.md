@@ -27,15 +27,19 @@ The initial flags are:
 - bit 1: critical to system bring-up.
 
 Initial service classes are console (`1`), hardware capability discovery (`2`),
-display (`3`), machine policy (`4`), and input (`5`). Capability discovery
-precedes the machine-clock transition so PAL/NTSC probing can use the VIC
-raster. The clock service then blanks the VIC and verifies 2 MHz operation
-before either display service starts. The framebuffer becomes the final VDC
-owner and renders the retained root terminal as a client.
+display (`3`), machine policy (`4`), input (`5`), and terminal policy (`6`).
+Capability discovery precedes the machine-clock transition so PAL/NTSC probing
+can use the VIC raster. The clock service then blanks the VIC and verifies
+2 MHz operation before either display service starts. The framebuffer becomes
+the final VDC owner and renders the retained root terminal as a client.
 
 The display service's provisional resident-C request surface is specified in
 the [framebuffer client API](framebuffer.md). It is not yet a compiler-neutral
 or cross-CPU service request ABI.
+
+The first terminal-policy instance consumes the keyboard FIFO after the input
+service has polled and edits the fixed-focus root console. Its provisional API
+and diagnostics are specified in the [line-editor contract](line-editor.md).
 
 The static image emits descriptors and a pointer table in assembly so vector
 addresses are linker-resolved without relying on compiler packing. The C

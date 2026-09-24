@@ -47,6 +47,12 @@ class RootConsoleBehaviorTests(unittest.TestCase):
         ]
         cls.console.udeks_root_console_row_dirty.argtypes = [ctypes.c_ubyte]
         cls.console.udeks_root_console_row_dirty.restype = ctypes.c_ubyte
+        cls.console.udeks_root_console_dirty_span.argtypes = [
+            ctypes.c_ubyte,
+            ctypes.POINTER(ctypes.c_ubyte),
+            ctypes.POINTER(ctypes.c_ubyte),
+        ]
+        cls.console.udeks_root_console_dirty_span.restype = ctypes.c_ubyte
         cls.console.udeks_root_console_mark_row_clean.argtypes = [
             ctypes.c_ubyte
         ]
@@ -63,6 +69,14 @@ class RootConsoleBehaviorTests(unittest.TestCase):
     def row(self, number):
         pointer = self.console.udeks_root_console_row(number)
         return bytes(pointer[index] for index in range(64))
+
+    def dirty_span(self, row):
+        first = ctypes.c_ubyte()
+        last = ctypes.c_ubyte()
+        present = self.console.udeks_root_console_dirty_span(
+            row, ctypes.byref(first), ctypes.byref(last)
+        )
+        return present, first.value, last.value
 
     def test_stream_output_and_control_characters(self):
         self.console.udeks_root_console_write_string(b"AB\bC\rD\nE\tF")
@@ -96,6 +110,13 @@ class RootConsoleBehaviorTests(unittest.TestCase):
         self.console.udeks_root_console_set_cursor(4, 4, 1)
         self.assertEqual(self.console.udeks_root_console_row_dirty(3), 1)
         self.assertEqual(self.console.udeks_root_console_row_dirty(4), 1)
+
+    def test_damage_span_tracks_only_changed_cells_and_cursor(self):
+        self.console.udeks_root_console_mark_all_clean()
+        self.console.udeks_root_console_set_cursor(9, 20, 1)
+        self.console.udeks_root_console_mark_all_clean()
+        self.console.udeks_root_console_write(ord("A"))
+        self.assertEqual(self.dirty_span(20), (1, 9, 10))
 
     def test_form_feed_clears_and_homes_console(self):
         self.console.udeks_root_console_write_string(b"TEXT\f")

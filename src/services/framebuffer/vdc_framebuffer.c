@@ -65,10 +65,14 @@ static unsigned char dirty_row;
 static unsigned char dirty_first;
 static unsigned char dirty_last;
 static unsigned char dirty_start;
+static unsigned char dirty_first_row;
+static unsigned char dirty_last_row;
 static unsigned char framebuffer_active;
 static unsigned char framebuffer_owned;
 static unsigned char console_row;
 static unsigned char console_column;
+static unsigned char console_first;
+static unsigned char console_last;
 
 static unsigned char vdc_write_register(
     unsigned char reg, unsigned char value)
@@ -163,8 +167,13 @@ static unsigned char flush_surface(void)
 {
     const unsigned char *surface;
 
+    if (udeks_surface_dirty_bounds(
+            &dirty_first_row, &dirty_last_row) == 0) {
+        return UDEKS_VDC_OK;
+    }
     surface = udeks_surface_data();
-    for (dirty_row = 0; dirty_row < UDEKS_FRAMEBUFFER_HEIGHT; ++dirty_row) {
+    dirty_row = dirty_first_row;
+    for (;;) {
         dirty_start = 0;
         while (udeks_surface_dirty_span(
                    dirty_row, dirty_start,
@@ -185,7 +194,12 @@ static unsigned char flush_surface(void)
             }
             dirty_start = dirty_last + 1u;
         }
+        if (dirty_row == dirty_last_row) {
+            break;
+        }
+        ++dirty_row;
     }
+    udeks_surface_clean_all();
     return UDEKS_VDC_OK;
 }
 
@@ -267,23 +281,27 @@ static unsigned char render_root_console_rows(
 
     for (console_row = 0; console_row < UDEKS_ROOT_CONSOLE_ROWS;
          ++console_row) {
-        if (render_all == 0 &&
-            udeks_root_console_row_dirty(console_row) == 0) {
-            continue;
-        }
+        console_first = 0;
+        console_last = UDEKS_ROOT_CONSOLE_COLUMNS - 1u;
         if (render_all == 0) {
+            if (udeks_root_console_dirty_span(
+                    console_row, &console_first, &console_last) == 0) {
+                continue;
+            }
             if (udeks_surface_fill_rect(
-                    CONSOLE_CONTENT_X,
+                    CONSOLE_CONTENT_X +
+                        (unsigned int)console_first * UDEKS_FONT_CELL_WIDTH,
                     (unsigned char)(CONSOLE_CONTENT_Y +
                         console_row * UDEKS_FONT_CELL_HEIGHT),
-                    UDEKS_ROOT_CONSOLE_COLUMNS * UDEKS_FONT_CELL_WIDTH,
+                    (unsigned int)(console_last - console_first + 1u) *
+                        UDEKS_FONT_CELL_WIDTH,
                     UDEKS_FONT_CELL_HEIGHT, 0) != UDEKS_FRAMEBUFFER_OK) {
                 return UDEKS_VDC_TIMEOUT;
             }
         }
         row_text = udeks_root_console_row(console_row);
-        for (console_column = 0;
-            console_column < UDEKS_ROOT_CONSOLE_COLUMNS;
+        for (console_column = console_first;
+            console_column <= console_last;
              ++console_column) {
             if (row_text[console_column] != ' ') {
                 if (update_checksum != 0) {
@@ -302,7 +320,9 @@ static unsigned char render_root_console_rows(
             }
         }
         if (udeks_root_console_cursor_visible() != 0 &&
-            udeks_root_console_cursor_row() == console_row) {
+            udeks_root_console_cursor_row() == console_row &&
+            udeks_root_console_cursor_column() >= console_first &&
+            udeks_root_console_cursor_column() <= console_last) {
             cursor_x = CONSOLE_CONTENT_X +
                 (unsigned int)udeks_root_console_cursor_column() *
                     UDEKS_FONT_CELL_WIDTH;

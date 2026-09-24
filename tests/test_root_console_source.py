@@ -19,10 +19,14 @@ class RootConsoleSourceTests(unittest.TestCase):
         self.assertIn("UDEKS_ROOT_CONSOLE_ROW_STRIDE  65u", header)
         self.assertIn("cells\n    [UDEKS_ROOT_CONSOLE_ROWS]", source)
         self.assertIn("udeks_root_console_write_at", source)
+        self.assertIn("udeks_root_console_put", source)
         self.assertIn("udeks_root_console_set_cursor", source)
         self.assertIn("udeks_root_console_write", source)
         self.assertIn("udeks_root_console_write_string", source)
         self.assertIn("udeks_root_console_row_dirty", source)
+        self.assertIn("udeks_root_console_dirty_span", source)
+        self.assertIn("dirty_first", source)
+        self.assertIn("dirty_last", source)
         self.assertIn("scroll_up", source)
 
     def test_boot_messages_populate_model_outside_renderer(self):

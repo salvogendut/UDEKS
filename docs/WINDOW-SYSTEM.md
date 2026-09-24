@@ -56,15 +56,18 @@ meaningful.
 ### 5. Input and focus
 
 - [x] Implement a complete polled C128 keyboard event source and bounded FIFO.
-- [ ] Route normalized key events to the focused window.
+- [x] Route normalized key events to the provisionally focused root terminal.
+- [ ] Generalize event routing to the focused window after the window registry
+  exists.
 - Add focus traversal and explicit focus changes through the window manager.
 - Add joystick, pointer, and light-pen sources without changing client input
   semantics.
 
 ### 6. Native UDEKS CLI
 
-- Build line editing, insertion/deletion, history, and completion as a terminal
+- [x] Build the bounded insertion/deletion and cursor-motion core as a terminal
   client.
+- [ ] Add history and completion.
 - Use registry-based command dispatch rather than a monolithic command chain.
 - Begin with `help`, `clear`, `echo`, `version`, `sysinfo`, `services`,
   `devices`, `memory`, and `reboot`.

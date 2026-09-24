@@ -20,6 +20,8 @@ void udeks_surface_blit_packed(
 unsigned char udeks_surface_dirty_span(
     unsigned char y, unsigned char start,
     unsigned char *first, unsigned char *last);
+unsigned char udeks_surface_dirty_bounds(
+    unsigned char *first_row, unsigned char *last_row);
 unsigned char udeks_surface_byte(unsigned int offset);
 const unsigned char *udeks_surface_data(void);
 void udeks_surface_set_dirty_tracking(unsigned char enabled);

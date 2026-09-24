@@ -7,6 +7,24 @@ static unsigned char cursor_column;
 static unsigned char cursor_row;
 static unsigned char cursor_visible;
 static unsigned char dirty_rows[UDEKS_ROOT_CONSOLE_ROWS];
+static unsigned char dirty_first[UDEKS_ROOT_CONSOLE_ROWS];
+static unsigned char dirty_last[UDEKS_ROOT_CONSOLE_ROWS];
+
+static void mark_cell_dirty(unsigned char row, unsigned char column)
+{
+    if (dirty_rows[row] == 0) {
+        dirty_rows[row] = 1;
+        dirty_first[row] = column;
+        dirty_last[row] = column;
+    } else {
+        if (column < dirty_first[row]) {
+            dirty_first[row] = column;
+        }
+        if (column > dirty_last[row]) {
+            dirty_last[row] = column;
+        }
+    }
+}
 
 static void mark_all_dirty(void)
 {
@@ -14,13 +32,15 @@ static void mark_all_dirty(void)
 
     for (row = 0; row < UDEKS_ROOT_CONSOLE_ROWS; ++row) {
         dirty_rows[row] = 1;
+        dirty_first[row] = 0;
+        dirty_last[row] = UDEKS_ROOT_CONSOLE_COLUMNS - 1u;
     }
 }
 
 static void mark_cursor_dirty(void)
 {
     if (cursor_visible != 0) {
-        dirty_rows[cursor_row] = 1;
+        mark_cell_dirty(cursor_row, cursor_column);
     }
 }
 
@@ -69,7 +89,7 @@ static void write_printable(unsigned char character)
     mark_cursor_dirty();
     if (cells[cursor_row][cursor_column] != character) {
         cells[cursor_row][cursor_column] = character;
-        dirty_rows[cursor_row] = 1;
+        mark_cell_dirty(cursor_row, cursor_column);
     }
     ++cursor_column;
     if (cursor_column == UDEKS_ROOT_CONSOLE_COLUMNS) {
@@ -106,10 +126,24 @@ unsigned char udeks_root_console_write_at(
     while (*text != 0 && column < UDEKS_ROOT_CONSOLE_COLUMNS) {
         if (cells[row][column] != *text) {
             cells[row][column] = *text;
-            dirty_rows[row] = 1;
+            mark_cell_dirty(row, column);
         }
         ++column;
         ++text;
+    }
+    return UDEKS_ROOT_CONSOLE_OK;
+}
+
+unsigned char udeks_root_console_put(
+    unsigned char column, unsigned char row, unsigned char character)
+{
+    if (column >= UDEKS_ROOT_CONSOLE_COLUMNS ||
+        row >= UDEKS_ROOT_CONSOLE_ROWS) {
+        return UDEKS_ROOT_CONSOLE_BOUNDS;
+    }
+    if (cells[row][column] != character) {
+        cells[row][column] = character;
+        mark_cell_dirty(row, column);
     }
     return UDEKS_ROOT_CONSOLE_OK;
 }
@@ -186,10 +220,23 @@ unsigned char udeks_root_console_row_dirty(unsigned char row)
     return dirty_rows[row];
 }
 
+unsigned char udeks_root_console_dirty_span(
+    unsigned char row, unsigned char *first, unsigned char *last)
+{
+    if (row >= UDEKS_ROOT_CONSOLE_ROWS || dirty_rows[row] == 0) {
+        return 0;
+    }
+    *first = dirty_first[row];
+    *last = dirty_last[row];
+    return 1;
+}
+
 void udeks_root_console_mark_row_clean(unsigned char row)
 {
     if (row < UDEKS_ROOT_CONSOLE_ROWS) {
         dirty_rows[row] = 0;
+        dirty_first[row] = 0;
+        dirty_last[row] = 0;
     }
 }
 
@@ -199,6 +246,8 @@ void udeks_root_console_mark_all_clean(void)
 
     for (row = 0; row < UDEKS_ROOT_CONSOLE_ROWS; ++row) {
         dirty_rows[row] = 0;
+        dirty_first[row] = 0;
+        dirty_last[row] = 0;
     }
 }
 

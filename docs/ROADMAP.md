@@ -153,14 +153,19 @@ mailbox corruption, with published benchmark results.
   console model.
 - [x] Track root-console row damage and re-render only changed rows through the
   owned framebuffer surface.
+- [x] Track bounded row and cell damage so interactive terminal edits avoid a
+  full-surface dirty-map scan and full-row redraw.
 - [ ] Add bounded window descriptors, z-order, clipping, damage, and
   back-to-front recomposition for overlapping text and bitmap windows.
-- [ ] Route normalized input events to the focused window.
+- [x] Route normalized keyboard events to a fixed-focus root-terminal editor.
+- [ ] Generalize input routing to arbitrary focused windows.
 - [ ] Implement queued VDC text and bitmap transfers.
 - [ ] Implement VIC text/bitmap surfaces, sprites, and raster service.
 - [ ] Support VDC-only, VIC-only, mirrored, and extended desktop modes.
 - [x] Add a polled full-matrix C128 keyboard source with normalized queued
   press/release events.
+- [x] Add a bounded root-terminal line editor with insertion, Backspace,
+  horizontal cursor movement, retained submission, and VDC repaint.
 - [ ] Add joystick, mouse/paddle, and light-pen event sources.
 - [ ] Demonstrate a two-monitor collaborative application.
 

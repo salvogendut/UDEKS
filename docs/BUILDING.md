@@ -68,13 +68,13 @@ VDC revision and RAM tier, and expansion presence for later service policy.
 artwork into row-major, MSB-first scanlines under `build/assets/`; the target
 kernel will consume those bytes without carrying an image decoder.
 
-The current production image starts five services in order: hardware
+The current production image starts six services in order: hardware
 capability discovery, the VDC-only 2 MHz machine-clock transition, the
 qualified text-mode fallback, the baseline VDC framebuffer, and the polled
-keyboard input source. Capability
-discovery finishes its VIC raster probe first; the clock service then blanks
-the VIC display and verifies `$D030` before either display service starts. The
-framebuffer takes final display ownership, enters 640x200
+keyboard input source followed by the fixed-focus root-terminal editor.
+Capability discovery finishes its VIC raster probe first; the clock service
+then blanks the VIC display and verifies `$D030` before either display service
+starts. The framebuffer takes final display ownership, enters 640x200
 monochrome bitmap mode, and shows the compact UDEKS pipe with its Japanese
 wordmark below it at the upper left in the default black-on-yellow theme.
 Following `assets/bootscreen.png`, it uses
@@ -90,7 +90,10 @@ The retained model now implements the provisional
 wrapping, scrolling, cursor damage, and row-damaged framebuffer refresh. It
 is paired with the complete 11-column polled
 [C128 keyboard service](../abi/keyboard.md), including normalized press/release
-events and a bounded FIFO. An editable command line is not implemented yet.
+events and a bounded FIFO. The provisional
+[root-terminal editor](../abi/line-editor.md) supports bounded insertion,
+Backspace, horizontal cursor motion, submission, and prompt renewal. Command
+dispatch, history, and completion are not implemented yet.
 
 The framebuffer owns a 16,000-byte system-RAM backing surface. Client changes
 are clipped, accumulated as byte spans per scanline, copied through the bounded

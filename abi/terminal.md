@@ -36,6 +36,8 @@ holding its lease, then flushes or releases normally. Only damaged rows are
 cleared and re-rendered into the canonical framebuffer; physical VDC transfer
 remains the framebuffer service's responsibility.
 
-This API does not yet include keyboard input, line editing, stream attachment,
-terminal handles, or concurrency. Backspace is intentionally non-destructive;
-the future line editor decides whether a key press should erase a character.
+The separate [root-terminal line editor](line-editor.md) now consumes keyboard
+events and applies destructive Backspace, insertion, cursor movement, and line
+submission as terminal policy. This output API still has no stream attachment,
+terminal handles, or concurrency; its own Backspace control remains
+intentionally non-destructive.
