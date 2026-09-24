@@ -27,6 +27,7 @@ BUILD_BOOT := $(BUILD_DIR)/boot
 
 KERNEL_BIN := $(BUILD_8502)/udeks-8502.bin
 KERNEL_PRG := $(BUILD_8502)/udeks-8502.prg
+PANIC_PROBE_KERNEL_BIN := $(BUILD_8502)/udeks-8502-panic-probe.bin
 Z80_IHX := $(BUILD_Z80)/udeks-z80.ihx
 Z80_BIN := $(BUILD_Z80)/udeks-z80.bin
 Z80_RASM_BIN := $(BUILD_Z80)/rasm-smoke.bin
@@ -77,17 +78,20 @@ STAGE0_BIN := $(BUILD_BOOT)/stage0.bin
 STAGE1_GATEWAY_BIN := $(BUILD_BOOT)/stage1-gateway.bin
 STAGE1_BIN := $(BUILD_BOOT)/stage1.bin
 BOOT_D71 := $(BUILD_BOOT)/udeks.d71
+PANIC_PROBE_D71 := $(BUILD_BOOT)/udeks-panic-probe.d71
 
 .PHONY: all 8502 z80 z80-asm bench bench-8502 bench-z80 bench-irq \
 	bench-irq-8502 bench-irq-z80 bench-irq-service \
 	bench-irq-service-8502 bench-irq-service-z80 bench-context \
 	bench-context-8502 bench-context-z80 bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
-	boot check doctor clean help
+	boot panic-probe check doctor clean help
 
 all: 8502 z80 z80-asm
 
 boot: $(BOOT_D71)
+
+panic-probe: $(PANIC_PROBE_D71)
 
 8502: $(KERNEL_BIN) $(KERNEL_PRG)
 
@@ -140,7 +144,8 @@ $(BUILD_8502) $(BUILD_Z80) $(BUILD_BENCH_8502) $(BUILD_BENCH_Z80) \
 	mkdir -p $@
 
 $(BUILD_8502)/kernel.s: src/8502/kernel.c include/udeks/mailbox.h \
-		include/udeks/memory.h include/udeks/service.h | $(BUILD_8502)
+		include/udeks/memory.h include/udeks/panic.h include/udeks/compiler.h \
+		include/udeks/service.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/service_registry.s: src/kernel/service_registry.c \
@@ -164,6 +169,9 @@ $(BUILD_8502)/service_registry.o: $(BUILD_8502)/service_registry.s | $(BUILD_850
 $(BUILD_8502)/console_descriptor.o: src/services/console/descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/console_descriptor_fault.o: src/services/console/descriptor.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -D UDEKS_FAULT_SERVICE_MAGIC -o $@ $<
+
 $(BUILD_8502)/service_table.o: src/services/table.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -173,12 +181,26 @@ $(BUILD_8502)/crt0.o: src/8502/crt0.s src/8502/mmu.inc | $(BUILD_8502)
 $(BUILD_8502)/vdc.o: src/8502/vdc.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/panic.o: src/8502/panic.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
+		$(BUILD_8502)/panic.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o $(BUILD_8502)/console_descriptor.o \
 		$(BUILD_8502)/vdc_console.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $@ $(filter %.o,$^)
+
+$(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
+		$(BUILD_8502)/panic.o \
+		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
+		$(BUILD_8502)/service_table.o \
+		$(BUILD_8502)/console_descriptor_fault.o \
+		$(BUILD_8502)/vdc_console.o cfg/8502-bootstrap.cfg
+	$(CL65) -t none --cpu 6502 -C cfg/8502-bootstrap.cfg \
+		-m $(BUILD_8502)/udeks-8502-panic-probe.map -o $@ \
+		$(filter %.o,$^)
 
 $(KERNEL_PRG): $(KERNEL_BIN) tools/bin_to_prg.py
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x2000 $< $@
@@ -520,6 +542,12 @@ $(BOOT_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) $(Z80_BIN) \
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) $@
 
+$(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
+		$(Z80_BIN) tools/build_d71.py
+	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
+		--stage1 $(STAGE1_BIN) --kernel $(PANIC_PROBE_KERNEL_BIN) \
+		--z80 $(Z80_BIN) $@
+
 check:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
 	$(PYTHON) -m py_compile tools/ihx_to_bin.py tools/bin_to_prg.py \
@@ -529,7 +557,7 @@ check:
 		tools/offload_decode.py tools/boot_status_decode.py \
 		tools/memory_map_decode.py tools/boot_chain_decode.py \
 		tools/vdc_console_decode.py tools/service_registry_decode.py \
-		tools/build_d71.py \
+		tools/panic_decode.py tools/build_d71.py \
 		tools/snapshot_extract.py \
 		tools/vice_capture.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
@@ -549,6 +577,8 @@ check:
 	cd bench/results/2026-09-24-vdc-console/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-service-registry-r1 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-service-registry/raw && sha256sum -c SHA256SUMS
+	cd bench/artifacts/2026-09-24-panic-r1 && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-24-panic/raw && sha256sum -c SHA256SUMS
 
 doctor:
 	@missing=0; \
@@ -575,6 +605,7 @@ help:
 		'make z80        Build the SDCC Z80 worker scaffold' \
 		'make z80-asm    Build the standalone RASM smoke image' \
 		'make boot       Build the native autoboot D71 image' \
+		'make panic-probe  Build the bad-descriptor panic qualification D71' \
 		'make bench      Build comparable 8502 and Z80 benchmark images' \
 		'make bench-8502 Build only the 8502 benchmark image' \
 		'make bench-z80  Build only the Z80 benchmark image' \

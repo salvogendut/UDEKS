@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "udeks/mailbox.h"
 #include "udeks/memory.h"
+#include "udeks/panic.h"
 #include "udeks/service.h"
 
 #define MAILBOX_BYTE(offset) \
@@ -21,8 +22,14 @@ static void mailbox_initialize(void)
 
 void kernel_main(void)
 {
+    unsigned char startup_result;
+
     mailbox_initialize();
-    (void)udeks_service_start_all();
+    startup_result = udeks_service_start_all();
+    if (startup_result != 0) {
+        udeks_panic((unsigned char)(UDEKS_PANIC_SERVICE_START_BASE |
+                                   startup_result));
+    }
 
     /* Bring-up halt. Service scheduling and interrupt enablement come next. */
     for (;;) {

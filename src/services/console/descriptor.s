@@ -9,7 +9,11 @@
 
         .segment "RODATA"
 _udeks_console_service_descriptor:
+.ifdef UDEKS_FAULT_SERVICE_MAGIC
+        .byte 'X', 'S', 'V', 'C'
+.else
         .byte 'U', 'S', 'V', 'C'
+.endif
         .byte $00, $01
         .byte $01, $00
         .byte $03, $10

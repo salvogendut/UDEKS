@@ -70,7 +70,8 @@ a material contradiction.
 - [ ] Accept ADR 0003 after its display-memory and physical-hardware gates pass.
 - [x] Bring up a polled VDC text console as a modular C service over bounded
   assembly transport, qualified in VICE and `1986`.
-- [ ] Add a panic screen and emulator-visible diagnostic codes.
+- [x] Add a stack-independent assembly panic screen and emulator-visible
+  diagnostic record, including a fault-injected service-startup test image.
 - [ ] Detect PAL/NTSC, model, VDC RAM size, and optional memory expansions.
 - [x] Produce the first bootable D71 image.
 

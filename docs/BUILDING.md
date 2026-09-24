@@ -36,6 +36,7 @@ make 8502       # build build/8502/udeks-8502.bin and .prg
 make z80        # build build/z80/udeks-z80.bin through SDCC
 make z80-asm    # build the independent RASM smoke image
 make boot       # build build/boot/udeks.d71 for native C128 autoboot
+make panic-probe  # build a non-release D71 that injects descriptor failure
 make bench      # build comparable 8502 and Z80 benchmark payloads
 make bench-irq  # build both CIA interrupt-entry probes
 make bench-irq-service  # build the three-path interrupt-service suite
@@ -53,6 +54,11 @@ bytes currently contain code. `make boot` packages both into a deterministic
 D71 implementing the stage-0/stage-1 path in
 [ADR 0003](decisions/0003-memory-bootstrap.md). The direct-load PRG remains
 useful for focused bring-up tests.
+
+`make panic-probe` builds `build/boot/udeks-panic-probe.d71`. Its console
+descriptor deliberately has invalid magic so the complete registry-to-panic
+path can be tested. See the [panic-path contract](PANIC.md); never use this
+fixture as a normal system disk.
 
 The resident 8502 image links the small subset of cc65's `none` runtime needed
 by its C services. Startup initializes cc65's downward-growing software stack
