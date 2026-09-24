@@ -1,0 +1,93 @@
+{
+  "status": "preliminary-emulator-only",
+  "date": "2026-09-24",
+  "timer": "CIA1 Timer B, 1 MHz system ticks",
+  "iterations_per_case": 64,
+  "ownership_changes_per_iteration": 2,
+  "runs_per_configuration": 3,
+  "runs_identical_within_configuration": true,
+  "emulator": {
+    "name": "1986",
+    "commit": "7556c2357506dc576ab7ab0783f9971892db1450",
+    "video_timing": "PAL",
+    "display_columns": 80,
+    "vdc_ram_kib": 64,
+    "double_z80_frequency": false,
+    "tinker": false,
+    "configuration_file": "bench/handoff/1986-stock.conf"
+  },
+  "toolchain": {
+    "8502": "ca65 V2.18, Fedora package cc65-2.19-15.fc44",
+    "z80": "SDCC 4.6.2 #16671 sdasz80/aslink"
+  },
+  "artifacts": {
+    "8502_window": {
+      "bytes": 2048,
+      "sha256": "d9c729cf0ce678fc0850f1e01206332f667ff060460a0a90b4739a7f59b7c7a1"
+    },
+    "z80_window": {
+      "bytes": 2048,
+      "sha256": "a1fc5a1644455e01f0d0ef5a9db78e89e49083562654b99efb3f2d8c9260550a"
+    },
+    "basic_prg": {
+      "bytes": 7169,
+      "sha256": "aeaf2c08ea4cc5b1d1d3b83f5ce71be7c167e3c7d6655ab2122c0dd203863d4f"
+    }
+  },
+  "cases": [
+    {
+      "name": "8502_to_z80_bare",
+      "meaning": "8502 requester, Z80 responder, two ownership changes",
+      "ticks": {
+        "8502_1mhz": [6091, 6091, 6091],
+        "8502_2mhz": [5666, 5666, 5666]
+      },
+      "ticks_per_round_trip": {
+        "8502_1mhz": 95.171875,
+        "8502_2mhz": 88.53125
+      }
+    },
+    {
+      "name": "8502_to_z80_mailbox",
+      "meaning": "8502 requester, Z80 responder, full ABI 0.1 NOP transaction",
+      "ticks": {
+        "8502_1mhz": [27793, 27793, 27793],
+        "8502_2mhz": [23880, 23880, 23880]
+      },
+      "ticks_per_round_trip": {
+        "8502_1mhz": 434.265625,
+        "8502_2mhz": 373.125
+      }
+    },
+    {
+      "name": "z80_to_8502_bare",
+      "meaning": "Z80 requester, 8502 responder, two ownership changes",
+      "ticks": {
+        "8502_1mhz": [4189, 4189, 4189],
+        "8502_2mhz": [2942, 2942, 2942]
+      },
+      "ticks_per_round_trip": {
+        "8502_1mhz": 65.453125,
+        "8502_2mhz": 45.96875
+      }
+    },
+    {
+      "name": "z80_to_8502_mailbox",
+      "meaning": "Z80 requester, 8502 responder, full ABI 0.1 NOP transaction",
+      "ticks": {
+        "8502_1mhz": [25828, 25828, 25828],
+        "8502_2mhz": [20676, 20676, 20676]
+      },
+      "ticks_per_round_trip": {
+        "8502_1mhz": 403.5625,
+        "8502_2mhz": 323.0625
+      }
+    }
+  ],
+  "mailbox_ticks_above_bare_per_transaction": {
+    "8502_requester_8502_1mhz": 339.09375,
+    "8502_requester_8502_2mhz": 284.59375,
+    "z80_requester_8502_1mhz": 338.109375,
+    "z80_requester_8502_2mhz": 277.09375
+  }
+}

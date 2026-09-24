@@ -6,9 +6,8 @@
 
 UDEKS—the **Unified Dual-Engine Executive Kernel System**—is a native operating
 system for the Commodore 128. It is designed around the machine the C128 could
-have been: an 8502-led system that deliberately schedules work on the Z80 and
-treats the VIC-IIe and VDC as independent, simultaneously useful display
-engines.
+have been: a system that deliberately coordinates its 8502 and Z80 and treats
+the VIC-IIe and VDC as independent, simultaneously useful display engines.
 
 The name also echoes the Latin word *iudex*, “judge.” UDEKS is dedicated to
 Lo Giudice, the teacher who introduced its creator to programming as a child
@@ -25,10 +24,11 @@ See [LICENSE](LICENSE).
 
 ## Hardware model
 
-- The MOS 8502 is the executive processor and owns scheduling, interrupts,
-  device policy, and the main application environment.
-- The Z80 is a scheduled worker. The processors share the system bus and do
-  **not** execute concurrently; a Z80 job is a bounded lease of the machine.
+- The 8502 and Z80 share the system bus and do **not** execute concurrently;
+  ownership passes explicitly between them.
+- Which CPU runs the executive and which serves as the secondary execution
+  engine is an open architecture decision, gated by comparative benchmarks on
+  emulators and real hardware.
 - The VDC is the primary high-resolution/text display engine.
 - The VIC-IIe is a first-class secondary display and timing/sprite engine.
 - A stock 128 KiB C128 with 16 KiB VDC RAM is the baseline. A 64 KiB VDC, REU,
@@ -61,6 +61,7 @@ the validated reference environment and individual targets.
 
 ```text
 abi/                 Cross-CPU contracts and protocol documentation
+bench/               Comparable target-side CPU benchmark harness
 cfg/                 Linker and memory-layout configurations
 docs/                Architecture plan, roadmap, and decisions
 include/udeks/        Public C headers shared across CPU builds
@@ -79,8 +80,18 @@ hardware tests and recorded as architecture decisions.
 
 - [Architecture and implementation plan](docs/PLAN.md)
 - [Development roadmap](docs/ROADMAP.md)
+- [Executive CPU benchmark plan](docs/BENCHMARKS.md)
+- [Initial emulator benchmark results](bench/results/2026-09-24-1986-initial.md)
+- [Initial emulator interrupt results](bench/results/2026-09-24-1986-irq-latency.md)
+- [Initial emulator interrupt-service results](bench/results/2026-09-24-1986-irq-service.md)
+- [Initial emulator context-switch results](bench/results/2026-09-24-1986-context.md)
+- [Initial emulator kernel-primitives results](bench/results/2026-09-24-1986-kernel.md)
+- [Initial emulator bidirectional-handoff results](bench/results/2026-09-24-1986-handoff.md)
+- [Initial emulator offload-crossover results](bench/results/2026-09-24-1986-offload.md)
+- [Preserved benchmark PRGs for VICE and hardware](bench/artifacts/2026-09-24/README.md)
 - [Building UDEKS](docs/BUILDING.md)
 - [Toolchain decision](docs/decisions/0001-toolchain.md)
+- [Executive CPU decision](docs/decisions/0002-executive-cpu.md)
 - [Mailbox ABI](abi/mailbox.md)
 - [Dedication](DEDICATION.md)
 - [Contributing](CONTRIBUTING.md)

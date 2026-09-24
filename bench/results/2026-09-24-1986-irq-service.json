@@ -1,0 +1,121 @@
+{
+  "status": "preliminary-emulator-only",
+  "date": "2026-09-24",
+  "timer_period_system_ticks": 4000,
+  "samples_per_variant": 16,
+  "runs_per_configuration": 3,
+  "runs_identical_within_configuration": true,
+  "emulator": {
+    "name": "1986",
+    "commit": "7556c2357506dc576ab7ab0783f9971892db1450",
+    "video_timing": "PAL",
+    "display_columns": 80,
+    "vdc_ram_kib": 64,
+    "double_z80_frequency": false,
+    "tinker": false
+  },
+  "artifacts": {
+    "8502": {
+      "payload_bytes": 460,
+      "sha256": "23bca2db792a460abd347ea69e713f8cf1bbe67a3b1ef4191e3d9756df7cd406"
+    },
+    "z80": {
+      "linked_payload_bytes": 469,
+      "transport_window_bytes": 2048,
+      "transport_sha256": "ea7bd8f831a8392f74e43b86375be82e9f7efdfb501181e777dad903c1dffe9f",
+      "launcher_and_transport_sha256": "9084d2cb89d2c0c2719ca1fb5dc19a26acb1e17f60bd831af2889191ad20ff27"
+    }
+  },
+  "sample_fields": {
+    "entry_latency_ticks": "timer underflow through the first post-prologue timestamp",
+    "instrumented_handler_ticks": "post-prologue timestamp through the pre-exit timestamp",
+    "underflow_to_resume_ticks": "timer underflow through the first timestamp after RTI and the patched wait jump"
+  },
+  "configurations": [
+    {
+      "name": "8502_1mhz",
+      "cpu": "8502",
+      "clock_mode": "1 MHz",
+      "variants": [
+        {
+          "name": "minimal",
+          "entry_latency_ticks": [85, 70, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79],
+          "instrumented_handler_ticks": [124, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115, 115],
+          "underflow_to_resume_ticks": [341, 317, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326],
+          "entry_to_resume_median_ticks": 247
+        },
+        {
+          "name": "kernel_tick",
+          "entry_latency_ticks": [61, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58],
+          "instrumented_handler_ticks": [136, 136, 136, 136, 136, 136, 136, 136, 136, 136, 136, 136, 136, 136, 136, 136],
+          "underflow_to_resume_ticks": [329, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326],
+          "entry_to_resume_median_ticks": 268
+        },
+        {
+          "name": "jump_table_dispatch",
+          "entry_latency_ticks": [37, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52],
+          "instrumented_handler_ticks": [142, 142, 142, 142, 142, 142, 142, 142, 142, 142, 142, 142, 142, 142, 142, 142],
+          "underflow_to_resume_ticks": [311, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326, 326],
+          "entry_to_resume_median_ticks": 274
+        }
+      ]
+    },
+    {
+      "name": "8502_2mhz",
+      "cpu": "8502",
+      "clock_mode": "2 MHz selected by D030 bit 0",
+      "variants": [
+        {
+          "name": "minimal",
+          "entry_latency_ticks": [51, 20, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24],
+          "instrumented_handler_ticks": [62, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57],
+          "underflow_to_resume_ticks": [179, 143, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147],
+          "entry_to_resume_median_ticks": 123
+        },
+        {
+          "name": "kernel_tick",
+          "entry_latency_ticks": [13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13],
+          "instrumented_handler_ticks": [68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68],
+          "underflow_to_resume_ticks": [147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147],
+          "entry_to_resume_median_ticks": 134
+        },
+        {
+          "name": "jump_table_dispatch",
+          "entry_latency_ticks": [67, 73, 73, 73, 73, 73, 73, 73, 73, 73, 73, 73, 73, 73, 73, 73],
+          "instrumented_handler_ticks": [71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71],
+          "underflow_to_resume_ticks": [204, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210],
+          "entry_to_resume_median_ticks": 137
+        }
+      ]
+    },
+    {
+      "name": "z80_stock",
+      "cpu": "z80",
+      "clock_mode": "stock effective 2 MHz; two T-states per 1 MHz system tick",
+      "double_z80_frequency": false,
+      "variants": [
+        {
+          "name": "minimal",
+          "entry_latency_ticks": [95, 104, 109, 109, 109, 114, 109, 109, 109, 109, 114, 109, 109, 109, 109, 114],
+          "instrumented_handler_ticks": [214, 208, 208, 208, 208, 208, 208, 208, 208, 208, 208, 208, 208, 208, 208, 208],
+          "underflow_to_resume_ticks": [526, 529, 534, 534, 534, 539, 534, 534, 534, 534, 539, 534, 534, 534, 534, 539],
+          "entry_to_resume_median_ticks": 425
+        },
+        {
+          "name": "kernel_tick",
+          "entry_latency_ticks": [79, 64, 59, 59, 64, 59, 59, 59, 64, 59, 59, 64, 59, 59, 64, 59],
+          "instrumented_handler_ticks": [258, 258, 258, 258, 258, 258, 258, 258, 258, 258, 258, 258, 258, 258, 258, 258],
+          "underflow_to_resume_ticks": [554, 539, 534, 534, 539, 534, 534, 534, 539, 534, 534, 539, 534, 534, 539, 534],
+          "entry_to_resume_median_ticks": 475
+        },
+        {
+          "name": "jump_table_dispatch",
+          "entry_latency_ticks": [94, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69],
+          "instrumented_handler_ticks": [249, 249, 249, 249, 249, 249, 249, 249, 249, 249, 249, 249, 249, 249, 249, 249],
+          "underflow_to_resume_ticks": [560, 535, 535, 535, 535, 535, 535, 535, 535, 535, 535, 535, 535, 535, 535, 535],
+          "entry_to_resume_median_ticks": 466
+        }
+      ]
+    }
+  ]
+}

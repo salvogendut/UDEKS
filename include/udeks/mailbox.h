@@ -44,5 +44,8 @@
 #define UDEKS_MB_STATE_ERROR        0x80u
 
 #define UDEKS_MB_OP_NOP             0u
+#define UDEKS_MB_OP_COPY            1u
+#define UDEKS_MB_OP_CHECKSUM16      2u
+#define UDEKS_MB_OP_XOR_ROL         3u
 
 #endif

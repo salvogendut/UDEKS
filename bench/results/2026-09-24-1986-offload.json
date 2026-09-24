@@ -1,0 +1,110 @@
+{
+  "status": "preliminary-emulator-only",
+  "date": "2026-09-24",
+  "timer": "CIA1 Timer B, 1 MHz system ticks",
+  "runs_per_configuration": 3,
+  "runs_identical_within_configuration": true,
+  "sizes": [16, 32, 64, 128, 256, 512, 1024, 2048],
+  "emulator": {
+    "name": "1986",
+    "commit": "7556c2357506dc576ab7ab0783f9971892db1450",
+    "video_timing": "PAL",
+    "display_columns": 80,
+    "vdc_ram_kib": 64,
+    "double_z80_frequency": false,
+    "tinker": false,
+    "configuration_file": "bench/handoff/1986-stock.conf"
+  },
+  "toolchain": {
+    "8502": "ca65 V2.18, Fedora package cc65-2.19-15.fc44",
+    "z80": "SDCC 4.6.2 #16671 sdasz80/aslink"
+  },
+  "artifacts": {
+    "8502_window": {
+      "bytes": 2048,
+      "sha256": "4e1c986ef0d650e00ce1225c8e3f77050af2f8d083eeccfec8f02a2b88bb2ac8"
+    },
+    "z80_window": {
+      "bytes": 2048,
+      "sha256": "f9945918803aff0f067be6e4e17ab1c48e624ae1db3cdc9f07df5a3a9634891f"
+    },
+    "basic_prg": {
+      "bytes": 7169,
+      "sha256": "10865ac9b20180561aeddcdb704ae5a9bd08ca606d779d7acec20a96f8be5b26"
+    },
+    "result_block_sha256": {
+      "8502_1mhz": "92533ebb14cabe77202442f59a585d9926efe32e45e8b693dfe84fc1175a69ed",
+      "8502_2mhz": "806353f6902b875f8dc86f95d873828bf3c159401dad87490cefcb61d5a4377b"
+    }
+  },
+  "operations": {
+    "copy": {
+      "8502_1mhz": {
+        "local_8502": [375, 679, 1287, 2503, 4182, 8292, 16512, 32952],
+        "offload_to_z80": [847, 1045, 1429, 2197, 3733, 6805, 12949, 25237],
+        "local_z80": [298, 490, 874, 1642, 3178, 6250, 12394, 24682],
+        "offload_to_8502": [939, 1246, 1854, 3326, 4749, 8859, 17079, 33519]
+      },
+      "8502_2mhz": {
+        "local_8502": [188, 339, 644, 1251, 2091, 4146, 8256, 16476],
+        "offload_to_z80": [748, 947, 1330, 2099, 3634, 6707, 12851, 25139],
+        "local_z80": [298, 490, 874, 1642, 3178, 6250, 12394, 24682],
+        "offload_to_8502": [649, 803, 1107, 1715, 2811, 4609, 8720, 16939]
+      }
+    },
+    "checksum16": {
+      "8502_1mhz": {
+        "local_8502": [495, 911, 1747, 3407, 5980, 11877, 23667, 47247],
+        "offload_to_z80": [1114, 1786, 2362, 4026, 7356, 14018, 27342, 53990],
+        "local_z80": [550, 966, 1798, 3462, 6792, 13454, 26778, 53426],
+        "offload_to_8502": [1092, 1508, 2344, 4004, 6577, 12474, 24264, 47844]
+      },
+      "8502_2mhz": {
+        "local_8502": [247, 455, 873, 1703, 2990, 5939, 11834, 23624],
+        "offload_to_z80": [1011, 1427, 2259, 3923, 7253, 13915, 27239, 53887],
+        "local_z80": [550, 966, 1798, 3462, 6792, 13454, 26778, 53426],
+        "offload_to_8502": [741, 949, 1367, 2197, 3484, 6432, 12327, 24117]
+      }
+    },
+    "transform": {
+      "8502_1mhz": {
+        "local_8502": [478, 878, 1678, 3278, 5725, 11371, 22663, 45247],
+        "offload_to_z80": [1169, 1649, 2609, 4529, 8377, 16063, 31435, 62179],
+        "local_z80": [614, 1094, 2054, 3974, 7822, 15508, 30880, 61624],
+        "offload_to_8502": [1045, 1445, 2245, 3845, 6292, 11938, 23230, 46070]
+      },
+      "8502_2mhz": {
+        "local_8502": [239, 439, 839, 1639, 2862, 5686, 11331, 22624],
+        "offload_to_z80": [1070, 1550, 2510, 4430, 8278, 15964, 31337, 62080],
+        "local_z80": [614, 1094, 2054, 3974, 7822, 15508, 30880, 61624],
+        "offload_to_8502": [702, 903, 1302, 2103, 3582, 6149, 11795, 23087]
+      }
+    }
+  },
+  "first_tested_crossovers": {
+    "8502_1mhz": {
+      "8502_executive_offload_to_z80": {
+        "copy": 128,
+        "checksum16": null,
+        "transform": null
+      },
+      "z80_executive_offload_to_8502": {
+        "copy": null,
+        "checksum16": 256,
+        "transform": 128
+      }
+    },
+    "8502_2mhz": {
+      "8502_executive_offload_to_z80": {
+        "copy": null,
+        "checksum16": null,
+        "transform": null
+      },
+      "z80_executive_offload_to_8502": {
+        "copy": 256,
+        "checksum16": 32,
+        "transform": 32
+      }
+    }
+  }
+}

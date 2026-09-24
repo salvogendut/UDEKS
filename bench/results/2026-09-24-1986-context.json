@@ -1,0 +1,80 @@
+{
+  "status": "preliminary-emulator-only",
+  "date": "2026-09-24",
+  "iterations_per_sample": 64,
+  "samples_per_variant": 8,
+  "runs_per_configuration": 3,
+  "runs_identical_within_configuration": true,
+  "emulator": {
+    "name": "1986",
+    "commit": "7556c2357506dc576ab7ab0783f9971892db1450",
+    "video_timing": "PAL",
+    "display_columns": 80,
+    "vdc_ram_kib": 64,
+    "double_z80_frequency": false,
+    "tinker": false
+  },
+  "artifacts": {
+    "8502": {
+      "payload_bytes": 737,
+      "sha256": "ec3e1de31484da61bab814bb356d94638365db4b111d146535e45a5604c69db5"
+    },
+    "z80": {
+      "linked_payload_bytes": 553,
+      "transport_window_bytes": 2048,
+      "transport_sha256": "469aeb23ec7a55a5e675cb042541b4680d1c7285e8d099c987cfeb02151c988a",
+      "launcher_and_transport_sha256": "e68b3c2fee29b14f5d72e619f24f5393edad5f9bbe7afba584ea91b4431475ee"
+    }
+  },
+  "contracts": {
+    "8502": {
+      "cpu_core": "call-stacked PC, P, A, X, Y, saved hardware SP",
+      "compiler": "cpu_core plus all 26 cc65 zero-page runtime bytes",
+      "full": "same as compiler",
+      "bytes": [7, 33, 33]
+    },
+    "z80": {
+      "cpu_core": "call-stacked PC, primary AF/BC/DE/HL, IX, IY, saved SP",
+      "compiler": "same as cpu_core for the selected SDCC ABI",
+      "full": "compiler plus alternate AF/BC/DE/HL",
+      "kernel_global_exclusions": ["I", "R", "IFF", "interrupt mode"],
+      "bytes": [16, 16, 24]
+    }
+  },
+  "configurations": [
+    {
+      "name": "8502_1mhz",
+      "cpu": "8502",
+      "clock_mode": "1 MHz",
+      "variants": [
+        {"name": "empty", "raw_total_ticks": [1428, 1428, 1428, 1428, 1428, 1428, 1428, 1428]},
+        {"name": "cpu_core", "raw_total_ticks": [4500, 4500, 4500, 4500, 4500, 4500, 4500, 4500], "adjusted_ticks_per_operation": [48, 48, 48, 48, 48, 48, 48, 48]},
+        {"name": "compiler", "raw_total_ticks": [27796, 27796, 27796, 27796, 27796, 27796, 27796, 27796], "adjusted_ticks_per_operation": [412, 412, 412, 412, 412, 412, 412, 412]},
+        {"name": "full", "raw_total_ticks": [27796, 27796, 27796, 27796, 27796, 27796, 27796, 27796], "adjusted_ticks_per_operation": [412, 412, 412, 412, 412, 412, 412, 412]}
+      ]
+    },
+    {
+      "name": "8502_2mhz",
+      "cpu": "8502",
+      "clock_mode": "2 MHz selected by D030 bit 0",
+      "variants": [
+        {"name": "empty", "raw_total_ticks": [714, 714, 714, 714, 714, 714, 714, 714]},
+        {"name": "cpu_core", "raw_total_ticks": [2250, 2250, 2250, 2250, 2250, 2250, 2250, 2250], "adjusted_ticks_per_operation": [24, 24, 24, 24, 24, 24, 24, 24]},
+        {"name": "compiler", "raw_total_ticks": [13898, 13898, 13898, 13898, 13898, 13898, 13898, 13898], "adjusted_ticks_per_operation": [206, 206, 206, 206, 206, 206, 206, 206]},
+        {"name": "full", "raw_total_ticks": [13898, 13898, 13898, 13898, 13898, 13898, 13898, 13898], "adjusted_ticks_per_operation": [206, 206, 206, 206, 206, 206, 206, 206]}
+      ]
+    },
+    {
+      "name": "z80_stock",
+      "cpu": "z80",
+      "clock_mode": "stock effective 2 MHz; two T-states per 1 MHz system tick",
+      "double_z80_frequency": false,
+      "variants": [
+        {"name": "empty", "raw_total_ticks": [2216, 2216, 2216, 2216, 2216, 2216, 2216, 2216]},
+        {"name": "cpu_core", "raw_total_ticks": [9640, 9640, 9640, 9640, 9640, 9640, 9640, 9640], "adjusted_ticks_per_operation": [116, 116, 116, 116, 116, 116, 116, 116]},
+        {"name": "compiler", "raw_total_ticks": [9640, 9640, 9640, 9640, 9640, 9640, 9640, 9640], "adjusted_ticks_per_operation": [116, 116, 116, 116, 116, 116, 116, 116]},
+        {"name": "full", "raw_total_ticks": [13736, 13736, 13736, 13736, 13736, 13736, 13736, 13736], "adjusted_ticks_per_operation": [180, 180, 180, 180, 180, 180, 180, 180]}
+      ]
+    }
+  ]
+}

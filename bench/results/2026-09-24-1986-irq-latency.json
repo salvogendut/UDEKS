@@ -1,0 +1,87 @@
+{
+  "status": "preliminary-emulator-only",
+  "date": "2026-09-24",
+  "measurement": "CIA1 Timer-A underflow through ABI-safe interrupt prologue",
+  "timer_period_system_ticks": 1000,
+  "samples_per_run": 32,
+  "runs_per_configuration": 3,
+  "emulator": {
+    "name": "1986",
+    "commit": "7556c2357506dc576ab7ab0783f9971892db1450",
+    "video_timing": "PAL",
+    "display_columns": 80,
+    "vdc_ram_kib": 64,
+    "double_z80_frequency": false,
+    "tinker": false
+  },
+  "toolchain": {
+    "8502": "ca65 V2.18, Fedora package cc65-2.19-15.fc44",
+    "z80": "sdasz80 V05.50.4 and SDCC 4.6.2 #16671"
+  },
+  "artifacts": {
+    "8502": {
+      "payload_bytes": 257,
+      "sha256": "8b90c6de9d8115a67b2f6533c00e5b70a3148e57add420a241179d872035c0d5"
+    },
+    "z80": {
+      "linked_payload_bytes": 288,
+      "transport_window_bytes": 2048,
+      "launcher_and_transport_bytes": 2096,
+      "transport_sha256": "7d437cfa62f8edc42ed7e4c0f2cb09515eb7474c9dddcd003c7048a024357921",
+      "launcher_and_transport_sha256": "e72a4c788be1f1de8dafa4fbcc743a45fb79e58cf972ee28c905d84525a296b7"
+    }
+  },
+  "interrupt_contracts": {
+    "8502": "hardware P/PC; software A/X/Y",
+    "z80": "IM1 hardware PC; software AF/BC/DE/HL/IX/IY; alternates and I/R excluded"
+  },
+  "configurations": [
+    {
+      "name": "8502_1mhz",
+      "cpu": "8502",
+      "clock_mode": "1 MHz",
+      "interrupt_mode": "native IRQ vector",
+      "identical_runs": 3,
+      "interrupts_observed_each_run": 32,
+      "unexpected_sources_each_run": 0,
+      "first_and_last_icr_each_run": [129, 129],
+      "samples_ticks_each_run": [31, 41, 48, 55, 62, 72, 79, 27, 34, 41, 50, 57, 64, 71, 81, 25, 36, 43, 50, 59, 66, 73, 80, 27, 34, 45, 52, 59, 68, 75, 82, 26],
+      "minimum_ticks": 25,
+      "median_ticks": 53.5,
+      "maximum_ticks": 82,
+      "spread_ticks": 57
+    },
+    {
+      "name": "8502_2mhz",
+      "cpu": "8502",
+      "clock_mode": "2 MHz selected by D030 bit 0",
+      "interrupt_mode": "native IRQ vector",
+      "identical_runs": 3,
+      "interrupts_observed_each_run": 32,
+      "unexpected_sources_each_run": 0,
+      "first_and_last_icr_each_run": [129, 129],
+      "samples_ticks_each_run": [32, 39, 49, 56, 64, 72, 17, 24, 32, 41, 48, 58, 65, 73, 18, 26, 33, 41, 50, 57, 67, 74, 19, 27, 35, 42, 50, 59, 66, 13, 20, 28],
+      "minimum_ticks": 13,
+      "median_ticks": 41.5,
+      "maximum_ticks": 74,
+      "spread_ticks": 61
+    },
+    {
+      "name": "z80_stock",
+      "cpu": "z80",
+      "clock_mode": "stock effective 2 MHz; two T-states per 1 MHz system tick",
+      "interrupt_mode": "IM1",
+      "double_z80_frequency": false,
+      "identical_runs": 3,
+      "interrupts_observed_each_run": 32,
+      "unexpected_sources_each_run": 0,
+      "first_and_last_icr_each_run": [129, 129],
+      "samples_ticks_each_run": [57, 65, 73, 81, 89, 97, 105, 113, 59, 67, 75, 83, 91, 99, 107, 115, 59, 67, 75, 83, 91, 99, 107, 115, 61, 69, 77, 85, 93, 101, 109, 117],
+      "minimum_ticks": 57,
+      "median_ticks": 87.0,
+      "maximum_ticks": 117,
+      "spread_ticks": 60
+    }
+  ],
+  "interpretation": "The repeating stair-step distributions indicate emulator interrupt scheduling granularity; use these results to qualify the harness, not as physical-machine latency."
+}

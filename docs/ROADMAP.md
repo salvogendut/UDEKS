@@ -18,6 +18,34 @@ assigned until the bring-up measurements expose the true hardware costs.
 **Exit gate:** a fresh reference container can build byte-identical 8502 and Z80
 scaffold images and run `make check`.
 
+## Phase 0.5 — Executive CPU decision
+
+- [x] Build one measurement harness that can run equivalent 8502 and Z80 cases.
+- [x] Qualify initial 8502 native-vector and Z80 IM1 CIA interrupt paths in
+  `1986`, with raw entry-through-prologue latency samples.
+- [x] Measure minimal, kernel-tick, and jump-table interrupt-service paths in
+  `1986`, including paired post-prologue-to-resume costs.
+- [x] Measure qualified CPU, compiler-runtime, and full task-context
+  save/restore primitives in `1986`.
+- [x] Measure syscall dispatch, event-queue traffic, and validated MMU/CIA/VDC
+  register transactions in `1986`.
+- [x] Measure real `$D505` ownership round trips and complete mailbox
+  transactions in both CPU directions in `1986`.
+- [x] Measure end-to-end copy, checksum, and transform offload thresholds in
+  both directions from 16 bytes through 2 KiB in `1986`.
+- [x] Preserve the exact result-set PRGs and hashes for later VICE and physical
+  C128 runs.
+- [ ] Measure compiled-C and handwritten-assembly workloads separately.
+- [ ] Broaden memory-access and device-I/O coverage beyond the initial slices.
+- [ ] Exercise VDC-only, VIC-active, and dual-display conditions on PAL and NTSC.
+- [ ] Cross-check `1986` and VICE results against at least one real C128.
+- [ ] Publish raw results, tool versions, test binaries, and the scoring rationale.
+- [ ] Accept ADR 0002 and update the permanent execution and memory plans.
+
+**Exit gate:** the same logical suite has run on both CPUs, real-hardware results
+have been recorded, and ADR 0002 names the executive and secondary engine with
+evidence.
+
 ## Phase 1 — Machine bring-up
 
 - [ ] Define the reset/loader contract and final bootstrap load address.
@@ -42,11 +70,11 @@ scaffold images and run `make check`.
 **Exit gate:** interrupt soak tests run for one hour without stack, bank, or
 display corruption.
 
-## Phase 3 — 8502 executive
+## Phase 3 — Executive kernel
 
 - [ ] Freeze the initial syscall jump-table ABI.
 - [ ] Implement task creation, exit, yield, sleep, and event wait.
-- [ ] Save and restore cc65 software-stack and zero-page runtime state.
+- [ ] Save and restore the selected compiler runtime and CPU context.
 - [ ] Add cooperative scheduling, then timer-driven preemption.
 - [ ] Add message queues and capability-based device handles.
 - [ ] Add host tests for scheduler and queue policy.
@@ -54,12 +82,12 @@ display corruption.
 **Exit gate:** at least four C tasks survive repeated preemption while performing
 banked-memory and display operations.
 
-## Phase 4 — Z80 execution engine
+## Phase 4 — Secondary execution engine
 
-- [ ] Prove the MMU CPU-switch sequence in a minimal assembly spike.
+- [x] Prove the MMU CPU-switch sequence in a minimal assembly spike.
 - [ ] Implement mailbox validation, sequence numbers, and error results.
 - [ ] Implement `NOP`, copy, checksum, and one decompression operation.
-- [ ] Measure handoff cost and define per-operation size thresholds.
+- [x] Measure handoff cost and define initial per-operation size thresholds.
 - [ ] Add repeated handoff and malformed-request tests.
 - [ ] Confirm behavior on real hardware.
 

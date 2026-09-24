@@ -1,0 +1,105 @@
+{
+  "status": "preliminary-emulator-only",
+  "date": "2026-09-24",
+  "timer": "CIA1 Timer B, 1 MHz system ticks",
+  "runs_per_configuration": 3,
+  "runs_identical_within_configuration": true,
+  "emulator": {
+    "name": "1986",
+    "commit": "7556c2357506dc576ab7ab0783f9971892db1450",
+    "video_timing": "PAL",
+    "display_columns": 80,
+    "vdc_ram_kib": 64,
+    "double_z80_frequency": false,
+    "tinker": false
+  },
+  "toolchain": {
+    "8502": "cc65 V2.18, Fedora package 2.19-15.fc44, -Oirs",
+    "z80": "SDCC 4.6.2 #16671, --opt-code-size"
+  },
+  "artifacts": {
+    "8502": {
+      "loaded_bytes": 2204,
+      "sha256": "d15bc6daab065e8863be6b7499cbbcaaa1d466d9a05b01b9039102f500062ed3"
+    },
+    "z80": {
+      "linked_code_bytes": 963,
+      "linked_data_bytes": 43,
+      "raw_window_bytes": 8192,
+      "sha256": "98927513fd4e577c36c7af94cbb9de313fa838d9ad900769a702675c53d61351",
+      "launcher_and_transport_sha256": "74ac297e523e2615099e60cd72aea0f601c3ad744ff9a997e7aac1521e47b059"
+    }
+  },
+  "cases": [
+    {
+      "name": "empty",
+      "iterations": 1,
+      "checksum": "beef",
+      "ticks": {
+        "8502_1mhz": [69, 69, 69],
+        "8502_2mhz": [35, 35, 35],
+        "z80_stock": [60, 60, 60]
+      }
+    },
+    {
+      "name": "switch_dispatch",
+      "iterations": 128,
+      "checksum": "04d7",
+      "ticks": {
+        "8502_1mhz": [36979, 36979, 36979],
+        "8502_2mhz": [18489, 18489, 18489],
+        "z80_stock": [13634, 13634, 13634]
+      }
+    },
+    {
+      "name": "table_dispatch",
+      "iterations": 128,
+      "checksum": "04d7",
+      "ticks": {
+        "8502_1mhz": [61044, 61044, 61044],
+        "8502_2mhz": [30522, 30522, 30522],
+        "z80_stock": [20110, 20110, 20110]
+      }
+    },
+    {
+      "name": "event_queue",
+      "iterations": 32,
+      "checksum": "4dd0",
+      "ticks": {
+        "8502_1mhz": [33517, 33517, 33517],
+        "8502_2mhz": [16759, 16759, 16759],
+        "z80_stock": [22524, 22524, 22524]
+      }
+    },
+    {
+      "name": "mmu_access",
+      "iterations": 128,
+      "checksum": "0080",
+      "ticks": {
+        "8502_1mhz": [2510, 2510, 2510],
+        "8502_2mhz": [1255, 1255, 1255],
+        "z80_stock": [4168, 4168, 4168]
+      }
+    },
+    {
+      "name": "cia_access",
+      "iterations": 128,
+      "checksum": "0080",
+      "ticks": {
+        "8502_1mhz": [2510, 2510, 2510],
+        "8502_2mhz": [1255, 1255, 1255],
+        "z80_stock": [4174, 4174, 4174]
+      }
+    },
+    {
+      "name": "vdc_access",
+      "iterations": 128,
+      "checksum": "0080",
+      "ticks": {
+        "8502_1mhz": [4294, 4294, 4294],
+        "8502_2mhz": [2147, 2147, 2147],
+        "z80_stock": [10302, 10302, 10302]
+      }
+    }
+  ]
+}

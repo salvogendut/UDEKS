@@ -30,16 +30,35 @@ are in `include/udeks/mailbox.h`; no compiler-native structure is normative.
 | `$12` | 2 | result | Operation-defined scalar result |
 | `$14` | 44 | reserved | Must be zero when submitting a request |
 
+## Provisional operations
+
+| Opcode | Name | Arguments | Result |
+|---:|---|---|---|
+| 0 | `NOP` | none | zero |
+| 1 | `COPY` | arg0 source, arg1 destination, length byte count | copied byte count |
+| 2 | `CHECKSUM16` | arg0 source, length byte count | unsigned sum of bytes modulo 65,536 |
+| 3 | `XOR_ROL` | arg0 source, arg1 destination, length byte count | transformed byte count |
+
+`XOR_ROL` writes `ROL8(source[i] XOR $A5)` to each destination byte. These
+operations are provisional benchmark contracts. They become kernel ABI only
+when this document reaches ABI 1.0; their current purpose is to measure
+end-to-end delegation thresholds with independently verifiable results.
+
 ## Publication protocol
 
-1. The 8502 waits for `IDLE`, `COMPLETE`, or `ERROR`.
+1. The requesting CPU waits for `IDLE`, `COMPLETE`, or `ERROR`.
 2. It fills the request fields and increments the sequence number.
 3. It writes `SUBMITTED` last and transfers bus ownership.
-4. The Z80 validates magic and ABI, then writes `RUNNING`.
-5. The Z80 writes result fields, then `COMPLETE` or `ERROR` last.
-6. The Z80 returns bus ownership. The 8502 validates the sequence number before
+4. The secondary CPU validates magic and ABI, then writes `RUNNING`.
+5. It writes result fields, then `COMPLETE` or `ERROR` last.
+6. It returns bus ownership. The requester validates the sequence number before
    consuming the result.
 
-The Z80 must always return ownership within the operation's documented maximum
-budget. A hardware-independent timeout cannot rescue the 8502 while the Z80
-owns the bus, so worker code is part of the trusted kernel.
+The secondary CPU must always return ownership within the operation's
+documented maximum budget. A hardware-independent timeout cannot rescue the
+executive while the secondary CPU owns the bus, so secondary-engine code is
+part of the trusted kernel.
+
+ABI 0.1 deliberately does not assign the requester role to either processor.
+The benchmark harness will exercise the same state machine in both directions;
+ADR 0002 will establish the normal direction before this ABI is frozen.

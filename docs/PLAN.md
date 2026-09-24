@@ -19,8 +19,8 @@ C64-mode environment, or an attempt to imitate modern symmetric multiprocessing.
    filesystems, and user-facing services belong in C. Reset, interrupt entry,
    context switching, MMU transitions, and cycle-critical transfers belong in
    assembly.
-4. **Bounded work.** Every Z80 transaction and interrupt-disabled region has a
-   documented upper bound.
+4. **Bounded work.** Every cross-CPU transaction and interrupt-disabled region
+   has a documented upper bound.
 5. **Explicit representation.** Cross-CPU, on-disk, and driver ABIs use byte
    layouts and fixed-width values rather than compiler-native structures.
 6. **Testable layers.** Pure algorithms build and test on the host. Hardware
@@ -40,9 +40,9 @@ present.
 
 ## Execution architecture
 
-### 8502 executive
+### Executive CPU
 
-The 8502 owns normal execution. Its kernel responsibilities are:
+The executive processor owns normal execution. Its responsibilities are:
 
 - interrupt dispatch and timekeeping;
 - task scheduling and C runtime context management;
@@ -50,28 +50,36 @@ The 8502 owns normal execution. Its kernel responsibilities are:
 - device arbitration and driver dispatch;
 - VDC/VIC display composition;
 - storage, filesystem, and application services;
-- creation and validation of Z80 jobs.
+- creation and validation of jobs for the secondary CPU.
 
-Preemption applies while the 8502 owns the machine. A context includes hardware
-registers, the hardware stack, the cc65 software-stack pointer, compiler-owned
-zero-page state, MMU configuration, and task-local page-zero/page-one mappings.
-The exact context layout requires a compiler-output spike before it becomes ABI.
+The 8502 and Z80 are both candidates for this role. The selection remains open
+until the suite in [BENCHMARKS.md](BENCHMARKS.md) has measured compiled C,
+handwritten assembly, interrupts, context switching, I/O, memory, and CPU
+handoff in representative C128 display modes. ADR 0002 records the decision
+process and will record its outcome.
 
-### Z80 worker
+The scheduler and context format will be designed only after that decision. An
+8502 context must account for the hardware stack, cc65 software-stack pointer,
+compiler-owned zero-page state, and page-zero/page-one mappings. A Z80 context
+must account for the registers and interrupt state actually admitted by the
+kernel ABI. Neither cost is assumed; both are benchmark inputs.
 
-The Z80 is a trusted synchronous worker, not an autonomous background CPU. A
-transaction is:
+### Secondary execution engine
+
+The non-executive CPU is a trusted synchronous execution engine, not an
+autonomous background CPU. A transaction is:
 
 1. prepare a mailbox request and any input buffers;
 2. publish the request state last;
-3. save the 8502 executive context and switch CPU ownership;
-4. validate and execute one bounded Z80 operation;
+3. save the executive context and switch CPU ownership;
+4. validate and execute one bounded operation;
 5. publish completion and return ownership;
-6. validate the result and resume 8502 scheduling.
+6. validate the result and resume executive scheduling.
 
 Initial worker candidates are memory transforms, checksums, decompression, and
-measured block operations. IEC, serial, and mathematical work move to the Z80
-only when a benchmark demonstrates a system-level benefit after handoff costs.
+measured block operations. IEC, serial, and mathematical work move to the
+secondary CPU only when a benchmark demonstrates a system-level benefit after
+handoff costs.
 
 ### Displays
 
@@ -91,9 +99,9 @@ choices. The final map will define:
 
 - permanently visible kernel code and data;
 - common RAM and the mailbox;
-- task-local zero-page and stack allocations;
+- task-local stack allocations and, for 8502 code, zero-page allocations;
 - bank-0 and bank-1 ownership windows;
-- Z80 code, stack, and job buffers;
+- secondary-CPU code, stack, and job buffers;
 - VIC-visible RAM;
 - load versus run addresses for banked modules;
 - optional REU/GeoRAM paging and swap policy.
@@ -106,15 +114,16 @@ interrupt, ROM-overlay, and model-compatibility tests.
 The first stable interfaces will be:
 
 - a versioned syscall jump table rather than direct kernel symbol linkage;
-- a versioned 8502/Z80 mailbox;
+- a versioned cross-CPU mailbox;
 - device classes with capability queries;
 - byte-oriented filesystem and executable headers;
 - display surfaces independent of a particular video chip;
 - event queues for keyboard, pointer, timers, storage, and inter-task messages.
 
 Applications initially share the kernel address space but receive distinct
-software stacks, page-zero/page-one mappings, and banked workspaces. Protection
-is cooperative because the C128 has no memory protection unit.
+stacks and banked workspaces. An 8502 executive may additionally use distinct
+page-zero/page-one mappings. Protection is cooperative because the C128 has no
+memory protection unit.
 
 ## Boot strategy
 
@@ -142,9 +151,10 @@ ROM routines may be used only in an explicitly temporary bootstrap layer.
 | Risk | Response |
 |---|---|
 | CPU handoff deadlocks the machine | Tiny audited worker entry; one operation per lease; emulator trace tests |
-| Compiler runtime prevents safe task switching | Inspect generated code; own crt0; explicitly save compiler zero-page and software stack |
+| Compiler runtime prevents safe task switching | Inspect generated code; own crt0; explicitly save all compiler-owned runtime state |
 | Common RAM conflicts with ROM, vectors, or buffers | Prove the complete map before ABI 1.0 |
-| Z80 offload is slower than 8502 execution | Benchmark end-to-end and retain the 8502 implementation |
+| The selected executive performs poorly in real workloads | Select it only after the comparative benchmark gate; retain portable policy code |
+| Secondary-CPU offload costs more than it saves | Benchmark end-to-end and keep work on the executive below measured thresholds |
 | VDC readiness stalls latency-sensitive paths | Bounded polling and queued display operations |
 | Emulator behavior hides hardware differences | Cross-check VICE and require real-machine milestone tests |
 | Toolchain optimizer regression | Pin versions and retain binary/layout regression tests |
@@ -152,6 +162,7 @@ ROM routines may be used only in an explicitly temporary bootstrap layer.
 ## Definition of architectural success
 
 The architecture is validated when a stock machine can boot without resident
-ROM dependencies, schedule multiple 8502 tasks, submit and complete bounded Z80
-jobs repeatedly, operate both displays, load applications from disk, and recover
-cleanly from rejected jobs and device errors.
+ROM dependencies, schedule multiple C tasks on the selected executive, submit
+and complete bounded jobs on the secondary CPU repeatedly, operate both
+displays, load applications from disk, and recover cleanly from rejected jobs
+and device errors.
