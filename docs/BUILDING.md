@@ -68,10 +68,10 @@ VDC revision and RAM tier, and expansion presence for later service policy.
 artwork into row-major, MSB-first scanlines under `build/assets/`; the target
 kernel will consume those bytes without carrying an image decoder.
 
-The current production image starts eight services in order: hardware
-capability discovery, the bounded Z80 worker, the VDC text console, the
-frame-paced pointer source, the passive VIC-IIe graphics service, the polled
-keyboard source, the fixed-focus root-terminal editor, and the native shell. It stays at
+The current production image starts nine services in order: hardware
+capability discovery, CIA time, the bounded Z80 worker, the VDC text console,
+the frame-paced pointer source, the passive VIC-IIe graphics service, the
+polled keyboard source, the fixed-focus root-terminal editor, and the native shell. It stays at
 1 MHz, leaving the VIC-IIe active for the future graphics/second-display
 service. The previously qualified VDC-only 2 MHz transition and VDC
 framebuffer remain optional modules.
@@ -86,9 +86,10 @@ stock timing; no optional doubled/8 MHz emulator mode is used. See the
 yellow 320x200 bank-1 bitmap with a centered black X pointer; `xinit -q`
 terminates that display session. Neither transition replaces or suspends the
 VDC console. The compact X pointer accepts a proportional 1351 mouse on control
-port 1 and a digital joystick on control port 2. The next application milestone
-is the [`xclock` analog clock](XCLOCK.md); the [`xwave` dual-engine plotter](XWAVE.md)
-follows it.
+port 1 and a digital joystick on control port 2. `xclock` starts the first
+movable analog-clock window, and `xclock -q` or VDC `Ctrl+C` closes it. See the
+[`xclock` design and status](XCLOCK.md). The [`xwave` dual-engine plotter](XWAVE.md)
+is the next application milestone.
 
 The text console displays the compact UDEKS pipe and Japanese wordmark in a
 left rail and a bordered 64x21 root terminal to the right. Build tooling packs

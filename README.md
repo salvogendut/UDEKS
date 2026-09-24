@@ -27,6 +27,10 @@ See [LICENSE](LICENSE).
   <img src="screenshot/udeks-boot.png" alt="UDEKS native C128 boot console running in the 1986 emulator" width="640">
 </p>
 
+<p align="center">
+  <img src="screenshot/udeks-xclock.png" alt="UDEKS xclock application running on the VIC-IIe display in the 1986 emulator" width="384">
+</p>
+
 ## Hardware model
 
 - The 8502 and Z80 share the system bus and do **not** execute concurrently;
@@ -131,6 +135,7 @@ the display-memory and physical-hardware gates in ADR 0003 pass.
 - [Bounded Z80 worker service](abi/z80-worker.md)
 - [VIC-IIe graphics service](abi/vic-graphics.md)
 - [Pointer input service](abi/pointer-input.md)
+- [CIA time service](abi/time.md)
 - [`xclock` analog clock application](docs/XCLOCK.md)
 - [`xwave` dual-engine graphics demo](docs/XWAVE.md)
 - [Service-module ABI](abi/services.md)

@@ -13,11 +13,25 @@ The visual and lifecycle reference is GEOBENCH's analog Clock application:
 - bounded updates that erase and redraw only the old and new hands;
 - complete repaint after damage, move, or reveal.
 
-The first UDEKS edition may use a fixed-size window while the general window
-manager is still being established. Its geometry will be derived from a
-60-entry fixed-point sine/cosine table, and every line will be clipped to the
-client rectangle. The application must use display, pointer, time, and window
-service APIs rather than direct VIC-IIe, CIA, or SID access.
+The first UDEKS edition uses a fixed-size window while the general window
+manager is still being established. Its geometry is derived from a 60-entry
+fixed-point sine/cosine table, and every line is clipped to the screen. It uses
+display, pointer, and time service APIs rather than direct VIC-IIe, CIA, or SID
+access.
+
+The current window is 144x154 pixels and can be dragged by its title bar with
+the port-1 mouse button or port-2 joystick fire. Its close box, `xclock -q`, or
+VDC-console `Ctrl+C` terminates it. `xclock` starts VIC graphics automatically
+when needed. The shell remains responsive on the independent VDC display.
+
+Rendering is prepared in an aligned 8 KiB bank-0 shadow bitmap. Pixel, line,
+rectangle, and fill operations mark dirty 256-byte pages; a common-RAM gateway
+copies only those pages into the bank-1 VIC bitmap. The final page copy stops
+at `$7F3F`, preserving the pointer sprite at `$7FC0`. Clock ticks erase and
+redraw only the old/new hour and minute hands and digital digits before
+committing their dirty pages. The default `HH:MM` clock refreshes once per
+minute, matching GEOBENCH's responsive default. A move performs a complete
+off-screen repaint followed by a page commit.
 
 `xclock` is deliberately an 8502-owned application. A clock tick is a small,
 bounded interactive update, so handing it to the Z80 would cost more than it
@@ -26,12 +40,15 @@ Z80 computation with 8502 plotting.
 
 ## Delivery gates
 
-- [ ] Add clipped VIC-IIe pixel and line primitives.
-- [ ] Add a monotonic/wall-clock service suitable for clock applications.
-- [ ] Create, move, damage, raise, and close one graphical window.
+- [x] Add bounded VIC-IIe pixel, line, rectangle, and fill primitives.
+- [x] Add a CIA TOD service suitable for clock applications.
+- [x] Create, move, and close one fixed-size graphical window.
 - [ ] Route normalized pointer motion and buttons to the window manager.
-- [ ] Draw the face, hour/minute hands, and digital readout.
-- [ ] Add the seconds-hand option and bounded incremental hand repaint.
-- [ ] Support VDC `Ctrl+C` termination and graphical close-button termination.
-- [ ] Verify timekeeping, repaint, input, and cleanup in 1986, VICE, and real
+- [x] Draw the face, hour/minute hands, and digital readout.
+- [x] Add bounded incremental hand repaint.
+- [ ] Add an optional seconds hand and per-second readout.
+- [x] Support VDC `Ctrl+C`, `xclock -q`, and graphical close-box termination.
+- [x] Verify timekeeping, repaint, and command lifecycle in 1986.
+- [ ] Verify pointer dragging and close-box input in 1986 and VICE.
+- [ ] Verify timekeeping, repaint, input, and cleanup on real
   hardware.

@@ -48,6 +48,7 @@ class KeyboardSourceTests(unittest.TestCase):
         self.assertGreaterEqual(
             source.count("udeks_pointer_keyboard_allowed()"), 2
         )
+        self.assertGreaterEqual(source.count("udeks_keyboard_scan();"), 3)
 
 
 if __name__ == "__main__":

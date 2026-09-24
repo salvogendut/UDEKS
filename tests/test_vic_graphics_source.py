@@ -17,7 +17,7 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertLess(console, pointer)
         self.assertLess(pointer, graphics)
         self.assertLess(graphics, keyboard)
-        self.assertIn(".byte $08", table)
+        self.assertIn(".byte $09", table)
 
         descriptor = (ROOT / "src/services/display/descriptor.s").read_text(
             encoding="utf-8"
@@ -42,6 +42,21 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("lda #$78", source)
         self.assertIn("lda #$3b", source)
         self.assertIn("VIC common gateway exceeds one-page installer", source)
+        self.assertIn("_udeks_vic_bitmap_commit_page", source)
+        self.assertIn("COMMON_BUFFER           = $f900", source)
+        self.assertIn("cmp #$1f", source)
+
+    def test_shadow_surface_is_aligned_and_commits_only_dirty_pages(self):
+        source = (ROOT / "src/services/display/vic_graphics.c").read_text(
+            encoding="utf-8"
+        )
+        config = (ROOT / "cfg/8502-bootstrap.cfg").read_text(encoding="utf-8")
+        self.assertIn('bss-name(push, "VICSHADOW")', source)
+        self.assertIn("udeks_vic_bitmap_shadow[8192]", source)
+        self.assertIn("dirty_pages[pixel_offset >> 8] = 1", source)
+        self.assertIn("udeks_vic_bitmap_commit_page(page)", source)
+        self.assertIn("VICSHADOW:", config)
+        self.assertIn("align = $100", config)
 
     def test_pointer_is_black_centered_sprite_and_shutdown_is_bounded(self):
         source = (ROOT / "src/8502/vic_graphics.s").read_text(encoding="utf-8")

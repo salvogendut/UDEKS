@@ -173,6 +173,10 @@ $(BUILD_8502)/hardware_capability.s: src/services/capability/hardware.c \
 		include/udeks/capability.h include/udeks/vdc.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/time.s: src/services/time/time.c include/udeks/capability.h \
+		include/udeks/time.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/vdc_console.s: src/services/console/vdc_console.c \
 		include/udeks/boot_console.h include/udeks/compiler.h \
 		include/udeks/console.h include/udeks/root_console.h \
@@ -220,7 +224,7 @@ $(BUILD_8502)/line_editor.s: src/services/terminal/line_editor.c \
 $(BUILD_8502)/root_terminal.s: src/services/terminal/root_terminal.c \
 		include/udeks/console.h include/udeks/keyboard.h \
 		include/udeks/line_editor.h include/udeks/root_console.h \
-		include/udeks/root_terminal.h | $(BUILD_8502)
+		include/udeks/root_terminal.h include/udeks/xclock.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/terminal_stream.s: src/services/terminal/stream.c \
@@ -236,7 +240,8 @@ $(BUILD_8502)/shell.s: src/services/shell/shell.c \
 		include/udeks/root_console.h include/udeks/root_terminal.h \
 		include/udeks/service.h include/udeks/shell.h \
 		include/udeks/stream.h include/udeks/mailbox.h \
-		include/udeks/z80_worker.h include/udeks/vic_graphics.h | $(BUILD_8502)
+		include/udeks/z80_worker.h include/udeks/vic_graphics.h \
+		include/udeks/xclock.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/z80_worker.s: src/services/engine/z80_worker.c \
@@ -245,7 +250,13 @@ $(BUILD_8502)/z80_worker.s: src/services/engine/z80_worker.c \
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/vic_graphics.s: src/services/display/vic_graphics.c \
-		include/udeks/pointer.h include/udeks/vic_graphics.h | $(BUILD_8502)
+		include/udeks/pointer.h include/udeks/vic_graphics.h \
+		include/udeks/xclock.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/xclock.s: src/apps/xclock.c include/udeks/pointer.h \
+		include/udeks/time.h include/udeks/vic_graphics.h \
+		include/udeks/xclock.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/framebuffer_font.s: src/services/framebuffer/font.c \
@@ -305,6 +316,9 @@ $(BUILD_8502)/z80_worker.o: $(BUILD_8502)/z80_worker.s | $(BUILD_8502)
 $(BUILD_8502)/vic_graphics.o: $(BUILD_8502)/vic_graphics.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/xclock.o: $(BUILD_8502)/xclock.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/framebuffer_font.o: $(BUILD_8502)/framebuffer_font.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -317,10 +331,16 @@ $(BUILD_8502)/service_registry.o: $(BUILD_8502)/service_registry.s | $(BUILD_850
 $(BUILD_8502)/hardware_capability.o: $(BUILD_8502)/hardware_capability.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/time.o: $(BUILD_8502)/time.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/clock.o: src/8502/clock.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/capability_descriptor.o: src/services/capability/descriptor.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/time_descriptor.o: src/services/time/descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/clock_descriptor.o: src/services/clock/descriptor.s | $(BUILD_8502)
@@ -396,6 +416,7 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o \
 		$(BUILD_8502)/capability_descriptor.o \
+		$(BUILD_8502)/time_descriptor.o \
 		$(BUILD_8502)/clock_descriptor.o \
 		$(BUILD_8502)/console_descriptor.o \
 		$(BUILD_8502)/pointer_descriptor.o \
@@ -404,7 +425,8 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/shell_descriptor.o \
 		$(BUILD_8502)/z80_worker_descriptor.o \
 		$(BUILD_8502)/vic_graphics_descriptor.o \
-		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/vdc_console.o \
+		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/time.o \
+		$(BUILD_8502)/vdc_console.o \
 		$(BUILD_8502)/root_console.o \
 		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/joystick.o $(BUILD_8502)/mouse1351.o \
@@ -414,6 +436,7 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/shell_parser.o $(BUILD_8502)/shell.o \
 		$(BUILD_8502)/z80_worker.o \
 		$(BUILD_8502)/vic_graphics.o \
+		$(BUILD_8502)/xclock.o \
 		$(BUILD_8502)/vdc_text_assets.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $@ $(filter %.o,$^)
@@ -425,6 +448,7 @@ $(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o $(BUILD_8502)/clock.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o $(BUILD_8502)/capability_descriptor.o \
+		$(BUILD_8502)/time_descriptor.o \
 		$(BUILD_8502)/clock_descriptor.o \
 		$(BUILD_8502)/console_descriptor_fault.o \
 		$(BUILD_8502)/pointer_descriptor.o \
@@ -433,7 +457,8 @@ $(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/shell_descriptor.o \
 		$(BUILD_8502)/z80_worker_descriptor.o \
 		$(BUILD_8502)/vic_graphics_descriptor.o \
-		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/vdc_console.o \
+		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/time.o \
+		$(BUILD_8502)/vdc_console.o \
 		$(BUILD_8502)/root_console.o \
 		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/joystick.o $(BUILD_8502)/mouse1351.o \
@@ -443,6 +468,7 @@ $(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/shell_parser.o $(BUILD_8502)/shell.o \
 		$(BUILD_8502)/z80_worker.o \
 		$(BUILD_8502)/vic_graphics.o \
+		$(BUILD_8502)/xclock.o \
 		$(BUILD_8502)/vdc_text_assets.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 -C cfg/8502-bootstrap.cfg \
@@ -816,6 +842,7 @@ check:
 		tools/z80_worker_decode.py \
 		tools/vic_graphics_decode.py \
 		tools/pointer_decode.py \
+		tools/time_decode.py tools/xclock_decode.py \
 		tools/build_d71.py \
 		tools/snapshot_extract.py \
 		tools/vice_capture.py

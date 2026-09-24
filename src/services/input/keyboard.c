@@ -220,6 +220,19 @@ unsigned char udeks_keyboard_poll(void)
         if (udeks_keyboard_matrix[scan_line] != candidate_matrix[scan_line]) {
             candidate_matrix[scan_line] = udeks_keyboard_matrix[scan_line];
             changed_matrix[scan_line] = 0;
+        }
+    }
+    /* Qualify transitions with a second complete scan in the same poll pass.
+       This retains consecutive-snapshot filtering even when display work
+       makes service passes less frequent than a short key pulse. */
+    udeks_keyboard_scan();
+    if (udeks_pointer_keyboard_allowed() == 0) {
+        return UDEKS_KEYBOARD_OK;
+    }
+    for (scan_line = 0; scan_line < UDEKS_KEYBOARD_MATRIX_LINES; ++scan_line) {
+        if (udeks_keyboard_matrix[scan_line] != candidate_matrix[scan_line]) {
+            candidate_matrix[scan_line] = udeks_keyboard_matrix[scan_line];
+            changed_matrix[scan_line] = 0;
             continue;
         }
         changed_matrix[scan_line] = (unsigned char)(

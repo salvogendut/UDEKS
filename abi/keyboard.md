@@ -19,8 +19,10 @@ only low bits persistent in both phases count as grounded control-port
 switches. A keyboard-induced low changes with the drive phase. The check is
 repeated after every scan, discarding a snapshot if a
 control-port switch became active while it was being collected. The C
-service then requires the same complete matrix row in two consecutive polls
-before publishing any transitions from that row.
+service then requires the same complete matrix row in two consecutive scans
+within a poll pass before publishing any transitions from that row. Keeping
+both qualification scans together prevents bounded graphical work from making
+a short key pulse invisible between service passes.
 Events and modifiers are derived from this debounced matrix, preventing switch
 bounce or a settling glitch from becoming spurious terminal characters.
 

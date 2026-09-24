@@ -22,12 +22,18 @@ the bitmap to yellow, initializes every screen byte for black-on-yellow hires
 pixels, installs the pointer sprite, then restores the 8502 kernel-I/O profile
 before touching VIC/CIA registers. The VDC console is unaffected.
 
+Drawing clients use a bank-0 shadow bitmap through bounded pixel, line,
+rectangle, fill, and commit calls. Drawing marks dirty 256-byte pages; commit
+uses a common-RAM staging page to transfer only those pages into physical bank
+1. The partial final bitmap page ends at `$7F3F` and cannot overwrite the
+reserved sprite. This is the first C display surface used by `xclock`.
+
 The initial pointer is a compact, unexpanded, high-resolution foreground
 sprite, approximately half the original X design, at the center of the visible
 area. The [pointer-input service](pointer-input.md) moves it with a 1351 mouse
-on control port 1 or a joystick on control port 2. General drawing primitives
-are deferred to the `xclock` application milestone; `xinit` proves mode
-ownership, bank placement, independent dual-display output, and input first.
+on control port 1 or a joystick on control port 2. The earlier `xinit`
+milestone proved mode ownership, bank placement, independent dual-display
+output, and input before the drawing primitives were added.
 
 `xinit -q` terminates the graphics session. It disables the pointer sprite,
 blanks VIC-IIe bitmap output, returns VIC RAM visibility to physical bank 0,
@@ -52,4 +58,5 @@ The 24-byte `VICG` record begins at `$F1B0`:
 | 16 | 1 | Sprite pointer (`$FF`) |
 | 17–18 | 2 | Successful `xinit` operations |
 | 19–20 | 2 | Successful `xinit -q` operations |
-| 21–23 | 3 | Reserved |
+| 21–22 | 2 | Successful dirty-page commit calls |
+| 23 | 1 | Reserved |

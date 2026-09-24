@@ -27,15 +27,19 @@ The initial flags are:
 - bit 1: critical to system bring-up.
 
 Initial service classes are console (`1`), hardware capability discovery (`2`),
-display (`3`), machine policy (`4`), input (`5`), terminal policy (`6`), native
+display (`3`), machine policy/time (`4`), input (`5`), terminal policy (`6`), native
 shell (`7`), and bounded Z80 worker (`8`). The default image starts capability
-discovery, the Z80 worker, VDC text console, pointer input, the VIC-IIe graphics
-service, keyboard, root-terminal policy, and shell services in that order. It
+discovery, CIA time, the Z80 worker, VDC text console, pointer input, the
+VIC-IIe graphics service, keyboard, root-terminal policy, and shell services
+in that order. It
 remains at 1 MHz so the VIC-IIe stays available.
 The machine-clock and VDC framebuffer descriptors remain optional modules:
 2 MHz requires an explicit VIC-blanking policy, and VDC bitmap mode requires
 explicit display ownership. The VIC-IIe service is display class `3`, instance
 `1`; startup is passive and `xinit` performs explicit mode acquisition.
+The resident CIA time service is machine-policy class `4`, instance `1`; the
+older optional machine-clock descriptor is the separate VIC-blanking 2 MHz
+transition.
 
 The display service's provisional resident-C request surface is specified in
 the [framebuffer client API](framebuffer.md). It is not yet a compiler-neutral

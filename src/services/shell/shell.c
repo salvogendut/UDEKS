@@ -8,6 +8,7 @@
 #include "udeks/mailbox.h"
 #include "udeks/z80_worker.h"
 #include "udeks/vic_graphics.h"
+#include "udeks/xclock.h"
 
 #define STATUS_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_SHELL_STATUS_BASE + (offset)))
@@ -254,6 +255,45 @@ static unsigned char command_xinit(
     return UDEKS_SHELL_OK;
 }
 
+static unsigned char command_xclock(
+    unsigned char count, unsigned char **arguments)
+{
+    unsigned char result;
+
+    if (count == 2 && strings_equal(
+            arguments[1], (const unsigned char *)"-q")) {
+        result = udeks_xclock_stop();
+        if (result == UDEKS_XCLOCK_OK) {
+            write_line(UDEKS_STDOUT, (const unsigned char *)"xclock stopped");
+        } else {
+            write_line(UDEKS_STDERR, (const unsigned char *)"xclock: not running");
+        }
+        return UDEKS_SHELL_OK;
+    }
+    if (count != 1) {
+        write_line(UDEKS_STDERR, (const unsigned char *)"Usage: xclock [-q]");
+        return UDEKS_SHELL_OK;
+    }
+    if (udeks_vic_graphics_is_active() == 0) {
+        result = udeks_vic_graphics_initialize();
+        if (result != UDEKS_VIC_GRAPHICS_OK) {
+            write_line(UDEKS_STDERR,
+                (const unsigned char *)"xclock: VIC-II graphics unavailable");
+            return UDEKS_SHELL_OK;
+        }
+    }
+    result = udeks_xclock_start();
+    if (result == UDEKS_XCLOCK_OK) {
+        write_line(UDEKS_STDOUT,
+            (const unsigned char *)"xclock started; Ctrl+C or xclock -q stops it");
+    } else if (result == UDEKS_XCLOCK_ALREADY_RUNNING) {
+        write_line(UDEKS_STDERR, (const unsigned char *)"xclock: already running");
+    } else {
+        write_line(UDEKS_STDERR, (const unsigned char *)"xclock: start failed");
+    }
+    return UDEKS_SHELL_OK;
+}
+
 static unsigned char command_help(
     unsigned char count, unsigned char **arguments);
 
@@ -266,7 +306,8 @@ static const struct shell_command commands[] = {
     {(const unsigned char *)"lsmod", (const unsigned char *)"Show resident services", command_lsmod},
     {(const unsigned char *)"lscpu", (const unsigned char *)"Show CPU roles", command_lscpu},
     {(const unsigned char *)"z80ctl", (const unsigned char *)"Inspect or test Z80 worker", command_z80ctl},
-    {(const unsigned char *)"xinit", (const unsigned char *)"Start VIC-II graphics", command_xinit}
+    {(const unsigned char *)"xinit", (const unsigned char *)"Start VIC-II graphics", command_xinit},
+    {(const unsigned char *)"xclock", (const unsigned char *)"Run analog clock", command_xclock}
 };
 
 #define COMMAND_COUNT ((unsigned char)(sizeof(commands) / sizeof(commands[0])))

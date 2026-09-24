@@ -9,6 +9,8 @@
         .export _udeks_vic_graphics_disable
         .export _udeks_vic_pointer_set_x
         .export _udeks_vic_pointer_set_y
+        .export _udeks_vic_bitmap_commit_page
+        .import _udeks_vic_bitmap_shadow
 
 MMU_LCR_KERNEL_IO       = $ff01
 MMU_LCR_WORKER_FLAT     = $ff04
@@ -31,6 +33,8 @@ VIC_BACKGROUND_COLOR    = $d021
 VIC_SPRITE0_COLOR       = $d027
 
 COMMON_GATEWAY          = $f800
+COMMON_PAGE             = $f8f0
+COMMON_BUFFER           = $f900
 VIC_SCREEN              = $5c00
 VIC_BITMAP              = $6000
 VIC_SPRITE              = $7fc0
@@ -79,6 +83,20 @@ pointer_x_store:
 
 _udeks_vic_pointer_set_y:
         sta VIC_SPRITE0_Y
+        rts
+
+_udeks_vic_bitmap_commit_page:
+        pha
+        ldx #$00
+copy_page_gateway:
+        lda page_gateway,x
+        sta COMMON_GATEWAY,x
+        inx
+        cpx #page_gateway_end-page_gateway
+        bne copy_page_gateway
+        pla
+        sta COMMON_PAGE
+        jsr COMMON_GATEWAY
         rts
 
 vic_gateway:
@@ -179,3 +197,47 @@ sprite_data_end:
         .assert sprite_data_end-sprite_data = 63, error, "VIC pointer sprite size drift"
 vic_gateway_end:
         .assert vic_gateway_end-vic_gateway < $100, error, "VIC common gateway exceeds one-page installer"
+
+page_gateway:
+        lda COMMON_PAGE
+        clc
+        adc #>_udeks_vic_bitmap_shadow
+        sta COMMON_GATEWAY+(page_load_shadow-page_gateway)+2
+        lda COMMON_PAGE
+        clc
+        adc #>VIC_BITMAP
+        sta COMMON_GATEWAY+(page_store_bitmap-page_gateway)+2
+
+        ldy #$00
+page_stage:
+page_load_shadow:
+        lda _udeks_vic_bitmap_shadow,y
+        sta COMMON_BUFFER,y
+        iny
+        bne page_stage
+
+        lda #$00
+        sta MMU_LCR_WORKER_FLAT
+        ldy #$00
+        lda COMMON_PAGE
+        cmp #$1f
+        beq page_copy_last
+page_copy_full:
+        lda COMMON_BUFFER,y
+page_store_bitmap:
+        sta VIC_BITMAP,y
+        iny
+        bne page_copy_full
+        beq page_copy_done
+page_copy_last:
+        lda COMMON_BUFFER,y
+        sta VIC_BITMAP+$1f00,y
+        iny
+        cpy #$40
+        bne page_copy_last
+page_copy_done:
+        lda #$00
+        sta MMU_LCR_KERNEL_IO
+        rts
+page_gateway_end:
+        .assert page_gateway_end-page_gateway < $f0, error, "VIC page gateway overlaps parameters"

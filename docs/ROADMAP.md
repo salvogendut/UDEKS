@@ -170,7 +170,7 @@ mailbox corruption, with published benchmark results.
   black X pointer while the VDC console remains active.
 - [x] Reserve control port 1 for a proportional 1351 mouse, reserve control
   port 2 for a digital joystick, and merge both into a frame-paced pointer.
-- [ ] Build `xclock` as the first graphical application, following the bounded
+- [x] Build the first fixed-window `xclock` graphical application, following the bounded
   analog-clock design proven in GEOBENCH.
 - [ ] Build `xwave` later as a wireframe function plotter using bounded Z80 sample
   computation, 8502 VIC-IIe rendering, and VDC-console `Ctrl+C` cancellation.
