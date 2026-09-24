@@ -49,6 +49,8 @@ class LineEditorBehaviorTests(unittest.TestCase):
             ctypes.c_ubyte,
         ]
         cls.editor.udeks_line_editor_get_line.restype = ctypes.c_ubyte
+        cls.editor.udeks_line_editor_history_count.restype = ctypes.c_ubyte
+        cls.editor.udeks_line_editor_history_position.restype = ctypes.c_ubyte
 
     @classmethod
     def tearDownClass(cls):
@@ -66,6 +68,11 @@ class LineEditorBehaviorTests(unittest.TestCase):
         length = self.editor.udeks_line_editor_length()
         pointer = self.editor.udeks_line_editor_text()
         return bytes(pointer[index] for index in range(length))
+
+    def enter(self, text):
+        for character in text:
+            self.handle(character=character)
+        self.editor.udeks_line_editor_submit()
 
     def test_inserts_at_cursor_and_backspace_closes_gap(self):
         self.handle(character=ord("a"))
@@ -111,6 +118,49 @@ class LineEditorBehaviorTests(unittest.TestCase):
         self.assertEqual(self.editor.udeks_line_editor_submit(), 0)
         self.handle(character=ord("b"))
         self.assertEqual(self.editor.udeks_line_editor_submit(), 1)
+
+    def test_up_and_down_browse_history_and_restore_draft(self):
+        self.enter(b"echo one")
+        self.enter(b"echo two")
+        for character in b"draft":
+            self.handle(character=character)
+
+        self.assertEqual(self.handle(scan_code=83), 4)
+        self.assertEqual(self.text(), b"echo two")
+        self.assertEqual(self.handle(scan_code=83), 4)
+        self.assertEqual(self.text(), b"echo one")
+        self.assertEqual(self.handle(scan_code=84), 4)
+        self.assertEqual(self.text(), b"echo two")
+        self.assertEqual(self.handle(scan_code=84), 4)
+        self.assertEqual(self.text(), b"draft")
+        self.assertEqual(self.editor.udeks_line_editor_history_position(), 0xFF)
+
+    def test_shifted_c128_cursor_down_is_history_up(self):
+        self.enter(b"help")
+        self.assertEqual(self.handle(scan_code=7, modifiers=1), 4)
+        self.assertEqual(self.text(), b"help")
+        self.assertEqual(self.handle(scan_code=7), 4)
+        self.assertEqual(self.text(), b"")
+
+    def test_history_is_bounded_and_ignores_adjacent_duplicates(self):
+        self.enter(b"same")
+        self.enter(b"same")
+        self.assertEqual(self.editor.udeks_line_editor_history_count(), 1)
+        for digit in b"0123456789":
+            self.enter(b"cmd" + bytes((digit,)))
+        self.assertEqual(self.editor.udeks_line_editor_history_count(), 6)
+        for _ in range(6):
+            self.assertEqual(self.handle(scan_code=83), 4)
+        self.assertEqual(self.text(), b"cmd4")
+        self.assertEqual(self.handle(scan_code=83), 0)
+
+    def test_editing_recalled_line_does_not_modify_stored_entry(self):
+        self.enter(b"echo")
+        self.handle(scan_code=83)
+        self.handle(character=ord("!"))
+        self.assertEqual(self.text(), b"echo!")
+        self.handle(scan_code=83)
+        self.assertEqual(self.text(), b"echo")
 
 
 if __name__ == "__main__":

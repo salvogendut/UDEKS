@@ -23,7 +23,8 @@ class KeyboardBehaviorTests(unittest.TestCase):
             "unsigned char udeks_keyboard_matrix[11];\n"
             "unsigned char udeks_keyboard_caps;\n"
             "unsigned char udeks_keyboard_display_80;\n"
-            "void udeks_keyboard_scan(void) {}\n",
+            "void udeks_keyboard_scan(void) {}\n"
+            "unsigned char udeks_pointer_keyboard_allowed(void) { return 1; }\n",
             encoding="ascii",
         )
         library = temporary / "keyboard.so"

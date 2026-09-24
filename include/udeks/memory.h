@@ -30,6 +30,8 @@
 #define UDEKS_COMMON_LIMIT            0x10000ul
 #define UDEKS_BOOT_STATUS_BASE        0xF040u
 #define UDEKS_BOOT_STATUS_SIZE        16u
+#define UDEKS_BOOT_CHAIN_BASE         0xF050u
+#define UDEKS_BOOT_CHAIN_SIZE         24u
 #define UDEKS_GATEWAY_BASE            0xF800u
 #define UDEKS_MMU_MIRROR_BASE         0xFF00u
 #define UDEKS_MMU_MIRROR_LIMIT        0xFF05u

@@ -68,11 +68,27 @@ VDC revision and RAM tier, and expansion presence for later service policy.
 artwork into row-major, MSB-first scanlines under `build/assets/`; the target
 kernel will consume those bytes without carrying an image decoder.
 
-The current production image starts four services in order: hardware
-capability discovery, the VDC text console, the polled keyboard source, and the
-fixed-focus root-terminal editor. It stays at 1 MHz, leaving the VIC-IIe active
-for the future graphics/second-display service. The previously qualified
-VDC-only 2 MHz transition and VDC framebuffer remain optional modules.
+The current production image starts eight services in order: hardware
+capability discovery, the bounded Z80 worker, the VDC text console, the
+frame-paced pointer source, the passive VIC-IIe graphics service, the polled
+keyboard source, the fixed-focus root-terminal editor, and the native shell. It stays at
+1 MHz, leaving the VIC-IIe active for the future graphics/second-display
+service. The previously qualified VDC-only 2 MHz transition and VDC
+framebuffer remain optional modules.
+
+The worker boot self-test completes a real `8502 -> Z80 -> 8502` `NOP`
+transaction through the ABI 0.1 mailbox. `z80ctl status` reports the common-RAM
+diagnostics and `z80ctl test` requests another bounded lease. The Z80 runs at
+stock timing; no optional doubled/8 MHz emulator mode is used. See the
+[worker contract](../abi/z80-worker.md).
+
+`xinit` activates the [VIC-IIe graphics service](../abi/vic-graphics.md): a
+yellow 320x200 bank-1 bitmap with a centered black X pointer; `xinit -q`
+terminates that display session. Neither transition replaces or suspends the
+VDC console. The compact X pointer accepts a proportional 1351 mouse on control
+port 1 and a digital joystick on control port 2. The next application milestone
+is the [`xclock` analog clock](XCLOCK.md); the [`xwave` dual-engine plotter](XWAVE.md)
+follows it.
 
 The text console displays the compact UDEKS pipe and Japanese wordmark in a
 left rail and a bordered 64x21 root terminal to the right. Build tooling packs
@@ -90,8 +106,10 @@ is paired with the complete 11-column polled
 [C128 keyboard service](../abi/keyboard.md), including normalized press/release
 events and a bounded FIFO. The provisional
 [root-terminal editor](../abi/line-editor.md) supports bounded insertion,
-Backspace, horizontal cursor motion, submission, and prompt renewal. Command
-dispatch, history, and completion are not implemented yet.
+Backspace, horizontal cursor motion, submission, and prompt renewal. The native
+shell provides bounded command dispatch and Unix-like streams. Up/Down browse
+six volatile history entries and preserve the current draft; completion is
+not implemented yet.
 
 The optional framebuffer owns a 16,000-byte system-RAM backing surface. Client changes
 are clipped, accumulated as byte spans per scanline, copied through the bounded

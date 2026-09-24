@@ -2,6 +2,7 @@
 #include "udeks/boot_console.h"
 #include "udeks/capability.h"
 #include "udeks/root_console.h"
+#include "udeks/z80_worker.h"
 
 #define STATUS_COLUMN 58u
 
@@ -23,8 +24,9 @@ static const unsigned char text_reu_yes[] = "REU : PRESENT";
 static const unsigned char text_reu_no[] = "REU : NOT PRESENT";
 static const unsigned char text_georam_yes[] = "GEORAM : PRESENT";
 static const unsigned char text_georam_no[] = "GEORAM : NOT PRESENT";
-static const unsigned char text_8502[] = "8502 EXECUTIVE : 2 MHZ VDC MODE";
-static const unsigned char text_z80[] = "Z80 WORKER : STAGED";
+static const unsigned char text_8502[] = "8502 EXECUTIVE : 1 MHZ";
+static const unsigned char text_z80_ready[] = "Z80 WORKER : READY";
+static const unsigned char text_z80_offline[] = "Z80 WORKER : OFFLINE";
 static const unsigned char text_storage[] = "STORAGE SERVICES : DEFERRED";
 static const unsigned char text_filesystem[] = "FILESYSTEM SERVICES : DEFERRED";
 static const unsigned char text_ready[] = "SYSTEM READY.";
@@ -52,9 +54,11 @@ static unsigned char write_status_line(
 unsigned char udeks_boot_console_build(void)
 {
     volatile unsigned char *capability;
+    volatile unsigned char *worker;
     const unsigned char *video_text;
 
     capability = (volatile unsigned char *)UDEKS_CAPABILITY_STATUS_BASE;
+    worker = (volatile unsigned char *)UDEKS_Z80_WORKER_STATUS_BASE;
     if (capability[7] == UDEKS_VIDEO_PAL) {
         video_text = capability[9] == UDEKS_VDC_FAMILY_8568 ?
             text_video_pal_8568 : text_video_pal_8563;
@@ -92,7 +96,11 @@ unsigned char udeks_boot_console_build(void)
             UDEKS_ROOT_CONSOLE_OK ||
         write_status_line(11, text_8502, text_status_ok) !=
             UDEKS_ROOT_CONSOLE_OK ||
-        write_status_line(12, text_z80, text_status_deferred) !=
+        write_status_line(
+            12, worker[5] == UDEKS_Z80_WORKER_READY ?
+                text_z80_ready : text_z80_offline,
+            worker[5] == UDEKS_Z80_WORKER_READY ?
+                text_status_ok : text_status_deferred) !=
             UDEKS_ROOT_CONSOLE_OK ||
         write_status_line(13, text_storage, text_status_deferred) !=
             UDEKS_ROOT_CONSOLE_OK ||

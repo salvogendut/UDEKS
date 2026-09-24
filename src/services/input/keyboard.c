@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "udeks/keyboard.h"
+#include "udeks/pointer.h"
 
 #define STATUS_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_KEYBOARD_STATUS_BASE + (offset)))
@@ -208,7 +209,13 @@ unsigned char udeks_keyboard_poll(void)
     unsigned char changed;
     unsigned char mask;
 
+    if (udeks_pointer_keyboard_allowed() == 0) {
+        return UDEKS_KEYBOARD_OK;
+    }
     udeks_keyboard_scan();
+    if (udeks_pointer_keyboard_allowed() == 0) {
+        return UDEKS_KEYBOARD_OK;
+    }
     for (scan_line = 0; scan_line < UDEKS_KEYBOARD_MATRIX_LINES; ++scan_line) {
         if (udeks_keyboard_matrix[scan_line] != candidate_matrix[scan_line]) {
             candidate_matrix[scan_line] = udeks_keyboard_matrix[scan_line];

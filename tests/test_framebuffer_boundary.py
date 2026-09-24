@@ -30,7 +30,14 @@ class FramebufferBoundaryTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertNotIn("_udeks_framebuffer_service_descriptor", source)
         self.assertIn("_udeks_framebuffer_service_descriptor", descriptor)
-        self.assertIn(".byte $05", source)
+        self.assertIn(".byte $08", source)
+
+        makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
+        production_link = makefile.split("$(KERNEL_BIN):", 1)[1].split(
+            "$(PANIC_PROBE_KERNEL_BIN):", 1
+        )[0]
+        self.assertNotIn("vdc_framebuffer.o", production_link)
+        self.assertNotIn("framebuffer_surface.o", production_link)
 
     def test_linked_assets_have_exact_sizes(self):
         source = (ROOT / "src/assets/vdc_splash.s").read_text(encoding="utf-8")

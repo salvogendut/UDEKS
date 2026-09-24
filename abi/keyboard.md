@@ -11,8 +11,16 @@ and `$D02F`. The unused column selector is held at `$FF` while the other matrix
 is scanned. UDEKS therefore does not depend on the inherited KERNAL port setup
 and does not leave keyboard or joystick-shared CIA pins reconfigured.
 The scanner discards the first port-B sample after each column change before
-using the second sample. The C service then requires the same complete matrix
-row in two consecutive polls before publishing any transitions from that row.
+using the second sample. The [pointer service](pointer-input.md) pauses scans
+during its bounded once-per-frame SID conversion-settling window and whenever
+a live control-port switch is active. The CIA half being read is made input
+while the opposite half of the keyboard matrix is probed at both high and low;
+only low bits persistent in both phases count as grounded control-port
+switches. A keyboard-induced low changes with the drive phase. The check is
+repeated after every scan, discarding a snapshot if a
+control-port switch became active while it was being collected. The C
+service then requires the same complete matrix row in two consecutive polls
+before publishing any transitions from that row.
 Events and modifiers are derived from this debounced matrix, preventing switch
 bounce or a settling glitch from becoming spurious terminal characters.
 
@@ -69,7 +77,7 @@ The service publishes a 48-byte `KEYB` record at `$F120`:
 | 35–37 | 3 | Last press scan code, character, and modifiers |
 | 38–47 | 10 | Reserved |
 
-The service is registered as input class `5`. Its descriptor supplies both
+The service is registered as input class `5`, instance `0`. Its descriptor supplies both
 start and poll vectors; the bring-up kernel repeatedly invokes all registered
 poll vectors after startup. Scheduler-driven cadence and interrupt-backed
 queues will replace this cooperative loop later without changing key events.

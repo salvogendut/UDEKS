@@ -9,6 +9,11 @@
 
 static void mailbox_initialize(void)
 {
+    unsigned char offset;
+
+    for (offset = 0; offset < UDEKS_MAILBOX_SIZE; ++offset) {
+        MAILBOX_BYTE(offset) = 0;
+    }
     MAILBOX_BYTE(UDEKS_MB_MAGIC0) = 'U';
     MAILBOX_BYTE(UDEKS_MB_MAGIC1) = 'D';
     MAILBOX_BYTE(UDEKS_MB_MAGIC2) = 'E';
@@ -16,7 +21,6 @@ static void mailbox_initialize(void)
     MAILBOX_BYTE(UDEKS_MB_ABI_MAJOR) = UDEKS_MAILBOX_ABI_MAJOR;
     MAILBOX_BYTE(UDEKS_MB_ABI_MINOR) = UDEKS_MAILBOX_ABI_MINOR;
     MAILBOX_BYTE(UDEKS_MB_OPCODE) = UDEKS_MB_OP_NOP;
-    MAILBOX_BYTE(UDEKS_MB_STATUS) = 0;
     MAILBOX_BYTE(UDEKS_MB_STATE) = UDEKS_MB_STATE_IDLE;
 }
 

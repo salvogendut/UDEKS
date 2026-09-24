@@ -32,6 +32,8 @@ class RootTerminalSourceTests(unittest.TestCase):
         self.assertIn("INPUT_FIELD_WIDTH           55u", source)
         self.assertIn("render_editor_range", source)
         self.assertIn("udeks_root_console_put(", source)
+        self.assertIn("UDEKS_LINE_EDITOR_ACTION_REPLACE", source)
+        self.assertIn("render_editor_range(0", source)
 
     def test_descriptor_is_a_polled_terminal_service(self):
         descriptor = (ROOT / "src/services/terminal/descriptor.s").read_text(

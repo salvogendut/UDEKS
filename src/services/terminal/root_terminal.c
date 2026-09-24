@@ -17,6 +17,9 @@
 #define STATUS_LAST_SUM_HI          22u
 #define STATUS_OVERWRITES           23u
 #define STATUS_REFRESHES_LO         24u
+#define STATUS_HISTORY_COUNT        26u
+#define STATUS_HISTORY_POSITION     27u
+#define STATUS_HISTORY_RECALLS_LO   28u
 
 #define INPUT_FIELD_WIDTH           55u
 
@@ -48,6 +51,9 @@ static void publish_editor_state(void)
     STATUS_BYTE(9) = udeks_line_editor_cursor();
     STATUS_BYTE(10) = pending_refresh;
     STATUS_BYTE(11) = 0;
+    STATUS_BYTE(STATUS_HISTORY_COUNT) = udeks_line_editor_history_count();
+    STATUS_BYTE(STATUS_HISTORY_POSITION) =
+        udeks_line_editor_history_position();
 }
 
 static unsigned char move_display_cursor(void)
@@ -203,6 +209,11 @@ unsigned char udeks_root_terminal_poll(void)
             increment_counter(STATUS_EDITS_LO);
             if (action == UDEKS_LINE_EDITOR_ACTION_CURSOR) {
                 result = move_display_cursor();
+            } else if (action == UDEKS_LINE_EDITOR_ACTION_REPLACE) {
+                increment_counter(STATUS_HISTORY_RECALLS_LO);
+                last = old_length > udeks_line_editor_length() ?
+                    old_length : udeks_line_editor_length();
+                result = render_editor_range(0, (unsigned char)(last - 1u));
             } else {
                 first = old_cursor < udeks_line_editor_cursor() ?
                     old_cursor : udeks_line_editor_cursor();

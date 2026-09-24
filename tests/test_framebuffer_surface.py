@@ -73,9 +73,9 @@ class FramebufferSurfaceTests(unittest.TestCase):
         self.assertLess(compose, upload)
         self.assertLess(upload, activate)
 
-    def test_surface_is_linked_into_production_and_panic_images(self):
+    def test_optional_surface_remains_buildable_but_is_not_linked_by_default(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
-        self.assertGreaterEqual(makefile.count("framebuffer_surface.o"), 2)
+        self.assertEqual(makefile.count("framebuffer_surface.o"), 1)
 
 
 if __name__ == "__main__":

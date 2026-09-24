@@ -48,4 +48,12 @@
 #define UDEKS_MB_OP_CHECKSUM16      2u
 #define UDEKS_MB_OP_XOR_ROL         3u
 
+/* Worker result status. Zero is success; nonzero values reject the request. */
+#define UDEKS_MB_STATUS_OK           0u
+#define UDEKS_MB_STATUS_MAGIC        1u
+#define UDEKS_MB_STATUS_ABI          2u
+#define UDEKS_MB_STATUS_STATE        3u
+#define UDEKS_MB_STATUS_OPCODE       4u
+#define UDEKS_MB_STATUS_RESERVED     5u
+
 #endif

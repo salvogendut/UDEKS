@@ -5,6 +5,9 @@
 #include "udeks/service.h"
 #include "udeks/shell.h"
 #include "udeks/stream.h"
+#include "udeks/mailbox.h"
+#include "udeks/z80_worker.h"
+#include "udeks/vic_graphics.h"
 
 #define STATUS_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_SHELL_STATUS_BASE + (offset)))
@@ -157,10 +160,97 @@ static unsigned char command_lsmod(
 static unsigned char command_lscpu(
     unsigned char count, unsigned char **arguments)
 {
+    volatile unsigned char *worker;
+
     (void)count;
     (void)arguments;
+    worker = (volatile unsigned char *)UDEKS_Z80_WORKER_STATUS_BASE;
     write_line(UDEKS_STDOUT, (const unsigned char *)"8502: resident executive");
-    write_line(UDEKS_STDOUT, (const unsigned char *)"Z80: staged; lease pending");
+    if (worker[5] == UDEKS_Z80_WORKER_READY) {
+        write_line(UDEKS_STDOUT,
+            (const unsigned char *)"Z80: bounded worker; ready (stock timing)");
+    } else if (worker[5] == UDEKS_Z80_WORKER_ERROR) {
+        write_line(UDEKS_STDOUT,
+            (const unsigned char *)"Z80: worker error; leases disabled");
+    } else {
+        write_line(UDEKS_STDOUT,
+            (const unsigned char *)"Z80: worker offline");
+    }
+    return UDEKS_SHELL_OK;
+}
+
+static unsigned char command_z80ctl(
+    unsigned char count, unsigned char **arguments)
+{
+    volatile unsigned char *worker;
+    unsigned char status;
+    unsigned int result;
+    unsigned int transactions;
+
+    worker = (volatile unsigned char *)UDEKS_Z80_WORKER_STATUS_BASE;
+    if (count == 2 && strings_equal(
+            arguments[1], (const unsigned char *)"test")) {
+        status = udeks_z80_submit(UDEKS_MB_OP_NOP, 0, 0, 0, &result);
+        if (status == UDEKS_Z80_OK && result == 0) {
+            write_line(UDEKS_STDOUT, (const unsigned char *)"Z80 self-test: OK");
+        } else {
+            write_text(UDEKS_STDERR, (const unsigned char *)"Z80 self-test: failed (");
+            write_decimal(UDEKS_STDERR, status);
+            write_line(UDEKS_STDERR, (const unsigned char *)")");
+        }
+        return UDEKS_SHELL_OK;
+    }
+    if (count == 1 || strings_equal(
+            arguments[1], (const unsigned char *)"status")) {
+        write_text(UDEKS_STDOUT, (const unsigned char *)"State: ");
+        write_line(UDEKS_STDOUT, worker[5] == UDEKS_Z80_WORKER_READY ?
+            (const unsigned char *)"ready" :
+            (const unsigned char *)"offline");
+        transactions = (unsigned int)worker[12] |
+            ((unsigned int)worker[13] << 8);
+        write_text(UDEKS_STDOUT, (const unsigned char *)"Transactions: ");
+        write_decimal(UDEKS_STDOUT, transactions);
+        udeks_stream_write_byte(UDEKS_STDOUT, '\n');
+        return UDEKS_SHELL_OK;
+    }
+    write_line(UDEKS_STDERR,
+        (const unsigned char *)"Usage: z80ctl [status|test]");
+    return UDEKS_SHELL_OK;
+}
+
+static unsigned char command_xinit(
+    unsigned char count, unsigned char **arguments)
+{
+    unsigned char result;
+
+    if (count == 2 && strings_equal(
+            arguments[1], (const unsigned char *)"-q")) {
+        result = udeks_vic_graphics_shutdown();
+        if (result == UDEKS_VIC_GRAPHICS_OK) {
+            write_line(UDEKS_STDOUT,
+                (const unsigned char *)"VIC-II graphics stopped");
+        } else {
+            write_text(UDEKS_STDERR,
+                (const unsigned char *)"xinit: VIC-II shutdown failed (");
+            write_decimal(UDEKS_STDERR, result);
+            write_line(UDEKS_STDERR, (const unsigned char *)")");
+        }
+        return UDEKS_SHELL_OK;
+    }
+    if (count != 1) {
+        write_line(UDEKS_STDERR, (const unsigned char *)"Usage: xinit [-q]");
+        return UDEKS_SHELL_OK;
+    }
+    result = udeks_vic_graphics_initialize();
+    if (result == UDEKS_VIC_GRAPHICS_OK) {
+        write_line(UDEKS_STDOUT,
+            (const unsigned char *)"VIC-II graphics active on 40-column display");
+    } else {
+        write_text(UDEKS_STDERR,
+            (const unsigned char *)"xinit: VIC-II setup failed (");
+        write_decimal(UDEKS_STDERR, result);
+        write_line(UDEKS_STDERR, (const unsigned char *)")");
+    }
     return UDEKS_SHELL_OK;
 }
 
@@ -174,7 +264,9 @@ static const struct shell_command commands[] = {
     {(const unsigned char *)"uname", (const unsigned char *)"Show system identity", command_uname},
     {(const unsigned char *)"lshw", (const unsigned char *)"Show detected hardware", command_lshw},
     {(const unsigned char *)"lsmod", (const unsigned char *)"Show resident services", command_lsmod},
-    {(const unsigned char *)"lscpu", (const unsigned char *)"Show CPU roles", command_lscpu}
+    {(const unsigned char *)"lscpu", (const unsigned char *)"Show CPU roles", command_lscpu},
+    {(const unsigned char *)"z80ctl", (const unsigned char *)"Inspect or test Z80 worker", command_z80ctl},
+    {(const unsigned char *)"xinit", (const unsigned char *)"Start VIC-II graphics", command_xinit}
 };
 
 #define COMMAND_COUNT ((unsigned char)(sizeof(commands) / sizeof(commands[0])))

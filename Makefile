@@ -193,11 +193,24 @@ $(BUILD_8502)/root_console.s: src/services/window/root_console.c \
 
 $(BUILD_8502)/boot_console.s: src/services/window/boot_console.c \
 		include/udeks/boot_console.h include/udeks/capability.h \
-		include/udeks/root_console.h | $(BUILD_8502)
+		include/udeks/root_console.h include/udeks/z80_worker.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/keyboard.s: src/services/input/keyboard.c \
-		include/udeks/keyboard.h | $(BUILD_8502)
+		include/udeks/keyboard.h include/udeks/pointer.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/joystick.s: src/services/input/joystick.c \
+		include/udeks/joystick.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/mouse1351.s: src/services/input/mouse1351.c \
+		include/udeks/mouse1351.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/pointer.s: src/services/input/pointer.c \
+		include/udeks/joystick.h include/udeks/mouse1351.h \
+		include/udeks/pointer.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/line_editor.s: src/services/terminal/line_editor.c \
@@ -222,7 +235,17 @@ $(BUILD_8502)/shell.s: src/services/shell/shell.c \
 		include/udeks/capability.h include/udeks/line_editor.h \
 		include/udeks/root_console.h include/udeks/root_terminal.h \
 		include/udeks/service.h include/udeks/shell.h \
-		include/udeks/stream.h | $(BUILD_8502)
+		include/udeks/stream.h include/udeks/mailbox.h \
+		include/udeks/z80_worker.h include/udeks/vic_graphics.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/z80_worker.s: src/services/engine/z80_worker.c \
+		include/udeks/mailbox.h include/udeks/memory.h \
+		include/udeks/z80_worker.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/vic_graphics.s: src/services/display/vic_graphics.c \
+		include/udeks/pointer.h include/udeks/vic_graphics.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/framebuffer_font.s: src/services/framebuffer/font.c \
@@ -252,6 +275,15 @@ $(BUILD_8502)/boot_console.o: $(BUILD_8502)/boot_console.s | $(BUILD_8502)
 $(BUILD_8502)/keyboard.o: $(BUILD_8502)/keyboard.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/joystick.o: $(BUILD_8502)/joystick.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/mouse1351.o: $(BUILD_8502)/mouse1351.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/pointer.o: $(BUILD_8502)/pointer.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/line_editor.o: $(BUILD_8502)/line_editor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -265,6 +297,12 @@ $(BUILD_8502)/shell_parser.o: $(BUILD_8502)/shell_parser.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/shell.o: $(BUILD_8502)/shell.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/z80_worker.o: $(BUILD_8502)/z80_worker.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/vic_graphics.o: $(BUILD_8502)/vic_graphics.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/framebuffer_font.o: $(BUILD_8502)/framebuffer_font.s | $(BUILD_8502)
@@ -300,10 +338,19 @@ $(BUILD_8502)/framebuffer_descriptor.o: src/services/framebuffer/descriptor.s | 
 $(BUILD_8502)/keyboard_descriptor.o: src/services/input/descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/pointer_descriptor.o: src/services/input/pointer_descriptor.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/root_terminal_descriptor.o: src/services/terminal/descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/shell_descriptor.o: src/services/shell/descriptor.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/z80_worker_descriptor.o: src/services/engine/descriptor.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/vic_graphics_descriptor.o: src/services/display/descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/vdc_splash.o: src/assets/vdc_splash.s $(VDC_SPLASH_BIN) \
@@ -332,48 +379,71 @@ $(BUILD_8502)/probe.o: src/8502/probe.s | $(BUILD_8502)
 $(BUILD_8502)/keyboard_scan.o: src/8502/keyboard_scan.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/control_ports.o: src/8502/control_ports.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/z80_handoff.o: src/8502/z80_handoff.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/vic_graphics_transport.o: src/8502/vic_graphics.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
-		$(BUILD_8502)/keyboard_scan.o \
+		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
+		$(BUILD_8502)/z80_handoff.o \
+		$(BUILD_8502)/vic_graphics_transport.o \
 		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o $(BUILD_8502)/clock.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o \
 		$(BUILD_8502)/capability_descriptor.o \
 		$(BUILD_8502)/clock_descriptor.o \
 		$(BUILD_8502)/console_descriptor.o \
-		$(BUILD_8502)/framebuffer_descriptor.o \
+		$(BUILD_8502)/pointer_descriptor.o \
 		$(BUILD_8502)/keyboard_descriptor.o \
 		$(BUILD_8502)/root_terminal_descriptor.o \
 		$(BUILD_8502)/shell_descriptor.o \
+		$(BUILD_8502)/z80_worker_descriptor.o \
+		$(BUILD_8502)/vic_graphics_descriptor.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/vdc_console.o \
-		$(BUILD_8502)/vdc_framebuffer.o $(BUILD_8502)/framebuffer_font.o \
-		$(BUILD_8502)/framebuffer_surface.o $(BUILD_8502)/root_console.o \
+		$(BUILD_8502)/root_console.o \
 		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
+		$(BUILD_8502)/joystick.o $(BUILD_8502)/mouse1351.o \
+		$(BUILD_8502)/pointer.o \
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
 		$(BUILD_8502)/terminal_stream.o \
 		$(BUILD_8502)/shell_parser.o $(BUILD_8502)/shell.o \
-		$(BUILD_8502)/vdc_splash.o $(BUILD_8502)/vdc_text_assets.o \
+		$(BUILD_8502)/z80_worker.o \
+		$(BUILD_8502)/vic_graphics.o \
+		$(BUILD_8502)/vdc_text_assets.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $@ $(filter %.o,$^)
 
 $(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
-		$(BUILD_8502)/keyboard_scan.o \
+		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
+		$(BUILD_8502)/z80_handoff.o \
+		$(BUILD_8502)/vic_graphics_transport.o \
 		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o $(BUILD_8502)/clock.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o $(BUILD_8502)/capability_descriptor.o \
 		$(BUILD_8502)/clock_descriptor.o \
 		$(BUILD_8502)/console_descriptor_fault.o \
-		$(BUILD_8502)/framebuffer_descriptor.o \
+		$(BUILD_8502)/pointer_descriptor.o \
 		$(BUILD_8502)/keyboard_descriptor.o \
 		$(BUILD_8502)/root_terminal_descriptor.o \
 		$(BUILD_8502)/shell_descriptor.o \
+		$(BUILD_8502)/z80_worker_descriptor.o \
+		$(BUILD_8502)/vic_graphics_descriptor.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/vdc_console.o \
-		$(BUILD_8502)/vdc_framebuffer.o $(BUILD_8502)/framebuffer_font.o \
-		$(BUILD_8502)/framebuffer_surface.o $(BUILD_8502)/root_console.o \
+		$(BUILD_8502)/root_console.o \
 		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
+		$(BUILD_8502)/joystick.o $(BUILD_8502)/mouse1351.o \
+		$(BUILD_8502)/pointer.o \
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
 		$(BUILD_8502)/terminal_stream.o \
 		$(BUILD_8502)/shell_parser.o $(BUILD_8502)/shell.o \
-		$(BUILD_8502)/vdc_splash.o $(BUILD_8502)/vdc_text_assets.o \
+		$(BUILD_8502)/z80_worker.o \
+		$(BUILD_8502)/vic_graphics.o \
+		$(BUILD_8502)/vdc_text_assets.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 -C cfg/8502-bootstrap.cfg \
 		-m $(BUILD_8502)/udeks-8502-panic-probe.map -o $@ \
@@ -385,10 +455,14 @@ $(KERNEL_PRG): $(KERNEL_BIN) tools/bin_to_prg.py
 $(BUILD_Z80)/worker.rel: src/z80/worker.c include/udeks/mailbox.h | $(BUILD_Z80)
 	$(SDCC) $(CFLAGS_Z80) -c -o $@ $<
 
+$(BUILD_Z80)/handoff.rel: src/z80/handoff.s | $(BUILD_Z80)
+	$(SDASZ80) -o $@ $<
+
 $(BUILD_Z80)/crt0.rel: src/z80/crt0.s | $(BUILD_Z80)
 	$(SDASZ80) -o $@ $<
 
-$(Z80_IHX): $(BUILD_Z80)/crt0.rel $(BUILD_Z80)/worker.rel
+$(Z80_IHX): $(BUILD_Z80)/crt0.rel $(BUILD_Z80)/handoff.rel \
+		$(BUILD_Z80)/worker.rel
 	$(SDCC) $(LDFLAGS_Z80) -o $@ $^
 
 $(Z80_BIN): $(Z80_IHX) tools/ihx_to_bin.py
@@ -739,6 +813,9 @@ check:
 		tools/xpm_to_vdc_text.py \
 		tools/keyboard_decode.py \
 		tools/root_terminal_decode.py \
+		tools/z80_worker_decode.py \
+		tools/vic_graphics_decode.py \
+		tools/pointer_decode.py \
 		tools/build_d71.py \
 		tools/snapshot_extract.py \
 		tools/vice_capture.py

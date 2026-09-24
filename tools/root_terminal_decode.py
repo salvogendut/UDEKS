@@ -43,6 +43,10 @@ def parse_result(data: bytes) -> dict[str, int]:
         raise ValueError("pending-refresh state is not Boolean")
     if block[20] > block[7]:
         raise ValueError("last submitted line exceeds capacity")
+    if block[26] > 6:
+        raise ValueError("history count exceeds capacity")
+    if block[27] != 0xFF and block[27] >= block[26]:
+        raise ValueError("history position is out of bounds")
     return {
         "format": block[4],
         "state": block[5],
@@ -59,6 +63,9 @@ def parse_result(data: bytes) -> dict[str, int]:
         "last_checksum": word(block, 21),
         "overwrites": block[23],
         "refreshes": word(block, 24),
+        "history_count": block[26],
+        "history_position": block[27],
+        "history_recalls": word(block, 28),
     }
 
 

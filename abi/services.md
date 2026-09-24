@@ -27,13 +27,15 @@ The initial flags are:
 - bit 1: critical to system bring-up.
 
 Initial service classes are console (`1`), hardware capability discovery (`2`),
-display (`3`), machine policy (`4`), input (`5`), and terminal policy (`6`).
-The native shell is class `7`. The default image starts capability discovery,
-VDC text console, keyboard, root-terminal policy, and shell services in that
-order. It remains at 1 MHz so the VIC-IIe stays available. The machine-clock
-and framebuffer descriptors remain optional modules: 2 MHz requires an
-explicit VIC-blanking policy, and VDC bitmap mode requires explicit display
-ownership.
+display (`3`), machine policy (`4`), input (`5`), terminal policy (`6`), native
+shell (`7`), and bounded Z80 worker (`8`). The default image starts capability
+discovery, the Z80 worker, VDC text console, pointer input, the VIC-IIe graphics
+service, keyboard, root-terminal policy, and shell services in that order. It
+remains at 1 MHz so the VIC-IIe stays available.
+The machine-clock and VDC framebuffer descriptors remain optional modules:
+2 MHz requires an explicit VIC-blanking policy, and VDC bitmap mode requires
+explicit display ownership. The VIC-IIe service is display class `3`, instance
+`1`; startup is passive and `xinit` performs explicit mode acquisition.
 
 The display service's provisional resident-C request surface is specified in
 the [framebuffer client API](framebuffer.md). It is not yet a compiler-neutral
@@ -42,6 +44,11 @@ or cross-CPU service request ABI.
 The first terminal-policy instance consumes the keyboard FIFO after the input
 service has polled and edits the fixed-focus root console. Its provisional API
 and diagnostics are specified in the [line-editor contract](line-editor.md).
+
+Input class instance `1` reserves control port 1 for a 1351 mouse and control
+port 2 for a joystick, publishing their combined state through the
+[pointer-input contract](pointer-input.md). It polls before input class instance
+`0` scans the shared CIA keyboard matrix.
 
 The static image emits descriptors and a pointer table in assembly so vector
 addresses are linker-resolved without relying on compiler packing. The C

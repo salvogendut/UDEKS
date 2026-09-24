@@ -119,8 +119,10 @@ banked-memory and display operations.
 ## Phase 4 — Secondary execution engine
 
 - [x] Prove the MMU CPU-switch sequence in a minimal assembly spike.
-- [ ] Implement mailbox validation, sequence numbers, and error results.
-- [ ] Implement `NOP`, copy, checksum, and one decompression operation.
+- [x] Implement production mailbox validation, sequence numbers, error results,
+  and a boot-time `NOP` transaction through the bounded Z80 worker.
+- [ ] Implement copy, checksum, and one decompression operation after defining
+  bank-aware buffer leases and measured admission thresholds.
 - [x] Measure handoff cost and define initial per-operation size thresholds.
 - [ ] Add repeated handoff and malformed-request tests.
 - [ ] Confirm behavior on real hardware.
@@ -164,6 +166,14 @@ mailbox corruption, with published benchmark results.
 - [ ] Generalize input routing to arbitrary focused windows.
 - [ ] Implement queued VDC text and bitmap transfers.
 - [ ] Implement VIC text/bitmap surfaces, sprites, and raster service.
+- [x] Add `xinit` with an initial bank-1 VIC-IIe hires surface and centered
+  black X pointer while the VDC console remains active.
+- [x] Reserve control port 1 for a proportional 1351 mouse, reserve control
+  port 2 for a digital joystick, and merge both into a frame-paced pointer.
+- [ ] Build `xclock` as the first graphical application, following the bounded
+  analog-clock design proven in GEOBENCH.
+- [ ] Build `xwave` later as a wireframe function plotter using bounded Z80 sample
+  computation, 8502 VIC-IIe rendering, and VDC-console `Ctrl+C` cancellation.
 - [ ] Support VDC-only, VIC-only, mirrored, and extended desktop modes.
 - [x] Add a polled full-matrix C128 keyboard source with normalized queued
   press/release events.
@@ -179,12 +189,15 @@ mailbox corruption, with published benchmark results.
   console, version, hardware, service, and CPU-role commands.
 - [x] Give shell commands Unix-like `argc`/`argv`, exit status, and standard
   stream descriptors without coupling commands to VDC hardware.
+- [x] Add bounded volatile shell history with Up/Down command recall and draft
+  restoration.
 - [ ] Benchmark equivalent VIC-IIe and VDC graphics primitives, including CPU
   draw cost, transfer cost, display-cycle contention, and perceived latency.
 - [ ] Implement a VIC-IIe graphics service as the preferred interactive-pixel
   candidate while retaining VDC bitmap modes for high-resolution/second-screen
   use.
-- [ ] Add joystick, mouse/paddle, and light-pen event sources.
+- [x] Add fixed-port joystick and proportional 1351 mouse pointer sources.
+- [ ] Add paddle and light-pen event sources.
 - [ ] Demonstrate a two-monitor collaborative application.
 
 **Exit gate:** both displays update independently under task and storage load

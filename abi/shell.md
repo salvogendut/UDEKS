@@ -15,8 +15,10 @@ initial binding for descriptors 1 and 2.
 The parser accepts spaces and tabs as separators. It performs no allocation,
 supports at most eight arguments including the command name, and deliberately
 does not yet implement quoting, escaping, variables, pipelines, redirection,
-history, or completion. Empty lines simply produce a new prompt. Parser limits
-are errors reported on standard error rather than reasons to fail the service.
+or completion. The terminal editor independently retains six volatile command
+lines for Up/Down recall. Empty lines simply produce a new prompt. Parser
+limits are errors reported on standard error rather than reasons to fail the
+service.
 
 The first command registry contains:
 
@@ -29,11 +31,13 @@ The first command registry contains:
 | `lshw` | Report detected video and expansion capabilities. |
 | `lsmod` | Report service-registry startup and poll state. |
 | `lscpu` | Report the honest current CPU roles. |
+| `z80ctl` | Show worker status or run a bounded `NOP` lease with `z80ctl test`. |
+| `xinit` | Initialize the independent VIC-IIe graphics screen; `-q` stops it. |
 
-`lscpu` initially reports the 8502 as the resident executive and the Z80 as
-staged with its worker lease pending. It must not claim a live secondary engine
-until the production mailbox, ownership transfer, and worker validation path
-has completed successfully.
+`lscpu` reports the 8502 as the resident executive and claims a ready bounded
+Z80 worker only after the production mailbox self-test has completed. `z80ctl`
+follows the conventional Unix utility-plus-subcommand shape; it does not expose
+raw MMU or mailbox access to the command layer.
 
 The provisional `SHLL` diagnostic record occupies 24 bytes at `$F170`. It
 contains format/state/error bytes, the command count, last argument count and

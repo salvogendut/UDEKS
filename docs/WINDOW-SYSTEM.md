@@ -70,7 +70,9 @@ meaningful.
 - [ ] Generalize event routing to the focused window after the window registry
   exists.
 - Add focus traversal and explicit focus changes through the window manager.
-- Add joystick, pointer, and light-pen sources without changing client input
+- [x] Add one normalized pointer source backed by a 1351 mouse on control port
+  1 and a digital joystick on control port 2.
+- Add light-pen and future pointer drivers without changing client input
   semantics.
 
 ### 6. Native UDEKS CLI
@@ -82,7 +84,11 @@ meaningful.
   conventions with the root terminal as the first binding.
 - [x] Add `help`, `clear`, `echo`, `uname`, `lshw`, `lsmod`, and `lscpu` as the
   first bash-like command vocabulary.
-- [ ] Add history and completion.
+- [x] Add `z80ctl status|test` without exposing raw mailbox or MMU operations.
+- [x] Add `xinit` to acquire an independent VIC-IIe graphics screen while the
+  VDC root console stays interactive.
+- [x] Add bounded volatile command history with Up/Down recall.
+- [ ] Add completion.
 - Add `devices`, `memory`, and `reboot` after their kernel interfaces exist.
 - Add filesystem, process, and module commands only when their service APIs
   exist.
@@ -93,6 +99,9 @@ meaningful.
 - Preserve focus and stream bindings when a window changes display.
 - Demonstrate concurrent root-console and graphical application activity on
   separate monitors.
+- Use `xclock` as the first bounded graphical application, based on GEOBENCH's
+  analog Clock, then use `xwave` for Z80 sample computation, 8502 plotting,
+  and VDC `Ctrl+C` termination.
 
 ## Constraints
 

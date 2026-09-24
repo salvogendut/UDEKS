@@ -30,7 +30,7 @@ are in `include/udeks/mailbox.h`; no compiler-native structure is normative.
 | `$12` | 2 | result | Operation-defined scalar result |
 | `$14` | 44 | reserved | Must be zero when submitting a request |
 
-## Provisional operations
+## Operations
 
 | Opcode | Name | Arguments | Result |
 |---:|---|---|---|
@@ -39,10 +39,15 @@ are in `include/udeks/mailbox.h`; no compiler-native structure is normative.
 | 2 | `CHECKSUM16` | arg0 source, length byte count | unsigned sum of bytes modulo 65,536 |
 | 3 | `XOR_ROL` | arg0 source, arg1 destination, length byte count | transformed byte count |
 
-`XOR_ROL` writes `ROL8(source[i] XOR $A5)` to each destination byte. These
-operations are provisional benchmark contracts. They become kernel ABI only
-when this document reaches ABI 1.0; their current purpose is to measure
-end-to-end delegation thresholds with independently verifiable results.
+`NOP` is implemented by the resident production worker and is used for boot
+self-test and explicit lease testing. `COPY`, `CHECKSUM16`, and `XOR_ROL`
+remain benchmark-only contracts; submitting them to the production worker
+returns `ERROR` with status `4` until their buffer-ownership rules are defined.
+`XOR_ROL` writes `ROL8(source[i] XOR $A5)` to each destination byte.
+
+Worker status values are zero for success, `1` for bad magic, `2` for an
+unsupported ABI, `3` for an invalid state, `4` for an unsupported opcode, and
+`5` for nonzero reserved bytes.
 
 ## Publication protocol
 
@@ -58,6 +63,11 @@ The secondary CPU must always return ownership within the operation's
 documented maximum budget. A hardware-independent timeout cannot rescue the
 executive while the secondary CPU owns the bus, so secondary-engine code is
 part of the trusted kernel.
+
+The production requester additionally clears offsets `$0A-$3F` before filling
+each request and validates the response state, worker status, and unchanged
+sequence after ownership returns. The first working implementation is
+specified by the [Z80 worker service contract](z80-worker.md).
 
 ADR 0002 establishes the 8502 executive as the normal requester and the Z80 as
 the worker. ABI 0.1 continues to exercise both directions for diagnostics, but

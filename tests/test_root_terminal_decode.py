@@ -18,6 +18,7 @@ def valid_record():
     block[5] = 2
     block[7] = 54
     block[12:14] = (100).to_bytes(2, "little")
+    block[27] = 0xFF
     return block
 
 
@@ -45,6 +46,23 @@ class RootTerminalDecodeTests(unittest.TestCase):
         block[8] = 2
         block[9] = 3
         with self.assertRaisesRegex(ValueError, "out of bounds"):
+            parse_result(block)
+
+    def test_accepts_bounded_history_diagnostics(self):
+        block = valid_record()
+        block[26] = 3
+        block[27] = 1
+        block[28:30] = (5).to_bytes(2, "little")
+        result = parse_result(block)
+        self.assertEqual(result["history_count"], 3)
+        self.assertEqual(result["history_position"], 1)
+        self.assertEqual(result["history_recalls"], 5)
+
+    def test_rejects_history_position_beyond_entries(self):
+        block = valid_record()
+        block[26] = 2
+        block[27] = 2
+        with self.assertRaisesRegex(ValueError, "history position"):
             parse_result(block)
 
 

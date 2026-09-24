@@ -9,9 +9,16 @@ focus with a terminal handle without changing the keyboard event source.
 The editor stores at most 54 printable ASCII bytes, reserving the final screen
 cell for its visible cursor. It supports insertion at the cursor, destructive
 Backspace to the left, Home, the standard shifted/unshifted horizontal cursor
-key, the C128 dedicated left/right keys, and Return. Unsupported non-text keys
-are ignored. There is no history, completion, typematic repeat, layout policy,
-or command dispatch yet.
+key, the C128 dedicated left/right keys, and Return. Up recalls older commands;
+Down moves toward newer commands and restores the draft that existed before
+history browsing began. Both the dedicated C128 cursor keys and the shifted
+standard cursor-key forms are accepted. Unsupported non-text keys are ignored.
+There is no completion, typematic repeat, or layout policy yet.
+
+History holds the six most recent non-empty submitted lines in RAM. Adjacent
+duplicates are stored once. When full, the oldest entry is discarded. Editing
+a recalled line does not mutate its stored entry, and history does not persist
+across reboot.
 
 Return retains a NUL-terminated submitted line for the next command consumer,
 clears the active edit buffer, advances the retained console, and emits a new
@@ -44,4 +51,7 @@ The service publishes a 32-byte `RCLI` record at `$F150`:
 | 21–22 | 2 | Last submitted unsigned byte sum, little-endian |
 | 23 | 1 | Unconsumed submissions overwritten |
 | 24–25 | 2 | Completed framebuffer refreshes, little-endian |
-| 26–31 | 6 | Reserved |
+| 26 | 1 | Stored history entries (`0`–`6`) |
+| 27 | 1 | Browsed history index, or `$FF` when editing the current draft |
+| 28–29 | 2 | Successful history recalls, little-endian |
+| 30–31 | 2 | Reserved |

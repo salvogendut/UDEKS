@@ -45,6 +45,9 @@ class KeyboardSourceTests(unittest.TestCase):
             source,
         )
         self.assertIn("KEYBOARD_FLAG_DEBOUNCED", source)
+        self.assertGreaterEqual(
+            source.count("udeks_pointer_keyboard_allowed()"), 2
+        )
 
 
 if __name__ == "__main__":
