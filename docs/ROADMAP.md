@@ -105,7 +105,10 @@ display corruption.
 - [ ] Add cooperative scheduling, then timer-driven preemption.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
-  startup lifecycle; poll, stop, and dynamic loading remain future work.
+  startup lifecycle.
+- [x] Invoke resident service poll vectors cooperatively and report failures
+  through the service-registry panic path; scheduler cadence, stop, and dynamic
+  loading remain future work.
 - [ ] Move console, graphics, storage, and filesystem policy into C service
   modules with no private microkernel dependencies.
 - [ ] Add host tests for scheduler and queue policy.
@@ -156,7 +159,9 @@ mailbox corruption, with published benchmark results.
 - [ ] Implement queued VDC text and bitmap transfers.
 - [ ] Implement VIC text/bitmap surfaces, sprites, and raster service.
 - [ ] Support VDC-only, VIC-only, mirrored, and extended desktop modes.
-- [ ] Add keyboard, joystick, mouse/paddle, and light-pen event sources.
+- [x] Add a polled full-matrix C128 keyboard source with normalized queued
+  press/release events.
+- [ ] Add joystick, mouse/paddle, and light-pen event sources.
 - [ ] Demonstrate a two-monitor collaborative application.
 
 **Exit gate:** both displays update independently under task and storage load

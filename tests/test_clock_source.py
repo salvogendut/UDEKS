@@ -16,7 +16,7 @@ class ClockSourceTests(unittest.TestCase):
         self.assertLess(capability, clock)
         self.assertLess(clock, console)
         self.assertLess(console, framebuffer)
-        self.assertIn(".byte $04", table)
+        self.assertIn(".byte $05", table)
 
     def test_transition_blanks_vic_and_selects_fast_clock(self):
         source = (ROOT / "src/8502/clock.s").read_text(encoding="utf-8")

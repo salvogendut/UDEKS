@@ -23,6 +23,16 @@ class ServiceRegistryDecodeTests(unittest.TestCase):
         self.assertEqual(result["started"], 1)
         self.assertEqual(result["last_class"], 1)
         self.assertEqual(result["last_flags"], 3)
+        self.assertEqual(result["poll_passes"], 0)
+        self.assertEqual(result["polled_services"], 0)
+
+    def test_reports_poll_diagnostics(self):
+        block = valid_record()
+        block[18:20] = b"\x34\x12"
+        block[23] = 1
+        result = parse_result(block)
+        self.assertEqual(result["poll_passes"], 0x1234)
+        self.assertEqual(result["polled_services"], 1)
 
     def test_reports_registry_failure(self):
         block = valid_record()

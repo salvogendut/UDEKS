@@ -74,7 +74,9 @@ The common area is partitioned conservatively:
 | `$F0C0-$F0DF` | Hardware-capability diagnostics |
 | `$F0E0-$F0FF` | VDC framebuffer diagnostics |
 | `$F100-$F10F` | 8502 clock-policy diagnostics |
-| `$F110-$F7FF` | Future queues, job descriptors, and shared transfer metadata |
+| `$F110-$F11F` | Reserved diagnostic alignment gap |
+| `$F120-$F14F` | C128 keyboard diagnostics |
+| `$F150-$F7FF` | Future queues, job descriptors, and shared transfer metadata |
 | `$F800-$FEFF` | 8502/Z80 gateway code and common kernel mechanisms |
 | `$FF00-$FF04` | Permanent MMU register hole; never RAM or code |
 | `$FF05-$FFCF` | Common gateway state/code, to be allocated explicitly |

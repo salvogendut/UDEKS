@@ -16,8 +16,10 @@ class PanicBoundaryTests(unittest.TestCase):
 
     def test_kernel_escalates_registry_failure(self):
         source = (ROOT / "src/8502/kernel.c").read_text(encoding="utf-8")
-        self.assertIn("startup_result = udeks_service_start_all()", source)
-        self.assertIn("udeks_panic(", source)
+        self.assertIn("udeks_service_start_all()", source)
+        self.assertIn("UDEKS_PANIC_SERVICE_START_BASE", source)
+        self.assertIn("udeks_service_poll_all()", source)
+        self.assertIn("UDEKS_PANIC_SERVICE_POLL_BASE", source)
 
     def test_probe_corrupts_only_descriptor_magic_at_source_level(self):
         source = (ROOT / "src/services/console/descriptor.s").read_text(

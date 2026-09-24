@@ -189,6 +189,10 @@ $(BUILD_8502)/boot_console.s: src/services/window/boot_console.c \
 		include/udeks/root_console.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/keyboard.s: src/services/input/keyboard.c \
+		include/udeks/keyboard.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/framebuffer_font.s: src/services/framebuffer/font.c \
 		include/udeks/font.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
@@ -211,6 +215,9 @@ $(BUILD_8502)/root_console.o: $(BUILD_8502)/root_console.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/boot_console.o: $(BUILD_8502)/boot_console.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/keyboard.o: $(BUILD_8502)/keyboard.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/framebuffer_font.o: $(BUILD_8502)/framebuffer_font.s | $(BUILD_8502)
@@ -243,6 +250,9 @@ $(BUILD_8502)/console_descriptor_fault.o: src/services/console/descriptor.s | $(
 $(BUILD_8502)/framebuffer_descriptor.o: src/services/framebuffer/descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/keyboard_descriptor.o: src/services/input/descriptor.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/vdc_splash.o: src/assets/vdc_splash.s $(VDC_SPLASH_BIN) \
 		$(VDC_WORDMARK_BIN) | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
@@ -262,7 +272,11 @@ $(BUILD_8502)/panic.o: src/8502/panic.s | $(BUILD_8502)
 $(BUILD_8502)/probe.o: src/8502/probe.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/keyboard_scan.o: src/8502/keyboard_scan.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
+		$(BUILD_8502)/keyboard_scan.o \
 		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o $(BUILD_8502)/clock.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o \
@@ -270,25 +284,28 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/clock_descriptor.o \
 		$(BUILD_8502)/console_descriptor.o \
 		$(BUILD_8502)/framebuffer_descriptor.o \
+		$(BUILD_8502)/keyboard_descriptor.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/vdc_console.o \
 		$(BUILD_8502)/vdc_framebuffer.o $(BUILD_8502)/framebuffer_font.o \
 		$(BUILD_8502)/framebuffer_surface.o $(BUILD_8502)/root_console.o \
-		$(BUILD_8502)/boot_console.o \
+		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/vdc_splash.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $@ $(filter %.o,$^)
 
 $(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
+		$(BUILD_8502)/keyboard_scan.o \
 		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o $(BUILD_8502)/clock.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o $(BUILD_8502)/capability_descriptor.o \
 		$(BUILD_8502)/clock_descriptor.o \
 		$(BUILD_8502)/console_descriptor_fault.o \
 		$(BUILD_8502)/framebuffer_descriptor.o \
+		$(BUILD_8502)/keyboard_descriptor.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/vdc_console.o \
 		$(BUILD_8502)/vdc_framebuffer.o $(BUILD_8502)/framebuffer_font.o \
 		$(BUILD_8502)/framebuffer_surface.o $(BUILD_8502)/root_console.o \
-		$(BUILD_8502)/boot_console.o \
+		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/vdc_splash.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 -C cfg/8502-bootstrap.cfg \
@@ -652,6 +669,7 @@ check:
 		tools/vdc_console_decode.py tools/service_registry_decode.py \
 		tools/panic_decode.py tools/capability_decode.py \
 		tools/framebuffer_decode.py tools/clock_decode.py tools/xpm_to_vdc.py \
+		tools/keyboard_decode.py \
 		tools/build_d71.py \
 		tools/snapshot_extract.py \
 		tools/vice_capture.py

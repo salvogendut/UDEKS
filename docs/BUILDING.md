@@ -68,9 +68,10 @@ VDC revision and RAM tier, and expansion presence for later service policy.
 artwork into row-major, MSB-first scanlines under `build/assets/`; the target
 kernel will consume those bytes without carrying an image decoder.
 
-The current production image starts four services in order: hardware
+The current production image starts five services in order: hardware
 capability discovery, the VDC-only 2 MHz machine-clock transition, the
-qualified text-mode fallback, and the baseline VDC framebuffer. Capability
+qualified text-mode fallback, the baseline VDC framebuffer, and the polled
+keyboard input source. Capability
 discovery finishes its VIC raster probe first; the clock service then blanks
 the VIC display and verifies `$D030` before either display service starts. The
 framebuffer takes final display ownership, enters 640x200
@@ -87,7 +88,9 @@ console window described in `docs/WINDOW-SYSTEM.md`.
 The retained model now implements the provisional
 [terminal API](../abi/terminal.md): sequential output, control characters,
 wrapping, scrolling, cursor damage, and row-damaged framebuffer refresh. It
-does not yet scan the keyboard or provide an editable command line.
+is paired with the complete 11-column polled
+[C128 keyboard service](../abi/keyboard.md), including normalized press/release
+events and a bounded FIFO. An editable command line is not implemented yet.
 
 The framebuffer owns a 16,000-byte system-RAM backing surface. Client changes
 are clipped, accumulated as byte spans per scanline, copied through the bounded

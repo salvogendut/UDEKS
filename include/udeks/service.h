@@ -27,6 +27,7 @@
 #define UDEKS_SERVICE_CLASS_CAPABILITY   2u
 #define UDEKS_SERVICE_CLASS_DISPLAY      3u
 #define UDEKS_SERVICE_CLASS_MACHINE      4u
+#define UDEKS_SERVICE_CLASS_INPUT        5u
 
 #define UDEKS_SERVICE_FLAG_RESIDENT      0x01u
 #define UDEKS_SERVICE_FLAG_CRITICAL      0x02u
@@ -38,5 +39,6 @@
 #define UDEKS_SERVICE_STATE_ERROR        0x80u
 
 unsigned char udeks_service_start_all(void);
+unsigned char udeks_service_poll_all(void);
 
 #endif

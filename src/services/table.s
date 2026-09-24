@@ -8,6 +8,7 @@
         .import _udeks_clock_service_descriptor
         .import _udeks_console_service_descriptor
         .import _udeks_framebuffer_service_descriptor
+        .import _udeks_keyboard_service_descriptor
         .export _udeks_service_table
         .export _udeks_service_count
 
@@ -17,5 +18,6 @@ _udeks_service_table:
         .addr _udeks_clock_service_descriptor
         .addr _udeks_console_service_descriptor
         .addr _udeks_framebuffer_service_descriptor
+        .addr _udeks_keyboard_service_descriptor
 _udeks_service_count:
-        .byte $04
+        .byte $05

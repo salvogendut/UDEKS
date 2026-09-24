@@ -11,6 +11,7 @@
 #define REGISTRY_ERROR_CLASS          5u
 #define REGISTRY_ERROR_START_VECTOR   6u
 #define REGISTRY_ERROR_START_FAILED   7u
+#define REGISTRY_ERROR_POLL_FAILED    8u
 
 typedef unsigned char (*service_entry)(void);
 
@@ -28,6 +29,7 @@ static const unsigned char *descriptor;
 static unsigned char service_index;
 static unsigned char table_offset;
 static unsigned char start_result;
+static unsigned char poll_invoked;
 
 static void registry_status_begin(void)
 {
@@ -121,5 +123,41 @@ unsigned char udeks_service_start_all(void)
     }
 
     STATUS_BYTE(5) = UDEKS_SERVICE_STATE_READY;
+    return 0;
+}
+
+unsigned char udeks_service_poll_all(void)
+{
+    unsigned char poll_result;
+
+    table_offset = 0;
+    poll_invoked = 0;
+    for (service_index = 0; service_index < udeks_service_count; ++service_index) {
+        service_pointer.byte[0] = udeks_service_table[table_offset];
+        ++table_offset;
+        service_pointer.byte[1] = udeks_service_table[table_offset];
+        ++table_offset;
+        descriptor = service_pointer.data;
+        if (descriptor[UDEKS_SERVICE_POLL_LO] == 0 &&
+            descriptor[UDEKS_SERVICE_POLL_HI] == 0) {
+            continue;
+        }
+        service_pointer.byte[0] = descriptor[UDEKS_SERVICE_POLL_LO];
+        service_pointer.byte[1] = descriptor[UDEKS_SERVICE_POLL_HI];
+        poll_result = service_pointer.entry();
+        ++poll_invoked;
+        if (poll_result != 0) {
+            STATUS_BYTE(23) = poll_invoked;
+            STATUS_BYTE(20) = service_index;
+            STATUS_BYTE(21) = poll_result;
+            ++STATUS_BYTE(22);
+            return registry_fail(REGISTRY_ERROR_POLL_FAILED);
+        }
+    }
+    ++STATUS_BYTE(18);
+    if (STATUS_BYTE(18) == 0) {
+        ++STATUS_BYTE(19);
+    }
+    STATUS_BYTE(23) = poll_invoked;
     return 0;
 }

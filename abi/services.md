@@ -27,12 +27,11 @@ The initial flags are:
 - bit 1: critical to system bring-up.
 
 Initial service classes are console (`1`), hardware capability discovery (`2`),
-display (`3`), and machine policy (`4`). Capability discovery precedes the
-machine-clock transition so PAL/NTSC probing can use the VIC raster. The clock
-service then blanks the VIC and verifies 2 MHz operation before the console;
-the first framebuffer display instance temporarily follows the qualified text
-console. The next display milestone makes that console a framebuffer client
-instead of a separate VDC owner.
+display (`3`), machine policy (`4`), and input (`5`). Capability discovery
+precedes the machine-clock transition so PAL/NTSC probing can use the VIC
+raster. The clock service then blanks the VIC and verifies 2 MHz operation
+before either display service starts. The framebuffer becomes the final VDC
+owner and renders the retained root terminal as a client.
 
 The display service's provisional resident-C request surface is specified in
 the [framebuffer client API](framebuffer.md). It is not yet a compiler-neutral
@@ -63,13 +62,18 @@ The registry publishes this 24-byte `SREG` diagnostic record at `$F090`:
 | 15 | 1 | Last descriptor size |
 | 16 | 1 | Last service flags |
 | 17 | 1 | Static table count |
-| 18 | 6 | Reserved; zero |
+| 18–19 | 2 | Completed poll passes, little-endian |
+| 20 | 1 | Index of the last service whose poll failed |
+| 21 | 1 | Last nonzero poll result |
+| 22 | 1 | Poll failures |
+| 23 | 1 | Poll vectors invoked during the latest completed or failed pass |
 
 Failure codes distinguish an empty table, invalid magic/version/size/class,
 a missing start vector, and a start function that returned an error. The
 decoder intentionally rejects inconsistent table, discovery, and started
 counts even when the state byte says ready.
 
-ABI 0.1 defines startup only. Poll and stop slots are reserved so lifecycle
-growth does not change descriptor size; scheduling and unload semantics remain
-provisional.
+ABI 0.1 now invokes nonzero poll vectors cooperatively after all services have
+started. A poll uses the same no-argument, eight-bit-result convention as
+startup; a nonzero result fails the registry and enters the panic path. Stop
+vectors, scheduling cadence, and unload semantics remain provisional.

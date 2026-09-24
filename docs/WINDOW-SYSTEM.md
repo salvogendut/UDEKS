@@ -55,8 +55,8 @@ meaningful.
 
 ### 5. Input and focus
 
-- Implement the C128 keyboard event source, first polled and then queue-driven.
-- Route normalized key events to the focused window.
+- [x] Implement a complete polled C128 keyboard event source and bounded FIFO.
+- [ ] Route normalized key events to the focused window.
 - Add focus traversal and explicit focus changes through the window manager.
 - Add joystick, pointer, and light-pen sources without changing client input
   semantics.

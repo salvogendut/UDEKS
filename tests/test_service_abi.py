@@ -22,6 +22,7 @@ class ServiceAbiTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("udeks_service_start_all()", kernel)
+        self.assertIn("udeks_service_poll_all()", kernel)
         self.assertNotIn("console", kernel.lower())
         self.assertNotIn("console", registry.lower())
 

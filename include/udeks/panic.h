@@ -9,6 +9,7 @@
 #define UDEKS_PANIC_STATE_PUBLISHED      2u
 
 #define UDEKS_PANIC_SERVICE_START_BASE   0x20u
+#define UDEKS_PANIC_SERVICE_POLL_BASE    0x40u
 
 void UDEKS_FASTCALL udeks_panic(unsigned char code);
 

@@ -59,6 +59,11 @@ def parse_result(data: bytes) -> dict[str, int]:
         "descriptor_size": block[15],
         "last_flags": block[16],
         "table_count": block[17],
+        "poll_passes": block[18] | (block[19] << 8),
+        "poll_failed_index": block[20],
+        "last_poll_result": block[21],
+        "poll_failures": block[22],
+        "polled_services": block[23],
     }
 
 
@@ -84,6 +89,10 @@ def main() -> None:
         "Service registry: ready "
         f"({result['started']}/{result['table_count']} services, "
         f"ABI {result['abi_major']}.{result['abi_minor']})"
+    )
+    print(
+        f"Polling: {result['poll_passes']} passes; "
+        f"{result['polled_services']} vectors in latest pass"
     )
 
 
