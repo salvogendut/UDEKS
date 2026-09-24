@@ -72,7 +72,10 @@ a material contradiction.
   assembly transport, qualified in VICE and `1986`.
 - [x] Add a stack-independent assembly panic screen and emulator-visible
   diagnostic record, including a fault-injected service-startup test image.
-- [ ] Detect PAL/NTSC, model, VDC RAM size, and optional memory expansions.
+- [x] Detect PAL/NTSC, VDC revision/family, 16/64 KiB VDC RAM, and REU/GeoRAM
+  presence without treating an upgradable hardware feature as a chassis ID.
+- [ ] Add physical-model configuration and expansion-capacity discovery after
+  the resource allocator can grant destructive-test ownership.
 - [x] Produce the first bootable D71 image.
 
 **Exit gate:** a stock configuration boots to the same diagnostic console in
@@ -125,6 +128,10 @@ mailbox corruption, with published benchmark results.
 ## Phase 5 — Dual-display and input system
 
 - [ ] Define display surface and mode APIs.
+- [ ] Implement the capability-tiered VDC framebuffer/compositor described in
+  `docs/VDC-FRAMEBUFFER.md`.
+- [ ] Convert the 160x160 project artwork at build time and use it as the first
+  framebuffer-backed boot splash, with a text-console fallback.
 - [ ] Implement queued VDC text and bitmap transfers.
 - [ ] Implement VIC text/bitmap surfaces, sprites, and raster service.
 - [ ] Support VDC-only, VIC-only, mirrored, and extended desktop modes.

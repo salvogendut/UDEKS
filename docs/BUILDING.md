@@ -60,6 +60,10 @@ descriptor deliberately has invalid magic so the complete registry-to-panic
 path can be tested. See the [panic-path contract](PANIC.md); never use this
 fixture as a normal system disk.
 
+The production boot image starts hardware capability discovery before the VDC
+console. Its [capability contract](HARDWARE-CAPABILITIES.md) records PAL/NTSC,
+VDC revision and RAM tier, and expansion presence for later service policy.
+
 The resident 8502 image links the small subset of cc65's `none` runtime needed
 by its C services. Startup initializes cc65's downward-growing software stack
 at `$EFF0`; the 6502 hardware stack remains on physical bank-0 page one. The

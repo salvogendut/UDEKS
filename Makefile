@@ -152,6 +152,10 @@ $(BUILD_8502)/service_registry.s: src/kernel/service_registry.c \
 		include/udeks/service.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/hardware_capability.s: src/services/capability/hardware.c \
+		include/udeks/capability.h include/udeks/vdc.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/vdc_console.s: src/services/console/vdc_console.c \
 		include/udeks/compiler.h include/udeks/console.h include/udeks/vdc.h \
 		| $(BUILD_8502)
@@ -164,6 +168,12 @@ $(BUILD_8502)/vdc_console.o: $(BUILD_8502)/vdc_console.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/service_registry.o: $(BUILD_8502)/service_registry.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/hardware_capability.o: $(BUILD_8502)/hardware_capability.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/capability_descriptor.o: src/services/capability/descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/console_descriptor.o: src/services/console/descriptor.s | $(BUILD_8502)
@@ -184,20 +194,26 @@ $(BUILD_8502)/vdc.o: src/8502/vdc.s | $(BUILD_8502)
 $(BUILD_8502)/panic.o: src/8502/panic.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/probe.o: src/8502/probe.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
-		$(BUILD_8502)/panic.o \
+		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
-		$(BUILD_8502)/service_table.o $(BUILD_8502)/console_descriptor.o \
-		$(BUILD_8502)/vdc_console.o \
+		$(BUILD_8502)/service_table.o \
+		$(BUILD_8502)/capability_descriptor.o \
+		$(BUILD_8502)/console_descriptor.o \
+		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/vdc_console.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $@ $(filter %.o,$^)
 
 $(PANIC_PROBE_KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
-		$(BUILD_8502)/panic.o \
+		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
-		$(BUILD_8502)/service_table.o \
+		$(BUILD_8502)/service_table.o $(BUILD_8502)/capability_descriptor.o \
 		$(BUILD_8502)/console_descriptor_fault.o \
-		$(BUILD_8502)/vdc_console.o cfg/8502-bootstrap.cfg
+		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/vdc_console.o \
+		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 -C cfg/8502-bootstrap.cfg \
 		-m $(BUILD_8502)/udeks-8502-panic-probe.map -o $@ \
 		$(filter %.o,$^)
@@ -557,7 +573,8 @@ check:
 		tools/offload_decode.py tools/boot_status_decode.py \
 		tools/memory_map_decode.py tools/boot_chain_decode.py \
 		tools/vdc_console_decode.py tools/service_registry_decode.py \
-		tools/panic_decode.py tools/build_d71.py \
+		tools/panic_decode.py tools/capability_decode.py \
+		tools/build_d71.py \
 		tools/snapshot_extract.py \
 		tools/vice_capture.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
@@ -579,6 +596,8 @@ check:
 	cd bench/results/2026-09-24-service-registry/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-panic-r1 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-panic/raw && sha256sum -c SHA256SUMS
+	cd bench/artifacts/2026-09-24-capabilities-r1 && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-24-capabilities/raw && sha256sum -c SHA256SUMS
 
 doctor:
 	@missing=0; \

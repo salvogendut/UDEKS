@@ -26,6 +26,10 @@ The initial flags are:
 - bit 0: resident for the lifetime of the kernel;
 - bit 1: critical to system bring-up.
 
+Initial service classes are console (`1`) and hardware capability discovery
+(`2`). The capability service precedes the console in the static image because
+later display policy depends on its measured VDC memory tier.
+
 The static image emits descriptors and a pointer table in assembly so vector
 addresses are linker-resolved without relying on compiler packing. The C
 registry validates every descriptor before invoking it. Future disk-loaded

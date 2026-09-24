@@ -109,6 +109,17 @@ The VDC is the default system console and desktop. The VIC-IIe is not merely a
 fallback: it can host a secondary console, preview, status surface, collaborative
 view, or sprite-oriented application.
 
+The VDC graphics service exposes a 640×200 one-bit framebuffer surface and
+software text composition. On 16 KiB VDCs the front buffer is paired with a
+banked system-RAM backing surface and dirty uploads; 64 KiB VDCs may add an
+attribute plane and VDC-resident staging or back buffers. The detailed proposal
+is in [VDC-FRAMEBUFFER.md](VDC-FRAMEBUFFER.md).
+
+The first framebuffer integration is a centred boot splash generated at build
+time from the source artwork in `assets/`. It doubles as a visual test of mode
+entry, clipping, packed scanline upload, and clean ownership transfer to the
+console; text-only boot remains the failure fallback.
+
 The display server must support VDC-only, VIC-only, mirrored, extended, and
 application-owned secondary modes. Full-time 2 MHz 8502 operation and an active
 VIC display are competing requirements; mode policy must expose that tradeoff.

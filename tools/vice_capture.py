@@ -181,6 +181,7 @@ def capture(args: argparse.Namespace) -> None:
         "-moncommands",
         str(commands_path),
     ]
+    command.extend(args.vice_arg)
     if args.native_disk:
         command.extend(("-8", str(launch_program)))
     else:
@@ -316,6 +317,12 @@ def main() -> None:
         help="attach a C128 native-autoboot disk instead of autostarting a PRG",
     )
     parser.add_argument("--timeout", type=float, default=20.0)
+    parser.add_argument(
+        "--vice-arg",
+        action="append",
+        default=[],
+        help="append one raw VICE option (use --vice-arg=-option)",
+    )
     parser.add_argument(
         "--capture-incomplete",
         action="store_true",

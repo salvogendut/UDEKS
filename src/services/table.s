@@ -4,12 +4,14 @@
 ; into the registry without changing its validation or lifecycle semantics.
 
         .setcpu "6502"
+        .import _udeks_capability_service_descriptor
         .import _udeks_console_service_descriptor
         .export _udeks_service_table
         .export _udeks_service_count
 
         .segment "RODATA"
 _udeks_service_table:
+        .addr _udeks_capability_service_descriptor
         .addr _udeks_console_service_descriptor
 _udeks_service_count:
-        .byte $01
+        .byte $02
