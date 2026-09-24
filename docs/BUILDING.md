@@ -37,6 +37,7 @@ make z80        # build build/z80/udeks-z80.bin through SDCC
 make z80-asm    # build the independent RASM smoke image
 make boot       # build build/boot/udeks.d71 for native C128 autoboot
 make panic-probe  # build a non-release D71 that injects descriptor failure
+make framebuffer-assets  # pack the 160x160 XPM as a 3,200-byte VDC bitmap
 make bench      # build comparable 8502 and Z80 benchmark payloads
 make bench-irq  # build both CIA interrupt-entry probes
 make bench-irq-service  # build the three-path interrupt-service suite
@@ -63,11 +64,14 @@ fixture as a normal system disk.
 The production boot image starts hardware capability discovery before the VDC
 console. Its [capability contract](HARDWARE-CAPABILITIES.md) records PAL/NTSC,
 VDC revision and RAM tier, and expansion presence for later service policy.
+`make framebuffer-assets` deterministically converts the two-colour project
+artwork into row-major, MSB-first scanlines under `build/assets/`; the target
+kernel will consume those bytes without carrying an image decoder.
 
 The resident 8502 image links the small subset of cc65's `none` runtime needed
 by its C services. Startup initializes cc65's downward-growing software stack
 at `$EFF0`; the 6502 hardware stack remains on physical bank-0 page one. The
-first service is the [VDC console](VDC-CONSOLE.md), with bounded assembly port
+first display service is the [VDC console](VDC-CONSOLE.md), with bounded assembly port
 access and C display policy. It is discovered and started through the
 [service-module ABI](../abi/services.md); the kernel calls the generic registry,
 not a console-specific symbol.

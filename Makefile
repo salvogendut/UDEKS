@@ -24,6 +24,7 @@ BUILD_OFFLOAD_8502 := $(BUILD_DIR)/bench/offload/8502
 BUILD_OFFLOAD_Z80 := $(BUILD_DIR)/bench/offload/z80
 BUILD_MEMORY_MAP := $(BUILD_DIR)/bench/memory-map
 BUILD_BOOT := $(BUILD_DIR)/boot
+BUILD_ASSETS := $(BUILD_DIR)/assets
 
 KERNEL_BIN := $(BUILD_8502)/udeks-8502.bin
 KERNEL_PRG := $(BUILD_8502)/udeks-8502.prg
@@ -79,19 +80,22 @@ STAGE1_GATEWAY_BIN := $(BUILD_BOOT)/stage1-gateway.bin
 STAGE1_BIN := $(BUILD_BOOT)/stage1.bin
 BOOT_D71 := $(BUILD_BOOT)/udeks.d71
 PANIC_PROBE_D71 := $(BUILD_BOOT)/udeks-panic-probe.d71
+VDC_SPLASH_BIN := $(BUILD_ASSETS)/udeksdroid-160.vdc
 
 .PHONY: all 8502 z80 z80-asm bench bench-8502 bench-z80 bench-irq \
 	bench-irq-8502 bench-irq-z80 bench-irq-service \
 	bench-irq-service-8502 bench-irq-service-z80 bench-context \
 	bench-context-8502 bench-context-z80 bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
-	boot panic-probe check doctor clean help
+	boot panic-probe framebuffer-assets check doctor clean help
 
 all: 8502 z80 z80-asm
 
 boot: $(BOOT_D71)
 
 panic-probe: $(PANIC_PROBE_D71)
+
+framebuffer-assets: $(VDC_SPLASH_BIN)
 
 8502: $(KERNEL_BIN) $(KERNEL_PRG)
 
@@ -140,8 +144,11 @@ $(BUILD_8502) $(BUILD_Z80) $(BUILD_BENCH_8502) $(BUILD_BENCH_Z80) \
 		$(BUILD_IRQ_SERVICE_Z80) $(BUILD_CONTEXT_8502) $(BUILD_CONTEXT_Z80) \
 		$(BUILD_KERNEL_8502) $(BUILD_KERNEL_Z80) $(BUILD_HANDOFF_8502) \
 		$(BUILD_HANDOFF_Z80) $(BUILD_OFFLOAD_8502) $(BUILD_OFFLOAD_Z80) \
-		$(BUILD_MEMORY_MAP) $(BUILD_BOOT):
+		$(BUILD_MEMORY_MAP) $(BUILD_BOOT) $(BUILD_ASSETS):
 	mkdir -p $@
+
+$(VDC_SPLASH_BIN): assets/udeksdroid-160.xpm tools/xpm_to_vdc.py | $(BUILD_ASSETS)
+	$(PYTHON) tools/xpm_to_vdc.py $< $@
 
 $(BUILD_8502)/kernel.s: src/8502/kernel.c include/udeks/mailbox.h \
 		include/udeks/memory.h include/udeks/panic.h include/udeks/compiler.h \
@@ -574,6 +581,7 @@ check:
 		tools/memory_map_decode.py tools/boot_chain_decode.py \
 		tools/vdc_console_decode.py tools/service_registry_decode.py \
 		tools/panic_decode.py tools/capability_decode.py \
+		tools/xpm_to_vdc.py \
 		tools/build_d71.py \
 		tools/snapshot_extract.py \
 		tools/vice_capture.py
@@ -625,6 +633,7 @@ help:
 		'make z80-asm    Build the standalone RASM smoke image' \
 		'make boot       Build the native autoboot D71 image' \
 		'make panic-probe  Build the bad-descriptor panic qualification D71' \
+		'make framebuffer-assets  Pack the VDC boot-splash source artwork' \
 		'make bench      Build comparable 8502 and Z80 benchmark images' \
 		'make bench-8502 Build only the 8502 benchmark image' \
 		'make bench-z80  Build only the Z80 benchmark image' \

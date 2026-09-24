@@ -8,4 +8,5 @@ are prepared source variants for constrained targets:
 
 Target-specific packed bitmaps are generated during the build and must not
 replace these source assets. The C128 kernel does not decode PNG or XPM files
-at runtime.
+at runtime. Run `make framebuffer-assets` to generate the row-major, MSB-first
+VDC bitmap under `build/assets/`.

@@ -59,6 +59,13 @@ interface, and then transfer ownership to the console. No PNG decoder belongs
 in the kernel. If bitmap-mode entry fails, boot continues with the existing VDC
 text console and its diagnostic record.
 
+The second client will install a software-defined 8x8 font and render a hardware
+inventory beside or after the splash. It reads the published `HCAP` record; it
+must not touch probe registers itself. The first screen reports PAL/NTSC, VDC
+family and memory, and REU/GeoRAM presence. This makes glyph rendering,
+text-over-bitmap composition, clipping, dirty-span flushing, and cross-service
+data consumption part of the same visible qualification.
+
 ## VDC operating rules
 
 Experience from existing C128 software suggests several rules that should be

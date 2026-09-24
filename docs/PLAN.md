@@ -120,6 +120,11 @@ time from the source artwork in `assets/`. It doubles as a visual test of mode
 entry, clipping, packed scanline upload, and clean ownership transfer to the
 console; text-only boot remains the failure fallback.
 
+After the splash, a software-defined font renders the capability service's
+published hardware inventory. Display code consumes `HCAP` and never repeats
+hardware probes, keeping discovery policy in one service while proving
+text-over-graphics composition.
+
 The display server must support VDC-only, VIC-only, mirrored, extended, and
 application-owned secondary modes. Full-time 2 MHz 8502 operation and an active
 VIC display are competing requirements; mode policy must expose that tradeoff.
