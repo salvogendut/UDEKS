@@ -57,6 +57,13 @@ def graphics_api_record() -> bytearray:
     return block
 
 
+def reference_boot_record() -> bytearray:
+    block = graphics_api_record()
+    block[4] = 6
+    block[27] = 17
+    return block
+
+
 class FramebufferDecodeTests(unittest.TestCase):
     def test_accepts_verified_splash(self):
         result = parse_result(valid_record())
@@ -90,6 +97,11 @@ class FramebufferDecodeTests(unittest.TestCase):
         result = parse_result(graphics_api_record())
         self.assertEqual(result["format"], 5)
         self.assertEqual(result["api_flags"], 0x1F)
+
+    def test_accepts_reference_boot_console(self):
+        result = parse_result(reference_boot_record())
+        self.assertEqual(result["format"], 6)
+        self.assertEqual(result["text_lines"], 17)
 
     def test_reports_service_failure(self):
         block = valid_record()
@@ -143,6 +155,15 @@ class FramebufferDecodeTests(unittest.TestCase):
                 result = parse_result((result_root / name).read_bytes())
                 self.assertEqual(result["format"], 5)
                 self.assertEqual(result["api_flags"], 0x1F)
+
+    def test_preserved_reference_bootscreen_records_pass(self):
+        result_root = ROOT / "bench/results/2026-09-24-reference-bootscreen/raw"
+        names = ("vice-64.bin", "vice-16.bin", "1986-64.bin", "1986-16.bin")
+        for name in names:
+            with self.subTest(result=name):
+                result = parse_result((result_root / name).read_bytes())
+                self.assertEqual(result["format"], 6)
+                self.assertEqual(result["text_lines"], 17)
 
 
 if __name__ == "__main__":

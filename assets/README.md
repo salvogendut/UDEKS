@@ -7,6 +7,11 @@ two-colour pipe XPM files are prepared source variants for constrained targets:
 - `udekspipe-64.xpm` is the active upper-left VDC boot mark;
 - `udekspipe-160.xpm` is the larger layout variant.
 
+`bootscreen.png` is the authoritative high-resolution composition reference:
+a logo rail at the left and a bordered boot console at the right. The VDC
+implementation adapts its hierarchy and spacing to the native 640x200 one-bit
+surface while reporting only subsystems the current kernel actually provides.
+
 The earlier `udeksdroid` PNG and XPM variants remain as project-history source
 artwork but are no longer linked into the boot image.
 

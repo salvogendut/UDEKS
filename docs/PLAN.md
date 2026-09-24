@@ -121,10 +121,11 @@ generated at build time from the 64x64 pipe artwork in `assets/`. It doubles as
 a visual test of mode entry, clipping, packed scanline upload, and clean
 ownership transfer to the console; text-only boot remains the failure fallback.
 
-To the splash's right, a software-defined font renders the capability service's
-published hardware inventory and CPU roles. A graphics-primitive-drawn viewport
-below reserves most of the screen for the next framebuffer-backed console.
-Display code consumes `HCAP` and never repeats hardware probes, keeping
+The high-resolution `assets/bootscreen.png` is the composition reference. Its
+VDC adaptation keeps the logo in a left rail and places a nearly full-height
+boot console to its right. A software-defined font renders project identity,
+truthful hardware states, deferred unfinished services, and the future-shell
+prompt. Display code consumes `HCAP` and never repeats hardware probes, keeping
 discovery policy in one service while proving text-over-graphics composition.
 
 The default system visual identity is black foreground on yellow background,

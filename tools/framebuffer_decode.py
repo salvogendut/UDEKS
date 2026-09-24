@@ -23,7 +23,7 @@ def parse_result(data: bytes) -> dict[str, int]:
     block = data[:RESULT_SIZE]
     if block[:4] != b"VFBR":
         raise ValueError("framebuffer status magic is not VFBR")
-    if block[4] not in (1, 2, 3, 4, 5):
+    if block[4] not in (1, 2, 3, 4, 5, 6):
         raise ValueError(f"unsupported framebuffer status format {block[4]}")
     if block[5] != 2:
         if block[5] & 0x80:
@@ -77,7 +77,14 @@ def parse_result(data: bytes) -> dict[str, int]:
         )
     expected[23] = 0x1F if block[4] == 1 else 0x7F
     if block[4] >= 2:
-        expected.update({25: 5, 26: 7, 27: 9, 30: 0x1F})
+        expected.update(
+            {
+                25: 5,
+                26: 7,
+                27: 17 if block[4] >= 6 else 9,
+                30: 0x1F,
+            }
+        )
     for offset, value in expected.items():
         if block[offset] != value:
             raise ValueError(
@@ -116,6 +123,7 @@ def parse_result(data: bytes) -> dict[str, int]:
         "color": block[24],
         "font_width": block[25] if block[4] >= 2 else 0,
         "font_height": block[26] if block[4] >= 2 else 0,
+        "text_lines": block[27] if block[4] >= 2 else 0,
         "font_checksum": (
             block[28] | (block[29] << 8) if block[4] >= 2 else 0
         ),
@@ -150,9 +158,13 @@ def main() -> None:
         f"checksum ${result['splash_checksum']:04X}"
     )
     if result["format"] >= 2:
+        panel_name = (
+            "boot console" if result["format"] >= 6 else "hardware panel"
+        )
         print(
             f"Software font: {result['font_width']}x{result['font_height']}, "
-            f"hardware panel checksum ${result['font_checksum']:04X}"
+            f"{panel_name} checksum ${result['font_checksum']:04X}, "
+            f"{result['text_lines']} lines"
         )
     if result["format"] >= 5:
         print(f"Graphics API capabilities: ${result['api_flags']:02X}")

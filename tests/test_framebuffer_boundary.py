@@ -42,7 +42,7 @@ class FramebufferBoundaryTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("UDEKS_CAPABILITY_STATUS_BASE", source)
-        self.assertIn("render_hardware_info()", source)
+        self.assertIn("render_boot_console()", source)
         self.assertNotIn("udeks_probe_", source)
 
 

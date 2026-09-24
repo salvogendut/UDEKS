@@ -72,9 +72,11 @@ The current production image starts three services in order: hardware
 capability discovery, the qualified text-mode fallback, and the baseline VDC
 framebuffer. The framebuffer takes final display ownership, enters 640x200
 monochrome bitmap mode, and shows the compact UDEKS pipe at the upper left in
-the default black-on-yellow theme. It uses the original UDEKS 5x7 software font
-to render the hardware inventory to the logo's right and draws a bordered
-console viewport below through the public graphics primitives.
+the default black-on-yellow theme. Following `assets/bootscreen.png`, it uses
+the original UDEKS 5x7 software font to render a nearly full-height bordered
+boot console to the logo's right. The console contains identity, version,
+truthful hardware and service states, aligned status fields, a welcome line,
+and a static future-shell prompt and cursor.
 
 The framebuffer owns a 16,000-byte system-RAM backing surface. Client changes
 are clipped, accumulated as byte spans per scanline, copied through the bounded

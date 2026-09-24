@@ -652,6 +652,8 @@ check:
 	cd bench/results/2026-09-24-vdc-pipe-logo/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-framebuffer-api-r1 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-framebuffer-api/raw && sha256sum -c SHA256SUMS
+	cd bench/artifacts/2026-09-24-reference-bootscreen-r1 && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-24-reference-bootscreen/raw && sha256sum -c SHA256SUMS
 
 doctor:
 	@missing=0; \

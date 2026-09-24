@@ -68,13 +68,14 @@ text console and takes final display ownership; the software-font milestone
 removes that split ownership by making console output a framebuffer client.
 
 The second client installs an original software-defined 5x7 font in 8x8 cells.
-The pipe remains at the upper left while the `HCAP` hardware inventory and CPU
-roles occupy the header to its right. A 608x96 rectangle drawn through the span
-and fill primitives reserves the lower portion as the future console viewport.
-The display client reads the published `HCAP` record; it must not touch probe
-registers itself. This makes glyph rendering, text-over-bitmap composition,
-clipping, dirty-span flushing, and cross-service data consumption part of the
-same visible qualification.
+Following `assets/bootscreen.png`, the pipe occupies a left rail and a 528x184
+bordered boot console occupies the right. Seventeen rendered lines provide the
+UDEKS identity and version, `HCAP` hardware results, accurate executive/worker
+state, explicit deferred storage/filesystem services, and a static future-shell
+prompt and cursor. The display client must not touch probe registers itself.
+This makes glyph rendering, text-over-bitmap composition, clipping, dirty-span
+flushing, and cross-service data consumption part of the same visible
+qualification.
 
 ## VDC operating rules
 
@@ -131,7 +132,7 @@ The first implementation publishes a 32-byte `VFBR` record at `$F0E0`:
 | Offset | Size | Meaning |
 |---:|---:|---|
 | 0 | 4 | ASCII magic `VFBR` |
-| 4 | 1 | Format (`5`; formats 1–4 preserve earlier milestones) |
+| 4 | 1 | Format (`6`; formats 1–5 preserve earlier milestones) |
 | 5 | 1 | Starting (`1`), ready (`2`), or error (`$80 | code`) |
 | 6 | 1 | Failure code |
 | 7 | 1 | Bitmap stride (`80` bytes) |
@@ -147,7 +148,7 @@ The first implementation publishes a 32-byte `VFBR` record at `$F0E0`:
 | 23 | 1 | Display and verified-font flags (`$7F`) |
 | 24 | 1 | VDC colour register (`$0D`, black on yellow) |
 | 25–26 | 2 | Font width (`5`) and height (`7`) |
-| 27 | 1 | Rendered hardware-information lines (`9`) |
+| 27 | 1 | Rendered boot-console lines (`17`) |
 | 28–29 | 2 | Verified font-panel byte-sum |
 | 30 | 1 | Consumed `HCAP` field mask (`$1F`) |
 | 31 | 1 | Graphics API flags (`$1F`: backing, primitives, text, dirty flush, ownership) |
@@ -155,5 +156,5 @@ The first implementation publishes a 32-byte `VFBR` record at `$F0E0`:
 The service reads every uploaded splash byte back before making bitmap mode
 visible. Every dirty span, including software-font and console-frame pixels,
 is also read back after it is written. `tools/framebuffer_decode.py` strictly
-validates all five record versions so preserved qualification evidence remains
+validates all six record versions so preserved qualification evidence remains
 readable.

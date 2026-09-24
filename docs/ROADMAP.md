@@ -138,8 +138,8 @@ mailbox corruption, with published benchmark results.
 - [ ] Degrade cleanly to the text console when framebuffer initialization fails.
 - [x] Add a software-defined bitmap font, then render the `HCAP` PAL/NTSC, VDC,
   and expansion-memory results as the second framebuffer client.
-- [x] Draw the reserved framebuffer-console viewport through the public
-  horizontal-span and clipped-rectangle primitives.
+- [x] Adapt `assets/bootscreen.png` into a logo rail and full-height bordered
+  boot console drawn through the public graphics primitives.
 - [ ] Implement queued VDC text and bitmap transfers.
 - [ ] Implement VIC text/bitmap surfaces, sprites, and raster service.
 - [ ] Support VDC-only, VIC-only, mirrored, and extended desktop modes.

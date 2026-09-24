@@ -45,6 +45,17 @@ static const unsigned char glyphs[][UDEKS_FONT_HEIGHT] = {
     {0x11, 0x11, 0x0A, 0x04, 0x0A, 0x11, 0x11}, /* X */
     {0x11, 0x11, 0x0A, 0x04, 0x04, 0x04, 0x04}, /* Y */
     {0x1F, 0x01, 0x02, 0x04, 0x08, 0x10, 0x1F}, /* Z */
+
+    {0x00, 0x00, 0x00, 0x00, 0x00, 0x0C, 0x0C}, /* . */
+    {0x00, 0x0C, 0x0C, 0x00, 0x0C, 0x0C, 0x00}, /* : */
+    {0x02, 0x04, 0x08, 0x08, 0x08, 0x04, 0x02}, /* ( */
+    {0x08, 0x04, 0x02, 0x02, 0x02, 0x04, 0x08}, /* ) */
+    {0x0E, 0x08, 0x08, 0x08, 0x08, 0x08, 0x0E}, /* [ */
+    {0x0E, 0x02, 0x02, 0x02, 0x02, 0x02, 0x0E}, /* ] */
+    {0x10, 0x08, 0x04, 0x02, 0x04, 0x08, 0x10}, /* > */
+    {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1F}, /* _ */
+    {0x00, 0x00, 0x0A, 0x15, 0x00, 0x00, 0x00}, /* ~ */
+    {0x00, 0x1F, 0x00, 0x1F, 0x00, 0x00, 0x00}, /* = */
 };
 
 static unsigned char glyph_index(unsigned char character)
@@ -55,6 +66,9 @@ static unsigned char glyph_index(unsigned char character)
     if (character >= 'A' && character <= 'Z') {
         return (unsigned char)(14u + character - 'A');
     }
+    if (character >= 'a' && character <= 'z') {
+        return (unsigned char)(14u + character - 'a');
+    }
     if (character == '-') {
         return 1;
     }
@@ -63,6 +77,36 @@ static unsigned char glyph_index(unsigned char character)
     }
     if (character == '/') {
         return 3;
+    }
+    if (character == '.') {
+        return 40;
+    }
+    if (character == ':') {
+        return 41;
+    }
+    if (character == '(') {
+        return 42;
+    }
+    if (character == ')') {
+        return 43;
+    }
+    if (character == '[') {
+        return 44;
+    }
+    if (character == ']') {
+        return 45;
+    }
+    if (character == '>') {
+        return 46;
+    }
+    if (character == '_') {
+        return 47;
+    }
+    if (character == '~') {
+        return 48;
+    }
+    if (character == '=') {
+        return 49;
     }
     return 0;
 }

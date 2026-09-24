@@ -23,6 +23,14 @@ class FontSourceTests(unittest.TestCase):
         self.assertIn("UDEKS_FONT_CELL_WIDTH 8u", header)
         self.assertIn("UDEKS_FONT_CELL_HEIGHT 8u", header)
 
+    def test_font_supports_boot_console_punctuation(self):
+        source = (ROOT / "src/services/framebuffer/font.c").read_text(
+            encoding="utf-8"
+        )
+        for character in (".", ":", "(", ")", "[", "]", ">", "_", "~", "="):
+            self.assertIn(f"character == '{character}'", source)
+        self.assertIn("character >= 'a' && character <= 'z'", source)
+
 
 if __name__ == "__main__":
     unittest.main()
