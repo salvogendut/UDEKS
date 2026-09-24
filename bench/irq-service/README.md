@@ -37,5 +37,5 @@ python3 tools/irq_service_decode.py run.vsf
 The 8502 PRG starts with `SYS 10240`; the Z80 launcher starts with `SYS 10192`.
 The result block is 320 bytes at `$F180` and uses the `IRQS` magic.
 
-VICE 3.10 has validated the corrected r2 harness. Physical-C128 runs are still
-required before the timing can finalize the executive decision.
+VICE 3.10 and `1986` have validated the corrected r2 harness. Physical-C128
+runs are still required to qualify the absolute timing and production budgets.

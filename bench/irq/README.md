@@ -34,4 +34,4 @@ an 8502 launcher at `$27D0` and starts with `SYS 10192`.
 
 The decoder reports the raw sample distribution and its minimum, median, and
 maximum. VICE 3.10 has qualified the corrected r2 images; real hardware remains
-required before the figures can finalize ADR 0002.
+required to qualify the absolute timing and detect any emulator artifact.

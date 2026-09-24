@@ -52,22 +52,21 @@ The executive processor owns normal execution. Its responsibilities are:
 - storage, filesystem, and application services;
 - creation and validation of jobs for the secondary CPU.
 
-The 8502 and Z80 are both candidates for this role. The selection remains open
-until the suite in [BENCHMARKS.md](BENCHMARKS.md) has measured compiled C,
-handwritten assembly, interrupts, context switching, I/O, memory, and CPU
-handoff in representative C128 display modes. ADR 0002 records the decision
-process and will record its outcome.
+ADR 0002 selects the 8502 as the resident executive. Corrected benchmark suites
+in `1986` and VICE agree that it is the stronger interrupt, event, MMU, CIA,
+and display-I/O engine. The Z80's compiled-C advantages remain useful through
+the secondary-engine interface rather than moving device ownership away from
+the 8502.
 
-The scheduler and context format will be designed only after that decision. An
-8502 context must account for the hardware stack, cc65 software-stack pointer,
-compiler-owned zero-page state, and page-zero/page-one mappings. A Z80 context
-must account for the registers and interrupt state actually admitted by the
-kernel ABI. Neither cost is assumed; both are benchmark inputs.
+The scheduler and task context are therefore 8502-native. A task context must
+account for the hardware stack, cc65 software-stack pointer, compiler-owned
+zero-page state, and page-zero/page-one mappings. Early scheduling may be
+cooperative while the full 33-byte cc65 context path is optimized and qualified.
 
 ### Secondary execution engine
 
-The non-executive CPU is a trusted synchronous execution engine, not an
-autonomous background CPU. A transaction is:
+The Z80 is a trusted synchronous execution engine, not an autonomous background
+CPU. A transaction is:
 
 1. prepare a mailbox request and any input buffers;
 2. publish the request state last;
@@ -121,9 +120,9 @@ The first stable interfaces will be:
 - event queues for keyboard, pointer, timers, storage, and inter-task messages.
 
 Applications initially share the kernel address space but receive distinct
-stacks and banked workspaces. An 8502 executive may additionally use distinct
-page-zero/page-one mappings. Protection is cooperative because the C128 has no
-memory protection unit.
+stacks, banked workspaces, and where practical distinct page-zero/page-one
+mappings. Protection is cooperative because the C128 has no memory protection
+unit.
 
 ## Boot strategy
 
@@ -153,7 +152,7 @@ ROM routines may be used only in an explicitly temporary bootstrap layer.
 | CPU handoff deadlocks the machine | Tiny audited worker entry; one operation per lease; emulator trace tests |
 | Compiler runtime prevents safe task switching | Inspect generated code; own crt0; explicitly save all compiler-owned runtime state |
 | Common RAM conflicts with ROM, vectors, or buffers | Prove the complete map before ABI 1.0 |
-| The selected executive performs poorly in real workloads | Select it only after the comparative benchmark gate; retain portable policy code |
+| The selected executive performs poorly in later workloads | Retain portable policy code, preserved benchmarks, and explicit ADR revision criteria |
 | Secondary-CPU offload costs more than it saves | Benchmark end-to-end and keep work on the executive below measured thresholds |
 | VDC readiness stalls latency-sensitive paths | Bounded polling and queued display operations |
 | Emulator behavior hides hardware differences | Cross-check VICE and require real-machine milestone tests |

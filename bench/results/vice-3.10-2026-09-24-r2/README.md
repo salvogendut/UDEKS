@@ -50,11 +50,12 @@ crossovers are:
 | 8502 2 MHz → stock Z80 | none through 2 KiB | none through 2 KiB | none through 2 KiB |
 | stock Z80 → 8502 2 MHz | none through 2 KiB | 1 KiB | 1 KiB |
 
-The VICE direction is therefore clear but not yet a final decision: it
-strengthens the case for an 8502 executive with selective Z80 jobs. The r2
-suite must now be rerun in `1986` and on physical hardware; the original
-`1986` numbers used r1 instrumentation and are historical rather than directly
-comparable.
+The VICE direction is therefore clear but not by itself a final decision: it
+strengthens the case for an 8502 executive with selective Z80 jobs. The same
+r2 suite has since run under [`1986`](../1986-7556c23-2026-09-24-r2/README.md),
+where the executive-level split agrees despite differing reverse-offload
+thresholds. Physical-hardware and display-pressure qualification remain open;
+the original `1986` r1 numbers are historical rather than directly comparable.
 
 ## Reproduction
 

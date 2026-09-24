@@ -25,5 +25,6 @@ The 8502 PRG loads at `$2000` and starts with `SYS 8192`. The Z80 PRG contains
 an 8502 launcher at `$1FE0` and starts with `SYS 8160`. Results occupy 128 bytes
 at `$F180` with `KPRM` magic.
 
-These are preliminary single-mode measurements. Display-pressure variants,
-VICE, and real-hardware runs remain required before they influence ADR 0002.
+The corrected suite has run in both VICE and `1986`. Display-pressure variants
+and real-hardware runs remain required to qualify production policy and detect
+hardware-specific reversals.

@@ -100,3 +100,7 @@ and decoder mapping for VICE and physical-hardware runs. The original
 `2026-09-24` bundle is historical r1 input; `2026-09-24-r2` corrects timer-read
 qualification and explicit Z80 IM1 selection. Generated files in `build/`
 remain disposable; preserved benchmark inputs do not.
+
+The complete corrected emulator result sets are preserved under
+[`results/1986-7556c23-2026-09-24-r2/`](results/1986-7556c23-2026-09-24-r2/)
+and [`results/vice-3.10-2026-09-24-r2/`](results/vice-3.10-2026-09-24-r2/).

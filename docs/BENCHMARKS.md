@@ -151,12 +151,14 @@ JSON plus a short Markdown interpretation. Result metadata must make it possible
 to reproduce the exact binaries.
 
 `1986` is the development instrument and VICE is the independent emulator
-check. Emulator agreement is necessary but not decisive. ADR 0002 cannot be
-accepted until the relevant suite has also run on real C128 hardware.
+check. Their corrected agreement supports ADR 0002. Real-C128 runs remain
+mandatory qualification for timing thresholds and hardware-dependent
+milestones and can trigger an ADR review if they materially contradict the
+emulator result.
 
 ## Decision deliverable
 
-The completed comparison will update ADR 0002 with:
+The completed comparison updates ADR 0002 with:
 
 - the chosen executive and secondary engine;
 - links to raw results and reproducible binaries;
@@ -167,9 +169,9 @@ The completed comparison will update ADR 0002 with:
 ## Current status
 
 The initial shared-C throughput slice is implemented and has produced
-repeatable `1986` emulator results. Stock-timing Z80 code was faster than 2 MHz
-8502 code in all five substantive cases, while the available C128-specific
-interrupt and I/O literature currently favors the 8502 implementation path.
+repeatable emulator results. Stock-timing Z80 code was faster than 2 MHz 8502
+code in all five substantive cases, while the available C128-specific
+interrupt and I/O literature favors the 8502 implementation path.
 
 The first CIA1 Timer-A interrupt probe is also implemented. Both the 8502
 native vector and Z80 IM1 paths completed 32 consecutive interrupts with the
@@ -184,7 +186,8 @@ make the internal costs stable despite the entry artifact. In `1986`, the 2 MHz
 8502 completed the paired post-prologue-to-resume paths in 123, 134, and 137
 system ticks; the stock Z80 required 425, 475, and 466. This is meaningful
 emulator evidence in favor of the 8502 interrupt path, but the asymmetric ISR
-register contracts and missing hardware confirmation keep the decision open.
+register contracts and missing hardware confirmation limited the weight of
+this initial r1 result.
 
 The task-context suite is implemented as well. After empty-loop subtraction,
 the 2 MHz 8502 needs 206 ticks to preserve its CPU state plus all 26 bytes of
@@ -229,8 +232,19 @@ traffic—and strengthens the current preference for an 8502 executive. At
 offload through 2 KiB. Reverse offload first wins only at 1 KiB for checksum
 and transform, and not for copy in that range.
 
-The detailed [VICE r2 results](../bench/results/vice-3.10-2026-09-24-r2/README.md)
-and [corrected PRGs](../bench/artifacts/2026-09-24-r2/README.md) are preserved.
-The original `1986` figures used r1 instrumentation and must be rerun with r2
-before numeric emulator agreement can be claimed. Real-hardware and display-
-pressure gates also remain open.
+`1986` commit `7556c23` has now run the same 19 corrected r2 configurations.
+All canonical blocks pass strict decoding after explicitly stopping the unused
+CIA1 Timer B before the IRQ cases, and the focused IRQ-service and offload
+repeats are byte-identical. `1986` and VICE agree on the executive-level split:
+Z80 for the compiled-C and larger compiler-context paths; 8502 for interrupts,
+CPU-core context, event traffic, and direct MMU/CIA/VDC access.
+Both also find no profitable 2 MHz 8502-to-Z80 offload for the three tested
+assembly kernels through 2 KiB.
+
+The emulators disagree on some reverse Z80-to-8502 crossover sizes, most
+strongly at 2 MHz. Those thresholds must therefore be calibrated on physical
+hardware rather than embedded as constants. The detailed
+[`1986` r2 results](../bench/results/1986-7556c23-2026-09-24-r2/README.md),
+[VICE r2 results](../bench/results/vice-3.10-2026-09-24-r2/README.md), and
+[corrected PRGs](../bench/artifacts/2026-09-24-r2/README.md) are preserved.
+Real-hardware and display-pressure gates remain open.

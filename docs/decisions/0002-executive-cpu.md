@@ -1,7 +1,7 @@
 # ADR 0002: Executive CPU selection
 
-- Status: proposed
-- Date: 2026-09-23
+- Status: accepted
+- Date: 2026-09-24
 
 ## Context
 
@@ -45,9 +45,10 @@ context switching, device access, memory operations, and handoff in both
 directions.
 
 Development runs must agree sufficiently across `1986` and VICE to identify
-emulator-specific behavior. Final acceptance requires real-C128 measurements.
-The decision will emphasize executive workloads and system-level constraints,
-not peak throughput in one loop.
+emulator-specific behavior. Real-C128 measurements remain required to qualify
+timing thresholds and hardware-dependent milestones; a material contradiction
+will reopen this ADR. The decision emphasizes executive workloads and
+system-level constraints, not peak throughput in one loop.
 
 Documentation quality and proven C128-specific implementations are scored as
 engineering risk. They may break a close technical result or identify a
@@ -59,9 +60,9 @@ behavior.
 The detailed `1986` figures below are the historical r1 baseline. A later VICE
 qualification pass exposed non-atomic running-CIA timer reads throughout the
 suite and a missing explicit `IM 1` in the Z80 interrupt-service case. Those
-preconditions are corrected in the preserved r2 binaries. The qualitative r1
-directions remain useful, but the numeric values must not be compared directly
-with r2 until `1986` is rerun.
+preconditions are corrected in the preserved r2 binaries. The r1 figures are
+retained as history rather than mixed numerically with the corrected r2 result
+sets described below.
 
 The first shared-C suite has run in the `1986` emulator using CIA1 Timer B.
 Three runs per configuration were identical and all workload checksums passed.
@@ -102,8 +103,10 @@ The accumulated emulator evidence is therefore deliberately split:
   2 MHz.
 - **8502 implementation-risk advantage:** C128-specific interrupt, MMU, I/O,
   and example-code documentation.
-- **Unresolved deciding evidence:** corrected r2 agreement between `1986` and
-  VICE, display coexistence, and real-hardware verification.
+- **Resolved emulator evidence:** corrected r2 `1986` and VICE runs agree on
+  the executive-level split and 2 MHz 8502-to-Z80 offload result.
+- **Unresolved qualification evidence:** display coexistence and real-hardware
+  verification, including final offload thresholds.
 
 ### Initial interrupt probe
 
@@ -302,11 +305,50 @@ transform first cross at 1 KiB. In the opposite direction, an 8502 executive
 never benefits from delegating these three assembly kernels to the Z80 through
 2 KiB.
 
-This evidence currently strengthens the working preference for an **8502
-executive with selective, measured Z80 jobs**. It does not accept the decision:
-the corrected r2 images still need `1986`, display-pressure, and physical-C128
-runs. See the [full VICE result set](../../bench/results/vice-3.10-2026-09-24-r2/README.md)
+This evidence supports an **8502 executive with selective, measured Z80
+jobs**. Display-pressure and physical-C128 runs remain qualification work. See
+the [full VICE result set](../../bench/results/vice-3.10-2026-09-24-r2/README.md)
 and [r2 artifacts](../../bench/artifacts/2026-09-24-r2/README.md).
+
+### `1986` qualification (r2)
+
+`1986` commit `7556c2357506dc576ab7ab0783f9971892db1450` then ran all 19
+corrected r2 configurations using the same preserved PRGs. All canonical blocks
+pass strict decoding; three interrupt-service and offload runs per
+configuration are byte-identical. The checked-in configuration explicitly
+keeps `double_z80_frequency = 0` and `tinker = 0`, so the reported Z80 is the
+stock effective timing and not the optional doubled-frequency modification.
+
+Selected 2 MHz 8502 versus stock-Z80 results are:
+
+| Measurement | 8502 | Z80 | Faster/lower candidate |
+|---|---:|---:|---|
+| IRQ entry median | 48 | 106.5 | 8502 |
+| Minimal IRQ service median | 144 | 500 | 8502 |
+| Kernel-tick IRQ service median | 154 | 549 | 8502 |
+| Compiler context operation | 206 | 116 | Z80 |
+| Full context operation | 206 | 180 | Z80 |
+| Switch dispatch, 128 iterations | 18,490 | 13,636 | Z80 |
+| Event queue, 32 round trips | 16,760 | 22,270 | 8502 |
+| MMU, CIA, VDC, 128 each | 1,256 / 1,256 / 2,148 | 4,170 / 4,176 / 10,304 | 8502 |
+
+These winners agree with VICE. Both emulators also find no profitable
+8502-to-Z80 copy, checksum, or transform offload through 2 KiB when the 8502
+runs at 2 MHz. They disagree materially about reverse Z80-to-8502 crossover
+sizes, showing that final thresholds must be calibrated on hardware rather
+than inferred from either emulator.
+
+The IRQ launch explicitly stopped unused CIA1 Timer B before entering the
+unchanged r2 PRG. Without that precondition, `1986` left Timer B running and the
+long 1 MHz service case ended with ICR `$83`: the expected enabled Timer-A
+source plus a masked Timer-B underflow flag. The rejected diagnostic is
+preserved alongside the canonical result. This is a harness-environment
+precondition, not evidence against either CPU.
+
+The full [`1986` r2 result set](../../bench/results/1986-7556c23-2026-09-24-r2/README.md)
+contains the raw blocks, hashes, repeatability evidence, reproduction commands,
+and direct VICE comparison. Corrected cross-emulator agreement makes the 8502
+executive with a selective Z80 worker the technically supported choice.
 
 ## Evidence sources
 
@@ -315,14 +357,42 @@ and [r2 artifacts](../../bench/artifacts/2026-09-24-r2/README.md).
 
 ## Decision
 
-Open. Neither CPU is designated the permanent executive yet. The existing
-8502 and Z80 scaffold images are experimental bring-up vehicles, not an
-architecture commitment.
+UDEKS uses the **8502 as its resident executive** and the **Z80 as a bounded,
+selectively scheduled secondary execution engine**.
 
-## Consequences while proposed
+The 8502 owns normal kernel execution, interrupts, timekeeping, scheduling,
+MMU state, device arbitration, event queues, VIC-IIe/VDC drivers, storage, and
+the cross-CPU job policy. The Z80 runs trusted jobs only when an end-to-end
+benchmark—including mailbox construction and both ownership transfers—shows a
+benefit for that operation, size, memory placement, and machine mode.
 
-- Scheduler and permanent context ABI work is blocked by this decision gate.
-- Boot and mailbox experiments must support handoff in both directions.
-- Policy code should remain portable C where practical.
-- CPU-specific mechanisms may be prototyped, but neither implementation is the
-  reference solely because it was written first.
+The initial policy is conservative:
+
+- short and latency-sensitive work remains on the 8502;
+- Z80 jobs are coarse, bounded, cancellable at defined chunk boundaries, and
+  submitted in batches where possible;
+- no tested 2 MHz 8502 copy, checksum, or XOR/rotate operation through 2 KiB is
+  delegated to the Z80;
+- production thresholds are data, not ABI: they are calibrated on physical
+  hardware and may vary by PAL/NTSC and display mode;
+- the bidirectional mailbox remains testable, but normal production requests
+  flow from the 8502 executive to the Z80 worker.
+
+## Consequences
+
+- Reset and bootstrap code must transfer control into an 8502-owned native-mode
+  kernel after establishing a documented MMU state.
+- The scheduler, syscall path, interrupt ABI, and ordinary task context are
+  8502-native and include the cc65 runtime state admitted by the task ABI.
+- MMU, CIA, VIC-IIe, VDC, storage, and other device drivers remain under the
+  8502 executive unless a later ADR establishes a narrowly scoped exception.
+- The Z80 runtime consists of a small audited dispatcher plus operation
+  modules; it is not an autonomous kernel and cannot assume concurrent 8502
+  service while it owns the bus.
+- Cross-CPU APIs use shared byte layouts and explicit publication order. No C
+  compiler structure layout crosses the ownership boundary.
+- Portable algorithms and policy remain in C where practical, but each Z80
+  candidate requires end-to-end measurement before activation.
+- Physical C128 and display-pressure results may revise thresholds and lease
+  budgets. This ADR is reopened only if they materially undermine the selected
+  CPU roles, not merely because an individual workload changes sides.

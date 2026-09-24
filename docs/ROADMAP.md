@@ -38,19 +38,23 @@ scaffold images and run `make check`.
   C128 runs.
 - [x] Run the corrected r2 suite in VICE 3.10 and preserve all 19 canonical
   result blocks plus focused repeats.
-- [ ] Rerun the corrected r2 suite in `1986`; r1 results are no longer directly
-  comparable after the timer-read qualification fix.
+- [x] Rerun all 19 corrected r2 configurations in `1986`, preserve the raw
+  blocks and focused repeats, and compare them with VICE.
 - [ ] Measure compiled-C and handwritten-assembly workloads separately.
 - [ ] Broaden memory-access and device-I/O coverage beyond the initial slices.
 - [ ] Exercise VDC-only, VIC-active, and dual-display conditions on PAL and NTSC.
 - [ ] Cross-check corrected `1986` and VICE results against at least one real
   C128.
-- [ ] Publish raw results, tool versions, test binaries, and the scoring rationale.
-- [ ] Accept ADR 0002 and update the permanent execution and memory plans.
+- [x] Publish the current raw emulator results, tool versions, test binaries,
+  hashes, and interpretation.
+- [x] Accept ADR 0002: 8502 resident executive with a bounded, selectively
+  scheduled Z80 worker; update the execution plan and mailbox direction.
 
-**Exit gate:** the same logical suite has run on both CPUs, real-hardware results
-have been recorded, and ADR 0002 names the executive and secondary engine with
-evidence.
+**Exit gate:** the corrected logical suite agrees across `1986` and VICE, and
+ADR 0002 names the executive and secondary engine with preserved evidence.
+Display-pressure and real-hardware work remain mandatory validation gates and
+may revise workload policy without reopening the CPU roles unless they expose
+a material contradiction.
 
 ## Phase 1 — Machine bring-up
 

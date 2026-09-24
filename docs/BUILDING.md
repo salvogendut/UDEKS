@@ -112,3 +112,18 @@ BASIC wrapper for pure machine-code PRGs without changing their payload bytes
 or addresses. See the [r2 VICE results](../bench/results/vice-3.10-2026-09-24-r2/README.md)
 for a complete command. Real-hardware verification still gates MMU, timing,
 video, IEC, and CPU-handoff milestones.
+
+`1986` saves complete VSF snapshots. `tools/snapshot_extract.py` extracts a
+compact decoder-ready address range from those snapshots, for example:
+
+```sh
+python3 tools/snapshot_extract.py run.vsf result.bin \
+  --address 0xf180 --size 320
+```
+
+For disk-loaded 2 MHz runs, issue BASIC `FAST` immediately before `RUN` or
+`SYS`; in the qualified launch path, the emulator's `--fast` startup option
+alone did not leave the benchmark in 2 MHz mode. IRQ qualification also stops
+the otherwise unused CIA1 Timer B and reads CIA1 ICR before entering the
+preserved PRG. The exact commands and rationale are in the
+[`1986` r2 report](../bench/results/1986-7556c23-2026-09-24-r2/README.md).

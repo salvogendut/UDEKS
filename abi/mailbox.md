@@ -59,6 +59,6 @@ documented maximum budget. A hardware-independent timeout cannot rescue the
 executive while the secondary CPU owns the bus, so secondary-engine code is
 part of the trusted kernel.
 
-ABI 0.1 deliberately does not assign the requester role to either processor.
-The benchmark harness will exercise the same state machine in both directions;
-ADR 0002 will establish the normal direction before this ABI is frozen.
+ADR 0002 establishes the 8502 executive as the normal requester and the Z80 as
+the worker. ABI 0.1 continues to exercise both directions for diagnostics, but
+production Z80-to-8502 requests are not part of the normal scheduling model.

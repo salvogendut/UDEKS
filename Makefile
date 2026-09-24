@@ -436,12 +436,16 @@ check:
 		tools/bench_decode.py tools/irq_probe_decode.py \
 		tools/irq_service_decode.py tools/context_decode.py \
 		tools/kernel_decode.py tools/handoff_decode.py \
-		tools/offload_decode.py tools/vice_capture.py
+		tools/offload_decode.py tools/snapshot_extract.py \
+		tools/vice_capture.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-r2 && sha256sum -c SHA256SUMS
 	cd bench/results/vice-3.10-2026-09-24-r1/raw && sha256sum -c SHA256SUMS
 	cd bench/results/vice-3.10-2026-09-24-r2/raw && sha256sum -c SHA256SUMS
 	cd bench/results/vice-3.10-2026-09-24-r2/repeats && sha256sum -c SHA256SUMS
+	cd bench/results/1986-7556c23-2026-09-24-r2/raw && sha256sum -c SHA256SUMS
+	cd bench/results/1986-7556c23-2026-09-24-r2/repeats && sha256sum -c SHA256SUMS
+	cd bench/results/1986-7556c23-2026-09-24-r2/diagnostics && sha256sum -c SHA256SUMS
 
 doctor:
 	@missing=0; \

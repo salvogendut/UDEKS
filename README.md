@@ -26,9 +26,8 @@ See [LICENSE](LICENSE).
 
 - The 8502 and Z80 share the system bus and do **not** execute concurrently;
   ownership passes explicitly between them.
-- Which CPU runs the executive and which serves as the secondary execution
-  engine is an open architecture decision, gated by comparative benchmarks on
-  emulators and real hardware.
+- The 8502 runs the resident executive; the Z80 is a bounded secondary
+  execution engine for workloads that demonstrate an end-to-end benefit.
 - The VDC is the primary high-resolution/text display engine.
 - The VIC-IIe is a first-class secondary display and timing/sprite engine.
 - A stock 128 KiB C128 with 16 KiB VDC RAM is the baseline. A 64 KiB VDC, REU,
@@ -88,6 +87,7 @@ hardware tests and recorded as architecture decisions.
 - [Initial emulator kernel-primitives results](bench/results/2026-09-24-1986-kernel.md)
 - [Initial emulator bidirectional-handoff results](bench/results/2026-09-24-1986-handoff.md)
 - [Initial emulator offload-crossover results](bench/results/2026-09-24-1986-offload.md)
+- [`1986` r2 benchmark results](bench/results/1986-7556c23-2026-09-24-r2/README.md)
 - [VICE 3.10 r2 benchmark results](bench/results/vice-3.10-2026-09-24-r2/README.md)
 - [Corrected preserved benchmark PRGs for VICE and hardware](bench/artifacts/2026-09-24-r2/README.md)
 - [Building UDEKS](docs/BUILDING.md)
