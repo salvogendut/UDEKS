@@ -32,6 +32,10 @@ reopens keyboard polling. This exceeds the 1351 manual's 1.6 ms SID
 conversion-settling requirement without busy-waiting or reducing ordinary
 keyboard scans to one per frame. The first two stable POT samples calibrate the
 driver and cannot move the pointer, preventing startup drift on an empty port.
+After a drag-release repaint, the window service requests one additional
+baseline sample. Motion accumulated while the synchronous compositor prevented
+sampling is discarded, so the 1351's wrapping counters cannot turn that stale
+interval into an imprecise or reversed post-drag delta.
 
 Because the C128 keyboard and control ports share CIA1 pins, keyboard scans are
 suppressed while a joystick direction, joystick fire, or mouse button is

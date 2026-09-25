@@ -68,7 +68,8 @@ the 63 sprite bytes are exchanged; sprite position, color, and VIC
 configuration remain unchanged. Release starts a non-blocking three-frame
 grace period, keeping short jobs and repaints visible without delaying either
 CPU. New work during that period reclaims the existing pipe without copying
-the sprite again.
+the sprite again. Each pointer swap invalidates the shared common-gateway
+cache so the next drag reloads the outline blitter before executing it.
 
 `xinit -q` terminates the graphics session. It disables the pointer sprite,
 blanks VIC-IIe bitmap output, returns VIC RAM visibility to physical bank 0,

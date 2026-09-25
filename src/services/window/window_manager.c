@@ -523,6 +523,7 @@ static void finish_drag(void)
     dragging_handle = UDEKS_WINDOW_NONE;
     drag_mode = 0;
     compose_damage(UDEKS_WINDOW_NONE);
+    udeks_pointer_resynchronize();
     increment_counter(26u);
 }
 

@@ -145,6 +145,15 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("sprite_swap_gateway:", source)
         self.assertIn("sta VIC_SPRITE_NORMAL,x", source)
         self.assertIn("lda VIC_SPRITE_BUSY,x", source)
+        pointer_swap = source.split("_udeks_vic_pointer_select_shape:", 1)[1]
+        pointer_swap = pointer_swap.split(
+            "_udeks_vic_bitmap_commit_page:", 1
+        )[0]
+        self.assertIn("sta OUTLINE_GATEWAY_TAG", pointer_swap)
+        self.assertLess(
+            pointer_swap.index("sta OUTLINE_GATEWAY_TAG"),
+            pointer_swap.index("copy_sprite_swap_gateway:"),
+        )
         shutdown = source.split("_udeks_vic_graphics_disable:", 1)[1]
         shutdown = shutdown.split("vic_gateway:", 1)[0]
         self.assertIn("and #$fe", shutdown)

@@ -28,6 +28,7 @@
 
 unsigned char udeks_pointer_start(void);
 unsigned char udeks_pointer_poll(void);
+void udeks_pointer_resynchronize(void);
 unsigned char udeks_pointer_keyboard_allowed(void);
 unsigned int udeks_pointer_x(void);
 unsigned char udeks_pointer_y(void);

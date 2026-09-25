@@ -56,6 +56,10 @@ class WindowManagerSourceTests(unittest.TestCase):
             finish.index("udeks_vic_bitmap_outline_toggle"),
             finish.index("compose_damage(UDEKS_WINDOW_NONE)"),
         )
+        self.assertLess(
+            finish.index("compose_damage(UDEKS_WINDOW_NONE)"),
+            finish.index("udeks_pointer_resynchronize()"),
+        )
 
     def test_lower_right_grip_resizes_with_outline_only_until_release(self):
         source = (ROOT / "src/services/window/window_manager.c").read_text(

@@ -60,6 +60,8 @@ class PointerSourceTests(unittest.TestCase):
         self.assertIn("mouse_dx + joystick_dx", source)
         self.assertIn("UDEKS_POINTER_X_MIN", source)
         self.assertIn("UDEKS_POINTER_X_MAX", source)
+        self.assertIn("void udeks_pointer_resynchronize(void)", source)
+        self.assertIn("warmup_samples = 1", source)
 
     def test_pointer_poll_precedes_keyboard_scan(self):
         table = (ROOT / "src/services/table.s").read_text(encoding="utf-8")

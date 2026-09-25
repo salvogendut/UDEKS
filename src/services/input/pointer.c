@@ -202,6 +202,11 @@ unsigned char udeks_pointer_poll(void)
     return UDEKS_POINTER_OK;
 }
 
+void udeks_pointer_resynchronize(void)
+{
+    warmup_samples = 1;
+}
+
 unsigned char udeks_pointer_keyboard_allowed(void)
 {
     if (mouse_settling != 0 || udeks_control_ports_active() != 0) {
