@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 from build_d71 import (
     BOOTFS_SIZE,
     BOOTFS_Z80_OFFSET,
+    D64_SIZE,
     BOOTFS_REQUEST_STAGING_ADDRESS,
     BOOTFS_REQUEST_STAGING_SIZE,
     MODULE_STAGING_ADDRESS,
@@ -27,6 +28,7 @@ from build_d71 import (
     blank_d71,
     boot_locations,
     build_image,
+    d64_compatibility_image,
     sector_offset,
 )
 from build_bootfs import build_bootfs
@@ -55,6 +57,17 @@ class BuildD71Tests(unittest.TestCase):
         image = blank_d71()
         self.assertEqual(len(image), 349696)
         self.assertEqual(image[sector_offset(18, 1) : sector_offset(18, 1) + 2], b"\x00\xff")
+
+    def test_d64_compatibility_image_is_standard_first_side(self):
+        image = build_image(stage0(), b"", b"", b"")
+        d64 = d64_compatibility_image(image)
+        self.assertEqual(len(d64), D64_SIZE)
+        self.assertEqual(d64[:4], b"CBM\x00")
+        self.assertEqual(d64, image[:D64_SIZE])
+
+    def test_d64_compatibility_image_rejects_nonstandard_source(self):
+        with self.assertRaisesRegex(ValueError, "standard D71"):
+            d64_compatibility_image(bytes(D64_SIZE))
 
     def test_native_payload_round_trips_from_sequential_sectors(self):
         first = b"stage-one"

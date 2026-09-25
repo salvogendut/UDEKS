@@ -35,11 +35,13 @@ class VicGraphicsSourceTests(unittest.TestCase):
             "VIC_BITMAP              = $6000",
             "VIC_SPRITE              = $7fc0",
             "VIC_SPRITE_POINTER      = $5ff8",
+            "CPU_PORT                = $0001",
         ):
             self.assertIn(declaration, source)
         self.assertIn("sta MMU_LCR_WORKER_FLAT", source)
         self.assertIn("sta MMU_LCR_KERNEL_IO", source)
         self.assertIn("ora #$40", source)
+        self.assertIn("and #$bf", source)
         self.assertIn("lda #$78", source)
         self.assertIn("lda #$3b", source)
         self.assertIn("VIC common gateway exceeds one-page installer", source)
@@ -55,6 +57,26 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("draw_horizontal:", source)
         self.assertIn("draw_vertical:", source)
         self.assertIn("sta $ffff", source)
+
+        enable = source.split("_udeks_vic_graphics_enable:", 1)[1].split(
+            "_udeks_vic_graphics_disable:", 1
+        )[0]
+        self.assertIn("sta saved_chargen_overlay", enable)
+        self.assertIn("ora #$04", enable)
+        self.assertIn("sta CPU_PORT", enable)
+        self.assertLess(enable.index("and #$ef"), enable.index("ora #$04"))
+        self.assertLess(enable.index("sta CPU_PORT"), enable.index("jsr COMMON_GATEWAY"))
+
+        gateway_init = source.split("\nvic_gateway:", 1)[1].split(
+            "\nsprite_data:", 1
+        )[0]
+        self.assertLess(gateway_init.index("and #$bf"), gateway_init.index("ora #$40"))
+        self.assertLess(
+            gateway_init.index("sta VIC_SPRITE_ENABLE"),
+            gateway_init.index("sta VIC_CONTROL_1"),
+        )
+        self.assertLess(gateway_init.index("sei"), gateway_init.index("and #$bf"))
+        self.assertGreater(gateway_init.index("plp"), gateway_init.index("sta VIC_CONTROL_1"))
 
         gateway = source.split("\noutline_gateway:", 1)[1].split(
             "outline_gateway_end:", 1
@@ -113,7 +135,8 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("and #$fe", shutdown)
         self.assertIn("and #$cf", shutdown)
         self.assertIn("and #$bf", shutdown)
-
+        self.assertIn("and #$fb", shutdown)
+        self.assertIn("sta CPU_PORT", shutdown)
 
 if __name__ == "__main__":
     unittest.main()

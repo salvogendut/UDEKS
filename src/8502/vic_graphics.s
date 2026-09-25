@@ -17,6 +17,7 @@
 MMU_LCR_KERNEL_IO       = $ff01
 MMU_LCR_WORKER_FLAT     = $ff04
 MMU_RCR                 = $d506
+CPU_PORT                = $0001
 CIA2_PRA                = $dd00
 CIA2_DDRA               = $dd02
 VIC_SPRITE0_X           = $d000
@@ -45,8 +46,28 @@ VIC_BITMAP              = $6000
 VIC_SPRITE              = $7fc0
 VIC_SPRITE_POINTER      = $5ff8
 
+        .segment "BSS"
+saved_chargen_overlay:
+        .res 1
+
         .segment "CODE"
 _udeks_vic_graphics_enable:
+        ; Hide the VIC canvas while the common-RAM gateway changes its bank
+        ; and prepares the new bitmap.  The gateway reveals bitmap mode only
+        ; after the screen, bitmap, and pointer are all coherent.
+        lda VIC_CONTROL_1
+        and #$ef
+        sta VIC_CONTROL_1
+        ; On the C128, CPU port bit 2 controls the character-ROM overlay seen
+        ; by the VIC-IIe in every 16 KiB VIC bank.  Our screen matrix is at
+        ; VIC-relative $1C00, inside that overlay window, so expose RAM before
+        ; the first bitmap badline and preserve the caller's prior setting.
+        lda CPU_PORT
+        and #$04
+        sta saved_chargen_overlay
+        lda CPU_PORT
+        ora #$04
+        sta CPU_PORT
         lda #$00
         sta OUTLINE_GATEWAY_TAG
         ldx #$00
@@ -70,6 +91,16 @@ _udeks_vic_graphics_disable:
         lda MMU_RCR
         and #$bf
         sta MMU_RCR
+        lda saved_chargen_overlay
+        beq restore_chargen_overlay
+        lda CPU_PORT
+        ora #$04
+        bne store_chargen_overlay
+restore_chargen_overlay:
+        lda CPU_PORT
+        and #$fb
+store_chargen_overlay:
+        sta CPU_PORT
         lda #$00
         rts
 
@@ -171,7 +202,13 @@ copy_sprite:
         lda #$00
         sta MMU_LCR_KERNEL_IO
 
+        php
+        sei
         lda MMU_RCR
+        ; Make the bank transition explicit and keep the complete VIC/MMU
+        ; setup atomic with respect to the console's periodic IRQ work.
+        and #$bf
+        sta MMU_RCR
         ora #$40
         sta MMU_RCR
         lda CIA2_DDRA
@@ -189,8 +226,6 @@ copy_sprite:
         sta VIC_MEMORY
         lda #$08
         sta VIC_CONTROL_2
-        lda #$3b
-        sta VIC_CONTROL_1
 
         lda VIC_SPRITE_X_MSB
         and #$fe
@@ -216,6 +251,9 @@ copy_sprite:
         lda VIC_SPRITE_ENABLE
         ora #$01
         sta VIC_SPRITE_ENABLE
+        lda #$3b
+        sta VIC_CONTROL_1
+        plp
         rts
 
 sprite_data:

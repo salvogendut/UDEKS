@@ -10,6 +10,12 @@ from pathlib import Path
 
 SECTOR_SIZE = 256
 TRACK_COUNT = 70
+D64_TRACK_COUNT = 35
+D64_SIZE = sum(
+    (21 if track <= 17 else 19 if track <= 24 else 18 if track <= 30 else 17)
+    * SECTOR_SIZE
+    for track in range(1, D64_TRACK_COUNT + 1)
+)
 STAGE1_ADDRESS = 0x1C00
 KERNEL_ADDRESS = 0x2000
 Z80_STAGING_ADDRESS = 0xD000
@@ -93,6 +99,16 @@ def blank_d71(name: str = "UDEKS", disk_id: str = "01") -> bytearray:
     for sector in range(sectors_per_track(53)):
         mark_used(image, 53, sector)
     return image
+
+
+def d64_compatibility_image(image: bytes) -> bytes:
+    """Return side one of a standard D71 as a Pi1541-compatible D64."""
+    expected_size = sum(
+        sectors_per_track(track) for track in range(1, TRACK_COUNT + 1)
+    ) * SECTOR_SIZE
+    if len(image) != expected_size:
+        raise ValueError("D64 compatibility source is not a standard D71 image")
+    return image[:D64_SIZE]
 
 
 def mark_used(image: bytearray, track: int, sector: int) -> None:
@@ -323,6 +339,11 @@ def main() -> None:
     parser.add_argument("--task-request-gateway", type=Path)
     parser.add_argument("--bootfs-request-service", type=Path)
     parser.add_argument("--ush", type=Path)
+    parser.add_argument(
+        "--d64-output",
+        type=Path,
+        help="also write a side-one D64 for drives that do not support D71",
+    )
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
 
@@ -344,6 +365,9 @@ def main() -> None:
         raise SystemExit(f"cannot build D71: {error}") from error
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_bytes(image)
+    if args.d64_output is not None:
+        args.d64_output.parent.mkdir(parents=True, exist_ok=True)
+        args.d64_output.write_bytes(d64_compatibility_image(image))
 
 
 if __name__ == "__main__":

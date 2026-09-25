@@ -22,6 +22,14 @@ the bitmap to yellow, initializes every screen byte for black-on-yellow hires
 pixels, installs the pointer sprite, then restores the 8502 kernel-I/O profile
 before touching VIC/CIA registers. The VDC console is unaffected.
 
+The C128 also lets the 8502 port at `$0001` expose character ROM to the
+VIC-IIe at relative `$1000-$1FFF` in every VIC bank. Because the screen matrix
+at relative `$1C00` occupies that window, `xinit` temporarily disables the
+overlay by setting port bit 2. `xinit -q` restores the bit to its previous
+state. Without this C128-specific step the bitmap itself is read correctly,
+but character-ROM bytes are mistaken for color-selection bytes and the screen
+appears as a grid of colored blocks.
+
 Drawing clients use a bank-0 shadow bitmap through bounded pixel, line,
 rectangle, fill, and commit calls. Drawing marks dirty 256-byte pages; commit
 uses a common-RAM staging page to transfer only those pages into physical bank

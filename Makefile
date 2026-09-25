@@ -85,6 +85,7 @@ BOOTFS_REQUEST_SERVICE_BIN := $(BUILD_BOOT)/bootfs-request-service.bin
 TASK_BANK_GATE_BIN := $(BUILD_BOOT)/task-bank-gateway.bin
 STAGE1_BIN := $(BUILD_BOOT)/stage1.bin
 BOOT_D71 := $(BUILD_BOOT)/udeks.d71
+BOOT_D64 := $(BUILD_BOOT)/udeks.d64
 PANIC_PROBE_D71 := $(BUILD_BOOT)/udeks-panic-probe.d71
 VDC_SPLASH_BIN := $(BUILD_ASSETS)/udekspipe-64.vdc
 VDC_WORDMARK_BIN := $(BUILD_ASSETS)/udekusu-64.vdc
@@ -135,7 +136,7 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 
 all: 8502 z80 z80-asm
 
-boot: $(BOOT_D71)
+boot: $(BOOT_D71) $(BOOT_D64)
 
 panic-probe: $(PANIC_PROBE_D71)
 
@@ -1059,7 +1060,7 @@ $(BUILD_BOOT)/stage1.o: src/boot/stage1.s $(STAGE1_GATEWAY_BIN) | $(BUILD_BOOT)
 $(STAGE1_BIN): $(BUILD_BOOT)/stage1.o cfg/8502-stage1.cfg
 	$(LD65) -C cfg/8502-stage1.cfg -o $@ $<
 
-$(BOOT_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) $(MODULE_BIN) \
+$(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) $(MODULE_BIN) \
 		$(Z80_BIN) $(USER_BOOTFS) \
 		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
@@ -1073,7 +1074,8 @@ $(BOOT_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) $(MODULE_BIN) \
 		--task-loader $(TASK_LOADER_BIN) \
 		--task-request-gateway $(TASK_REQUEST_GATE_BIN) \
 		--bootfs-request-service $(BOOTFS_REQUEST_SERVICE_BIN) \
-		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
+		--task-bank-gateway $(TASK_BANK_GATE_BIN) \
+		--d64-output $(BOOT_D64) $(BOOT_D71)
 
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		$(MODULE_BIN) \
