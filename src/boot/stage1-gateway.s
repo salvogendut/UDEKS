@@ -97,6 +97,23 @@ final_copy_request_tail:
         iny
         cpy #$09
         bne final_copy_request_tail
+
+        ; The 8 KiB VIC shadow reclaims bank-0 bootstrap staging RAM.  Clear
+        ; it only after every staged image has reached its permanent home so
+        ; the first partial window commit cannot expose boot payload bytes.
+        lda #$af
+        sta final_clear_vic_shadow+2
+        lda #$00
+        ldx #$20
+        ldy #$00
+final_clear_vic_shadow:
+        sta $af00,y
+        iny
+        bne final_clear_vic_shadow
+        inc final_clear_vic_shadow+2
+        dex
+        bne final_clear_vic_shadow
+
         lda #'Z'
         sta BOOT_CHAIN+8
         lda #'8'
