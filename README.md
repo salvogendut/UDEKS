@@ -45,6 +45,10 @@ See [LICENSE](LICENSE).
   <img src="screenshot/udeks-xwave-xclock.png" alt="Resizable UDEKS xwave and xclock windows sharing the VIC-IIe display" width="384">
 </p>
 
+<p align="center">
+  <img src="screenshot/udeks-dual-display.gif" alt="Animated UDEKS session with the VIC-IIe graphical desktop and VDC console running together" width="720">
+</p>
+
 ## Current prototype
 
 - A native-autoboot D71 starts the assembly-oriented 8502 microkernel, its
