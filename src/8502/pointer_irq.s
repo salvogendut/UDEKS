@@ -14,6 +14,7 @@
         .export _udeks_pointer_x
         .export _udeks_pointer_y
         .export _udeks_pointer_buttons
+        .import _udeks_control_ports_active
 
 PTR                     = $f1d0
 IRQ_TRAMPOLINE          = $ffc5
@@ -164,15 +165,21 @@ _udeks_pointer_resynchronize:
         rts
 
 _udeks_pointer_keyboard_allowed:
+        php
+        sei
         lda PTR+26
         bne keyboard_blocked
-        lda PTR+12
-        ora PTR+13
+        ; Button and joystick edges are asynchronous and can arrive after the
+        ; last raster sample.  Probe the CIA pins immediately before each
+        ; keyboard scan so a fresh mouse click cannot become matrix input.
+        jsr _udeks_control_ports_active
         beq keyboard_allowed
 keyboard_blocked:
+        plp
         lda #$00
         rts
 keyboard_allowed:
+        plp
         lda #$01
         rts
 

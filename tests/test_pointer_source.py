@@ -85,6 +85,7 @@ class PointerSourceTests(unittest.TestCase):
         self.assertNotIn("VIC_RASTER", source)
         pointer = (ROOT / "src/8502/pointer_irq.s").read_text(encoding="utf-8")
         self.assertIn("lda PTR+26", pointer)
+        self.assertIn("jsr _udeks_control_ports_active", pointer)
         self.assertIn("lda #$02\n        sta warmup_samples", pointer)
         scanner = (ROOT / "src/8502/keyboard_scan.s").read_text(
             encoding="utf-8"

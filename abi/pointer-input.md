@@ -50,7 +50,10 @@ to close the race between the C-level gate check and the hardware scan. For the
 joystick activity check, the opposite half of the keyboard matrix is probed at
 both high and low. Only a low bit persistent in both phases is treated as a
 grounded control-port switch; keyboard-induced lows vary with the drive phase.
-Releasing all control-port switches re-enables keyboard polling automatically.
+This hardware activity probe runs immediately before each matrix scan rather
+than waiting for the next raster sample, so a fresh mouse-button edge cannot be
+misread as typed characters. Releasing all control-port switches re-enables
+keyboard polling automatically.
 
 The electrical model and settling rule follow the
 [Commodore 1351 Mouse User's Manual](https://retroisle.com/commodore/c64128/OriginalDocs/1351mousev11.php)

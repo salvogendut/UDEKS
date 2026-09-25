@@ -630,7 +630,7 @@ $(BUILD_8502)/vic_graphics_transport.o: src/8502/vic_graphics.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
-		$(BUILD_8502)/keyboard_scan.o \
+		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
 		$(BUILD_8502)/line_editor_read.o \
 		$(BUILD_8502)/z80_handoff.o \
 		$(BUILD_8502)/vic_graphics_transport.o \
@@ -669,7 +669,7 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 
 $(PANIC_PROBE_KERNEL_BIN): $(BOOT_D71) \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
-		$(BUILD_8502)/keyboard_scan.o \
+		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
 		$(BUILD_8502)/line_editor_read.o \
 		$(BUILD_8502)/z80_handoff.o \
 		$(BUILD_8502)/vic_graphics_transport.o \
