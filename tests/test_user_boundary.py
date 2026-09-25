@@ -75,6 +75,12 @@ class UserBoundaryTests(unittest.TestCase):
         self.assertIn("task_restore_zp:", loader)
         self.assertIn("task_saved_zp:          .res $1e", loader)
 
+    def test_transient_filesystem_calls_do_not_use_bank1_gateway(self):
+        source = (ROOT / "user/lib/filesystem.c").read_text()
+
+        self.assertIn("UDEKS_SYSCALL_TASK_REQUEST", source)
+        self.assertNotIn("UDEKS_TASK_BANK_REQUEST", source)
+
     def test_architecture_decision_defines_both_sides(self):
         decision = (
             ROOT / "docs/decisions/0007-resident-core-and-loadable-services.md"

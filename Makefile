@@ -210,7 +210,7 @@ $(USER_TASK_STREAM_OBJ): $(USER_TASK_STREAM_ASM) | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
 
 $(USER_FILESYSTEM_ASM): user/lib/filesystem.c user/include/udeks/program.h \
-		include/udeks/task_bank.h include/udeks/task_request.h | $(BUILD_USER)
+		include/udeks/syscall.h include/udeks/task_request.h | $(BUILD_USER)
 	$(CC65) $(CFLAGS_8502) -I user/include -I include -o $@ $<
 
 $(USER_FILESYSTEM_OBJ): $(USER_FILESYSTEM_ASM) | $(BUILD_USER)

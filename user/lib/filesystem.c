@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "udeks/program.h"
-#include "udeks/task_bank.h"
+#include "udeks/syscall.h"
 #include "udeks/task_request.h"
 
 #define REQUEST(offset) \
@@ -31,7 +31,11 @@ static unsigned char submit(
     REQUEST(UDEKS_TREQ_ERROR) = 0;
     REQUEST(UDEKS_TREQ_FLAGS) = 0;
     REQUEST(UDEKS_TREQ_STATE) = UDEKS_TREQ_STATE_REQUEST;
-    gate = (request_gate)UDEKS_TASK_BANK_REQUEST;
+    /* Transient programs execute in bank 0, where the resident syscall table
+     * is directly visible.  The $FF16 bank gateway is exclusively for the
+     * persistent bank-1 runtime and would return through the wrong bank here.
+     */
+    gate = (request_gate)UDEKS_SYSCALL_TASK_REQUEST;
     gate();
     if (REQUEST(UDEKS_TREQ_STATE) != UDEKS_TREQ_STATE_COMPLETE) {
         udeks_errno = REQUEST(UDEKS_TREQ_ERROR);
