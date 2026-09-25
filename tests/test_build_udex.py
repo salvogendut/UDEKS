@@ -8,7 +8,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-from build_udex import ABI_MAJOR, ABI_MINOR, HEADER_SIZE, MAGIC, build_executable
+from build_udex import (
+    ABI_MAJOR,
+    ABI_MINOR,
+    FLAG_PERSISTENT_POLL,
+    HEADER_SIZE,
+    MAGIC,
+    build_executable,
+)
 
 
 class BuildUdexTests(unittest.TestCase):
@@ -58,14 +65,21 @@ class BuildUdexTests(unittest.TestCase):
                 b"x", cpu=3, load_address=0x0200, entry_address=0x0200
             )
 
-    def test_rejects_nonzero_format_01_flags(self):
-        with self.assertRaisesRegex(ValueError, "flags must be zero"):
+    def test_accepts_persistent_poll_flag(self):
+        executable = build_executable(
+            b"x",
+            cpu=1,
+            load_address=0x9000,
+            entry_address=0x9000,
+            flags=FLAG_PERSISTENT_POLL,
+        )
+        self.assertEqual(executable[7], FLAG_PERSISTENT_POLL)
+
+    def test_rejects_unsupported_flags(self):
+        with self.assertRaisesRegex(ValueError, "unsupported flags"):
             build_executable(
-                b"x",
-                cpu=1,
-                load_address=0x0200,
-                entry_address=0x0200,
-                flags=1,
+                b"x", cpu=1, load_address=0x0200,
+                entry_address=0x0200, flags=0x80,
             )
 
     def test_rejects_entry_outside_image(self):

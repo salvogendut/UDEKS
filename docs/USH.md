@@ -6,12 +6,14 @@ implementation stays small enough for a stock C128.
 
 ## Current transition
 
-The production image still executes the shell policy from the resident image,
-but the registry no longer owns a shell descriptor. A minimal init service owns
-the root session and delegates start/poll calls to that bootstrap shell. The
-dependency-free tokenizer already lives under `user/lib/`; executable lookup
-is generic and searches the read-only `/bin` bootfs rather than containing a
-`cowsay` builtin.
+The production image now packages a minimal persistent `ush.udx` in the
+read-only `/bin` bootfs, preloads its validated payload at bank-1 `$9000`, and
+has init invoke one bounded poll on every service pass. Its first poll proves
+the public stream request path by announcing that the task is ready. The
+registry no longer owns a shell descriptor, but init still delegates to the
+resident bootstrap shell alongside the bank-1 task so current command parsing
+and dispatch remain usable during extraction. Executable lookup is generic
+and contains no `cowsay` builtin.
 
 This is deliberately called a transition, not a completed user-space shell.
 The resident implementation still calls private terminal, graphics, window,
@@ -32,9 +34,12 @@ supplies the context switch. The complete task path must:
 5. retain the shell's BSS, history-facing state, and working directory between
    polls.
 
-Init will validate and install `/bin/ush`, then invoke that poll entry after the
-terminal service. The shell will use only public operations for terminal input,
-streams, process execution, job control, system queries, and filesystem access.
+The host image builder currently validates `/bin/ush` and stages its payload;
+stage 1 installs it before init invokes the poll entry after the terminal
+service. The completed shell will use only public operations for terminal
+input, streams, process execution, job control, system queries, and filesystem
+access. Runtime resolution through the generic loader replaces this boot-time
+preload once persistent-task allocation is available.
 
 ## Extraction gates
 
@@ -46,8 +51,10 @@ streams, process execution, job control, system queries, and filesystem access.
 - [x] Add nonblocking terminal-read and bounded terminal-write requests.
 - [ ] Add prompt, task-yield, exec, wait, and signal operations.
 - [ ] Replace direct graphical builtins with `/bin` programs or service calls.
-- [ ] Link `ush.udx` without resident private symbols.
-- [ ] Have init install and poll `/bin/ush` at boot.
+- [x] Link a minimal `ush.udx` without resident private symbols.
+- [x] Validate, boot-preload, and have init poll `/bin/ush` alongside the
+  compatibility shell.
+- [ ] Replace the fixed boot preload with init-driven persistent-task loading.
 - [ ] Remove the resident shell descriptor, implementation, and compatibility
   delegation completely.
 - [ ] Resolve `/bin/ush` and other commands from the mounted disk filesystem,

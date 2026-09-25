@@ -41,13 +41,15 @@
 #define UDEKS_VIC_WINDOW_LIMIT        0x8000u
 #define UDEKS_Z80_STACK_TOP           0xEFF0u
 
-/* App images ride in unused portions of the bank-0 Z80 staging payload. */
-#define UDEKS_APP1_STAGING_BASE       0xD400u
-#define UDEKS_APP2_STAGING_BASE       0xE600u
+/* Boot-only images occupy the reclaimable bank-0 VIC shadow. */
+#define UDEKS_APP1_STAGING_BASE       0xAF00u
+#define UDEKS_APP2_STAGING_BASE       0xB900u
+#define UDEKS_USH_STAGING_BASE        0xC300u
+#define UDEKS_USH_STAGING_LIMIT       0xC900u
 
 /* Bank-1 bootfs image and the first transient task-slot backup. */
-#define UDEKS_BOOTFS_BASE             0x2E00u
-#define UDEKS_BOOTFS_LIMIT            0x3600u
+#define UDEKS_BOOTFS_BASE             0x0C00u
+#define UDEKS_BOOTFS_LIMIT            0x1C00u
 #define UDEKS_TASK_BACKUP_BASE        0x8000u
 #define UDEKS_TASK_BACKUP_LIMIT       0x8A00u
 

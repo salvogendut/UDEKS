@@ -41,6 +41,23 @@ class UserBoundaryTests(unittest.TestCase):
         ):
             self.assertNotIn(forbidden, source)
 
+    def test_minimal_ush_is_a_separate_persistent_user_image(self):
+        source = (ROOT / "user/bin/ush.c").read_text()
+        makefile = (ROOT / "Makefile").read_text()
+        config = (ROOT / "cfg/8502-user-bank1.cfg").read_text().lower()
+        init = (ROOT / "src/services/init/descriptor.s").read_text().lower()
+
+        self.assertIn("udeks_ush_poll", source)
+        self.assertIn("--entry ush=$(USER_USH_UDEX)", makefile)
+        self.assertIn("--flags 0x01", makefile)
+        self.assertIn("app: start = $9000", config)
+        self.assertIn("jsr task_bank_reset", init)
+        self.assertIn("jsr task_bank_poll", init)
+        self.assertNotRegex(
+            makefile.split("check:", 1)[0],
+            re.compile(r"BUILD_8502[^\n]*ush|KERNEL_[^\n]*ush", re.I),
+        )
+
     def test_task_loader_preserves_resident_cc65_zero_page(self):
         loader = (ROOT / "src/boot/stage1-gateway.s").read_text()
 

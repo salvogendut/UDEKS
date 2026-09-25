@@ -20,5 +20,7 @@
 #define UDEKS_TASK_BANK_NOT_READY         1u
 
 typedef unsigned char (*udeks_task_bank_entry)(void);
+typedef void (*udeks_task_bank_reset_entry)(void);
+typedef unsigned char (*udeks_task_bank_poll_entry)(void);
 
 #endif

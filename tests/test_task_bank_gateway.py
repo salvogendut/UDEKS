@@ -53,6 +53,15 @@ class TaskBankGatewayTests(unittest.TestCase):
         self.assertIn("sta $ff05,y", stage1)
         self.assertIn("cpy #$cb", stage1)
 
+    def test_stage1_relocates_bootfs_and_installs_persistent_task(self):
+        stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
+
+        self.assertIn("lda $2c00,y", stage1)
+        self.assertIn("sta $0c00,y", stage1)
+        self.assertIn("lda $c300,y", stage1)
+        self.assertIn("sta $9000,y", stage1)
+        self.assertIn("bootfs_base             = $0c00", stage1)
+
 
 if __name__ == "__main__":
     unittest.main()

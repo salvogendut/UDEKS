@@ -64,7 +64,9 @@ See [LICENSE](LICENSE).
   `user/` and must arrive through the executable-loader path.
 - A transitional init service owns the root session. Commands absent from the
   builtin table are resolved by leaf name through the read-only `/bin` bootfs;
-  `cowsay` is the first program launched through that path.
+  `cowsay` is the first transient program launched through that path. A
+  minimal `/bin/ush` is also boot-preloaded in bank 1 and cooperatively polled
+  through the public task/stream ABI while shell-policy extraction continues.
 
 ## Hardware model
 

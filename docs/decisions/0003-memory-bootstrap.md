@@ -47,8 +47,8 @@ The initial physical allocation is:
 | `$0000-$01FF` | Initial executive zero page and stack | Relocatable task-page pool |
 | `$0200-$0AFF` | Boot-preloaded application slot 1 | Task/worker low workspace |
 | `$0B00-$0BFF` | Application slot 1 after stage 0 exits | Task/worker space |
-| `$0C00-$11FF` | Reclaimed root-console and terminal state after stage 1 exits | Task/worker space |
-| `$1200-$1BFF` | Boot-preloaded application slot 2 | Task/worker space |
+| `$0C00-$11FF` | Reclaimed root-console and terminal state after stage 1 exits | Read-only bootfs |
+| `$1200-$1BFF` | Boot-preloaded application slot 2 | Read-only bootfs |
 | `$1C00-$1FFF` | Stage-1 loader | Task/worker space |
 | `$2000-$3FFF` | 8502 kernel image | Resident Z80 dispatcher and code |
 | `$4000-$7FFF` | 8502 kernel image | Reserved 16 KiB VIC-visible window |
@@ -72,7 +72,15 @@ view and must remain at or above `$E300`, leaving the bank-1 context intact.
 
 Stage 1 transfers control from `$1C00-$1FFF` and never returns. Before doing
 so it installs two 2560-byte application images from bank-0 staging ranges
-`$D400-$DDFF` and `$E600-$EFFF` into `$0200-$0BFF` and `$1200-$1BFF`.
+`$AF00-$B8FF` and `$B900-$C2FF` into `$0200-$0BFF` and `$1200-$1BFF`.
+It also installs the validated persistent-shell payload from `$C300-$C8FF`
+into bank-1 `$9000-$95FF`. These boot-only staging ranges are reclaimed by the
+VIC shadow after initialization.
+
+The 4 KiB bootfs travels in the unused `$2C00-$3BFF` portion of the staged Z80
+window. The common gateway relocates it to bank-1 `$0C00-$1BFF` and clears the
+source pages before allowing the Z80 worker to run. Bank 0 uses the same
+logical addresses independently for resident low BSS and application slot 2.
 The kernel reclaims the adjacent `$0C00-$11FF` bootstrap/KERNAL workspace as a linker-
 bounded `LOWBSS` segment. The retained root-console module owns its initial
 allocation there and explicitly initializes every byte in

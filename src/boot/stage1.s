@@ -124,5 +124,5 @@ halt:
 gateway_image:
         .incbin "build/boot/stage1-gateway.bin"
 gateway_image_end:
-        .assert gateway_image_end-gateway_image <= $0700, error, "stage-1 gateway exceeds common region"
+        .assert gateway_image_end-gateway_image <= $0200, error, "stage-1 gateway exceeds boot reservation"
         .assert gateway_image_end <= $2000, error, "stage 1 exceeds reserved $1C00-$1FFF range"

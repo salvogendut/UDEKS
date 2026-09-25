@@ -11,13 +11,13 @@ dynamic symbol table, or implicit host-runtime dependency.
 | 4 | 1 | ABI major (`0`) |
 | 5 | 1 | ABI minor (`1`) |
 | 6 | 1 | CPU (`1` = 8502, `2` = Z80) |
-| 7 | 1 | Flags; zero in format 0.1 |
+| 7 | 1 | Flags; bit 0 selects a persistent cooperative poll entry |
 | 8 | 2 | Required load address |
 | 10 | 2 | Image byte count, excluding this header |
 | 12 | 2 | Zero-filled BSS byte count following the image |
 | 14 | 2 | Absolute entry address inside the image |
 
-A loader must reject an unknown major version or CPU, nonzero format-0.1
+A loader must reject an unknown major version or CPU, unsupported format-0.1
 flags, a zero-length image, an entry outside the image, an address-space
 overflow, or an allocation that overlaps the resident kernel, another task,
 display memory, common RAM, or active module state. It copies exactly the
@@ -31,6 +31,12 @@ entry convention and standard output/error operations. A UDEX file is not
 runnable merely because its container is valid: task allocation, private
 software-stack setup, argument copying, cc65 zero-page preservation, and
 context restoration remain loader responsibilities.
+
+Flag bit 0 changes the entry lifecycle, not the binary container. Init invokes
+a persistent program's entry once per cooperative service pass; returning
+yields to init without discarding image, BSS, stack, or zero-page state. Such a
+program receives no transient `argc`/`argv` registers at each poll. Version
+0.1 allows no other flag bits.
 
 `tools/build_udex.py` is the canonical host-side packer. It performs all
 format-level bounds checks without assuming a filesystem. The early

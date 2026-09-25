@@ -19,10 +19,12 @@ TASK_BANK_GATE_STAGING_ADDRESS = 0xCE00
 TASK_BANK_GATE_STAGING_SIZE = 0x00CB
 Z80_SIZE = 0x2000
 APP_IMAGE_SIZE = 0x0A00
-APP1_Z80_OFFSET = 0x0400
-BOOTFS_Z80_OFFSET = 0x0E00
-BOOTFS_SIZE = 0x0800
-APP2_Z80_OFFSET = 0x1600
+APP1_STAGING_ADDRESS = 0xAF00
+APP2_STAGING_ADDRESS = 0xB900
+USH_STAGING_ADDRESS = 0xC300
+USH_STAGING_SIZE = 0x0600
+BOOTFS_Z80_OFFSET = 0x0C00
+BOOTFS_SIZE = 0x1000
 PAYLOAD_SIZE = 0xD400
 PAYLOAD_BLOCKS = PAYLOAD_SIZE // SECTOR_SIZE
 
@@ -115,22 +117,59 @@ def boot_locations(blocks: int):
             sector = 0
 
 
-def install_app_image(z80: bytearray, image: bytes, offset: int, name: str) -> None:
+def install_app_image(
+    kernel: bytearray, image: bytes, address: int, name: str
+) -> None:
     if len(image) > APP_IMAGE_SIZE:
         raise ValueError(f"{name} image exceeds its 2560-byte reservation")
-    if any(z80[offset : offset + APP_IMAGE_SIZE]):
-        raise ValueError(f"{name} staging range overlaps Z80 code or data")
-    z80[offset : offset + APP_IMAGE_SIZE] = image.ljust(APP_IMAGE_SIZE, b"\x00")
+    offset = address - KERNEL_ADDRESS
+    if any(kernel[offset : offset + APP_IMAGE_SIZE]):
+        raise ValueError(f"{name} staging range overlaps resident kernel data")
+    kernel[offset : offset + APP_IMAGE_SIZE] = image.ljust(
+        APP_IMAGE_SIZE, b"\x00"
+    )
 
 
 def install_bootfs(z80: bytearray, bootfs: bytes) -> None:
     if len(bootfs) > BOOTFS_SIZE:
-        raise ValueError("bootfs exceeds its 2048-byte reservation")
+        raise ValueError("bootfs exceeds its 4096-byte reservation")
     region = z80[BOOTFS_Z80_OFFSET : BOOTFS_Z80_OFFSET + BOOTFS_SIZE]
     if any(region):
         raise ValueError("bootfs overlaps Z80 code or data")
     z80[BOOTFS_Z80_OFFSET : BOOTFS_Z80_OFFSET + BOOTFS_SIZE] = (
         bootfs.ljust(BOOTFS_SIZE, b"\x00")
+    )
+
+
+def install_ush(kernel: bytearray, executable: bytes) -> None:
+    if not executable:
+        return
+    if len(executable) < 16 or executable[:4] != b"UDEX":
+        raise ValueError("ush is not a UDEX executable")
+    major, minor, cpu, flags = executable[4:8]
+    load_address = int.from_bytes(executable[8:10], "little")
+    image_size = int.from_bytes(executable[10:12], "little")
+    bss_size = int.from_bytes(executable[12:14], "little")
+    entry_address = int.from_bytes(executable[14:16], "little")
+    if major != 0 or minor > 1:
+        raise ValueError("ush has an unsupported UDEX version")
+    if cpu != 1:
+        raise ValueError("ush is not an 8502 executable")
+    if flags != 0x01:
+        raise ValueError("ush is not a persistent-poll executable")
+    if load_address != 0x9000 or entry_address != 0x9000:
+        raise ValueError("ush must load and enter at $9000")
+    if image_size == 0 or len(executable) != 16 + image_size:
+        raise ValueError("ush UDEX image size is inconsistent")
+    if image_size + bss_size > USH_STAGING_SIZE:
+        raise ValueError("ush exceeds its 1536-byte staging area")
+    offset = USH_STAGING_ADDRESS - KERNEL_ADDRESS
+    region = kernel[offset : offset + USH_STAGING_SIZE]
+    if any(region):
+        raise ValueError("ush staging overlaps resident kernel data")
+    allocation = executable[16:].ljust(image_size + bss_size, b"\x00")
+    kernel[offset : offset + USH_STAGING_SIZE] = allocation.ljust(
+        USH_STAGING_SIZE, b"\x00"
     )
 
 
@@ -161,7 +200,8 @@ def install_task_bank_gateway(kernel: bytearray, gateway: bytes) -> None:
 def build_image(
     stage0: bytes, stage1: bytes, kernel: bytes, z80: bytes,
     app1: bytes = b"", app2: bytes = b"", bootfs: bytes = b"",
-    task_loader: bytes = b"", task_bank_gateway: bytes = b""
+    task_loader: bytes = b"", task_bank_gateway: bytes = b"",
+    ush: bytes = b"",
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -177,12 +217,13 @@ def build_image(
         raise ValueError("Z80 image exceeds its 8 KiB reservation")
 
     staged_z80 = bytearray(z80.ljust(Z80_SIZE, b"\x00"))
-    install_app_image(staged_z80, app1, APP1_Z80_OFFSET, "application 1")
-    install_app_image(staged_z80, app2, APP2_Z80_OFFSET, "application 2")
     install_bootfs(staged_z80, bootfs)
     staged_kernel = bytearray(
         kernel.ljust(Z80_STAGING_ADDRESS - KERNEL_ADDRESS, b"\x00")
     )
+    install_app_image(staged_kernel, app1, APP1_STAGING_ADDRESS, "application 1")
+    install_app_image(staged_kernel, app2, APP2_STAGING_ADDRESS, "application 2")
+    install_ush(staged_kernel, ush)
     install_task_loader(staged_kernel, task_loader)
     install_task_bank_gateway(staged_kernel, task_bank_gateway)
 
@@ -220,6 +261,7 @@ def main() -> None:
     parser.add_argument("--bootfs", type=Path)
     parser.add_argument("--task-loader", type=Path)
     parser.add_argument("--task-bank-gateway", type=Path)
+    parser.add_argument("--ush", type=Path)
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
 
@@ -234,6 +276,7 @@ def main() -> None:
             b"" if args.bootfs is None else args.bootfs.read_bytes(),
             b"" if args.task_loader is None else args.task_loader.read_bytes(),
             b"" if args.task_bank_gateway is None else args.task_bank_gateway.read_bytes(),
+            b"" if args.ush is None else args.ush.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

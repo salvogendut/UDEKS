@@ -94,8 +94,13 @@ USER_ENTRY_OBJ := $(BUILD_USER)/entry.o
 USER_SYSCALL_OBJ := $(BUILD_USER)/syscall.o
 USER_TASK_STREAM_ASM := $(BUILD_USER)/task_stream.s
 USER_TASK_STREAM_OBJ := $(BUILD_USER)/task_stream.o
+USER_POLL_ENTRY_OBJ := $(BUILD_USER)/poll_entry.o
+USER_USH_ASM := $(BUILD_USER)/ush.s
+USER_USH_OBJ := $(BUILD_USER)/ush.o
 USER_COWSAY_BIN := $(BUILD_USER)/cowsay.bin
 USER_COWSAY_UDEX := $(BUILD_USER)/cowsay.udx
+USER_USH_BIN := $(BUILD_USER)/ush.bin
+USER_USH_UDEX := $(BUILD_USER)/ush.udx
 USER_BOOTFS := $(BUILD_USER)/bootfs.img
 
 .PHONY: all 8502 z80 z80-asm bench bench-8502 bench-z80 bench-irq \
@@ -115,7 +120,8 @@ panic-probe: $(PANIC_PROBE_D71)
 framebuffer-assets: $(VDC_SPLASH_BIN) $(VDC_WORDMARK_BIN) $(VDC_TEXT_ASSETS_BIN)
 
 # Compile user programs independently; they must never enter the resident link.
-user-sources: $(USER_COWSAY_ASM) $(USER_TASK_STREAM_OBJ)
+user-sources: $(USER_COWSAY_ASM) $(USER_USH_ASM) \
+		$(USER_TASK_STREAM_OBJ) $(USER_POLL_ENTRY_OBJ)
 
 user-programs: $(USER_BOOTFS)
 
@@ -188,6 +194,15 @@ $(USER_TASK_STREAM_ASM): user/lib/task_stream.c user/include/udeks/program.h \
 $(USER_TASK_STREAM_OBJ): $(USER_TASK_STREAM_ASM) | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
 
+$(USER_POLL_ENTRY_OBJ): user/lib/poll_entry.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(USER_USH_ASM): user/bin/ush.c user/include/udeks/program.h | $(BUILD_USER)
+	$(CC65) $(CFLAGS_8502) -I user/include -o $@ $<
+
+$(USER_USH_OBJ): $(USER_USH_ASM) | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
 $(USER_COWSAY_BIN): $(USER_ENTRY_OBJ) $(USER_SYSCALL_OBJ) \
 		$(USER_COWSAY_OBJ) cfg/8502-user-app1.cfg
 	$(CL65) -t none --cpu 6502 -C cfg/8502-user-app1.cfg \
@@ -197,9 +212,19 @@ $(USER_COWSAY_UDEX): $(USER_COWSAY_BIN) tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 \
 		--entry-address 0x0200 $< $@
 
-$(USER_BOOTFS): $(USER_COWSAY_UDEX) tools/build_bootfs.py
-	$(PYTHON) tools/build_bootfs.py --max-size 0x0800 \
-		--entry cowsay=$(USER_COWSAY_UDEX) $@
+$(USER_USH_BIN): $(USER_POLL_ENTRY_OBJ) $(USER_TASK_STREAM_OBJ) \
+		$(USER_USH_OBJ) cfg/8502-user-bank1.cfg
+	$(CL65) -t none --cpu 6502 -C cfg/8502-user-bank1.cfg \
+		-m $(BUILD_USER)/ush.map -o $@ $(filter %.o,$^)
+
+$(USER_USH_UDEX): $(USER_USH_BIN) tools/build_udex.py
+	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x9000 \
+		--entry-address 0x9000 --bss-size 0x0010 --flags 0x01 $< $@
+
+$(USER_BOOTFS): $(USER_COWSAY_UDEX) $(USER_USH_UDEX) tools/build_bootfs.py
+	$(PYTHON) tools/build_bootfs.py --max-size 0x1000 \
+		--entry cowsay=$(USER_COWSAY_UDEX) \
+		--entry ush=$(USER_USH_UDEX) $@
 
 $(VDC_SPLASH_BIN): assets/udekspipe-64.xpm tools/xpm_to_vdc.py | $(BUILD_ASSETS)
 	$(PYTHON) tools/xpm_to_vdc.py $< $@
@@ -929,21 +954,25 @@ $(STAGE1_BIN): $(BUILD_BOOT)/stage1.o cfg/8502-stage1.cfg
 
 $(BOOT_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(APP1_BIN) $(APP2_BIN) $(Z80_BIN) $(USER_BOOTFS) \
-		$(TASK_LOADER_BIN) $(TASK_BANK_GATE_BIN) tools/build_d71.py
+		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_BANK_GATE_BIN) \
+		tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--app1 $(APP1_BIN) --app2 $(APP2_BIN) \
 		--bootfs $(USER_BOOTFS) \
+		--ush $(USER_USH_UDEX) \
 		--task-loader $(TASK_LOADER_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		$(APP1_BIN) $(APP2_BIN) $(Z80_BIN) $(USER_BOOTFS) \
-		$(TASK_LOADER_BIN) $(TASK_BANK_GATE_BIN) tools/build_d71.py
+		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_BANK_GATE_BIN) \
+		tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(PANIC_PROBE_KERNEL_BIN) \
 		--z80 $(Z80_BIN) --app1 $(APP1_BIN) --app2 $(APP2_BIN) \
 		--bootfs $(USER_BOOTFS) \
+		--ush $(USER_USH_UDEX) \
 		--task-loader $(TASK_LOADER_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 

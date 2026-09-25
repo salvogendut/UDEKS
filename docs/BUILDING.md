@@ -50,16 +50,17 @@ make bench-offload  # build copy/checksum/transform crossover sweep
 make            # build all three target images
 ```
 
-`make user-sources` compiles `user/bin/cowsay.c` and the bank-1 task stream
-runtime under `build/user/`. The latter provides nonblocking `read`, bounded
-`write`, Unix descriptor numbers, and Linux errno values through the common
-task-request gate; it is compiled independently but is not yet linked into an
-installed `/bin/ush`. `make user-programs` independently links `cowsay` at the first
-loader-owned slot and wraps it as `build/user/cowsay.udx`. The program imports
-only the user-side syscall veneer; it does not resolve private kernel or shell
-symbols. The same target creates `build/user/bootfs.img`, installs `cowsay.udx`
-as the `cowsay` entry, and `make boot` mounts that immutable image as the early
-`/bin`. Commands absent from the resident bootstrap builtin table go through
+`make user-sources` compiles `user/bin/cowsay.c`, the minimal persistent
+`user/bin/ush.c`, and the bank-1 task stream runtime under `build/user/`. The
+runtime provides nonblocking `read`, bounded `write`, Unix descriptor numbers,
+and Linux errno values through the common task-request gate. `make
+user-programs` independently links `cowsay` at the first loader-owned slot and
+`ush` at bank-1 `$9000`, wrapping them as `build/user/cowsay.udx` and
+`build/user/ush.udx`. Neither resolves private kernel or shell symbols. The
+same target creates `build/user/bootfs.img`, installs both UDEX files, and
+`make boot` mounts that immutable 4 KiB image as the early `/bin`. Stage 1
+preloads the persistent shell payload while commands absent from the resident
+bootstrap builtin table go through
 the common-RAM resolver and loader. It validates bootfs and UDEX bounds, swaps
 the first task slot, supplies a private C stack and cc65 zero page, runs the
 program, and restores the slot on exit. Runtime qualification in both

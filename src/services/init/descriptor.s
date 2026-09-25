@@ -1,19 +1,25 @@
 ; SPDX-License-Identifier: GPL-3.0-or-later
 ;
 ; Transitional init service. It is the sole registry-visible owner of the
-; root user session and delegates to the resident bootstrap shell until
-; /bin/ush can run through the task and stream ABIs.
+; root user session. It polls the persistent bank-1 /bin/ush task while also
+; delegating to the resident bootstrap shell during the extraction transition.
 
         .setcpu "6502"
         .import _udeks_shell_start
         .import _udeks_shell_poll
         .export _udeks_init_service_descriptor
 
+TASK_BANK_RESET         = $ff10
+TASK_BANK_POLL          = $ff13
+
         .segment "CODE"
 init_start:
+        jsr TASK_BANK_RESET
+        jsr TASK_BANK_POLL
         jmp _udeks_shell_start
 
 init_poll:
+        jsr TASK_BANK_POLL
         jmp _udeks_shell_poll
 
         .segment "RODATA"

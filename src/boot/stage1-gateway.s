@@ -130,27 +130,84 @@ checksum_high_matches:
         lda destination_sum_high
         sta BOOT_CHAIN_DEST_SUM+1
 
+        ; Relocate the immutable 4 KiB bootfs from the deliberately empty Z80
+        ; staging window to bank-1 low RAM, then restore that worker window to
+        ; zero before the Z80 is allowed to run.
+        lda #$2c
+        sta bootfs_source+2
+        sta bootfs_clear+2
+        lda #$0c
+        sta bootfs_destination+2
+        ldx #$10
+relocate_bootfs_page:
+        ldy #$00
+relocate_bootfs_byte:
+bootfs_source:
+        lda $2c00,y
+bootfs_destination:
+        sta $0c00,y
+        lda #$00
+bootfs_clear:
+        sta $2c00,y
+        iny
+        bne relocate_bootfs_byte
+        inc bootfs_source+2
+        inc bootfs_destination+2
+        inc bootfs_clear+2
+        dex
+        bne relocate_bootfs_page
+
         ; Install the two boot-preloaded application slots after the verified
-        ; Z80 image has reached bank 1. Their staging ranges are unused by the
-        ; worker and are copied into low RAM that the boot chain has vacated.
+        ; Z80 image has reached bank 1. Their staging ranges are in the
+        ; reclaimable bank-0 VIC shadow and are copied into low RAM that the
+        ; boot chain has vacated.
         lda #$00
         sta MMU_LCR_KERNEL_FLAT
-        lda #$d4
+        lda #$af
         sta low_copy_source+2
         lda #$02
         sta low_copy_destination+2
         ldx #$0a
         jsr copy_low_pages
-        lda #$e6
+        lda #$b9
         sta low_copy_source+2
         lda #$12
         sta low_copy_destination+2
         ldx #$0a
         jsr copy_low_pages
 
+        ; Install the persistent shell payload and its zeroed BSS from the
+        ; final boot-only bank-0 slot into its private bank-1 task address.
+        lda #$c3
+        sta ush_source+2
+        lda #$90
+        sta ush_destination+2
+        ldx #$06
+copy_ush_page:
+        ldy #$00
+copy_ush_byte:
+        lda #$00
+        sta MMU_LCR_KERNEL_FLAT
+ush_source:
+        lda $c300,y
+        sta transfer_byte
+        lda #$00
+        sta MMU_LCR_WORKER_FLAT
+        lda transfer_byte
+ush_destination:
+        sta $9000,y
+        iny
+        bne copy_ush_byte
+        inc ush_source+2
+        inc ush_destination+2
+        dex
+        bne copy_ush_page
+
         ; Install the permanent task loader from its reclaimable bank-0 boot
         ; staging area into common RAM. VIC graphics clears this shadow area
         ; before first use, after the loader is safely resident at $FA00.
+        lda #$00
+        sta MMU_LCR_KERNEL_FLAT
         lda #$c9
         sta task_loader_source+2
         lda #$fa
@@ -240,7 +297,7 @@ destination_sum_low:    .byte $00
 destination_sum_high:   .byte $00
 
 gateway_end:
-        .assert gateway_end - gateway_start <= $0700, error, "stage-1 gateway exceeds common region"
+        .assert gateway_end - gateway_start <= $0200, error, "stage-1 gateway exceeds boot reservation"
 
         ; The early gateway above is dead after it transfers to the kernel.
         ; Align the permanent foreground-task loader at a published common-RAM
@@ -263,8 +320,8 @@ TASK_HEADER             = TASK_STATUS + 16
 XCLOCK_STATE            = $f225
 XCLOCK_RUNNING          = $03
 SYSCALL_TABLE           = $cf00
-BOOTFS_BASE             = $2e00
-BOOTFS_LIMIT_HI         = $36
+BOOTFS_BASE             = $0c00
+BOOTFS_LIMIT_HI         = $1c
 TASK_SLOT               = $0200
 TASK_BACKUP             = $8000
 CC65_SP                 = $06
@@ -416,7 +473,7 @@ task_bootfs_reject_early:
 
 task_bootfs_header_valid:
         ; Convert bootfs-relative data/end offsets to absolute bank-1
-        ; addresses and keep them inside the reserved $2E00-$35FF window.
+        ; addresses and keep them inside the reserved $0C00-$1BFF window.
         lda BOOTFS_BASE+10
         sta task_data_begin_lo
         lda BOOTFS_BASE+11

@@ -7,6 +7,8 @@ This tree contains programs that execute outside the resident microkernel.
   private kernel or service symbols.
 - `lib/shell_parser.c` is the first source extracted from the transitional
   resident shell for reuse by the future `/bin/ush`.
+- `lib/task_stream.c` provides the public request-backed stream operations used
+  by persistent bank-1 tasks.
 
 `make user-sources` compiles staged programs independently of the kernel.
 `make user-programs` links and packages them in the
@@ -15,5 +17,10 @@ This tree contains programs that execute outside the resident microkernel.
 read-only [boot filesystem](../abi/bootfs.md), mounted as `/bin`. The same UDEX
 files will later be installed in the storage-backed filesystem without format
 conversion.
+
+The current bootfs contains the standalone `/bin/cowsay` acceptance program
+and a minimal persistent `/bin/ush`. Init polls that shell image from bank 1,
+while the resident compatibility shell continues to own parsing and command
+dispatch until those policies have crossed the public task-request ABI.
 
 Do not add a shell builtin or resident service merely to launch a program.

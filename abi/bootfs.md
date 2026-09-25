@@ -36,6 +36,10 @@ because this format represents exactly one mounted directory. Entries are
 sorted by name and duplicates are rejected. The loader validates all bounds
 before interpreting a file as UDEX.
 
+The native-boot image reserves at most 4096 bytes. Stage 1 relocates it to
+bank-1 `$0C00-$1BFF`, separate from bank-0 low memory at the same logical
+addresses.
+
 Bootfs is a bootstrap filesystem backend, not the permanent on-disk format.
 The future VFS resolver will search `/bin` through the mounted storage
 filesystem first and may use bootfs as the early-boot fallback.
