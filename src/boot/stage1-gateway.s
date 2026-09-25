@@ -4,7 +4,6 @@
 ; $D000-$EFFF to its resident bank-1 location at $2000-$3FFF.
 
         .setcpu "6502"
-        .segment "CODE"
 
 BOOT_CHAIN              = $f050
 BOOT_CHAIN_STATE        = BOOT_CHAIN + 12
@@ -15,6 +14,102 @@ BOOT_CHAIN_DEST_SUM     = BOOT_CHAIN + 16
 MMU_LCR_KERNEL_IO       = $ff01
 MMU_LCR_KERNEL_FLAT     = $ff02
 MMU_LCR_WORKER_FLAT     = $ff04
+
+        ; This installer remains below $F800 while it replaces the boot-time
+        ; code above it with permanent common-RAM services.
+        .segment "FINAL"
+gateway_entry:
+        jmp gateway_start
+final_install:
+        ; Install the permanent task loader while executing from the protected
+        ; $F700 page.  The main gateway has grown into the $F910 destination,
+        ; so copying it from $F800 code would overwrite the active copy loop.
+        lda #$c8
+        sta final_task_loader_source+2
+        lda #$f9
+        sta final_task_loader_destination+2
+        lda #$10
+        sta final_task_loader_destination+1
+        ldx #$05
+final_copy_task_loader_page:
+        ldy #$00
+final_copy_task_loader_byte:
+final_task_loader_source:
+        lda $c800,y
+final_task_loader_destination:
+        sta $f910,y
+        iny
+        bne final_copy_task_loader_byte
+        inc final_task_loader_source+2
+        inc final_task_loader_destination+2
+        dex
+        bne final_copy_task_loader_page
+        ; Copy the final $F0 bytes without entering the MMU-register page.
+        ldy #$00
+final_copy_task_loader_tail:
+        lda $cd00,y
+        sta $fe10,y
+        iny
+        cpy #$f0
+        bne final_copy_task_loader_tail
+
+        ldy #$00
+final_copy_bootfs_head:
+        lda $c414,y
+        sta $f400,y
+        iny
+        cpy #$ec
+        bne final_copy_bootfs_head
+        ldy #$00
+final_copy_bootfs_page:
+        lda $c500,y
+        sta $f4ec,y
+        iny
+        bne final_copy_bootfs_page
+        ldy #$00
+final_copy_bootfs_tail:
+        lda $c600,y
+        sta $f5ec,y
+        iny
+        cpy #$9e
+        bne final_copy_bootfs_tail
+        lda #$00
+        sta $f3e8
+        sta $f3e9
+        sta $f3ed
+
+        ldy #$00
+final_copy_request_page:
+        lda $c300,y
+        sta $f800,y
+        iny
+        bne final_copy_request_page
+        ldy #$00
+final_copy_request_tail:
+        lda $c400,y
+        sta $f900,y
+        iny
+        cpy #$09
+        bne final_copy_request_tail
+        lda #'Z'
+        sta BOOT_CHAIN+8
+        lda #'8'
+        sta BOOT_CHAIN+9
+        lda #'0'
+        sta BOOT_CHAIN+10
+        lda #'!'
+        sta BOOT_CHAIN+11
+        lda #$00
+        sta BOOT_CHAIN_FAILURE
+        lda #$02
+        sta BOOT_CHAIN_STATE
+        lda #$00
+        sta MMU_LCR_KERNEL_IO
+        jmp $2000
+final_install_end:
+        .assert final_install_end <= $f800, error, "final installer exceeds protected common page"
+
+        .segment "CODE"
 
 gateway_start:
         ; Confirm that the two nominal banks are physically distinct.
@@ -130,15 +225,15 @@ checksum_high_matches:
         lda destination_sum_high
         sta BOOT_CHAIN_DEST_SUM+1
 
-        ; Relocate the immutable 4 KiB bootfs from the deliberately empty Z80
+        ; Relocate the immutable 6 KiB bootfs from the deliberately empty Z80
         ; staging window to bank-1 low RAM, then restore that worker window to
         ; zero before the Z80 is allowed to run.
-        lda #$2c
+        lda #$28
         sta bootfs_source+2
         sta bootfs_clear+2
-        lda #$0c
+        lda #$08
         sta bootfs_destination+2
-        ldx #$10
+        ldx #$18
 relocate_bootfs_page:
         ldy #$00
 relocate_bootfs_byte:
@@ -176,40 +271,6 @@ bootfs_clear:
         ldx #$0a
         jsr copy_low_pages
 
-        ; Install the permanent task loader from its reclaimable bank-0 boot
-        ; staging area into common RAM. VIC graphics clears this shadow area
-        ; after the loader is safely resident at $F910-$FEFF.
-        lda #$00
-        sta MMU_LCR_KERNEL_FLAT
-        lda #$c8
-        sta task_loader_source+2
-        lda #$f9
-        sta task_loader_destination+2
-        lda #$10
-        sta task_loader_destination+1
-        ldx #$05
-copy_task_loader_page:
-        ldy #$00
-copy_task_loader_byte:
-task_loader_source:
-        lda $c900,y
-task_loader_destination:
-        sta $fa00,y
-        iny
-        bne copy_task_loader_byte
-        inc task_loader_source+2
-        inc task_loader_destination+2
-        dex
-        bne copy_task_loader_page
-        ; Copy the final $F0 bytes without entering the MMU-register page.
-        ldy #$00
-copy_task_loader_tail:
-        lda $cd00,y
-        sta $fe10,y
-        iny
-        cpy #$f0
-        bne copy_task_loader_tail
-
         ; Install the bank-1 8502 cooperative-task gate above the MMU register
         ; hole. Its 203-byte reservation ends immediately before the existing
         ; CPU-handoff gateway at $FFD0.
@@ -221,48 +282,41 @@ copy_task_bank_gate:
         cpy #$cb
         bne copy_task_bank_gate
 
-        ; The request gateway replaces part of this executing boot gateway at
-        ; $F800. Move the final copy-and-jump stub to unused hardware-stack
-        ; page space first, then never return to common boot code.
-        ldy #(final_stub_end-final_stub)-1
-copy_final_stub:
-        lda final_stub,y
-        sta $0100,y
-        dey
-        bpl copy_final_stub
-        jmp $0100
+        ; Preserve the first installed bootfs-service page in otherwise free
+        ; bank-1 RAM. VIC page commits borrow that common page as a transfer
+        ; buffer and restore it from this immutable backup before returning.
+        ldy #$00
+backup_service_head:
+        lda #$00
+        sta MMU_LCR_KERNEL_FLAT
+        lda $c414,y
+        sta transfer_byte
+        lda #$00
+        sta MMU_LCR_WORKER_FLAT
+        lda transfer_byte
+        sta $4000,y
+        iny
+        cpy #$ec
+        bne backup_service_head
+        ldy #$00
+backup_service_tail:
+        lda #$00
+        sta MMU_LCR_KERNEL_FLAT
+        lda $c500,y
+        sta transfer_byte
+        lda #$00
+        sta MMU_LCR_WORKER_FLAT
+        lda transfer_byte
+        sta $40ec,y
+        iny
+        cpy #$14
+        bne backup_service_tail
+        lda #$00
+        sta MMU_LCR_KERNEL_FLAT
 
-final_stub:
-        ldy #$00
-copy_request_page_1:
-        lda $c300,y
-        sta $f800,y
-        iny
-        bne copy_request_page_1
-        ldy #$00
-copy_request_page_2:
-        lda $c400,y
-        sta $f900,y
-        iny
-        cpy #$09
-        bne copy_request_page_2
-        lda #'Z'
-        sta BOOT_CHAIN+8
-        lda #'8'
-        sta BOOT_CHAIN+9
-        lda #'0'
-        sta BOOT_CHAIN+10
-        lda #'!'
-        sta BOOT_CHAIN+11
-        lda #$00
-        sta BOOT_CHAIN_FAILURE
-        lda #$02
-        sta BOOT_CHAIN_STATE
-        lda #$00
-        sta MMU_LCR_KERNEL_IO
-        jmp $2000
-final_stub_end:
-        .assert final_stub_end-final_stub <= $80, error, "final boot stub exceeds safe stack-page span"
+        ; The protected $F700 installer can now replace this executing
+        ; $F800-$F9FF boot code without stack-page relocation.
+        jmp final_install
 
 copy_low_pages:
         ldy #$00
@@ -330,8 +384,8 @@ TASK_HEADER             = TASK_STATUS + 16
 XCLOCK_STATE            = $f225
 XCLOCK_RUNNING          = $03
 SYSCALL_TABLE           = $cf00
-BOOTFS_BASE             = $0c00
-BOOTFS_LIMIT_HI         = $1c
+BOOTFS_BASE             = $0800
+BOOTFS_LIMIT_HI         = $20
 TASK_SLOT               = $0200
 PERSISTENT_SLOT         = $9000
 TASK_BACKUP             = $8000
@@ -510,7 +564,7 @@ task_bootfs_reject_early:
 
 task_bootfs_header_valid:
         ; Convert bootfs-relative data/end offsets to absolute bank-1
-        ; addresses and keep them inside the reserved $0C00-$1BFF window.
+        ; addresses and keep them inside the reserved $0800-$1FFF window.
         lda BOOTFS_BASE+10
         sta task_data_begin_lo
         lda BOOTFS_BASE+11

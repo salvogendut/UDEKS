@@ -48,16 +48,34 @@
 #define UDEKS_TREQ_OP_EXEC               3u
 #define UDEKS_TREQ_OP_WAIT               4u
 #define UDEKS_TREQ_OP_PROMPT             5u
+#define UDEKS_TREQ_OP_OPEN               6u
+#define UDEKS_TREQ_OP_GETDENTS           7u
+#define UDEKS_TREQ_OP_STAT               8u
+#define UDEKS_TREQ_OP_CLOSE              9u
 
 #define UDEKS_TREQ_EXEC_COMPLETE         0u
 #define UDEKS_TREQ_EXEC_FOREGROUND       1u
 
 /* Linux-compatible errno values used at the user boundary. */
+#define UDEKS_TREQ_ENOENT                 2u
 #define UDEKS_TREQ_EIO                   5u
 #define UDEKS_TREQ_EBADF                 9u
 #define UDEKS_TREQ_EAGAIN                11u
+#define UDEKS_TREQ_ENOTDIR               20u
 #define UDEKS_TREQ_EINVAL                22u
+#define UDEKS_TREQ_EMFILE                 24u
 #define UDEKS_TREQ_ENOSYS                38u
 #define UDEKS_TREQ_EPROTO                71u
+
+/* Compact explicit-byte directory/stat records; never compiler structs. */
+#define UDEKS_DT_DIR                      4u
+#define UDEKS_DT_REG                      8u
+#define UDEKS_DIRENT_TYPE                 0u
+#define UDEKS_DIRENT_NAME_LENGTH          1u
+#define UDEKS_DIRENT_NAME                 2u
+#define UDEKS_STAT_TYPE                   0u
+#define UDEKS_STAT_SIZE_LOW               1u
+#define UDEKS_STAT_SIZE_HIGH              2u
+#define UDEKS_STAT_SIZE                   3u
 
 #endif

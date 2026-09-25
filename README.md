@@ -8,6 +8,10 @@ UDEKS—the **Unified Dual-Engine Executive Kernel System**—is a native operat
 system for the Commodore 128. It is designed around the machine the C128 could
 have been: a system that deliberately coordinates its 8502 and Z80 and treats
 the VIC-IIe and VDC as independent, simultaneously useful display engines.
+The Commodore 128 was among the earliest 8-bit home computers capable of a
+multi-processor architecture and of driving more than one independent display
+at the same time. UDEKS intends to build on those unusually forward-looking
+capabilities instead of treating them as peripheral compatibility features.
 
 The name also echoes the Latin word *iudex*, “judge.” UDEKS is dedicated to
 “Professor Lo Giudice,” the teacher who introduced its creator to programming
@@ -64,8 +68,9 @@ See [LICENSE](LICENSE).
   `user/` and must arrive through the executable-loader path.
 - A transitional init service owns the root session. Commands absent from the
   builtin table are resolved by leaf name through the read-only `/bin` bootfs;
-  `cowsay` is the first transient program launched through that path. A
-  `/bin/ush` is also loaded in bank 1 and cooperatively polled through the
+  `cowsay` and `ls` are transient programs launched through that path; `ls`
+  exercises the first Linux-shaped `open`/`getdents`/`stat`/`close` boundary.
+  A `/bin/ush` is also loaded in bank 1 and cooperatively polled through the
   public task/stream ABI. It now owns terminal lines and runs `echo`, `help`,
   and `uname` natively, forwarding commands still awaiting extraction through
   a bounded compatibility request.

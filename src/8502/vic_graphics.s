@@ -12,6 +12,7 @@
         .export _udeks_vic_bitmap_commit_page
         .export _udeks_vic_bitmap_outline_blit
         .import _udeks_vic_bitmap_shadow
+        .import _udeks_vic_buffer_restore
 
 MMU_LCR_KERNEL_IO       = $ff01
 MMU_LCR_WORKER_FLAT     = $ff04
@@ -33,11 +34,11 @@ VIC_BORDER_COLOR        = $d020
 VIC_BACKGROUND_COLOR    = $d021
 VIC_SPRITE0_COLOR       = $d027
 
-COMMON_GATEWAY          = $f800
-COMMON_PAGE             = $f8f0
-OUTLINE_GATEWAY_TAG     = $f7fe
+COMMON_GATEWAY          = $f68a
+COMMON_PAGE             = $f3ee
+OUTLINE_GATEWAY_TAG     = $f3ed
 OUTLINE_COUNT           = $f37f
-COMMON_BUFFER           = $f900
+COMMON_BUFFER           = $f400
 OUTLINE_BUFFER          = $f380
 VIC_SCREEN              = $5c00
 VIC_BITMAP              = $6000
@@ -238,7 +239,6 @@ page_gateway:
         clc
         adc #>VIC_BITMAP
         sta COMMON_GATEWAY+(page_store_bitmap-page_gateway)+2
-
         ldy #$00
 page_stage:
 page_load_shadow:
@@ -267,9 +267,7 @@ page_copy_last:
         cpy #$40
         bne page_copy_last
 page_copy_done:
-        lda #$00
-        sta MMU_LCR_KERNEL_IO
-        rts
+        jmp _udeks_vic_buffer_restore
 page_gateway_end:
         .assert page_gateway_end-page_gateway < $f0, error, "VIC page gateway overlaps parameters"
 

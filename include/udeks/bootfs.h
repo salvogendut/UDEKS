@@ -7,7 +7,7 @@
 #define UDEKS_BOOTFS_HEADER_SIZE         16u
 #define UDEKS_BOOTFS_ENTRY_SIZE          24u
 #define UDEKS_BOOTFS_NAME_SIZE           16u
-#define UDEKS_BOOTFS_MAX_SIZE            4096u
+#define UDEKS_BOOTFS_MAX_SIZE            6144u
 
 #define UDEKS_BOOTFS_ENTRY_EXECUTABLE    0x01u
 

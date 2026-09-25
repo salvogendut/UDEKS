@@ -18,6 +18,7 @@
         .import _udeks_shell_command_line
         .import _udeks_shell_dispatch_line
         .import _udeks_shell_foreground_job
+        .import _udeks_bootfs_request
         .import pusha
         .import pushax
         .importzp tmp1, ptr1
@@ -127,11 +128,10 @@ task_dispatch_operation:
         jmp task_wait
 task_check_prompt:
         cmp #TREQ_OP_PROMPT
-        bne task_unknown
+        bne :+
         jmp task_prompt
-task_unknown:
-        lda #ERR_ENOSYS
-        jmp task_finish_error
+:
+        jmp _udeks_bootfs_request
 
 task_read:
         lda TREQ_DESCRIPTOR
@@ -242,4 +242,4 @@ task_finish_ok:
 
 task_signature:
         .byte 'U', 'T', 'R', 'Q', $00
-        .assert * <= $f909, error, "task request gateway exceeds common reservation"
+        .assert * <= $f910, error, "task request gateway exceeds common reservation"

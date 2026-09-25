@@ -45,11 +45,12 @@ The initial physical allocation is:
 | Logical range | Bank 0 | Bank 1 / non-common view |
 |---|---|---|
 | `$0000-$01FF` | Initial executive zero page and stack | Relocatable task-page pool |
-| `$0200-$0AFF` | Boot-preloaded application slot 1 | Task/worker low workspace |
-| `$0B00-$0BFF` | Application slot 1 after stage 0 exits | Task/worker space |
+| `$0200-$07FF` | Boot-preloaded application slot 1 | Task/worker low workspace |
+| `$0800-$0AFF` | Boot-preloaded application slot 1 | Read-only bootfs |
+| `$0B00-$0BFF` | Application slot 1 after stage 0 exits | Read-only bootfs |
 | `$0C00-$11FF` | Reclaimed root-console and terminal state after stage 1 exits | Read-only bootfs |
 | `$1200-$1BFF` | Boot-preloaded application slot 2 | Read-only bootfs |
-| `$1C00-$1FFF` | Stage-1 loader | Task/worker space |
+| `$1C00-$1FFF` | Stage-1 loader | Read-only bootfs |
 | `$2000-$3FFF` | 8502 kernel image | Resident Z80 dispatcher and code |
 | `$4000-$7FFF` | 8502 kernel image | Reserved 16 KiB VIC-visible window |
 | `$8000-$CFFF` | 8502 kernel image | Application, worker, and transfer data |
@@ -79,8 +80,8 @@ resident common-RAM loader to validate and allocate it in bank-1
 position or copied by stage 1. The boot-only bank-0 staging ranges are
 reclaimed by the VIC shadow after initialization.
 
-The 4 KiB bootfs travels in the unused `$2C00-$3BFF` portion of the staged Z80
-window. The common gateway relocates it to bank-1 `$0C00-$1BFF` and clears the
+The 6 KiB bootfs travels in the unused `$2800-$3FFF` portion of the staged Z80
+window. The common gateway relocates it to bank-1 `$0800-$1FFF` and clears the
 source pages before allowing the Z80 worker to run. Bank 0 uses the same
 logical addresses independently for resident low BSS and application slot 2.
 The kernel reclaims the adjacent `$0C00-$11FF` bootstrap/KERNAL workspace as a linker-
@@ -116,12 +117,16 @@ The common area is partitioned conservatively:
 | `$F3A0-$F3D6` | Bank-task compatibility command buffer |
 | `$F3D7` | Reserved alignment byte |
 | `$F3D8-$F3E7` | Persistent shell diagnostics |
-| `$F3E8-$F7EF` | Initial transient-task C stack and future queues; stage 1 temporarily executes in `$F700-$F7EF` before tasks exist |
+| `$F3E8-$F3EC` | Read-only bootfs service directory state and scratch pointers |
+| `$F3ED-$F3EE` | VIC-IIe common-gateway tag and page parameter |
+| `$F3EF-$F3FF` | Reserved common-service growth |
+| `$F400-$F689` | Read-only bootfs request service and VIC transfer-buffer restore gate |
+| `$F68A-$F6FF` | VIC-IIe bank-switch gateway workspace |
+| `$F700-$F7EF` | Initial transient-task C stack; stage 1 temporarily uses the protected `$F700` installer page before tasks exist |
 | `$F7F0-$F7FF` | Transient-task stack guard/top |
 | `$F800-$F908` | Permanent bank-task request gateway after stage 1 exits |
 | `$F909-$F90F` | Reserved common-gateway alignment gap |
 | `$F910-$FEFF` | Resident bootfs/UDEX loader; persistent entry at `$F910`, transient entry at `$F913` |
-| `$F800-$FEFF` | 8502/Z80 gateway code and common kernel mechanisms |
 | `$FF00-$FF04` | Permanent MMU register hole; never RAM or code |
 | `$FF05-$FFC4` | Bank-1 8502 poll and synchronous-request gate |
 | `$FFC5-$FFCF` | Reserved common-gateway growth |

@@ -16,7 +16,9 @@ Z80_STAGING_ADDRESS = 0xD000
 TASK_LOADER_STAGING_ADDRESS = 0xC800
 TASK_LOADER_STAGING_SIZE = 0x05F0
 TASK_REQUEST_STAGING_ADDRESS = 0xC300
-TASK_REQUEST_STAGING_SIZE = 0x0200
+TASK_REQUEST_STAGING_SIZE = 0x0109
+BOOTFS_REQUEST_STAGING_ADDRESS = 0xC414
+BOOTFS_REQUEST_STAGING_SIZE = 0x03EC
 TASK_BANK_GATE_STAGING_ADDRESS = 0xCE00
 TASK_BANK_GATE_STAGING_SIZE = 0x00CB
 Z80_SIZE = 0x2000
@@ -24,8 +26,8 @@ APP_IMAGE_SIZE = 0x0A00
 APP1_STAGING_ADDRESS = 0xAF00
 APP2_STAGING_ADDRESS = 0xB900
 USH_ALLOCATION_SIZE = 0x0800
-BOOTFS_Z80_OFFSET = 0x0C00
-BOOTFS_SIZE = 0x1000
+BOOTFS_Z80_OFFSET = 0x0800
+BOOTFS_SIZE = 0x1800
 PAYLOAD_SIZE = 0xD400
 PAYLOAD_BLOCKS = PAYLOAD_SIZE // SECTOR_SIZE
 
@@ -133,7 +135,7 @@ def install_app_image(
 
 def install_bootfs(z80: bytearray, bootfs: bytes) -> None:
     if len(bootfs) > BOOTFS_SIZE:
-        raise ValueError("bootfs exceeds its 4096-byte reservation")
+        raise ValueError(f"bootfs exceeds its {BOOTFS_SIZE}-byte reservation")
     region = z80[BOOTFS_Z80_OFFSET : BOOTFS_Z80_OFFSET + BOOTFS_SIZE]
     if any(region):
         raise ValueError("bootfs overlaps Z80 code or data")
@@ -201,13 +203,29 @@ def install_task_loader(kernel: bytearray, loader: bytes) -> None:
 
 def install_task_request_gateway(kernel: bytearray, gateway: bytes) -> None:
     if len(gateway) > TASK_REQUEST_STAGING_SIZE:
-        raise ValueError("task request gateway exceeds its 512-byte staging area")
+        raise ValueError(
+            f"task request gateway exceeds its {TASK_REQUEST_STAGING_SIZE}-byte staging area"
+        )
     offset = TASK_REQUEST_STAGING_ADDRESS - KERNEL_ADDRESS
     region = kernel[offset : offset + TASK_REQUEST_STAGING_SIZE]
     if any(region):
         raise ValueError("task-request staging overlaps resident kernel data")
     kernel[offset : offset + TASK_REQUEST_STAGING_SIZE] = gateway.ljust(
         TASK_REQUEST_STAGING_SIZE, b"\x00"
+    )
+
+
+def install_bootfs_request_service(kernel: bytearray, service: bytes) -> None:
+    if len(service) > BOOTFS_REQUEST_STAGING_SIZE:
+        raise ValueError(
+            f"bootfs request service exceeds its {BOOTFS_REQUEST_STAGING_SIZE}-byte staging area"
+        )
+    offset = BOOTFS_REQUEST_STAGING_ADDRESS - KERNEL_ADDRESS
+    region = kernel[offset : offset + BOOTFS_REQUEST_STAGING_SIZE]
+    if any(region):
+        raise ValueError("bootfs-request staging overlaps resident kernel data")
+    kernel[offset : offset + BOOTFS_REQUEST_STAGING_SIZE] = service.ljust(
+        BOOTFS_REQUEST_STAGING_SIZE, b"\x00"
     )
 
 
@@ -228,6 +246,7 @@ def build_image(
     app1: bytes = b"", app2: bytes = b"", bootfs: bytes = b"",
     task_loader: bytes = b"", task_bank_gateway: bytes = b"",
     task_request_gateway: bytes = b"",
+    bootfs_request_service: bytes = b"",
     ush: bytes = b"",
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
@@ -252,6 +271,7 @@ def build_image(
     install_app_image(staged_kernel, app2, APP2_STAGING_ADDRESS, "application 2")
     validate_ush(bootfs, ush)
     install_task_request_gateway(staged_kernel, task_request_gateway)
+    install_bootfs_request_service(staged_kernel, bootfs_request_service)
     install_task_loader(staged_kernel, task_loader)
     install_task_bank_gateway(staged_kernel, task_bank_gateway)
 
@@ -290,6 +310,7 @@ def main() -> None:
     parser.add_argument("--task-loader", type=Path)
     parser.add_argument("--task-bank-gateway", type=Path)
     parser.add_argument("--task-request-gateway", type=Path)
+    parser.add_argument("--bootfs-request-service", type=Path)
     parser.add_argument("--ush", type=Path)
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
@@ -306,6 +327,7 @@ def main() -> None:
             b"" if args.task_loader is None else args.task_loader.read_bytes(),
             b"" if args.task_bank_gateway is None else args.task_bank_gateway.read_bytes(),
             b"" if args.task_request_gateway is None else args.task_request_gateway.read_bytes(),
+            b"" if args.bootfs_request_service is None else args.bootfs_request_service.read_bytes(),
             b"" if args.ush is None else args.ush.read_bytes(),
         )
     except ValueError as error:

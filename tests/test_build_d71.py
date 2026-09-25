@@ -13,6 +13,8 @@ from build_d71 import (
     APP_IMAGE_SIZE,
     BOOTFS_SIZE,
     BOOTFS_Z80_OFFSET,
+    BOOTFS_REQUEST_STAGING_ADDRESS,
+    BOOTFS_REQUEST_STAGING_SIZE,
     PAYLOAD_BLOCKS,
     PAYLOAD_SIZE,
     SECTOR_SIZE,
@@ -153,7 +155,7 @@ class BuildD71Tests(unittest.TestCase):
         self.assertEqual(payload[offset : offset + len(gateway)], gateway)
 
     def test_rejects_oversize_task_request_gateway(self):
-        with self.assertRaisesRegex(ValueError, "512-byte"):
+        with self.assertRaisesRegex(ValueError, "265-byte"):
             build_image(
                 stage0(), b"", b"", b"",
                 task_request_gateway=bytes(TASK_REQUEST_STAGING_SIZE + 1),
@@ -185,7 +187,7 @@ class BuildD71Tests(unittest.TestCase):
             build_image(stage0(), b"", b"", b"", bytes(APP_IMAGE_SIZE + 1))
 
     def test_rejects_oversize_bootfs(self):
-        with self.assertRaisesRegex(ValueError, "4096-byte"):
+        with self.assertRaisesRegex(ValueError, "6144-byte"):
             build_image(
                 stage0(), b"", b"", b"", b"", b"", bytes(BOOTFS_SIZE + 1)
             )
@@ -195,6 +197,25 @@ class BuildD71Tests(unittest.TestCase):
             build_image(
                 stage0(), b"", b"", b"", b"", b"", b"",
                 bytes(TASK_LOADER_STAGING_SIZE + 1),
+            )
+
+    def test_bootfs_request_service_is_staged_in_vic_shadow(self):
+        service = b"bootfs-request-service"
+        image = build_image(
+            stage0(), b"", b"", b"", bootfs_request_service=service
+        )
+        payload = b"".join(
+            image[sector_offset(track, sector) : sector_offset(track, sector) + SECTOR_SIZE]
+            for track, sector in list(boot_locations(1 + PAYLOAD_BLOCKS))[1:]
+        )
+        offset = BOOTFS_REQUEST_STAGING_ADDRESS - 0x1C00
+        self.assertEqual(payload[offset : offset + len(service)], service)
+
+    def test_rejects_oversize_bootfs_request_service(self):
+        with self.assertRaisesRegex(ValueError, "1004-byte"):
+            build_image(
+                stage0(), b"", b"", b"",
+                bootfs_request_service=bytes(BOOTFS_REQUEST_STAGING_SIZE + 1),
             )
 
     def test_task_bank_gateway_is_staged_below_syscall_page(self):

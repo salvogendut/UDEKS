@@ -9,6 +9,8 @@
 #define UDEKS_EXIT_SUCCESS              0u
 #define UDEKS_EXIT_FAILURE              1u
 #define UDEKS_IO_ERROR                  0xFFu
+#define UDEKS_O_RDONLY                  0x00u
+#define UDEKS_O_DIRECTORY               0x01u
 
 extern unsigned char udeks_errno;
 
@@ -22,6 +24,12 @@ unsigned char udeks_exec_line(
     const unsigned char *line, unsigned char length);
 unsigned char udeks_wait_foreground(void);
 unsigned char udeks_prompt(void);
+unsigned char udeks_open(const unsigned char *path, unsigned char flags);
+unsigned char udeks_getdents(
+    unsigned char descriptor, unsigned char *buffer, unsigned char capacity);
+unsigned char udeks_stat(
+    const unsigned char *path, unsigned char *status);
+unsigned char udeks_close(unsigned char descriptor);
 
 unsigned char udeks_program_main(
     unsigned char count, unsigned char **arguments);

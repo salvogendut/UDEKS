@@ -30,7 +30,7 @@ class VicGraphicsSourceTests(unittest.TestCase):
     def test_transport_uses_reserved_bank1_window_and_common_gateway(self):
         source = (ROOT / "src/8502/vic_graphics.s").read_text(encoding="utf-8")
         for declaration in (
-            "COMMON_GATEWAY          = $f800",
+            "COMMON_GATEWAY          = $f68a",
             "VIC_SCREEN              = $5c00",
             "VIC_BITMAP              = $6000",
             "VIC_SPRITE              = $7fc0",
@@ -45,9 +45,10 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("VIC common gateway exceeds one-page installer", source)
         self.assertIn("_udeks_vic_bitmap_commit_page", source)
         self.assertIn("_udeks_vic_bitmap_outline_blit", source)
-        self.assertIn("COMMON_BUFFER           = $f900", source)
+        self.assertIn("COMMON_BUFFER           = $f400", source)
         self.assertIn("OUTLINE_BUFFER          = $f380", source)
-        self.assertIn("OUTLINE_GATEWAY_TAG     = $f7fe", source)
+        self.assertIn("OUTLINE_GATEWAY_TAG     = $f3ed", source)
+        self.assertIn("jmp _udeks_vic_buffer_restore", source)
         self.assertIn("cmp #$a5", source)
         self.assertIn("cmp #$1f", source)
         self.assertIn("outline_gateway:", source)
@@ -55,7 +56,7 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("draw_vertical:", source)
         self.assertIn("sta $ffff", source)
 
-        gateway = source.split("outline_gateway:", 1)[1].split(
+        gateway = source.split("\noutline_gateway:", 1)[1].split(
             "outline_gateway_end:", 1
         )[0]
         bare_jumps = re.findall(

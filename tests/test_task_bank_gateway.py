@@ -58,13 +58,26 @@ class TaskBankGatewayTests(unittest.TestCase):
 
         self.assertIn("lda $2c00,y", stage1)
         self.assertIn("sta $0c00,y", stage1)
+        self.assertIn("lda #$28\n        sta bootfs_source+2", stage1)
+        self.assertIn("lda #$08\n        sta bootfs_destination+2", stage1)
+        self.assertIn("ldx #$18", stage1)
         self.assertNotIn("lda $0c2a", stage1)
         self.assertIn("task_persistent_loader_entry:", stage1)
         self.assertIn("sta persistent_slot", stage1)
         self.assertIn("lda $c300,y", stage1)
         self.assertIn("sta $f800,y", stage1)
         self.assertIn("sta $f900,y\n        iny\n        cpy #$09", stage1)
-        self.assertIn("bootfs_base             = $0c00", stage1)
+        self.assertIn("sta $40ec,y\n        iny\n        cpy #$14", stage1)
+        self.assertIn("bootfs_base             = $0800", stage1)
+
+    def test_runtime_loader_is_installed_from_protected_final_page(self):
+        stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
+        protected, main = stage1.split('.segment "code"', 1)
+
+        self.assertIn('.segment "final"', protected)
+        self.assertIn("final_copy_task_loader_byte:", protected)
+        self.assertIn("sta $f910,y", protected)
+        self.assertNotIn("copy_task_loader_byte:", main)
 
     def test_task_loader_compares_bootfs_names_from_common_ram(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
