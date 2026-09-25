@@ -39,7 +39,7 @@ The first command registry contains:
 | `z80ctl` | Show worker status or run a bounded `NOP` lease with `z80ctl test`. |
 | `xinit` | Initialize the independent VIC-IIe graphics screen; `-q` stops it. |
 | `xclock` | Run the managed analog clock; `-q` stops it and `&` backgrounds it. |
-| `xwave` | Run the dual-engine wireframe wave plot; `-q` stops it and `&` backgrounds it. |
+| `xwave` | Run the dual-engine isometric sinc mesh; `-q` stops it and `&` backgrounds it. |
 
 `lscpu` reports the 8502 as the resident executive and claims a ready bounded
 Z80 worker only after the production mailbox self-test has completed. `z80ctl`

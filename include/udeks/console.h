@@ -17,8 +17,13 @@
 #define UDEKS_CONSOLE_ROOT_X            14u
 #define UDEKS_CONSOLE_ROOT_Y            2u
 
+#define UDEKS_CONSOLE_APP_XINIT         0x01u
+#define UDEKS_CONSOLE_APP_XCLOCK        0x02u
+#define UDEKS_CONSOLE_APP_XWAVE         0x04u
+
 /* Static service lifecycle entry used by the bring-up registry. */
 unsigned char udeks_console_start(void);
+unsigned char udeks_console_poll(void);
 unsigned char udeks_console_refresh_root(void);
 
 #endif

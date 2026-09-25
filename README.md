@@ -19,9 +19,11 @@ UDEKS is licensed under the GNU General Public License, version 3 or later.
 See [LICENSE](LICENSE).
 
 > [!IMPORTANT]
-> UDEKS is in its architecture and bring-up phase. The current binaries are
-> freestanding scaffolding and a qualified native boot path, not yet a usable
-> operating system.
+> UDEKS is an experimental kernel prototype in active bring-up. It has a
+> qualified native boot path, interactive console, dual-CPU worker protocol,
+> and initial graphical applications, but it is not yet a general-purpose
+> operating system: storage, filesystems, process isolation, and dynamic module
+> loading remain future work.
 
 <p align="center">
   <img src="screenshot/udeks-boot.png" alt="UDEKS native C128 boot console running in the 1986 emulator" width="640">
@@ -30,6 +32,33 @@ See [LICENSE](LICENSE).
 <p align="center">
   <img src="screenshot/udeks-xclock.png" alt="UDEKS xclock application running on the VIC-IIe display in the 1986 emulator" width="384">
 </p>
+
+<p align="center">
+  <img src="screenshot/udeks-running-apps.png" alt="UDEKS VDC root console with the live RUNNING application panel" width="640">
+</p>
+
+<p align="center">
+  <img src="screenshot/udeks-xwave-xclock.png" alt="Resizable UDEKS xwave and xclock windows sharing the VIC-IIe display" width="384">
+</p>
+
+## Current prototype
+
+- A native-autoboot D71 starts the assembly-oriented 8502 microkernel, its
+  modular services, two boot-preloaded application banks, and the stock-timing
+  Z80 worker.
+- The VDC hosts a retained black-on-yellow root console with mixed-case input,
+  bounded command history, Unix-like standard streams, Bash-like command
+  names, foreground `Ctrl+C`, and background jobs launched with `&`.
+- The console's live `RUNNING` panel follows `xinit`, `xclock`, and `xwave`
+  lifecycle changes.
+- `xinit` owns an independent VIC-IIe bitmap desktop. A proportional 1351 mouse
+  on port 1 and a digital joystick on port 2 drive its pointer.
+- Window Manager 0.3 supports four overlapping, focused, movable, closable,
+  and resizable bitmap windows. Dragging and resizing move an outline; clients
+  repaint scaled content after release.
+- `xclock` supplies the first C graphical client. `xwave` visibly divides work
+  between the CPUs: the Z80 computes bounded rows of a radial sinc surface and
+  the 8502 projects and draws its two-axis isometric wireframe.
 
 ## Hardware model
 
@@ -78,16 +107,21 @@ docs/                Architecture plan, roadmap, and decisions
 include/udeks/        Public C headers shared across CPU builds
 mk/                   Make configuration
 src/8502/             8502 C and ca65 sources
+src/apps/             Boot-preloaded graphical application modules
 src/boot/             Native C128 stage-0/stage-1 bootstrap
+src/kernel/           Executive and service-registry core
 src/services/         Predominantly C system-service modules
 src/z80/              Z80 C, SDAS, and RASM sources
 tests/                Host-side tests and future emulator tests
 tools/                Deterministic build utilities
 ```
 
-`make boot` produces a native-autoboot D71 with the 8502 kernel and Z80 worker
-at their proposed `$2000` locations. The memory map remains provisional until
-the display-memory and physical-hardware gates in ADR 0003 pass.
+`make boot` produces a native-autoboot D71 containing the resident 8502 kernel,
+the Z80 worker, and the two fixed-size application images. These modules have
+independent descriptors and lifecycles but are still statically linked or
+boot-preloaded; UDEKS does not yet have an executable loader or process address
+spaces. The memory map remains provisional until its physical-hardware gates
+pass.
 
 ## Documents
 
@@ -139,7 +173,7 @@ the display-memory and physical-hardware gates in ADR 0003 pass.
 - [CIA time service](abi/time.md)
 - [`xclock` analog clock application](docs/XCLOCK.md)
 - [`xwave` dual-engine graphics demo](docs/XWAVE.md)
-- [`xmandel` dual-engine Mandelbrot viewer](docs/XMANDEL.md)
+- [Planned `xmandel` dual-engine Mandelbrot viewer](docs/XMANDEL.md)
 - [Service-module ABI](abi/services.md)
 - [Framebuffer client API](abi/framebuffer.md)
 - [Retained terminal API](abi/terminal.md)

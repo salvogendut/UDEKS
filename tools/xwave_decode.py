@@ -23,7 +23,7 @@ def parse_result(data: bytes) -> dict[str, int]:
     if len(data) < RESULT_SIZE:
         raise ValueError("xwave record is truncated")
     block = data[:RESULT_SIZE]
-    if block[:4] != b"XWAV" or block[4] != 1:
+    if block[:4] != b"XWAV" or block[4] not in (1, 2, 3):
         raise ValueError("xwave record magic or format is invalid")
     if block[5] not in (2, 3) or block[6] != 0:
         raise ValueError("xwave state is invalid")
@@ -36,13 +36,26 @@ def parse_result(data: bytes) -> dict[str, int]:
             raise ValueError("xwave window lies outside the surface")
         if word(block, 16) == 0:
             raise ValueError("running xwave has not rendered")
+        if block[4] == 2 and (
+            block[9:12] != bytes((21, 25, 1)) or word(block, 18) != 525
+        ):
+            raise ValueError("running xwave surface geometry is invalid")
+        if block[4] == 3 and (
+            block[9:12] != bytes((21, 25, 2)) or word(block, 18) != 525
+        ):
+            raise ValueError("running xwave mesh geometry is invalid")
     return {
+        "format": block[4],
         "state": block[5],
         "handle": block[8],
-        "phase": block[9],
+        "surface_rows": block[9] if block[4] >= 2 else 0,
+        "surface_columns": block[10] if block[4] >= 2 else 0,
+        "hidden_lines": block[11] if block[4] == 2 else 0,
+        "mesh_axes": block[11] if block[4] >= 3 else 0,
         "z80_batches": word(block, 12),
         "fallback_batches": word(block, 14),
         "renders": word(block, 16),
+        "samples": word(block, 18) if block[4] >= 2 else 0,
         "x": block[20],
         "y": block[21],
         "width": block[22],
@@ -72,7 +85,8 @@ def main() -> None:
         print(
             f"xwave: {state}; {result['renders']} repaint(s); "
             f"{result['z80_batches']} Z80 batch(es), "
-            f"{result['fallback_batches']} fallback batch(es)"
+            f"{result['fallback_batches']} fallback batch(es); "
+            f"{result['samples']} surface sample(s)"
         )
 
 

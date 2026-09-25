@@ -183,6 +183,8 @@ $(BUILD_8502)/vdc_console.s: src/services/console/vdc_console.c \
 		include/udeks/boot_console.h include/udeks/compiler.h \
 		include/udeks/console.h include/udeks/root_console.h \
 		include/udeks/theme.h include/udeks/vdc.h \
+		include/udeks/vic_graphics.h include/udeks/xclock.h \
+		include/udeks/xwave.h \
 		| $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 

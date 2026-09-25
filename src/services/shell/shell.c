@@ -412,7 +412,7 @@ static const struct shell_command commands[] = {
     {(const unsigned char *)"z80ctl", (const unsigned char *)"Inspect or test Z80 worker", command_z80ctl},
     {(const unsigned char *)"xinit", (const unsigned char *)"Start VIC-II graphics", command_xinit},
     {(const unsigned char *)"xclock", (const unsigned char *)"Run analog clock", command_xclock},
-    {(const unsigned char *)"xwave", (const unsigned char *)"Run dual-engine wave plotter", command_xwave}
+    {(const unsigned char *)"xwave", (const unsigned char *)"Run dual-engine surface plotter", command_xwave}
 };
 
 #define COMMAND_COUNT ((unsigned char)(sizeof(commands) / sizeof(commands[0])))

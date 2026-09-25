@@ -55,6 +55,21 @@ class RootConsoleSourceTests(unittest.TestCase):
         self.assertIn("udeks_root_console_mark_row_clean", renderer)
         self.assertIn("VDC_REG_CURSOR_HI", renderer)
 
+    def test_vdc_logo_rail_lists_only_currently_running_apps(self):
+        renderer = (
+            ROOT / "src/services/console/vdc_console.c"
+        ).read_text(encoding="utf-8")
+        descriptor = (
+            ROOT / "src/services/console/descriptor.s"
+        ).read_text(encoding="utf-8")
+        self.assertIn("draw_app_panel", renderer)
+        self.assertIn("active_app_mask", renderer)
+        self.assertIn('app_panel_title[] = "RUNNING"', renderer)
+        for name in ("xinit", "xclock", "xwave"):
+            self.assertIn(f'[] = "{name}"', renderer)
+        self.assertIn("if (current == app_mask)", renderer)
+        self.assertIn(".addr _udeks_console_poll", descriptor)
+
     def test_vdc_renderer_preserves_mixed_case_with_alternate_charset(self):
         renderer = (
             ROOT / "src/services/console/vdc_console.c"

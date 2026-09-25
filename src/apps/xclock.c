@@ -49,9 +49,9 @@ static unsigned int window_width;
 static unsigned char window_height;
 static unsigned int face_x;
 static unsigned char face_y;
+static unsigned char face_radius;
 static unsigned char previous_hour;
 static unsigned char previous_minute;
-static unsigned char previous_second;
 static unsigned int last_window_x;
 static unsigned char last_window_y;
 #pragma bss-name(pop)
@@ -155,8 +155,9 @@ static unsigned char hour_position(
 static void draw_hands(
     unsigned char hour, unsigned char minute, unsigned char color)
 {
-    draw_hand(hour_position(hour, minute), 11u, color);
-    draw_hand(minute, 16u, color);
+    draw_hand(hour_position(hour, minute), face_radius / 2u, color);
+    draw_hand(minute,
+        face_radius - face_radius / 4u, color);
 }
 
 static void draw_face(void)
@@ -167,14 +168,15 @@ static void draw_face(void)
     for (position = 0; position < 60u; position += 2u) {
         next = (unsigned char)((position + 2u) % 60u);
         udeks_vic_bitmap_line(
-            point_x(position, 21u), point_y(position, 21u),
-            point_x(next, 21u), point_y(next, 21u),
+            point_x(position, face_radius), point_y(position, face_radius),
+            point_x(next, face_radius), point_y(next, face_radius),
             UDEKS_VIC_COLOR_BLACK);
     }
     for (position = 0; position < 60u; position += 5u) {
         udeks_vic_bitmap_line(
-            point_x(position, 21u), point_y(position, 21u),
-            point_x(position, 18u), point_y(position, 18u),
+            point_x(position, face_radius), point_y(position, face_radius),
+            point_x(position, face_radius - 3u),
+            point_y(position, face_radius - 3u),
             UDEKS_VIC_COLOR_BLACK);
     }
 }
@@ -192,16 +194,26 @@ static void paint_clock(unsigned char handle)
     }
     udeks_time_now(&hour, &minute, &second);
     face_x = window_x + window_width / 2u;
-    face_y = (unsigned char)(window_y + 40u);
+    face_radius = (unsigned char)((window_width - 8u) / 2u);
+    if (face_radius >
+            (window_height - UDEKS_WINDOW_TITLE_HEIGHT - 18u) / 2u) {
+        face_radius = (unsigned char)(
+            (window_height - UDEKS_WINDOW_TITLE_HEIGHT - 18u) / 2u);
+    }
+    if (face_radius < 4u) {
+        face_radius = 4u;
+    }
+    face_y = (unsigned char)(
+        window_y + UDEKS_WINDOW_TITLE_HEIGHT + 3u + face_radius);
     draw_face();
     draw_hands(hour, minute, UDEKS_VIC_COLOR_BLACK);
     draw_digital(hour, minute);
     previous_hour = hour;
     previous_minute = minute;
-    previous_second = second;
     STATUS_BYTE(12) = hour;
     STATUS_BYTE(13) = minute;
     STATUS_BYTE(14) = second;
+    STATUS_BYTE(25) = face_radius;
     increment_counter(16u);
     if (window_x != last_window_x || window_y != last_window_y) {
         increment_counter(20u);
@@ -247,7 +259,7 @@ unsigned char udeks_xclock_initialize(void)
     STATUS_BYTE(1) = 'C';
     STATUS_BYTE(2) = 'L';
     STATUS_BYTE(3) = 'K';
-    STATUS_BYTE(4) = 1;
+    STATUS_BYTE(4) = 2;
     STATUS_BYTE(5) = UDEKS_XCLOCK_READY;
     STATUS_BYTE(7) = 0x07u;
     window_handle = UDEKS_WINDOW_NONE;

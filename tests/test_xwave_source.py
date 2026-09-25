@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import re
 import unittest
 from pathlib import Path
 
@@ -22,12 +23,31 @@ class XwaveSourceTests(unittest.TestCase):
 
     def test_computation_uses_bounded_z80_batches_and_8502_fallback(self):
         source = (ROOT / "src/apps/xwave.c").read_text(encoding="utf-8")
-        self.assertIn("UDEKS_MB_OP_WAVE_SAMPLES", source)
-        self.assertIn("UDEKS_WAVE_BUFFER_SIZE", source)
-        self.assertIn("#define PLOT_SAMPLES   64u", source)
+        worker = (ROOT / "src/z80/worker.c").read_text(encoding="utf-8")
+        self.assertIn("UDEKS_MB_OP_SURFACE_ROWS", source)
+        self.assertIn("#define SURFACE_ROWS          21u", source)
+        self.assertIn("#define SURFACE_COLUMNS       25u", source)
         self.assertIn("udeks_z80_submit(", source)
-        self.assertIn("sine64[phase >> 2]", source)
-        self.assertIn("remaining > UDEKS_WAVE_BUFFER_SIZE", source)
+        self.assertIn("local_surface_height", source)
+        self.assertIn("PREVIOUS_HEIGHT_BYTE", source)
+        self.assertIn("PROJECTED_WIDTH", source)
+        self.assertIn("column != 0 && (row & 1u) == 0", source)
+        self.assertIn("row != 0 && (column & 1u) == 0", source)
+        self.assertIn(
+            "window_height - UDEKS_WINDOW_TITLE_HEIGHT - 5u", source
+        )
+        tables = []
+        for text in (source, worker):
+            match = re.search(
+                r"sinc_height\[35\]\s*=\s*\{([^}]*)\}", text, re.DOTALL
+            )
+            self.assertIsNotNone(match)
+            tables.append([int(value) for value in re.findall(r"-?\d+", match.group(1))])
+        self.assertEqual(tables[0], tables[1])
+        self.assertEqual(len(tables[0]), 35)
+        self.assertEqual(tables[0][0], 40)
+        self.assertGreater(tables[0][0], tables[0][2])
+        self.assertLess(min(tables[0]), 0)
 
     def test_polling_never_starts_an_unbounded_periodic_repaint(self):
         source = (ROOT / "src/apps/xwave.c").read_text(encoding="utf-8")

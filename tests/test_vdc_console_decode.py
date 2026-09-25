@@ -45,6 +45,20 @@ class VdcConsoleDecodeTests(unittest.TestCase):
         self.assertEqual(result["attribute"], 0)
         self.assertEqual(result["color"], 0x0D)
 
+    def test_decodes_running_app_panel_state(self):
+        block = themed_record()
+        block[19] = 0x05
+        block[20:22] = (3).to_bytes(2, "little")
+        result = parse_result(block)
+        self.assertEqual(result["app_mask"], 0x05)
+        self.assertEqual(result["app_panel_updates"], 3)
+
+    def test_rejects_unknown_running_app_bit(self):
+        block = themed_record()
+        block[19] = 0x80
+        with self.assertRaisesRegex(ValueError, "unknown bits"):
+            parse_result(block)
+
     def test_rejects_screen_readback_failure(self):
         block = valid_record()
         block[12] = 0x20

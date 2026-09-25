@@ -4,6 +4,8 @@
 
 #define UDEKS_XWAVE_STATUS_BASE       0xF260u
 #define UDEKS_XWAVE_STATUS_SIZE       32u
+#define UDEKS_XWAVE_ROW_BASE          0xF340u
+#define UDEKS_XWAVE_ROW_SIZE          25u
 
 #define UDEKS_XWAVE_READY             2u
 #define UDEKS_XWAVE_RUNNING           3u

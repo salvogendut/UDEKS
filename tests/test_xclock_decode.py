@@ -14,11 +14,12 @@ from xclock_decode import parse_result
 def valid_record() -> bytearray:
     block = bytearray(32)
     block[:4] = b"XCLK"
-    block[4:8] = bytes((1, 3, 0, 7))
+    block[4:8] = bytes((2, 3, 0, 7))
     block[8:12] = bytes((124, 61, 72, 77))
     block[12:15] = bytes((13, 45, 27))
     block[16:18] = (1).to_bytes(2, "little")
     block[18:20] = (4).to_bytes(2, "little")
+    block[25] = 21
     return block
 
 
@@ -28,6 +29,7 @@ class XclockDecodeTests(unittest.TestCase):
         self.assertEqual(result["state"], 3)
         self.assertEqual(result["width"], 72)
         self.assertEqual(result["ticks"], 4)
+        self.assertEqual(result["face_radius"], 21)
 
     def test_accepts_resized_clock(self):
         block = valid_record()
@@ -35,6 +37,12 @@ class XclockDecodeTests(unittest.TestCase):
         result = parse_result(block)
         self.assertEqual(result["width"], 120)
         self.assertEqual(result["height"], 100)
+
+    def test_accepts_legacy_fixed_geometry_record(self):
+        block = valid_record()
+        block[4] = 1
+        block[25] = 0
+        self.assertEqual(parse_result(block)["face_radius"], 21)
 
     def test_rejects_unrendered_running_clock(self):
         block = valid_record()

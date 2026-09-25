@@ -1,6 +1,6 @@
 # 8502/Z80 mailbox ABI
 
-Status: **provisional**, ABI version 0.2.
+Status: **provisional**, ABI version 0.3.
 
 The mailbox is the only state transferred implicitly across a CPU ownership
 change. Both processors access the same physical bytes, but never at the same
@@ -39,11 +39,15 @@ are in `include/udeks/mailbox.h`; no compiler-native structure is normative.
 | 2 | `CHECKSUM16` | arg0 source, length byte count | unsigned sum of bytes modulo 65,536 |
 | 3 | `XOR_ROL` | arg0 source, arg1 destination, length byte count | transformed byte count |
 | 4 | `WAVE_SAMPLES` | arg0 low byte phase, arg1 low byte phase step, length 1–64 | next phase; signed samples at `$F300-$F33F` |
+| 5 | `SURFACE_ROWS` | arg0 starting row (0–20), arg1 row count (1–2), length = rows × 25 | next row; signed sinc heights at `$F300-$F33F` |
 
 `NOP` is implemented by the resident production worker and is used for boot
 self-test and explicit lease testing. `WAVE_SAMPLES` is the first production
 compute operation. It writes no more than 64 signed eight-bit sine samples to
 the fixed common-RAM transfer buffer and has a statically bounded loop.
+`SURFACE_ROWS` is the bounded two-dimensional successor used by `xwave`. It
+returns one or two rows of a 25×21 fixed-point radial sinc grid; its maximum
+50 samples keep every Z80 ownership lease statically bounded.
 `COPY`, `CHECKSUM16`, and `XOR_ROL`
 remain benchmark-only contracts; submitting them to the production worker
 returns `ERROR` with status `4` until their buffer-ownership rules are defined.
@@ -74,5 +78,5 @@ sequence after ownership returns. The first working implementation is
 specified by the [Z80 worker service contract](z80-worker.md).
 
 ADR 0002 establishes the 8502 executive as the normal requester and the Z80 as
-the worker. ABI 0.2 continues to exercise both directions for diagnostics, but
+the worker. ABI 0.3 continues to exercise both directions for diagnostics, but
 production Z80-to-8502 requests are not part of the normal scheduling model.

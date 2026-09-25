@@ -46,6 +46,8 @@ def parse_result(data: bytes) -> dict[str, int]:
             )
     if not block[15] & 0x40:
         raise ValueError("VDC attributes are not enabled")
+    if block[19] & ~0x07:
+        raise ValueError("VDC running-app mask has unknown bits")
     return {
         "format": block[4],
         "state": block[5],
@@ -57,6 +59,8 @@ def parse_result(data: bytes) -> dict[str, int]:
         "attribute_readback": block[13],
         "horizontal_scroll": block[15],
         "color": block[16],
+        "app_mask": block[19],
+        "app_panel_updates": block[20] | (block[21] << 8),
     }
 
 
@@ -78,7 +82,10 @@ def main() -> None:
     if args.json:
         print(json.dumps(result, indent=2))
         return
-    print(f"VDC console: ready ({result['width']}x{result['height']})")
+    print(
+        f"VDC console: ready ({result['width']}x{result['height']}); "
+        f"running-app mask 0x{result['app_mask']:02x}"
+    )
     print(
         "Readback: screen 0x"
         f"{result['screen_readback']:02x}, attribute 0x{result['attribute_readback']:02x}"

@@ -160,6 +160,8 @@ mailbox corruption, with published benchmark results.
   owned framebuffer surface.
 - [x] Track bounded row and cell damage so interactive terminal edits avoid a
   full-surface dirty-map scan and full-row redraw.
+- [x] Use the lower logo rail for a change-driven list of running graphical
+  applications.
 - [x] Add bounded window descriptors, z-order, clipping, damage, and
   back-to-front recomposition for overlapping text and bitmap windows.
 - [x] Add Window Manager 0.1 with a bounded registry, managed bitmap chrome,
@@ -183,8 +185,10 @@ mailbox corruption, with published benchmark results.
   port 2 for a digital joystick, and merge both into a frame-paced pointer.
 - [x] Build the first fixed-window `xclock` graphical application, following the bounded
   analog-clock design proven in GEOBENCH.
-- [x] Build `xwave` as a wireframe function plotter using bounded Z80 sample
-  computation, 8502 VIC-IIe rendering, and VDC-console `Ctrl+C` cancellation.
+- [x] Build `xwave` as a two-axis isometric radial sinc mesh using bounded Z80
+  row computation, 8502 VIC-IIe rendering, and VDC-console `Ctrl+C`
+  cancellation.
+- [x] Make xclock and xwave graphics respond to managed-window resizing.
 - [x] Add shell foreground jobs and a whitespace-delimited trailing `&` for
   background `xclock` and `xwave` execution.
 - [ ] Build `xmandel` from the GEOBENCH `XAOS.APP` fixed-point design as a

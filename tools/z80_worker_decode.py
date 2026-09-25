@@ -35,8 +35,8 @@ def parse_result(data: bytes) -> dict[str, int]:
         raise ValueError(f"Z80 worker is not ready (state {block[5]:#04x})")
     if block[6] != 0 or block[10] != 0 or block[11] != 0:
         raise ValueError("ready Z80 worker reports a service or mailbox failure")
-    if block[16:18] != b"\x00\x02":
-        raise ValueError("Z80 worker does not report mailbox ABI 0.2")
+    if block[16] != 0 or block[17] not in (2, 3):
+        raise ValueError("Z80 worker does not report mailbox ABI 0.2 or 0.3")
     if block[18:21] != b"\x01\x01\x01":
         raise ValueError("Z80 image, gateway, or stock-timing policy is missing")
     if block[21] != 3:

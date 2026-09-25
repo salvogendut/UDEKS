@@ -24,6 +24,12 @@ Lowercase cells select the VDC's alternate character set through attribute
 bit 7 while uppercase cells retain the primary set, so one row can display
 mixed case without switching the console-wide character generator.
 
+The lower logo rail contains a bordered `RUNNING` panel. It lists `xinit`,
+`xclock`, and `xwave` only while their lifecycle records report active or
+running state, and displays `none` otherwise. The console poll compares a
+three-bit mask and touches VDC memory only when that mask changes; ordinary
+service passes therefore add no display traffic.
+
 Record format 2 changes the system-owned palette to the UDEKS default: black
 foreground attribute `$00` on the yellow register-26 background `$0D`. The
 decoder continues to accept preserved format-1 white-on-black qualification
@@ -37,6 +43,9 @@ set and place the failing phase in byte 6. Validate a raw record or VSF with:
 python3 tools/vdc_console_decode.py console.bin
 python3 tools/vdc_console_decode.py run.vsf
 ```
+
+Byte 19 contains the running-app mask (`xinit=$01`, `xclock=$02`,
+`xwave=$04`), and bytes 20–21 count panel redraws.
 
 This is currently a polled service. The retained model already provides
 scrolling and terminal controls; IRQ-safe serialization, output queues, and

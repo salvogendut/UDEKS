@@ -35,7 +35,7 @@
 #define UDEKS_MB_RESULT_HI         19u
 
 #define UDEKS_MAILBOX_ABI_MAJOR     0u
-#define UDEKS_MAILBOX_ABI_MINOR     2u
+#define UDEKS_MAILBOX_ABI_MINOR     3u
 
 #define UDEKS_MB_STATE_IDLE         0u
 #define UDEKS_MB_STATE_SUBMITTED    1u
@@ -48,6 +48,7 @@
 #define UDEKS_MB_OP_CHECKSUM16      2u
 #define UDEKS_MB_OP_XOR_ROL         3u
 #define UDEKS_MB_OP_WAVE_SAMPLES    4u
+#define UDEKS_MB_OP_SURFACE_ROWS    5u
 
 #define UDEKS_WAVE_BUFFER_BASE      0xF300u
 #define UDEKS_WAVE_BUFFER_SIZE      64u

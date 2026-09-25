@@ -12,20 +12,25 @@
     (*(volatile unsigned char *)(UDEKS_XWAVE_STATUS_BASE + (offset)))
 #define SAMPLE_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_WAVE_BUFFER_BASE + (offset)))
+#define PREVIOUS_HEIGHT_BYTE(offset) \
+    (*(volatile unsigned char *)(UDEKS_XWAVE_ROW_BASE + (offset)))
 
-#define WINDOW_X       144u
-#define WINDOW_Y       88u
-#define WINDOW_WIDTH   168u
-#define WINDOW_HEIGHT  104u
-#define WINDOW_OWNER   2u
-#define PLOT_SAMPLES   64u
-#define PLOT_X_STEP    2u
+#define WINDOW_X             144u
+#define WINDOW_Y              88u
+#define WINDOW_WIDTH         168u
+#define WINDOW_HEIGHT        104u
+#define WINDOW_OWNER           2u
+#define SURFACE_ROWS          21u
+#define SURFACE_COLUMNS       25u
+#define SURFACE_SAMPLES      525u
+#define PROJECTED_WIDTH      176u
+#define PROJECTED_HEIGHT      75u
 
-static const signed char sine64[64] = {
-      0,  3,  6,  9, 12, 14, 17, 19, 21, 23, 25, 26, 28, 29, 29, 30,
-     30, 30, 29, 29, 28, 26, 25, 23, 21, 19, 17, 14, 12,  9,  6,  3,
-      0, -3, -6, -9,-12,-14,-17,-19,-21,-23,-25,-26,-28,-29,-29,-30,
-    -30,-30,-29,-29,-28,-26,-25,-23,-21,-19,-17,-14,-12, -9, -6, -3
+/* 40 * sinc(r), sampled every half unit from r=0 through r=17. */
+static const signed char sinc_height[35] = {
+    40, 38, 34, 27, 18, 10,  2, -4, -8, -9, -8, -5,
+    -2,  1,  4,  5,  5,  4,  2,  0, -2, -3, -4, -3,
+    -2,  0,  1,  2,  3,  3,  2,  1, -1, -2, -2
 };
 static const unsigned char window_title[] = "XWAVE";
 
@@ -35,7 +40,6 @@ static unsigned int window_x;
 static unsigned char window_y;
 static unsigned int window_width;
 static unsigned char window_height;
-static unsigned char wave_phase;
 #pragma bss-name(pop)
 
 static void increment_counter(unsigned char offset)
@@ -46,78 +50,125 @@ static void increment_counter(unsigned char offset)
     }
 }
 
-static unsigned char sample_batch(unsigned char phase, unsigned char count)
+static signed char local_surface_height(
+    unsigned char row, unsigned char column)
 {
-    unsigned int next_phase;
-    unsigned char index;
+    unsigned char x;
+    unsigned char y;
+    unsigned char greater;
+    unsigned char lesser;
+    unsigned char radius;
+
+    x = column > 12u ? column - 12u : 12u - column;
+    y = row > 10u ? row - 10u : 10u - row;
+    x *= 5u;
+    y *= 6u;
+    if (x > y) {
+        greater = x;
+        lesser = y;
+    } else {
+        greater = y;
+        lesser = x;
+    }
+    radius = (unsigned char)(greater + (lesser >> 2) + (lesser >> 3));
+    radius = (unsigned char)((radius * 2u + 2u) / 5u);
+    if (radius > 34u) {
+        radius = 34u;
+    }
+    return sinc_height[radius];
+}
+
+static void sample_row(unsigned char row)
+{
+    unsigned int next_row;
+    unsigned char column;
 
     if (udeks_z80_submit(
-            UDEKS_MB_OP_WAVE_SAMPLES, phase, 2u, count,
-            &next_phase) == UDEKS_Z80_OK) {
+            UDEKS_MB_OP_SURFACE_ROWS, row, 1u, SURFACE_COLUMNS,
+            &next_row) == UDEKS_Z80_OK &&
+        next_row == row + 1u) {
         increment_counter(12u);
-        return (unsigned char)next_phase;
+        return;
     }
-    for (index = 0; index < count; ++index) {
-        SAMPLE_BYTE(index) = (unsigned char)sine64[phase >> 2];
-        phase += 2u;
+    for (column = 0; column < SURFACE_COLUMNS; ++column) {
+        SAMPLE_BYTE(column) =
+            (unsigned char)local_surface_height(row, column);
     }
     increment_counter(14u);
-    return phase;
+}
+
+static int project_x(int local_x)
+{
+    return window_x + 3u +
+        (unsigned int)local_x *
+            (window_width - 6u) / PROJECTED_WIDTH;
+}
+
+static int project_y(int local_y)
+{
+    return window_y + UDEKS_WINDOW_TITLE_HEIGHT + 1u +
+        (unsigned int)local_y *
+            (window_height - UDEKS_WINDOW_TITLE_HEIGHT - 5u) /
+            PROJECTED_HEIGHT;
 }
 
 static void paint_wave(unsigned char handle)
 {
-    unsigned char remaining;
-    unsigned char count;
-    unsigned char index;
-    unsigned char phase;
-    signed char sample;
-    int center_y;
+    unsigned char row;
+    unsigned char column;
+    signed char previous_height;
+    int local_x;
+    int local_y;
+    int previous_local_x;
+    int previous_local_y;
     int plot_x;
     int plot_y;
     int previous_x;
     int previous_y;
+    signed char height;
 
     if (udeks_window_get_geometry(
             handle, &window_x, &window_y,
             &window_width, &window_height) != UDEKS_WINDOW_OK) {
         return;
     }
-    center_y = window_y + UDEKS_WINDOW_TITLE_HEIGHT +
-        (window_height - UDEKS_WINDOW_TITLE_HEIGHT) / 2u;
-    udeks_vic_bitmap_line(
-        window_x + 4, center_y,
-        window_x + window_width - 5, center_y,
-        UDEKS_VIC_COLOR_BLACK);
-    udeks_vic_bitmap_line(
-        window_x + 8, window_y + UDEKS_WINDOW_TITLE_HEIGHT + 4,
-        window_x + 8, window_y + window_height - 5,
-        UDEKS_VIC_COLOR_BLACK);
 
-    remaining = window_width > 136u ? PLOT_SAMPLES :
-        (unsigned char)((window_width - 8u) / PLOT_X_STEP);
-    phase = wave_phase;
-    plot_x = window_x + 4;
-    previous_x = plot_x;
-    previous_y = center_y;
-    while (remaining != 0) {
-        count = remaining > UDEKS_WAVE_BUFFER_SIZE ?
-            UDEKS_WAVE_BUFFER_SIZE : remaining;
-        phase = sample_batch(phase, count);
-        for (index = 0; index < count; ++index) {
-            sample = (signed char)SAMPLE_BYTE(index);
-            plot_y = center_y - sample;
-            udeks_vic_bitmap_line(
-                previous_x, previous_y, plot_x, plot_y,
-                UDEKS_VIC_COLOR_BLACK);
+    for (row = 0; row < SURFACE_ROWS; ++row) {
+        sample_row(row);
+        previous_x = 0;
+        previous_y = 0;
+        for (column = 0; column < SURFACE_COLUMNS; ++column) {
+            height = (signed char)SAMPLE_BYTE(column);
+            local_x = (int)(column + SURFACE_ROWS - 1u - row) * 4;
+            local_y = 28 + column + row - height;
+            plot_x = project_x(local_x);
+            plot_y = project_y(local_y);
+            if (column != 0 && (row & 1u) == 0) {
+                udeks_vic_bitmap_line(
+                    previous_x, previous_y, plot_x, plot_y,
+                    UDEKS_VIC_COLOR_BLACK);
+            }
+            if (row != 0 && (column & 1u) == 0) {
+                previous_height =
+                    (signed char)PREVIOUS_HEIGHT_BYTE(column);
+                previous_local_x = local_x + 4;
+                previous_local_y = 27 + column + row - previous_height;
+                udeks_vic_bitmap_line(
+                    project_x(previous_local_x),
+                    project_y(previous_local_y),
+                    plot_x, plot_y, UDEKS_VIC_COLOR_BLACK);
+            }
+            PREVIOUS_HEIGHT_BYTE(column) = (unsigned char)height;
             previous_x = plot_x;
-            plot_x += PLOT_X_STEP;
             previous_y = plot_y;
         }
-        remaining -= count;
     }
     STATUS_BYTE(8) = window_handle;
-    STATUS_BYTE(9) = wave_phase;
+    STATUS_BYTE(9) = SURFACE_ROWS;
+    STATUS_BYTE(10) = SURFACE_COLUMNS;
+    STATUS_BYTE(11) = 2u;
+    STATUS_BYTE(18) = (unsigned char)SURFACE_SAMPLES;
+    STATUS_BYTE(19) = (unsigned char)(SURFACE_SAMPLES >> 8);
     STATUS_BYTE(20) = (unsigned char)window_x;
     STATUS_BYTE(21) = window_y;
     STATUS_BYTE(22) = (unsigned char)window_width;
@@ -143,11 +194,10 @@ unsigned char udeks_xwave_initialize(void)
     STATUS_BYTE(1) = 'W';
     STATUS_BYTE(2) = 'A';
     STATUS_BYTE(3) = 'V';
-    STATUS_BYTE(4) = 1;
+    STATUS_BYTE(4) = 3;
     STATUS_BYTE(5) = UDEKS_XWAVE_READY;
     STATUS_BYTE(7) = 0x07u;
     window_handle = UDEKS_WINDOW_NONE;
-    wave_phase = 0;
     return UDEKS_XWAVE_OK;
 }
 

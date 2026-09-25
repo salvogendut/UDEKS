@@ -23,7 +23,7 @@ def parse_result(data: bytes) -> dict[str, int]:
     if len(data) < RESULT_SIZE:
         raise ValueError("xclock record is truncated")
     block = data[:RESULT_SIZE]
-    if block[:4] != b"XCLK" or block[4] != 1:
+    if block[:4] != b"XCLK" or block[4] not in (1, 2):
         raise ValueError("xclock record magic or format is invalid")
     if block[5] not in (2, 3) or block[6] != 0:
         raise ValueError("xclock state is invalid")
@@ -38,7 +38,10 @@ def parse_result(data: bytes) -> dict[str, int]:
     renders = word(block, 16)
     if block[5] == 3 and renders == 0:
         raise ValueError("running xclock has not rendered")
+    if block[4] == 2 and block[5] == 3 and block[25] < 4:
+        raise ValueError("running xclock has an invalid face radius")
     return {
+        "format": block[4],
         "state": block[5],
         "x": block[8],
         "y": block[9],
@@ -52,6 +55,7 @@ def parse_result(data: bytes) -> dict[str, int]:
         "moves": word(block, 20),
         "closes": word(block, 22),
         "dragging": block[24],
+        "face_radius": block[25] if block[4] == 2 else 21,
     }
 
 

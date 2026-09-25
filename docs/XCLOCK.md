@@ -1,8 +1,8 @@
 # `xclock` analog clock application
 
-`xclock` will be the first application on the UDEKS VIC-IIe graphical
-environment. It replaces `xwave` as the initial application milestone;
-`xwave` remains planned as the later dual-engine computation demonstration.
+`xclock` is the first application on the UDEKS VIC-IIe graphical environment.
+It established the managed-window path before the later dual-engine `xwave`
+computation demonstration.
 
 The visual and lifecycle reference is GEOBENCH's analog Clock application:
 
@@ -14,16 +14,18 @@ The visual and lifecycle reference is GEOBENCH's analog Clock application:
   windows;
 - complete repaint after damage, move, or reveal.
 
-The first UDEKS edition uses a fixed-size window while the general window
-manager is still being established. Its geometry is derived from a 60-entry
-fixed-point sine/cosine table, and every line is clipped to its managed client
-area. It uses window, display, and time service APIs rather than direct pointer,
-VIC-IIe, CIA, or SID access.
+Its geometry is derived from a 60-entry fixed-point sine/cosine table, and
+every line is clipped to its managed client area. After a resize, the face
+radius is recomputed from both available width and height; the rim, hour marks,
+and hands expand or contract together while the compact digital readout keeps
+a stable legible font size. It uses window, display, and time service APIs
+rather than direct pointer, VIC-IIe, CIA, or SID access.
 
-The current compact managed window is 72x77 pixels and can be dragged by its title
-bar with the port-1 mouse button or port-2 joystick fire. During a drag its
-contents disappear and only an 8502 assembly-blitted outline follows the pointer;
-one complete repaint occurs on release. Its close box, `xclock -q`, or
+The default managed window is 72x77 pixels and can be dragged by its title bar
+or resized from its lower-right grip with the port-1 mouse button or port-2
+joystick fire. During either operation its contents disappear and only an 8502
+assembly-blitted outline follows the pointer; one geometry-aware repaint occurs
+on release. Its close box, `xclock -q`, or
 VDC-console `Ctrl+C` terminates it. `xclock` starts VIC graphics automatically
 when needed. The shell remains responsive on the independent VDC display.
 
@@ -50,10 +52,11 @@ adapter once application scheduling exists.
 
 - [x] Add bounded VIC-IIe pixel, line, rectangle, and fill primitives.
 - [x] Add a CIA TOD service suitable for clock applications.
-- [x] Create, move, and close one fixed-size graphical window.
+- [x] Create, move, resize, and close a graphical window.
 - [x] Route normalized pointer motion and buttons to the window manager.
 - [x] Draw the face, hour/minute hands, and digital readout.
 - [x] Add bounded, overlap-safe managed clock repaint.
+- [x] Scale the analog face and hands to the resized client area.
 - [ ] Add an optional seconds hand and per-second readout.
 - [x] Support VDC `Ctrl+C`, `xclock -q`, and graphical close-box termination.
 - [x] Verify timekeeping, repaint, and command lifecycle in 1986.

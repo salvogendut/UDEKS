@@ -80,7 +80,7 @@ The common area is partitioned conservatively:
 
 | Range | Contract |
 |---|---|
-| `$F000-$F03F` | Mailbox ABI 0.2 |
+| `$F000-$F03F` | Mailbox ABI 0.3 |
 | `$F040-$F06F` | Native boot-chain diagnostics |
 | `$F070-$F087` | VDC console diagnostics |
 | `$F088-$F08F` | Reserved diagnostic alignment gap |
@@ -96,8 +96,9 @@ The common area is partitioned conservatively:
 | `$F170-$F18F` | Shell diagnostics and foreground-job state |
 | `$F190-$F27F` | Worker, graphics, pointer, time, window, and application diagnostics |
 | `$F280-$F2FF` | Reserved diagnostic space |
-| `$F300-$F33F` | Bounded Z80/8502 wave-sample buffer |
-| `$F340-$F7FF` | Future queues, job descriptors, and shared transfer metadata |
+| `$F300-$F33F` | Bounded Z80/8502 sample transfer buffer |
+| `$F340-$F358` | `xwave` previous surface-row cache |
+| `$F359-$F7FF` | Future queues, job descriptors, and shared transfer metadata |
 | `$F800-$FEFF` | 8502/Z80 gateway code and common kernel mechanisms |
 | `$FF00-$FF04` | Permanent MMU register hole; never RAM or code |
 | `$FF05-$FFCF` | Common gateway state/code, to be allocated explicitly |

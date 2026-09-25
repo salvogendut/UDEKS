@@ -4,6 +4,9 @@
 #include "udeks/root_console.h"
 #include "udeks/theme.h"
 #include "udeks/vdc.h"
+#include "udeks/vic_graphics.h"
+#include "udeks/xclock.h"
+#include "udeks/xwave.h"
 
 #define STATUS_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_CONSOLE_STATUS_BASE + (offset)))
@@ -49,6 +52,11 @@
 #define LOGO_Y                     1u
 #define WORDMARK_X                 2u
 #define WORDMARK_Y                 10u
+#define APP_PANEL_X                1u
+#define APP_PANEL_TOP              15u
+#define APP_PANEL_BOTTOM           21u
+#define APP_PANEL_WIDTH            11u
+#define APP_PANEL_INNER_WIDTH      9u
 #define FRAME_LEFT                 (UDEKS_CONSOLE_ROOT_X - 1u)
 #define FRAME_TOP                  (UDEKS_CONSOLE_ROOT_Y - 1u)
 #define FRAME_RIGHT                \
@@ -64,6 +72,17 @@ static unsigned char service_failure;
 static unsigned char row_buffer[UDEKS_ROOT_CONSOLE_COLUMNS];
 static unsigned char attribute_buffer[UDEKS_ROOT_CONSOLE_COLUMNS];
 static unsigned char frame_buffer[UDEKS_ROOT_CONSOLE_COLUMNS + 2u];
+#pragma bss-name(push, "APP2BSS")
+static unsigned char app_mask;
+#pragma bss-name(pop)
+
+#pragma rodata-name(push, "APP2RODATA")
+static const unsigned char app_panel_title[] = "RUNNING";
+static const unsigned char app_panel_none[] = "none";
+static const unsigned char app_name_xinit[] = "xinit";
+static const unsigned char app_name_xclock[] = "xclock";
+static const unsigned char app_name_xwave[] = "xwave";
+#pragma rodata-name(pop)
 
 static void status_begin(void)
 {
@@ -251,6 +270,136 @@ static unsigned char draw_logo(void)
         wordmark_map());
 }
 
+#pragma code-name(push, "APP2CODE")
+static unsigned char write_app_panel_row(
+    unsigned char row, const unsigned char *text)
+{
+    unsigned char column;
+    unsigned char value;
+
+    frame_buffer[0] = udeks_vdc_text_assets[ASSET_BORDER_V];
+    attribute_buffer[0] = SCREEN_ATTRIBUTE;
+    for (column = 0; column < APP_PANEL_INNER_WIDTH; ++column) {
+        value = text != 0 && *text != 0 ? *text++ : ' ';
+        frame_buffer[column + 1u] = screen_code(value);
+        attribute_buffer[column + 1u] = (unsigned char)(
+            SCREEN_ATTRIBUTE |
+            (value >= 'a' && value <= 'z' ? SCREEN_ATTRIBUTE_ALT : 0u));
+    }
+    frame_buffer[APP_PANEL_WIDTH - 1u] =
+        udeks_vdc_text_assets[ASSET_BORDER_V];
+    attribute_buffer[APP_PANEL_WIDTH - 1u] = SCREEN_ATTRIBUTE;
+    if (vdc_write_block_at(
+            (unsigned int)row * SCREEN_WIDTH + APP_PANEL_X,
+            frame_buffer, APP_PANEL_WIDTH) != UDEKS_VDC_OK ||
+        vdc_write_block_at(
+            ATTRIBUTE_BASE + (unsigned int)row * SCREEN_WIDTH + APP_PANEL_X,
+            attribute_buffer, APP_PANEL_WIDTH) != UDEKS_VDC_OK) {
+        return UDEKS_VDC_TIMEOUT;
+    }
+    return UDEKS_VDC_OK;
+}
+
+static unsigned char write_app_panel_edge(
+    unsigned char row, unsigned char left, unsigned char right)
+{
+    unsigned char column;
+
+    frame_buffer[0] = left;
+    attribute_buffer[0] = SCREEN_ATTRIBUTE;
+    for (column = 1; column < APP_PANEL_WIDTH - 1u; ++column) {
+        frame_buffer[column] = udeks_vdc_text_assets[ASSET_BORDER_H];
+        attribute_buffer[column] = SCREEN_ATTRIBUTE;
+    }
+    frame_buffer[APP_PANEL_WIDTH - 1u] = right;
+    attribute_buffer[APP_PANEL_WIDTH - 1u] = SCREEN_ATTRIBUTE;
+    if (vdc_write_block_at(
+            (unsigned int)row * SCREEN_WIDTH + APP_PANEL_X,
+            frame_buffer, APP_PANEL_WIDTH) != UDEKS_VDC_OK ||
+        vdc_write_block_at(
+            ATTRIBUTE_BASE + (unsigned int)row * SCREEN_WIDTH + APP_PANEL_X,
+            attribute_buffer, APP_PANEL_WIDTH) != UDEKS_VDC_OK) {
+        return UDEKS_VDC_TIMEOUT;
+    }
+    return UDEKS_VDC_OK;
+}
+
+static unsigned char draw_app_panel(unsigned char mask)
+{
+    const unsigned char *entries[3];
+    unsigned char count;
+    unsigned char row;
+
+    count = 0;
+    if ((mask & UDEKS_CONSOLE_APP_XINIT) != 0) {
+        entries[count++] = app_name_xinit;
+    }
+    if ((mask & UDEKS_CONSOLE_APP_XCLOCK) != 0) {
+        entries[count++] = app_name_xclock;
+    }
+    if ((mask & UDEKS_CONSOLE_APP_XWAVE) != 0) {
+        entries[count++] = app_name_xwave;
+    }
+    if (write_app_panel_edge(
+            APP_PANEL_TOP,
+            udeks_vdc_text_assets[ASSET_BORDER_TL],
+            udeks_vdc_text_assets[ASSET_BORDER_TR]) != UDEKS_VDC_OK ||
+        write_app_panel_row(APP_PANEL_TOP + 1u, app_panel_title) !=
+            UDEKS_VDC_OK) {
+        return UDEKS_VDC_TIMEOUT;
+    }
+    for (row = 0; row < 3u; ++row) {
+        const unsigned char *text;
+
+        text = row < count ? entries[row] : 0;
+        if (count == 0 && row == 0) {
+            text = app_panel_none;
+        }
+        if (write_app_panel_row(
+                APP_PANEL_TOP + 2u + row, text) != UDEKS_VDC_OK) {
+            return UDEKS_VDC_TIMEOUT;
+        }
+    }
+    if (write_app_panel_row(APP_PANEL_BOTTOM - 1u, 0) != UDEKS_VDC_OK ||
+        write_app_panel_edge(
+            APP_PANEL_BOTTOM,
+            udeks_vdc_text_assets[ASSET_BORDER_BL],
+            udeks_vdc_text_assets[ASSET_BORDER_BR]) != UDEKS_VDC_OK) {
+        return UDEKS_VDC_TIMEOUT;
+    }
+    return UDEKS_VDC_OK;
+}
+
+static unsigned char active_app_mask(void)
+{
+    unsigned char mask;
+
+    mask = 0;
+    if (*(volatile unsigned char *)(
+            UDEKS_VIC_GRAPHICS_STATUS_BASE + 5u) ==
+            UDEKS_VIC_GRAPHICS_ACTIVE) {
+        mask |= UDEKS_CONSOLE_APP_XINIT;
+    }
+    if (*(volatile unsigned char *)(UDEKS_XCLOCK_STATUS_BASE + 5u) ==
+            UDEKS_XCLOCK_RUNNING) {
+        mask |= UDEKS_CONSOLE_APP_XCLOCK;
+    }
+    if (*(volatile unsigned char *)(UDEKS_XWAVE_STATUS_BASE + 5u) ==
+            UDEKS_XWAVE_RUNNING) {
+        mask |= UDEKS_CONSOLE_APP_XWAVE;
+    }
+    return mask;
+}
+
+static void increment_app_panel_updates(void)
+{
+    ++STATUS_BYTE(20);
+    if (STATUS_BYTE(20) == 0) {
+        ++STATUS_BYTE(21);
+    }
+}
+#pragma code-name(pop)
+
 static unsigned char draw_frame(void)
 {
     unsigned char column;
@@ -405,9 +554,13 @@ unsigned char udeks_console_start(void)
     if (upload_custom_glyphs() != UDEKS_VDC_OK) {
         return console_fail(6);
     }
-    if (draw_logo() != UDEKS_VDC_OK || draw_frame() != UDEKS_VDC_OK) {
+    app_mask = 0;
+    if (draw_logo() != UDEKS_VDC_OK || draw_frame() != UDEKS_VDC_OK ||
+        draw_app_panel(app_mask) != UDEKS_VDC_OK) {
         return console_fail(7);
     }
+    STATUS_BYTE(19) = app_mask;
+    increment_app_panel_updates();
     if (udeks_boot_console_build() != UDEKS_ROOT_CONSOLE_OK ||
         udeks_console_refresh_root() != UDEKS_CONSOLE_OK) {
         return console_fail(8);
@@ -434,3 +587,22 @@ unsigned char udeks_console_start(void)
     STATUS_BYTE(5) = UDEKS_CONSOLE_STATE_READY;
     return 0;
 }
+
+#pragma code-name(push, "APP2CODE")
+unsigned char udeks_console_poll(void)
+{
+    unsigned char current;
+
+    current = active_app_mask();
+    if (current == app_mask) {
+        return UDEKS_CONSOLE_OK;
+    }
+    if (draw_app_panel(current) != UDEKS_VDC_OK) {
+        return console_fail(11u);
+    }
+    app_mask = current;
+    STATUS_BYTE(19) = app_mask;
+    increment_app_panel_updates();
+    return UDEKS_CONSOLE_OK;
+}
+#pragma code-name(pop)

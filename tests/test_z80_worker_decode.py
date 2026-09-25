@@ -18,7 +18,7 @@ def valid_record() -> bytearray:
     block[5] = 2
     block[8:10] = (2).to_bytes(2, "little")
     block[12:14] = (2).to_bytes(2, "little")
-    block[16:18] = b"\x00\x02"
+    block[16:18] = b"\x00\x03"
     block[18:21] = b"\x01\x01\x01"
     block[21] = 3
     return block
@@ -30,6 +30,11 @@ class Z80WorkerDecodeTests(unittest.TestCase):
         self.assertEqual(result["transactions"], 2)
         self.assertEqual(result["sequence"], 2)
         self.assertEqual(result["stock_timing"], 1)
+
+    def test_accepts_preserved_mailbox_abi_0_2_record(self):
+        block = valid_record()
+        block[17] = 2
+        self.assertEqual(parse_result(block)["abi_minor"], 2)
 
     def test_rejects_ready_record_without_transaction(self):
         block = valid_record()

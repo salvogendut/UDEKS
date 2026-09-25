@@ -12,6 +12,10 @@ retained model, not VDC RAM, is authoritative. Pixel-oriented windows target a
 separately owned graphics mode or the VIC-IIe; the VDC cannot overlay its text
 and bitmap modes.
 
+The unused lower portion of the logo rail is a small live process panel. Its
+`RUNNING` list follows the lifecycle state of `xinit`, `xclock`, and `xwave`
+and is redrawn only when membership changes.
+
 ## Implementation stages
 
 ### 1. Retained root-console model
@@ -47,12 +51,14 @@ meaningful.
 
 - [x] Define bounded window descriptors with handles, geometry, visibility,
   surface type, z-order, owner, and damage.
-- [x] Add create, destroy, managed repaint, click-to-raise/focus, and
-  outline-move operations; resize, explicit show/hide, and lower remain
-  pending.
+- [x] Add create, destroy, managed repaint, click-to-raise/focus,
+  outline-move, and lower-right outline-resize operations; explicit show/hide
+  and lower remain pending.
 - [x] Clip the first bitmap client's operations to its content bounds.
 - [x] Hide client content during a drag, move only an assembly-blitted XOR outline, and
   repaint once on release.
+- [x] Reflow application-owned graphics after resize: `xclock` recomputes its
+  face radius and `xwave` scales its projection to the client rectangle.
 - [x] Recompose damaged regions back-to-front without save-under buffers.
 - Treat display mode and target controller as explicit window/workspace
   properties; do not imply text/bitmap overlay on one VDC screen.
@@ -105,8 +111,8 @@ meaningful.
 - Demonstrate concurrent root-console and graphical application activity on
   separate monitors.
 - Use `xclock` as the first bounded graphical application, based on GEOBENCH's
-  analog Clock, then use `xwave` for Z80 sample computation, 8502 plotting,
-  and VDC `Ctrl+C` termination.
+  analog Clock, then use `xwave` for Z80 sinc-surface computation, 8502
+  isometric mesh plotting, and VDC `Ctrl+C` termination.
 
 ## Constraints
 
