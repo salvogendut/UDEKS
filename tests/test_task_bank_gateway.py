@@ -53,15 +53,17 @@ class TaskBankGatewayTests(unittest.TestCase):
         self.assertIn("sta $ff05,y", stage1)
         self.assertIn("cpy #$cb", stage1)
 
-    def test_stage1_relocates_bootfs_and_installs_persistent_task(self):
+    def test_stage1_relocates_bootfs_and_installs_runtime_loader(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
 
         self.assertIn("lda $2c00,y", stage1)
         self.assertIn("sta $0c00,y", stage1)
-        self.assertIn("lda $0c2a", stage1)
-        self.assertIn("sta $9000,y", stage1)
+        self.assertNotIn("lda $0c2a", stage1)
+        self.assertIn("task_persistent_loader_entry:", stage1)
+        self.assertIn("sta persistent_slot", stage1)
         self.assertIn("lda $c300,y", stage1)
         self.assertIn("sta $f800,y", stage1)
+        self.assertIn("sta $f900,y\n        iny\n        cpy #$09", stage1)
         self.assertIn("bootfs_base             = $0c00", stage1)
 
     def test_task_loader_compares_bootfs_names_from_common_ram(self):
@@ -73,6 +75,10 @@ class TaskBankGatewayTests(unittest.TestCase):
         self.assertIn("sta task_header,y", lookup)
         self.assertIn("lda task_header,y", lookup)
         self.assertIn("cmp bootfs_base+$18,y", lookup)
+        self.assertIn("sta task_entry_length_load+1", lookup)
+        self.assertIn("sta task_entry_length_load+2", lookup)
+        self.assertEqual(lookup.count("sta task_entry_length_load+1"), 2)
+        self.assertEqual(lookup.count("sta task_entry_length_load+2"), 2)
         self.assertIn("sta task_argv_pointer_high_load+1", lookup)
         self.assertIn("sta task_argv_pointer_high_load+2", lookup)
         self.assertIn("tya\n        sta task_name_length", lookup)

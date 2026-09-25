@@ -8,7 +8,8 @@
 #define UDEKS_TASK_ERROR_OFFSET         6u
 #define UDEKS_TASK_EXIT_OFFSET          7u
 #define UDEKS_TASK_HEADER_BASE          0xF290u
-#define UDEKS_TASK_LOADER_ENTRY         0xFA00u
+#define UDEKS_PERSISTENT_LOADER_ENTRY   0xF910u
+#define UDEKS_TASK_LOADER_ENTRY         0xF913u
 #define UDEKS_TASK_STACK_TOP            0xF7F0u
 
 #define UDEKS_TASK_STATE_IDLE           0u

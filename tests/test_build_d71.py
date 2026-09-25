@@ -107,7 +107,7 @@ class BuildD71Tests(unittest.TestCase):
             bootfs,
         )
 
-    def test_persistent_ush_is_loaded_directly_from_bootfs(self):
+    def test_persistent_ush_is_resolved_from_bootfs(self):
         executable = ush_executable()
         bootfs = bootfs_with_ush(executable)
         image = build_image(stage0(), b"", b"", b"", bootfs=bootfs,
@@ -120,6 +120,13 @@ class BuildD71Tests(unittest.TestCase):
         self.assertEqual(
             z80[BOOTFS_Z80_OFFSET : BOOTFS_Z80_OFFSET + len(bootfs)], bootfs
         )
+
+    def test_ush_bootfs_validation_is_independent_of_directory_position(self):
+        executable = ush_executable()
+        bootfs = build_bootfs([
+            ("aardvark", b"first"), ("cowsay", b"x"), ("ush", executable),
+        ])
+        build_image(stage0(), b"", b"", b"", bootfs=bootfs, ush=executable)
 
     def test_rejects_nonpersistent_ush(self):
         executable = ush_executable(b"x", bss_size=0, flags=0)
@@ -184,7 +191,7 @@ class BuildD71Tests(unittest.TestCase):
             )
 
     def test_rejects_oversize_task_loader(self):
-        with self.assertRaisesRegex(ValueError, "1280-byte"):
+        with self.assertRaisesRegex(ValueError, "1520-byte"):
             build_image(
                 stage0(), b"", b"", b"", b"", b"", b"",
                 bytes(TASK_LOADER_STAGING_SIZE + 1),

@@ -128,11 +128,13 @@ user/                 Standalone program sources and user-side ABI headers
 ```
 
 `make boot` produces a native-autoboot D71 containing the resident 8502 kernel,
-the Z80 worker, and the two fixed-size application images. These modules have
-independent descriptors and lifecycles but are still statically linked or
-boot-preloaded; UDEKS does not yet have an executable loader or process address
-spaces. The memory map remains provisional until its physical-hardware gates
-pass.
+the Z80 worker, two transitional fixed-size graphical application images, and
+a read-only boot filesystem. The UDEX loader resolves standalone programs from
+that filesystem: transient commands such as `cowsay` are reclaimed on exit,
+while init allocates the persistent `/bin/ush` task in bank 1. General process
+address spaces, disk-backed filesystems, and loader-managed graphical programs
+remain future work. The memory map remains provisional until its
+physical-hardware gates pass.
 
 ## Documents
 

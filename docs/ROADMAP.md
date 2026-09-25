@@ -237,13 +237,14 @@ without missing input events.
   bootfs.
 - [x] Add init as the registry-visible owner of the root session; its direct
   delegation to the bootstrap shell remains transitional.
-- [x] Package a minimal persistent `/bin/ush`, boot-preload it in bank 1, and
+- [x] Package a minimal persistent `/bin/ush`, initially boot-preload it in bank 1, and
   poll it from init through the public task/stream boundary.
 - [x] Move terminal-line ownership plus native `echo`, `help`, and `uname`
   handling into `/bin/ush`, with bounded compatibility exec/wait for commands
   not yet extracted.
-- [ ] Replace the fixed `ush` preload with runtime persistent-task allocation.
-- [ ] Load, run, and reclaim `cowsay` without adding it to the resident image.
+- [x] Replace the fixed `ush` preload with init-driven, named runtime
+  persistent-task allocation.
+- [x] Load, run, and reclaim `cowsay` without adding it to the resident image.
 - [ ] Package `xclock` and `xwave` as UDEX programs.
 - [ ] Implement IEC device discovery and baseline serial operations.
 - [ ] Add 1571 burst support only after baseline correctness.

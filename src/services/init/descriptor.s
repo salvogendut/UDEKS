@@ -11,6 +11,7 @@
 
 TASK_BANK_RESET         = $ff10
 TASK_BANK_POLL          = $ff13
+PERSISTENT_LOAD         = $f910
 TASK_STATE              = $f285
 USH_STATE               = $f3d9
 
@@ -19,13 +20,21 @@ init_start:
         lda #$00
         sta TASK_STATE
         sta USH_STATE
+        lda #<ush_name
+        ldx #>ush_name
+        jsr PERSISTENT_LOAD
+        bne init_shell_fallback
         jsr TASK_BANK_RESET
         jsr TASK_BANK_POLL
+init_shell_fallback:
         jmp _udeks_shell_start
 
 init_poll:
         jsr TASK_BANK_POLL
         jmp _udeks_shell_poll
+
+ush_name:
+        .byte "ush", $00
 
         .segment "RODATA"
 _udeks_init_service_descriptor:

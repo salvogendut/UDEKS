@@ -60,6 +60,8 @@ class UserBoundaryTests(unittest.TestCase):
         self.assertIn("app: start = $9000", config)
         self.assertIn("jsr task_bank_reset", init)
         self.assertIn("jsr task_bank_poll", init)
+        self.assertIn("jsr persistent_load", init)
+        self.assertIn('.byte "ush", $00', init)
         self.assertIn("sta ush_state", init)
         self.assertNotRegex(
             makefile.split("check:", 1)[0],

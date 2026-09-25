@@ -73,10 +73,11 @@ view and must remain at or above `$E300`, leaving the bank-1 context intact.
 Stage 1 transfers control from `$1C00-$1FFF` and never returns. Before doing
 so it installs two 2560-byte application images from bank-0 staging ranges
 `$AF00-$B8FF` and `$B900-$C2FF` into `$0200-$0BFF` and `$1200-$1BFF`.
-It installs the validated persistent-shell allocation directly from the
-relocated bootfs into bank-1 `$9000-$97FF`, avoiding a duplicate image. The
-boot-only bank-0 staging ranges are reclaimed by the VIC shadow after
-initialization.
+After it transfers control, init resolves `/bin/ush` by name and asks the
+resident common-RAM loader to validate and allocate it in bank-1
+`$9000-$97FF`. The shell is therefore no longer tied to a bootfs directory
+position or copied by stage 1. The boot-only bank-0 staging ranges are
+reclaimed by the VIC shadow after initialization.
 
 The 4 KiB bootfs travels in the unused `$2C00-$3BFF` portion of the staged Z80
 window. The common gateway relocates it to bank-1 `$0C00-$1BFF` and clears the
@@ -117,8 +118,9 @@ The common area is partitioned conservatively:
 | `$F3D8-$F3E7` | Persistent shell diagnostics |
 | `$F3E8-$F7EF` | Initial transient-task C stack and future queues; stage 1 temporarily executes in `$F700-$F7EF` before tasks exist |
 | `$F7F0-$F7FF` | Transient-task stack guard/top |
-| `$F800-$F9FF` | Permanent bank-task request gateway after stage 1 exits |
-| `$FA00-$FEFF` | Resident bootfs/task-loader reservation |
+| `$F800-$F908` | Permanent bank-task request gateway after stage 1 exits |
+| `$F909-$F90F` | Reserved common-gateway alignment gap |
+| `$F910-$FEFF` | Resident bootfs/UDEX loader; persistent entry at `$F910`, transient entry at `$F913` |
 | `$F800-$FEFF` | 8502/Z80 gateway code and common kernel mechanisms |
 | `$FF00-$FF04` | Permanent MMU register hole; never RAM or code |
 | `$FF05-$FFC4` | Bank-1 8502 poll and synchronous-request gate |

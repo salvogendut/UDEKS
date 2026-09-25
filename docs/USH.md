@@ -7,8 +7,9 @@ implementation stays small enough for a stock C128.
 ## Current transition
 
 The production image now packages a minimal persistent `ush.udx` in the
-read-only `/bin` bootfs, loads its validated payload directly at bank-1 `$9000`,
-and has init invoke one bounded poll on every service pass. `ush` now owns
+read-only `/bin` bootfs. Init resolves it by name through the common-RAM UDEX
+loader, which validates and allocates it at bank-1 `$9000`; init then invokes
+one bounded poll on every service pass. `ush` now owns
 submitted terminal lines and implements `echo`, `help`, and `uname` natively
 through the public stream ABI. Commands not yet extracted cross a bounded
 compatibility-exec request, so existing graphical commands and standalone
@@ -41,12 +42,11 @@ supplies the context switch. The complete task path must:
 5. retain the shell's BSS, history-facing state, and working directory between
    polls.
 
-The host image builder currently validates `/bin/ush` and stages its payload;
-stage 1 installs it before init invokes the poll entry after the terminal
-service. The completed shell will use only public operations for terminal
+The host image builder validates the packaged `/bin/ush`; stage 1 only
+relocates bootfs. Init invokes the loader's persistent entry before resetting
+and polling the task gate. The completed shell will use only public operations for terminal
 input, streams, process execution, job control, system queries, and filesystem
-access. Runtime resolution through the generic loader replaces this boot-time
-preload once persistent-task allocation is available.
+access.
 
 ## Extraction gates
 
@@ -60,9 +60,9 @@ preload once persistent-task allocation is available.
 - [ ] Add scheduler yield and signal operations.
 - [ ] Replace direct graphical builtins with `/bin` programs or service calls.
 - [x] Link a minimal `ush.udx` without resident private symbols.
-- [x] Validate, boot-preload, and have init poll `/bin/ush` alongside the
+- [x] Validate, initially boot-preload, and have init poll `/bin/ush` alongside the
   compatibility shell.
-- [ ] Replace the fixed boot preload with init-driven persistent-task loading.
+- [x] Replace the fixed boot preload with init-driven persistent-task loading.
 - [ ] Remove the resident shell descriptor, implementation, and compatibility
   delegation completely.
 - [ ] Resolve `/bin/ush` and other commands from the mounted disk filesystem,

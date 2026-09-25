@@ -157,33 +157,6 @@ bootfs_clear:
         dex
         bne relocate_bootfs_page
 
-        ; The host packer validates /bin/ush as the second bootfs entry and
-        ; leaves enough zero padding after its image for the declared BSS.
-        ; Skip the UDEX header and copy the complete 2 KiB task allocation.
-        clc
-        lda $0c2a
-        adc #$10
-        sta ush_source+1
-        lda $0c2b
-        adc #$0c
-        sta ush_source+2
-        lda #$90
-        sta ush_destination+2
-        ldx #$08
-copy_ush_page:
-        ldy #$00
-copy_ush_byte:
-ush_source:
-        lda $0c00,y
-ush_destination:
-        sta $9000,y
-        iny
-        bne copy_ush_byte
-        inc ush_source+2
-        inc ush_destination+2
-        dex
-        bne copy_ush_page
-
         ; Install the two boot-preloaded application slots after the verified
         ; Z80 image has reached bank 1. Their staging ranges are in the
         ; reclaimable bank-0 VIC shadow and are copied into low RAM that the
@@ -205,13 +178,15 @@ ush_destination:
 
         ; Install the permanent task loader from its reclaimable bank-0 boot
         ; staging area into common RAM. VIC graphics clears this shadow area
-        ; before first use, after the loader is safely resident at $FA00.
+        ; after the loader is safely resident at $F910-$FEFF.
         lda #$00
         sta MMU_LCR_KERNEL_FLAT
-        lda #$c9
+        lda #$c8
         sta task_loader_source+2
-        lda #$fa
+        lda #$f9
         sta task_loader_destination+2
+        lda #$10
+        sta task_loader_destination+1
         ldx #$05
 copy_task_loader_page:
         ldy #$00
@@ -226,6 +201,14 @@ task_loader_destination:
         inc task_loader_destination+2
         dex
         bne copy_task_loader_page
+        ; Copy the final $F0 bytes without entering the MMU-register page.
+        ldy #$00
+copy_task_loader_tail:
+        lda $cd00,y
+        sta $fe10,y
+        iny
+        cpy #$f0
+        bne copy_task_loader_tail
 
         ; Install the bank-1 8502 cooperative-task gate above the MMU register
         ; hole. Its 203-byte reservation ends immediately before the existing
@@ -261,6 +244,7 @@ copy_request_page_2:
         lda $c400,y
         sta $f900,y
         iny
+        cpy #$09
         bne copy_request_page_2
         lda #'Z'
         sta BOOT_CHAIN+8
@@ -349,6 +333,7 @@ SYSCALL_TABLE           = $cf00
 BOOTFS_BASE             = $0c00
 BOOTFS_LIMIT_HI         = $1c
 TASK_SLOT               = $0200
+PERSISTENT_SLOT         = $9000
 TASK_BACKUP             = $8000
 CC65_SP                 = $06
 TASK_STACK_TOP          = $f7f0
@@ -366,9 +351,22 @@ TASK_BAD_ENTRY          = $0a
 TASK_NOT_FOUND          = $0b
 TASK_BAD_BOOTFS         = $0c
 
+task_persistent_loader_entry:
+        .assert task_persistent_loader_entry = $f910, error, "persistent loader entry moved"
+        jmp task_load_persistent
 task_loader_entry:
-        .assert task_loader_entry = $fa00, error, "task loader entry moved"
+        .assert task_loader_entry = $f913, error, "task loader entry moved"
+        jmp task_load_foreground
 
+task_load_persistent:
+        ; init passes a direct bank-0 pointer to the bootfs program name in AX.
+        sta task_command_load+1
+        stx task_command_load+2
+        lda #$01
+        sta task_load_mode
+        bne task_initialize
+
+task_load_foreground:
         ; Adapt the cc65 call made by the shell. argv arrives in AX and argc is
         ; the one-byte stack argument. Consume argc exactly as a C callee does.
         sta TASK_ARGV_LO
@@ -380,6 +378,9 @@ task_loader_entry:
         bne task_arg_popped
         inc CC65_SP+1
 task_arg_popped:
+        lda #$00
+        sta task_load_mode
+task_initialize:
         lda #'T'
         sta TASK_STATUS+0
         lda #'A'
@@ -394,7 +395,10 @@ task_arg_popped:
         lda #$00
         sta TASK_ERROR
 
-        ; APP1 contains xclock. It may be replaced only while xclock is idle.
+        ; APP1 contains xclock. It may be replaced only by a foreground task
+        ; and only while xclock is idle.
+        lda task_load_mode
+        bne task_check_syscalls
         lda XCLOCK_STATE
         cmp #XCLOCK_RUNNING
         bne task_check_syscalls
@@ -431,6 +435,8 @@ task_find_file:
         ; Resolve argv[0] in the bootfs /bin directory. The argv vector and
         ; command text remain in bank 0 while the immutable directory is in
         ; the bank-1 staging window.
+        lda task_load_mode
+        bne task_measure_name_start
         lda TASK_ARGV_LO
         sta task_argv_pointer_load+1
         sta task_argv_pointer_high_load+1
@@ -445,6 +451,8 @@ task_argv_pointer_load:
 task_argv_pointer_high_load:
         lda $ffff,y
         sta task_command_load+2
+        jmp task_measure_name_start
+task_measure_name_start:
         ldy #$00
 task_measure_name:
 task_command_load:
@@ -537,8 +545,10 @@ task_bootfs_reject_bounds:
 task_bootfs_layout_ready:
         lda #<(BOOTFS_BASE+$10)
         sta task_entry_load+1
+        sta task_entry_length_load+1
         lda #>(BOOTFS_BASE+$10)
         sta task_entry_load+2
+        sta task_entry_length_load+2
         lda #<(BOOTFS_BASE+$18)
         sta task_entry_name_load+1
         lda #>(BOOTFS_BASE+$18)
@@ -556,6 +566,7 @@ task_entry_load:
         and #$01
         beq task_advance_entry
         iny
+task_entry_length_load:
         lda BOOTFS_BASE+$10,y
         cmp task_name_length
         bne task_advance_entry
@@ -581,6 +592,13 @@ task_advance_entry:
         lda task_entry_load+2
         adc #$00
         sta task_entry_load+2
+        clc
+        lda task_entry_length_load+1
+        adc #$18
+        sta task_entry_length_load+1
+        lda task_entry_length_load+2
+        adc #$00
+        sta task_entry_length_load+2
         clc
         lda task_entry_name_load+1
         adc #$18
@@ -664,6 +682,9 @@ task_file_bounds_ready:
         lda task_file_hi
         adc #$00
         sta task_copy_load+2
+        sta task_copy_load_persistent+2
+        lda task_copy_load+1
+        sta task_copy_load_persistent+1
 
 task_fetch_header:
         ldx #$0f
@@ -709,6 +730,7 @@ task_header_load:
         jmp task_bad_cpu
 :
         lda TASK_HEADER+7
+        cmp task_load_mode
         beq :+
         jmp task_bad_flags
 :
@@ -717,6 +739,12 @@ task_header_load:
         jmp task_bad_load
 :
         lda TASK_HEADER+9
+        ldx task_load_mode
+        beq task_check_foreground_load
+        cmp #$90
+        beq :+
+        jmp task_bad_load
+task_check_foreground_load:
         cmp #$02
         beq :+
         jmp task_bad_load
@@ -761,6 +789,13 @@ task_file_size_valid:
         bcc :+
         jmp task_bad_size
 :
+        ldx task_load_mode
+        beq task_check_foreground_size
+        cmp #$08
+        bcc task_check_entry
+        beq :+
+        jmp task_bad_size
+task_check_foreground_size:
         cmp #$0a
         bcc task_check_entry
         beq :+
@@ -778,7 +813,13 @@ task_check_entry:
         sbc #$00
         sta task_entry_offset_lo
         lda TASK_HEADER+15
+        ldx task_load_mode
+        beq task_foreground_entry_base
+        sbc #$90
+        jmp task_entry_base_ready
+task_foreground_entry_base:
         sbc #$02
+task_entry_base_ready:
         sta task_entry_offset_hi
         bcs :+
         jmp task_bad_entry
@@ -795,6 +836,43 @@ task_check_entry:
         jmp task_bad_entry
 
 task_valid:
+        lda task_load_mode
+        beq task_save_foreground
+        lda #<PERSISTENT_SLOT
+        sta task_copy_store_persistent+1
+        lda #>PERSISTENT_SLOT
+        sta task_copy_store_persistent+2
+        lda TASK_IMAGE_LO
+        sta task_remaining_lo
+        lda TASK_IMAGE_HI
+        sta task_remaining_hi
+task_copy_persistent_byte:
+        lda task_remaining_lo
+        ora task_remaining_hi
+        bne :+
+        jmp task_clear_bss
+:
+task_copy_load_persistent:
+        ; Both source and destination are in bank 1 while this map is active.
+        lda $ffff
+task_copy_store_persistent:
+        sta PERSISTENT_SLOT
+        inc task_copy_load_persistent+1
+        bne :+
+        inc task_copy_load_persistent+2
+:
+        inc task_copy_store_persistent+1
+        bne :+
+        inc task_copy_store_persistent+2
+:
+        lda task_remaining_lo
+        bne :+
+        dec task_remaining_hi
+:
+        dec task_remaining_lo
+        jmp task_copy_persistent_byte
+
+task_save_foreground:
         ; Save all ten pages of APP1 in unused bank-1 RAM.
         lda #$02
         sta task_save_load+2
@@ -860,10 +938,19 @@ task_copy_decrement_low:
         jmp task_copy_byte
 
 task_clear_bss:
+        lda task_load_mode
+        beq task_clear_bss_pointer_ready
+        lda task_copy_store_persistent+1
+        sta task_bss_store+1
+        lda task_copy_store_persistent+2
+        sta task_bss_store+2
+        bne task_clear_bss_count
+task_clear_bss_pointer_ready:
         lda task_copy_store+1
         sta task_bss_store+1
         lda task_copy_store+2
         sta task_bss_store+2
+task_clear_bss_count:
         lda TASK_BSS_LO
         sta task_remaining_lo
         lda TASK_BSS_HI
@@ -873,7 +960,7 @@ task_clear_byte:
         ldx task_remaining_lo
         bne task_clear_store
         ldx task_remaining_hi
-        beq task_enter
+        beq task_copy_complete
 task_clear_store:
 task_bss_store:
         sta TASK_SLOT
@@ -887,6 +974,16 @@ task_bss_destination_ready:
 task_bss_decrement_low:
         dec task_remaining_lo
         jmp task_clear_byte
+
+task_copy_complete:
+        lda task_load_mode
+        beq task_enter
+        lda #$00
+        sta MMU_LCR_KERNEL_IO
+        sta TASK_STATE
+        sta TASK_ERROR
+        tax
+        rts
 
 task_enter:
         lda #$00
@@ -1007,6 +1104,7 @@ task_file_lo:           .byte $00
 task_file_hi:           .byte $00
 task_file_size_lo:      .byte $00
 task_file_size_hi:      .byte $00
+task_load_mode:         .byte $00
 task_saved_zp:          .res $1e, $00
 
 task_loader_end:

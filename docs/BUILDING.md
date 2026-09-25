@@ -58,11 +58,11 @@ user-programs` independently links `cowsay` at the first loader-owned slot and
 `ush` at bank-1 `$9000`, wrapping them as `build/user/cowsay.udx` and
 `build/user/ush.udx`. Neither resolves private kernel or shell symbols. The
 same target creates `build/user/bootfs.img`, installs both UDEX files, and
-`make boot` mounts that immutable 4 KiB image as the early `/bin`. Stage 1
-loads the persistent shell allocation directly from its bootfs entry while commands absent from the resident
-bootstrap builtin table go through
-the common-RAM resolver and loader. It validates bootfs and UDEX bounds, swaps
-the first task slot, supplies a private C stack and cc65 zero page, runs the
+`make boot` mounts that immutable 4 KiB image as the early `/bin`. After stage
+1 relocates bootfs, init asks the common-RAM loader to resolve, validate, and
+allocate `/bin/ush` at runtime. Commands absent from the shell's native table
+use the same resolver through its transient entry point. That path swaps the
+first task slot, supplies a private C stack and cc65 zero page, runs the
 program, and restores the slot on exit. Runtime qualification in both
 emulators and on hardware remains required before this milestone is closed.
 

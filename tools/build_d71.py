@@ -13,8 +13,8 @@ TRACK_COUNT = 70
 STAGE1_ADDRESS = 0x1C00
 KERNEL_ADDRESS = 0x2000
 Z80_STAGING_ADDRESS = 0xD000
-TASK_LOADER_STAGING_ADDRESS = 0xC900
-TASK_LOADER_STAGING_SIZE = 0x0500
+TASK_LOADER_STAGING_ADDRESS = 0xC800
+TASK_LOADER_STAGING_SIZE = 0x05F0
 TASK_REQUEST_STAGING_ADDRESS = 0xC300
 TASK_REQUEST_STAGING_SIZE = 0x0200
 TASK_BANK_GATE_STAGING_ADDRESS = 0xCE00
@@ -164,24 +164,32 @@ def validate_ush(bootfs: bytes, executable: bytes) -> None:
         raise ValueError("ush UDEX image size is inconsistent")
     if image_size + bss_size > USH_ALLOCATION_SIZE:
         raise ValueError("ush exceeds its 2048-byte bank-1 allocation")
-    if len(bootfs) < 64 or bootfs[:4] != b"UBFS" or bootfs[6] < 2:
-        raise ValueError("bootfs cannot provide the stage-1 ush entry")
-    entry = 16 + 24
-    if bootfs[entry + 1] != 3 or bootfs[entry + 8 : entry + 11] != b"ush":
-        raise ValueError("ush must be the second bootfs directory entry")
+    if len(bootfs) < 40 or bootfs[:4] != b"UBFS" or bootfs[6] == 0:
+        raise ValueError("bootfs cannot provide /bin/ush")
+    entry = None
+    for index in range(bootfs[6]):
+        candidate = 16 + index * 24
+        if candidate + 24 > len(bootfs):
+            raise ValueError("bootfs directory is truncated")
+        name_size = bootfs[candidate + 1]
+        if name_size == 3 and bootfs[candidate + 8 : candidate + 11] == b"ush":
+            entry = candidate
+            break
+    if entry is None:
+        raise ValueError("bootfs does not contain /bin/ush")
     file_offset = int.from_bytes(bootfs[entry + 2 : entry + 4], "little")
     file_size = int.from_bytes(bootfs[entry + 4 : entry + 6], "little")
     if file_size != len(executable) or bootfs[
         file_offset : file_offset + file_size
     ] != executable:
         raise ValueError("bootfs ush entry does not match the staged executable")
-    if file_offset + 16 + USH_ALLOCATION_SIZE > BOOTFS_SIZE:
-        raise ValueError("bootfs leaves insufficient zero-fill space after ush")
 
 
 def install_task_loader(kernel: bytearray, loader: bytes) -> None:
     if len(loader) > TASK_LOADER_STAGING_SIZE:
-        raise ValueError("task loader exceeds its 1280-byte staging area")
+        raise ValueError(
+            f"task loader exceeds its {TASK_LOADER_STAGING_SIZE}-byte staging area"
+        )
     offset = TASK_LOADER_STAGING_ADDRESS - KERNEL_ADDRESS
     region = kernel[offset : offset + TASK_LOADER_STAGING_SIZE]
     if any(region):

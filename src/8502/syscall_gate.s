@@ -242,4 +242,4 @@ task_finish_ok:
 
 task_signature:
         .byte 'U', 'T', 'R', 'Q', $00
-        .assert * <= $fa00, error, "task request gateway exceeds common reservation"
+        .assert * <= $f909, error, "task request gateway exceeds common reservation"
