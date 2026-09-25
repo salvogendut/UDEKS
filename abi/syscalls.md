@@ -1,4 +1,4 @@
-# 8502 syscall and program-entry ABI 0.2
+# 8502 syscall and program-entry ABI 0.3
 
 The initial 8502 user ABI separates program binaries from resident link-time
 symbols. A program links only its own code, its required compiler runtime, and
@@ -14,19 +14,20 @@ The table begins at `$CF00` and occupies one reserved 256-byte page. The first
 |---:|---:|---|
 | 0 | 4 | ASCII magic `USYS` |
 | 4 | 1 | ABI major (`0`) |
-| 5 | 1 | ABI minor (`2`) |
-| 6 | 1 | Implemented vector count (`3`) |
+| 5 | 1 | ABI minor (`3`) |
+| 6 | 1 | Implemented vector count (`4`) |
 | 7 | 1 | Header size (`16`) |
 | 8 | 8 | Reserved; zero |
 
 Each vector owns a 16-byte slot. Programs enter a vector with `JSR`; the gate
-returns with the status in `A`. Version 0.1 provides:
+returns with the status in `A`. Version 0.3 provides:
 
 | Address | Operation | Input |
 |---:|---|---|
 | `$CF10` | `write_byte` | `A` descriptor, `X` byte |
 | `$CF20` | `write` | `A` descriptor, `X` pointer low, `Y` pointer high |
 | `$CF30` | `task_request` | Common `$F359` request record |
+| `$CF40` | `clock_set` | `A` hour, `X` minute, `Y` second; binary 24-hour values |
 
 Descriptors follow the Unix convention already used by the shell: `0` is
 standard input, `1` standard output, and `2` standard error. The two initial
@@ -39,6 +40,11 @@ The register contract is compiler-neutral. `user/lib/syscall.s` is the cc65
 adapter; another compiler may supply a different adapter without changing the
 program or kernel ABI. User binaries never import `_udeks_stream_write` or any
 other private resident symbol.
+
+`clock_set` rejects values outside `00:00:00` through `23:59:59`, updates
+CIA1 TOD, and synchronizes the BASIC-compatible 24-bit TI counter at
+`$A0-$A2`. Reading time remains a time-service operation rather than a second
+syscall: the common `TIME` record publishes coherent binary fields.
 
 ## 8502 program entry
 

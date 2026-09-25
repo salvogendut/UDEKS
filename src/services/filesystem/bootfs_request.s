@@ -12,7 +12,7 @@
 
 MMU_LCR_KERNEL_IO       = $ff01
 MMU_LCR_WORKER_FLAT     = $ff04
-BOOTFS_BASE             = $0800
+BOOTFS_BASE             = $0300
 
 TREQ_BASE               = $f359
 TREQ_STATE              = TREQ_BASE+$06

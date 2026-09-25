@@ -14,6 +14,11 @@
 
 #define UDEKS_TIME_SOURCE_CIA1_TOD   1u
 
+/* C128 BASIC TI uses a 24-bit, 60-jiffy-per-second counter at $A0-$A2. */
+#define UDEKS_TIME_JIFFY_HIGH         0x00A0u
+#define UDEKS_TIME_JIFFY_MIDDLE       0x00A1u
+#define UDEKS_TIME_JIFFY_LOW          0x00A2u
+
 unsigned char udeks_time_start(void);
 unsigned char udeks_time_poll(void);
 void udeks_time_now(

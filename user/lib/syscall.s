@@ -8,11 +8,13 @@
 
         .export _udeks_write_byte
         .export _udeks_write
+        .export _udeks_clock_set
         .import popa
         .importzp tmp1, ptr1
 
 UDEKS_SYSCALL_WRITE_BYTE = $cf10
 UDEKS_SYSCALL_WRITE      = $cf20
+UDEKS_SYSCALL_CLOCK_SET  = $cf40
 
 _udeks_write_byte:
         ; cc65 supplies value in A and descriptor on its software stack.
@@ -29,3 +31,12 @@ _udeks_write:
         ldx ptr1
         ldy ptr1+1
         jmp UDEKS_SYSCALL_WRITE
+
+_udeks_clock_set:
+        ; cc65 supplies second in A, with hour then minute on its C stack.
+        sta tmp1
+        jsr popa
+        tax
+        jsr popa
+        ldy tmp1
+        jmp UDEKS_SYSCALL_CLOCK_SET

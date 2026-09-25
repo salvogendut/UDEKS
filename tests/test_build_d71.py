@@ -187,7 +187,7 @@ class BuildD71Tests(unittest.TestCase):
             build_image(stage0(), b"", b"", b"", bytes(APP_IMAGE_SIZE + 1))
 
     def test_rejects_oversize_bootfs(self):
-        with self.assertRaisesRegex(ValueError, "6144-byte"):
+        with self.assertRaisesRegex(ValueError, "7424-byte"):
             build_image(
                 stage0(), b"", b"", b"", b"", b"", bytes(BOOTFS_SIZE + 1)
             )

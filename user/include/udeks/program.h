@@ -30,6 +30,8 @@ unsigned char udeks_getdents(
 unsigned char udeks_stat(
     const unsigned char *path, unsigned char *status);
 unsigned char udeks_close(unsigned char descriptor);
+unsigned char udeks_clock_set(
+    unsigned char hour, unsigned char minute, unsigned char second);
 
 unsigned char udeks_program_main(
     unsigned char count, unsigned char **arguments);

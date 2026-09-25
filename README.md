@@ -68,7 +68,9 @@ See [LICENSE](LICENSE).
   `user/` and must arrive through the executable-loader path.
 - A transitional init service owns the root session. Commands absent from the
   builtin table are resolved by leaf name through the read-only `/bin` bootfs;
-  `cowsay` and `ls` are transient programs launched through that path; `ls`
+  `cowsay`, `date`, and `ls` are transient programs launched through that path;
+  `date` reads or sets the BASIC `TI`/`TI$`-compatible clock also used by
+  `xclock`, while `ls`
   exercises the first Linux-shaped `open`/`getdents`/`stat`/`close` boundary.
   A `/bin/ush` is also loaded in bank 1 and cooperatively polled through the
   public task/stream ABI. It now owns terminal lines and runs `echo`, `help`,
@@ -196,6 +198,7 @@ physical-hardware gates pass.
 - [VIC-IIe window manager](abi/window.md)
 - [Pointer input service](abi/pointer-input.md)
 - [CIA time service](abi/time.md)
+- [`date` and the shared C128 clock](docs/DATE.md)
 - [`xclock` analog clock application](docs/XCLOCK.md)
 - [`xwave` dual-engine graphics demo](docs/XWAVE.md)
 - [`cowsay` first user-program port](docs/COWSAY.md)

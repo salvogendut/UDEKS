@@ -12,9 +12,7 @@
 #define CIA1_CRA          (*(volatile unsigned char *)0xDC0Eu)
 #define CIA1_CRB          (*(volatile unsigned char *)0xDC0Fu)
 
-static unsigned char current_hour;
-static unsigned char current_minute;
-static unsigned char current_second;
+void udeks_time_sync_ti(void);
 
 static unsigned char bcd_to_binary(unsigned char value)
 {
@@ -47,32 +45,27 @@ static unsigned char sample_tod(void)
     hour = bcd_to_binary((unsigned char)(raw_hour & 0x1Fu));
     minute = bcd_to_binary((unsigned char)(raw_minute & 0x7Fu));
     second = bcd_to_binary((unsigned char)(raw_second & 0x7Fu));
-    if (hour == 0 || hour > 12u || minute > 59u || second > 59u ||
+    if (hour > 12u || minute > 59u || second > 59u ||
         raw_tenth > 9u) {
         return UDEKS_TIME_INVALID;
     }
     if ((raw_hour & 0x80u) != 0) {
-        if (hour != 12u) {
-            hour = (unsigned char)(hour + 12u);
+        hour = (unsigned char)(hour + 12u);
+        if (hour == 24u) {
+            hour = 12u;
         }
     } else if (hour == 12u) {
         hour = 0;
     }
-    STATUS_BYTE(12) = raw_hour;
-    STATUS_BYTE(13) = raw_minute;
-    STATUS_BYTE(14) = raw_second;
-    STATUS_BYTE(15) = raw_tenth;
-    STATUS_BYTE(11) = raw_tenth;
-    if (hour != current_hour || minute != current_minute ||
-        second != current_second) {
-        current_hour = hour;
-        current_minute = minute;
-        current_second = second;
+    if (hour != STATUS_BYTE(8) || minute != STATUS_BYTE(9) ||
+        second != STATUS_BYTE(10)) {
         increment_counter(18u);
     }
-    STATUS_BYTE(8) = current_hour;
-    STATUS_BYTE(9) = current_minute;
-    STATUS_BYTE(10) = current_second;
+    STATUS_BYTE(8) = hour;
+    STATUS_BYTE(9) = minute;
+    STATUS_BYTE(10) = second;
+    STATUS_BYTE(11) = raw_tenth;
+    udeks_time_sync_ti();
     return UDEKS_TIME_OK;
 }
 
@@ -92,10 +85,10 @@ unsigned char udeks_time_start(void)
     STATUS_BYTE(4) = 1;
     STATUS_BYTE(5) = UDEKS_TIME_STARTING;
     STATUS_BYTE(7) = UDEKS_TIME_SOURCE_CIA1_TOD;
-    STATUS_BYTE(20) = *(volatile unsigned char *)(
-        UDEKS_CAPABILITY_STATUS_BASE + 7u);
-
-    if (STATUS_BYTE(20) == UDEKS_VIDEO_PAL) {
+    /* Force the first coherent TOD sample to initialize BASIC's TI mirror. */
+    STATUS_BYTE(12) = 0xFFu;
+    if (*(volatile unsigned char *)(UDEKS_CAPABILITY_STATUS_BASE + 7u) ==
+        UDEKS_VIDEO_PAL) {
         CIA1_CRA |= 0x80u;
     } else {
         CIA1_CRA &= 0x7Fu;
@@ -107,11 +100,7 @@ unsigned char udeks_time_start(void)
     CIA1_TOD_TENTHS = (unsigned char)(tenths & 0x0Fu);
     CIA1_CRB = control_b;
 
-    current_hour = 0;
-    current_minute = 0;
-    current_second = 0;
     if (sample_tod() != UDEKS_TIME_OK) {
-        STATUS_BYTE(6) = UDEKS_TIME_INVALID;
         STATUS_BYTE(5) = UDEKS_TIME_ERROR;
         return UDEKS_TIME_INVALID;
     }
@@ -131,7 +120,7 @@ unsigned char udeks_time_poll(void)
 void udeks_time_now(
     unsigned char *hour, unsigned char *minute, unsigned char *second)
 {
-    *hour = current_hour;
-    *minute = current_minute;
-    *second = current_second;
+    *hour = STATUS_BYTE(8);
+    *minute = STATUS_BYTE(9);
+    *second = STATUS_BYTE(10);
 }

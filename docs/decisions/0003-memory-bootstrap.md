@@ -45,8 +45,8 @@ The initial physical allocation is:
 | Logical range | Bank 0 | Bank 1 / non-common view |
 |---|---|---|
 | `$0000-$01FF` | Initial executive zero page and stack | Relocatable task-page pool |
-| `$0200-$07FF` | Boot-preloaded application slot 1 | Task/worker low workspace |
-| `$0800-$0AFF` | Boot-preloaded application slot 1 | Read-only bootfs |
+| `$0200-$02FF` | Boot-preloaded application slot 1 | Task/worker low workspace |
+| `$0300-$0AFF` | Boot-preloaded application slot 1 | Read-only bootfs |
 | `$0B00-$0BFF` | Application slot 1 after stage 0 exits | Read-only bootfs |
 | `$0C00-$11FF` | Reclaimed root-console and terminal state after stage 1 exits | Read-only bootfs |
 | `$1200-$1BFF` | Boot-preloaded application slot 2 | Read-only bootfs |
@@ -80,8 +80,8 @@ resident common-RAM loader to validate and allocate it in bank-1
 position or copied by stage 1. The boot-only bank-0 staging ranges are
 reclaimed by the VIC shadow after initialization.
 
-The 6 KiB bootfs travels in the unused `$2800-$3FFF` portion of the staged Z80
-window. The common gateway relocates it to bank-1 `$0800-$1FFF` and clears the
+The 7.25 KiB bootfs travels in the unused `$2300-$3FFF` portion of the staged Z80
+window. The common gateway relocates it to bank-1 `$0300-$1FFF` and clears the
 source pages before allowing the Z80 worker to run. Bank 0 uses the same
 logical addresses independently for resident low BSS and application slot 2.
 The kernel reclaims the adjacent `$0C00-$11FF` bootstrap/KERNAL workspace as a linker-

@@ -248,25 +248,25 @@ checksum_high_matches:
         lda destination_sum_high
         sta BOOT_CHAIN_DEST_SUM+1
 
-        ; Relocate the immutable 6 KiB bootfs from the deliberately empty Z80
+        ; Relocate the immutable 7.25 KiB bootfs after the compact Z80 image
         ; staging window to bank-1 low RAM, then restore that worker window to
         ; zero before the Z80 is allowed to run.
-        lda #$28
+        lda #$23
         sta bootfs_source+2
         sta bootfs_clear+2
-        lda #$08
+        lda #$03
         sta bootfs_destination+2
-        ldx #$18
+        ldx #$1d
 relocate_bootfs_page:
         ldy #$00
 relocate_bootfs_byte:
 bootfs_source:
-        lda $2c00,y
+        lda $2300,y
 bootfs_destination:
-        sta $0c00,y
+        sta $0300,y
         lda #$00
 bootfs_clear:
-        sta $2c00,y
+        sta $2300,y
         iny
         bne relocate_bootfs_byte
         inc bootfs_source+2
@@ -390,10 +390,8 @@ TASK_ARGV_LO            = TASK_STATUS + 13
 TASK_ARGV_HI            = TASK_STATUS + 14
 TASK_HEADER             = TASK_STATUS + 16
 
-XCLOCK_STATE            = $f225
-XCLOCK_RUNNING          = $03
 SYSCALL_TABLE           = $cf00
-BOOTFS_BASE             = $0800
+BOOTFS_BASE             = $0300
 BOOTFS_LIMIT_HI         = $20
 TASK_SLOT               = $0200
 PERSISTENT_SLOT         = $9000
@@ -403,7 +401,6 @@ TASK_STACK_TOP          = $f7f0
 
 TASK_OK                 = $00
 TASK_BAD_SYSCALL_ABI    = $02
-TASK_BUSY               = $03
 TASK_BAD_MAGIC          = $04
 TASK_BAD_VERSION        = $05
 TASK_BAD_CPU            = $06
@@ -458,16 +455,6 @@ task_initialize:
         lda #$00
         sta TASK_ERROR
 
-        ; APP1 contains xclock. It may be replaced only by a foreground task
-        ; and only while xclock is idle.
-        lda task_load_mode
-        bne task_check_syscalls
-        lda XCLOCK_STATE
-        cmp #XCLOCK_RUNNING
-        bne task_check_syscalls
-        lda #TASK_BUSY
-        jmp task_fail_kernel
-
 task_check_syscalls:
         lda SYSCALL_TABLE+0
         cmp #'U'
@@ -484,7 +471,7 @@ task_check_syscalls:
         lda SYSCALL_TABLE+4
         bne task_bad_syscalls
         lda SYSCALL_TABLE+5
-        cmp #$03
+        cmp #$04
         bcs task_bad_syscalls
         lda SYSCALL_TABLE+6
         cmp #$02
@@ -573,7 +560,7 @@ task_bootfs_reject_early:
 
 task_bootfs_header_valid:
         ; Convert bootfs-relative data/end offsets to absolute bank-1
-        ; addresses and keep them inside the reserved $0800-$1FFF window.
+        ; addresses and keep them inside the reserved $0300-$1FFF window.
         lda BOOTFS_BASE+10
         sta task_data_begin_lo
         lda BOOTFS_BASE+11

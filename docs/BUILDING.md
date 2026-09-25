@@ -50,15 +50,18 @@ make bench-offload  # build copy/checksum/transform crossover sweep
 make            # build all three target images
 ```
 
-`make user-sources` compiles `user/bin/cowsay.c`, the minimal persistent
-`user/bin/ush.c`, and the bank-1 task stream runtime under `build/user/`. The
+`make user-sources` compiles `user/bin/cowsay.c`, `user/bin/date.c`, the
+minimal persistent `user/bin/ush.c`, and the bank-1 task stream runtime under
+`build/user/`. The
 runtime provides nonblocking `read`, bounded `write`, Unix descriptor numbers,
 and Linux errno values through the common task-request gate. `make
-user-programs` independently links `cowsay` at the first loader-owned slot and
-`ush` at bank-1 `$9000`, wrapping them as `build/user/cowsay.udx` and
-`build/user/ush.udx`. Neither resolves private kernel or shell symbols. The
-same target creates `build/user/bootfs.img`, installs both UDEX files, and
-`make boot` mounts that immutable 6 KiB image as the early `/bin`. After stage
+user-programs` independently links the transient `cowsay`, `date`, and `ls`
+programs for the first loader-owned slot and `ush` at bank-1 `$9000`, wrapping
+each as UDEX. None resolves private kernel or shell symbols. The same target
+creates `build/user/bootfs.img`, installs all four UDEX files, and
+`make boot` mounts that immutable 7.25 KiB image as the early `/bin`. The
+standalone `date` reads or sets the shared TI-compatible clock, so `xclock`
+observes the same time. After stage
 1 relocates bootfs, init asks the common-RAM loader to resolve, validate, and
 allocate `/bin/ush` at runtime. Commands absent from the shell's native table
 use the same resolver through its transient entry point. That path swaps the

@@ -41,6 +41,18 @@ class UserBoundaryTests(unittest.TestCase):
         ):
             self.assertNotIn(forbidden, source)
 
+    def test_date_is_a_standalone_shared_clock_client(self):
+        source = (ROOT / "user/bin/date.c").read_text()
+        shell = (ROOT / "src/services/shell/shell.c").read_text()
+        makefile = (ROOT / "Makefile").read_text()
+
+        self.assertIn("udeks_program_main", source)
+        self.assertIn("UDEKS_TIME_STATUS_BASE", source)
+        self.assertIn("udeks_clock_set(hour, minute, second)", source)
+        self.assertIn("HHMMSS", source)
+        self.assertNotIn('*)"date"', shell)
+        self.assertIn("--entry date=$(USER_DATE_UDEX)", makefile)
+
     def test_minimal_ush_is_a_separate_persistent_user_image(self):
         source = (ROOT / "user/bin/ush.c").read_text()
         makefile = (ROOT / "Makefile").read_text()

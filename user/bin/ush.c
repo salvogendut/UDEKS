@@ -100,7 +100,7 @@ static void dispatch_line(void)
 
     rest = command_end(command, (const unsigned char *)"help");
     if (rest != 0xFFu && line[skip_space(rest)] == 0) {
-        write_line((const unsigned char *)"cd cowsay echo help ls pwd uname");
+        write_line((const unsigned char *)"cd cowsay date echo help ls pwd uname");
         finish_command();
         return;
     }

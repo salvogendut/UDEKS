@@ -56,11 +56,11 @@ class TaskBankGatewayTests(unittest.TestCase):
     def test_stage1_relocates_bootfs_and_installs_runtime_loader(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
 
-        self.assertIn("lda $2c00,y", stage1)
-        self.assertIn("sta $0c00,y", stage1)
-        self.assertIn("lda #$28\n        sta bootfs_source+2", stage1)
-        self.assertIn("lda #$08\n        sta bootfs_destination+2", stage1)
-        self.assertIn("ldx #$18", stage1)
+        self.assertIn("lda $2300,y", stage1)
+        self.assertIn("sta $0300,y", stage1)
+        self.assertIn("lda #$23\n        sta bootfs_source+2", stage1)
+        self.assertIn("lda #$03\n        sta bootfs_destination+2", stage1)
+        self.assertIn("ldx #$1d", stage1)
         self.assertNotIn("lda $0c2a", stage1)
         self.assertIn("task_persistent_loader_entry:", stage1)
         self.assertIn("sta persistent_slot", stage1)
@@ -72,7 +72,7 @@ class TaskBankGatewayTests(unittest.TestCase):
         self.assertIn("ldx #$20", stage1)
         self.assertIn("lda $c500,y", stage1)
         self.assertIn("sta $4000,y\n        iny\n        bne backup_service_page", stage1)
-        self.assertIn("bootfs_base             = $0800", stage1)
+        self.assertIn("bootfs_base             = $0300", stage1)
 
     def test_runtime_loader_is_installed_from_protected_final_page(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
@@ -109,6 +109,14 @@ class TaskBankGatewayTests(unittest.TestCase):
         self.assertIn("cmp task_file_size_lo", validation)
         self.assertIn("cmp task_file_size_hi", validation)
         self.assertIn("cmp #$0a", validation)
+
+    def test_transient_slot_is_saved_even_while_xclock_is_active(self):
+        stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
+
+        self.assertNotIn("xclock_state", stage1)
+        self.assertNotIn("xclock_running", stage1)
+        self.assertIn("task_save_foreground:", stage1)
+        self.assertIn("task_restore_page:", stage1)
 
 
 if __name__ == "__main__":

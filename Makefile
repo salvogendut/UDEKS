@@ -92,6 +92,8 @@ VDC_WORDMARK_BIN := $(BUILD_ASSETS)/udekusu-64.vdc
 VDC_TEXT_ASSETS_BIN := $(BUILD_ASSETS)/udeks-vdc-text.bin
 USER_COWSAY_ASM := $(BUILD_USER)/cowsay.s
 USER_COWSAY_OBJ := $(BUILD_USER)/cowsay.o
+USER_DATE_ASM := $(BUILD_USER)/date.s
+USER_DATE_OBJ := $(BUILD_USER)/date.o
 USER_LS_ASM := $(BUILD_USER)/ls.s
 USER_LS_OBJ := $(BUILD_USER)/ls.o
 USER_ENTRY_OBJ := $(BUILD_USER)/entry.o
@@ -105,6 +107,8 @@ USER_USH_ASM := $(BUILD_USER)/ush.s
 USER_USH_OBJ := $(BUILD_USER)/ush.o
 USER_COWSAY_BIN := $(BUILD_USER)/cowsay.bin
 USER_COWSAY_UDEX := $(BUILD_USER)/cowsay.udx
+USER_DATE_BIN := $(BUILD_USER)/date.bin
+USER_DATE_UDEX := $(BUILD_USER)/date.udx
 USER_LS_BIN := $(BUILD_USER)/ls.bin
 USER_LS_UDEX := $(BUILD_USER)/ls.udx
 USER_USH_BIN := $(BUILD_USER)/ush.bin
@@ -128,7 +132,7 @@ panic-probe: $(PANIC_PROBE_D71)
 framebuffer-assets: $(VDC_SPLASH_BIN) $(VDC_WORDMARK_BIN) $(VDC_TEXT_ASSETS_BIN)
 
 # Compile user programs independently; they must never enter the resident link.
-user-sources: $(USER_COWSAY_ASM) $(USER_LS_ASM) $(USER_USH_ASM) \
+user-sources: $(USER_COWSAY_ASM) $(USER_DATE_ASM) $(USER_LS_ASM) $(USER_USH_ASM) \
 		$(USER_TASK_STREAM_OBJ) $(USER_FILESYSTEM_OBJ) $(USER_POLL_ENTRY_OBJ)
 
 user-programs: $(USER_BOOTFS)
@@ -189,6 +193,13 @@ $(USER_COWSAY_ASM): user/bin/cowsay.c user/include/udeks/program.h | $(BUILD_USE
 $(USER_COWSAY_OBJ): $(USER_COWSAY_ASM) | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
 
+$(USER_DATE_ASM): user/bin/date.c user/include/udeks/program.h \
+		include/udeks/time.h | $(BUILD_USER)
+	$(CC65) $(CFLAGS_8502) -I user/include -I include -o $@ $<
+
+$(USER_DATE_OBJ): $(USER_DATE_ASM) | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
 $(USER_LS_ASM): user/bin/ls.c user/include/udeks/program.h \
 		include/udeks/task_request.h | $(BUILD_USER)
 	$(CC65) $(CFLAGS_8502) -I user/include -I include -o $@ $<
@@ -235,6 +246,15 @@ $(USER_COWSAY_UDEX): $(USER_COWSAY_BIN) tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 \
 		--entry-address 0x0200 $< $@
 
+$(USER_DATE_BIN): $(USER_ENTRY_OBJ) $(USER_SYSCALL_OBJ) \
+		$(USER_DATE_OBJ) cfg/8502-user-app1.cfg
+	$(CL65) -t none --cpu 6502 -C cfg/8502-user-app1.cfg \
+		-m $(BUILD_USER)/date.map -o $@ $(filter %.o,$^)
+
+$(USER_DATE_UDEX): $(USER_DATE_BIN) tools/build_udex.py
+	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 \
+		--entry-address 0x0200 $< $@
+
 $(USER_LS_BIN): $(USER_ENTRY_OBJ) $(USER_SYSCALL_OBJ) $(USER_FILESYSTEM_OBJ) \
 		$(USER_LS_OBJ) cfg/8502-user-app1.cfg
 	$(CL65) -t none --cpu 6502 -C cfg/8502-user-app1.cfg \
@@ -253,10 +273,11 @@ $(USER_USH_UDEX): $(USER_USH_BIN) tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x9000 \
 		--entry-address 0x9000 --bss-size 0x0050 --flags 0x01 $< $@
 
-$(USER_BOOTFS): $(USER_COWSAY_UDEX) $(USER_LS_UDEX) $(USER_USH_UDEX) \
+$(USER_BOOTFS): $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_LS_UDEX) $(USER_USH_UDEX) \
 		tools/build_bootfs.py
-	$(PYTHON) tools/build_bootfs.py --max-size 0x1800 \
+	$(PYTHON) tools/build_bootfs.py --max-size 0x1D00 \
 		--entry cowsay=$(USER_COWSAY_UDEX) \
+		--entry date=$(USER_DATE_UDEX) \
 		--entry ls=$(USER_LS_UDEX) \
 		--entry ush=$(USER_USH_UDEX) $@
 

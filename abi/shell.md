@@ -2,8 +2,8 @@
 
 The root shell is a persistent bank-1 `/bin/ush` task owned and polled by init.
 The terminal owns keyboard editing and publishes one bounded, NUL-terminated
-line. `ush` reads it through the task-request ABI, implements `echo`, `help`,
-and `uname` natively, writes through descriptors 1 and 2, and requests the next
+line. `ush` reads it through the task-request ABI, implements `cd`, `echo`,
+`help`, `pwd`, and `uname` natively, writes through descriptors 1 and 2, and requests the next
 prompt. Commands not yet extracted cross a bounded compatibility-exec request
 to the resident dispatcher; foreground jobs are observed through an explicit
 wait request.
@@ -29,9 +29,11 @@ service.
 
 Names absent from the builtin registry are searched as executable leaf names
 in the bootfs mounted at `/bin`. A match is validated as UDEX and run in the
-transient task slot. A missing name reports `Unknown command`; a slot occupied
-by `xclock` reports `<name>: task slot busy`. This lookup path is generic—there
-is no resident `cowsay` command record.
+transient task slot. The loader saves and restores that complete slot around a
+synchronous command, so utilities such as `date` and `cowsay` remain usable
+while the background `xclock` client owns its normal image there. A missing
+name reports `Unknown command`. This lookup path is generic—there is no
+resident `cowsay` or `date` command record.
 
 The current native and compatibility command set contains:
 
@@ -40,6 +42,7 @@ The current native and compatibility command set contains:
 | `help` | List registered commands and summaries. |
 | `clear` | Clear and home the retained root console. |
 | `echo` | Write its arguments separated by spaces. |
+| `date` | Read time, or set the shared clock with `HHMMSS`, `HH:MM:SS`, or `-s`. |
 | `uname` | Report system identity; `uname -a` includes version and machine. |
 | `lshw` | Report detected video and expansion capabilities. |
 | `lsmod` | Report service-registry startup and poll state. |

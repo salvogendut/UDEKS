@@ -46,7 +46,7 @@
 #define UDEKS_APP2_STAGING_BASE       0xB900u
 
 /* Bank-1 bootfs image and the first transient task-slot backup. */
-#define UDEKS_BOOTFS_BASE             0x0800u
+#define UDEKS_BOOTFS_BASE             0x0300u
 #define UDEKS_BOOTFS_LIMIT            0x2000u
 #define UDEKS_USH_BASE                0x9000u
 #define UDEKS_USH_LIMIT               0x9A00u

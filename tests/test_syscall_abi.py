@@ -18,6 +18,7 @@ class SyscallAbiTests(unittest.TestCase):
         self.assertIn("_udeks_syscall_write_byte_gate = $cf10", gate)
         self.assertIn("_udeks_syscall_write_gate = $cf20", gate)
         self.assertIn("_udeks_syscall_task_request_gate = $cf30", gate)
+        self.assertIn("_udeks_syscall_clock_set_gate = $cf40", gate)
 
     def test_public_constants_match_user_veneers(self):
         header = (ROOT / "include/udeks/syscall.h").read_text().lower()
@@ -26,8 +27,10 @@ class SyscallAbiTests(unittest.TestCase):
         self.assertIn("udeks_syscall_write_byte        0xcf10u", header)
         self.assertIn("udeks_syscall_write             0xcf20u", header)
         self.assertIn("udeks_syscall_task_request      0xcf30u", header)
+        self.assertIn("udeks_syscall_clock_set         0xcf40u", header)
         self.assertIn("udeks_syscall_write_byte = $cf10", veneer)
         self.assertIn("udeks_syscall_write      = $cf20", veneer)
+        self.assertIn("udeks_syscall_clock_set  = $cf40", veneer)
         self.assertNotIn("_udeks_stream_", veneer)
 
     def test_user_entry_marshals_register_abi(self):
@@ -45,7 +48,7 @@ class SyscallAbiTests(unittest.TestCase):
         )[0]
 
         self.assertIn("lda syscall_table+5", check)
-        self.assertIn("cmp #$03", check)
+        self.assertIn("cmp #$04", check)
         self.assertIn("bcs task_bad_syscalls", check)
 
     def test_user_link_is_separate_from_kernel(self):

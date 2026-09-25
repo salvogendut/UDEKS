@@ -10,6 +10,7 @@
         .export _udeks_syscall_write_byte_gate
         .export _udeks_syscall_write_gate
         .export _udeks_syscall_task_request_gate
+        .export _udeks_syscall_clock_set_gate
         .import _udeks_stream_write_byte
         .import _udeks_stream_write
         .import _udeks_line_editor_read
@@ -19,6 +20,7 @@
         .import _udeks_shell_dispatch_line
         .import _udeks_shell_foreground_job
         .import _udeks_bootfs_request
+        .export _udeks_time_sync_ti
         .import pusha
         .import pushax
         .importzp tmp1, ptr1
@@ -52,8 +54,8 @@ ERR_EPROTO      = $47
 
 _udeks_syscall_table:
         .byte 'U', 'S', 'Y', 'S'
-        .byte $00, $02
-        .byte $03, $10
+        .byte $00, $03
+        .byte $04, $10
         .res 8, $00
 
         ; $CF10: A=descriptor, X=byte. Marshal to the resident C service.
@@ -79,19 +81,167 @@ _udeks_syscall_write_gate:
         ; $CF30: dispatch the common-RAM bank-task request record. The common
         ; gate has already selected the kernel map and restored resident ZP.
 _udeks_syscall_task_request_gate:
-        jmp task_request_dispatch
-        .res 13, $ea
-
-task_request_dispatch:
         jmp task_request_runtime
         .res 13, $ea
+
+        ; $CF40: A=hour, X=minute, Y=second. Set the shared service clock and
+        ; CIA1 TOD; the time service mirrors it into BASIC's TI counter.
+_udeks_syscall_clock_set_gate:
+        cmp #$18
+        bcs clock_set_invalid
+        cpx #$3c
+        bcs clock_set_invalid
+        cpy #$3c
+        bcs clock_set_invalid
+        sta $f208
+        stx $f209
+        sty $f20a
+        lda $dc0f
+        and #$7f
+        sta $dc0f
+        lda $f208
+        beq clock_set_midnight
+        cmp #$0c
+        beq clock_set_noon
+        bcc clock_set_am
+        sec
+        sbc #$0c
+        jsr clock_binary_bcd
+        ora #$80
+        bne clock_set_hour_ready
+clock_set_midnight:
+        ; The 6526 toggles PM when $12 is written. $00/$80 are the documented
+        ; safe encodings for setting midnight/noon without that anomaly.
+        lda #$00
+        jmp clock_set_hour_ready
+clock_set_noon:
+        lda #$80
+        bne clock_set_hour_ready
+clock_set_am:
+        jsr clock_binary_bcd
+clock_set_hour_ready:
+        sta $dc0b
+        lda $f209
+        jsr clock_binary_bcd
+        sta $dc0a
+        lda $f20a
+        jsr clock_binary_bcd
+        sta $dc09
+        lda #$00
+        sta $f20b
+        sta $dc08
+        inc $f20c
+        jsr _udeks_time_sync_ti
+        lda #$00
+        rts
+clock_set_invalid:
+        lda #$01
+        rts
+
+clock_binary_bcd:
+        ldx #$00
+clock_binary_bcd_digit:
+        cmp #$0a
+        bcc clock_binary_bcd_ready
+        sbc #$0a
+        inx
+        bne clock_binary_bcd_digit
+clock_binary_bcd_ready:
+        sta tmp1
+        txa
+        asl a
+        asl a
+        asl a
+        asl a
+        ora tmp1
+        rts
+
+        ; Rebuild BASIC's high/middle/low TI bytes from the published
+        ; HH:MM:SS.t value. CIA TOD has tenth-second resolution, hence +6.
+_udeks_time_sync_ti:
+        lda $f20b
+        cmp $f20c
+        beq clock_sync_done
+        sta $f20c
+        lda #$00
+        sta $a0
+        sta $a1
+        sta $a2
+        ldy $f208
+        ldx #$4b
+        jsr clock_add_loop
+        ldy $f209
+        ldx #$0e
+        jsr clock_add_loop
+        ldy $f20a
+        ldx #$00
+        jsr clock_add_loop
+        ldy $f20b
+clock_add_tenth:
+        beq clock_sync_done
+        clc
+        lda $a2
+        adc #$06
+        sta $a2
+        bcc :+
+        inc $a1
+        bne :+
+        inc $a0
+:
+        dey
+        bne clock_add_tenth
+clock_sync_done:
+        rts
 
         .assert _udeks_syscall_table = $cf00, error, "syscall table moved"
         .assert _udeks_syscall_write_byte_gate = $cf10, error, "write-byte gate moved"
         .assert _udeks_syscall_write_gate = $cf20, error, "write gate moved"
         .assert _udeks_syscall_task_request_gate = $cf30, error, "task request gate moved"
-        .assert task_request_dispatch = $cf40, error, "task dispatcher moved"
+        .assert _udeks_syscall_clock_set_gate = $cf40, error, "clock-set gate moved"
         .assert * <= $d000, error, "syscalls overlap I/O aperture"
+
+        .segment "CODE"
+        ; Add Y copies of the constant selected by X. The high byte is $03
+        ; only for hours; minutes and seconds cannot carry beyond their range.
+clock_add_loop:
+        sty tmp1
+        tya
+        beq clock_add_done
+clock_add_again:
+        cpx #$4b
+        bne :+
+        lda #$c0
+        bne clock_add_value
+:
+        cpx #$0e
+        bne :+
+        lda #$10
+        bne clock_add_value
+:
+        lda #$3c
+clock_add_value:
+        clc
+        adc $a2
+        sta $a2
+        txa
+        adc $a1
+        sta $a1
+        lda #$00
+        adc $a0
+        sta $a0
+        ; Hour contributions need the additional fixed high-byte value.
+        cpx #$4b
+        bne :+
+        clc
+        lda $a0
+        adc #$03
+        sta $a0
+:
+        dec tmp1
+        beq clock_add_done
+        bne clock_add_again
+clock_add_done:
+        rts
 
         ; The bounded implementation resides in reclaimed common boot RAM.
         ; Stage 1 installs this separately after its own common gateway exits.
