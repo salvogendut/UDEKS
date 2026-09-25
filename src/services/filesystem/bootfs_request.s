@@ -28,6 +28,7 @@ DIRECTORY_OFFSET        = $f3e9
 ENTRY_INDEX             = $f3ea
 ENTRY_ADDRESS_LOW       = $f3eb
 ENTRY_ADDRESS_HIGH      = $f3ec
+CWD_KIND                = $f2a6
 
 STATE_COMPLETE          = $02
 STATE_ERROR             = $80
@@ -67,11 +68,16 @@ open_path:
         bne open_check_bin
         lda TREQ_PAYLOAD
         cmp #'.'
-        beq open_root
+        beq open_current
         cmp #'/'
         bne open_not_found
 open_root:
         lda #$01
+        bne open_ready
+open_current:
+        lda CWD_KIND
+        beq open_root
+        lda #$02
         bne open_ready
 open_check_bin:
         cmp #$04

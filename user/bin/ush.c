@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "udeks/program.h"
+#include "udeks/memory.h"
 #include "udeks/task_request.h"
 
 #define LINE_CAPACITY 54u
@@ -7,6 +8,9 @@
     (*(volatile unsigned char *)(UDEKS_USH_STATUS_BASE + (offset)))
 #define USH_COMMANDS USH_STATUS(UDEKS_USH_STATUS_COMMANDS)
 #define USH_STATE USH_STATUS(UDEKS_USH_STATUS_STATE)
+#define CWD_KIND (*(volatile unsigned char *)UDEKS_ROOT_CWD_KIND)
+#define CWD_ROOT 0u
+#define CWD_BIN 1u
 
 static unsigned char started;
 static unsigned char waiting_foreground;
@@ -96,8 +100,37 @@ static void dispatch_line(void)
 
     rest = command_end(command, (const unsigned char *)"help");
     if (rest != 0xFFu && line[skip_space(rest)] == 0) {
-        write_line((const unsigned char *)"Native ush: echo help uname");
-        write_line((const unsigned char *)"Other commands use compatibility exec");
+        write_line((const unsigned char *)"cd cowsay echo help ls pwd uname");
+        finish_command();
+        return;
+    }
+
+    rest = command_end(command, (const unsigned char *)"pwd");
+    if (rest != 0xFFu && line[skip_space(rest)] == 0) {
+        write_line((const unsigned char *)(CWD_KIND == CWD_BIN ? "/bin" : "/"));
+        finish_command();
+        return;
+    }
+
+    rest = command_end(command, (const unsigned char *)"cd");
+    if (rest != 0xFFu) {
+        rest = skip_space(rest);
+        if (line[rest] == 0) {
+            CWD_KIND = CWD_ROOT;
+        } else {
+            if (text_equal(rest, (const unsigned char *)"/") ||
+                text_equal(rest, (const unsigned char *)"..")) {
+                CWD_KIND = CWD_ROOT;
+            } else if (text_equal(rest, (const unsigned char *)".")) {
+                /* Retain the current directory. */
+            } else if (text_equal(rest, (const unsigned char *)"/bin") ||
+                       (CWD_KIND == CWD_ROOT &&
+                        text_equal(rest, (const unsigned char *)"bin"))) {
+                CWD_KIND = CWD_BIN;
+            } else {
+                write_line((const unsigned char *)"cd: not found");
+            }
+        }
         finish_command();
         return;
     }
@@ -110,7 +143,7 @@ static void dispatch_line(void)
         return;
     }
     if (result == UDEKS_IO_ERROR) {
-        write_line((const unsigned char *)"ush: exec request failed");
+        write_line((const unsigned char *)"ush: exec failed");
     }
     udeks_prompt();
 }
@@ -125,6 +158,7 @@ unsigned char udeks_ush_poll(void)
         started = 1;
         line_length = 0;
         waiting_foreground = 0;
+        CWD_KIND = CWD_ROOT;
         USH_COMMANDS = 0;
         USH_STATE = UDEKS_USH_STATE_READY;
         USH_STATUS(UDEKS_USH_STATUS_MAGIC0) = 'U';

@@ -9,9 +9,9 @@ implementation stays small enough for a stock C128.
 The production image now packages a minimal persistent `ush.udx` in the
 read-only `/bin` bootfs. Init resolves it by name through the common-RAM UDEX
 loader, which validates and allocates it at bank-1 `$9000`; init then invokes
-one bounded poll on every service pass. `ush` now owns
-submitted terminal lines and implements `echo`, `help`, and `uname` natively
-through the public stream ABI. Commands not yet extracted cross a bounded
+one bounded poll on every service pass. `ush` now owns submitted terminal
+lines and implements `cd`, `echo`, `help`, `pwd`, and `uname` natively through
+the public stream ABI. Commands not yet extracted cross a bounded
 compatibility-exec request, so existing graphical commands and standalone
 program loading remain usable. Foreground jobs use an explicit wait request
 and retain the existing `Ctrl+C` behavior. The registry no longer owns a shell
@@ -42,6 +42,13 @@ supplies the context switch. The complete task path must:
 5. retain the shell's BSS, history-facing state, and working directory between
    polls.
 
+The bootstrap namespace currently has only `/` and `/bin`. `ush` owns a
+root-session working-directory token in common RAM, while bootfs resolves `.`
+through that token for independently loaded commands such as `/bin/ls`. This
+is intentionally the small single-session precursor to public per-process
+`chdir`/`getcwd` operations; it does not make pathname policy part of the
+microkernel.
+
 The host image builder validates the packaged `/bin/ush`; stage 1 only
 relocates bootfs. Init invokes the loader's persistent entry before resetting
 and polling the task gate. The completed shell will use only public operations for terminal
@@ -57,8 +64,10 @@ access.
 - [x] Define the common-RAM task request protocol and public stream wrappers.
 - [x] Add nonblocking terminal-read and bounded terminal-write requests.
 - [x] Add prompt, compatibility-exec, and foreground-wait operations.
-- [ ] Add persistent working-directory state and native Bash-like `cd`/`pwd`
-  using public `chdir`/`getcwd` operations.
+- [x] Add persistent root-session working-directory state and native Bash-like
+  `cd`/`pwd` builtins; standalone `ls` inherits it when resolving `.`.
+- [ ] Graduate the bootstrap token to public per-process `chdir`/`getcwd`
+  operations when the VFS process model lands.
 - [ ] Add scheduler yield and signal operations.
 - [ ] Replace direct graphical builtins with standalone `/bin/xclock` and
   `/bin/xwave` UDEX programs, in that order after `cd`.

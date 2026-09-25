@@ -17,15 +17,15 @@ TASK_LOADER_STAGING_ADDRESS = 0xC800
 TASK_LOADER_STAGING_SIZE = 0x05F0
 TASK_REQUEST_STAGING_ADDRESS = 0xC300
 TASK_REQUEST_STAGING_SIZE = 0x0109
-BOOTFS_REQUEST_STAGING_ADDRESS = 0xC414
-BOOTFS_REQUEST_STAGING_SIZE = 0x03EC
+BOOTFS_REQUEST_STAGING_ADDRESS = 0xC4EF
+BOOTFS_REQUEST_STAGING_SIZE = 0x0311
 TASK_BANK_GATE_STAGING_ADDRESS = 0xCE00
 TASK_BANK_GATE_STAGING_SIZE = 0x00CB
 Z80_SIZE = 0x2000
 APP_IMAGE_SIZE = 0x0A00
 APP1_STAGING_ADDRESS = 0xAF00
 APP2_STAGING_ADDRESS = 0xB900
-USH_ALLOCATION_SIZE = 0x0800
+USH_ALLOCATION_SIZE = 0x0A00
 BOOTFS_Z80_OFFSET = 0x0800
 BOOTFS_SIZE = 0x1800
 PAYLOAD_SIZE = 0xD400
@@ -165,7 +165,7 @@ def validate_ush(bootfs: bytes, executable: bytes) -> None:
     if image_size == 0 or len(executable) != 16 + image_size:
         raise ValueError("ush UDEX image size is inconsistent")
     if image_size + bss_size > USH_ALLOCATION_SIZE:
-        raise ValueError("ush exceeds its 2048-byte bank-1 allocation")
+        raise ValueError("ush exceeds its 2560-byte bank-1 allocation")
     if len(bootfs) < 40 or bootfs[:4] != b"UBFS" or bootfs[6] == 0:
         raise ValueError("bootfs cannot provide /bin/ush")
     entry = None

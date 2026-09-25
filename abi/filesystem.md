@@ -33,3 +33,9 @@ Related Bash-like user commands will include `pwd`, `cd` (implemented by the
 shell because it changes shell state), `cat`, `mkdir`, `rm`, `cp`, `mv`,
 `mount`, `umount`, and `df`. Their availability depends on the mounted
 filesystem's capabilities; read-only bootfs correctly rejects mutation.
+
+During the bootfs-only transition, `/bin/ush` already implements `cd` and
+`pwd` for the two-directory namespace (`/` and `/bin`). A bounded common-RAM
+root-session token lets separately loaded `/bin/ls` resolve `.` consistently.
+This token is transitional; the storage-backed VFS will replace it with the
+per-process `chdir`/`getcwd` contract above.

@@ -70,6 +70,18 @@ class MemoryMapTests(unittest.TestCase):
             self.assertLess(memory[name], common_limit)
         self.assertEqual(memory["UDEKS_MMU_MIRROR_LIMIT"] - memory["UDEKS_MMU_MIRROR_BASE"], 5)
 
+    def test_persistent_shell_and_root_directory_state_are_bounded(self):
+        memory = self.memory
+        self.assertEqual(
+            memory["UDEKS_USH_LIMIT"] - memory["UDEKS_USH_BASE"], 0x0A00
+        )
+        self.assertGreaterEqual(
+            memory["UDEKS_ROOT_CWD_KIND"], memory["UDEKS_COMMON_BASE"]
+        )
+        self.assertLess(
+            memory["UDEKS_ROOT_CWD_KIND"], memory["UDEKS_COMMON_LIMIT"]
+        )
+
     def test_worker_and_vic_reservations_do_not_overlap(self):
         memory = self.memory
         self.assertLessEqual(memory["UDEKS_Z80_CODE_LIMIT"], memory["UDEKS_VIC_WINDOW_BASE"])

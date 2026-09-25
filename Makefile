@@ -220,7 +220,7 @@ $(USER_POLL_ENTRY_OBJ): user/lib/poll_entry.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
 
 $(USER_USH_ASM): user/bin/ush.c user/include/udeks/program.h \
-		include/udeks/task_request.h | $(BUILD_USER)
+		include/udeks/memory.h include/udeks/task_request.h | $(BUILD_USER)
 	$(CC65) $(CFLAGS_8502) -I user/include -I include -o $@ $<
 
 $(USER_USH_OBJ): $(USER_USH_ASM) | $(BUILD_USER)

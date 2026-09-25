@@ -67,7 +67,8 @@ class TaskBankGatewayTests(unittest.TestCase):
         self.assertIn("lda $c300,y", stage1)
         self.assertIn("sta $f800,y", stage1)
         self.assertIn("sta $f900,y\n        iny\n        cpy #$09", stage1)
-        self.assertIn("sta $40ec,y\n        iny\n        cpy #$14", stage1)
+        self.assertIn("lda $c500,y", stage1)
+        self.assertIn("sta $4000,y\n        iny\n        bne backup_service_page", stage1)
         self.assertIn("bootfs_base             = $0800", stage1)
 
     def test_runtime_loader_is_installed_from_protected_final_page(self):
@@ -104,6 +105,7 @@ class TaskBankGatewayTests(unittest.TestCase):
         self.assertIn("sta task_allocation_hi", validation)
         self.assertIn("cmp task_file_size_lo", validation)
         self.assertIn("cmp task_file_size_hi", validation)
+        self.assertIn("cmp #$0a", validation)
 
 
 if __name__ == "__main__":

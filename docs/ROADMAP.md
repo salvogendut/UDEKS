@@ -239,9 +239,9 @@ without missing input events.
   delegation to the bootstrap shell remains transitional.
 - [x] Package a minimal persistent `/bin/ush`, initially boot-preload it in bank 1, and
   poll it from init through the public task/stream boundary.
-- [x] Move terminal-line ownership plus native `echo`, `help`, and `uname`
-  handling into `/bin/ush`, with bounded compatibility exec/wait for commands
-  not yet extracted.
+- [x] Move terminal-line ownership plus native `cd`, `echo`, `help`, `pwd`, and
+  `uname` handling into `/bin/ush`, with bounded compatibility exec/wait for
+  commands not yet extracted.
 - [x] Replace the fixed `ush` preload with init-driven, named runtime
   persistent-task allocation.
 - [x] Load, run, and reclaim `cowsay` without adding it to the resident image.
@@ -250,8 +250,11 @@ without missing input events.
 - [x] Add `/bin/ls` over that directory ABI, supporting `ls`, `ls /`,
   `ls /bin`, and `ls -l /bin` without direct knowledge of devices or
   filesystem formats.
-- [ ] Add per-shell working-directory state plus `chdir`/`getcwd`, then
-  implement Bash-like `cd` (and `pwd`) natively in `/bin/ush`.
+- [x] Add persistent root-session working-directory state and implement
+  Bash-like `cd` and `pwd` natively in `/bin/ush`; make standalone `ls` inherit
+  that state for `.`.
+- [ ] Replace the bootstrap directory token with per-process `chdir`/`getcwd`
+  operations as part of the general VFS process contract.
 - [ ] Package `xclock` as a standalone UDEX graphical program.
 - [ ] Package `xwave` as a standalone UDEX dual-engine graphical program.
 - [ ] Implement IEC device discovery and baseline serial operations.

@@ -138,7 +138,7 @@ class BuildD71Tests(unittest.TestCase):
 
     def test_rejects_oversize_ush_allocation(self):
         executable = ush_executable(bytes(USH_ALLOCATION_SIZE), bss_size=1)
-        with self.assertRaisesRegex(ValueError, "2048-byte"):
+        with self.assertRaisesRegex(ValueError, "2560-byte"):
             build_image(stage0(), b"", b"", b"",
                         bootfs=bootfs_with_ush(executable), ush=executable)
 
@@ -212,7 +212,7 @@ class BuildD71Tests(unittest.TestCase):
         self.assertEqual(payload[offset : offset + len(service)], service)
 
     def test_rejects_oversize_bootfs_request_service(self):
-        with self.assertRaisesRegex(ValueError, "1004-byte"):
+        with self.assertRaisesRegex(ValueError, "785-byte"):
             build_image(
                 stage0(), b"", b"", b"",
                 bootfs_request_service=bytes(BOOTFS_REQUEST_STAGING_SIZE + 1),

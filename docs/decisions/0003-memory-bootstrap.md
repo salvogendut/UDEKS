@@ -76,7 +76,7 @@ so it installs two 2560-byte application images from bank-0 staging ranges
 `$AF00-$B8FF` and `$B900-$C2FF` into `$0200-$0BFF` and `$1200-$1BFF`.
 After it transfers control, init resolves `/bin/ush` by name and asks the
 resident common-RAM loader to validate and allocate it in bank-1
-`$9000-$97FF`. The shell is therefore no longer tied to a bootfs directory
+`$9000-$99FF`. The shell is therefore no longer tied to a bootfs directory
 position or copied by stage 1. The boot-only bank-0 staging ranges are
 reclaimed by the VIC shadow after initialization.
 
@@ -108,7 +108,9 @@ The common area is partitioned conservatively:
 | `$F150-$F16F` | Root-terminal line-editor diagnostics |
 | `$F170-$F18F` | Shell diagnostics and foreground-job state |
 | `$F190-$F27F` | Worker, graphics, pointer, time, window, and application diagnostics |
-| `$F280-$F2FF` | Reserved diagnostic space |
+| `$F280-$F2A5` | Reserved diagnostic space |
+| `$F2A6` | Bootstrap root-session working-directory token |
+| `$F2A7-$F2FF` | Reserved diagnostic space |
 | `$F300-$F33F` | Bounded Z80/8502 sample transfer buffer |
 | `$F340-$F358` | `xwave` previous surface-row cache |
 | `$F359-$F37E` | Bank-task request record and 24-byte inline payload |
@@ -119,8 +121,7 @@ The common area is partitioned conservatively:
 | `$F3D8-$F3E7` | Persistent shell diagnostics |
 | `$F3E8-$F3EC` | Read-only bootfs service directory state and scratch pointers |
 | `$F3ED-$F3EE` | VIC-IIe common-gateway tag and page parameter |
-| `$F3EF-$F3FF` | Reserved common-service growth |
-| `$F400-$F689` | Read-only bootfs request service and VIC transfer-buffer restore gate |
+| `$F3EF-$F689` | Read-only bootfs request service and VIC transfer-buffer restore gate |
 | `$F68A-$F6FF` | VIC-IIe bank-switch gateway workspace |
 | `$F700-$F7EF` | Initial transient-task C stack; stage 1 temporarily uses the protected `$F700` installer page before tasks exist |
 | `$F7F0-$F7FF` | Transient-task stack guard/top |

@@ -53,30 +53,36 @@ final_copy_task_loader_tail:
         cpy #$f0
         bne final_copy_task_loader_tail
 
-        ldy #$00
-final_copy_bootfs_head:
-        lda $c414,y
-        sta $f400,y
-        iny
-        cpy #$ec
-        bne final_copy_bootfs_head
-        ldy #$00
+        lda #$c4
+        sta final_copy_bootfs_load+2
+        lda #$f3
+        sta final_copy_bootfs_store+2
+        ldx #$02
 final_copy_bootfs_page:
-        lda $c500,y
-        sta $f4ec,y
+        ldy #$00
+final_copy_bootfs_byte:
+final_copy_bootfs_load:
+        lda $c4ef,y
+final_copy_bootfs_store:
+        sta $f3ef,y
         iny
+        bne final_copy_bootfs_byte
+        inc final_copy_bootfs_load+2
+        inc final_copy_bootfs_store+2
+        dex
         bne final_copy_bootfs_page
         ldy #$00
 final_copy_bootfs_tail:
-        lda $c600,y
-        sta $f5ec,y
+        lda $c6ef,y
+        sta $f5ef,y
         iny
-        cpy #$9e
+        cpy #$9b
         bne final_copy_bootfs_tail
         lda #$00
         sta $f3e8
         sta $f3e9
         sta $f3ed
+        sta $f2a6
 
         ldy #$00
 final_copy_request_page:
@@ -286,20 +292,7 @@ copy_task_bank_gate:
         ; bank-1 RAM. VIC page commits borrow that common page as a transfer
         ; buffer and restore it from this immutable backup before returning.
         ldy #$00
-backup_service_head:
-        lda #$00
-        sta MMU_LCR_KERNEL_FLAT
-        lda $c414,y
-        sta transfer_byte
-        lda #$00
-        sta MMU_LCR_WORKER_FLAT
-        lda transfer_byte
-        sta $4000,y
-        iny
-        cpy #$ec
-        bne backup_service_head
-        ldy #$00
-backup_service_tail:
+backup_service_page:
         lda #$00
         sta MMU_LCR_KERNEL_FLAT
         lda $c500,y
@@ -307,10 +300,9 @@ backup_service_tail:
         lda #$00
         sta MMU_LCR_WORKER_FLAT
         lda transfer_byte
-        sta $40ec,y
+        sta $4000,y
         iny
-        cpy #$14
-        bne backup_service_tail
+        bne backup_service_page
         lda #$00
         sta MMU_LCR_KERNEL_FLAT
 
@@ -845,7 +837,7 @@ task_file_size_valid:
 :
         ldx task_load_mode
         beq task_check_foreground_size
-        cmp #$08
+        cmp #$0a
         bcc task_check_entry
         beq :+
         jmp task_bad_size

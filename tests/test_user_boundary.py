@@ -53,8 +53,10 @@ class UserBoundaryTests(unittest.TestCase):
         self.assertIn("udeks_wait_foreground", source)
         self.assertIn("udeks_prompt", source)
         self.assertIn("USH_STATE = UDEKS_USH_STATE_READY", source)
-        for command in ('*)"echo"', '*)"help"', '*)"uname"'):
+        for command in ('*)"cd"', '*)"echo"', '*)"help"', '*)"pwd"', '*)"uname"'):
             self.assertIn(command, source)
+        self.assertIn("CWD_KIND = CWD_ROOT", source)
+        self.assertIn('CWD_KIND == CWD_BIN ? "/bin" : "/"', source)
         self.assertIn("--entry ush=$(USER_USH_UDEX)", makefile)
         self.assertIn("--flags 0x01", makefile)
         self.assertIn("app: start = $9000", config)
