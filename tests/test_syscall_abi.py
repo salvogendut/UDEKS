@@ -17,6 +17,7 @@ class SyscallAbiTests(unittest.TestCase):
         self.assertIn("_udeks_syscall_table = $cf00", gate)
         self.assertIn("_udeks_syscall_write_byte_gate = $cf10", gate)
         self.assertIn("_udeks_syscall_write_gate = $cf20", gate)
+        self.assertIn("_udeks_syscall_task_request_gate = $cf30", gate)
 
     def test_public_constants_match_user_veneers(self):
         header = (ROOT / "include/udeks/syscall.h").read_text().lower()
@@ -24,6 +25,7 @@ class SyscallAbiTests(unittest.TestCase):
 
         self.assertIn("udeks_syscall_write_byte        0xcf10u", header)
         self.assertIn("udeks_syscall_write             0xcf20u", header)
+        self.assertIn("udeks_syscall_task_request      0xcf30u", header)
         self.assertIn("udeks_syscall_write_byte = $cf10", veneer)
         self.assertIn("udeks_syscall_write      = $cf20", veneer)
         self.assertNotIn("_udeks_stream_", veneer)

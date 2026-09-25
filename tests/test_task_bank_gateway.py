@@ -17,6 +17,7 @@ class TaskBankGatewayTests(unittest.TestCase):
         self.assertIn("udeks_task_bank_gate_base         0xff05u", header)
         self.assertIn("udeks_task_bank_reset             0xff10u", header)
         self.assertIn("udeks_task_bank_poll              0xff13u", header)
+        self.assertIn("udeks_task_bank_request           0xff16u", header)
         self.assertIn(".assert * = $ff10", gate)
         self.assertIn(".assert task_gate_end <= $ffd0", gate)
 
@@ -24,13 +25,11 @@ class TaskBankGatewayTests(unittest.TestCase):
         header = (ROOT / "include/udeks/task_bank.h").read_text().lower()
         gate = (ROOT / "src/8502/task_bank_gateway.s").read_text().lower()
 
-        self.assertIn("udeks_task_bank_user_zp           0x8fe0u", header)
-        self.assertIn("task_user_zp            = $8fe0", gate)
-        self.assertIn("sta task_user_zp,x", gate)
-        self.assertIn("lda task_user_zp,x", gate)
-        self.assertIn('.segment "bss"', gate)
-        self.assertIn("task_kernel_zp:         .res cc65_zp_size", gate)
-        self.assertNotIn("task_user_zp:           .res", gate)
+        self.assertIn("udeks_task_bank_context           0xe2e2u", header)
+        self.assertIn("task_context            = $e2e2", gate)
+        self.assertIn("sta task_context,x", gate)
+        self.assertIn("lda task_context,x", gate)
+        self.assertNotIn('.segment "bss"', gate)
 
     def test_poll_masks_interrupts_and_restores_kernel_map(self):
         gate = (ROOT / "src/8502/task_bank_gateway.s").read_text().lower()
@@ -42,6 +41,7 @@ class TaskBankGatewayTests(unittest.TestCase):
             "sta mmu_lcr_worker_flat",
             "jsr task_entry",
             "sta mmu_lcr_kernel_io",
+            "jsr task_request_dispatch",
             "plp",
         ):
             self.assertIn(instruction, poll)

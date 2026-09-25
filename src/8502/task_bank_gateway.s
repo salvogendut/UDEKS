@@ -10,11 +10,13 @@
         .export _udeks_task_bank_gate
         .export _udeks_task_bank_reset_gate
         .export _udeks_task_bank_poll_gate
+        .export _udeks_task_bank_request_gate
 
 MMU_LCR_KERNEL_IO       = $ff01
 MMU_LCR_WORKER_FLAT     = $ff04
 TASK_ENTRY              = $9000
-TASK_USER_ZP            = $8fe0
+TASK_CONTEXT            = $e2e2
+TASK_REQUEST_DISPATCH   = $cf30
 CC65_ZP_FIRST           = $02
 CC65_ZP_SIZE            = $1e
 CC65_SP_INDEX           = $04
@@ -27,7 +29,7 @@ TASK_NOT_READY          = $01
 
 _udeks_task_bank_gate:
         .byte 'U', 'T', 'G', '1'
-        .byte $00, $01
+        .byte $00, $02
 task_state:
         .byte TASK_STATE_EMPTY
 task_last_result:
@@ -43,24 +45,24 @@ _udeks_task_bank_reset_gate:
         jmp task_reset
 _udeks_task_bank_poll_gate:
         jmp task_poll
-        .res $0a, $00
+_udeks_task_bank_request_gate:
+        jmp task_request
+        .res $07, $00
 
 task_reset:
         php
         sei
-        lda #$00
         sta MMU_LCR_WORKER_FLAT
         ldx #CC65_ZP_SIZE-1
         lda #$00
 task_reset_zp:
-        sta TASK_USER_ZP,x
+        sta TASK_CONTEXT,x
         dex
         bpl task_reset_zp
         lda #<TASK_STACK_TOP
-        sta TASK_USER_ZP+CC65_SP_INDEX
+        sta TASK_CONTEXT+CC65_SP_INDEX
         lda #>TASK_STACK_TOP
-        sta TASK_USER_ZP+CC65_SP_INDEX+1
-        lda #$00
+        sta TASK_CONTEXT+CC65_SP_INDEX+1
         sta MMU_LCR_KERNEL_IO
         lda #TASK_STATE_READY
         sta task_state
@@ -84,42 +86,16 @@ task_enter:
         sei
         lda #TASK_STATE_RUNNING
         sta task_state
-        ldx #CC65_ZP_SIZE-1
-task_save_kernel_zp:
-        lda CC65_ZP_FIRST,x
-        sta task_kernel_zp,x
-        dex
-        bpl task_save_kernel_zp
-
-        lda #$00
+        jsr task_save_zp
         sta MMU_LCR_WORKER_FLAT
-        ldx #CC65_ZP_SIZE-1
-task_restore_user_zp:
-        lda TASK_USER_ZP,x
-        sta CC65_ZP_FIRST,x
-        dex
-        bpl task_restore_user_zp
+        jsr task_restore_zp
         jsr TASK_ENTRY
         pha
         txa
         pha
-
-        ldx #CC65_ZP_SIZE-1
-task_save_user_zp:
-        lda CC65_ZP_FIRST,x
-        sta TASK_USER_ZP,x
-        dex
-        bpl task_save_user_zp
-
-        lda #$00
+        jsr task_save_zp
         sta MMU_LCR_KERNEL_IO
-        ldx #CC65_ZP_SIZE-1
-task_restore_kernel_zp:
-        lda task_kernel_zp,x
-        sta CC65_ZP_FIRST,x
-        dex
-        bpl task_restore_kernel_zp
-
+        jsr task_restore_zp
         pla
         tax
         pla
@@ -136,8 +112,47 @@ task_poll_counted:
         plp
         rts
 
+        ; Synchronous bank-1 request. The caller has filled the common request
+        ; record. Swap to the resident runtime, dispatch it at $CF30, then
+        ; restore the task runtime before returning through the same C stack.
+task_request:
+        php
+        sei
+        jsr task_save_zp
+        sta MMU_LCR_KERNEL_IO
+        jsr task_restore_zp
+        jsr TASK_REQUEST_DISPATCH
+        pha
+        txa
+        pha
+        jsr task_save_zp
+        sta MMU_LCR_WORKER_FLAT
+        jsr task_restore_zp
+        pla
+        tax
+        pla
+        plp
+        rts
+
+        ; Both physical banks reserve $E2E2-$E2FF for their selected cc65
+        ; zero-page image. The active MMU map chooses the context implicitly.
+task_save_zp:
+        ldx #CC65_ZP_SIZE-1
+task_save_zp_byte:
+        lda CC65_ZP_FIRST,x
+        sta TASK_CONTEXT,x
+        dex
+        bpl task_save_zp_byte
+        rts
+
+task_restore_zp:
+        ldx #CC65_ZP_SIZE-1
+task_restore_zp_byte:
+        lda TASK_CONTEXT,x
+        sta CC65_ZP_FIRST,x
+        dex
+        bpl task_restore_zp_byte
+        rts
+
 task_gate_end:
         .assert task_gate_end <= $ffd0, error, "bank-task gate overlaps CPU handoff"
-
-        .segment "BSS"
-task_kernel_zp:         .res CC65_ZP_SIZE

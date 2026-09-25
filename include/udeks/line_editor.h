@@ -23,6 +23,8 @@ unsigned char udeks_line_editor_handle(
 unsigned char udeks_line_editor_submit(void);
 unsigned char udeks_line_editor_get_line(
     unsigned char *text, unsigned char capacity);
+unsigned char udeks_line_editor_read(
+    unsigned char *text, unsigned char capacity);
 const unsigned char *udeks_line_editor_text(void);
 unsigned char udeks_line_editor_length(void);
 unsigned char udeks_line_editor_cursor(void);

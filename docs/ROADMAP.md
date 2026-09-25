@@ -102,6 +102,8 @@ display corruption.
 - [x] Freeze the initial 8502 syscall table and program-entry ABI.
 - [x] Link a bounded common-RAM gate that preserves resident and bank-1 cc65
   zero-page contexts around a cooperative task poll.
+- [x] Add a synchronous common-RAM request record with task-side nonblocking
+  `read`, bounded `write`, Unix descriptors, and Linux errno values.
 - [ ] Implement task creation, exit, yield, sleep, and event wait.
 - [ ] Save and restore the selected compiler runtime and CPU context.
 - [ ] Add cooperative scheduling, then timer-driven preemption.

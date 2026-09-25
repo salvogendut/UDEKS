@@ -1,12 +1,12 @@
-# Bank-1 8502 cooperative-task gate 0.1
+# Bank-1 8502 cooperative-task gate 0.2
 
 The persistent `/bin/ush` task cannot occupy bank-0 application slot 1 or 2:
 those slots currently retain `xclock` and `xwave`. It instead executes from
 bank 1 at `$9000`, with its cc65 software stack growing down from `$EFF0`.
 The resident Z80 image remains at `$2000-$3FFF`, and the VIC-IIe window remains
-at `$4000-$7FFF`. Its saved `$02-$1F` cc65 zero-page image occupies bank-1
-`$8FE0-$8FFD`, immediately below the program load address; the resident copy is
-kept in ordinary bank-0 BSS.
+at `$4000-$7FFF`. Each physical bank reserves `$E2E2-$E2FF` for its own saved
+`$02-$1F` cc65 zero-page image. Selecting the MMU profile therefore selects the
+context without consuming common RAM.
 
 The 8502 enters the task through common RAM, which remains visible under both
 MMU profiles:
@@ -16,6 +16,7 @@ MMU profiles:
 | `$FF05` | `UTG1` header and state |
 | `$FF10` | Reset the saved user context |
 | `$FF13` | Run one cooperative poll at `$9000` |
+| `$FF16` | Perform one synchronous common-record request |
 
 The poll gate performs this bounded transition:
 
@@ -33,8 +34,9 @@ the poll returns. Interrupts remain disabled during this initial cooperative
 gate. A later scheduler will save full CPU and hardware-stack contexts rather
 than treating task entry as a returning subroutine.
 
-Code in bank 1 cannot call the bank-0 `$CF00` syscall page. The next ABI step
-will define a common-RAM request/yield protocol so task-side Linux-shaped
-wrappers can ask the resident kernel to perform terminal and process services
-between polls. Only after that protocol exists can init install and poll
-`/bin/ush`.
+Code in bank 1 cannot directly call the bank-0 `$CF00` syscall page. The `$FF16`
+gate saves the task context, restores the resident context, dispatches the
+common [task request record](task-request.md) through `$CF30`, and reverses the
+transition before returning. The first task-side wrappers provide nonblocking
+`read` and bounded `write`; task creation, execution, signals, and a true
+scheduler yield remain later operations.

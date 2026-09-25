@@ -178,7 +178,8 @@ the assigned module-workspace and C-stack region. Bank 1 initially reserves
 
 The VIC-IIe module currently owns `$E000-$E18F` for its 200-entry scanline
 offset table, `$E190-$E1AF` for its dirty-page map, and `$E1B0-$E1B7` for clip
-state. `$E1B8-$E2FF` holds linker-bounded module-private high BSS; the C
+state. `$E1B8-$E2E1` holds linker-bounded module-private high BSS,
+`$E2E2-$E2FF` holds the selected bank's cc65 zero-page context, and the C
 software stack is constrained to `$E300-$EFF0`. This is an explicit module
 workspace assignment, not expansion of the ordinary resident kernel image.
 The retained root-console state occupies the linker-bounded `$0C00-$11FF`

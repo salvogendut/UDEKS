@@ -50,8 +50,11 @@ make bench-offload  # build copy/checksum/transform crossover sweep
 make            # build all three target images
 ```
 
-`make user-sources` compiles `user/bin/cowsay.c` into cc65 assembly under
-`build/user/`. `make user-programs` independently links it at the first
+`make user-sources` compiles `user/bin/cowsay.c` and the bank-1 task stream
+runtime under `build/user/`. The latter provides nonblocking `read`, bounded
+`write`, Unix descriptor numbers, and Linux errno values through the common
+task-request gate; it is compiled independently but is not yet linked into an
+installed `/bin/ush`. `make user-programs` independently links `cowsay` at the first
 loader-owned slot and wraps it as `build/user/cowsay.udx`. The program imports
 only the user-side syscall veneer; it does not resolve private kernel or shell
 symbols. The same target creates `build/user/bootfs.img`, installs `cowsay.udx`

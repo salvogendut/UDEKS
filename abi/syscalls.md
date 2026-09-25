@@ -1,4 +1,4 @@
-# 8502 syscall and program-entry ABI 0.1
+# 8502 syscall and program-entry ABI 0.2
 
 The initial 8502 user ABI separates program binaries from resident link-time
 symbols. A program links only its own code, its required compiler runtime, and
@@ -14,8 +14,8 @@ The table begins at `$CF00` and occupies one reserved 256-byte page. The first
 |---:|---:|---|
 | 0 | 4 | ASCII magic `USYS` |
 | 4 | 1 | ABI major (`0`) |
-| 5 | 1 | ABI minor (`1`) |
-| 6 | 1 | Implemented vector count (`2`) |
+| 5 | 1 | ABI minor (`2`) |
+| 6 | 1 | Implemented vector count (`3`) |
 | 7 | 1 | Header size (`16`) |
 | 8 | 8 | Reserved; zero |
 
@@ -26,6 +26,7 @@ returns with the status in `A`. Version 0.1 provides:
 |---:|---|---|
 | `$CF10` | `write_byte` | `A` descriptor, `X` byte |
 | `$CF20` | `write` | `A` descriptor, `X` pointer low, `Y` pointer high |
+| `$CF30` | `task_request` | Common `$F359` request record |
 
 Descriptors follow the Unix convention already used by the shell: `0` is
 standard input, `1` standard output, and `2` standard error. The two initial
@@ -61,6 +62,6 @@ These task-lifecycle operations are the next implementation milestone; the ABI
 and independently linked executable exist now, but no shell command invokes
 the program yet.
 
-Version 0.1 programs execute from bank 0, where `$CF00` is visible. Moving task
-storage to another physical bank will require a common-RAM trap veneer or an
-MMU-mediated gate and therefore a later ABI revision.
+Transient version 0.1 programs execute from bank 0, where `$CF00` is visible.
+Persistent bank-1 tasks call the common `$FF16` gate, which swaps runtime
+contexts before invoking `$CF30`; they never jump into hidden bank-0 code.

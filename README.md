@@ -179,6 +179,7 @@ pass.
 - [Filesystem and Unix-like command direction](abi/filesystem.md)
 - [8502 syscall and program-entry ABI](abi/syscalls.md)
 - [Bank-1 8502 cooperative-task gate](abi/task-bank.md)
+- [Bank-task request and stream ABI](abi/task-request.md)
 - [Bounded Z80 worker service](abi/z80-worker.md)
 - [VIC-IIe graphics service](abi/vic-graphics.md)
 - [VIC-IIe window manager](abi/window.md)

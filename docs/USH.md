@@ -26,7 +26,8 @@ supplies the context switch. The complete task path must:
 
 1. preserve the resident cc65 zero page and software-stack pointer;
 2. enter the bank-1 task profile and call one cooperative `ush` poll;
-3. marshal service requests through common RAM and yield them to the kernel;
+3. marshal service requests synchronously through common RAM and return from
+   the shell poll when the task must yield;
 4. return to the service loop without disturbing Z80 or VIC ownership;
 5. retain the shell's BSS, history-facing state, and working directory between
    polls.
@@ -41,8 +42,9 @@ streams, process execution, job control, system queries, and filesystem access.
 - [x] Move tokenization into the user source tree.
 - [x] Resolve non-builtin commands through `/bin` bootfs.
 - [x] Define and link the bounded bank-1 8502 cooperative-task context gate.
-- [ ] Define the common-RAM task request/yield protocol and public wrappers.
-- [ ] Add terminal-read, prompt, yield, exec, wait, and signal syscalls.
+- [x] Define the common-RAM task request protocol and public stream wrappers.
+- [x] Add nonblocking terminal-read and bounded terminal-write requests.
+- [ ] Add prompt, task-yield, exec, wait, and signal operations.
 - [ ] Replace direct graphical builtins with `/bin` programs or service calls.
 - [ ] Link `ush.udx` without resident private symbols.
 - [ ] Have init install and poll `/bin/ush` at boot.

@@ -92,6 +92,8 @@ USER_COWSAY_ASM := $(BUILD_USER)/cowsay.s
 USER_COWSAY_OBJ := $(BUILD_USER)/cowsay.o
 USER_ENTRY_OBJ := $(BUILD_USER)/entry.o
 USER_SYSCALL_OBJ := $(BUILD_USER)/syscall.o
+USER_TASK_STREAM_ASM := $(BUILD_USER)/task_stream.s
+USER_TASK_STREAM_OBJ := $(BUILD_USER)/task_stream.o
 USER_COWSAY_BIN := $(BUILD_USER)/cowsay.bin
 USER_COWSAY_UDEX := $(BUILD_USER)/cowsay.udx
 USER_BOOTFS := $(BUILD_USER)/bootfs.img
@@ -113,7 +115,7 @@ panic-probe: $(PANIC_PROBE_D71)
 framebuffer-assets: $(VDC_SPLASH_BIN) $(VDC_WORDMARK_BIN) $(VDC_TEXT_ASSETS_BIN)
 
 # Compile user programs independently; they must never enter the resident link.
-user-sources: $(USER_COWSAY_ASM)
+user-sources: $(USER_COWSAY_ASM) $(USER_TASK_STREAM_OBJ)
 
 user-programs: $(USER_BOOTFS)
 
@@ -177,6 +179,13 @@ $(USER_ENTRY_OBJ): user/lib/entry.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
 
 $(USER_SYSCALL_OBJ): user/lib/syscall.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(USER_TASK_STREAM_ASM): user/lib/task_stream.c user/include/udeks/program.h \
+		include/udeks/task_bank.h include/udeks/task_request.h | $(BUILD_USER)
+	$(CC65) $(CFLAGS_8502) -I user/include -I include -o $@ $<
+
+$(USER_TASK_STREAM_OBJ): $(USER_TASK_STREAM_ASM) | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
 
 $(USER_COWSAY_BIN): $(USER_ENTRY_OBJ) $(USER_SYSCALL_OBJ) \
@@ -483,6 +492,9 @@ $(BUILD_8502)/keyboard_scan.o: src/8502/keyboard_scan.s | $(BUILD_8502)
 $(BUILD_8502)/control_ports.o: src/8502/control_ports.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/line_editor_read.o: src/8502/line_editor_read.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/z80_handoff.o: src/8502/z80_handoff.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -491,6 +503,7 @@ $(BUILD_8502)/vic_graphics_transport.o: src/8502/vic_graphics.s | $(BUILD_8502)
 
 $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
+		$(BUILD_8502)/line_editor_read.o \
 		$(BUILD_8502)/z80_handoff.o \
 		$(BUILD_8502)/vic_graphics_transport.o \
 		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o $(BUILD_8502)/clock.o \
@@ -530,6 +543,7 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 $(PANIC_PROBE_KERNEL_BIN): $(BOOT_D71) \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
+		$(BUILD_8502)/line_editor_read.o \
 		$(BUILD_8502)/z80_handoff.o \
 		$(BUILD_8502)/vic_graphics_transport.o \
 		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o $(BUILD_8502)/clock.o \

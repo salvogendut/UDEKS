@@ -47,7 +47,7 @@ The initial physical allocation is:
 | `$0000-$01FF` | Initial executive zero page and stack | Relocatable task-page pool |
 | `$0200-$0AFF` | Boot-preloaded application slot 1 | Task/worker low workspace |
 | `$0B00-$0BFF` | Application slot 1 after stage 0 exits | Task/worker space |
-| `$0C00-$11FF` | Reclaimed root-console state after stage 1 exits | Task/worker space |
+| `$0C00-$11FF` | Reclaimed root-console and terminal state after stage 1 exits | Task/worker space |
 | `$1200-$1BFF` | Boot-preloaded application slot 2 | Task/worker space |
 | `$1C00-$1FFF` | Stage-1 loader | Task/worker space |
 | `$2000-$3FFF` | 8502 kernel image | Resident Z80 dispatcher and code |
@@ -57,16 +57,18 @@ The initial physical allocation is:
 | `$E000-$E18F` | VIC-IIe module scanline-offset table | Worker data |
 | `$E190-$E1AF` | VIC-IIe module dirty-page map | Worker data |
 | `$E1B0-$E1B7` | VIC-IIe module clip state | Worker data |
-| `$E1B8-$E2FF` | Statically linked module-private high BSS | Worker data |
+| `$E1B8-$E2E1` | Statically linked module-private high BSS | Worker data |
+| `$E2E2-$E2FF` | Selected-bank cc65 zero-page context | Task/worker context |
 | `$E300-$EFFF` | 8502 C software stack | Worker data and stack |
 | `$F000-$FFFF` | 4 KiB common RAM | Bank-0 common RAM replaces bank 1 |
 
 The bank-0 kernel linker range is `$2000-$CFFF`; it cannot grow into I/O or
 common RAM. The first high-memory assignment gives `$E000-$E1B7` to the
 VIC-IIe module's scanline table, dirty-page map, and clip state, and reserves
-`$E1B8-$E2FF` for bounded module-private BSS, and `$E300-$EFF0` for the
-downward-growing 8502 C software stack. The initial Z80
-stack top is `$EFF0` in its non-common bank view.
+`$E1B8-$E2E1` for bounded module-private BSS, `$E2E2-$E2FF` for the selected
+bank's cc65 zero-page context, and `$E300-$EFF0` for the downward-growing 8502
+C software stack. The initial Z80 stack top is `$EFF0` in its non-common bank
+view and must remain at or above `$E300`, leaving the bank-1 context intact.
 
 Stage 1 transfers control from `$1C00-$1FFF` and never returns. Before doing
 so it installs two 2560-byte application images from bank-0 staging ranges
@@ -98,7 +100,7 @@ The common area is partitioned conservatively:
 | `$F280-$F2FF` | Reserved diagnostic space |
 | `$F300-$F33F` | Bounded Z80/8502 sample transfer buffer |
 | `$F340-$F358` | `xwave` previous surface-row cache |
-| `$F359-$F37E` | Future queues and shared transfer metadata |
+| `$F359-$F37E` | Bank-task request record and 24-byte inline payload |
 | `$F37F-$F39D` | VIC-II outline count and two 15-byte records |
 | `$F39E-$F7EF` | Initial transient-task C stack and future queues |
 | `$F7F0-$F7FF` | Transient-task stack guard/top |
@@ -106,8 +108,8 @@ The common area is partitioned conservatively:
 | `$FA00-$FEFF` | Resident bootfs/task-loader reservation |
 | `$F800-$FEFF` | 8502/Z80 gateway code and common kernel mechanisms |
 | `$FF00-$FF04` | Permanent MMU register hole; never RAM or code |
-| `$FF05-$FFB3` | Bank-1 8502 cooperative-task gate and state |
-| `$FFB4-$FFCF` | Reserved for task request/yield gateway growth |
+| `$FF05-$FFC4` | Bank-1 8502 poll and synchronous-request gate |
+| `$FFC5-$FFCF` | Reserved common-gateway growth |
 | `$FFD0-$FFF9` | CPU handoff and interrupt/NMI trampolines |
 | `$FFFA-$FFFF` | 8502 NMI, reset, and IRQ vectors |
 

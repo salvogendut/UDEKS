@@ -3,24 +3,30 @@
 #include "udeks/line_editor.h"
 
 static unsigned char edit_text[UDEKS_LINE_EDITOR_CAPACITY + 1u];
-static unsigned char submitted_text[UDEKS_LINE_EDITOR_CAPACITY + 1u];
 static unsigned char history_text[UDEKS_LINE_EDITOR_HISTORY_CAPACITY]
     [UDEKS_LINE_EDITOR_CAPACITY + 1u];
-static unsigned char history_length[UDEKS_LINE_EDITOR_HISTORY_CAPACITY];
 static unsigned char draft_text[UDEKS_LINE_EDITOR_CAPACITY + 1u];
+
+#pragma bss-name(push, "LOWBSS")
+unsigned char udeks_line_editor_submitted_text
+    [UDEKS_LINE_EDITOR_CAPACITY + 1u];
+static unsigned char history_length[UDEKS_LINE_EDITOR_HISTORY_CAPACITY];
 static unsigned char edit_length;
 static unsigned char edit_cursor;
-static unsigned char submitted_length;
-static unsigned char submitted_ready;
+unsigned char udeks_line_editor_submitted_length_value;
+unsigned char udeks_line_editor_submitted_ready_value;
+unsigned char udeks_line_editor_submitted_cursor;
 static unsigned char history_count;
 static unsigned char history_position;
 static unsigned char draft_length;
+#pragma bss-name(pop)
 
 void udeks_line_editor_initialize(void)
 {
-    submitted_length = 0;
-    submitted_ready = 0;
-    submitted_text[0] = 0;
+    udeks_line_editor_submitted_length_value = 0;
+    udeks_line_editor_submitted_ready_value = 0;
+    udeks_line_editor_submitted_cursor = 0;
+    udeks_line_editor_submitted_text[0] = 0;
     history_count = 0;
     history_position = 0;
     draft_length = 0;
@@ -234,12 +240,13 @@ unsigned char udeks_line_editor_submit(void)
     unsigned char index;
     unsigned char overwritten;
 
-    overwritten = submitted_ready;
+    overwritten = udeks_line_editor_submitted_ready_value;
     for (index = 0; index <= edit_length; ++index) {
-        submitted_text[index] = edit_text[index];
+        udeks_line_editor_submitted_text[index] = edit_text[index];
     }
-    submitted_length = edit_length;
-    submitted_ready = 1;
+    udeks_line_editor_submitted_length_value = edit_length;
+    udeks_line_editor_submitted_ready_value = 1;
+    udeks_line_editor_submitted_cursor = 0;
     remember_line();
     udeks_line_editor_reset();
     return overwritten;
@@ -250,16 +257,17 @@ unsigned char udeks_line_editor_get_line(
 {
     unsigned char index;
 
-    if (submitted_ready == 0) {
+    if (udeks_line_editor_submitted_ready_value == 0) {
         return UDEKS_LINE_EDITOR_EMPTY;
     }
-    if (capacity <= submitted_length) {
+    if (capacity <= udeks_line_editor_submitted_length_value) {
         return UDEKS_LINE_EDITOR_TOO_SMALL;
     }
-    for (index = 0; index <= submitted_length; ++index) {
-        text[index] = submitted_text[index];
+    for (index = 0; index <= udeks_line_editor_submitted_length_value; ++index) {
+        text[index] = udeks_line_editor_submitted_text[index];
     }
-    submitted_ready = 0;
+    udeks_line_editor_submitted_ready_value = 0;
+    udeks_line_editor_submitted_cursor = 0;
     return UDEKS_LINE_EDITOR_OK;
 }
 
@@ -280,12 +288,12 @@ unsigned char udeks_line_editor_cursor(void)
 
 unsigned char udeks_line_editor_submission_ready(void)
 {
-    return submitted_ready;
+    return udeks_line_editor_submitted_ready_value;
 }
 
 unsigned char udeks_line_editor_submitted_length(void)
 {
-    return submitted_length;
+    return udeks_line_editor_submitted_length_value;
 }
 
 unsigned char udeks_line_editor_history_count(void)

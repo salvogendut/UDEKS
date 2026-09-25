@@ -46,8 +46,8 @@ static unsigned char *arguments[UDEKS_SHELL_MAX_ARGUMENTS];
 static unsigned char foreground_job;
 static unsigned char launch_background;
 static unsigned char foreground_interrupted;
-static unsigned char background_jobs;
 #pragma bss-name(pop)
+static unsigned char background_jobs;
 
 static void write_text(
     unsigned char descriptor, const unsigned char *text)

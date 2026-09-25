@@ -97,6 +97,10 @@ class MemoryMapTests(unittest.TestCase):
         )
         self.assertEqual(
             memory["UDEKS_MODULE_HIGH_BSS_LIMIT"],
+            memory["UDEKS_TASK_CONTEXT_BASE"],
+        )
+        self.assertEqual(
+            memory["UDEKS_TASK_CONTEXT_LIMIT"],
             memory["UDEKS_C_STACK_BOTTOM"],
         )
         self.assertLess(memory["UDEKS_C_STACK_BOTTOM"], memory["UDEKS_C_STACK_TOP"])
