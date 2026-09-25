@@ -65,8 +65,10 @@ See [LICENSE](LICENSE).
 - A transitional init service owns the root session. Commands absent from the
   builtin table are resolved by leaf name through the read-only `/bin` bootfs;
   `cowsay` is the first transient program launched through that path. A
-  minimal `/bin/ush` is also boot-preloaded in bank 1 and cooperatively polled
-  through the public task/stream ABI while shell-policy extraction continues.
+  `/bin/ush` is also loaded in bank 1 and cooperatively polled through the
+  public task/stream ABI. It now owns terminal lines and runs `echo`, `help`,
+  and `uname` natively, forwarding commands still awaiting extraction through
+  a bounded compatibility request.
 
 ## Hardware model
 

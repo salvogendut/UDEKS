@@ -11,9 +11,14 @@
 
 TASK_BANK_RESET         = $ff10
 TASK_BANK_POLL          = $ff13
+TASK_STATE              = $f285
+USH_STATE               = $f3d9
 
         .segment "CODE"
 init_start:
+        lda #$00
+        sta TASK_STATE
+        sta USH_STATE
         jsr TASK_BANK_RESET
         jsr TASK_BANK_POLL
         jmp _udeks_shell_start

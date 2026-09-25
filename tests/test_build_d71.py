@@ -20,17 +20,33 @@ from build_d71 import (
     TASK_LOADER_STAGING_SIZE,
     TASK_BANK_GATE_STAGING_ADDRESS,
     TASK_BANK_GATE_STAGING_SIZE,
-    USH_STAGING_ADDRESS,
-    USH_STAGING_SIZE,
+    TASK_REQUEST_STAGING_ADDRESS,
+    TASK_REQUEST_STAGING_SIZE,
+    USH_ALLOCATION_SIZE,
     blank_d71,
     boot_locations,
     build_image,
     sector_offset,
 )
+from build_bootfs import build_bootfs
 
 
 def stage0() -> bytes:
     return b"CBM\x00\x1c\x00\xd4" + bytes(25)
+
+
+def ush_executable(
+    payload: bytes = b"shell-code", *, bss_size: int = 3, flags: int = 1
+) -> bytes:
+    return (
+        b"UDEX" + bytes((0, 1, 1, flags)) + b"\x00\x90"
+        + len(payload).to_bytes(2, "little")
+        + bss_size.to_bytes(2, "little") + b"\x00\x90" + payload
+    )
+
+
+def bootfs_with_ush(executable: bytes) -> bytes:
+    return build_bootfs([("cowsay", b"x"), ("ush", executable)])
 
 
 class BuildD71Tests(unittest.TestCase):
@@ -91,41 +107,50 @@ class BuildD71Tests(unittest.TestCase):
             bootfs,
         )
 
-    def test_persistent_ush_payload_is_staged_without_udex_header(self):
-        payload_bytes = b"shell-code"
-        header = (
-            b"UDEX" + bytes((0, 1, 1, 1)) + b"\x00\x90"
-            + len(payload_bytes).to_bytes(2, "little")
-            + b"\x03\x00\x00\x90"
+    def test_persistent_ush_is_loaded_directly_from_bootfs(self):
+        executable = ush_executable()
+        bootfs = bootfs_with_ush(executable)
+        image = build_image(stage0(), b"", b"", b"", bootfs=bootfs,
+                            ush=executable)
+        payload = b"".join(
+            image[sector_offset(track, sector) : sector_offset(track, sector) + SECTOR_SIZE]
+            for track, sector in list(boot_locations(1 + PAYLOAD_BLOCKS))[1:]
         )
+        z80 = payload[0xB400 : 0xB400 + 0x2000]
+        self.assertEqual(
+            z80[BOOTFS_Z80_OFFSET : BOOTFS_Z80_OFFSET + len(bootfs)], bootfs
+        )
+
+    def test_rejects_nonpersistent_ush(self):
+        executable = ush_executable(b"x", bss_size=0, flags=0)
+        with self.assertRaisesRegex(ValueError, "persistent-poll"):
+            build_image(stage0(), b"", b"", b"",
+                        bootfs=bootfs_with_ush(executable), ush=executable)
+
+    def test_rejects_oversize_ush_allocation(self):
+        executable = ush_executable(bytes(USH_ALLOCATION_SIZE), bss_size=1)
+        with self.assertRaisesRegex(ValueError, "2048-byte"):
+            build_image(stage0(), b"", b"", b"",
+                        bootfs=bootfs_with_ush(executable), ush=executable)
+
+    def test_task_request_gateway_is_staged_in_vic_shadow(self):
+        gateway = b"request-gateway"
         image = build_image(
-            stage0(), b"", b"", b"", ush=header + payload_bytes
+            stage0(), b"", b"", b"", task_request_gateway=gateway
         )
         payload = b"".join(
             image[sector_offset(track, sector) : sector_offset(track, sector) + SECTOR_SIZE]
             for track, sector in list(boot_locations(1 + PAYLOAD_BLOCKS))[1:]
         )
-        offset = USH_STAGING_ADDRESS - 0x1C00
-        self.assertEqual(payload[offset : offset + len(payload_bytes)], payload_bytes)
-        self.assertEqual(payload[offset + len(payload_bytes) : offset + len(payload_bytes) + 3], bytes(3))
+        offset = TASK_REQUEST_STAGING_ADDRESS - 0x1C00
+        self.assertEqual(payload[offset : offset + len(gateway)], gateway)
 
-    def test_rejects_nonpersistent_ush(self):
-        executable = (
-            b"UDEX" + bytes((0, 1, 1, 0)) + b"\x00\x90"
-            + b"\x01\x00\x00\x00\x00\x90x"
-        )
-        with self.assertRaisesRegex(ValueError, "persistent-poll"):
-            build_image(stage0(), b"", b"", b"", ush=executable)
-
-    def test_rejects_oversize_ush_allocation(self):
-        image_size = USH_STAGING_SIZE
-        executable = (
-            b"UDEX" + bytes((0, 1, 1, 1)) + b"\x00\x90"
-            + image_size.to_bytes(2, "little") + b"\x01\x00\x00\x90"
-            + bytes(image_size)
-        )
-        with self.assertRaisesRegex(ValueError, "1536-byte"):
-            build_image(stage0(), b"", b"", b"", ush=executable)
+    def test_rejects_oversize_task_request_gateway(self):
+        with self.assertRaisesRegex(ValueError, "512-byte"):
+            build_image(
+                stage0(), b"", b"", b"",
+                task_request_gateway=bytes(TASK_REQUEST_STAGING_SIZE + 1),
+            )
 
     def test_task_loader_is_staged_in_reclaimable_vic_shadow(self):
         loader = b"task-loader"

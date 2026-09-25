@@ -36,7 +36,8 @@ than treating task entry as a returning subroutine.
 
 Code in bank 1 cannot directly call the bank-0 `$CF00` syscall page. The `$FF16`
 gate saves the task context, restores the resident context, dispatches the
-common [task request record](task-request.md) through `$CF30`, and reverses the
-transition before returning. The first task-side wrappers provide nonblocking
-`read` and bounded `write`; task creation, execution, signals, and a true
-scheduler yield remain later operations.
+common [task request record](task-request.md) through `$CF30` and the permanent
+`$F800` request gateway, and reverses the transition before returning. The
+task-side wrappers provide nonblocking `read`, bounded `write`, compatibility
+`exec`, foreground `wait`, and terminal `prompt`; signals and a true scheduler
+yield remain later operations.

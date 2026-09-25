@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 from vice_capture import (
     make_basic_wrapper,
+    parse_block,
     parse_keybuf,
     parse_monitor_byte,
     quote_monitor_text,
@@ -48,6 +49,10 @@ class ViceCaptureTests(unittest.TestCase):
 
     def test_keybuf_quotes_and_backslashes_are_escaped(self):
         self.assertEqual(quote_monitor_text('a"b\\c'), r'"a\"b\\c"')
+
+    def test_ready_block_parser(self):
+        self.assertEqual(parse_block("0x1197=65 63 68 6f"),
+                         (0x1197, b"echo"))
 
 
 if __name__ == "__main__":

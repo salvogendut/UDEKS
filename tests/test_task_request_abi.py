@@ -14,6 +14,8 @@ class TaskRequestAbiTests(unittest.TestCase):
         self.assertIn("udeks_task_request_base          0xf359u", header)
         self.assertIn("udeks_task_request_size          38u", header)
         self.assertIn("udeks_task_request_payload_size  24u", header)
+        self.assertIn("udeks_task_command_base          0xf3a0u", header)
+        self.assertIn("udeks_task_command_size          55u", header)
         self.assertIn("udeks_treq_payload               14u", header)
 
     def test_dispatcher_uses_fixed_resident_and_common_vectors(self):
@@ -25,6 +27,7 @@ class TaskRequestAbiTests(unittest.TestCase):
         self.assertIn("jsr task_request_dispatch", task_gate)
         self.assertIn("_udeks_syscall_task_request_gate = $cf30", syscalls)
         self.assertIn(".assert * <= $d000", syscalls)
+        self.assertIn('.segment "taskrequest"', syscalls)
 
     def test_initial_operations_follow_unix_descriptor_and_errno_values(self):
         header = (ROOT / "include/udeks/task_request.h").read_text().lower()
@@ -36,6 +39,8 @@ class TaskRequestAbiTests(unittest.TestCase):
             self.assertIn(value, header)
         self.assertIn("jsr _udeks_line_editor_read", dispatcher)
         self.assertIn("jsr _udeks_root_console_write", dispatcher)
+        self.assertIn("jsr _udeks_shell_dispatch_line", dispatcher)
+        self.assertIn("jsr _udeks_root_terminal_prompt", dispatcher)
 
     def test_task_stream_wrapper_has_no_resident_private_imports(self):
         wrapper = (ROOT / "user/lib/task_stream.c").read_text().lower()
@@ -44,6 +49,9 @@ class TaskRequestAbiTests(unittest.TestCase):
         self.assertIn("udeks_task_bank_request", wrapper)
         self.assertIn("udeks_treq_op_read", wrapper)
         self.assertIn("udeks_treq_op_write", wrapper)
+        self.assertIn("udeks_treq_op_exec", wrapper)
+        self.assertIn("udeks_treq_op_wait", wrapper)
+        self.assertIn("udeks_treq_op_prompt", wrapper)
         self.assertNotIn("udeks_root_console", wrapper)
         self.assertNotIn("udeks_line_editor", wrapper)
         self.assertIn("extern unsigned char udeks_errno", program)

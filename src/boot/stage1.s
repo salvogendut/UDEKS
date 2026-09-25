@@ -21,7 +21,7 @@ MMU_PAGE0_BANK          = $d508
 MMU_PAGE1_PAGE          = $d509
 MMU_PAGE1_BANK          = $d50a
 
-GATEWAY                 = $f800
+GATEWAY                 = $f700
 COPY_SOURCE             = $f8
 COPY_DESTINATION        = $fa
 COPY_LENGTH             = $fc
@@ -124,5 +124,5 @@ halt:
 gateway_image:
         .incbin "build/boot/stage1-gateway.bin"
 gateway_image_end:
-        .assert gateway_image_end-gateway_image <= $0200, error, "stage-1 gateway exceeds boot reservation"
+        .assert gateway_image_end-gateway_image <= $0300, error, "stage-1 gateway exceeds boot reservation"
         .assert gateway_image_end <= $2000, error, "stage 1 exceeds reserved $1C00-$1FFF range"

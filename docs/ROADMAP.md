@@ -239,6 +239,9 @@ without missing input events.
   delegation to the bootstrap shell remains transitional.
 - [x] Package a minimal persistent `/bin/ush`, boot-preload it in bank 1, and
   poll it from init through the public task/stream boundary.
+- [x] Move terminal-line ownership plus native `echo`, `help`, and `uname`
+  handling into `/bin/ush`, with bounded compatibility exec/wait for commands
+  not yet extracted.
 - [ ] Replace the fixed `ush` preload with runtime persistent-task allocation.
 - [ ] Load, run, and reclaim `cowsay` without adding it to the resident image.
 - [ ] Package `xclock` and `xwave` as UDEX programs.

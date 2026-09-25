@@ -38,6 +38,16 @@ class SyscallAbiTests(unittest.TestCase):
         self.assertIn("jmp _udeks_program_main", entry)
         self.assertIn("_udeks_program_entry = $0200", entry)
 
+    def test_task_loader_accepts_current_syscall_minor(self):
+        loader = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
+        check = loader.split("task_check_syscalls:", 1)[1].split(
+            "task_find_file:", 1
+        )[0]
+
+        self.assertIn("lda syscall_table+5", check)
+        self.assertIn("cmp #$03", check)
+        self.assertIn("bcs task_bad_syscalls", check)
+
     def test_user_link_is_separate_from_kernel(self):
         makefile = (ROOT / "Makefile").read_text()
         user_rule = makefile.split("$(USER_COWSAY_BIN):", 1)[1].split("\n\n", 1)[0]

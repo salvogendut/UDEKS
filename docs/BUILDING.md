@@ -59,7 +59,7 @@ user-programs` independently links `cowsay` at the first loader-owned slot and
 `build/user/ush.udx`. Neither resolves private kernel or shell symbols. The
 same target creates `build/user/bootfs.img`, installs both UDEX files, and
 `make boot` mounts that immutable 4 KiB image as the early `/bin`. Stage 1
-preloads the persistent shell payload while commands absent from the resident
+loads the persistent shell allocation directly from its bootfs entry while commands absent from the resident
 bootstrap builtin table go through
 the common-RAM resolver and loader. It validates bootfs and UDEX bounds, swaps
 the first task slot, supplies a private C stack and cc65 zero page, runs the
@@ -255,7 +255,10 @@ python3 tools/snapshot_extract.py run.vsf result.bin \
 Pass `--screenshot output.bmp` to `tools/vice_capture.py` to capture the active
 VICE canvas after the requested result record reaches its completed state. A
 small `--screenshot-delay` lets a newly activated display complete a raster
-refresh before capture.
+refresh before capture. Native interactive tests can wait for an exact
+common-RAM readiness signature with `--keybuf-ready-block ADDRESS=HEXBYTES`,
+then inject an entire line-editor record atomically with
+`--ready-block ADDRESS=HEXBYTES`.
 
 For disk-loaded 2 MHz runs, issue BASIC `FAST` immediately before `RUN` or
 `SYS`; in the qualified launch path, the emulator's `--fast` startup option

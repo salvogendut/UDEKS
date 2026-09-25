@@ -7,13 +7,20 @@ implementation stays small enough for a stock C128.
 ## Current transition
 
 The production image now packages a minimal persistent `ush.udx` in the
-read-only `/bin` bootfs, preloads its validated payload at bank-1 `$9000`, and
-has init invoke one bounded poll on every service pass. Its first poll proves
-the public stream request path by announcing that the task is ready. The
-registry no longer owns a shell descriptor, but init still delegates to the
-resident bootstrap shell alongside the bank-1 task so current command parsing
-and dispatch remain usable during extraction. Executable lookup is generic
-and contains no `cowsay` builtin.
+read-only `/bin` bootfs, loads its validated payload directly at bank-1 `$9000`,
+and has init invoke one bounded poll on every service pass. `ush` now owns
+submitted terminal lines and implements `echo`, `help`, and `uname` natively
+through the public stream ABI. Commands not yet extracted cross a bounded
+compatibility-exec request, so existing graphical commands and standalone
+program loading remain usable. Foreground jobs use an explicit wait request
+and retain the existing `Ctrl+C` behavior. The registry no longer owns a shell
+descriptor, although init continues polling resident compatibility state for
+forwarded jobs.
+
+The common-RAM diagnostic block at `$F3D8-$F3E7` exposes the dispatched
+command counter at offset 0 and shell state at offset 1. The byte sequence
+`A5 55 53 48` at offsets 1 through 4 (`$A5`, `USH`) means that `ush` has
+completed its first poll and is ready to accept submitted input.
 
 This is deliberately called a transition, not a completed user-space shell.
 The resident implementation still calls private terminal, graphics, window,
@@ -49,7 +56,8 @@ preload once persistent-task allocation is available.
 - [x] Define and link the bounded bank-1 8502 cooperative-task context gate.
 - [x] Define the common-RAM task request protocol and public stream wrappers.
 - [x] Add nonblocking terminal-read and bounded terminal-write requests.
-- [ ] Add prompt, task-yield, exec, wait, and signal operations.
+- [x] Add prompt, compatibility-exec, and foreground-wait operations.
+- [ ] Add scheduler yield and signal operations.
 - [ ] Replace direct graphical builtins with `/bin` programs or service calls.
 - [x] Link a minimal `ush.udx` without resident private symbols.
 - [x] Validate, boot-preload, and have init poll `/bin/ush` alongside the

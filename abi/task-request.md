@@ -1,4 +1,4 @@
-# Bank-task request ABI 0.1
+# Bank-task request ABI 0.2
 
 Bank-1 8502 tasks exchange bounded requests with the resident kernel through a
 38-byte record in top common RAM. The task fills the record and calls `$FF16`.
@@ -13,7 +13,7 @@ The record occupies `$F359-$F37E`:
 |---:|---:|---|
 | 0 | 4 | ASCII magic `UTRQ` |
 | 4 | 1 | ABI major (`0`) |
-| 5 | 1 | ABI minor (`1`) |
+| 5 | 1 | ABI minor (`2`) |
 | 6 | 1 | State |
 | 7 | 1 | Operation |
 | 8 | 1 | Sequence number |
@@ -25,8 +25,9 @@ The record occupies `$F359-$F37E`:
 | 14 | 24 | Inline payload |
 
 States are idle (`0`), request (`1`), complete (`2`), and error (`$80`). ABI
-0.1 implements `READ` (`1`) and `WRITE` (`2`). Descriptors use the Unix
-convention: standard input is 0, standard output is 1, and standard error is 2.
+0.2 implements `READ` (`1`), `WRITE` (`2`), `EXEC` (`3`), `WAIT` (`4`), and
+`PROMPT` (`5`). Descriptors use the Unix convention: standard input is 0,
+standard output is 1, and standard error is 2.
 
 Writes accept binary chunks rather than zero-terminated strings. Reads consume
 submitted console lines in chunks and include the terminating newline. They are
@@ -34,8 +35,16 @@ nonblocking: when no line is ready, the call returns error state with `EAGAIN`
 (11). This lets a shell poll return to init so input, graphics, windows, and Z80
 work continue to receive service.
 
-The boundary uses the familiar Linux errno numbers `EBADF` (9), `EAGAIN` (11),
-`EINVAL` (22), `ENOSYS` (38), and `EPROTO` (71). The task runtime exposes
+`EXEC` is the bounded migration bridge for commands whose policy has not yet
+moved out of the resident compatibility shell. The task copies at most 54
+bytes of command text to `$F3A0-$F3D6`; the kernel copies it into private
+resident storage before dispatch. Result 0 completed synchronously and result
+1 launched a foreground job. `WAIT` returns 1 while that job owns the session
+and 0 after the resident job path has restored the prompt. `PROMPT` rearms the
+root terminal input field.
+
+The boundary uses the familiar Linux errno numbers `EIO` (5), `EBADF` (9),
+`EAGAIN` (11), `EINVAL` (22), `ENOSYS` (38), and `EPROTO` (71). The task runtime exposes
 `udeks_read`, `udeks_write`, `udeks_write_byte`, and `udeks_errno`; the API is
 deliberately small, but its descriptors, short reads/writes, and error model are
 compatible with later POSIX-shaped libc veneers.

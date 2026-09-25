@@ -81,6 +81,7 @@ MEMORY_MAP_PRG := $(BUILD_MEMORY_MAP)/memory-map.prg
 STAGE0_BIN := $(BUILD_BOOT)/stage0.bin
 STAGE1_GATEWAY_BIN := $(BUILD_BOOT)/stage1-gateway.bin
 TASK_LOADER_BIN := $(BUILD_BOOT)/task-loader.bin
+TASK_REQUEST_GATE_BIN := $(BUILD_BOOT)/task-request-gateway.bin
 TASK_BANK_GATE_BIN := $(BUILD_BOOT)/task-bank-gateway.bin
 STAGE1_BIN := $(BUILD_BOOT)/stage1.bin
 BOOT_D71 := $(BUILD_BOOT)/udeks.d71
@@ -197,8 +198,9 @@ $(USER_TASK_STREAM_OBJ): $(USER_TASK_STREAM_ASM) | $(BUILD_USER)
 $(USER_POLL_ENTRY_OBJ): user/lib/poll_entry.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
 
-$(USER_USH_ASM): user/bin/ush.c user/include/udeks/program.h | $(BUILD_USER)
-	$(CC65) $(CFLAGS_8502) -I user/include -o $@ $<
+$(USER_USH_ASM): user/bin/ush.c user/include/udeks/program.h \
+		include/udeks/task_request.h | $(BUILD_USER)
+	$(CC65) $(CFLAGS_8502) -I user/include -I include -o $@ $<
 
 $(USER_USH_OBJ): $(USER_USH_ASM) | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
@@ -219,7 +221,7 @@ $(USER_USH_BIN): $(USER_POLL_ENTRY_OBJ) $(USER_TASK_STREAM_OBJ) \
 
 $(USER_USH_UDEX): $(USER_USH_BIN) tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x9000 \
-		--entry-address 0x9000 --bss-size 0x0010 --flags 0x01 $< $@
+		--entry-address 0x9000 --bss-size 0x0050 --flags 0x01 $< $@
 
 $(USER_BOOTFS): $(USER_COWSAY_UDEX) $(USER_USH_UDEX) tools/build_bootfs.py
 	$(PYTHON) tools/build_bootfs.py --max-size 0x1000 \
@@ -612,6 +614,9 @@ $(KERNEL_PRG): $(KERNEL_BIN) tools/bin_to_prg.py
 $(TASK_BANK_GATE_BIN): $(KERNEL_BIN)
 	test -s $@
 
+$(TASK_REQUEST_GATE_BIN): $(KERNEL_BIN)
+	test -s $@
+
 $(APP1_BIN) $(APP2_BIN): $(KERNEL_BIN)
 	test -s $@
 
@@ -954,7 +959,8 @@ $(STAGE1_BIN): $(BUILD_BOOT)/stage1.o cfg/8502-stage1.cfg
 
 $(BOOT_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(APP1_BIN) $(APP2_BIN) $(Z80_BIN) $(USER_BOOTFS) \
-		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_BANK_GATE_BIN) \
+		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
+		$(TASK_BANK_GATE_BIN) \
 		tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
@@ -962,11 +968,13 @@ $(BOOT_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--bootfs $(USER_BOOTFS) \
 		--ush $(USER_USH_UDEX) \
 		--task-loader $(TASK_LOADER_BIN) \
+		--task-request-gateway $(TASK_REQUEST_GATE_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		$(APP1_BIN) $(APP2_BIN) $(Z80_BIN) $(USER_BOOTFS) \
-		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_BANK_GATE_BIN) \
+		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
+		$(TASK_BANK_GATE_BIN) \
 		tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(PANIC_PROBE_KERNEL_BIN) \
@@ -974,6 +982,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--bootfs $(USER_BOOTFS) \
 		--ush $(USER_USH_UDEX) \
 		--task-loader $(TASK_LOADER_BIN) \
+		--task-request-gateway $(TASK_REQUEST_GATE_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 check:

@@ -1,12 +1,12 @@
-# UDEKS native shell contract 0.1
+# UDEKS native shell contract 0.2
 
-The initial shell is a resident C service layered above the root-terminal
-policy service. The terminal owns keyboard editing and publishes one bounded,
-NUL-terminated line. The shell consumes that line on the same cooperative
-service pass, dispatches it through a static command registry, writes output to
-the retained root console, and then rearms the terminal prompt. Init, rather
-than the service registry, owns this root-session lifecycle; init currently
-delegates to the resident implementation while `/bin/ush` is being separated.
+The root shell is a persistent bank-1 `/bin/ush` task owned and polled by init.
+The terminal owns keyboard editing and publishes one bounded, NUL-terminated
+line. `ush` reads it through the task-request ABI, implements `echo`, `help`,
+and `uname` natively, writes through descriptors 1 and 2, and requests the next
+prompt. Commands not yet extracted cross a bounded compatibility-exec request
+to the resident dispatcher; foreground jobs are observed through an explicit
+wait request.
 
 The command-facing conventions intentionally resemble a small Unix shell:
 handlers receive `argc`/`argv`, return zero for success and nonzero for
@@ -33,7 +33,7 @@ transient task slot. A missing name reports `Unknown command`; a slot occupied
 by `xclock` reports `<name>: task slot busy`. This lookup path is generic—there
 is no resident `cowsay` command record.
 
-The first command registry contains:
+The current native and compatibility command set contains:
 
 | Command | Behavior |
 |---|---|
@@ -58,4 +58,6 @@ The provisional `SHLL` diagnostic record occupies 24 bytes at `$F170`. It
 contains format/state/error bytes, the command count, last argument count and
 command/result identifiers, 16-bit poll, command, unknown-command, and
 parse-error counters, the foreground job identifier, background-job count,
-and interrupt count. A compiler-neutral request ABI remains future work.
+and interrupt count. The compiler-neutral task-request ABI is documented in
+[`task-request.md`](task-request.md); the persistent `ush` readiness and
+command counters occupy `$F3D8-$F3E7`.

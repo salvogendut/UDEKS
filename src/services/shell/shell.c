@@ -40,14 +40,17 @@ struct shell_command {
 };
 
 #pragma bss-name(push, "HIGHBSS")
-static unsigned char command_line[UDEKS_LINE_EDITOR_CAPACITY + 1u];
+unsigned char udeks_shell_command_line[UDEKS_LINE_EDITOR_CAPACITY + 1u];
 static unsigned char argument_offsets[UDEKS_SHELL_MAX_ARGUMENTS];
 static unsigned char *arguments[UDEKS_SHELL_MAX_ARGUMENTS];
-static unsigned char foreground_job;
+unsigned char udeks_shell_foreground_job;
 static unsigned char launch_background;
 static unsigned char foreground_interrupted;
 #pragma bss-name(pop)
 static unsigned char background_jobs;
+
+#define command_line udeks_shell_command_line
+#define foreground_job udeks_shell_foreground_job
 
 static void write_text(
     unsigned char descriptor, const unsigned char *text)
@@ -448,7 +451,7 @@ static unsigned char shell_fail(unsigned char code)
     return code;
 }
 
-static unsigned char dispatch_line(void)
+unsigned char udeks_shell_dispatch_line(void)
 {
     unsigned char count;
     unsigned char index;
@@ -488,8 +491,8 @@ static unsigned char dispatch_line(void)
         }
     }
     loader = (udeks_task_loader_entry)UDEKS_TASK_LOADER_ENTRY;
-    result = loader(count, arguments);
     task = (volatile unsigned char *)UDEKS_TASK_STATUS_BASE;
+    result = loader(count, arguments);
     if ((task[UDEKS_TASK_STATE_OFFSET] & UDEKS_TASK_STATE_ERROR) == 0) {
         STATUS_BYTE(9) = 0xFEu;
         STATUS_BYTE(10) = task[UDEKS_TASK_EXIT_OFFSET];
@@ -572,7 +575,7 @@ unsigned char udeks_shell_poll(void)
     if (result != UDEKS_LINE_EDITOR_OK) {
         return shell_fail(UDEKS_SHELL_INPUT);
     }
-    result = dispatch_line();
+    result = udeks_shell_dispatch_line();
     if (result != UDEKS_SHELL_OK) {
         return shell_fail(result);
     }

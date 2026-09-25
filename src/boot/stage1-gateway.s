@@ -157,6 +157,33 @@ bootfs_clear:
         dex
         bne relocate_bootfs_page
 
+        ; The host packer validates /bin/ush as the second bootfs entry and
+        ; leaves enough zero padding after its image for the declared BSS.
+        ; Skip the UDEX header and copy the complete 2 KiB task allocation.
+        clc
+        lda $0c2a
+        adc #$10
+        sta ush_source+1
+        lda $0c2b
+        adc #$0c
+        sta ush_source+2
+        lda #$90
+        sta ush_destination+2
+        ldx #$08
+copy_ush_page:
+        ldy #$00
+copy_ush_byte:
+ush_source:
+        lda $0c00,y
+ush_destination:
+        sta $9000,y
+        iny
+        bne copy_ush_byte
+        inc ush_source+2
+        inc ush_destination+2
+        dex
+        bne copy_ush_page
+
         ; Install the two boot-preloaded application slots after the verified
         ; Z80 image has reached bank 1. Their staging ranges are in the
         ; reclaimable bank-0 VIC shadow and are copied into low RAM that the
@@ -175,33 +202,6 @@ bootfs_clear:
         sta low_copy_destination+2
         ldx #$0a
         jsr copy_low_pages
-
-        ; Install the persistent shell payload and its zeroed BSS from the
-        ; final boot-only bank-0 slot into its private bank-1 task address.
-        lda #$c3
-        sta ush_source+2
-        lda #$90
-        sta ush_destination+2
-        ldx #$06
-copy_ush_page:
-        ldy #$00
-copy_ush_byte:
-        lda #$00
-        sta MMU_LCR_KERNEL_FLAT
-ush_source:
-        lda $c300,y
-        sta transfer_byte
-        lda #$00
-        sta MMU_LCR_WORKER_FLAT
-        lda transfer_byte
-ush_destination:
-        sta $9000,y
-        iny
-        bne copy_ush_byte
-        inc ush_source+2
-        inc ush_destination+2
-        dex
-        bne copy_ush_page
 
         ; Install the permanent task loader from its reclaimable bank-0 boot
         ; staging area into common RAM. VIC graphics clears this shadow area
@@ -238,6 +238,30 @@ copy_task_bank_gate:
         cpy #$cb
         bne copy_task_bank_gate
 
+        ; The request gateway replaces part of this executing boot gateway at
+        ; $F800. Move the final copy-and-jump stub to unused hardware-stack
+        ; page space first, then never return to common boot code.
+        ldy #(final_stub_end-final_stub)-1
+copy_final_stub:
+        lda final_stub,y
+        sta $0100,y
+        dey
+        bpl copy_final_stub
+        jmp $0100
+
+final_stub:
+        ldy #$00
+copy_request_page_1:
+        lda $c300,y
+        sta $f800,y
+        iny
+        bne copy_request_page_1
+        ldy #$00
+copy_request_page_2:
+        lda $c400,y
+        sta $f900,y
+        iny
+        bne copy_request_page_2
         lda #'Z'
         sta BOOT_CHAIN+8
         lda #'8'
@@ -253,6 +277,8 @@ copy_task_bank_gate:
         lda #$00
         sta MMU_LCR_KERNEL_IO
         jmp $2000
+final_stub_end:
+        .assert final_stub_end-final_stub <= $80, error, "final boot stub exceeds safe stack-page span"
 
 copy_low_pages:
         ldy #$00
@@ -297,7 +323,7 @@ destination_sum_low:    .byte $00
 destination_sum_high:   .byte $00
 
 gateway_end:
-        .assert gateway_end - gateway_start <= $0200, error, "stage-1 gateway exceeds boot reservation"
+        .assert gateway_end - gateway_start <= $0300, error, "stage-1 gateway exceeds boot reservation"
 
         ; The early gateway above is dead after it transfers to the kernel.
         ; Align the permanent foreground-task loader at a published common-RAM
@@ -391,7 +417,7 @@ task_check_syscalls:
         lda SYSCALL_TABLE+4
         bne task_bad_syscalls
         lda SYSCALL_TABLE+5
-        cmp #$02
+        cmp #$03
         bcs task_bad_syscalls
         lda SYSCALL_TABLE+6
         cmp #$02
@@ -407,28 +433,31 @@ task_find_file:
         ; the bank-1 staging window.
         lda TASK_ARGV_LO
         sta task_argv_pointer_load+1
+        sta task_argv_pointer_high_load+1
         lda TASK_ARGV_HI
         sta task_argv_pointer_load+2
+        sta task_argv_pointer_high_load+2
         ldy #$00
 task_argv_pointer_load:
         lda $ffff,y
         sta task_command_load+1
-        sta task_command_compare_load+1
         iny
+task_argv_pointer_high_load:
         lda $ffff,y
         sta task_command_load+2
-        sta task_command_compare_load+2
         ldy #$00
 task_measure_name:
 task_command_load:
         lda $ffff,y
         beq task_name_measured
+        sta TASK_HEADER,y
         iny
         cpy #$11
         bcc task_measure_name
         jmp task_not_found
 task_name_measured:
-        sty task_name_length
+        tya
+        sta task_name_length
         bne task_validate_bootfs
         jmp task_not_found
 
@@ -534,16 +563,9 @@ task_entry_load:
 task_compare_name:
         cpy task_name_length
         beq task_file_found
-        lda #$00
-        sta MMU_LCR_KERNEL_FLAT
-task_command_compare_load:
-        lda $ffff,y
-        sta task_transfer_byte
-        lda #$00
-        sta MMU_LCR_WORKER_FLAT
+        lda TASK_HEADER,y
 task_entry_name_load:
-        lda BOOTFS_BASE+$18,y
-        cmp task_transfer_byte
+        cmp BOOTFS_BASE+$18,y
         bne task_advance_entry
         iny
         bne task_compare_name
@@ -712,16 +734,19 @@ task_header_load:
         clc
         lda TASK_IMAGE_LO
         adc #$10
-        cmp task_file_size_lo
-        beq :+
-        jmp task_bad_size
-:
+        sta task_allocation_lo
         lda TASK_IMAGE_HI
         adc #$00
+        sta task_allocation_hi
+        lda task_allocation_lo
+        cmp task_file_size_lo
+        bne task_file_size_bad
+        lda task_allocation_hi
         cmp task_file_size_hi
-        beq :+
+        beq task_file_size_valid
+task_file_size_bad:
         jmp task_bad_size
-:
+task_file_size_valid:
         lda TASK_HEADER+12
         sta TASK_BSS_LO
         lda TASK_HEADER+13

@@ -58,9 +58,33 @@ class TaskBankGatewayTests(unittest.TestCase):
 
         self.assertIn("lda $2c00,y", stage1)
         self.assertIn("sta $0c00,y", stage1)
-        self.assertIn("lda $c300,y", stage1)
+        self.assertIn("lda $0c2a", stage1)
         self.assertIn("sta $9000,y", stage1)
+        self.assertIn("lda $c300,y", stage1)
+        self.assertIn("sta $f800,y", stage1)
         self.assertIn("bootfs_base             = $0c00", stage1)
+
+    def test_task_loader_compares_bootfs_names_from_common_ram(self):
+        stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
+        lookup = stage1.split("task_find_file:", 1)[1].split(
+            "task_file_found:", 1
+        )[0]
+
+        self.assertIn("sta task_header,y", lookup)
+        self.assertIn("lda task_header,y", lookup)
+        self.assertIn("cmp bootfs_base+$18,y", lookup)
+        self.assertIn("sta task_argv_pointer_high_load+1", lookup)
+        self.assertIn("sta task_argv_pointer_high_load+2", lookup)
+        self.assertIn("tya\n        sta task_name_length", lookup)
+        self.assertNotIn("task_command_compare_load", lookup)
+
+        validation = stage1.split("task_fetch_header:", 1)[1].split(
+            "task_check_entry:", 1
+        )[0]
+        self.assertIn("sta task_allocation_lo", validation)
+        self.assertIn("sta task_allocation_hi", validation)
+        self.assertIn("cmp task_file_size_lo", validation)
+        self.assertIn("cmp task_file_size_hi", validation)
 
 
 if __name__ == "__main__":

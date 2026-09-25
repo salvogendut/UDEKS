@@ -89,3 +89,31 @@ unsigned char udeks_read(
     }
     return result;
 }
+
+unsigned char udeks_exec_line(
+    const unsigned char *line, unsigned char length)
+{
+    volatile unsigned char *command;
+    unsigned char index;
+
+    if (length == 0 || length >= UDEKS_TASK_COMMAND_SIZE) {
+        udeks_errno = UDEKS_TREQ_EINVAL;
+        return UDEKS_IO_ERROR;
+    }
+    command = (volatile unsigned char *)UDEKS_TASK_COMMAND_BASE;
+    for (index = 0; index < length; ++index) {
+        command[index] = line[index];
+    }
+    command[length] = 0;
+    return submit_request(UDEKS_TREQ_OP_EXEC, 0, length);
+}
+
+unsigned char udeks_wait_foreground(void)
+{
+    return submit_request(UDEKS_TREQ_OP_WAIT, 0, 0);
+}
+
+unsigned char udeks_prompt(void)
+{
+    return submit_request(UDEKS_TREQ_OP_PROMPT, 0, 0);
+}

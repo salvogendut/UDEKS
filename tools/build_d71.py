@@ -15,14 +15,15 @@ KERNEL_ADDRESS = 0x2000
 Z80_STAGING_ADDRESS = 0xD000
 TASK_LOADER_STAGING_ADDRESS = 0xC900
 TASK_LOADER_STAGING_SIZE = 0x0500
+TASK_REQUEST_STAGING_ADDRESS = 0xC300
+TASK_REQUEST_STAGING_SIZE = 0x0200
 TASK_BANK_GATE_STAGING_ADDRESS = 0xCE00
 TASK_BANK_GATE_STAGING_SIZE = 0x00CB
 Z80_SIZE = 0x2000
 APP_IMAGE_SIZE = 0x0A00
 APP1_STAGING_ADDRESS = 0xAF00
 APP2_STAGING_ADDRESS = 0xB900
-USH_STAGING_ADDRESS = 0xC300
-USH_STAGING_SIZE = 0x0600
+USH_ALLOCATION_SIZE = 0x0800
 BOOTFS_Z80_OFFSET = 0x0C00
 BOOTFS_SIZE = 0x1000
 PAYLOAD_SIZE = 0xD400
@@ -141,7 +142,7 @@ def install_bootfs(z80: bytearray, bootfs: bytes) -> None:
     )
 
 
-def install_ush(kernel: bytearray, executable: bytes) -> None:
+def validate_ush(bootfs: bytes, executable: bytes) -> None:
     if not executable:
         return
     if len(executable) < 16 or executable[:4] != b"UDEX":
@@ -161,16 +162,21 @@ def install_ush(kernel: bytearray, executable: bytes) -> None:
         raise ValueError("ush must load and enter at $9000")
     if image_size == 0 or len(executable) != 16 + image_size:
         raise ValueError("ush UDEX image size is inconsistent")
-    if image_size + bss_size > USH_STAGING_SIZE:
-        raise ValueError("ush exceeds its 1536-byte staging area")
-    offset = USH_STAGING_ADDRESS - KERNEL_ADDRESS
-    region = kernel[offset : offset + USH_STAGING_SIZE]
-    if any(region):
-        raise ValueError("ush staging overlaps resident kernel data")
-    allocation = executable[16:].ljust(image_size + bss_size, b"\x00")
-    kernel[offset : offset + USH_STAGING_SIZE] = allocation.ljust(
-        USH_STAGING_SIZE, b"\x00"
-    )
+    if image_size + bss_size > USH_ALLOCATION_SIZE:
+        raise ValueError("ush exceeds its 2048-byte bank-1 allocation")
+    if len(bootfs) < 64 or bootfs[:4] != b"UBFS" or bootfs[6] < 2:
+        raise ValueError("bootfs cannot provide the stage-1 ush entry")
+    entry = 16 + 24
+    if bootfs[entry + 1] != 3 or bootfs[entry + 8 : entry + 11] != b"ush":
+        raise ValueError("ush must be the second bootfs directory entry")
+    file_offset = int.from_bytes(bootfs[entry + 2 : entry + 4], "little")
+    file_size = int.from_bytes(bootfs[entry + 4 : entry + 6], "little")
+    if file_size != len(executable) or bootfs[
+        file_offset : file_offset + file_size
+    ] != executable:
+        raise ValueError("bootfs ush entry does not match the staged executable")
+    if file_offset + 16 + USH_ALLOCATION_SIZE > BOOTFS_SIZE:
+        raise ValueError("bootfs leaves insufficient zero-fill space after ush")
 
 
 def install_task_loader(kernel: bytearray, loader: bytes) -> None:
@@ -182,6 +188,18 @@ def install_task_loader(kernel: bytearray, loader: bytes) -> None:
         raise ValueError("task-loader staging overlaps resident kernel data")
     kernel[offset : offset + TASK_LOADER_STAGING_SIZE] = loader.ljust(
         TASK_LOADER_STAGING_SIZE, b"\x00"
+    )
+
+
+def install_task_request_gateway(kernel: bytearray, gateway: bytes) -> None:
+    if len(gateway) > TASK_REQUEST_STAGING_SIZE:
+        raise ValueError("task request gateway exceeds its 512-byte staging area")
+    offset = TASK_REQUEST_STAGING_ADDRESS - KERNEL_ADDRESS
+    region = kernel[offset : offset + TASK_REQUEST_STAGING_SIZE]
+    if any(region):
+        raise ValueError("task-request staging overlaps resident kernel data")
+    kernel[offset : offset + TASK_REQUEST_STAGING_SIZE] = gateway.ljust(
+        TASK_REQUEST_STAGING_SIZE, b"\x00"
     )
 
 
@@ -201,6 +219,7 @@ def build_image(
     stage0: bytes, stage1: bytes, kernel: bytes, z80: bytes,
     app1: bytes = b"", app2: bytes = b"", bootfs: bytes = b"",
     task_loader: bytes = b"", task_bank_gateway: bytes = b"",
+    task_request_gateway: bytes = b"",
     ush: bytes = b"",
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
@@ -223,7 +242,8 @@ def build_image(
     )
     install_app_image(staged_kernel, app1, APP1_STAGING_ADDRESS, "application 1")
     install_app_image(staged_kernel, app2, APP2_STAGING_ADDRESS, "application 2")
-    install_ush(staged_kernel, ush)
+    validate_ush(bootfs, ush)
+    install_task_request_gateway(staged_kernel, task_request_gateway)
     install_task_loader(staged_kernel, task_loader)
     install_task_bank_gateway(staged_kernel, task_bank_gateway)
 
@@ -261,6 +281,7 @@ def main() -> None:
     parser.add_argument("--bootfs", type=Path)
     parser.add_argument("--task-loader", type=Path)
     parser.add_argument("--task-bank-gateway", type=Path)
+    parser.add_argument("--task-request-gateway", type=Path)
     parser.add_argument("--ush", type=Path)
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
@@ -276,6 +297,7 @@ def main() -> None:
             b"" if args.bootfs is None else args.bootfs.read_bytes(),
             b"" if args.task_loader is None else args.task_loader.read_bytes(),
             b"" if args.task_bank_gateway is None else args.task_bank_gateway.read_bytes(),
+            b"" if args.task_request_gateway is None else args.task_request_gateway.read_bytes(),
             b"" if args.ush is None else args.ush.read_bytes(),
         )
     except ValueError as error:

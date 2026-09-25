@@ -5,6 +5,18 @@
 #define UDEKS_TASK_REQUEST_BASE          0xF359u
 #define UDEKS_TASK_REQUEST_SIZE          38u
 #define UDEKS_TASK_REQUEST_PAYLOAD_SIZE  24u
+#define UDEKS_TASK_COMMAND_BASE          0xF3A0u
+#define UDEKS_TASK_COMMAND_SIZE          55u
+#define UDEKS_USH_STATUS_BASE            0xF3D8u
+#define UDEKS_USH_STATUS_SIZE            16u
+#define UDEKS_USH_STATUS_COMMANDS        0u
+#define UDEKS_USH_STATUS_STATE           1u
+#define UDEKS_USH_STATUS_MAGIC0          2u
+#define UDEKS_USH_STATUS_MAGIC1          3u
+#define UDEKS_USH_STATUS_MAGIC2          4u
+
+#define UDEKS_USH_STATE_STARTING         0u
+#define UDEKS_USH_STATE_READY            0xA5u
 
 #define UDEKS_TREQ_MAGIC0                0u
 #define UDEKS_TREQ_MAGIC1                1u
@@ -23,7 +35,7 @@
 #define UDEKS_TREQ_PAYLOAD               14u
 
 #define UDEKS_TASK_REQUEST_ABI_MAJOR     0u
-#define UDEKS_TASK_REQUEST_ABI_MINOR     1u
+#define UDEKS_TASK_REQUEST_ABI_MINOR     2u
 
 #define UDEKS_TREQ_STATE_IDLE            0u
 #define UDEKS_TREQ_STATE_REQUEST         1u
@@ -33,8 +45,15 @@
 #define UDEKS_TREQ_OP_NONE               0u
 #define UDEKS_TREQ_OP_READ               1u
 #define UDEKS_TREQ_OP_WRITE              2u
+#define UDEKS_TREQ_OP_EXEC               3u
+#define UDEKS_TREQ_OP_WAIT               4u
+#define UDEKS_TREQ_OP_PROMPT             5u
+
+#define UDEKS_TREQ_EXEC_COMPLETE         0u
+#define UDEKS_TREQ_EXEC_FOREGROUND       1u
 
 /* Linux-compatible errno values used at the user boundary. */
+#define UDEKS_TREQ_EIO                   5u
 #define UDEKS_TREQ_EBADF                 9u
 #define UDEKS_TREQ_EAGAIN                11u
 #define UDEKS_TREQ_EINVAL                22u

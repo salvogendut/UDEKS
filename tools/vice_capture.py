@@ -34,6 +34,20 @@ def parse_poke(value: str) -> tuple[int, int]:
     return address, byte
 
 
+def parse_block(value: str) -> tuple[int, bytes]:
+    address_text, separator, data_text = value.partition("=")
+    if not separator:
+        raise argparse.ArgumentTypeError("block must use ADDRESS=HEXBYTES")
+    try:
+        address = parse_number(address_text)
+        data = bytes.fromhex(data_text)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("block address/data is invalid") from error
+    if not data or address < 0 or address + len(data) > 0x10000:
+        raise argparse.ArgumentTypeError("block must fit in 64 KiB")
+    return address, data
+
+
 def parse_keybuf(value: str) -> str:
     return value.replace(r"\n", "\n").replace(r"\r", "\r")
 
@@ -245,21 +259,39 @@ def capture(args: argparse.Namespace) -> None:
         # redirected logs, so a short fixed grace period is more reliable than
         # waiting for a log marker.
         time.sleep(min(5.0, max(0.0, deadline - time.monotonic())))
-        if args.keybuf is not None:
-            if args.keybuf_ready is not None:
-                ready_address, ready_value = args.keybuf_ready
-                while time.monotonic() < deadline:
-                    try:
+        if args.keybuf_ready is not None or args.keybuf_ready_block is not None:
+            while time.monotonic() < deadline:
+                try:
+                    matches = True
+                    expected = []
+                    if args.keybuf_ready is not None:
+                        expected.append(args.keybuf_ready)
+                    if args.keybuf_ready_block is not None:
+                        address, data = args.keybuf_ready_block
+                        expected.extend(
+                            (address + offset, value)
+                            for offset, value in enumerate(data)
+                        )
+                    for ready_address, ready_value in expected:
                         reply = monitor_command(
                             port, f"m {ready_address:04x} {ready_address:04x}"
                         )
-                        if parse_monitor_byte(reply, ready_address) == ready_value:
+                        if parse_monitor_byte(reply, ready_address) != ready_value:
+                            matches = False
                             break
-                    except (ConnectionError, OSError, RuntimeError, ValueError):
-                        pass
-                    time.sleep(0.1)
-                else:
-                    raise TimeoutError("VICE key-buffer readiness byte did not match")
+                    if matches:
+                        break
+                except (ConnectionError, OSError, RuntimeError, ValueError):
+                    pass
+                time.sleep(0.1)
+            else:
+                raise TimeoutError("VICE post-boot readiness byte did not match")
+        for address, byte in args.ready_poke:
+            monitor_command(port, f"> {address:04x} {byte:02x}")
+        for address, data in args.ready_block:
+            values = " ".join(f"{byte:02x}" for byte in data)
+            monitor_command(port, f"> {address:04x} {values}")
+        if args.keybuf is not None:
             monitor_command(port, f"keybuf {quote_monitor_text(args.keybuf)}")
         state = None
         last_error: Exception | None = None
@@ -276,6 +308,14 @@ def capture(args: argparse.Namespace) -> None:
             if state == args.complete_value:
                 break
             if state >= 0x80:
+                if args.capture_incomplete:
+                    save_result_block(
+                        port,
+                        vice_output,
+                        output,
+                        args.result_address,
+                        args.result_size,
+                    )
                 raise RuntimeError(f"benchmark reported error state ${state:02X}")
             time.sleep(0.1)
         else:
@@ -304,7 +344,10 @@ def capture(args: argparse.Namespace) -> None:
         if screenshot is not None:
             if args.screenshot_delay != 0:
                 time.sleep(args.screenshot_delay)
-            monitor_command(port, f"screenshot {quote_monitor_path(screenshot)} 0")
+            monitor_command(
+                port,
+                f"screenshot {quote_monitor_path(screenshot)} 0",
+            )
             if not screenshot.is_file():
                 raise RuntimeError("VICE monitor did not create the requested screenshot")
         succeeded = True
@@ -363,6 +406,28 @@ def main() -> None:
         type=parse_poke,
         metavar="ADDRESS=BYTE",
         help="wait for a memory byte before typing --keybuf text",
+    )
+    parser.add_argument(
+        "--keybuf-ready-block",
+        type=parse_block,
+        metavar="ADDRESS=HEXBYTES",
+        help="wait for an exact memory byte sequence before injecting input",
+    )
+    parser.add_argument(
+        "--ready-poke",
+        action="append",
+        default=[],
+        type=parse_poke,
+        metavar="ADDRESS=BYTE",
+        help="write one byte after --keybuf-ready matches",
+    )
+    parser.add_argument(
+        "--ready-block",
+        action="append",
+        default=[],
+        type=parse_block,
+        metavar="ADDRESS=HEXBYTES",
+        help="write one contiguous byte block after --keybuf-ready matches",
     )
     parser.add_argument(
         "--autostart",

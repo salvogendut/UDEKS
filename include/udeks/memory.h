@@ -44,12 +44,12 @@
 /* Boot-only images occupy the reclaimable bank-0 VIC shadow. */
 #define UDEKS_APP1_STAGING_BASE       0xAF00u
 #define UDEKS_APP2_STAGING_BASE       0xB900u
-#define UDEKS_USH_STAGING_BASE        0xC300u
-#define UDEKS_USH_STAGING_LIMIT       0xC900u
 
 /* Bank-1 bootfs image and the first transient task-slot backup. */
 #define UDEKS_BOOTFS_BASE             0x0C00u
 #define UDEKS_BOOTFS_LIMIT            0x1C00u
+#define UDEKS_USH_BASE                0x9000u
+#define UDEKS_USH_LIMIT               0x9800u
 #define UDEKS_TASK_BACKUP_BASE        0x8000u
 #define UDEKS_TASK_BACKUP_LIMIT       0x8A00u
 
@@ -61,6 +61,7 @@
 #define UDEKS_BOOT_STATUS_SIZE        16u
 #define UDEKS_BOOT_CHAIN_BASE         0xF050u
 #define UDEKS_BOOT_CHAIN_SIZE         24u
+#define UDEKS_BOOT_GATEWAY_BASE       0xF700u
 #define UDEKS_GATEWAY_BASE            0xF800u
 #define UDEKS_MMU_MIRROR_BASE         0xFF00u
 #define UDEKS_MMU_MIRROR_LIMIT        0xFF05u

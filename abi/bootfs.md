@@ -38,7 +38,9 @@ before interpreting a file as UDEX.
 
 The native-boot image reserves at most 4096 bytes. Stage 1 relocates it to
 bank-1 `$0C00-$1BFF`, separate from bank-0 low memory at the same logical
-addresses.
+addresses. During the current fixed bootstrap, host validation requires `ush`
+as the second sorted directory entry so stage 1 can copy its allocation
+directly from bootfs without maintaining a duplicate staging image.
 
 Bootfs is a bootstrap filesystem backend, not the permanent on-disk format.
 The future VFS resolver will search `/bin` through the mounted storage

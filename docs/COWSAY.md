@@ -29,5 +29,6 @@ zero page, and restores the previous slot contents after exit.
 
 This is the acceptance workload for executable loading, `argc`/`argv`,
 standard descriptors, exit status, slot restoration, and memory reclamation.
-The final `/bin/ush` will use the same lookup contract through a syscall, with
-storage-backed `/bin` taking precedence over the early bootfs fallback.
+The persistent `/bin/ush` uses the same lookup contract through its bounded
+compatibility-exec request. Storage-backed `/bin` will eventually take
+precedence over the early bootfs fallback.

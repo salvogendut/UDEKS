@@ -18,6 +18,10 @@ unsigned char udeks_write(
     unsigned char descriptor, const unsigned char *text);
 unsigned char udeks_read(
     unsigned char descriptor, unsigned char *buffer, unsigned char count);
+unsigned char udeks_exec_line(
+    const unsigned char *line, unsigned char length);
+unsigned char udeks_wait_foreground(void);
+unsigned char udeks_prompt(void);
 
 unsigned char udeks_program_main(
     unsigned char count, unsigned char **arguments);

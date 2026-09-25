@@ -14,6 +14,10 @@
         .import _udeks_stream_write
         .import _udeks_line_editor_read
         .import _udeks_root_console_write
+        .import _udeks_root_terminal_prompt
+        .import _udeks_shell_command_line
+        .import _udeks_shell_dispatch_line
+        .import _udeks_shell_foreground_job
         .import pusha
         .import pushax
         .importzp tmp1, ptr1
@@ -25,14 +29,20 @@ TREQ_DESCRIPTOR = TREQ_BASE+$09
 TREQ_COUNT      = TREQ_BASE+$0a
 TREQ_RESULT     = TREQ_BASE+$0b
 TREQ_ERROR      = TREQ_BASE+$0c
+TREQ_FLAGS      = TREQ_BASE+$0d
 TREQ_PAYLOAD    = TREQ_BASE+$0e
+TASK_COMMAND    = $f3a0
 
 TREQ_REQUEST    = $01
 TREQ_COMPLETE   = $02
 TREQ_STATE_ERROR = $80
 TREQ_OP_READ    = $01
 TREQ_OP_WRITE   = $02
+TREQ_OP_EXEC    = $03
+TREQ_OP_WAIT    = $04
+TREQ_OP_PROMPT  = $05
 
+ERR_EIO         = $05
 ERR_EBADF       = $09
 ERR_EAGAIN      = $0b
 ERR_EINVAL      = $16
@@ -72,41 +82,67 @@ _udeks_syscall_task_request_gate:
         .res 13, $ea
 
 task_request_dispatch:
-        jmp task_validate_request
-task_protocol_trampoline:
-        jmp task_protocol_error
-task_validate_request:
-        lda TREQ_BASE
-        cmp #'U'
+        jmp task_request_runtime
+        .res 13, $ea
+
+        .assert _udeks_syscall_table = $cf00, error, "syscall table moved"
+        .assert _udeks_syscall_write_byte_gate = $cf10, error, "write-byte gate moved"
+        .assert _udeks_syscall_write_gate = $cf20, error, "write gate moved"
+        .assert _udeks_syscall_task_request_gate = $cf30, error, "task request gate moved"
+        .assert task_request_dispatch = $cf40, error, "task dispatcher moved"
+        .assert * <= $d000, error, "syscalls overlap I/O aperture"
+
+        ; The bounded implementation resides in reclaimed common boot RAM.
+        ; Stage 1 installs this separately after its own common gateway exits.
+        .segment "TASKREQUEST"
+task_request_runtime:
+        ldx #$04
+task_validate_signature:
+        lda TREQ_BASE,x
+        cmp task_signature,x
         bne task_protocol_trampoline
-        lda TREQ_BASE+1
-        cmp #'T'
-        bne task_protocol_trampoline
-        lda TREQ_BASE+2
-        cmp #'R'
-        bne task_protocol_trampoline
-        lda TREQ_BASE+3
-        cmp #'Q'
-        bne task_protocol_trampoline
-        lda TREQ_BASE+4
+        dex
+        bpl task_validate_signature
+        lda TREQ_BASE+$05
+        cmp #$03
+        bcs task_protocol_trampoline
+        lda TREQ_FLAGS
         bne task_protocol_trampoline
         lda TREQ_STATE
         cmp #TREQ_REQUEST
         bne task_protocol_trampoline
+        jmp task_dispatch_operation
+task_protocol_trampoline:
+        jmp task_protocol_error
+task_dispatch_operation:
         lda TREQ_OPERATION
         cmp #TREQ_OP_READ
         beq task_read
         cmp #TREQ_OP_WRITE
         beq task_write
+        cmp #TREQ_OP_EXEC
+        beq task_exec
+        cmp #TREQ_OP_WAIT
+        bne task_check_prompt
+        jmp task_wait
+task_check_prompt:
+        cmp #TREQ_OP_PROMPT
+        bne task_unknown
+        jmp task_prompt
+task_unknown:
         lda #ERR_ENOSYS
-        bne task_finish_error
+        jmp task_finish_error
 
 task_read:
         lda TREQ_DESCRIPTOR
-        bne task_bad_descriptor
+        beq task_read_descriptor_ok
+        jmp task_bad_descriptor
+task_read_descriptor_ok:
         lda TREQ_COUNT
         cmp #$19
-        bcs task_invalid
+        bcc task_read_count_ok
+        jmp task_invalid
+task_read_count_ok:
         lda #<TREQ_PAYLOAD
         ldx #>TREQ_PAYLOAD
         jsr pushax
@@ -114,7 +150,6 @@ task_read:
         jsr _udeks_line_editor_read
         cmp #$ff
         beq task_would_block
-        sta TREQ_RESULT
         jmp task_finish_ok
 
 task_write:
@@ -141,18 +176,41 @@ task_write_byte:
         bne task_write_byte
 task_write_complete:
         lda TREQ_COUNT
-        sta TREQ_RESULT
+        jmp task_finish_ok
 
-task_finish_ok:
+task_exec:
+        lda TREQ_DESCRIPTOR
+        bne task_invalid
+        ldx TREQ_COUNT
+        beq task_invalid
+        cpx #$37
+        bcs task_invalid
         lda #$00
-        sta TREQ_ERROR
-        lda #TREQ_COMPLETE
-        sta TREQ_STATE
-        rts
+        sta _udeks_shell_command_line,x
+        dex
+task_copy_command:
+        lda TASK_COMMAND,x
+        sta _udeks_shell_command_line,x
+        dex
+        bpl task_copy_command
+        jsr _udeks_shell_dispatch_line
+        lda _udeks_shell_foreground_job
+        beq task_finish_ok
+        lda #$01
+        bne task_finish_ok
 
-task_protocol_error:
-        lda #ERR_EPROTO
+task_wait:
+        lda _udeks_shell_foreground_job
+        beq task_finish_ok
+        lda #$01
+        bne task_finish_ok
+
+task_prompt:
+        jsr _udeks_root_terminal_prompt
+        beq task_finish_ok
+        lda #ERR_EIO
         bne task_finish_error
+
 task_bad_descriptor:
         lda #ERR_EBADF
         bne task_finish_error
@@ -161,6 +219,9 @@ task_would_block:
         bne task_finish_error
 task_invalid:
         lda #ERR_EINVAL
+        bne task_finish_error
+task_protocol_error:
+        lda #ERR_EPROTO
 task_finish_error:
         sta TREQ_ERROR
         lda #$00
@@ -170,9 +231,15 @@ task_finish_error:
         lda TREQ_ERROR
         rts
 
-        .assert _udeks_syscall_table = $cf00, error, "syscall table moved"
-        .assert _udeks_syscall_write_byte_gate = $cf10, error, "write-byte gate moved"
-        .assert _udeks_syscall_write_gate = $cf20, error, "write gate moved"
-        .assert _udeks_syscall_task_request_gate = $cf30, error, "task request gate moved"
-        .assert task_request_dispatch = $cf40, error, "task dispatcher moved"
-        .assert * <= $d000, error, "syscalls overlap I/O aperture"
+task_finish_ok:
+        sta TREQ_RESULT
+        lda #$00
+        sta TREQ_ERROR
+        lda #TREQ_COMPLETE
+        sta TREQ_STATE
+        lda #$00
+        rts
+
+task_signature:
+        .byte 'U', 'T', 'R', 'Q', $00
+        .assert * <= $fa00, error, "task request gateway exceeds common reservation"
