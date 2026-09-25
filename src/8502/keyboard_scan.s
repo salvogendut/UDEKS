@@ -41,6 +41,11 @@ saved_vic_select:
         .segment "CODE"
 
 _udeks_keyboard_scan:
+        ; A raster IRQ may become due between the C-level permission check and
+        ; this routine.  Keep each short matrix scan atomic so it cannot alter
+        ; the POT mux during the mouse conversion window.
+        php
+        sei
         lda CIA1_PRA
         sta saved_pra
         lda CIA1_DDRA
@@ -116,4 +121,5 @@ store_display:
         sta CIA1_DDRB
         lda saved_vic_select
         sta VIC_KEYBOARD_SELECT
+        plp
         rts

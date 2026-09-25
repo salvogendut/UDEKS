@@ -415,11 +415,6 @@ $(BUILD_8502)/mouse1351.s: src/services/input/mouse1351.c \
 		include/udeks/mouse1351.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
-$(BUILD_8502)/pointer.s: src/services/input/pointer.c \
-		include/udeks/joystick.h include/udeks/mouse1351.h \
-		include/udeks/pointer.h | $(BUILD_8502)
-	$(CC65) $(CFLAGS_8502) -o $@ $<
-
 $(BUILD_8502)/line_editor.s: src/services/terminal/line_editor.c \
 		include/udeks/keyboard.h include/udeks/line_editor.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
@@ -494,7 +489,7 @@ $(BUILD_8502)/joystick.o: $(BUILD_8502)/joystick.s | $(BUILD_8502)
 $(BUILD_8502)/mouse1351.o: $(BUILD_8502)/mouse1351.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(BUILD_8502)/pointer.o: $(BUILD_8502)/pointer.s | $(BUILD_8502)
+$(BUILD_8502)/pointer.o: src/8502/pointer_irq.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/line_editor.o: $(BUILD_8502)/line_editor.s | $(BUILD_8502)
@@ -635,7 +630,7 @@ $(BUILD_8502)/vic_graphics_transport.o: src/8502/vic_graphics.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
-		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
+		$(BUILD_8502)/keyboard_scan.o \
 		$(BUILD_8502)/line_editor_read.o \
 		$(BUILD_8502)/z80_handoff.o \
 		$(BUILD_8502)/vic_graphics_transport.o \
@@ -661,7 +656,6 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/vdc_console.o $(BUILD_8502)/app_panel.o \
 		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o \
 		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
-		$(BUILD_8502)/joystick.o $(BUILD_8502)/mouse1351.o \
 		$(BUILD_8502)/pointer.o \
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
 		$(BUILD_8502)/terminal_stream.o \
@@ -675,7 +669,7 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 
 $(PANIC_PROBE_KERNEL_BIN): $(BOOT_D71) \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
-		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
+		$(BUILD_8502)/keyboard_scan.o \
 		$(BUILD_8502)/line_editor_read.o \
 		$(BUILD_8502)/z80_handoff.o \
 		$(BUILD_8502)/vic_graphics_transport.o \
@@ -700,7 +694,6 @@ $(PANIC_PROBE_KERNEL_BIN): $(BOOT_D71) \
 		$(BUILD_8502)/vdc_console.o $(BUILD_8502)/app_panel.o \
 		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o \
 		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
-		$(BUILD_8502)/joystick.o $(BUILD_8502)/mouse1351.o \
 		$(BUILD_8502)/pointer.o \
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
 		$(BUILD_8502)/terminal_stream.o \

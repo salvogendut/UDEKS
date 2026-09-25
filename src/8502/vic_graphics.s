@@ -181,10 +181,9 @@ _udeks_vic_pointer_busy_tick:
         jmp _udeks_vic_pointer_select_shape
 
 _udeks_vic_pointer_select_shape:
-        tax
+        sta COMMON_PAGE
         lda #$00
         sta OUTLINE_GATEWAY_TAG
-        stx COMMON_PAGE
         ldx #$00
 copy_sprite_swap_gateway:
         lda sprite_swap_gateway,x

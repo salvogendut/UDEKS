@@ -28,7 +28,7 @@ class PointerDecodeTests(unittest.TestCase):
         result = parse_result(valid_record())
         self.assertEqual(result["x"], 172)
         self.assertEqual(result["y"], 140)
-        self.assertEqual(result["polls"], 9)
+        self.assertEqual(result["samples"], 9)
 
     def test_decodes_signed_motion(self):
         block = valid_record()

@@ -8,7 +8,7 @@
 #define UDEKS_JOYSTICK_RIGHT    0x08u
 #define UDEKS_JOYSTICK_FIRE     0x10u
 
-#define UDEKS_JOYSTICK_STEP     3
+#define UDEKS_JOYSTICK_STEP     5
 
 void udeks_joystick_initialize(unsigned char active);
 void udeks_joystick_decode(

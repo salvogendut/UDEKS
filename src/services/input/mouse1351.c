@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "udeks/mouse1351.h"
 
+#pragma bss-name(push, "LOWBSS")
 static unsigned char old_pot_x;
 static unsigned char old_pot_y;
+#pragma bss-name(pop)
 
 static signed char decode_axis(unsigned char current, unsigned char *previous)
 {

@@ -140,11 +140,12 @@ The common area is partitioned conservatively:
 | `$F700-$F7EF` | Initial transient-task C stack; stage 1 temporarily uses the protected `$F700` installer page before tasks exist |
 | `$F7F0-$F7FF` | Transient-task stack guard/top |
 | `$F800-$F908` | Permanent bank-task request gateway after stage 1 exits |
-| `$F909-$F90F` | Reserved common-gateway alignment gap |
+| `$F909-$F90D` | Pointer raster-IRQ common return |
+| `$F90E-$F90F` | Reserved common-gateway alignment gap |
 | `$F910-$FEFF` | Resident bootfs/UDEX loader; persistent entry at `$F910`, transient entry at `$F913` |
 | `$FF00-$FF04` | Permanent MMU register hole; never RAM or code |
 | `$FF05-$FFC4` | Bank-1 8502 poll and synchronous-request gate |
-| `$FFC5-$FFCF` | Reserved common-gateway growth |
+| `$FFC5-$FFCF` | Pointer raster-IRQ MMU trampoline |
 | `$FFD0-$FFF9` | CPU handoff and interrupt/NMI trampolines |
 | `$FFFA-$FFFF` | 8502 NMI, reset, and IRQ vectors |
 

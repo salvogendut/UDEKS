@@ -186,7 +186,7 @@ mailbox corruption, with published benchmark results.
 - [x] Add `xinit` with an initial bank-1 VIC-IIe hires surface and centered
   black X pointer while the VDC console remains active.
 - [x] Reserve control port 1 for a proportional 1351 mouse, reserve control
-  port 2 for a digital joystick, and merge both into a frame-paced pointer.
+  port 2 for a digital joystick, and merge both into a raster-paced pointer.
 - [x] Build the first fixed-window `xclock` graphical application, following the bounded
   analog-clock design proven in GEOBENCH.
 - [x] Build `xwave` as a two-axis isometric radial sinc mesh using bounded Z80

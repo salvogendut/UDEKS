@@ -15,7 +15,7 @@ The resident input-class service combines both sources into one bounded
 320x200 pointer coordinate. Applications consume the normalized pointer state;
 they do not read CIA or SID registers and do not need separate mouse and
 joystick code. Simultaneous movement is combined, the joystick contributes a
-three-pixel step per video frame after one-sample digital debounce, and
+five-pixel step per video frame after one-sample digital debounce, and
 coordinates are clipped so the compact sprite remains visible.
 
 The 1351 driver implements the manual's modulo-64 delta algorithm. It removes
@@ -25,27 +25,32 @@ inputs while reading port-1 buttons, then restores the service-owned port
 configuration. The keyboard scanner independently saves and restores the same
 registers.
 
-Pointer sampling is paced once per video frame. Before each sample, the pointer
-service closes a 26-raster-line gate during which the keyboard scanner leaves
-the port-1 multiplexer untouched. It then reads the converted POT values and
-reopens keyboard polling. This exceeds the 1351 manual's 1.6 ms SID
-conversion-settling requirement without busy-waiting or reducing ordinary
-keyboard scans to one per frame. The first two stable POT samples calibrate the
-driver and cannot move the pointer, preventing startup drift on an empty port.
-After a drag-release repaint, the window service requests one additional
-baseline sample. Motion accumulated while the synchronous compositor prevented
-sampling is discarded, so the 1351's wrapping counters cannot turn that stale
-interval into an imprecise or reversed post-drag delta.
+Pointer sampling is paced once per video frame by a two-phase VIC-IIe raster
+interrupt. At raster 200 the driver selects the port-1 POT pair and closes the
+keyboard gate. At raster 226 it reads the converted POT values, decodes the
+modulo position immediately, and reopens keyboard polling. This exceeds the
+1351 manual's 1.6 ms SID conversion-settling requirement without busy-waiting.
+More importantly, synchronous repaint and Z80 service work can delay a client
+of the pointer state but cannot delay or reorder the modulo samples themselves.
+Fast motion therefore cannot alias into a reversal or become stuck behind a
+stale cooperative sample. The first two stable samples calibrate the driver and
+cannot move the pointer, preventing startup drift on an empty port.
+
+The IRQ vector first enters an 11-byte trampoline in common RAM at
+`$FFC5-$FFCF`. It saves the interrupted MMU profile and selects kernel bank 0
+with I/O visible before entering the resident assembly driver. A second common
+stub at `$F909-$F90D` restores the exact profile and returns. Consequently the
+sampler remains safe while a graphics gateway has bank-1 bitmap RAM mapped at
+`$D000-$DFFF`; the interrupted gateway resumes with its original mapping.
 
 Because the C128 keyboard and control ports share CIA1 pins, keyboard scans are
-suppressed while a joystick direction, joystick fire, or mouse button is
-active. For the activity check, the CIA half being read becomes input while
-the opposite half of the keyboard matrix is probed at both high and low. Only
-a low bit persistent in both phases is treated as a grounded control-port
-switch; keyboard-induced lows vary with the drive phase. The check happens
-immediately before and after each
-matrix scan. Releasing all control-port switches re-enables keyboard polling
-automatically.
+suppressed during the POT conversion window and while a joystick direction,
+joystick fire, or mouse button is active. Each short matrix scan also masks IRQs
+to close the race between the C-level gate check and the hardware scan. For the
+joystick activity check, the opposite half of the keyboard matrix is probed at
+both high and low. Only a low bit persistent in both phases is treated as a
+grounded control-port switch; keyboard-induced lows vary with the drive phase.
+Releasing all control-port switches re-enables keyboard polling automatically.
 
 The electrical model and settling rule follow the
 [Commodore 1351 Mouse User's Manual](https://retroisle.com/commodore/c64128/OriginalDocs/1351mousev11.php)
@@ -62,11 +67,11 @@ The 32-byte `PTRI` record begins at `$F1D0`:
 |---:|---:|---|
 | 0 | 4 | ASCII magic `PTRI` |
 | 4–6 | 3 | Format (`1`), state, and failure code |
-| 7 | 1 | Capabilities: mouse 1, joystick 2, 1351, frame-paced |
+| 7 | 1 | Capabilities: mouse 1, joystick 2, 1351, raster-IRQ paced |
 | 8–10 | 3 | Pointer X (little-endian) and Y |
 | 11 | 1 | Buttons: mouse left/right and joystick fire |
 | 12–15 | 4 | Raw joystick, mouse buttons, POTX, and POTY |
 | 16–17 | 2 | Last signed X/Y motion |
-| 18–25 | 8 | Poll, movement, mouse-event, and joystick-event counters |
-| 26–27 | 2 | Frame latch and active-source mask |
+| 18–25 | 8 | IRQ sample, movement, mouse-event, and joystick-event counters |
+| 26–27 | 2 | POT conversion phase and active-source mask |
 | 28–31 | 4 | Reserved |

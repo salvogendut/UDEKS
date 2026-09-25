@@ -96,7 +96,7 @@ kernel will consume those bytes without carrying an image decoder.
 The current transitional production image starts eleven statically linked
 modules in order: hardware capability discovery, CIA time, the bounded Z80
 worker, the VDC text console,
-the frame-paced pointer source, the passive VIC-IIe graphics service, the
+the raster-paced pointer source, the passive VIC-IIe graphics service, the
 window manager, the polled keyboard source, the fixed-focus root-terminal
 editor, the managed-app dispatcher, and init. Init polls the persistent
 `/bin/ush` task plus the resident compatibility shell; `xclock` and `xwave`
@@ -121,7 +121,8 @@ port 1 and a digital joystick on control port 2. During a repaint or Z80 lease,
 its 63 sprite bytes are temporarily replaced by the pipe asset as a busy
 indication; nested Z80 work cannot clear a repaint-owned indication. A
 non-blocking three-frame release delay makes brief work visible without
-stalling the executive. `xclock`
+stalling the executive. Mouse positions are consumed by a two-phase raster IRQ,
+so compositor and Z80 latency cannot reverse or lose modulo-64 motion. `xclock`
 starts the first
 managed analog-clock window. `xwave` opens another managed window and uses
 bounded Z80 sinc-surface leases while the 8502 projects and plots a connected

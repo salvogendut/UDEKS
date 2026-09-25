@@ -57,7 +57,9 @@ See [LICENSE](LICENSE).
 - The console's live `RUNNING` panel follows `xinit`, `xclock`, and `xwave`
   lifecycle changes.
 - `xinit` owns an independent VIC-IIe bitmap desktop. A proportional 1351 mouse
-  on port 1 and a digital joystick on port 2 drive its pointer.
+  on port 1 and a digital joystick on port 2 drive its pointer. A raster-paced
+  assembly input driver keeps mouse sampling independent of repaint and Z80
+  latency.
 - Window Manager 0.3 supports four overlapping, focused, movable, closable,
   and resizable bitmap windows. Dragging and resizing move an outline; clients
   repaint scaled content after release.

@@ -56,7 +56,7 @@ def parse_result(data: bytes) -> dict[str, int]:
         "mouse1_pot_y": block[15],
         "dx": signed(block[16]),
         "dy": signed(block[17]),
-        "polls": word(block, 18),
+        "samples": word(block, 18),
         "moves": word(block, 20),
         "mouse_events": word(block, 22),
         "joystick_events": word(block, 24),
@@ -82,7 +82,7 @@ def main() -> None:
         return
     print(
         f"pointer: ({result['x']}, {result['y']}); "
-        f"{result['polls']} poll(s), {result['moves']} move(s)"
+        f"{result['samples']} IRQ sample(s), {result['moves']} move(s)"
     )
 
 
