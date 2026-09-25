@@ -8,6 +8,12 @@ at `$4000-$7FFF`. Each physical bank reserves `$E2E2-$E2FF` for its own saved
 `$02-$1F` cc65 zero-page image. Selecting the MMU profile therefore selects the
 context without consuming common RAM.
 
+The `none` runtime places its two-byte software-stack pointer at zero-page
+`$02-$03`. Because the saved context begins with zero page `$02`, context
+bytes 0 and 1 must be initialized to `$EFF0`. This offset is an executable ABI
+invariant: initializing `$06-$07` instead leaves `sp` at zero and makes the
+first C stack allocation wrap into top common RAM.
+
 The 8502 enters the task through common RAM, which remains visible under both
 MMU profiles:
 

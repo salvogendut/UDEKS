@@ -396,7 +396,8 @@ BOOTFS_LIMIT_HI         = $20
 TASK_SLOT               = $0200
 PERSISTENT_SLOT         = $9000
 TASK_BACKUP             = $8000
-CC65_SP                 = $06
+; cc65's none runtime exports its software-stack pointer at $02/$03.
+CC65_SP                 = $02
 TASK_STACK_TOP          = $f7f0
 
 TASK_OK                 = $00

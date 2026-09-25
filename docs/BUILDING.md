@@ -176,6 +176,9 @@ string, and flush operations from `include/udeks/framebuffer.h`.
 The resident 8502 image links the small subset of cc65's `none` runtime needed
 by its C services. Startup initializes cc65's downward-growing software stack
 at `$EFF0`; the 6502 hardware stack remains on physical bank-0 page one. The
+Z80 worker uses the reserved common-RAM stack `$F2B0-$F2FF` (SP `$F300`) so
+its suspended frames survive persistent bank-1 task polls and MMU profile
+changes between bounded leases. The
 first display service is the [VDC console](VDC-CONSOLE.md), with bounded assembly port
 access and C display policy. It is discovered and started through the
 [service-module ABI](../abi/services.md); the kernel calls the generic registry,

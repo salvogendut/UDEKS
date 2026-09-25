@@ -51,9 +51,11 @@ static const unsigned char shifted_map[88] = {
     0, '0', '.', 0, 0, 0, 0, 0
 };
 
+#pragma bss-name(push, "LOWBSS")
 static unsigned char previous_matrix[UDEKS_KEYBOARD_MATRIX_LINES];
 static unsigned char candidate_matrix[UDEKS_KEYBOARD_MATRIX_LINES];
 static unsigned char changed_matrix[UDEKS_KEYBOARD_MATRIX_LINES];
+#pragma bss-name(pop)
 static struct udeks_key_event event_queue[UDEKS_KEYBOARD_QUEUE_CAPACITY];
 static unsigned char queue_head;
 static unsigned char queue_tail;

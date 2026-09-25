@@ -23,6 +23,7 @@
 #define STATUS_FOREGROUND        20u
 #define STATUS_BACKGROUND_JOBS   21u
 #define STATUS_INTERRUPTS        22u
+#define STATUS_PENDING_EXEC      23u
 
 #define JOB_NONE                 0u
 #define JOB_XCLOCK               1u
@@ -567,8 +568,13 @@ unsigned char udeks_shell_poll(void)
         return UDEKS_SHELL_OK;
     }
 
-    result = udeks_line_editor_get_line(
-        command_line, sizeof(command_line));
+    if (STATUS_BYTE(STATUS_PENDING_EXEC) != 0) {
+        STATUS_BYTE(STATUS_PENDING_EXEC) = 0;
+        result = UDEKS_LINE_EDITOR_OK;
+    } else {
+        result = udeks_line_editor_get_line(
+            command_line, sizeof(command_line));
+    }
     if (result == UDEKS_LINE_EDITOR_EMPTY) {
         return UDEKS_SHELL_OK;
     }

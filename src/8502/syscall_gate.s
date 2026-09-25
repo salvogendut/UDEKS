@@ -17,7 +17,6 @@
         .import _udeks_root_console_write
         .import _udeks_root_terminal_prompt
         .import _udeks_shell_command_line
-        .import _udeks_shell_dispatch_line
         .import _udeks_shell_foreground_job
         .import _udeks_bootfs_request
         .export _udeks_time_sync_ti
@@ -35,6 +34,7 @@ TREQ_ERROR      = TREQ_BASE+$0c
 TREQ_FLAGS      = TREQ_BASE+$0d
 TREQ_PAYLOAD    = TREQ_BASE+$0e
 TASK_COMMAND    = $f3a0
+SHELL_PENDING_EXEC = $f187
 
 TREQ_REQUEST    = $01
 TREQ_COMPLETE   = $02
@@ -343,10 +343,13 @@ task_copy_command:
         sta _udeks_shell_command_line,x
         dex
         bpl task_copy_command
-        jsr _udeks_shell_dispatch_line
-        lda _udeks_shell_foreground_job
-        beq task_finish_ok
+        ; Never execute a resident command while the persistent bank-1 task
+        ; gate is on the 8502 call stack. In particular, a nested Z80 handoff
+        ; cannot safely resume through that bank-switched path. The ordinary
+        ; bank-0 shell poll consumes the copied command on this same service
+        ; pass. Report foreground/wait so ush does not emit a premature prompt.
         lda #$01
+        sta SHELL_PENDING_EXEC
         bne task_finish_ok
 
 task_wait:

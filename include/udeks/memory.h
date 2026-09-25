@@ -39,7 +39,8 @@
 #define UDEKS_Z80_CODE_LIMIT          0x4000u
 #define UDEKS_VIC_WINDOW_BASE         0x4000u
 #define UDEKS_VIC_WINDOW_LIMIT        0x8000u
-#define UDEKS_Z80_STACK_TOP           0xEFF0u
+#define UDEKS_Z80_STACK_BOTTOM        0xF2B0u
+#define UDEKS_Z80_STACK_TOP           0xF300u
 
 /* Boot-only images occupy the reclaimable bank-0 VIC shadow. */
 #define UDEKS_APP1_STAGING_BASE       0xAF00u

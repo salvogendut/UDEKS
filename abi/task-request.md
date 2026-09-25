@@ -38,10 +38,12 @@ work continue to receive service.
 `EXEC` is the bounded migration bridge for commands whose policy has not yet
 moved out of the resident compatibility shell. The task copies at most 54
 bytes of command text to `$F3A0-$F3D6`; the kernel copies it into private
-resident storage before dispatch. Result 0 completed synchronously and result
-1 launched a foreground job. `WAIT` returns 1 while that job owns the session
-and 0 after the resident job path has restored the prompt. `PROMPT` rearms the
-root terminal input field.
+resident storage and returns result 1 after queuing it. The bank-0 shell poll
+performs dispatch only after the bank-1 request gate has unwound, so a command
+may safely hand ownership to the Z80 without leaving a bank-switched task frame
+on the 8502 stack. `WAIT` returns 1 while that queued or foreground job owns the
+session and 0 after the resident job path has restored the prompt. `PROMPT`
+rearms the root terminal input field.
 
 The boundary uses the familiar Linux errno numbers `EIO` (5), `EBADF` (9),
 `EAGAIN` (11), `EINVAL` (22), `ENOSYS` (38), and `EPROTO` (71). The task runtime exposes
@@ -49,5 +51,7 @@ The boundary uses the familiar Linux errno numbers `EIO` (5), `EBADF` (9),
 deliberately small, but its descriptors, short reads/writes, and error model are
 compatible with later POSIX-shaped libc veneers.
 
-A request call is synchronous, not a scheduler yield. A cooperative program
-must return from its `$9000` poll entry when it has no more immediate work.
+A request call itself is synchronous, not a scheduler yield; `EXEC` completion
+means that the command was accepted for deferred resident dispatch. A
+cooperative program must return from its `$9000` poll entry when it has no more
+immediate work.

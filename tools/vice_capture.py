@@ -291,8 +291,49 @@ def capture(args: argparse.Namespace) -> None:
         for address, data in args.ready_block:
             values = " ".join(f"{byte:02x}" for byte in data)
             monitor_command(port, f"> {address:04x} {values}")
+        if args.ready_repeat_until is not None:
+            repeat_address, repeat_value = args.ready_repeat_until
+            while time.monotonic() < deadline:
+                reply = monitor_command(
+                    port, f"m {repeat_address:04x} {repeat_address:04x}"
+                )
+                if parse_monitor_byte(reply, repeat_address) == repeat_value:
+                    break
+                for address, data in args.ready_block:
+                    values = " ".join(f"{byte:02x}" for byte in data)
+                    monitor_command(port, f"> {address:04x} {values}")
+                time.sleep(0.05)
+            else:
+                raise TimeoutError("VICE repeated ready block did not take effect")
         if args.keybuf is not None:
             monitor_command(port, f"keybuf {quote_monitor_text(args.keybuf)}")
+        if args.followup_ready_block is not None:
+            address, data = args.followup_ready_block
+            while time.monotonic() < deadline:
+                try:
+                    matches = True
+                    for offset, value in enumerate(data):
+                        ready_address = address + offset
+                        reply = monitor_command(
+                            port, f"m {ready_address:04x} {ready_address:04x}"
+                        )
+                        if parse_monitor_byte(reply, ready_address) != value:
+                            matches = False
+                            break
+                    if matches:
+                        break
+                except (ConnectionError, OSError, RuntimeError, ValueError):
+                    pass
+                time.sleep(0.1)
+            else:
+                raise TimeoutError("VICE follow-up readiness block did not match")
+        for address, data in args.followup_block:
+            values = " ".join(f"{byte:02x}" for byte in data)
+            monitor_command(port, f"> {address:04x} {values}")
+        if args.followup_keybuf is not None:
+            monitor_command(
+                port, f"keybuf {quote_monitor_text(args.followup_keybuf)}"
+            )
         state = None
         last_error: Exception | None = None
         while time.monotonic() < deadline:
@@ -328,6 +369,17 @@ def capture(args: argparse.Namespace) -> None:
                     args.result_address,
                     args.result_size,
                 )
+                try:
+                    registers = monitor_command(port, "r")
+                    print(registers.decode("utf-8", errors="replace"))
+                    stack = monitor_command(port, "m f2b0 f2ff")
+                    print(stack.decode("utf-8", errors="replace"))
+                    mmu = monitor_command(port, "m d505 d50a")
+                    print(mmu.decode("utf-8", errors="replace"))
+                    gateway = monitor_command(port, "m ffd0 fff4")
+                    print(gateway.decode("utf-8", errors="replace"))
+                except (ConnectionError, OSError, RuntimeError):
+                    pass
             detail = "" if last_error is None else f"; last monitor error: {last_error}"
             raise TimeoutError(
                 f"benchmark did not complete; state is {shown}{detail}; "
@@ -341,6 +393,9 @@ def capture(args: argparse.Namespace) -> None:
             args.result_address,
             args.result_size,
         )
+        if args.capture_incomplete:
+            registers = monitor_command(port, "r")
+            print(registers.decode("utf-8", errors="replace"))
         if screenshot is not None:
             if args.screenshot_delay != 0:
                 time.sleep(args.screenshot_delay)
@@ -414,6 +469,25 @@ def main() -> None:
         help="wait for an exact memory byte sequence before injecting input",
     )
     parser.add_argument(
+        "--followup-ready-block",
+        type=parse_block,
+        metavar="ADDRESS=HEXBYTES",
+        help="after initial input, wait for a block before follow-up input",
+    )
+    parser.add_argument(
+        "--followup-keybuf",
+        type=parse_keybuf,
+        help="type a second input after --followup-ready-block matches",
+    )
+    parser.add_argument(
+        "--followup-block",
+        action="append",
+        default=[],
+        type=parse_block,
+        metavar="ADDRESS=HEXBYTES",
+        help="write a block after --followup-ready-block matches",
+    )
+    parser.add_argument(
         "--ready-poke",
         action="append",
         default=[],
@@ -428,6 +502,12 @@ def main() -> None:
         type=parse_block,
         metavar="ADDRESS=HEXBYTES",
         help="write one contiguous byte block after --keybuf-ready matches",
+    )
+    parser.add_argument(
+        "--ready-repeat-until",
+        type=parse_poke,
+        metavar="ADDRESS=BYTE",
+        help="repeat --ready-block writes until a memory byte matches",
     )
     parser.add_argument(
         "--autostart",

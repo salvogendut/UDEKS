@@ -8,6 +8,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class TaskBankGatewayTests(unittest.TestCase):
+    def test_cc65_stack_pointer_uses_none_runtime_zero_page_location(self):
+        gate = (ROOT / "src/8502/task_bank_gateway.s").read_text().lower()
+        loader = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
+
+        self.assertIn("cc65_sp_index           = $00", gate)
+        self.assertIn("cc65_sp                 = $02", loader)
+
     def test_fixed_common_ram_contract_matches_public_header(self):
         config = (ROOT / "cfg/8502-bootstrap.cfg").read_text().lower()
         header = (ROOT / "include/udeks/task_bank.h").read_text().lower()

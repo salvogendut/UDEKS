@@ -39,7 +39,11 @@ class TaskRequestAbiTests(unittest.TestCase):
             self.assertIn(value, header)
         self.assertIn("jsr _udeks_line_editor_read", dispatcher)
         self.assertIn("jsr _udeks_root_console_write", dispatcher)
-        self.assertIn("jsr _udeks_shell_dispatch_line", dispatcher)
+        self.assertNotIn("jsr _udeks_shell_dispatch_line", dispatcher)
+        self.assertIn("sta shell_pending_exec", dispatcher)
+        shell = (ROOT / "src/services/shell/shell.c").read_text().lower()
+        self.assertIn("status_pending_exec", shell)
+        self.assertIn("result = udeks_shell_dispatch_line();", shell)
         self.assertIn("jsr _udeks_root_terminal_prompt", dispatcher)
 
     def test_task_stream_wrapper_has_no_resident_private_imports(self):

@@ -87,7 +87,18 @@ class MemoryMapTests(unittest.TestCase):
         self.assertLessEqual(memory["UDEKS_Z80_CODE_LIMIT"], memory["UDEKS_VIC_WINDOW_BASE"])
         self.assertLess(memory["UDEKS_VIC_WINDOW_BASE"], memory["UDEKS_VIC_WINDOW_LIMIT"])
         self.assertEqual(memory["UDEKS_VIC_WINDOW_LIMIT"] - memory["UDEKS_VIC_WINDOW_BASE"], 0x4000)
-        self.assertLess(memory["UDEKS_Z80_STACK_TOP"], memory["UDEKS_COMMON_BASE"])
+        self.assertGreaterEqual(
+            memory["UDEKS_Z80_STACK_BOTTOM"], memory["UDEKS_COMMON_BASE"]
+        )
+        self.assertLess(
+            memory["UDEKS_Z80_STACK_BOTTOM"], memory["UDEKS_Z80_STACK_TOP"]
+        )
+        self.assertEqual(memory["UDEKS_Z80_STACK_TOP"], 0xF300)
+
+    def test_resident_z80_stack_matches_common_memory_contract(self):
+        crt0 = (ROOT / "src/z80/crt0.s").read_text(encoding="utf-8").lower()
+
+        self.assertIn("ld      sp, #0xf300", crt0)
 
     def test_initial_c_stack_uses_reserved_kernel_high_ram(self):
         memory = self.memory

@@ -8,7 +8,10 @@
         .area   _CODE
 _start::
         di
-        ld      sp, #0xeff0
+        ; The worker is suspended between leases while bank-1 ush runs. Keep
+        ; its live call frames in reserved common RAM so neither the task nor
+        ; an MMU profile change can replace the underlying stack storage.
+        ld      sp, #0xf300
         call    _z80_main
 
 halt:

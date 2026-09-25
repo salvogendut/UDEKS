@@ -68,8 +68,10 @@ common RAM. The first high-memory assignment gives `$E000-$E1B7` to the
 VIC-IIe module's scanline table, dirty-page map, and clip state, and reserves
 `$E1B8-$E2E1` for bounded module-private BSS, `$E2E2-$E2FF` for the selected
 bank's cc65 zero-page context, and `$E300-$EFF0` for the downward-growing 8502
-C software stack. The initial Z80 stack top is `$EFF0` in its non-common bank
-view and must remain at or above `$E300`, leaving the bank-1 context intact.
+C software stack. The resident Z80 stack instead occupies reserved common RAM
+at `$F2B0-$F2FF`, with SP initialized to `$F300`. Its live call frames must
+survive both MMU profile changes and execution of the persistent bank-1 task
+between worker leases.
 
 Stage 1 transfers control from `$1C00-$1FFF` and never returns. Before doing
 so it installs two 2560-byte application images from bank-0 staging ranges
@@ -110,7 +112,8 @@ The common area is partitioned conservatively:
 | `$F190-$F27F` | Worker, graphics, pointer, time, window, and application diagnostics |
 | `$F280-$F2A5` | Reserved diagnostic space |
 | `$F2A6` | Bootstrap root-session working-directory token |
-| `$F2A7-$F2FF` | Reserved diagnostic space |
+| `$F2A7-$F2AF` | Reserved diagnostic space |
+| `$F2B0-$F2FF` | Resident Z80 stack (80 bytes, SP starts at `$F300`) |
 | `$F300-$F33F` | Bounded Z80/8502 sample transfer buffer |
 | `$F340-$F358` | `xwave` previous surface-row cache |
 | `$F359-$F37E` | Bank-task request record and 24-byte inline payload |

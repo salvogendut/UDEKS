@@ -19,7 +19,9 @@ TASK_CONTEXT            = $e2e2
 TASK_REQUEST_DISPATCH   = $cf30
 CC65_ZP_FIRST           = $02
 CC65_ZP_SIZE            = $1e
-CC65_SP_INDEX           = $04
+; none.lib exports sp at zero-page $02/$03. TASK_CONTEXT mirrors zero page
+; beginning at $02, so the stack pointer occupies context bytes 0 and 1.
+CC65_SP_INDEX           = $00
 TASK_STACK_TOP          = $eff0
 
 TASK_STATE_EMPTY        = $00
