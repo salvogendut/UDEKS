@@ -81,6 +81,7 @@ MEMORY_MAP_PRG := $(BUILD_MEMORY_MAP)/memory-map.prg
 STAGE0_BIN := $(BUILD_BOOT)/stage0.bin
 STAGE1_GATEWAY_BIN := $(BUILD_BOOT)/stage1-gateway.bin
 TASK_LOADER_BIN := $(BUILD_BOOT)/task-loader.bin
+TASK_BANK_GATE_BIN := $(BUILD_BOOT)/task-bank-gateway.bin
 STAGE1_BIN := $(BUILD_BOOT)/stage1.bin
 BOOT_D71 := $(BUILD_BOOT)/udeks.d71
 PANIC_PROBE_D71 := $(BUILD_BOOT)/udeks-panic-probe.d71
@@ -402,6 +403,9 @@ $(BUILD_8502)/clock.o: src/8502/clock.s | $(BUILD_8502)
 $(BUILD_8502)/syscall_gate.o: src/8502/syscall_gate.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/task_bank_gateway.o: src/8502/task_bank_gateway.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/capability_descriptor.o: src/services/capability/descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -490,7 +494,7 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/z80_handoff.o \
 		$(BUILD_8502)/vic_graphics_transport.o \
 		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o $(BUILD_8502)/clock.o \
-		$(BUILD_8502)/syscall_gate.o \
+		$(BUILD_8502)/syscall_gate.o $(BUILD_8502)/task_bank_gateway.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o \
 		$(BUILD_8502)/capability_descriptor.o \
@@ -529,7 +533,7 @@ $(PANIC_PROBE_KERNEL_BIN): $(BOOT_D71) \
 		$(BUILD_8502)/z80_handoff.o \
 		$(BUILD_8502)/vic_graphics_transport.o \
 		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o $(BUILD_8502)/clock.o \
-		$(BUILD_8502)/syscall_gate.o \
+		$(BUILD_8502)/syscall_gate.o $(BUILD_8502)/task_bank_gateway.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o $(BUILD_8502)/capability_descriptor.o \
 		$(BUILD_8502)/time_descriptor.o \
@@ -565,6 +569,9 @@ $(PANIC_PROBE_KERNEL_BIN): $(BOOT_D71) \
 
 $(KERNEL_PRG): $(KERNEL_BIN) tools/bin_to_prg.py
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x2000 $< $@
+
+$(TASK_BANK_GATE_BIN): $(KERNEL_BIN)
+	test -s $@
 
 $(APP1_BIN) $(APP2_BIN): $(KERNEL_BIN)
 	test -s $@
@@ -908,21 +915,23 @@ $(STAGE1_BIN): $(BUILD_BOOT)/stage1.o cfg/8502-stage1.cfg
 
 $(BOOT_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(APP1_BIN) $(APP2_BIN) $(Z80_BIN) $(USER_BOOTFS) \
-		$(TASK_LOADER_BIN) tools/build_d71.py
+		$(TASK_LOADER_BIN) $(TASK_BANK_GATE_BIN) tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--app1 $(APP1_BIN) --app2 $(APP2_BIN) \
 		--bootfs $(USER_BOOTFS) \
-		--task-loader $(TASK_LOADER_BIN) $@
+		--task-loader $(TASK_LOADER_BIN) \
+		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		$(APP1_BIN) $(APP2_BIN) $(Z80_BIN) $(USER_BOOTFS) \
-		$(TASK_LOADER_BIN) tools/build_d71.py
+		$(TASK_LOADER_BIN) $(TASK_BANK_GATE_BIN) tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(PANIC_PROBE_KERNEL_BIN) \
 		--z80 $(Z80_BIN) --app1 $(APP1_BIN) --app2 $(APP2_BIN) \
 		--bootfs $(USER_BOOTFS) \
-		--task-loader $(TASK_LOADER_BIN) $@
+		--task-loader $(TASK_LOADER_BIN) \
+		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 check:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'

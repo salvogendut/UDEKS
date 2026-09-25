@@ -170,6 +170,17 @@ task_loader_destination:
         dex
         bne copy_task_loader_page
 
+        ; Install the bank-1 8502 cooperative-task gate above the MMU register
+        ; hole. Its 203-byte reservation ends immediately before the existing
+        ; CPU-handoff gateway at $FFD0.
+        ldy #$00
+copy_task_bank_gate:
+        lda $ce00,y
+        sta $ff05,y
+        iny
+        cpy #$cb
+        bne copy_task_bank_gate
+
         lda #'Z'
         sta BOOT_CHAIN+8
         lda #'8'

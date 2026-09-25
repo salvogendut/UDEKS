@@ -106,7 +106,8 @@ The common area is partitioned conservatively:
 | `$FA00-$FEFF` | Resident bootfs/task-loader reservation |
 | `$F800-$FEFF` | 8502/Z80 gateway code and common kernel mechanisms |
 | `$FF00-$FF04` | Permanent MMU register hole; never RAM or code |
-| `$FF05-$FFCF` | Common gateway state/code, to be allocated explicitly |
+| `$FF05-$FFB3` | Bank-1 8502 cooperative-task gate and state |
+| `$FFB4-$FFCF` | Reserved for task request/yield gateway growth |
 | `$FFD0-$FFF9` | CPU handoff and interrupt/NMI trampolines |
 | `$FFFA-$FFFF` | 8502 NMI, reset, and IRQ vectors |
 

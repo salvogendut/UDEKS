@@ -15,6 +15,8 @@ KERNEL_ADDRESS = 0x2000
 Z80_STAGING_ADDRESS = 0xD000
 TASK_LOADER_STAGING_ADDRESS = 0xC900
 TASK_LOADER_STAGING_SIZE = 0x0500
+TASK_BANK_GATE_STAGING_ADDRESS = 0xCE00
+TASK_BANK_GATE_STAGING_SIZE = 0x00CB
 Z80_SIZE = 0x2000
 APP_IMAGE_SIZE = 0x0A00
 APP1_Z80_OFFSET = 0x0400
@@ -144,10 +146,22 @@ def install_task_loader(kernel: bytearray, loader: bytes) -> None:
     )
 
 
+def install_task_bank_gateway(kernel: bytearray, gateway: bytes) -> None:
+    if len(gateway) > TASK_BANK_GATE_STAGING_SIZE:
+        raise ValueError("task-bank gateway exceeds its 203-byte staging area")
+    offset = TASK_BANK_GATE_STAGING_ADDRESS - KERNEL_ADDRESS
+    region = kernel[offset : offset + TASK_BANK_GATE_STAGING_SIZE]
+    if any(region):
+        raise ValueError("task-bank gateway staging overlaps resident kernel data")
+    kernel[offset : offset + TASK_BANK_GATE_STAGING_SIZE] = gateway.ljust(
+        TASK_BANK_GATE_STAGING_SIZE, b"\x00"
+    )
+
+
 def build_image(
     stage0: bytes, stage1: bytes, kernel: bytes, z80: bytes,
     app1: bytes = b"", app2: bytes = b"", bootfs: bytes = b"",
-    task_loader: bytes = b""
+    task_loader: bytes = b"", task_bank_gateway: bytes = b""
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -170,6 +184,7 @@ def build_image(
         kernel.ljust(Z80_STAGING_ADDRESS - KERNEL_ADDRESS, b"\x00")
     )
     install_task_loader(staged_kernel, task_loader)
+    install_task_bank_gateway(staged_kernel, task_bank_gateway)
 
     payload = (
         stage1.ljust(KERNEL_ADDRESS - STAGE1_ADDRESS, b"\x00")
@@ -204,6 +219,7 @@ def main() -> None:
     parser.add_argument("--app2", type=Path)
     parser.add_argument("--bootfs", type=Path)
     parser.add_argument("--task-loader", type=Path)
+    parser.add_argument("--task-bank-gateway", type=Path)
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
 
@@ -217,6 +233,7 @@ def main() -> None:
             b"" if args.app2 is None else args.app2.read_bytes(),
             b"" if args.bootfs is None else args.bootfs.read_bytes(),
             b"" if args.task_loader is None else args.task_loader.read_bytes(),
+            b"" if args.task_bank_gateway is None else args.task_bank_gateway.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

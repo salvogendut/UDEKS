@@ -178,6 +178,7 @@ pass.
 - [Read-only boot filesystem format](abi/bootfs.md)
 - [Filesystem and Unix-like command direction](abi/filesystem.md)
 - [8502 syscall and program-entry ABI](abi/syscalls.md)
+- [Bank-1 8502 cooperative-task gate](abi/task-bank.md)
 - [Bounded Z80 worker service](abi/z80-worker.md)
 - [VIC-IIe graphics service](abi/vic-graphics.md)
 - [VIC-IIe window manager](abi/window.md)

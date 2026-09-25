@@ -18,6 +18,8 @@ from build_d71 import (
     SECTOR_SIZE,
     TASK_LOADER_STAGING_ADDRESS,
     TASK_LOADER_STAGING_SIZE,
+    TASK_BANK_GATE_STAGING_ADDRESS,
+    TASK_BANK_GATE_STAGING_SIZE,
     blank_d71,
     boot_locations,
     build_image,
@@ -122,6 +124,28 @@ class BuildD71Tests(unittest.TestCase):
             build_image(
                 stage0(), b"", b"", b"", b"", b"", b"",
                 bytes(TASK_LOADER_STAGING_SIZE + 1),
+            )
+
+    def test_task_bank_gateway_is_staged_below_syscall_page(self):
+        gateway = b"UTG1" + bytes(12)
+        image = build_image(
+            stage0(), b"", b"", b"", b"", b"", b"", b"", gateway
+        )
+        payload = b"".join(
+            image[
+                sector_offset(track, sector) :
+                sector_offset(track, sector) + SECTOR_SIZE
+            ]
+            for track, sector in list(boot_locations(1 + PAYLOAD_BLOCKS))[1:]
+        )
+        offset = TASK_BANK_GATE_STAGING_ADDRESS - 0x1C00
+        self.assertEqual(payload[offset : offset + len(gateway)], gateway)
+
+    def test_rejects_oversize_task_bank_gateway(self):
+        with self.assertRaisesRegex(ValueError, "203-byte"):
+            build_image(
+                stage0(), b"", b"", b"", b"", b"", b"", b"",
+                bytes(TASK_BANK_GATE_STAGING_SIZE + 1),
             )
 
     def test_rejects_header_layout_drift(self):

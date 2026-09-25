@@ -21,12 +21,12 @@ and application functions and therefore cannot be wrapped honestly in UDEX.
 
 The two low bank-0 application slots remain occupied by `xclock` and `xwave`.
 `ush` will therefore run from a persistent bank-1 8502 task allocation, outside
-the resident Z80 image and VIC-IIe display window. A bounded common-RAM gate
-must:
+the resident Z80 image and VIC-IIe display window. A bounded common-RAM gate now
+supplies the context switch. The complete task path must:
 
 1. preserve the resident cc65 zero page and software-stack pointer;
 2. enter the bank-1 task profile and call one cooperative `ush` poll;
-3. marshal syscalls through common RAM, temporarily restoring the kernel map;
+3. marshal service requests through common RAM and yield them to the kernel;
 4. return to the service loop without disturbing Z80 or VIC ownership;
 5. retain the shell's BSS, history-facing state, and working directory between
    polls.
@@ -40,7 +40,8 @@ streams, process execution, job control, system queries, and filesystem access.
 - [x] Put init, not the static registry, in charge of the root session.
 - [x] Move tokenization into the user source tree.
 - [x] Resolve non-builtin commands through `/bin` bootfs.
-- [ ] Define the bank-1 8502 task profile and common syscall return gate.
+- [x] Define and link the bounded bank-1 8502 cooperative-task context gate.
+- [ ] Define the common-RAM task request/yield protocol and public wrappers.
 - [ ] Add terminal-read, prompt, yield, exec, wait, and signal syscalls.
 - [ ] Replace direct graphical builtins with `/bin` programs or service calls.
 - [ ] Link `ush.udx` without resident private symbols.
