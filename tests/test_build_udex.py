@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 from build_udex import (
     ABI_MAJOR,
     ABI_MINOR,
+    FLAG_MANAGED_APP,
     FLAG_PERSISTENT_POLL,
     HEADER_SIZE,
     MAGIC,
@@ -74,6 +75,26 @@ class BuildUdexTests(unittest.TestCase):
             flags=FLAG_PERSISTENT_POLL,
         )
         self.assertEqual(executable[7], FLAG_PERSISTENT_POLL)
+
+    def test_accepts_managed_application_flag(self):
+        executable = build_executable(
+            bytes(18),
+            cpu=1,
+            load_address=0x1200,
+            entry_address=0x1200,
+            flags=FLAG_MANAGED_APP,
+        )
+        self.assertEqual(executable[7], FLAG_MANAGED_APP)
+
+    def test_rejects_combined_lifecycle_flags(self):
+        with self.assertRaisesRegex(ValueError, "flags conflict"):
+            build_executable(
+                bytes(18),
+                cpu=1,
+                load_address=0x1200,
+                entry_address=0x1200,
+                flags=FLAG_PERSISTENT_POLL | FLAG_MANAGED_APP,
+            )
 
     def test_rejects_unsupported_flags(self):
         with self.assertRaisesRegex(ValueError, "unsupported flags"):

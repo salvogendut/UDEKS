@@ -248,13 +248,12 @@ checksum_high_matches:
         lda destination_sum_high
         sta BOOT_CHAIN_DEST_SUM+1
 
-        ; Relocate the immutable 7.25 KiB bootfs after the compact Z80 image
-        ; staging window to bank-1 low RAM, then restore that worker window to
-        ; zero before the Z80 is allowed to run.
+        ; Relocate the first 7.25 KiB of bootfs from the unused tail of the
+        ; Z80 staging window to its permanent bank-1 $A000 home.
         lda #$23
         sta bootfs_source+2
         sta bootfs_clear+2
-        lda #$03
+        lda #$a0
         sta bootfs_destination+2
         ldx #$1d
 relocate_bootfs_page:
@@ -275,24 +274,69 @@ bootfs_clear:
         dex
         bne relocate_bootfs_page
 
-        ; Install the two boot-preloaded application slots after the verified
-        ; Z80 image has reached bank 1. Their staging ranges are in the
-        ; reclaimable bank-0 VIC shadow and are copied into low RAM that the
-        ; boot chain has vacated.
+        ; Relocate the remaining 5 KiB from the former bank-0 application
+        ; staging area. This gives bootfs one contiguous $A000-$D0FF extent.
+        lda #$af
+        sta bootfs_tail_source+2
+        lda #$bd
+        sta bootfs_tail_destination+2
+        ldx #$14
+relocate_bootfs_tail_page:
+        ldy #$00
+relocate_bootfs_tail_byte:
         lda #$00
         sta MMU_LCR_KERNEL_FLAT
-        lda #$af
-        sta low_copy_source+2
-        lda #$02
-        sta low_copy_destination+2
-        ldx #$0a
-        jsr copy_low_pages
-        lda #$b9
-        sta low_copy_source+2
-        lda #$12
-        sta low_copy_destination+2
-        ldx #$0a
-        jsr copy_low_pages
+bootfs_tail_source:
+        lda $af00,y
+        sta transfer_byte
+        lda #$00
+        sta MMU_LCR_WORKER_FLAT
+        lda transfer_byte
+bootfs_tail_destination:
+        sta $bd00,y
+        iny
+        bne relocate_bootfs_tail_byte
+        inc bootfs_tail_source+2
+        inc bootfs_tail_destination+2
+        dex
+        bne relocate_bootfs_tail_page
+
+        ; The compact high-memory module occupies the otherwise unused tail
+        ; of bootfs staging. Install its fixed $345-byte reservation before
+        ; the VIC shadow staging range is cleared.
+        lda #$00
+        sta MMU_LCR_KERNEL_FLAT
+        lda #$bb
+        sta module_source+1
+        lda #$bf
+        sta module_source+2
+        lda #$00
+        sta module_destination+1
+        lda #$e3
+        sta module_destination+2
+        ldx #$03
+copy_module_page:
+        ldy #$00
+copy_module_byte:
+module_source:
+        lda $bfbb,y
+module_destination:
+        sta $e300,y
+        iny
+        bne copy_module_byte
+        inc module_source+2
+        inc module_destination+2
+        dex
+        bne copy_module_page
+        ldy #$00
+copy_module_tail:
+        lda $c2bb,y
+        sta $e600,y
+        iny
+        cpy #$45
+        bne copy_module_tail
+        lda #$00
+        sta MMU_LCR_KERNEL_FLAT
 
         ; Install the bank-1 8502 cooperative-task gate above the MMU register
         ; hole. Its 203-byte reservation ends immediately before the existing
@@ -326,21 +370,6 @@ backup_service_page:
         ; The protected $F700 installer can now replace this executing
         ; $F800-$F9FF boot code without stack-page relocation.
         jmp final_install
-
-copy_low_pages:
-        ldy #$00
-copy_low_byte:
-low_copy_source:
-        lda $d400,y
-low_copy_destination:
-        sta $0200,y
-        iny
-        bne copy_low_byte
-        inc low_copy_source+2
-        inc low_copy_destination+2
-        dex
-        bne copy_low_pages
-        rts
 
 bank1_failure:
         lda #$02
@@ -391,13 +420,15 @@ TASK_ARGV_HI            = TASK_STATUS + 14
 TASK_HEADER             = TASK_STATUS + 16
 
 SYSCALL_TABLE           = $cf00
-BOOTFS_BASE             = $0300
-BOOTFS_LIMIT_HI         = $20
+BOOTFS_BASE             = $a000
+BOOTFS_LIMIT_HI         = $d1
 TASK_SLOT               = $0200
 PERSISTENT_SLOT         = $9000
 TASK_BACKUP             = $8000
-; cc65's none runtime exports its software-stack pointer at $02/$03.
-CC65_SP                 = $02
+; The resident image reserves four zero-page bytes before none.lib, while a
+; standalone UDEX begins its runtime reservation at $02.
+RESIDENT_CC65_SP        = $06
+USER_CC65_SP            = $02
 TASK_STACK_TOP          = $f7f0
 
 TASK_OK                 = $00
@@ -418,14 +449,22 @@ task_persistent_loader_entry:
 task_loader_entry:
         .assert task_loader_entry = $f913, error, "task loader entry moved"
         jmp task_load_foreground
+task_managed_loader_entry:
+        .assert task_managed_loader_entry = $f916, error, "managed loader entry moved"
+        jmp task_load_managed
 
 task_load_persistent:
         ; init passes a direct bank-0 pointer to the bootfs program name in AX.
+        ldy #$01
+        bne task_load_named
+task_load_managed:
+        ; The resident application manager supplies a direct name pointer.
+        ldy #$02
+task_load_named:
         sta task_command_load+1
         stx task_command_load+2
-        lda #$01
-        sta task_load_mode
-        bne task_initialize
+        sty task_load_mode
+        jmp task_initialize
 
 task_load_foreground:
         ; Adapt the cc65 call made by the shell. argv arrives in AX and argc is
@@ -433,11 +472,11 @@ task_load_foreground:
         sta TASK_ARGV_LO
         stx TASK_ARGV_HI
         ldy #$00
-        lda (CC65_SP),y
+        lda (RESIDENT_CC65_SP),y
         sta TASK_ARGC
-        inc CC65_SP
+        inc RESIDENT_CC65_SP
         bne task_arg_popped
-        inc CC65_SP+1
+        inc RESIDENT_CC65_SP+1
 task_arg_popped:
         lda #$00
         sta task_load_mode
@@ -792,11 +831,19 @@ task_header_load:
         lda TASK_HEADER+9
         ldx task_load_mode
         beq task_check_foreground_load
+        cpx #$01
+        bne task_check_managed_load
         cmp #$90
         beq :+
         jmp task_bad_load
 task_check_foreground_load:
         cmp #$02
+        beq :+
+        jmp task_bad_load
+task_check_managed_load:
+        cmp #$02
+        beq :+
+        cmp #$12
         beq :+
         jmp task_bad_load
 :
@@ -840,13 +887,6 @@ task_file_size_valid:
         bcc :+
         jmp task_bad_size
 :
-        ldx task_load_mode
-        beq task_check_foreground_size
-        cmp #$0a
-        bcc task_check_entry
-        beq :+
-        jmp task_bad_size
-task_check_foreground_size:
         cmp #$0a
         bcc task_check_entry
         beq :+
@@ -864,13 +904,7 @@ task_check_entry:
         sbc #$00
         sta task_entry_offset_lo
         lda TASK_HEADER+15
-        ldx task_load_mode
-        beq task_foreground_entry_base
-        sbc #$90
-        jmp task_entry_base_ready
-task_foreground_entry_base:
-        sbc #$02
-task_entry_base_ready:
+        sbc TASK_HEADER+9
         sta task_entry_offset_hi
         bcs :+
         jmp task_bad_entry
@@ -889,6 +923,8 @@ task_entry_base_ready:
 task_valid:
         lda task_load_mode
         beq task_save_foreground
+        cmp #$02
+        beq task_copy_managed
         lda #<PERSISTENT_SLOT
         sta task_copy_store_persistent+1
         lda #>PERSISTENT_SLOT
@@ -923,6 +959,20 @@ task_copy_store_persistent:
         dec task_remaining_lo
         jmp task_copy_persistent_byte
 
+task_copy_managed:
+        lda #$00
+        sta task_copy_store+1
+        lda TASK_HEADER+9
+        sta task_copy_store+2
+        jmp task_prepare_copy_count
+
+task_prepare_copy_count:
+        lda TASK_IMAGE_LO
+        sta task_remaining_lo
+        lda TASK_IMAGE_HI
+        sta task_remaining_hi
+        jmp task_copy_byte
+
 task_save_foreground:
         ; Save all ten pages of APP1 in unused bank-1 RAM.
         lda #$02
@@ -955,10 +1005,7 @@ task_save_store:
         sta task_copy_store+1
         lda #>TASK_SLOT
         sta task_copy_store+2
-        lda TASK_IMAGE_LO
-        sta task_remaining_lo
-        lda TASK_IMAGE_HI
-        sta task_remaining_hi
+        jmp task_prepare_copy_count
 task_copy_byte:
         lda task_remaining_lo
         ora task_remaining_hi
@@ -991,6 +1038,8 @@ task_copy_decrement_low:
 task_clear_bss:
         lda task_load_mode
         beq task_clear_bss_pointer_ready
+        cmp #$01
+        bne task_clear_bss_pointer_ready
         lda task_copy_store_persistent+1
         sta task_bss_store+1
         lda task_copy_store_persistent+2
@@ -1049,9 +1098,9 @@ task_save_zp:
         dex
         bpl task_save_zp
         lda #<TASK_STACK_TOP
-        sta CC65_SP
+        sta USER_CC65_SP
         lda #>TASK_STACK_TOP
-        sta CC65_SP+1
+        sta USER_CC65_SP+1
         lda #$02
         sta TASK_STATE
         lda TASK_ARGC

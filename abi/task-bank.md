@@ -1,7 +1,7 @@
 # Bank-1 8502 cooperative-task gate 0.2
 
 The persistent `/bin/ush` task cannot occupy bank-0 application slot 1 or 2:
-those slots currently retain `xclock` and `xwave`. It instead executes from
+those slots retain loader-managed `xclock` and `xwave` after first use. It instead executes from
 bank 1 at `$9000`, with its cc65 software stack growing down from `$EFF0`.
 The resident Z80 image remains at `$2000-$3FFF`, and the VIC-IIe window remains
 at `$4000-$7FFF`. Each physical bank reserves `$E2E2-$E2FF` for its own saved

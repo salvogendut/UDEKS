@@ -43,10 +43,10 @@ bounded interactive update, so handing it to the Z80 would cost more than it
 saves. `xwave` remains the first application intended to demonstrate measured
 Z80 computation with 8502 plotting.
 
-For the static bootstrap image, `xclock` has its own class-10 lifecycle adapter
-so the service registry can poll it independently. This is not a claim that an
-application belongs in the microkernel: the task loader will replace the
-adapter once application scheduling exists.
+`xclock` is a standalone UDEX image in bootfs. A small resident managed-app
+service loads it into the `$0200-$0BFF` slot on first invocation and calls its
+fixed lifecycle entry table thereafter. Its implementation and private state
+are no longer linked into the resident kernel image.
 
 ## Delivery gates
 

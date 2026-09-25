@@ -12,7 +12,7 @@
 
 MMU_LCR_KERNEL_IO       = $ff01
 MMU_LCR_WORKER_FLAT     = $ff04
-BOOTFS_BASE             = $0300
+BOOTFS_BASE             = $a000
 
 TREQ_BASE               = $f359
 TREQ_STATE              = TREQ_BASE+$06
@@ -323,7 +323,7 @@ bad_descriptor:
         jmp finish_error
 
 ; A is a zero-based bootfs directory index.  Each record is 24 bytes and the
-; first record begins at $0810.
+; first record begins at $A010.
 set_entry_address:
         sta ENTRY_ADDRESS_LOW
         asl a
@@ -335,7 +335,7 @@ set_entry_address:
         clc
         adc #$10
         sta ENTRY_ADDRESS_LOW
-        lda #$08
+        lda #>BOOTFS_BASE
         adc #$00
         sta ENTRY_ADDRESS_HIGH
         rts

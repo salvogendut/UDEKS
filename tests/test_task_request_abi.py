@@ -20,13 +20,15 @@ class TaskRequestAbiTests(unittest.TestCase):
 
     def test_dispatcher_uses_fixed_resident_and_common_vectors(self):
         syscalls = (ROOT / "src/8502/syscall_gate.s").read_text().lower()
+        app_gateway = (ROOT / "src/8502/app_gateway.s").read_text().lower()
         task_gate = (ROOT / "src/8502/task_bank_gateway.s").read_text().lower()
 
         self.assertIn("task_request_dispatch   = $cf30", task_gate)
         self.assertIn("_udeks_task_bank_request_gate:", task_gate)
         self.assertIn("jsr task_request_dispatch", task_gate)
         self.assertIn("_udeks_syscall_task_request_gate = $cf30", syscalls)
-        self.assertIn(".assert * <= $d000", syscalls)
+        self.assertIn(".include \"app_gateway.s\"", syscalls)
+        self.assertIn(".assert * <= $d000", app_gateway)
         self.assertIn('.segment "taskrequest"', syscalls)
 
     def test_initial_operations_follow_unix_descriptor_and_errno_values(self):

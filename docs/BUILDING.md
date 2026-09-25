@@ -56,10 +56,12 @@ minimal persistent `user/bin/ush.c`, and the bank-1 task stream runtime under
 runtime provides nonblocking `read`, bounded `write`, Unix descriptor numbers,
 and Linux errno values through the common task-request gate. `make
 user-programs` independently links the transient `cowsay`, `date`, and `ls`
-programs for the first loader-owned slot and `ush` at bank-1 `$9000`, wrapping
-each as UDEX. None resolves private kernel or shell symbols. The same target
-creates `build/user/bootfs.img`, installs all four UDEX files, and
-`make boot` mounts that immutable 7.25 KiB image as the early `/bin`. The
+programs for the first loader-owned slot, `ush` at bank-1 `$9000`, and the
+managed graphical `xclock` and `xwave` images at bank-0 `$0200` and `$1200`,
+wrapping each as UDEX. None resolves private moving kernel symbols; graphical
+apps use a fixed managed-app entry table. The same target creates
+`build/user/bootfs.img`, installs all six UDEX files, and `make boot` mounts
+that bounded image as the early `/bin`. The
 standalone `date` reads or sets the shared TI-compatible clock, so `xclock`
 observes the same time. After stage
 1 relocates bootfs, init asks the common-RAM loader to resolve, validate, and
@@ -89,13 +91,14 @@ VDC revision and RAM tier, and expansion presence for later service policy.
 artwork into row-major, MSB-first scanlines under `build/assets/`; the target
 kernel will consume those bytes without carrying an image decoder.
 
-The current transitional production image starts twelve statically linked
+The current transitional production image starts eleven statically linked
 modules in order: hardware capability discovery, CIA time, the bounded Z80
 worker, the VDC text console,
 the frame-paced pointer source, the passive VIC-IIe graphics service, the
 window manager, the polled keyboard source, the fixed-focus root-terminal
-editor, the native shell, and temporary cooperative `xclock` and `xwave`
-application adapters. Static placement is a bootstrap detail: each entry has a separate
+editor, the managed-app dispatcher, and init. Init polls the persistent
+`/bin/ush` task plus the resident compatibility shell; `xclock` and `xwave`
+themselves are no longer resident modules. Static placement is a bootstrap detail: each entry has a separate
 descriptor and lifecycle, and the display module does not drive window or
 application policy. The image stays at
 1 MHz, leaving the VIC-IIe active for the future graphics/second-display
@@ -131,12 +134,13 @@ statically linked into one bootstrap kernel payload even though each has an
 independent descriptor and lifecycle. Disk-loadable modules require the later
 allocator, filesystem, and executable loader milestones.
 
-The two initial applications are emitted as separate 2560-byte linker images
-and boot-preloaded into reclaimed low-memory slots at `$0200-$0BFF` and
-`$1200-$1BFF`. This removes their code and state from the resident `$2000`
-kernel range, but is not yet a filesystem loader or a process address space.
-No new application may be added to this bootstrap scheme; new programs live in
-`user/` and target the [UDEX executable format](../abi/executable.md).
+The two initial graphical applications are emitted as separate UDEX images in
+bootfs and loaded on first invocation into fixed, retained low-memory slots at
+`$0200-$0BFF` and `$1200-$1BFF`. This removes their code and state from the
+resident `$2000` kernel range while keeping lifecycle polling bounded. These
+fixed slots are transitional rather than general process address spaces. New
+programs live in `user/` and target the
+[UDEX executable format](../abi/executable.md).
 Their kernel-facing calls use the fixed
 [8502 syscall and entry ABI](../abi/syscalls.md).
 

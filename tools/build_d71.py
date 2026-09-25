@@ -22,12 +22,14 @@ BOOTFS_REQUEST_STAGING_SIZE = 0x0311
 TASK_BANK_GATE_STAGING_ADDRESS = 0xCE00
 TASK_BANK_GATE_STAGING_SIZE = 0x00CB
 Z80_SIZE = 0x2000
-APP_IMAGE_SIZE = 0x0A00
-APP1_STAGING_ADDRESS = 0xAF00
-APP2_STAGING_ADDRESS = 0xB900
+BOOTFS_TAIL_STAGING_ADDRESS = 0xAF00
+MODULE_STAGING_ADDRESS = 0xBFBB
+MODULE_STAGING_SIZE = 0x0345
 USH_ALLOCATION_SIZE = 0x0A00
 BOOTFS_Z80_OFFSET = 0x0300
-BOOTFS_SIZE = 0x1D00
+BOOTFS_Z80_SIZE = 0x1D00
+BOOTFS_TAIL_SIZE = 0x1400
+BOOTFS_SIZE = BOOTFS_Z80_SIZE + BOOTFS_TAIL_SIZE
 PAYLOAD_SIZE = 0xD400
 PAYLOAD_BLOCKS = PAYLOAD_SIZE // SECTOR_SIZE
 
@@ -120,27 +122,38 @@ def boot_locations(blocks: int):
             sector = 0
 
 
-def install_app_image(
-    kernel: bytearray, image: bytes, address: int, name: str
-) -> None:
-    if len(image) > APP_IMAGE_SIZE:
-        raise ValueError(f"{name} image exceeds its 2560-byte reservation")
-    offset = address - KERNEL_ADDRESS
-    if any(kernel[offset : offset + APP_IMAGE_SIZE]):
-        raise ValueError(f"{name} staging range overlaps resident kernel data")
-    kernel[offset : offset + APP_IMAGE_SIZE] = image.ljust(
-        APP_IMAGE_SIZE, b"\x00"
+def install_bootfs(z80: bytearray, kernel: bytearray, bootfs: bytes) -> None:
+    if len(bootfs) > BOOTFS_SIZE:
+        raise ValueError(f"bootfs exceeds its {BOOTFS_SIZE}-byte reservation")
+    padded = bootfs.ljust(BOOTFS_SIZE, b"\x00")
+    z80_region = z80[
+        BOOTFS_Z80_OFFSET : BOOTFS_Z80_OFFSET + BOOTFS_Z80_SIZE
+    ]
+    if any(z80_region):
+        raise ValueError("bootfs overlaps Z80 code or data")
+    tail_offset = BOOTFS_TAIL_STAGING_ADDRESS - KERNEL_ADDRESS
+    kernel_region = kernel[tail_offset : tail_offset + BOOTFS_TAIL_SIZE]
+    if any(kernel_region):
+        raise ValueError("bootfs tail staging overlaps resident kernel data")
+    z80[BOOTFS_Z80_OFFSET : BOOTFS_Z80_OFFSET + BOOTFS_Z80_SIZE] = (
+        padded[:BOOTFS_Z80_SIZE]
+    )
+    kernel[tail_offset : tail_offset + BOOTFS_TAIL_SIZE] = (
+        padded[BOOTFS_Z80_SIZE:]
     )
 
 
-def install_bootfs(z80: bytearray, bootfs: bytes) -> None:
-    if len(bootfs) > BOOTFS_SIZE:
-        raise ValueError(f"bootfs exceeds its {BOOTFS_SIZE}-byte reservation")
-    region = z80[BOOTFS_Z80_OFFSET : BOOTFS_Z80_OFFSET + BOOTFS_SIZE]
+def install_module(kernel: bytearray, module: bytes) -> None:
+    if len(module) > MODULE_STAGING_SIZE:
+        raise ValueError(
+            f"high-memory module exceeds its {MODULE_STAGING_SIZE}-byte reservation"
+        )
+    offset = MODULE_STAGING_ADDRESS - KERNEL_ADDRESS
+    region = kernel[offset : offset + MODULE_STAGING_SIZE]
     if any(region):
-        raise ValueError("bootfs overlaps Z80 code or data")
-    z80[BOOTFS_Z80_OFFSET : BOOTFS_Z80_OFFSET + BOOTFS_SIZE] = (
-        bootfs.ljust(BOOTFS_SIZE, b"\x00")
+        raise ValueError("high-memory module overlaps bootfs or kernel staging")
+    kernel[offset : offset + MODULE_STAGING_SIZE] = module.ljust(
+        MODULE_STAGING_SIZE, b"\x00"
     )
 
 
@@ -243,7 +256,7 @@ def install_task_bank_gateway(kernel: bytearray, gateway: bytes) -> None:
 
 def build_image(
     stage0: bytes, stage1: bytes, kernel: bytes, z80: bytes,
-    app1: bytes = b"", app2: bytes = b"", bootfs: bytes = b"",
+    bootfs: bytes = b"", module: bytes = b"",
     task_loader: bytes = b"", task_bank_gateway: bytes = b"",
     task_request_gateway: bytes = b"",
     bootfs_request_service: bytes = b"",
@@ -262,13 +275,12 @@ def build_image(
     if len(z80) > Z80_SIZE:
         raise ValueError("Z80 image exceeds its 8 KiB reservation")
 
-    staged_z80 = bytearray(z80.ljust(Z80_SIZE, b"\x00"))
-    install_bootfs(staged_z80, bootfs)
     staged_kernel = bytearray(
         kernel.ljust(Z80_STAGING_ADDRESS - KERNEL_ADDRESS, b"\x00")
     )
-    install_app_image(staged_kernel, app1, APP1_STAGING_ADDRESS, "application 1")
-    install_app_image(staged_kernel, app2, APP2_STAGING_ADDRESS, "application 2")
+    staged_z80 = bytearray(z80.ljust(Z80_SIZE, b"\x00"))
+    install_bootfs(staged_z80, staged_kernel, bootfs)
+    install_module(staged_kernel, module)
     validate_ush(bootfs, ush)
     install_task_request_gateway(staged_kernel, task_request_gateway)
     install_bootfs_request_service(staged_kernel, bootfs_request_service)
@@ -304,9 +316,8 @@ def main() -> None:
     parser.add_argument("--stage1", type=Path, required=True)
     parser.add_argument("--kernel", type=Path, required=True)
     parser.add_argument("--z80", type=Path, required=True)
-    parser.add_argument("--app1", type=Path)
-    parser.add_argument("--app2", type=Path)
     parser.add_argument("--bootfs", type=Path)
+    parser.add_argument("--module", type=Path)
     parser.add_argument("--task-loader", type=Path)
     parser.add_argument("--task-bank-gateway", type=Path)
     parser.add_argument("--task-request-gateway", type=Path)
@@ -321,9 +332,8 @@ def main() -> None:
             args.stage1.read_bytes(),
             args.kernel.read_bytes(),
             args.z80.read_bytes(),
-            b"" if args.app1 is None else args.app1.read_bytes(),
-            b"" if args.app2 is None else args.app2.read_bytes(),
             b"" if args.bootfs is None else args.bootfs.read_bytes(),
+            b"" if args.module is None else args.module.read_bytes(),
             b"" if args.task_loader is None else args.task_loader.read_bytes(),
             b"" if args.task_bank_gateway is None else args.task_bank_gateway.read_bytes(),
             b"" if args.task_request_gateway is None else args.task_request_gateway.read_bytes(),

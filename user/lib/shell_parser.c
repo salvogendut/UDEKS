@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "udeks/shell.h"
 
+#pragma code-name(push, "MODULECODE")
+
 static unsigned char is_separator(unsigned char value)
 {
     return value == ' ' || value == '\t';
@@ -36,3 +38,5 @@ unsigned char udeks_shell_tokenize(
         }
     }
 }
+
+#pragma code-name(pop)

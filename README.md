@@ -48,8 +48,9 @@ See [LICENSE](LICENSE).
 ## Current prototype
 
 - A native-autoboot D71 starts the assembly-oriented 8502 microkernel, its
-  modular services, two boot-preloaded application banks, and the stock-timing
-  Z80 worker.
+  modular services, a loader-managed boot filesystem, and the stock-timing Z80
+  worker. Standalone `xclock` and `xwave` UDEX images are loaded into retained
+  application slots on first invocation.
 - The VDC hosts a retained black-on-yellow root console with mixed-case input,
   bounded command history, Unix-like standard streams, Bash-like command
   names, foreground `Ctrl+C`, and background jobs launched with `&`.
@@ -62,7 +63,9 @@ See [LICENSE](LICENSE).
   repaint scaled content after release.
 - `xclock` supplies the first C graphical client. `xwave` visibly divides work
   between the CPUs: the Z80 computes bounded rows of a radial sinc surface and
-  the 8502 projects and draws its two-axis isometric wireframe.
+  the 8502 projects and draws its two-axis isometric wireframe. Computed heights
+  are cached, so move and stacking repaints do not reacquire the Z80; resizing
+  invalidates and recomputes the surface.
 - The current statically linked services are transitional. ADR 0007 freezes a
   smaller resident-core boundary; new commands such as `cowsay` live under
   `user/` and must arrive through the executable-loader path.
@@ -124,7 +127,7 @@ docs/                Architecture plan, roadmap, and decisions
 include/udeks/        Public C headers shared across CPU builds
 mk/                   Make configuration
 src/8502/             8502 C and ca65 sources
-src/apps/             Boot-preloaded graphical application modules
+src/apps/             Standalone graphical UDEX application sources
 src/boot/             Native C128 stage-0/stage-1 bootstrap
 src/kernel/           Executive and service-registry core
 src/services/         Predominantly C system-service modules

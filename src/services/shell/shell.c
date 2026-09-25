@@ -31,13 +31,10 @@
 #define BACKGROUND_XCLOCK        0x01u
 #define BACKGROUND_XWAVE         0x02u
 
-typedef unsigned char (*command_handler)(
-    unsigned char count, unsigned char **arguments);
-
 struct shell_command {
     const unsigned char *name;
     const unsigned char *summary;
-    command_handler handler;
+    unsigned char (*handler)(void);
 };
 
 #pragma bss-name(push, "HIGHBSS")
@@ -48,6 +45,7 @@ unsigned char udeks_shell_foreground_job;
 static unsigned char launch_background;
 static unsigned char foreground_interrupted;
 #pragma bss-name(pop)
+static unsigned char argument_count;
 static unsigned char background_jobs;
 
 #define command_line udeks_shell_command_line
@@ -112,21 +110,17 @@ static void publish_background_jobs(void)
     STATUS_BYTE(STATUS_BACKGROUND_JOBS) = count;
 }
 
-static unsigned char command_clear(
-    unsigned char count, unsigned char **arguments)
+static unsigned char command_clear(void)
 {
-    (void)count;
-    (void)arguments;
     udeks_stream_write_byte(UDEKS_STDOUT, '\f');
     return UDEKS_SHELL_OK;
 }
 
-static unsigned char command_echo(
-    unsigned char count, unsigned char **arguments)
+static unsigned char command_echo(void)
 {
     unsigned char index;
 
-    for (index = 1; index < count; ++index) {
+    for (index = 1; index < argument_count; ++index) {
         if (index != 1) {
             udeks_stream_write_byte(UDEKS_STDOUT, ' ');
         }
@@ -136,10 +130,9 @@ static unsigned char command_echo(
     return UDEKS_SHELL_OK;
 }
 
-static unsigned char command_uname(
-    unsigned char count, unsigned char **arguments)
+static unsigned char command_uname(void)
 {
-    if (count > 1 && strings_equal(
+    if (argument_count > 1 && strings_equal(
             arguments[1], (const unsigned char *)"-a")) {
         write_line(
             UDEKS_STDOUT,
@@ -150,13 +143,10 @@ static unsigned char command_uname(
     return UDEKS_SHELL_OK;
 }
 
-static unsigned char command_lshw(
-    unsigned char count, unsigned char **arguments)
+static unsigned char command_lshw(void)
 {
     volatile unsigned char *capability;
 
-    (void)count;
-    (void)arguments;
     capability = (volatile unsigned char *)UDEKS_CAPABILITY_STATUS_BASE;
     write_text(UDEKS_STDOUT, (const unsigned char *)"Video: ");
     write_text(UDEKS_STDOUT, capability[7] == UDEKS_VIDEO_PAL ?
@@ -177,14 +167,11 @@ static unsigned char command_lshw(
     return UDEKS_SHELL_OK;
 }
 
-static unsigned char command_lsmod(
-    unsigned char count, unsigned char **arguments)
+static unsigned char command_lsmod(void)
 {
     volatile unsigned char *registry;
     unsigned int polls;
 
-    (void)count;
-    (void)arguments;
     registry = (volatile unsigned char *)UDEKS_SERVICE_STATUS_BASE;
     write_text(UDEKS_STDOUT, (const unsigned char *)"Modules: ");
     write_decimal(UDEKS_STDOUT, registry[8]);
@@ -199,13 +186,10 @@ static unsigned char command_lsmod(
     return UDEKS_SHELL_OK;
 }
 
-static unsigned char command_lscpu(
-    unsigned char count, unsigned char **arguments)
+static unsigned char command_lscpu(void)
 {
     volatile unsigned char *worker;
 
-    (void)count;
-    (void)arguments;
     worker = (volatile unsigned char *)UDEKS_Z80_WORKER_STATUS_BASE;
     write_line(UDEKS_STDOUT, (const unsigned char *)"8502: resident executive");
     if (worker[5] == UDEKS_Z80_WORKER_READY) {
@@ -221,8 +205,7 @@ static unsigned char command_lscpu(
     return UDEKS_SHELL_OK;
 }
 
-static unsigned char command_z80ctl(
-    unsigned char count, unsigned char **arguments)
+static unsigned char command_z80ctl(void)
 {
     volatile unsigned char *worker;
     unsigned char status;
@@ -230,7 +213,7 @@ static unsigned char command_z80ctl(
     unsigned int transactions;
 
     worker = (volatile unsigned char *)UDEKS_Z80_WORKER_STATUS_BASE;
-    if (count == 2 && strings_equal(
+    if (argument_count == 2 && strings_equal(
             arguments[1], (const unsigned char *)"test")) {
         status = udeks_z80_submit(UDEKS_MB_OP_NOP, 0, 0, 0, &result);
         if (status == UDEKS_Z80_OK && result == 0) {
@@ -242,7 +225,7 @@ static unsigned char command_z80ctl(
         }
         return UDEKS_SHELL_OK;
     }
-    if (count == 1 || strings_equal(
+    if (argument_count == 1 || strings_equal(
             arguments[1], (const unsigned char *)"status")) {
         write_text(UDEKS_STDOUT, (const unsigned char *)"State: ");
         write_line(UDEKS_STDOUT, worker[5] == UDEKS_Z80_WORKER_READY ?
@@ -260,12 +243,11 @@ static unsigned char command_z80ctl(
     return UDEKS_SHELL_OK;
 }
 
-static unsigned char command_xinit(
-    unsigned char count, unsigned char **arguments)
+static unsigned char command_xinit(void)
 {
     unsigned char result;
 
-    if (count == 2 && strings_equal(
+    if (argument_count == 2 && strings_equal(
             arguments[1], (const unsigned char *)"-q")) {
         if (udeks_xclock_is_running() != 0) {
             udeks_xclock_stop();
@@ -289,7 +271,7 @@ static unsigned char command_xinit(
         }
         return UDEKS_SHELL_OK;
     }
-    if (count != 1) {
+    if (argument_count != 1) {
         write_line(UDEKS_STDERR, (const unsigned char *)"Usage: xinit [-q]");
         return UDEKS_SHELL_OK;
     }
@@ -306,12 +288,11 @@ static unsigned char command_xinit(
     return UDEKS_SHELL_OK;
 }
 
-static unsigned char command_xclock(
-    unsigned char count, unsigned char **arguments)
+static unsigned char command_xclock(void)
 {
     unsigned char result;
 
-    if (count == 2 && strings_equal(
+    if (argument_count == 2 && strings_equal(
             arguments[1], (const unsigned char *)"-q")) {
         result = udeks_xclock_stop();
         if (result == UDEKS_XCLOCK_OK) {
@@ -323,7 +304,7 @@ static unsigned char command_xclock(
         }
         return UDEKS_SHELL_OK;
     }
-    if (count != 1) {
+    if (argument_count != 1) {
         write_line(UDEKS_STDERR, (const unsigned char *)"Usage: xclock [-q]");
         return UDEKS_SHELL_OK;
     }
@@ -355,12 +336,11 @@ static unsigned char command_xclock(
     return UDEKS_SHELL_OK;
 }
 
-static unsigned char command_xwave(
-    unsigned char count, unsigned char **arguments)
+static unsigned char command_xwave(void)
 {
     unsigned char result;
 
-    if (count == 2 && strings_equal(
+    if (argument_count == 2 && strings_equal(
             arguments[1], (const unsigned char *)"-q")) {
         result = udeks_xwave_stop();
         if (result == UDEKS_XWAVE_OK) {
@@ -373,7 +353,7 @@ static unsigned char command_xwave(
                 (const unsigned char *)"xwave: not running");
         return UDEKS_SHELL_OK;
     }
-    if (count != 1) {
+    if (argument_count != 1) {
         write_line(UDEKS_STDERR, (const unsigned char *)"Usage: xwave [-q] [&]");
         return UDEKS_SHELL_OK;
     }
@@ -403,8 +383,7 @@ static unsigned char command_xwave(
     return UDEKS_SHELL_OK;
 }
 
-static unsigned char command_help(
-    unsigned char count, unsigned char **arguments);
+static unsigned char command_help(void);
 
 static const struct shell_command commands[] = {
     {(const unsigned char *)"help", (const unsigned char *)"List commands", command_help},
@@ -422,13 +401,10 @@ static const struct shell_command commands[] = {
 
 #define COMMAND_COUNT ((unsigned char)(sizeof(commands) / sizeof(commands[0])))
 
-static unsigned char command_help(
-    unsigned char count, unsigned char **arguments)
+static unsigned char command_help(void)
 {
     unsigned char index;
 
-    (void)count;
-    (void)arguments;
     for (index = 0; index < COMMAND_COUNT; ++index) {
         write_text(UDEKS_STDOUT, commands[index].name);
         write_text(UDEKS_STDOUT, (const unsigned char *)" - ");
@@ -485,7 +461,8 @@ unsigned char udeks_shell_dispatch_line(void)
         if (strings_equal(
                 arguments[0], commands[index].name)) {
             STATUS_BYTE(9) = index;
-            result = commands[index].handler(count, arguments);
+            argument_count = count;
+            result = commands[index].handler();
             STATUS_BYTE(10) = result;
             increment_counter(STATUS_COMMANDS_LO);
             return result;

@@ -31,7 +31,9 @@
 #define UDEKS_MODULE_HIGH_BSS_LIMIT   0xE2E2u
 #define UDEKS_TASK_CONTEXT_BASE       0xE2E2u
 #define UDEKS_TASK_CONTEXT_LIMIT      0xE300u
-#define UDEKS_C_STACK_BOTTOM          0xE300u
+#define UDEKS_MODULE_CODE_BASE        0xE300u
+#define UDEKS_MODULE_CODE_LIMIT       0xE645u
+#define UDEKS_C_STACK_BOTTOM          0xE700u
 #define UDEKS_C_STACK_TOP             0xEFF0u
 
 /* Bank-1 resident worker and the initial VIC-visible 16 KiB reservation. */
@@ -42,13 +44,9 @@
 #define UDEKS_Z80_STACK_BOTTOM        0xF2B0u
 #define UDEKS_Z80_STACK_TOP           0xF300u
 
-/* Boot-only images occupy the reclaimable bank-0 VIC shadow. */
-#define UDEKS_APP1_STAGING_BASE       0xAF00u
-#define UDEKS_APP2_STAGING_BASE       0xB900u
-
 /* Bank-1 bootfs image and the first transient task-slot backup. */
-#define UDEKS_BOOTFS_BASE             0x0300u
-#define UDEKS_BOOTFS_LIMIT            0x2000u
+#define UDEKS_BOOTFS_BASE             0xA000u
+#define UDEKS_BOOTFS_LIMIT            0xD100u
 #define UDEKS_USH_BASE                0x9000u
 #define UDEKS_USH_LIMIT               0x9A00u
 #define UDEKS_TASK_BACKUP_BASE        0x8000u

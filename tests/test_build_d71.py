@@ -8,13 +8,12 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
 from build_d71 import (
-    APP1_STAGING_ADDRESS,
-    APP2_STAGING_ADDRESS,
-    APP_IMAGE_SIZE,
     BOOTFS_SIZE,
     BOOTFS_Z80_OFFSET,
     BOOTFS_REQUEST_STAGING_ADDRESS,
     BOOTFS_REQUEST_STAGING_SIZE,
+    MODULE_STAGING_ADDRESS,
+    MODULE_STAGING_SIZE,
     PAYLOAD_BLOCKS,
     PAYLOAD_SIZE,
     SECTOR_SIZE,
@@ -78,24 +77,19 @@ class BuildD71Tests(unittest.TestCase):
         self.assertEqual(image[bam + 8], 0)
         self.assertEqual(image[bam + 44], 18)
 
-    def test_application_slots_are_packed_into_vic_shadow_staging(self):
-        app1 = b"clock"
-        app2 = b"wave"
-        image = build_image(stage0(), b"", b"", b"", app1, app2)
+    def test_high_memory_module_is_packed_after_bootfs_data(self):
+        module = b"module"
+        image = build_image(stage0(), b"", b"", b"", module=module)
         payload = b"".join(
             image[sector_offset(track, sector) : sector_offset(track, sector) + SECTOR_SIZE]
             for track, sector in list(boot_locations(1 + PAYLOAD_BLOCKS))[1:]
         )
-        app1_offset = APP1_STAGING_ADDRESS - 0x1C00
-        app2_offset = APP2_STAGING_ADDRESS - 0x1C00
-        self.assertEqual(payload[app1_offset : app1_offset + len(app1)], app1)
-        self.assertEqual(payload[app2_offset : app2_offset + len(app2)], app2)
+        offset = MODULE_STAGING_ADDRESS - 0x1C00
+        self.assertEqual(payload[offset : offset + len(module)], module)
 
     def test_bootfs_is_packed_into_unused_z80_staging(self):
         bootfs = b"UBFS" + bytes(20)
-        image = build_image(
-            stage0(), b"", b"", b"", b"clock", b"wave", bootfs
-        )
+        image = build_image(stage0(), b"", b"", b"", bootfs=bootfs)
         payload = b"".join(
             image[
                 sector_offset(track, sector) :
@@ -164,7 +158,7 @@ class BuildD71Tests(unittest.TestCase):
     def test_task_loader_is_staged_in_reclaimable_vic_shadow(self):
         loader = b"task-loader"
         image = build_image(
-            stage0(), b"", b"", b"", b"", b"", b"", loader
+            stage0(), b"", b"", b"", task_loader=loader
         )
         payload = b"".join(
             image[
@@ -176,27 +170,29 @@ class BuildD71Tests(unittest.TestCase):
         offset = TASK_LOADER_STAGING_ADDRESS - 0x1C00
         self.assertEqual(payload[offset : offset + len(loader)], loader)
 
-    def test_rejects_application_staging_collision(self):
-        kernel = bytearray(APP1_STAGING_ADDRESS - 0x2000 + 1)
-        kernel[-1] = 1
-        with self.assertRaisesRegex(ValueError, "overlaps resident kernel"):
-            build_image(stage0(), b"", bytes(kernel), b"", b"app")
+    def test_rejects_module_staging_collision(self):
+        bootfs = bytes(BOOTFS_SIZE - MODULE_STAGING_SIZE) + b"x"
+        with self.assertRaisesRegex(ValueError, "overlaps bootfs"):
+            build_image(stage0(), b"", b"", b"", bootfs=bootfs, module=b"m")
 
-    def test_rejects_oversize_application(self):
-        with self.assertRaisesRegex(ValueError, "2560-byte"):
-            build_image(stage0(), b"", b"", b"", bytes(APP_IMAGE_SIZE + 1))
+    def test_rejects_oversize_module(self):
+        with self.assertRaisesRegex(ValueError, "837-byte"):
+            build_image(
+                stage0(), b"", b"", b"",
+                module=bytes(MODULE_STAGING_SIZE + 1),
+            )
 
     def test_rejects_oversize_bootfs(self):
-        with self.assertRaisesRegex(ValueError, "7424-byte"):
+        with self.assertRaisesRegex(ValueError, "12544-byte"):
             build_image(
-                stage0(), b"", b"", b"", b"", b"", bytes(BOOTFS_SIZE + 1)
+                stage0(), b"", b"", b"", bootfs=bytes(BOOTFS_SIZE + 1)
             )
 
     def test_rejects_oversize_task_loader(self):
         with self.assertRaisesRegex(ValueError, "1520-byte"):
             build_image(
-                stage0(), b"", b"", b"", b"", b"", b"",
-                bytes(TASK_LOADER_STAGING_SIZE + 1),
+                stage0(), b"", b"", b"",
+                task_loader=bytes(TASK_LOADER_STAGING_SIZE + 1),
             )
 
     def test_bootfs_request_service_is_staged_in_vic_shadow(self):
@@ -221,7 +217,7 @@ class BuildD71Tests(unittest.TestCase):
     def test_task_bank_gateway_is_staged_below_syscall_page(self):
         gateway = b"UTG1" + bytes(12)
         image = build_image(
-            stage0(), b"", b"", b"", b"", b"", b"", b"", gateway
+            stage0(), b"", b"", b"", task_bank_gateway=gateway
         )
         payload = b"".join(
             image[
@@ -236,8 +232,8 @@ class BuildD71Tests(unittest.TestCase):
     def test_rejects_oversize_task_bank_gateway(self):
         with self.assertRaisesRegex(ValueError, "203-byte"):
             build_image(
-                stage0(), b"", b"", b"", b"", b"", b"", b"",
-                bytes(TASK_BANK_GATE_STAGING_SIZE + 1),
+                stage0(), b"", b"", b"",
+                task_bank_gateway=bytes(TASK_BANK_GATE_STAGING_SIZE + 1),
             )
 
     def test_rejects_header_layout_drift(self):

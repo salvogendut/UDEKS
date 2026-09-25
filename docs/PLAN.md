@@ -179,15 +179,16 @@ the assigned module-workspace and C-stack region. Bank 1 initially reserves
 The VIC-IIe module currently owns `$E000-$E18F` for its 200-entry scanline
 offset table, `$E190-$E1AF` for its dirty-page map, and `$E1B0-$E1B7` for clip
 state. `$E1B8-$E2E1` holds linker-bounded module-private high BSS,
-`$E2E2-$E2FF` holds the selected bank's cc65 zero-page context, and the C
-software stack is constrained to `$E300-$EFF0`. This is an explicit module
-workspace assignment, not expansion of the ordinary resident kernel image.
-The retained root-console state occupies the linker-bounded `$0C00-$11FF`
-`LOWBSS` region after the native stage-1 loader has vacated it. Boot-preloaded
-application slots occupy `$0200-$0BFF` and `$1200-$1BFF`; their disk bytes ride
-in unused portions of the bank-0 Z80 staging payload and stage 1 installs them
-after worker-image verification. Each reset path initializes its complete
-allocation before first use.
+`$E2E2-$E2FF` holds the selected bank's cc65 zero-page context, and the compact
+resident module occupies `$E300-$E644`. A guard extends through `$E6FF`, and
+the C software stack is constrained to `$E700-$EFF0`. These are explicit
+module workspace assignments, not expansion of the ordinary resident kernel
+image. The retained root-console state occupies the linker-bounded
+`$0C00-$11FF` `LOWBSS` region after the native stage-1 loader has vacated it.
+Loader-managed application slots occupy `$0200-$0BFF` and `$1200-$1BFF`;
+`xclock` and `xwave` are copied from bootfs on first invocation and retained
+for cooperative polling. Each reset or first-use path initializes its complete
+allocation before use.
 
 The final map must define and validate:
 

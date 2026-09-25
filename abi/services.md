@@ -29,13 +29,12 @@ The initial flags are:
 Initial service classes are console (`1`), hardware capability discovery
 (`2`), display (`3`), machine policy/time (`4`), input (`5`), terminal policy
 (`6`), native shell (`7`), bounded Z80 worker (`8`), window manager (`9`),
-temporary static-application adapter (`10`), and init/session policy (`11`).
+managed-application dispatcher (`10`), and init/session policy (`11`).
 The default image starts capability discovery, CIA time, the Z80 worker, VDC
 text console, pointer input, the VIC-IIe graphics service, window manager,
-keyboard, root-terminal policy, init, and the temporary `xclock` and `xwave`
-application adapters in that order. Init currently delegates the root session
-to the resident bootstrap shell; it will instead load `/bin/ush` once the
-user-task stream and yield interfaces exist. The system remains at 1 MHz so
+keyboard, root-terminal policy, the managed-app dispatcher, and init in that
+order. Init loads and polls `/bin/ush` while retaining the resident shell only
+as a compatibility dispatcher for commands not yet extracted. The system remains at 1 MHz so
 the VIC-IIe stays available.
 The machine-clock and VDC framebuffer descriptors remain optional modules:
 2 MHz requires an explicit VIC-blanking policy, and VDC bitmap mode requires
@@ -69,8 +68,9 @@ Static linking during bring-up does not merge module responsibilities. ADR
 policy or applications to the resident image. The
 VIC-IIe display module owns hardware state and its 8502 assembly transport;
 the window module owns composition and pointer policy; `xclock` and `xwave`
-are applications. Their adapters exist only to obtain a cooperative poll
-until the task loader and scheduler replace it.
+are standalone UDEX applications. A compact class-10 dispatcher loads them on
+first use and calls their fixed lifecycle tables until a general scheduler
+replaces the retained slots.
 
 The registry publishes this 24-byte `SREG` diagnostic record at `$F090`:
 

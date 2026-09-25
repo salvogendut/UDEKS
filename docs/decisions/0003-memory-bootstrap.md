@@ -45,47 +45,58 @@ The initial physical allocation is:
 | Logical range | Bank 0 | Bank 1 / non-common view |
 |---|---|---|
 | `$0000-$01FF` | Initial executive zero page and stack | Relocatable task-page pool |
-| `$0200-$02FF` | Boot-preloaded application slot 1 | Task/worker low workspace |
-| `$0300-$0AFF` | Boot-preloaded application slot 1 | Read-only bootfs |
-| `$0B00-$0BFF` | Application slot 1 after stage 0 exits | Read-only bootfs |
-| `$0C00-$11FF` | Reclaimed root-console and terminal state after stage 1 exits | Read-only bootfs |
-| `$1200-$1BFF` | Boot-preloaded application slot 2 | Read-only bootfs |
-| `$1C00-$1FFF` | Stage-1 loader | Read-only bootfs |
+| `$0200-$0BFF` | Loader-managed graphical application slot 1 | Task/worker low workspace |
+| `$0C00-$11FF` | Reclaimed root-console and terminal state after stage 1 exits | Task/worker workspace |
+| `$1200-$1BFF` | Loader-managed graphical application slot 2 | Task/worker workspace |
+| `$1C00-$1FFF` | Stage-1 loader, reclaimed after boot | Task/worker workspace |
 | `$2000-$3FFF` | 8502 kernel image | Resident Z80 dispatcher and code |
 | `$4000-$7FFF` | 8502 kernel image | Reserved 16 KiB VIC-visible window |
-| `$8000-$CFFF` | 8502 kernel image | Application, worker, and transfer data |
-| `$D000-$DFFF` | I/O normally; bank-0 RAM in flat profile | I/O or bank-1 RAM by profile |
+| `$8000-$89FF` | 8502 kernel image | Transient application-slot backup |
+| `$8A00-$8FFF` | 8502 kernel image | Available task memory |
+| `$9000-$99FF` | 8502 kernel image | Persistent `/bin/ush` allocation |
+| `$9A00-$9FFF` | 8502 kernel image | Available task memory |
+| `$A000-$CFFF` | 8502 kernel image | Read-only bootfs |
+| `$D000-$D0FF` | I/O normally; bank-0 RAM in flat profile | Bootfs tail in flat profile; I/O otherwise |
+| `$D100-$DFFF` | I/O normally; bank-0 RAM in flat profile | I/O or bank-1 RAM by profile |
 | `$E000-$E18F` | VIC-IIe module scanline-offset table | Worker data |
 | `$E190-$E1AF` | VIC-IIe module dirty-page map | Worker data |
 | `$E1B0-$E1B7` | VIC-IIe module clip state | Worker data |
 | `$E1B8-$E2E1` | Statically linked module-private high BSS | Worker data |
 | `$E2E2-$E2FF` | Selected-bank cc65 zero-page context | Task/worker context |
-| `$E300-$EFFF` | 8502 C software stack | Worker data and stack |
+| `$E300-$E644` | Compact resident module code and read-only data | Worker data |
+| `$E645-$E6FF` | Module/stack guard | Worker data |
+| `$E700-$EFFF` | 8502 C software stack | Worker data and stack |
 | `$F000-$FFFF` | 4 KiB common RAM | Bank-0 common RAM replaces bank 1 |
 
 The bank-0 kernel linker range is `$2000-$CFFF`; it cannot grow into I/O or
 common RAM. The first high-memory assignment gives `$E000-$E1B7` to the
 VIC-IIe module's scanline table, dirty-page map, and clip state, and reserves
-`$E1B8-$E2E1` for bounded module-private BSS, `$E2E2-$E2FF` for the selected
-bank's cc65 zero-page context, and `$E300-$EFF0` for the downward-growing 8502
-C software stack. The resident Z80 stack instead occupies reserved common RAM
-at `$F2B0-$F2FF`, with SP initialized to `$F300`. Its live call frames must
-survive both MMU profile changes and execution of the persistent bank-1 task
-between worker leases.
+`$E1B8-$E2E1` for bounded module-private BSS and `$E2E2-$E2FF` for the selected
+bank's cc65 zero-page context. The compact high-memory module occupies
+`$E300-$E644`, a guard extends through `$E6FF`, and the downward-growing 8502 C
+software stack uses `$E700-$EFF0`. The resident Z80 stack instead occupies
+reserved common RAM at `$F2B0-$F2FF`, with SP initialized to `$F300`. Its live
+call frames must survive both MMU profile changes and execution of the
+persistent bank-1 task between worker leases.
 
-Stage 1 transfers control from `$1C00-$1FFF` and never returns. Before doing
-so it installs two 2560-byte application images from bank-0 staging ranges
-`$AF00-$B8FF` and `$B900-$C2FF` into `$0200-$0BFF` and `$1200-$1BFF`.
-After it transfers control, init resolves `/bin/ush` by name and asks the
-resident common-RAM loader to validate and allocate it in bank-1
-`$9000-$99FF`. The shell is therefore no longer tied to a bootfs directory
-position or copied by stage 1. The boot-only bank-0 staging ranges are
-reclaimed by the VIC shadow after initialization.
+Stage 1 transfers control from `$1C00-$1FFF` and never returns. It does not
+preload graphical programs. On first invocation, the managed loader validates
+`/bin/xclock` or `/bin/xwave`, copies it into `$0200-$0BFF` or `$1200-$1BFF`,
+clears its declared BSS, calls its initialization entry, and retains the image
+for cooperative lifecycle polling. Init independently resolves `/bin/ush` by
+name and asks the resident common-RAM loader to allocate it in bank-1
+`$9000-$99FF`.
 
-The 7.25 KiB bootfs travels in the unused `$2300-$3FFF` portion of the staged Z80
-window. The common gateway relocates it to bank-1 `$0300-$1FFF` and clears the
-source pages before allowing the Z80 worker to run. Bank 0 uses the same
-logical addresses independently for resident low BSS and application slot 2.
+The bounded bootfs uses a `$3100`-byte relocation reservation and currently
+contains six UDEX files. Its first `$1D00` bytes travel in the unused
+`$2300-$3FFF` portion of the staged Z80 window; its tail travels in bank-0
+`$AF00-$C2FF`. The common gateway relocates both pieces into bank-1
+`$A000-$D0FF`, then clears the source before allowing the Z80 worker or VIC
+shadow to use those regions. The compact module image is staged in unused
+padding at `$BFBB-$C2FF` and installed at `$E300-$E644` first.
+
+Bank 0 uses the same low logical addresses independently for resident low BSS
+and the two managed application slots.
 The kernel reclaims the adjacent `$0C00-$11FF` bootstrap/KERNAL workspace as a linker-
 bounded `LOWBSS` segment. The retained root-console module owns its initial
 allocation there and explicitly initializes every byte in

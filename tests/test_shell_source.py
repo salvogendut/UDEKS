@@ -13,7 +13,7 @@ class ShellSourceTests(unittest.TestCase):
         terminal = table.index(".addr _udeks_root_terminal_service_descriptor")
         init = table.index(".addr _udeks_init_service_descriptor")
         self.assertLess(terminal, init)
-        self.assertIn(".byte $0c", table)
+        self.assertIn(".byte $0b", table)
 
     def test_init_owns_the_transitional_root_shell_session(self):
         descriptor = (ROOT / "src/services/init/descriptor.s").read_text(
@@ -42,7 +42,8 @@ class ShellSourceTests(unittest.TestCase):
             "xwave",
         ):
             self.assertIn(f'*)"{command}"', source)
-        self.assertIn("unsigned char count, unsigned char **arguments", source)
+        self.assertIn("static unsigned char argument_count;", source)
+        self.assertIn("result = commands[index].handler();", source)
         self.assertIn("UDEKS_STDOUT", source)
         self.assertIn("UDEKS_STDERR", source)
         self.assertIn("udeks_z80_submit", source)

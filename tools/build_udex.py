@@ -14,7 +14,8 @@ ABI_MINOR = 1
 HEADER_SIZE = 16
 CPU_IDS = {"8502": 1, "z80": 2}
 FLAG_PERSISTENT_POLL = 0x01
-SUPPORTED_FLAGS = FLAG_PERSISTENT_POLL
+FLAG_MANAGED_APP = 0x02
+SUPPORTED_FLAGS = FLAG_PERSISTENT_POLL | FLAG_MANAGED_APP
 
 
 def parse_number(text: str) -> int:
@@ -34,6 +35,8 @@ def build_executable(
         raise ValueError("unsupported executable CPU")
     if flags & ~SUPPORTED_FLAGS:
         raise ValueError("format 0.1 executable has unsupported flags")
+    if flags == SUPPORTED_FLAGS:
+        raise ValueError("persistent and managed application flags conflict")
     if not image or len(image) > 0xFFFF:
         raise ValueError("executable image size must be 1..65535 bytes")
     if not 0 <= load_address <= 0xFFFF:

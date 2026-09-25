@@ -39,8 +39,8 @@ drag updates; dirty-page commits invalidate it because they reuse the common
 gateway workspace.
 
 The display service does not drive compositor or application policy. The
-window manager and the temporary `xclock` polling adapter have independent
-service descriptors and lifecycle entries.
+window manager and loader-managed graphical applications have independent
+lifecycle ownership.
 
 The initial pointer is a compact, unexpanded, high-resolution foreground
 sprite, approximately half the original X design, at the center of the visible

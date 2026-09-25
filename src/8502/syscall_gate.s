@@ -87,6 +87,20 @@ _udeks_syscall_task_request_gate:
         ; $CF40: A=hour, X=minute, Y=second. Set the shared service clock and
         ; CIA1 TOD; the time service mirrors it into BASIC's TI counter.
 _udeks_syscall_clock_set_gate:
+        jmp clock_set_runtime
+        .res 13, $ea
+
+        .assert _udeks_syscall_table = $cf00, error, "syscall table moved"
+        .assert _udeks_syscall_write_byte_gate = $cf10, error, "write-byte gate moved"
+        .assert _udeks_syscall_write_gate = $cf20, error, "write gate moved"
+        .assert _udeks_syscall_task_request_gate = $cf30, error, "task request gate moved"
+        .assert _udeks_syscall_clock_set_gate = $cf40, error, "clock-set gate moved"
+        .assert * = $cf50, error, "base syscall vectors exceed reserved slots"
+
+        .include "app_gateway.s"
+
+        .segment "CODE"
+clock_set_runtime:
         cmp #$18
         bcs clock_set_invalid
         cpx #$3c
@@ -193,14 +207,6 @@ clock_add_tenth:
 clock_sync_done:
         rts
 
-        .assert _udeks_syscall_table = $cf00, error, "syscall table moved"
-        .assert _udeks_syscall_write_byte_gate = $cf10, error, "write-byte gate moved"
-        .assert _udeks_syscall_write_gate = $cf20, error, "write gate moved"
-        .assert _udeks_syscall_task_request_gate = $cf30, error, "task request gate moved"
-        .assert _udeks_syscall_clock_set_gate = $cf40, error, "clock-set gate moved"
-        .assert * <= $d000, error, "syscalls overlap I/O aperture"
-
-        .segment "CODE"
         ; Add Y copies of the constant selected by X. The high byte is $03
         ; only for hours; minutes and seconds cannot carry beyond their range.
 clock_add_loop:

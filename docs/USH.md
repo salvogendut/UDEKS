@@ -29,7 +29,9 @@ and application functions and therefore cannot be wrapped honestly in UDEX.
 
 ## Required execution model
 
-The two low bank-0 application slots remain occupied by `xclock` and `xwave`.
+The two low bank-0 application slots are reserved for `xclock` and `xwave`,
+which are loaded from bootfs on first invocation and then retained for bounded
+cooperative polling.
 `ush` will therefore run from a persistent bank-1 8502 task allocation, outside
 the resident Z80 image and VIC-IIe display window. A bounded common-RAM gate now
 supplies the context switch. The complete task path must:
@@ -69,8 +71,8 @@ access.
 - [ ] Graduate the bootstrap token to public per-process `chdir`/`getcwd`
   operations when the VFS process model lands.
 - [ ] Add scheduler yield and signal operations.
-- [ ] Replace direct graphical builtins with standalone `/bin/xclock` and
-  `/bin/xwave` UDEX programs, in that order after `cd`.
+- [x] Replace the resident graphical implementations with standalone
+  `/bin/xclock` and `/bin/xwave` UDEX programs loaded on first invocation.
 - [x] Link a minimal `ush.udx` without resident private symbols.
 - [x] Validate, initially boot-preload, and have init poll `/bin/ush` alongside the
   compatibility shell.

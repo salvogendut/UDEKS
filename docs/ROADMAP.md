@@ -176,8 +176,8 @@ mailbox corruption, with published benchmark results.
   managed client painting.
 - [x] Advance the VIC-IIe Window Manager to 0.3 with a visible lower-right
   resize grip and content-hidden outline resizing before release-time repaint.
-- [x] Separate VIC-IIe display, window-manager, and temporary application-poll
-  lifecycles into independently registered modules.
+- [x] Separate VIC-IIe display and window-manager lifecycles, then replace the
+  temporary embedded application pollers with a loader-managed app dispatcher.
 - [x] Route normalized keyboard events to a fixed-focus root-terminal editor.
 - [ ] Generalize keyboard input routing to arbitrary focused windows; pointer
   routing to managed VIC-IIe windows is complete.
@@ -193,6 +193,8 @@ mailbox corruption, with published benchmark results.
   row computation, 8502 VIC-IIe rendering, and VDC-console `Ctrl+C`
   cancellation.
 - [x] Make xclock and xwave graphics respond to managed-window resizing.
+- [x] Cache the completed xwave surface so move, reveal, and restacking paints
+  use the 8502; reserve new Z80 sampling leases for launch and resize only.
 - [x] Add shell foreground jobs and a whitespace-delimited trailing `&` for
   background `xclock` and `xwave` execution.
 - [ ] Build `xmandel` from the GEOBENCH `XAOS.APP` fixed-point design as a
@@ -255,8 +257,9 @@ without missing input events.
   that state for `.`.
 - [ ] Replace the bootstrap directory token with per-process `chdir`/`getcwd`
   operations as part of the general VFS process contract.
-- [ ] Package `xclock` as a standalone UDEX graphical program.
-- [ ] Package `xwave` as a standalone UDEX dual-engine graphical program.
+- [x] Package `xclock` as a standalone, loader-managed UDEX graphical program.
+- [x] Package `xwave` as a standalone, loader-managed dual-engine UDEX
+  graphical program, retaining its computed surface between repaints.
 - [ ] Implement IEC device discovery and baseline serial operations.
 - [ ] Add 1571 burst support only after baseline correctness.
 - [ ] Define the filesystem format and mount contract.
@@ -266,7 +269,7 @@ without missing input events.
   format is qualified.
 - [ ] Extract terminal, window, display, input, time, and engine policy into
   loadable servers and remove their static pointer-table entries.
-- [ ] Package the native shell as `/bin/ush` and have init load it for the root
+- [x] Package the native shell as `/bin/ush` and have init load it for the root
   terminal session at boot.
 - [ ] Replace bootfs fallback with storage-backed `/bin` resolution after VFS
   and IEC services are available.

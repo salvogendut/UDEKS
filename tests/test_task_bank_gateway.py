@@ -13,7 +13,8 @@ class TaskBankGatewayTests(unittest.TestCase):
         loader = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
 
         self.assertIn("cc65_sp_index           = $00", gate)
-        self.assertIn("cc65_sp                 = $02", loader)
+        self.assertIn("resident_cc65_sp        = $06", loader)
+        self.assertIn("user_cc65_sp            = $02", loader)
 
     def test_fixed_common_ram_contract_matches_public_header(self):
         config = (ROOT / "cfg/8502-bootstrap.cfg").read_text().lower()
@@ -64,10 +65,15 @@ class TaskBankGatewayTests(unittest.TestCase):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
 
         self.assertIn("lda $2300,y", stage1)
-        self.assertIn("sta $0300,y", stage1)
+        self.assertIn("bootfs_destination:\n        sta $0300,y", stage1)
         self.assertIn("lda #$23\n        sta bootfs_source+2", stage1)
-        self.assertIn("lda #$03\n        sta bootfs_destination+2", stage1)
+        self.assertIn("lda #$a0\n        sta bootfs_destination+2", stage1)
         self.assertIn("ldx #$1d", stage1)
+        self.assertIn("lda $af00,y", stage1)
+        self.assertIn("sta $bd00,y", stage1)
+        self.assertIn("ldx #$14", stage1)
+        self.assertIn("lda $bfbb,y", stage1)
+        self.assertIn("sta $e300,y", stage1)
         self.assertNotIn("lda $0c2a", stage1)
         self.assertIn("task_persistent_loader_entry:", stage1)
         self.assertIn("sta persistent_slot", stage1)
@@ -79,7 +85,8 @@ class TaskBankGatewayTests(unittest.TestCase):
         self.assertIn("ldx #$20", stage1)
         self.assertIn("lda $c500,y", stage1)
         self.assertIn("sta $4000,y\n        iny\n        bne backup_service_page", stage1)
-        self.assertIn("bootfs_base             = $0300", stage1)
+        self.assertIn("bootfs_base             = $a000", stage1)
+        self.assertIn("task_managed_loader_entry:", stage1)
 
     def test_runtime_loader_is_installed_from_protected_final_page(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()

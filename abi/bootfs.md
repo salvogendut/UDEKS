@@ -36,10 +36,12 @@ because this format represents exactly one mounted directory. Entries are
 sorted by name and duplicates are rejected. The loader validates all bounds
 before interpreting a file as UDEX.
 
-The native-boot image reserves at most 7424 bytes. Stage 1 relocates it to
-bank-1 `$0300-$1FFF`, separate from bank-0 low memory at the same logical
-addresses. The packer sorts directory entries and the loader resolves `ush`
-by name, so adding another program does not change the init contract.
+The current native-boot image admits at most `$2DBB` bytes inside a `$3100`-byte
+relocation reservation. Stage 1 gathers its split staging image into bank-1
+`$A000-$D0FF`, separate from bank-0 kernel memory at the same logical
+addresses. The packer sorts directory entries and the loader resolves `ush`,
+`xclock`, and `xwave` by name, so directory ordering does not change init or
+managed-application contracts.
 
 Bootfs is a bootstrap filesystem backend, not the permanent on-disk format.
 The future VFS resolver will search `/bin` through the mounted storage

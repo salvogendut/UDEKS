@@ -11,7 +11,7 @@ dynamic symbol table, or implicit host-runtime dependency.
 | 4 | 1 | ABI major (`0`) |
 | 5 | 1 | ABI minor (`1`) |
 | 6 | 1 | CPU (`1` = 8502, `2` = Z80) |
-| 7 | 1 | Flags; bit 0 selects a persistent cooperative poll entry |
+| 7 | 1 | Flags; bit 0 selects a persistent cooperative poll entry, bit 1 a retained managed-application lifecycle table |
 | 8 | 2 | Required load address |
 | 10 | 2 | Image byte count, excluding this header |
 | 12 | 2 | Zero-filled BSS byte count following the image |
@@ -35,8 +35,15 @@ context restoration remain loader responsibilities.
 Flag bit 0 changes the entry lifecycle, not the binary container. Init invokes
 a persistent program's entry once per cooperative service pass; returning
 yields to init without discarding image, BSS, stack, or zero-page state. Such a
-program receives no transient `argc`/`argv` registers at each poll. Version
-0.1 allows no other flag bits.
+program receives no transient `argc`/`argv` registers at each poll.
+
+Flag bit 1 identifies a retained managed application. Its absolute entry is a
+six-vector table of three-byte `JMP` instructions: initialize, start, poll,
+stop, is-running, and is-focused at offsets 0, 3, 6, 9, 12, and 15. The initial
+loader admits these images only into the two fixed bank-0 application slots;
+it loads and initializes on first invocation, then preserves code and BSS for
+cooperative polling. Version 0.1 rejects all other flag bits and the two flags
+cannot be combined.
 
 `tools/build_udex.py` is the canonical host-side packer. It performs all
 format-level bounds checks without assuming a filesystem. The early

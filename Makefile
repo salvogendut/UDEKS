@@ -29,8 +29,7 @@ BUILD_USER := $(BUILD_DIR)/user
 
 KERNEL_BIN := $(BUILD_8502)/udeks-8502.bin
 KERNEL_PRG := $(BUILD_8502)/udeks-8502.prg
-APP1_BIN := $(BUILD_8502)/udeks-app1.bin
-APP2_BIN := $(BUILD_8502)/udeks-app2.bin
+MODULE_BIN := $(BUILD_8502)/udeks-module.bin
 PANIC_PROBE_KERNEL_BIN := $(BUILD_8502)/udeks-8502-panic-probe.bin
 Z80_IHX := $(BUILD_Z80)/udeks-z80.ihx
 Z80_BIN := $(BUILD_Z80)/udeks-z80.bin
@@ -113,6 +112,17 @@ USER_LS_BIN := $(BUILD_USER)/ls.bin
 USER_LS_UDEX := $(BUILD_USER)/ls.udx
 USER_USH_BIN := $(BUILD_USER)/ush.bin
 USER_USH_UDEX := $(BUILD_USER)/ush.udx
+USER_APP_IMPORTS_OBJ := $(BUILD_USER)/app_imports.o
+USER_XCLOCK_ASM := $(BUILD_USER)/xclock.s
+USER_XCLOCK_OBJ := $(BUILD_USER)/xclock.o
+USER_XCLOCK_ENTRY_OBJ := $(BUILD_USER)/xclock_entry.o
+USER_XCLOCK_BIN := $(BUILD_USER)/xclock.bin
+USER_XCLOCK_UDEX := $(BUILD_USER)/xclock.udx
+USER_XWAVE_ASM := $(BUILD_USER)/xwave.s
+USER_XWAVE_OBJ := $(BUILD_USER)/xwave.o
+USER_XWAVE_ENTRY_OBJ := $(BUILD_USER)/xwave_entry.o
+USER_XWAVE_BIN := $(BUILD_USER)/xwave.bin
+USER_XWAVE_UDEX := $(BUILD_USER)/xwave.udx
 USER_BOOTFS := $(BUILD_USER)/bootfs.img
 
 .PHONY: all 8502 z80 z80-asm bench bench-8502 bench-z80 bench-irq \
@@ -133,7 +143,8 @@ framebuffer-assets: $(VDC_SPLASH_BIN) $(VDC_WORDMARK_BIN) $(VDC_TEXT_ASSETS_BIN)
 
 # Compile user programs independently; they must never enter the resident link.
 user-sources: $(USER_COWSAY_ASM) $(USER_DATE_ASM) $(USER_LS_ASM) $(USER_USH_ASM) \
-		$(USER_TASK_STREAM_OBJ) $(USER_FILESYSTEM_OBJ) $(USER_POLL_ENTRY_OBJ)
+		$(USER_XCLOCK_ASM) $(USER_XWAVE_ASM) $(USER_TASK_STREAM_OBJ) \
+		$(USER_FILESYSTEM_OBJ) $(USER_POLL_ENTRY_OBJ)
 
 user-programs: $(USER_BOOTFS)
 
@@ -273,13 +284,59 @@ $(USER_USH_UDEX): $(USER_USH_BIN) tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x9000 \
 		--entry-address 0x9000 --bss-size 0x0050 --flags 0x01 $< $@
 
-$(USER_BOOTFS): $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_LS_UDEX) $(USER_USH_UDEX) \
+$(USER_APP_IMPORTS_OBJ): user/lib/app_imports.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(USER_XCLOCK_ASM): src/apps/xclock.c include/udeks/time.h \
+		include/udeks/vic_graphics.h include/udeks/window.h \
+		include/udeks/xclock.h | $(BUILD_USER)
+	$(CC65) $(CFLAGS_8502) -I include -o $@ $<
+
+$(USER_XCLOCK_OBJ): $(USER_XCLOCK_ASM) | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(USER_XCLOCK_ENTRY_OBJ): user/lib/xclock_entry.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(USER_XCLOCK_BIN): $(USER_XCLOCK_ENTRY_OBJ) $(USER_XCLOCK_OBJ) \
+		$(USER_APP_IMPORTS_OBJ) cfg/8502-managed-app1.cfg
+	$(CL65) -t none --cpu 6502 -C cfg/8502-managed-app1.cfg \
+		-m $(BUILD_USER)/xclock.map -o $@ $(filter %.o,$^)
+
+$(USER_XCLOCK_UDEX): $(USER_XCLOCK_BIN) tools/build_udex.py
+	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 \
+		--entry-address 0x0200 --bss-size 0x000D --flags 0x02 $< $@
+
+$(USER_XWAVE_ASM): src/apps/xwave.c include/udeks/mailbox.h \
+		include/udeks/vic_graphics.h include/udeks/window.h \
+		include/udeks/xwave.h include/udeks/z80_worker.h | $(BUILD_USER)
+	$(CC65) $(CFLAGS_8502) -I include -o $@ $<
+
+$(USER_XWAVE_OBJ): $(USER_XWAVE_ASM) | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(USER_XWAVE_ENTRY_OBJ): user/lib/xwave_entry.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(USER_XWAVE_BIN): $(USER_XWAVE_ENTRY_OBJ) $(USER_XWAVE_OBJ) \
+		$(USER_APP_IMPORTS_OBJ) cfg/8502-managed-app2.cfg
+	$(CL65) -t none --cpu 6502 -C cfg/8502-managed-app2.cfg \
+		-m $(BUILD_USER)/xwave.map -o $@ $(filter %.o,$^)
+
+$(USER_XWAVE_UDEX): $(USER_XWAVE_BIN) tools/build_udex.py
+	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x1200 \
+		--entry-address 0x1200 --bss-size 0x0218 --flags 0x02 $< $@
+
+$(USER_BOOTFS): $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_LS_UDEX) \
+		$(USER_USH_UDEX) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) \
 		tools/build_bootfs.py
-	$(PYTHON) tools/build_bootfs.py --max-size 0x1D00 \
+	$(PYTHON) tools/build_bootfs.py --max-size 0x2DBB \
 		--entry cowsay=$(USER_COWSAY_UDEX) \
 		--entry date=$(USER_DATE_UDEX) \
 		--entry ls=$(USER_LS_UDEX) \
-		--entry ush=$(USER_USH_UDEX) $@
+		--entry ush=$(USER_USH_UDEX) \
+		--entry xclock=$(USER_XCLOCK_UDEX) \
+		--entry xwave=$(USER_XWAVE_UDEX) $@
 
 $(VDC_SPLASH_BIN): assets/udekspipe-64.xpm tools/xpm_to_vdc.py | $(BUILD_ASSETS)
 	$(PYTHON) tools/xpm_to_vdc.py $< $@
@@ -394,17 +451,6 @@ $(BUILD_8502)/vic_graphics.s: src/services/display/vic_graphics.c \
 		include/udeks/vic_graphics.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
-$(BUILD_8502)/xclock.s: src/apps/xclock.c \
-		include/udeks/time.h include/udeks/vic_graphics.h \
-		include/udeks/window.h include/udeks/xclock.h | $(BUILD_8502)
-	$(CC65) $(CFLAGS_8502) -o $@ $<
-
-$(BUILD_8502)/xwave.s: src/apps/xwave.c include/udeks/mailbox.h \
-		include/udeks/vic_graphics.h \
-		include/udeks/window.h include/udeks/xwave.h \
-		include/udeks/z80_worker.h | $(BUILD_8502)
-	$(CC65) $(CFLAGS_8502) -o $@ $<
-
 $(BUILD_8502)/framebuffer_font.s: src/services/framebuffer/font.c \
 		include/udeks/font.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
@@ -465,10 +511,10 @@ $(BUILD_8502)/z80_worker.o: $(BUILD_8502)/z80_worker.s | $(BUILD_8502)
 $(BUILD_8502)/vic_graphics.o: $(BUILD_8502)/vic_graphics.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(BUILD_8502)/xclock.o: $(BUILD_8502)/xclock.s | $(BUILD_8502)
+$(BUILD_8502)/managed_apps.o: src/services/app/managed_apps.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(BUILD_8502)/xwave.o: $(BUILD_8502)/xwave.s | $(BUILD_8502)
+$(BUILD_8502)/app_panel.o: src/services/console/app_panel.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/framebuffer_font.o: $(BUILD_8502)/framebuffer_font.s | $(BUILD_8502)
@@ -492,7 +538,7 @@ $(BUILD_8502)/bootfs_request.o: src/services/filesystem/bootfs_request.s | $(BUI
 $(BUILD_8502)/clock.o: src/8502/clock.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(BUILD_8502)/syscall_gate.o: src/8502/syscall_gate.s | $(BUILD_8502)
+$(BUILD_8502)/syscall_gate.o: src/8502/syscall_gate.s src/8502/app_gateway.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/task_bank_gateway.o: src/8502/task_bank_gateway.s | $(BUILD_8502)
@@ -540,10 +586,7 @@ $(BUILD_8502)/vic_graphics_descriptor.o: src/services/display/descriptor.s | $(B
 $(BUILD_8502)/window_descriptor.o: src/services/window/descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(BUILD_8502)/xclock_descriptor.o: src/apps/xclock_descriptor.s | $(BUILD_8502)
-	$(CA65) $(ASFLAGS_8502) -o $@ $<
-
-$(BUILD_8502)/xwave_descriptor.o: src/apps/xwave_descriptor.s | $(BUILD_8502)
+$(BUILD_8502)/managed_apps_descriptor.o: src/services/app/descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/vdc_splash.o: src/assets/vdc_splash.s $(VDC_SPLASH_BIN) \
@@ -590,7 +633,8 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/z80_handoff.o \
 		$(BUILD_8502)/vic_graphics_transport.o \
 		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o $(BUILD_8502)/clock.o \
-		$(BUILD_8502)/syscall_gate.o $(BUILD_8502)/task_bank_gateway.o \
+		$(BUILD_8502)/syscall_gate.o \
+		$(BUILD_8502)/task_bank_gateway.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o \
 		$(BUILD_8502)/capability_descriptor.o \
@@ -604,11 +648,10 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/z80_worker_descriptor.o \
 		$(BUILD_8502)/vic_graphics_descriptor.o \
 		$(BUILD_8502)/window_descriptor.o \
-		$(BUILD_8502)/xclock_descriptor.o \
-		$(BUILD_8502)/xwave_descriptor.o \
+		$(BUILD_8502)/managed_apps_descriptor.o \
 		$(BUILD_8502)/bootfs_request.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/time.o \
-		$(BUILD_8502)/vdc_console.o \
+		$(BUILD_8502)/vdc_console.o $(BUILD_8502)/app_panel.o \
 		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o \
 		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/joystick.o $(BUILD_8502)/mouse1351.o \
@@ -618,8 +661,7 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/shell_parser.o $(BUILD_8502)/shell.o \
 		$(BUILD_8502)/z80_worker.o \
 		$(BUILD_8502)/vic_graphics.o \
-		$(BUILD_8502)/xclock.o \
-		$(BUILD_8502)/xwave.o \
+		$(BUILD_8502)/managed_apps.o \
 		$(BUILD_8502)/vdc_text_assets.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $@ $(filter %.o,$^)
@@ -631,7 +673,8 @@ $(PANIC_PROBE_KERNEL_BIN): $(BOOT_D71) \
 		$(BUILD_8502)/z80_handoff.o \
 		$(BUILD_8502)/vic_graphics_transport.o \
 		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o $(BUILD_8502)/clock.o \
-		$(BUILD_8502)/syscall_gate.o $(BUILD_8502)/task_bank_gateway.o \
+		$(BUILD_8502)/syscall_gate.o \
+		$(BUILD_8502)/task_bank_gateway.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o $(BUILD_8502)/capability_descriptor.o \
 		$(BUILD_8502)/time_descriptor.o \
@@ -644,11 +687,10 @@ $(PANIC_PROBE_KERNEL_BIN): $(BOOT_D71) \
 		$(BUILD_8502)/z80_worker_descriptor.o \
 		$(BUILD_8502)/vic_graphics_descriptor.o \
 		$(BUILD_8502)/window_descriptor.o \
-		$(BUILD_8502)/xclock_descriptor.o \
-		$(BUILD_8502)/xwave_descriptor.o \
+		$(BUILD_8502)/managed_apps_descriptor.o \
 		$(BUILD_8502)/bootfs_request.o \
 		$(BUILD_8502)/hardware_capability.o $(BUILD_8502)/time.o \
-		$(BUILD_8502)/vdc_console.o \
+		$(BUILD_8502)/vdc_console.o $(BUILD_8502)/app_panel.o \
 		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o \
 		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/joystick.o $(BUILD_8502)/mouse1351.o \
@@ -658,8 +700,7 @@ $(PANIC_PROBE_KERNEL_BIN): $(BOOT_D71) \
 		$(BUILD_8502)/shell_parser.o $(BUILD_8502)/shell.o \
 		$(BUILD_8502)/z80_worker.o \
 		$(BUILD_8502)/vic_graphics.o \
-		$(BUILD_8502)/xclock.o \
-		$(BUILD_8502)/xwave.o \
+		$(BUILD_8502)/managed_apps.o \
 		$(BUILD_8502)/vdc_text_assets.o \
 		cfg/8502-bootstrap.cfg
 	$(CL65) -t none --cpu 6502 -C cfg/8502-bootstrap.cfg \
@@ -669,6 +710,9 @@ $(PANIC_PROBE_KERNEL_BIN): $(BOOT_D71) \
 $(KERNEL_PRG): $(KERNEL_BIN) tools/bin_to_prg.py
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x2000 $< $@
 
+$(MODULE_BIN): $(KERNEL_BIN)
+	test -s $@
+
 $(TASK_BANK_GATE_BIN): $(KERNEL_BIN)
 	test -s $@
 
@@ -676,9 +720,6 @@ $(TASK_REQUEST_GATE_BIN): $(KERNEL_BIN)
 	test -s $@
 
 $(BOOTFS_REQUEST_SERVICE_BIN): $(KERNEL_BIN)
-	test -s $@
-
-$(APP1_BIN) $(APP2_BIN): $(KERNEL_BIN)
 	test -s $@
 
 $(BUILD_Z80)/worker.rel: src/z80/worker.c include/udeks/mailbox.h | $(BUILD_Z80)
@@ -1018,16 +1059,16 @@ $(BUILD_BOOT)/stage1.o: src/boot/stage1.s $(STAGE1_GATEWAY_BIN) | $(BUILD_BOOT)
 $(STAGE1_BIN): $(BUILD_BOOT)/stage1.o cfg/8502-stage1.cfg
 	$(LD65) -C cfg/8502-stage1.cfg -o $@ $<
 
-$(BOOT_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
-		$(APP1_BIN) $(APP2_BIN) $(Z80_BIN) $(USER_BOOTFS) \
+$(BOOT_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) $(MODULE_BIN) \
+		$(Z80_BIN) $(USER_BOOTFS) \
 		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
 		tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
-		--app1 $(APP1_BIN) --app2 $(APP2_BIN) \
 		--bootfs $(USER_BOOTFS) \
+		--module $(MODULE_BIN) \
 		--ush $(USER_USH_UDEX) \
 		--task-loader $(TASK_LOADER_BIN) \
 		--task-request-gateway $(TASK_REQUEST_GATE_BIN) \
@@ -1035,15 +1076,17 @@ $(BOOT_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
-		$(APP1_BIN) $(APP2_BIN) $(Z80_BIN) $(USER_BOOTFS) \
+		$(MODULE_BIN) \
+		$(Z80_BIN) $(USER_BOOTFS) \
 		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
 		tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(PANIC_PROBE_KERNEL_BIN) \
-		--z80 $(Z80_BIN) --app1 $(APP1_BIN) --app2 $(APP2_BIN) \
+		--z80 $(Z80_BIN) \
 		--bootfs $(USER_BOOTFS) \
+		--module $(MODULE_BIN) \
 		--ush $(USER_USH_UDEX) \
 		--task-loader $(TASK_LOADER_BIN) \
 		--task-request-gateway $(TASK_REQUEST_GATE_BIN) \

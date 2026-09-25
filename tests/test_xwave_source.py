@@ -11,15 +11,17 @@ ROOT = Path(__file__).resolve().parents[1]
 class XwaveSourceTests(unittest.TestCase):
     def test_application_is_a_managed_resizable_wireframe_plot(self):
         source = (ROOT / "src/apps/xwave.c").read_text(encoding="utf-8")
-        self.assertIn('code-name(push, "APP2CODE")', source)
-        self.assertIn('rodata-name(push, "APP2RODATA")', source)
-        self.assertIn('bss-name(push, "APP2BSS")', source)
+        makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
+        self.assertIn("8502-managed-app2.cfg", makefile)
+        self.assertIn("--flags 0x02", makefile)
         self.assertIn("udeks_window_create(", source)
         self.assertIn("paint_wave, close_wave", source)
         self.assertIn("udeks_window_get_geometry(", source)
         self.assertIn("udeks_vic_bitmap_line(", source)
         self.assertIn("udeks_window_is_dragging(window_handle)", source)
         self.assertIn("udeks_window_is_focused(window_handle)", source)
+        self.assertIn("surface_cache[SURFACE_SAMPLES]", source)
+        self.assertIn("if (refresh_samples != 0)", source)
 
     def test_computation_uses_bounded_z80_batches_and_8502_fallback(self):
         source = (ROOT / "src/apps/xwave.c").read_text(encoding="utf-8")
@@ -57,18 +59,21 @@ class XwaveSourceTests(unittest.TestCase):
         self.assertNotIn("udeks_window_repaint", poll)
         self.assertNotIn("udeks_z80_submit", poll)
 
-    def test_service_descriptor_is_registered_after_xclock(self):
+    def test_managed_app_service_dispatches_both_standalone_images(self):
         table = (ROOT / "src/services/table.s").read_text(encoding="utf-8")
-        descriptor = (ROOT / "src/apps/xwave_descriptor.s").read_text(
+        descriptor = (ROOT / "src/services/app/descriptor.s").read_text(
             encoding="utf-8"
         )
-        self.assertLess(
-            table.index(".addr _udeks_xclock_service_descriptor"),
-            table.index(".addr _udeks_xwave_service_descriptor"),
+        manager = (ROOT / "src/services/app/managed_apps.s").read_text(
+            encoding="utf-8"
         )
-        self.assertIn(".byte $0a, $01", descriptor)
-        self.assertIn(".addr _udeks_xwave_initialize", descriptor)
-        self.assertIn(".addr _udeks_xwave_poll", descriptor)
+        self.assertIn(".addr _udeks_managed_apps_service_descriptor", table)
+        self.assertIn(".byte $0a, $00", descriptor)
+        self.assertIn("XCLOCK          = $0200", manager)
+        self.assertIn("XWAVE           = $1200", manager)
+        self.assertIn("MANAGED_LOADER  = $f916", manager)
+        self.assertGreaterEqual(manager.count("cmp #$00"), 4)
+        self.assertFalse((ROOT / "src/services/app/managed_apps.c").exists())
 
 
 if __name__ == "__main__":

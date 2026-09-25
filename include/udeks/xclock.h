@@ -18,5 +18,6 @@ unsigned char udeks_xclock_start(void);
 unsigned char udeks_xclock_poll(void);
 unsigned char udeks_xclock_stop(void);
 unsigned char udeks_xclock_is_running(void);
+unsigned char udeks_xclock_is_focused(void);
 
 #endif

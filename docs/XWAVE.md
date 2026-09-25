@@ -34,11 +34,14 @@ of disconnected row strips or an overdrawn black center. Its normalized
 coordinates are scaled continuously to the current client width and height on
 every managed repaint. A 40-unit fixed-point vertical gain gives the central
 sample a pronounced peak while preserving the surrounding sinc troughs and
-rings inside the normalized projection envelope. A 25-byte previous-row cache
-at `$F340-$F358` supplies the cross-grid connections without retaining the
-whole 525-byte surface or recomputing Z80 samples. The plot is clipped by the
-window manager after resizing; moving or resizing still uses the lightweight
-outline-only interaction and repaints the scaled surface once on release.
+rings inside the normalized projection envelope. A private 525-byte surface
+cache retains every computed height, while the 25-byte row scratch area at
+`$F340-$F358` supplies cross-grid connections during plotting. Initial display
+and a changed client width or height recompute the cache through 21 bounded Z80
+row leases. Moving, raising, revealing, or otherwise repainting an unchanged
+window uses the cached heights and submits no Z80 work. The plot is clipped by
+the window manager after resizing; moving or resizing still uses the
+lightweight outline-only interaction and repaints once on release.
 
 The plot is deliberately static. Periodic full recomposition would monopolize
 the 1 MHz 8502 and starve pointer and keyboard service. Future animation must
@@ -55,7 +58,9 @@ immediately returns the prompt.
 The Z80 cannot be interrupted while it owns the C128 bus. Each surface row is
 therefore a short, statically bounded lease. Once initial painting finishes,
 the application poll performs no computation or repaint and normal pointer,
-keyboard, and console polling resumes.
+keyboard, and console polling resumes. A compositor repaint caused by move or
+stacking projects the cached surface on the 8502; only a resize invalidates the
+cache and invokes the Z80 again.
 
 ## Delivery gates
 
@@ -65,5 +70,7 @@ keyboard, and console polling resumes.
 - [x] Project a 25×21 radial surface as a connected two-axis isometric mesh.
 - [x] Preserve foreground/background job control and `Ctrl+C` cancellation.
 - [x] Keep the managed window movable, resizable, overlapping, and closable.
+- [x] Cache the completed surface so move, reveal, and restack repaints do not
+  repeat Z80 computation; invalidate it only when window dimensions change.
 - [ ] Verify visual output, resizing, and bounded cancellation in VICE and on
   real hardware.

@@ -5,9 +5,6 @@
 #include "udeks/xwave.h"
 #include "udeks/z80_worker.h"
 
-#pragma code-name(push, "APP2CODE")
-#pragma rodata-name(push, "APP2RODATA")
-
 #define STATUS_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_XWAVE_STATUS_BASE + (offset)))
 #define SAMPLE_BYTE(offset) \
@@ -34,13 +31,15 @@ static const signed char sinc_height[35] = {
 };
 static const unsigned char window_title[] = "XWAVE";
 
-#pragma bss-name(push, "APP2BSS")
 static unsigned char window_handle;
 static unsigned int window_x;
 static unsigned char window_y;
 static unsigned int window_width;
 static unsigned char window_height;
-#pragma bss-name(pop)
+static unsigned char surface_cache[SURFACE_SAMPLES];
+static unsigned char surface_cache_valid;
+static unsigned int surface_cache_width;
+static unsigned char surface_cache_height;
 
 static void increment_counter(unsigned char offset)
 {
@@ -126,6 +125,8 @@ static void paint_wave(unsigned char handle)
     int previous_x;
     int previous_y;
     signed char height;
+    unsigned int cache_offset;
+    unsigned char refresh_samples;
 
     if (udeks_window_get_geometry(
             handle, &window_x, &window_y,
@@ -133,12 +134,21 @@ static void paint_wave(unsigned char handle)
         return;
     }
 
+    refresh_samples = surface_cache_valid == 0 ||
+        surface_cache_width != window_width ||
+        surface_cache_height != window_height;
+    cache_offset = 0;
     for (row = 0; row < SURFACE_ROWS; ++row) {
-        sample_row(row);
+        if (refresh_samples != 0) {
+            sample_row(row);
+            for (column = 0; column < SURFACE_COLUMNS; ++column) {
+                surface_cache[cache_offset + column] = SAMPLE_BYTE(column);
+            }
+        }
         previous_x = 0;
         previous_y = 0;
         for (column = 0; column < SURFACE_COLUMNS; ++column) {
-            height = (signed char)SAMPLE_BYTE(column);
+            height = (signed char)surface_cache[cache_offset + column];
             local_x = (int)(column + SURFACE_ROWS - 1u - row) * 4;
             local_y = 28 + column + row - height;
             plot_x = project_x(local_x);
@@ -162,6 +172,12 @@ static void paint_wave(unsigned char handle)
             previous_x = plot_x;
             previous_y = plot_y;
         }
+        cache_offset += SURFACE_COLUMNS;
+    }
+    if (refresh_samples != 0) {
+        surface_cache_valid = 1;
+        surface_cache_width = window_width;
+        surface_cache_height = window_height;
     }
     STATUS_BYTE(8) = window_handle;
     STATUS_BYTE(9) = SURFACE_ROWS;
@@ -198,6 +214,7 @@ unsigned char udeks_xwave_initialize(void)
     STATUS_BYTE(5) = UDEKS_XWAVE_READY;
     STATUS_BYTE(7) = 0x07u;
     window_handle = UDEKS_WINDOW_NONE;
+    surface_cache_valid = 0;
     return UDEKS_XWAVE_OK;
 }
 
@@ -251,6 +268,3 @@ unsigned char udeks_xwave_is_focused(void)
 {
     return udeks_window_is_focused(window_handle);
 }
-
-#pragma rodata-name(pop)
-#pragma code-name(pop)

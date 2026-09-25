@@ -4,9 +4,6 @@
 #include "udeks/window.h"
 #include "udeks/xclock.h"
 
-#pragma code-name(push, "APP1CODE")
-#pragma rodata-name(push, "APP1RODATA")
-
 #define STATUS_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_XCLOCK_STATUS_BASE + (offset)))
 
@@ -41,7 +38,6 @@ static const unsigned char digit_glyphs[11][5] = {
 
 static const unsigned char window_title[] = "XCLOCK";
 
-#pragma bss-name(push, "APP1BSS")
 static unsigned char window_handle;
 static unsigned int window_x;
 static unsigned char window_y;
@@ -52,9 +48,6 @@ static unsigned char face_y;
 static unsigned char face_radius;
 static unsigned char previous_hour;
 static unsigned char previous_minute;
-static unsigned int last_window_x;
-static unsigned char last_window_y;
-#pragma bss-name(pop)
 
 static void increment_counter(unsigned char low_offset)
 {
@@ -215,11 +208,10 @@ static void paint_clock(unsigned char handle)
     STATUS_BYTE(14) = second;
     STATUS_BYTE(25) = face_radius;
     increment_counter(16u);
-    if (window_x != last_window_x || window_y != last_window_y) {
+    if ((unsigned char)window_x != STATUS_BYTE(8) ||
+        window_y != STATUS_BYTE(9)) {
         increment_counter(20u);
     }
-    last_window_x = window_x;
-    last_window_y = window_y;
     publish_geometry();
 }
 
@@ -267,8 +259,6 @@ unsigned char udeks_xclock_initialize(void)
     window_y = WINDOW_INITIAL_Y;
     window_width = WINDOW_WIDTH;
     window_height = WINDOW_HEIGHT;
-    last_window_x = window_x;
-    last_window_y = window_y;
     publish_geometry();
     return UDEKS_XCLOCK_OK;
 }
@@ -328,5 +318,8 @@ unsigned char udeks_xclock_is_running(void)
     return STATUS_BYTE(5) == UDEKS_XCLOCK_RUNNING ? 1u : 0u;
 }
 
-#pragma rodata-name(pop)
-#pragma code-name(pop)
+unsigned char udeks_xclock_is_focused(void)
+{
+    return window_handle != UDEKS_WINDOW_NONE &&
+        udeks_window_is_focused(window_handle) != 0 ? 1u : 0u;
+}

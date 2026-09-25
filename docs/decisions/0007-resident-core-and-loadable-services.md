@@ -75,8 +75,8 @@ entries contain the same UDEX byte streams later stored as ordinary files.
 
 1. Define UDEX 0.1, a syscall-vector ABI, task slots, and loader validation.
 2. Make `cowsay` the first transient 8502 executable.
-3. Convert the two boot-preloaded graphical slots into loader-managed task
-   slots and package `xclock` and `xwave` as UDEX programs.
+3. Convert the two former boot-preloaded graphical slots into loader-managed
+   task slots and package `xclock` and `xwave` as UDEX programs. (Complete.)
 4. Move the terminal, window, display, input, time, and engine policy into
    bootfs services, then have init launch the shell as `/bin/ush`.
 5. Add IEC storage and filesystem servers and resolve noncritical modules from

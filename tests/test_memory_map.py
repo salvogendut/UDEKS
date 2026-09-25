@@ -122,8 +122,12 @@ class MemoryMapTests(unittest.TestCase):
             memory["UDEKS_MODULE_HIGH_BSS_LIMIT"],
             memory["UDEKS_TASK_CONTEXT_BASE"],
         )
-        self.assertEqual(
+        self.assertLessEqual(
             memory["UDEKS_TASK_CONTEXT_LIMIT"],
+            memory["UDEKS_MODULE_CODE_BASE"],
+        )
+        self.assertLessEqual(
+            memory["UDEKS_MODULE_CODE_LIMIT"],
             memory["UDEKS_C_STACK_BOTTOM"],
         )
         self.assertLess(memory["UDEKS_C_STACK_BOTTOM"], memory["UDEKS_C_STACK_TOP"])
@@ -168,20 +172,21 @@ class MemoryMapTests(unittest.TestCase):
             low_start + low_size,
             self.memory["UDEKS_RECLAIMED_STATE_LIMIT"],
         )
-        for region, base_name, limit_name in (
-            ("APP1", "UDEKS_APP1_BASE", "UDEKS_APP1_LIMIT"),
-            ("APP2", "UDEKS_APP2_BASE", "UDEKS_APP2_LIMIT"),
+        for config_name, base_name, limit_name in (
+            ("8502-managed-app1.cfg", "UDEKS_APP1_BASE", "UDEKS_APP1_LIMIT"),
+            ("8502-managed-app2.cfg", "UDEKS_APP2_BASE", "UDEKS_APP2_LIMIT"),
         ):
+            app_linker = (ROOT / "cfg" / config_name).read_text(encoding="utf-8")
             app = re.search(
-                rf"{region}:\s+start\s*=\s*\$([0-9A-Fa-f]+),\s*"
+                r"APP:\s+start\s*=\s*\$([0-9A-Fa-f]+),\s*"
                 rf"size\s*=\s*\$([0-9A-Fa-f]+)",
-                linker,
+                app_linker,
             )
             self.assertIsNotNone(app)
             app_start = int(app.group(1), 16)
             app_size = int(app.group(2), 16)
             self.assertEqual(app_start, self.memory[base_name])
-            self.assertEqual(app_start + app_size, self.memory[limit_name])
+            self.assertLessEqual(app_start + app_size, self.memory[limit_name])
         high = re.search(
             r"HIGHMEM:\s+start\s*=\s*\$([0-9A-Fa-f]+),\s*"
             r"size\s*=\s*\$([0-9A-Fa-f]+)",

@@ -18,7 +18,7 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertLess(console, pointer)
         self.assertLess(pointer, graphics)
         self.assertLess(graphics, keyboard)
-        self.assertIn(".byte $0c", table)
+        self.assertIn(".byte $0b", table)
 
         descriptor = (ROOT / "src/services/display/descriptor.s").read_text(
             encoding="utf-8"
@@ -89,7 +89,7 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("offset += 8u", fill)
         self.assertNotIn("for (column", fill)
         self.assertIn("VICSHADOW:", config)
-        self.assertIn("align = $100", config)
+        self.assertIn("start = $AF00", config)
 
     def test_display_module_does_not_drive_window_or_application_policy(self):
         source = (ROOT / "src/services/display/vic_graphics.c").read_text(
