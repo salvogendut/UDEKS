@@ -301,6 +301,7 @@ static void compose_damage(unsigned char skip_handle)
     unsigned char rank;
     unsigned char index;
 
+    udeks_vic_pointer_busy_begin(UDEKS_VIC_BUSY_REPAINT);
     udeks_vic_bitmap_set_clip(
         damage_left, damage_top,
         damage_right - damage_left,
@@ -322,6 +323,7 @@ static void compose_damage(unsigned char skip_handle)
     }
     udeks_vic_bitmap_reset_clip();
     udeks_vic_bitmap_commit();
+    udeks_vic_pointer_busy_end(UDEKS_VIC_BUSY_REPAINT);
     increment_counter(30u);
 }
 

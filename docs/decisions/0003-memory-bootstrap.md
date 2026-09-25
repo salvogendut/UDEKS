@@ -50,7 +50,7 @@ The initial physical allocation is:
 | `$1200-$1BFF` | Loader-managed graphical application slot 2 | Task/worker workspace |
 | `$1C00-$1FFF` | Stage-1 loader, reclaimed after boot | Task/worker workspace |
 | `$2000-$3FFF` | 8502 kernel image | Resident Z80 dispatcher and code |
-| `$4000-$7FFF` | 8502 kernel image | Reserved 16 KiB VIC-visible window |
+| `$4000-$7FFF` | 8502 kernel image | Reserved 16 KiB VIC-visible window; transfer backup at `$4000`, pointer templates at `$4100`/`$4140`, live sprite at `$7FC0` |
 | `$8000-$89FF` | 8502 kernel image | Transient application-slot backup |
 | `$8A00-$8FFF` | 8502 kernel image | Available task memory |
 | `$9000-$99FF` | 8502 kernel image | Persistent `/bin/ush` allocation |

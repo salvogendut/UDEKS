@@ -85,6 +85,14 @@ class WindowManagerSourceTests(unittest.TestCase):
         )[0]
         self.assertIn("for (rank = 1u; rank <= active_count; ++rank)", compose)
         self.assertIn("paint_window_damage", compose)
+        self.assertLess(
+            compose.index("udeks_vic_pointer_busy_begin(UDEKS_VIC_BUSY_REPAINT)"),
+            compose.index("paint_window_damage"),
+        )
+        self.assertGreater(
+            compose.index("udeks_vic_pointer_busy_end(UDEKS_VIC_BUSY_REPAINT)"),
+            compose.index("udeks_vic_bitmap_commit()"),
+        )
         self.assertIn("compose_damage(UDEKS_WINDOW_NONE)", source)
         self.assertIn("--windows[index].z", raise_window)
         self.assertIn("window->z = active_count", raise_window)

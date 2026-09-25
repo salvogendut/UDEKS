@@ -47,6 +47,8 @@ def parse_result(data: bytes) -> dict[str, int]:
         raise ValueError("active VIC graphics reports no initialization")
     if stops > starts:
         raise ValueError("VIC graphics has more stops than starts")
+    if block[23] not in (0, 1, 2, 3):
+        raise ValueError("VIC pointer shape state is invalid")
     return {
         "format": block[4],
         "state": block[5],
@@ -61,6 +63,7 @@ def parse_result(data: bytes) -> dict[str, int]:
         "sprite_pointer": block[16],
         "starts": starts,
         "stops": stops,
+        "pointer_busy": block[23],
     }
 
 

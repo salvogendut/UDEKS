@@ -28,6 +28,22 @@ class VicGraphicsDecodeTests(unittest.TestCase):
         self.assertEqual(result["state"], 3)
         self.assertEqual(result["pointer_x"], 172)
         self.assertEqual(result["ram_bank"], 1)
+        self.assertEqual(result["pointer_busy"], 0)
+
+    def test_accepts_busy_pointer_shape(self):
+        block = valid_record()
+        block[23] = 1
+        self.assertEqual(parse_result(block)["pointer_busy"], 1)
+        block[23] = 2
+        self.assertEqual(parse_result(block)["pointer_busy"], 2)
+        block[23] = 3
+        self.assertEqual(parse_result(block)["pointer_busy"], 3)
+
+    def test_rejects_invalid_pointer_shape(self):
+        block = valid_record()
+        block[23] = 4
+        with self.assertRaisesRegex(ValueError, "pointer shape"):
+            parse_result(block)
 
     def test_accepts_stopped_surface(self):
         block = valid_record()

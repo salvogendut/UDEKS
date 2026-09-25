@@ -54,6 +54,15 @@ class Z80WorkerSourceTests(unittest.TestCase):
         self.assertIn("UDEKS_Z80_TIMING_STOCK", source)
         self.assertIn("UDEKS_MB_OP_NOP", source)
         self.assertIn("BOOT_CHAIN_BYTE(12) == 2u", source)
+        handoff = source.index("udeks_z80_handoff();")
+        self.assertLess(
+            source.index("udeks_vic_pointer_busy_begin(UDEKS_VIC_BUSY_Z80);"),
+            handoff,
+        )
+        self.assertGreater(
+            source.index("udeks_vic_pointer_busy_end(UDEKS_VIC_BUSY_Z80);"),
+            handoff,
+        )
 
 
 if __name__ == "__main__":

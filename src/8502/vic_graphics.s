@@ -9,6 +9,10 @@
         .export _udeks_vic_graphics_disable
         .export _udeks_vic_pointer_set_x
         .export _udeks_vic_pointer_set_y
+        .export _udeks_vic_pointer_select_shape
+        .export _udeks_vic_pointer_busy_begin
+        .export _udeks_vic_pointer_busy_end
+        .export _udeks_vic_pointer_busy_tick
         .export _udeks_vic_bitmap_commit_page
         .export _udeks_vic_bitmap_outline_blit
         .import _udeks_vic_bitmap_shadow
@@ -43,11 +47,21 @@ COMMON_BUFFER           = $f400
 OUTLINE_BUFFER          = $f380
 VIC_SCREEN              = $5c00
 VIC_BITMAP              = $6000
+VIC_SPRITE_NORMAL       = $4100
+VIC_SPRITE_BUSY         = $4140
 VIC_SPRITE              = $7fc0
 VIC_SPRITE_POINTER      = $5ff8
+VIC_STATUS_STATE        = $f1b5
+VIC_STATUS_POINTER_SHAPE = $f1c7
+POINTER_FRAME_LOW       = $f1e2
+VIC_STATE_ACTIVE        = $03
+BUSY_RELEASE_PENDING    = $03
+BUSY_HOLD_FRAMES        = $03
 
         .segment "BSS"
 saved_chargen_overlay:
+        .res 1
+busy_release_frame:
         .res 1
 
         .segment "CODE"
@@ -69,6 +83,7 @@ _udeks_vic_graphics_enable:
         ora #$04
         sta CPU_PORT
         lda #$00
+        sta VIC_STATUS_POINTER_SHAPE
         sta OUTLINE_GATEWAY_TAG
         ldx #$00
 copy_gateway:
@@ -102,6 +117,7 @@ restore_chargen_overlay:
 store_chargen_overlay:
         sta CPU_PORT
         lda #$00
+        sta VIC_STATUS_POINTER_SHAPE
         rts
 
 _udeks_vic_pointer_set_x:
@@ -121,6 +137,59 @@ pointer_x_store:
 
 _udeks_vic_pointer_set_y:
         sta VIC_SPRITE0_Y
+        rts
+
+_udeks_vic_pointer_busy_begin:
+        tax
+        lda VIC_STATUS_STATE
+        cmp #VIC_STATE_ACTIVE
+        bne pointer_busy_done
+        lda VIC_STATUS_POINTER_SHAPE
+        beq pointer_busy_install
+        cmp #BUSY_RELEASE_PENDING
+        bne pointer_busy_done
+        stx VIC_STATUS_POINTER_SHAPE
+        rts
+pointer_busy_install:
+        stx VIC_STATUS_POINTER_SHAPE
+        lda #$01
+        jmp _udeks_vic_pointer_select_shape
+pointer_busy_done:
+        rts
+
+_udeks_vic_pointer_busy_end:
+        tax
+        cpx VIC_STATUS_POINTER_SHAPE
+        bne pointer_busy_done
+        lda POINTER_FRAME_LOW
+        clc
+        adc #BUSY_HOLD_FRAMES
+        sta busy_release_frame
+        lda #BUSY_RELEASE_PENDING
+        sta VIC_STATUS_POINTER_SHAPE
+        rts
+
+_udeks_vic_pointer_busy_tick:
+        lda VIC_STATUS_POINTER_SHAPE
+        cmp #BUSY_RELEASE_PENDING
+        bne pointer_busy_done
+        lda POINTER_FRAME_LOW
+        cmp busy_release_frame
+        bne pointer_busy_done
+        lda #$00
+        sta VIC_STATUS_POINTER_SHAPE
+        jmp _udeks_vic_pointer_select_shape
+
+_udeks_vic_pointer_select_shape:
+        sta COMMON_PAGE
+        ldx #$00
+copy_sprite_swap_gateway:
+        lda sprite_swap_gateway,x
+        sta COMMON_GATEWAY,x
+        inx
+        cpx #sprite_swap_gateway_end-sprite_swap_gateway
+        bne copy_sprite_swap_gateway
+        jsr COMMON_GATEWAY
         rts
 
 _udeks_vic_bitmap_commit_page:
@@ -267,6 +336,34 @@ sprite_data_end:
         .assert sprite_data_end-sprite_data = 63, error, "VIC pointer sprite size drift"
 vic_gateway_end:
         .assert vic_gateway_end-vic_gateway < $100, error, "VIC common gateway exceeds one-page installer"
+
+sprite_swap_gateway:
+        lda #$00
+        sta MMU_LCR_WORKER_FLAT
+        lda COMMON_PAGE
+        beq sprite_restore_normal
+        ldx #$3e
+sprite_save_normal:
+        lda VIC_SPRITE,x
+        sta VIC_SPRITE_NORMAL,x
+        lda VIC_SPRITE_BUSY,x
+        sta VIC_SPRITE,x
+        dex
+        bpl sprite_save_normal
+        bmi sprite_swap_done
+sprite_restore_normal:
+        ldx #$3e
+sprite_restore_copy:
+        lda VIC_SPRITE_NORMAL,x
+        sta VIC_SPRITE,x
+        dex
+        bpl sprite_restore_copy
+sprite_swap_done:
+        lda #$00
+        sta MMU_LCR_KERNEL_IO
+        rts
+sprite_swap_gateway_end:
+        .assert sprite_swap_gateway_end-sprite_swap_gateway < $40, error, "VIC sprite swap gateway is too large"
 
 page_gateway:
         lda COMMON_PAGE

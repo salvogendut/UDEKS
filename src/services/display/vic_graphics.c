@@ -10,6 +10,7 @@ extern unsigned char udeks_vic_graphics_enable(void);
 extern unsigned char udeks_vic_graphics_disable(void);
 extern void udeks_vic_pointer_set_x(unsigned int x);
 extern void udeks_vic_pointer_set_y(unsigned char y);
+extern void udeks_vic_pointer_busy_tick(void);
 extern void udeks_vic_bitmap_commit_page(unsigned char page);
 extern void udeks_vic_bitmap_outline_blit(void);
 
@@ -403,6 +404,7 @@ unsigned char udeks_vic_graphics_start(void)
 unsigned char udeks_vic_graphics_poll(void)
 {
     if (STATUS_BYTE(5) == UDEKS_VIC_GRAPHICS_ACTIVE) {
+        udeks_vic_pointer_busy_tick();
         update_pointer();
     }
     return UDEKS_VIC_GRAPHICS_OK;

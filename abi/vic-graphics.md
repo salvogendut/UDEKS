@@ -10,10 +10,13 @@ physical-bank-1 layout:
 
 | Range | Purpose |
 |---|---|
-| `$4000-$5BFF` | Reserved VIC window space |
+| `$4000-$40FF` | Immutable backup of the common transfer page |
+| `$4100-$413E` | Saved normal-pointer sprite template |
+| `$4140-$417E` | Busy-pipe sprite template |
+| `$417F-$5BFF` | Reserved VIC window space |
 | `$5C00-$5FFF` | Screen/color-selection bytes and sprite pointers |
 | `$6000-$7F3F` | 8,000-byte high-resolution bitmap |
-| `$7F40-$7FBF` | Reserved |
+| `$7F40-$7FBF` | Reserved bitmap tail |
 | `$7FC0-$7FFF` | Sprite 0, a black X pointer |
 
 The MMU RAM-configuration register exposes physical bank 1 to the VIC-IIe and
@@ -57,6 +60,16 @@ on control port 1 or a joystick on control port 2. The earlier `xinit`
 milestone proved mode ownership, bank placement, independent dual-display
 output, and input before the drawing primitives were added.
 
+While ownership has been handed to the Z80 worker or the 8502 compositor is
+repainting, the display service replaces the X data in sprite 0 with the 24x21
+pipe from `assets/24x21-pipe-sprite.png`. Repaint owns the indication across
+nested Z80 leases, preventing each lease from briefly restoring the X. Only
+the 63 sprite bytes are exchanged; sprite position, color, and VIC
+configuration remain unchanged. Release starts a non-blocking three-frame
+grace period, keeping short jobs and repaints visible without delaying either
+CPU. New work during that period reclaims the existing pipe without copying
+the sprite again.
+
 `xinit -q` terminates the graphics session. It disables the pointer sprite,
 blanks VIC-IIe bitmap output, returns VIC RAM visibility to physical bank 0,
 and leaves the service passive and ready for a later `xinit`. The VDC console
@@ -81,4 +94,4 @@ The 24-byte `VICG` record begins at `$F1B0`:
 | 17–18 | 2 | Successful `xinit` operations |
 | 19–20 | 2 | Successful `xinit -q` operations |
 | 21–22 | 2 | Successful dirty-page commit calls |
-| 23 | 1 | Reserved |
+| 23 | 1 | Pointer owner (`0` = X, `1` = Z80, `2` = repaint, `3` = release delay) |

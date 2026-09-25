@@ -33,6 +33,8 @@ class VicGraphicsSourceTests(unittest.TestCase):
             "COMMON_GATEWAY          = $f68a",
             "VIC_SCREEN              = $5c00",
             "VIC_BITMAP              = $6000",
+            "VIC_SPRITE_NORMAL       = $4100",
+            "VIC_SPRITE_BUSY         = $4140",
             "VIC_SPRITE              = $7fc0",
             "VIC_SPRITE_POINTER      = $5ff8",
             "CPU_PORT                = $0001",
@@ -129,7 +131,20 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("sta VIC_SPRITE0_COLOR", source)
         self.assertIn("_udeks_vic_pointer_set_x", source)
         self.assertIn("_udeks_vic_pointer_set_y", source)
+        self.assertIn("_udeks_vic_pointer_select_shape", source)
         self.assertIn("sprite_data_end-sprite_data = 63", source)
+        stage1 = (ROOT / "src/boot/stage1.s").read_text(encoding="utf-8")
+        loader = (ROOT / "src/boot/stage1-gateway.s").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('.incbin "build/assets/24x21-pipe-sprite.vic"', stage1)
+        self.assertIn("busy_sprite_image_end-busy_sprite_image = 63", stage1)
+        self.assertIn("BUSY_SPRITE_SOURCE      = $1fc0", loader)
+        self.assertIn("VIC_BUSY_TEMPLATE       = $4140", loader)
+        self.assertIn("sta VIC_BUSY_TEMPLATE,y", loader)
+        self.assertIn("sprite_swap_gateway:", source)
+        self.assertIn("sta VIC_SPRITE_NORMAL,x", source)
+        self.assertIn("lda VIC_SPRITE_BUSY,x", source)
         shutdown = source.split("_udeks_vic_graphics_disable:", 1)[1]
         shutdown = shutdown.split("vic_gateway:", 1)[0]
         self.assertIn("and #$fe", shutdown)
@@ -137,6 +152,18 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("and #$bf", shutdown)
         self.assertIn("and #$fb", shutdown)
         self.assertIn("sta CPU_PORT", shutdown)
+
+        self.assertIn("_udeks_vic_pointer_busy_begin:", source)
+        self.assertIn("_udeks_vic_pointer_busy_end:", source)
+        self.assertIn("_udeks_vic_pointer_busy_tick:", source)
+        self.assertIn("BUSY_HOLD_FRAMES        = $03", source)
+        self.assertIn("cmp #BUSY_RELEASE_PENDING", source)
+        self.assertIn("sta VIC_STATUS_POINTER_SHAPE", source)
+
+        display = (ROOT / "src/services/display/vic_graphics.c").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("udeks_vic_pointer_busy_tick();", display)
 
 if __name__ == "__main__":
     unittest.main()

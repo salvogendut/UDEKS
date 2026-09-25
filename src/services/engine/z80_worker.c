@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "udeks/mailbox.h"
 #include "udeks/memory.h"
+#include "udeks/vic_graphics.h"
 #include "udeks/z80_worker.h"
 
 #define MAILBOX_BYTE(offset) \
@@ -107,7 +108,9 @@ unsigned char udeks_z80_submit(
     STATUS_BYTE(STATUS_LAST_OPCODE) = opcode;
     STATUS_BYTE(STATUS_SEQUENCE_LO) = (unsigned char)sequence;
     STATUS_BYTE(STATUS_SEQUENCE_HI) = (unsigned char)(sequence >> 8);
+    udeks_vic_pointer_busy_begin(UDEKS_VIC_BUSY_Z80);
     udeks_z80_handoff();
+    udeks_vic_pointer_busy_end(UDEKS_VIC_BUSY_Z80);
     STATUS_BYTE(STATUS_LAST_STATE) = MAILBOX_BYTE(UDEKS_MB_STATE);
     STATUS_BYTE(STATUS_MAILBOX_STATUS) = MAILBOX_BYTE(UDEKS_MB_STATUS);
 

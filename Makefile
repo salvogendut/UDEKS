@@ -90,6 +90,7 @@ PANIC_PROBE_D71 := $(BUILD_BOOT)/udeks-panic-probe.d71
 VDC_SPLASH_BIN := $(BUILD_ASSETS)/udekspipe-64.vdc
 VDC_WORDMARK_BIN := $(BUILD_ASSETS)/udekusu-64.vdc
 VDC_TEXT_ASSETS_BIN := $(BUILD_ASSETS)/udeks-vdc-text.bin
+VIC_BUSY_SPRITE_BIN := $(BUILD_ASSETS)/24x21-pipe-sprite.vic
 USER_COWSAY_ASM := $(BUILD_USER)/cowsay.s
 USER_COWSAY_OBJ := $(BUILD_USER)/cowsay.o
 USER_DATE_ASM := $(BUILD_USER)/date.s
@@ -140,7 +141,8 @@ boot: $(BOOT_D71) $(BOOT_D64)
 
 panic-probe: $(PANIC_PROBE_D71)
 
-framebuffer-assets: $(VDC_SPLASH_BIN) $(VDC_WORDMARK_BIN) $(VDC_TEXT_ASSETS_BIN)
+framebuffer-assets: $(VDC_SPLASH_BIN) $(VDC_WORDMARK_BIN) \
+		$(VDC_TEXT_ASSETS_BIN) $(VIC_BUSY_SPRITE_BIN)
 
 # Compile user programs independently; they must never enter the resident link.
 user-sources: $(USER_COWSAY_ASM) $(USER_DATE_ASM) $(USER_LS_ASM) $(USER_USH_ASM) \
@@ -350,6 +352,10 @@ $(VDC_TEXT_ASSETS_BIN): assets/udekspipe-64.xpm assets/udekusu-64.xpm \
 	$(PYTHON) tools/xpm_to_vdc_text.py \
 		assets/udekspipe-64.xpm assets/udekusu-64.xpm $@
 
+$(VIC_BUSY_SPRITE_BIN): assets/24x21-pipe-sprite.png \
+		tools/png_to_vic_sprite.py | $(BUILD_ASSETS)
+	$(PYTHON) tools/png_to_vic_sprite.py $< $@
+
 $(BUILD_8502)/kernel.s: src/8502/kernel.c include/udeks/mailbox.h \
 		include/udeks/memory.h include/udeks/panic.h include/udeks/compiler.h \
 		include/udeks/service.h | $(BUILD_8502)
@@ -444,7 +450,7 @@ $(BUILD_8502)/shell.s: src/services/shell/shell.c \
 
 $(BUILD_8502)/z80_worker.s: src/services/engine/z80_worker.c \
 		include/udeks/mailbox.h include/udeks/memory.h \
-		include/udeks/z80_worker.h | $(BUILD_8502)
+		include/udeks/vic_graphics.h include/udeks/z80_worker.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/vic_graphics.s: src/services/display/vic_graphics.c \
@@ -1054,7 +1060,8 @@ $(STAGE1_GATEWAY_BIN) $(TASK_LOADER_BIN) &: $(BUILD_BOOT)/stage1-gateway.o \
 	$(LD65) -C cfg/8502-stage1-gateway.cfg \
 		-o $(STAGE1_GATEWAY_BIN) $<
 
-$(BUILD_BOOT)/stage1.o: src/boot/stage1.s $(STAGE1_GATEWAY_BIN) | $(BUILD_BOOT)
+$(BUILD_BOOT)/stage1.o: src/boot/stage1.s $(STAGE1_GATEWAY_BIN) \
+		$(VIC_BUSY_SPRITE_BIN) | $(BUILD_BOOT)
 	$(CA65) --cpu 6502 -o $@ $<
 
 $(STAGE1_BIN): $(BUILD_BOOT)/stage1.o cfg/8502-stage1.cfg
@@ -1106,7 +1113,7 @@ check:
 		tools/vdc_console_decode.py tools/service_registry_decode.py \
 		tools/panic_decode.py tools/capability_decode.py \
 		tools/framebuffer_decode.py tools/clock_decode.py tools/xpm_to_vdc.py \
-		tools/xpm_to_vdc_text.py \
+		tools/xpm_to_vdc_text.py tools/png_to_vic_sprite.py \
 		tools/keyboard_decode.py \
 		tools/root_terminal_decode.py \
 		tools/z80_worker_decode.py \

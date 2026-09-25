@@ -117,7 +117,12 @@ stock timing; no optional doubled/8 MHz emulator mode is used. See the
 yellow 320x200 bank-1 bitmap with a centered black X pointer; `xinit -q`
 terminates that display session. Neither transition replaces or suspends the
 VDC console. The compact X pointer accepts a proportional 1351 mouse on control
-port 1 and a digital joystick on control port 2. `xclock` starts the first
+port 1 and a digital joystick on control port 2. During a repaint or Z80 lease,
+its 63 sprite bytes are temporarily replaced by the pipe asset as a busy
+indication; nested Z80 work cannot clear a repaint-owned indication. A
+non-blocking three-frame release delay makes brief work visible without
+stalling the executive. `xclock`
+starts the first
 managed analog-clock window. `xwave` opens another managed window and uses
 bounded Z80 sinc-surface leases while the 8502 projects and plots a connected
 two-axis isometric mesh on the VIC-IIe. A command

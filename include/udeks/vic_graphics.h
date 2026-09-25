@@ -23,11 +23,16 @@
 #define UDEKS_VIC_BITMAP_SIZE                8000u
 #define UDEKS_VIC_BITMAP_PAGES               32u
 
+#define UDEKS_VIC_BUSY_Z80                   1u
+#define UDEKS_VIC_BUSY_REPAINT               2u
+
 unsigned char udeks_vic_graphics_start(void);
 unsigned char udeks_vic_graphics_poll(void);
 unsigned char udeks_vic_graphics_initialize(void);
 unsigned char udeks_vic_graphics_shutdown(void);
 unsigned char udeks_vic_graphics_is_active(void);
+void udeks_vic_pointer_busy_begin(unsigned char owner);
+void udeks_vic_pointer_busy_end(unsigned char owner);
 void udeks_vic_bitmap_clear(unsigned char color);
 void udeks_vic_bitmap_pixel(int x, int y, unsigned char color);
 void udeks_vic_bitmap_line(

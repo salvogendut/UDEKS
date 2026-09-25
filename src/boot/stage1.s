@@ -125,4 +125,11 @@ gateway_image:
         .incbin "build/boot/stage1-gateway.bin"
 gateway_image_end:
         .assert gateway_image_end-gateway_image <= $0300, error, "stage-1 gateway exceeds boot reservation"
-        .assert gateway_image_end <= $2000, error, "stage 1 exceeds reserved $1C00-$1FFF range"
+        .assert gateway_image_end <= $1fc0, error, "stage-1 gateway overlaps the busy sprite"
+
+        .segment "SPRITE"
+busy_sprite_image:
+        .incbin "build/assets/24x21-pipe-sprite.vic"
+busy_sprite_image_end:
+        .assert busy_sprite_image_end-busy_sprite_image = 63, error, "VIC busy sprite size drift"
+        .assert busy_sprite_image_end <= $2000, error, "stage 1 exceeds reserved $1C00-$1FFF range"

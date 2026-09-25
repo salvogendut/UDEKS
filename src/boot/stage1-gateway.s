@@ -14,6 +14,8 @@ BOOT_CHAIN_DEST_SUM     = BOOT_CHAIN + 16
 MMU_LCR_KERNEL_IO       = $ff01
 MMU_LCR_KERNEL_FLAT     = $ff02
 MMU_LCR_WORKER_FLAT     = $ff04
+BUSY_SPRITE_SOURCE      = $1fc0
+VIC_BUSY_TEMPLATE       = $4140
 
         ; This installer remains below $F800 while it replaces the boot-time
         ; code above it with permanent common-RAM services.
@@ -364,6 +366,24 @@ backup_service_page:
         sta $4000,y
         iny
         bne backup_service_page
+
+        ; Move the generated pipe out of the disposable stage-1 image and
+        ; into reserved space near the start of the VIC-visible bank. Runtime
+        ; changes can then copy entirely within bank 1 without spending
+        ; scarce resident-kernel bytes on the 63-byte sprite payload.
+        ldy #$00
+copy_busy_sprite:
+        lda #$00
+        sta MMU_LCR_KERNEL_FLAT
+        lda BUSY_SPRITE_SOURCE,y
+        sta transfer_byte
+        lda #$00
+        sta MMU_LCR_WORKER_FLAT
+        lda transfer_byte
+        sta VIC_BUSY_TEMPLATE,y
+        iny
+        cpy #$3f
+        bne copy_busy_sprite
         lda #$00
         sta MMU_LCR_KERNEL_FLAT
 
