@@ -11,9 +11,13 @@ from build_d71 import (
     APP1_Z80_OFFSET,
     APP2_Z80_OFFSET,
     APP_IMAGE_SIZE,
+    BOOTFS_SIZE,
+    BOOTFS_Z80_OFFSET,
     PAYLOAD_BLOCKS,
     PAYLOAD_SIZE,
     SECTOR_SIZE,
+    TASK_LOADER_STAGING_ADDRESS,
+    TASK_LOADER_STAGING_SIZE,
     blank_d71,
     boot_locations,
     build_image,
@@ -64,6 +68,39 @@ class BuildD71Tests(unittest.TestCase):
         self.assertEqual(z80[APP1_Z80_OFFSET : APP1_Z80_OFFSET + len(app1)], app1)
         self.assertEqual(z80[APP2_Z80_OFFSET : APP2_Z80_OFFSET + len(app2)], app2)
 
+    def test_bootfs_is_packed_between_application_slots(self):
+        bootfs = b"UBFS" + bytes(20)
+        image = build_image(
+            stage0(), b"", b"", b"", b"clock", b"wave", bootfs
+        )
+        payload = b"".join(
+            image[
+                sector_offset(track, sector) :
+                sector_offset(track, sector) + SECTOR_SIZE
+            ]
+            for track, sector in list(boot_locations(1 + PAYLOAD_BLOCKS))[1:]
+        )
+        z80 = payload[0xB400 : 0xB400 + 0x2000]
+        self.assertEqual(
+            z80[BOOTFS_Z80_OFFSET : BOOTFS_Z80_OFFSET + len(bootfs)],
+            bootfs,
+        )
+
+    def test_task_loader_is_staged_in_reclaimable_vic_shadow(self):
+        loader = b"task-loader"
+        image = build_image(
+            stage0(), b"", b"", b"", b"", b"", b"", loader
+        )
+        payload = b"".join(
+            image[
+                sector_offset(track, sector) :
+                sector_offset(track, sector) + SECTOR_SIZE
+            ]
+            for track, sector in list(boot_locations(1 + PAYLOAD_BLOCKS))[1:]
+        )
+        offset = TASK_LOADER_STAGING_ADDRESS - 0x1C00
+        self.assertEqual(payload[offset : offset + len(loader)], loader)
+
     def test_rejects_application_staging_collision(self):
         z80 = bytearray(0x2000)
         z80[APP1_Z80_OFFSET] = 1
@@ -73,6 +110,19 @@ class BuildD71Tests(unittest.TestCase):
     def test_rejects_oversize_application(self):
         with self.assertRaisesRegex(ValueError, "2560-byte"):
             build_image(stage0(), b"", b"", b"", bytes(APP_IMAGE_SIZE + 1))
+
+    def test_rejects_oversize_bootfs(self):
+        with self.assertRaisesRegex(ValueError, "2048-byte"):
+            build_image(
+                stage0(), b"", b"", b"", b"", b"", bytes(BOOTFS_SIZE + 1)
+            )
+
+    def test_rejects_oversize_task_loader(self):
+        with self.assertRaisesRegex(ValueError, "1280-byte"):
+            build_image(
+                stage0(), b"", b"", b"", b"", b"", b"",
+                bytes(TASK_LOADER_STAGING_SIZE + 1),
+            )
 
     def test_rejects_header_layout_drift(self):
         bad = bytearray(stage0())

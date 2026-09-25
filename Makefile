@@ -25,6 +25,7 @@ BUILD_OFFLOAD_Z80 := $(BUILD_DIR)/bench/offload/z80
 BUILD_MEMORY_MAP := $(BUILD_DIR)/bench/memory-map
 BUILD_BOOT := $(BUILD_DIR)/boot
 BUILD_ASSETS := $(BUILD_DIR)/assets
+BUILD_USER := $(BUILD_DIR)/user
 
 KERNEL_BIN := $(BUILD_8502)/udeks-8502.bin
 KERNEL_PRG := $(BUILD_8502)/udeks-8502.prg
@@ -79,19 +80,28 @@ MEMORY_MAP_LAUNCH_BIN := $(BUILD_MEMORY_MAP)/memory-map.bin
 MEMORY_MAP_PRG := $(BUILD_MEMORY_MAP)/memory-map.prg
 STAGE0_BIN := $(BUILD_BOOT)/stage0.bin
 STAGE1_GATEWAY_BIN := $(BUILD_BOOT)/stage1-gateway.bin
+TASK_LOADER_BIN := $(BUILD_BOOT)/task-loader.bin
 STAGE1_BIN := $(BUILD_BOOT)/stage1.bin
 BOOT_D71 := $(BUILD_BOOT)/udeks.d71
 PANIC_PROBE_D71 := $(BUILD_BOOT)/udeks-panic-probe.d71
 VDC_SPLASH_BIN := $(BUILD_ASSETS)/udekspipe-64.vdc
 VDC_WORDMARK_BIN := $(BUILD_ASSETS)/udekusu-64.vdc
 VDC_TEXT_ASSETS_BIN := $(BUILD_ASSETS)/udeks-vdc-text.bin
+USER_COWSAY_ASM := $(BUILD_USER)/cowsay.s
+USER_COWSAY_OBJ := $(BUILD_USER)/cowsay.o
+USER_ENTRY_OBJ := $(BUILD_USER)/entry.o
+USER_SYSCALL_OBJ := $(BUILD_USER)/syscall.o
+USER_COWSAY_BIN := $(BUILD_USER)/cowsay.bin
+USER_COWSAY_UDEX := $(BUILD_USER)/cowsay.udx
+USER_BOOTFS := $(BUILD_USER)/bootfs.img
 
 .PHONY: all 8502 z80 z80-asm bench bench-8502 bench-z80 bench-irq \
 	bench-irq-8502 bench-irq-z80 bench-irq-service \
 	bench-irq-service-8502 bench-irq-service-z80 bench-context \
 	bench-context-8502 bench-context-z80 bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
-	boot panic-probe framebuffer-assets check doctor clean help
+	boot panic-probe framebuffer-assets user-sources user-programs \
+	check doctor clean help
 
 all: 8502 z80 z80-asm
 
@@ -100,6 +110,11 @@ boot: $(BOOT_D71)
 panic-probe: $(PANIC_PROBE_D71)
 
 framebuffer-assets: $(VDC_SPLASH_BIN) $(VDC_WORDMARK_BIN) $(VDC_TEXT_ASSETS_BIN)
+
+# Compile user programs independently; they must never enter the resident link.
+user-sources: $(USER_COWSAY_ASM)
+
+user-programs: $(USER_BOOTFS)
 
 8502: $(KERNEL_BIN) $(KERNEL_PRG)
 
@@ -148,8 +163,33 @@ $(BUILD_8502) $(BUILD_Z80) $(BUILD_BENCH_8502) $(BUILD_BENCH_Z80) \
 		$(BUILD_IRQ_SERVICE_Z80) $(BUILD_CONTEXT_8502) $(BUILD_CONTEXT_Z80) \
 		$(BUILD_KERNEL_8502) $(BUILD_KERNEL_Z80) $(BUILD_HANDOFF_8502) \
 		$(BUILD_HANDOFF_Z80) $(BUILD_OFFLOAD_8502) $(BUILD_OFFLOAD_Z80) \
-		$(BUILD_MEMORY_MAP) $(BUILD_BOOT) $(BUILD_ASSETS):
+		$(BUILD_MEMORY_MAP) $(BUILD_BOOT) $(BUILD_ASSETS) $(BUILD_USER):
 	mkdir -p $@
+
+$(USER_COWSAY_ASM): user/bin/cowsay.c user/include/udeks/program.h | $(BUILD_USER)
+	$(CC65) $(CFLAGS_8502) -I user/include -o $@ $<
+
+$(USER_COWSAY_OBJ): $(USER_COWSAY_ASM) | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(USER_ENTRY_OBJ): user/lib/entry.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(USER_SYSCALL_OBJ): user/lib/syscall.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(USER_COWSAY_BIN): $(USER_ENTRY_OBJ) $(USER_SYSCALL_OBJ) \
+		$(USER_COWSAY_OBJ) cfg/8502-user-app1.cfg
+	$(CL65) -t none --cpu 6502 -C cfg/8502-user-app1.cfg \
+		-m $(BUILD_USER)/cowsay.map -o $@ $(filter %.o,$^)
+
+$(USER_COWSAY_UDEX): $(USER_COWSAY_BIN) tools/build_udex.py
+	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 \
+		--entry-address 0x0200 $< $@
+
+$(USER_BOOTFS): $(USER_COWSAY_UDEX) tools/build_bootfs.py
+	$(PYTHON) tools/build_bootfs.py --max-size 0x0800 \
+		--entry cowsay=$(USER_COWSAY_UDEX) $@
 
 $(VDC_SPLASH_BIN): assets/udekspipe-64.xpm tools/xpm_to_vdc.py | $(BUILD_ASSETS)
 	$(PYTHON) tools/xpm_to_vdc.py $< $@
@@ -240,7 +280,7 @@ $(BUILD_8502)/terminal_stream.s: src/services/terminal/stream.c \
 		include/udeks/root_console.h include/udeks/stream.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
-$(BUILD_8502)/shell_parser.s: src/services/shell/parser.c \
+$(BUILD_8502)/shell_parser.s: user/lib/shell_parser.c \
 		include/udeks/shell.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
@@ -248,7 +288,7 @@ $(BUILD_8502)/shell.s: src/services/shell/shell.c \
 		include/udeks/capability.h include/udeks/line_editor.h \
 		include/udeks/root_console.h include/udeks/root_terminal.h \
 		include/udeks/service.h include/udeks/shell.h \
-		include/udeks/stream.h include/udeks/mailbox.h \
+		include/udeks/stream.h include/udeks/task.h include/udeks/mailbox.h \
 		include/udeks/z80_worker.h include/udeks/vic_graphics.h \
 		include/udeks/window.h include/udeks/xclock.h \
 		include/udeks/xwave.h | $(BUILD_8502)
@@ -359,6 +399,9 @@ $(BUILD_8502)/time.o: $(BUILD_8502)/time.s | $(BUILD_8502)
 $(BUILD_8502)/clock.o: src/8502/clock.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/syscall_gate.o: src/8502/syscall_gate.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/capability_descriptor.o: src/services/capability/descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -387,6 +430,9 @@ $(BUILD_8502)/root_terminal_descriptor.o: src/services/terminal/descriptor.s | $
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/shell_descriptor.o: src/services/shell/descriptor.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/init_descriptor.o: src/services/init/descriptor.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/z80_worker_descriptor.o: src/services/engine/descriptor.s | $(BUILD_8502)
@@ -444,6 +490,7 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/z80_handoff.o \
 		$(BUILD_8502)/vic_graphics_transport.o \
 		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o $(BUILD_8502)/clock.o \
+		$(BUILD_8502)/syscall_gate.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o \
 		$(BUILD_8502)/capability_descriptor.o \
@@ -453,7 +500,7 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/pointer_descriptor.o \
 		$(BUILD_8502)/keyboard_descriptor.o \
 		$(BUILD_8502)/root_terminal_descriptor.o \
-		$(BUILD_8502)/shell_descriptor.o \
+		$(BUILD_8502)/init_descriptor.o \
 		$(BUILD_8502)/z80_worker_descriptor.o \
 		$(BUILD_8502)/vic_graphics_descriptor.o \
 		$(BUILD_8502)/window_descriptor.o \
@@ -482,6 +529,7 @@ $(PANIC_PROBE_KERNEL_BIN): $(BOOT_D71) \
 		$(BUILD_8502)/z80_handoff.o \
 		$(BUILD_8502)/vic_graphics_transport.o \
 		$(BUILD_8502)/panic.o $(BUILD_8502)/probe.o $(BUILD_8502)/clock.o \
+		$(BUILD_8502)/syscall_gate.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o $(BUILD_8502)/capability_descriptor.o \
 		$(BUILD_8502)/time_descriptor.o \
@@ -490,7 +538,7 @@ $(PANIC_PROBE_KERNEL_BIN): $(BOOT_D71) \
 		$(BUILD_8502)/pointer_descriptor.o \
 		$(BUILD_8502)/keyboard_descriptor.o \
 		$(BUILD_8502)/root_terminal_descriptor.o \
-		$(BUILD_8502)/shell_descriptor.o \
+		$(BUILD_8502)/init_descriptor.o \
 		$(BUILD_8502)/z80_worker_descriptor.o \
 		$(BUILD_8502)/vic_graphics_descriptor.o \
 		$(BUILD_8502)/window_descriptor.o \
@@ -847,9 +895,10 @@ $(STAGE0_BIN): $(BUILD_BOOT)/stage0.o cfg/8502-stage0.cfg
 $(BUILD_BOOT)/stage1-gateway.o: src/boot/stage1-gateway.s | $(BUILD_BOOT)
 	$(CA65) --cpu 6502 -o $@ $<
 
-$(STAGE1_GATEWAY_BIN): $(BUILD_BOOT)/stage1-gateway.o \
+$(STAGE1_GATEWAY_BIN) $(TASK_LOADER_BIN) &: $(BUILD_BOOT)/stage1-gateway.o \
 		cfg/8502-stage1-gateway.cfg
-	$(LD65) -C cfg/8502-stage1-gateway.cfg -o $@ $<
+	$(LD65) -C cfg/8502-stage1-gateway.cfg \
+		-o $(STAGE1_GATEWAY_BIN) $<
 
 $(BUILD_BOOT)/stage1.o: src/boot/stage1.s $(STAGE1_GATEWAY_BIN) | $(BUILD_BOOT)
 	$(CA65) --cpu 6502 -o $@ $<
@@ -858,17 +907,22 @@ $(STAGE1_BIN): $(BUILD_BOOT)/stage1.o cfg/8502-stage1.cfg
 	$(LD65) -C cfg/8502-stage1.cfg -o $@ $<
 
 $(BOOT_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
-		$(APP1_BIN) $(APP2_BIN) $(Z80_BIN) \
-		tools/build_d71.py
+		$(APP1_BIN) $(APP2_BIN) $(Z80_BIN) $(USER_BOOTFS) \
+		$(TASK_LOADER_BIN) tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
-		--app1 $(APP1_BIN) --app2 $(APP2_BIN) $@
+		--app1 $(APP1_BIN) --app2 $(APP2_BIN) \
+		--bootfs $(USER_BOOTFS) \
+		--task-loader $(TASK_LOADER_BIN) $@
 
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
-		$(APP1_BIN) $(APP2_BIN) $(Z80_BIN) tools/build_d71.py
+		$(APP1_BIN) $(APP2_BIN) $(Z80_BIN) $(USER_BOOTFS) \
+		$(TASK_LOADER_BIN) tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(PANIC_PROBE_KERNEL_BIN) \
-		--z80 $(Z80_BIN) --app1 $(APP1_BIN) --app2 $(APP2_BIN) $@
+		--z80 $(Z80_BIN) --app1 $(APP1_BIN) --app2 $(APP2_BIN) \
+		--bootfs $(USER_BOOTFS) \
+		--task-loader $(TASK_LOADER_BIN) $@
 
 check:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
@@ -889,6 +943,8 @@ check:
 		tools/pointer_decode.py \
 		tools/time_decode.py tools/window_decode.py tools/xclock_decode.py \
 		tools/xwave_decode.py \
+		tools/build_udex.py \
+		tools/build_bootfs.py \
 		tools/build_d71.py \
 		tools/snapshot_extract.py \
 		tools/vice_capture.py
@@ -959,6 +1015,8 @@ help:
 		'make boot       Build the native autoboot D71 image' \
 		'make panic-probe  Build the bad-descriptor panic qualification D71' \
 		'make framebuffer-assets  Pack the VDC boot-splash source artwork' \
+		'make user-sources  Compile staged user-program C sources' \
+		'make user-programs  Link and package staged UDEX programs' \
 		'make bench      Build comparable 8502 and Z80 benchmark images' \
 		'make bench-8502 Build only the 8502 benchmark image' \
 		'make bench-z80  Build only the Z80 benchmark image' \

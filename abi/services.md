@@ -26,14 +26,17 @@ The initial flags are:
 - bit 0: resident for the lifetime of the kernel;
 - bit 1: critical to system bring-up.
 
-Initial service classes are console (`1`), hardware capability discovery (`2`),
-display (`3`), machine policy/time (`4`), input (`5`), terminal policy (`6`), native
-shell (`7`), bounded Z80 worker (`8`), window manager (`9`), and temporary
-static-application adapter (`10`). The default image starts capability
-discovery, CIA time, the Z80 worker, VDC text console, pointer input, the
-VIC-IIe graphics service, window manager, keyboard, root-terminal policy,
-shell, and the temporary `xclock` and `xwave` application adapters in that order. It
-remains at 1 MHz so the VIC-IIe stays available.
+Initial service classes are console (`1`), hardware capability discovery
+(`2`), display (`3`), machine policy/time (`4`), input (`5`), terminal policy
+(`6`), native shell (`7`), bounded Z80 worker (`8`), window manager (`9`),
+temporary static-application adapter (`10`), and init/session policy (`11`).
+The default image starts capability discovery, CIA time, the Z80 worker, VDC
+text console, pointer input, the VIC-IIe graphics service, window manager,
+keyboard, root-terminal policy, init, and the temporary `xclock` and `xwave`
+application adapters in that order. Init currently delegates the root session
+to the resident bootstrap shell; it will instead load `/bin/ush` once the
+user-task stream and yield interfaces exist. The system remains at 1 MHz so
+the VIC-IIe stays available.
 The machine-clock and VDC framebuffer descriptors remain optional modules:
 2 MHz requires an explicit VIC-blanking policy, and VDC bitmap mode requires
 explicit display ownership. The VIC-IIe service is display class `3`, instance
@@ -61,7 +64,9 @@ registry validates every descriptor before invoking it. Future disk-loaded
 modules must submit the same bytes to the same validation path before being
 registered.
 
-Static linking during bring-up does not merge module responsibilities. The
+Static linking during bring-up does not merge module responsibilities. ADR
+0007 now makes this placement explicitly transitional and forbids adding new
+policy or applications to the resident image. The
 VIC-IIe display module owns hardware state and its 8502 assembly transport;
 the window module owns composition and pointer policy; `xclock` and `xwave`
 are applications. Their adapters exist only to obtain a cooperative poll

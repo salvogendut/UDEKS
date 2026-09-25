@@ -46,7 +46,7 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("_udeks_vic_bitmap_commit_page", source)
         self.assertIn("_udeks_vic_bitmap_outline_blit", source)
         self.assertIn("COMMON_BUFFER           = $f900", source)
-        self.assertIn("OUTLINE_BUFFER          = $fa00", source)
+        self.assertIn("OUTLINE_BUFFER          = $f380", source)
         self.assertIn("OUTLINE_GATEWAY_TAG     = $f7fe", source)
         self.assertIn("cmp #$a5", source)
         self.assertIn("cmp #$1f", source)

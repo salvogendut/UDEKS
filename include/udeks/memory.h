@@ -43,6 +43,12 @@
 #define UDEKS_APP1_STAGING_BASE       0xD400u
 #define UDEKS_APP2_STAGING_BASE       0xE600u
 
+/* Bank-1 bootfs image and the first transient task-slot backup. */
+#define UDEKS_BOOTFS_BASE             0x2E00u
+#define UDEKS_BOOTFS_LIMIT            0x3600u
+#define UDEKS_TASK_BACKUP_BASE        0x8000u
+#define UDEKS_TASK_BACKUP_LIMIT       0x8A00u
+
 /* Four KiB of bank-0 RAM shared at the top of every RAM-bank view. */
 #define UDEKS_COMMON_BASE             0xF000u
 #define UDEKS_COMMON_SIZE             0x1000u

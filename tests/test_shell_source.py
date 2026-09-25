@@ -8,12 +8,20 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ShellSourceTests(unittest.TestCase):
-    def test_shell_follows_terminal_in_service_poll_order(self):
+    def test_init_follows_terminal_in_service_poll_order(self):
         table = (ROOT / "src/services/table.s").read_text(encoding="utf-8")
         terminal = table.index(".addr _udeks_root_terminal_service_descriptor")
-        shell = table.index(".addr _udeks_shell_service_descriptor")
-        self.assertLess(terminal, shell)
+        init = table.index(".addr _udeks_init_service_descriptor")
+        self.assertLess(terminal, init)
         self.assertIn(".byte $0c", table)
+
+    def test_init_owns_the_transitional_root_shell_session(self):
+        descriptor = (ROOT / "src/services/init/descriptor.s").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(".byte $0b, $00", descriptor)
+        self.assertIn("jmp _udeks_shell_start", descriptor)
+        self.assertIn("jmp _udeks_shell_poll", descriptor)
 
     def test_shell_uses_registry_dispatch_and_rearms_terminal_prompt(self):
         source = (ROOT / "src/services/shell/shell.c").read_text(encoding="utf-8")
@@ -51,13 +59,25 @@ class ShellSourceTests(unittest.TestCase):
         self.assertIn("udeks_shell_interrupt_foreground", source)
         self.assertIn('*)"-q"', source)
 
-    def test_shell_is_a_resident_polled_service(self):
+    def test_external_commands_use_generic_bootfs_loader(self):
+        source = (ROOT / "src/services/shell/shell.c").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("UDEKS_TASK_LOADER_ENTRY", source)
+        self.assertIn("UDEKS_TASK_NOT_FOUND", source)
+        self.assertIn('*)": task slot busy"', source)
+        self.assertIn('*)"Unknown command: "', source)
+        self.assertNotIn("command_cowsay", source)
+
+    def test_legacy_shell_descriptor_is_not_in_the_boot_table(self):
         descriptor = (ROOT / "src/services/shell/descriptor.s").read_text(
             encoding="utf-8"
         )
+        table = (ROOT / "src/services/table.s").read_text(encoding="utf-8")
         self.assertIn(".byte $07, $00", descriptor)
         self.assertIn(".addr _udeks_shell_start", descriptor)
         self.assertIn(".addr _udeks_shell_poll", descriptor)
+        self.assertNotIn("_udeks_shell_service_descriptor", table)
 
 
 if __name__ == "__main__":

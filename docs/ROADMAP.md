@@ -99,7 +99,7 @@ display corruption.
 
 ## Phase 3 — Executive kernel
 
-- [ ] Freeze the initial syscall jump-table ABI.
+- [x] Freeze the initial 8502 syscall table and program-entry ABI.
 - [ ] Implement task creation, exit, yield, sleep, and event wait.
 - [ ] Save and restore the selected compiler runtime and CPU context.
 - [ ] Add cooperative scheduling, then timer-driven preemption.
@@ -224,12 +224,32 @@ without missing input events.
 
 ## Phase 6 — Storage and executable environment
 
+- [x] Freeze the resident-core boundary and extraction order in ADR 0007.
+- [x] Define and host-validate the fixed-address UDEX 0.1 container.
+- [x] Move `cowsay` to the user source tree as the first loader acceptance
+  program; do not register it as a resident builtin.
+- [x] Define and link the fixed syscall veneer and 8502 entry/exit convention.
+- [x] Add the first loader-managed task slot and validated read-only `/bin`
+  bootfs.
+- [x] Add init as the registry-visible owner of the root session; its direct
+  delegation to the bootstrap shell remains transitional.
+- [ ] Load, run, and reclaim `cowsay` without adding it to the resident image.
+- [ ] Package `xclock` and `xwave` as UDEX programs.
 - [ ] Implement IEC device discovery and baseline serial operations.
 - [ ] Add 1571 burst support only after baseline correctness.
-- [ ] Define filesystem and executable/module formats.
+- [ ] Define the filesystem format and mount contract.
 - [ ] Implement file, directory, and stream syscalls.
+- [ ] Add `/bin/ls` over the directory ABI, supporting `ls`, `ls /`, and
+  `ls -l /bin` without direct knowledge of IEC devices or filesystem formats.
 - [ ] Add disk-error recovery and media-change handling.
-- [ ] Load and terminate relocatable C applications.
+- [ ] Load and terminate relocatable C applications after the fixed-address
+  format is qualified.
+- [ ] Extract terminal, window, display, input, time, and engine policy into
+  loadable servers and remove their static pointer-table entries.
+- [ ] Package the native shell as `/bin/ush` and have init load it for the root
+  terminal session at boot.
+- [ ] Replace bootfs fallback with storage-backed `/bin` resolution after VFS
+  and IEC services are available.
 
 **Exit gate:** applications can be installed, launched, exchange files, and exit
 without rebooting or corrupting media.

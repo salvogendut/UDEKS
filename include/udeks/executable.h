@@ -1,0 +1,27 @@
+/* SPDX-License-Identifier: GPL-3.0-or-later */
+#ifndef UDEKS_EXECUTABLE_H
+#define UDEKS_EXECUTABLE_H
+
+#define UDEKS_EXECUTABLE_MAGIC0          'U'
+#define UDEKS_EXECUTABLE_MAGIC1          'D'
+#define UDEKS_EXECUTABLE_MAGIC2          'E'
+#define UDEKS_EXECUTABLE_MAGIC3          'X'
+#define UDEKS_EXECUTABLE_ABI_MAJOR       0u
+#define UDEKS_EXECUTABLE_ABI_MINOR       1u
+#define UDEKS_EXECUTABLE_HEADER_SIZE     16u
+
+#define UDEKS_EXECUTABLE_CPU_8502        1u
+#define UDEKS_EXECUTABLE_CPU_Z80         2u
+
+#define UDEKS_EXECUTABLE_FLAG_NONE       0u
+
+#define UDEKS_EXECUTABLE_LOAD_LO         8u
+#define UDEKS_EXECUTABLE_LOAD_HI         9u
+#define UDEKS_EXECUTABLE_IMAGE_LO       10u
+#define UDEKS_EXECUTABLE_IMAGE_HI       11u
+#define UDEKS_EXECUTABLE_BSS_LO         12u
+#define UDEKS_EXECUTABLE_BSS_HI         13u
+#define UDEKS_EXECUTABLE_ENTRY_LO       14u
+#define UDEKS_EXECUTABLE_ENTRY_HI       15u
+
+#endif

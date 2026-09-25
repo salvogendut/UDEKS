@@ -69,8 +69,10 @@ extern const unsigned char udeks_vdc_text_assets[];
 static unsigned char address_high;
 static unsigned char address_low;
 static unsigned char service_failure;
+#pragma bss-name(push, "HIGHBSS")
 static unsigned char row_buffer[UDEKS_ROOT_CONSOLE_COLUMNS];
 static unsigned char attribute_buffer[UDEKS_ROOT_CONSOLE_COLUMNS];
+#pragma bss-name(pop)
 static unsigned char frame_buffer[UDEKS_ROOT_CONSOLE_COLUMNS + 2u];
 #pragma bss-name(push, "APP2BSS")
 static unsigned char app_mask;

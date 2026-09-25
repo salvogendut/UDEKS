@@ -13,9 +13,13 @@ TRACK_COUNT = 70
 STAGE1_ADDRESS = 0x1C00
 KERNEL_ADDRESS = 0x2000
 Z80_STAGING_ADDRESS = 0xD000
+TASK_LOADER_STAGING_ADDRESS = 0xC900
+TASK_LOADER_STAGING_SIZE = 0x0500
 Z80_SIZE = 0x2000
 APP_IMAGE_SIZE = 0x0A00
 APP1_Z80_OFFSET = 0x0400
+BOOTFS_Z80_OFFSET = 0x0E00
+BOOTFS_SIZE = 0x0800
 APP2_Z80_OFFSET = 0x1600
 PAYLOAD_SIZE = 0xD400
 PAYLOAD_BLOCKS = PAYLOAD_SIZE // SECTOR_SIZE
@@ -117,9 +121,33 @@ def install_app_image(z80: bytearray, image: bytes, offset: int, name: str) -> N
     z80[offset : offset + APP_IMAGE_SIZE] = image.ljust(APP_IMAGE_SIZE, b"\x00")
 
 
+def install_bootfs(z80: bytearray, bootfs: bytes) -> None:
+    if len(bootfs) > BOOTFS_SIZE:
+        raise ValueError("bootfs exceeds its 2048-byte reservation")
+    region = z80[BOOTFS_Z80_OFFSET : BOOTFS_Z80_OFFSET + BOOTFS_SIZE]
+    if any(region):
+        raise ValueError("bootfs overlaps Z80 code or data")
+    z80[BOOTFS_Z80_OFFSET : BOOTFS_Z80_OFFSET + BOOTFS_SIZE] = (
+        bootfs.ljust(BOOTFS_SIZE, b"\x00")
+    )
+
+
+def install_task_loader(kernel: bytearray, loader: bytes) -> None:
+    if len(loader) > TASK_LOADER_STAGING_SIZE:
+        raise ValueError("task loader exceeds its 1280-byte staging area")
+    offset = TASK_LOADER_STAGING_ADDRESS - KERNEL_ADDRESS
+    region = kernel[offset : offset + TASK_LOADER_STAGING_SIZE]
+    if any(region):
+        raise ValueError("task-loader staging overlaps resident kernel data")
+    kernel[offset : offset + TASK_LOADER_STAGING_SIZE] = loader.ljust(
+        TASK_LOADER_STAGING_SIZE, b"\x00"
+    )
+
+
 def build_image(
     stage0: bytes, stage1: bytes, kernel: bytes, z80: bytes,
-    app1: bytes = b"", app2: bytes = b""
+    app1: bytes = b"", app2: bytes = b"", bootfs: bytes = b"",
+    task_loader: bytes = b""
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -137,10 +165,15 @@ def build_image(
     staged_z80 = bytearray(z80.ljust(Z80_SIZE, b"\x00"))
     install_app_image(staged_z80, app1, APP1_Z80_OFFSET, "application 1")
     install_app_image(staged_z80, app2, APP2_Z80_OFFSET, "application 2")
+    install_bootfs(staged_z80, bootfs)
+    staged_kernel = bytearray(
+        kernel.ljust(Z80_STAGING_ADDRESS - KERNEL_ADDRESS, b"\x00")
+    )
+    install_task_loader(staged_kernel, task_loader)
 
     payload = (
         stage1.ljust(KERNEL_ADDRESS - STAGE1_ADDRESS, b"\x00")
-        + kernel.ljust(Z80_STAGING_ADDRESS - KERNEL_ADDRESS, b"\x00")
+        + staged_kernel
         + staged_z80
     )
     if len(payload) != PAYLOAD_SIZE:
@@ -169,6 +202,8 @@ def main() -> None:
     parser.add_argument("--z80", type=Path, required=True)
     parser.add_argument("--app1", type=Path)
     parser.add_argument("--app2", type=Path)
+    parser.add_argument("--bootfs", type=Path)
+    parser.add_argument("--task-loader", type=Path)
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
 
@@ -180,6 +215,8 @@ def main() -> None:
             args.z80.read_bytes(),
             b"" if args.app1 is None else args.app1.read_bytes(),
             b"" if args.app2 is None else args.app2.read_bytes(),
+            b"" if args.bootfs is None else args.bootfs.read_bytes(),
+            b"" if args.task_loader is None else args.task_loader.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

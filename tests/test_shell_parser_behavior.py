@@ -26,7 +26,7 @@ class ShellParserBehaviorTests(unittest.TestCase):
                 "-fPIC",
                 "-I",
                 str(ROOT / "include"),
-                str(ROOT / "src/services/shell/parser.c"),
+                str(ROOT / "user/lib/shell_parser.c"),
                 "-o",
                 str(library),
             ],

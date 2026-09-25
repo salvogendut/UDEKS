@@ -98,7 +98,12 @@ The common area is partitioned conservatively:
 | `$F280-$F2FF` | Reserved diagnostic space |
 | `$F300-$F33F` | Bounded Z80/8502 sample transfer buffer |
 | `$F340-$F358` | `xwave` previous surface-row cache |
-| `$F359-$F7FF` | Future queues, job descriptors, and shared transfer metadata |
+| `$F359-$F37E` | Future queues and shared transfer metadata |
+| `$F37F-$F39D` | VIC-II outline count and two 15-byte records |
+| `$F39E-$F7EF` | Initial transient-task C stack and future queues |
+| `$F7F0-$F7FF` | Transient-task stack guard/top |
+| `$F800-$F9FF` | Reclaimable stage-1 common gateway |
+| `$FA00-$FEFF` | Resident bootfs/task-loader reservation |
 | `$F800-$FEFF` | 8502/Z80 gateway code and common kernel mechanisms |
 | `$FF00-$FF04` | Permanent MMU register hole; never RAM or code |
 | `$FF05-$FFCF` | Common gateway state/code, to be allocated explicitly |

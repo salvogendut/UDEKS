@@ -17,6 +17,11 @@ your contribution may be distributed under those terms.
 - Keep hardware addresses and bit definitions in named interfaces.
 - Keep interrupt entry, MMU transitions, CPU handoff, and cycle-sensitive code
   in assembly. Keep policy and state machines in C where practical.
+- Put commands and applications under `user/`; do not register or link them in
+  the resident kernel. Hardware drivers and system policy belong in loadable
+  services unless they are required to implement the minimal executive.
+- User programs may depend only on the public user ABI. `make user-programs`
+  must link them without resolving private resident symbols.
 - Use fixed-width integer types in protocols and on-disk formats.
 - Do not expose compiler-native structs as an inter-CPU or on-disk ABI. Specify
   byte offsets and byte order instead.

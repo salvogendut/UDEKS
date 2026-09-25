@@ -4,7 +4,9 @@ The initial shell is a resident C service layered above the root-terminal
 policy service. The terminal owns keyboard editing and publishes one bounded,
 NUL-terminated line. The shell consumes that line on the same cooperative
 service pass, dispatches it through a static command registry, writes output to
-the retained root console, and then rearms the terminal prompt.
+the retained root console, and then rearms the terminal prompt. Init, rather
+than the service registry, owns this root-session lifecycle; init currently
+delegates to the resident implementation while `/bin/ush` is being separated.
 
 The command-facing conventions intentionally resemble a small Unix shell:
 handlers receive `argc`/`argv`, return zero for success and nonzero for
@@ -24,6 +26,12 @@ independently retains six volatile command
 lines for Up/Down recall. Empty lines simply produce a new prompt. Parser
 limits are errors reported on standard error rather than reasons to fail the
 service.
+
+Names absent from the builtin registry are searched as executable leaf names
+in the bootfs mounted at `/bin`. A match is validated as UDEX and run in the
+transient task slot. A missing name reports `Unknown command`; a slot occupied
+by `xclock` reports `<name>: task slot busy`. This lookup path is generic—there
+is no resident `cowsay` command record.
 
 The first command registry contains:
 

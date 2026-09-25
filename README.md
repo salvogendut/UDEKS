@@ -59,6 +59,12 @@ See [LICENSE](LICENSE).
 - `xclock` supplies the first C graphical client. `xwave` visibly divides work
   between the CPUs: the Z80 computes bounded rows of a radial sinc surface and
   the 8502 projects and draws its two-axis isometric wireframe.
+- The current statically linked services are transitional. ADR 0007 freezes a
+  smaller resident-core boundary; new commands such as `cowsay` live under
+  `user/` and must arrive through the executable-loader path.
+- A transitional init service owns the root session. Commands absent from the
+  builtin table are resolved by leaf name through the read-only `/bin` bootfs;
+  `cowsay` is the first program launched through that path.
 
 ## Hardware model
 
@@ -114,6 +120,7 @@ src/services/         Predominantly C system-service modules
 src/z80/              Z80 C, SDAS, and RASM sources
 tests/                Host-side tests and future emulator tests
 tools/                Deterministic build utilities
+user/                 Standalone program sources and user-side ABI headers
 ```
 
 `make boot` produces a native-autoboot D71 containing the resident 8502 kernel,
@@ -165,7 +172,12 @@ pass.
 - [Microkernel and service-module decision](docs/decisions/0004-microkernel-modules.md)
 - [Root-console and overlapping-window decision](docs/decisions/0005-root-window-and-compositor.md)
 - [Text-console and 1 MHz boot decision](docs/decisions/0006-text-console-default.md)
+- [Resident core and loadable service decision](docs/decisions/0007-resident-core-and-loadable-services.md)
 - [Mailbox ABI](abi/mailbox.md)
+- [UDEX executable format](abi/executable.md)
+- [Read-only boot filesystem format](abi/bootfs.md)
+- [Filesystem and Unix-like command direction](abi/filesystem.md)
+- [8502 syscall and program-entry ABI](abi/syscalls.md)
 - [Bounded Z80 worker service](abi/z80-worker.md)
 - [VIC-IIe graphics service](abi/vic-graphics.md)
 - [VIC-IIe window manager](abi/window.md)
@@ -173,6 +185,8 @@ pass.
 - [CIA time service](abi/time.md)
 - [`xclock` analog clock application](docs/XCLOCK.md)
 - [`xwave` dual-engine graphics demo](docs/XWAVE.md)
+- [`cowsay` first user-program port](docs/COWSAY.md)
+- [`/bin/ush` user-shell migration](docs/USH.md)
 - [Planned `xmandel` dual-engine Mandelbrot viewer](docs/XMANDEL.md)
 - [Service-module ABI](abi/services.md)
 - [Framebuffer client API](abi/framebuffer.md)

@@ -38,6 +38,8 @@ make z80-asm    # build the independent RASM smoke image
 make boot       # build build/boot/udeks.d71 for native C128 autoboot
 make panic-probe  # build a non-release D71 that injects descriptor failure
 make framebuffer-assets  # pack the 64x64 XPM as a 512-byte VDC bitmap
+make user-sources  # compile staged user programs separately from the kernel
+make user-programs  # link and package standalone UDEX programs
 make bench      # build comparable 8502 and Z80 benchmark payloads
 make bench-irq  # build both CIA interrupt-entry probes
 make bench-irq-service  # build the three-path interrupt-service suite
@@ -47,6 +49,18 @@ make bench-handoff  # build bidirectional ownership and mailbox cases
 make bench-offload  # build copy/checksum/transform crossover sweep
 make            # build all three target images
 ```
+
+`make user-sources` compiles `user/bin/cowsay.c` into cc65 assembly under
+`build/user/`. `make user-programs` independently links it at the first
+loader-owned slot and wraps it as `build/user/cowsay.udx`. The program imports
+only the user-side syscall veneer; it does not resolve private kernel or shell
+symbols. The same target creates `build/user/bootfs.img`, installs `cowsay.udx`
+as the `cowsay` entry, and `make boot` mounts that immutable image as the early
+`/bin`. Commands absent from the resident bootstrap builtin table go through
+the common-RAM resolver and loader. It validates bootfs and UDEX bounds, swaps
+the first task slot, supplies a private C stack and cc65 zero page, runs the
+program, and restores the slot on exit. Runtime qualification in both
+emulators and on hardware remains required before this milestone is closed.
 
 The 8502 artifacts are a raw resident image and a development PRG linked/loaded
 at `$2000`. Its linker region ends before the `$D000` I/O aperture. The SDCC
@@ -68,8 +82,9 @@ VDC revision and RAM tier, and expansion presence for later service policy.
 artwork into row-major, MSB-first scanlines under `build/assets/`; the target
 kernel will consume those bytes without carrying an image decoder.
 
-The current production image starts twelve statically linked modules in order: hardware
-capability discovery, CIA time, the bounded Z80 worker, the VDC text console,
+The current transitional production image starts twelve statically linked
+modules in order: hardware capability discovery, CIA time, the bounded Z80
+worker, the VDC text console,
 the frame-paced pointer source, the passive VIC-IIe graphics service, the
 window manager, the polled keyboard source, the fixed-focus root-terminal
 editor, the native shell, and temporary cooperative `xclock` and `xwave`
@@ -113,6 +128,10 @@ The two initial applications are emitted as separate 2560-byte linker images
 and boot-preloaded into reclaimed low-memory slots at `$0200-$0BFF` and
 `$1200-$1BFF`. This removes their code and state from the resident `$2000`
 kernel range, but is not yet a filesystem loader or a process address space.
+No new application may be added to this bootstrap scheme; new programs live in
+`user/` and target the [UDEX executable format](../abi/executable.md).
+Their kernel-facing calls use the fixed
+[8502 syscall and entry ABI](../abi/syscalls.md).
 
 The text console displays the compact UDEKS pipe and Japanese wordmark in a
 left rail and a bordered 64x21 root terminal to the right. A bordered

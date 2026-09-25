@@ -45,6 +45,17 @@ same interfaces must support loadable and replaceable modules later. The
 [service-module ABI](../abi/services.md) defines the compiler-neutral descriptor
 and initial startup lifecycle used by the static bring-up registry.
 
+[ADR 0007](decisions/0007-resident-core-and-loadable-services.md) ends that
+static-placement phase. Drivers and policy are now migration sources for
+loadable servers, not candidates for further resident growth. New commands and
+applications must enter through the executable-loader path.
+
+The currently resident shell is likewise bootstrap scaffolding, not a kernel
+facility. Once init, task loading, and the terminal endpoint are mature, init
+will create the root terminal session and load `/bin/ush`. Command parsing,
+history, job control, and program lookup then live entirely in that user
+process; only task, IPC, and stream mechanisms remain resident.
+
 The C128 has no memory-protection unit, so “microkernel” describes responsibility,
 dependency direction, and failure containment by validation—not hardware-enforced
 address-space isolation. ADR 0004 records this boundary.
@@ -64,15 +75,20 @@ present.
 
 ### Executive CPU
 
-The executive processor owns normal execution. Its responsibilities are:
+The executive processor owns normal execution. Its resident responsibilities
+are:
 
-- interrupt dispatch and timekeeping;
+- interrupt/trap dispatch and the minimum scheduling clock;
 - task scheduling and C runtime context management;
 - MMU configuration and bank ownership;
-- device arbitration and driver dispatch;
-- VDC/VIC display composition;
-- storage, filesystem, and application services;
+- memory-region and capability validation;
+- IPC and stable syscall dispatch;
 - creation and validation of jobs for the secondary CPU.
+
+Device drivers, display composition, time policy, storage, filesystems,
+terminals, shells, and applications are servers or programs scheduled by that
+core. They are not executive responsibilities merely because the 8502 runs
+their code.
 
 ADR 0002 selects the 8502 as the resident executive. Corrected benchmark suites
 in `1986` and VICE agree that it is the stronger interrupt, event, MMU, CIA,

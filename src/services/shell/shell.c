@@ -5,6 +5,7 @@
 #include "udeks/service.h"
 #include "udeks/shell.h"
 #include "udeks/stream.h"
+#include "udeks/task.h"
 #include "udeks/mailbox.h"
 #include "udeks/z80_worker.h"
 #include "udeks/vic_graphics.h"
@@ -452,6 +453,8 @@ static unsigned char dispatch_line(void)
     unsigned char count;
     unsigned char index;
     unsigned char result;
+    volatile unsigned char *task;
+    udeks_task_loader_entry loader;
 
     count = udeks_shell_tokenize(
         command_line, argument_offsets, UDEKS_SHELL_MAX_ARGUMENTS);
@@ -484,10 +487,28 @@ static unsigned char dispatch_line(void)
             return result;
         }
     }
+    loader = (udeks_task_loader_entry)UDEKS_TASK_LOADER_ENTRY;
+    result = loader(count, arguments);
+    task = (volatile unsigned char *)UDEKS_TASK_STATUS_BASE;
+    if ((task[UDEKS_TASK_STATE_OFFSET] & UDEKS_TASK_STATE_ERROR) == 0) {
+        STATUS_BYTE(9) = 0xFEu;
+        STATUS_BYTE(10) = task[UDEKS_TASK_EXIT_OFFSET];
+        increment_counter(STATUS_COMMANDS_LO);
+        return UDEKS_SHELL_OK;
+    }
     STATUS_BYTE(9) = 0xFFu;
-    increment_counter(STATUS_UNKNOWN_LO);
-    write_text(UDEKS_STDERR, (const unsigned char *)"Unknown command: ");
-    write_line(UDEKS_STDERR, arguments[0]);
+    if (task[UDEKS_TASK_ERROR_OFFSET] == UDEKS_TASK_NOT_FOUND) {
+        increment_counter(STATUS_UNKNOWN_LO);
+        write_text(UDEKS_STDERR, (const unsigned char *)"Unknown command: ");
+        write_line(UDEKS_STDERR, arguments[0]);
+    } else {
+        write_text(UDEKS_STDERR, arguments[0]);
+        write_line(UDEKS_STDERR,
+            task[UDEKS_TASK_ERROR_OFFSET] == UDEKS_TASK_BUSY ?
+                (const unsigned char *)": task slot busy" :
+                (const unsigned char *)": loader error");
+    }
+    STATUS_BYTE(10) = result;
     return UDEKS_SHELL_OK;
 }
 

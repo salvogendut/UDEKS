@@ -24,8 +24,8 @@ unsigned char udeks_vic_bitmap_shadow[8192];
 #define clip_right (*(int *)(UDEKS_VIC_CLIP_STATE_BASE + 4u))
 #define clip_bottom (*(int *)(UDEKS_VIC_CLIP_STATE_BASE + 6u))
 
-#define OUTLINE_COUNT          (*(volatile unsigned char *)0xF7FFu)
-#define OUTLINE_BUFFER         ((volatile unsigned char *)0xFA00u)
+#define OUTLINE_COUNT          (*(volatile unsigned char *)0xF37Fu)
+#define OUTLINE_BUFFER         ((volatile unsigned char *)0xF380u)
 #define OUTLINE_RECORD_SIZE    15u
 
 #define PLOT_UNCHECKED(plot_x, plot_y, plot_color) do { \
