@@ -245,13 +245,19 @@ without missing input events.
 - [x] Replace the fixed `ush` preload with init-driven, named runtime
   persistent-task allocation.
 - [x] Load, run, and reclaim `cowsay` without adding it to the resident image.
-- [ ] Package `xclock` and `xwave` as UDEX programs.
+- [x] Add the read-only bootfs `open`, `getdents`, `stat`, and `close`
+  operations through the public syscall boundary.
+- [x] Add `/bin/ls` over that directory ABI, supporting `ls`, `ls /`,
+  `ls /bin`, and `ls -l /bin` without direct knowledge of devices or
+  filesystem formats.
+- [ ] Add per-shell working-directory state plus `chdir`/`getcwd`, then
+  implement Bash-like `cd` (and `pwd`) natively in `/bin/ush`.
+- [ ] Package `xclock` as a standalone UDEX graphical program.
+- [ ] Package `xwave` as a standalone UDEX dual-engine graphical program.
 - [ ] Implement IEC device discovery and baseline serial operations.
 - [ ] Add 1571 burst support only after baseline correctness.
 - [ ] Define the filesystem format and mount contract.
-- [ ] Implement file, directory, and stream syscalls.
-- [ ] Add `/bin/ls` over the directory ABI, supporting `ls`, `ls /`, and
-  `ls -l /bin` without direct knowledge of IEC devices or filesystem formats.
+- [ ] Complete general storage-backed file, directory, and stream syscalls.
 - [ ] Add disk-error recovery and media-change handling.
 - [ ] Load and terminate relocatable C applications after the fixed-address
   format is qualified.

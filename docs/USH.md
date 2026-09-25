@@ -57,8 +57,11 @@ access.
 - [x] Define the common-RAM task request protocol and public stream wrappers.
 - [x] Add nonblocking terminal-read and bounded terminal-write requests.
 - [x] Add prompt, compatibility-exec, and foreground-wait operations.
+- [ ] Add persistent working-directory state and native Bash-like `cd`/`pwd`
+  using public `chdir`/`getcwd` operations.
 - [ ] Add scheduler yield and signal operations.
-- [ ] Replace direct graphical builtins with `/bin` programs or service calls.
+- [ ] Replace direct graphical builtins with standalone `/bin/xclock` and
+  `/bin/xwave` UDEX programs, in that order after `cd`.
 - [x] Link a minimal `ush.udx` without resident private symbols.
 - [x] Validate, initially boot-preload, and have init poll `/bin/ush` alongside the
   compatibility shell.
