@@ -14,6 +14,7 @@ from bench_decode import extract_memory, parse_number
 RESULT_BASE = 0xF180
 RESULT_SIZE = 32
 STRATEGY_RELOCATE = 2
+FLAG_COPY = 0x01
 FLAG_RELOCATE = 0x02
 STRATEGY_NAMES = {1: "copy", 2: "relocate"}
 
@@ -47,19 +48,37 @@ def parse_result(data: bytes) -> dict[str, int]:
         raise ValueError(
             f"switch count {switches} does not match {rounds} rounds"
         )
-    if block[11] == 0:
-        raise ValueError("no timer interrupts were observed")
-    if block[12] == 0:
-        raise ValueError("no switch checks were recorded")
+    interrupts = block[11]
+    boundary = block[22]
+    body = block[23]
+    if boundary == 0:
+        raise ValueError("no interrupt arrived in a switch-boundary window")
+    if body == 0:
+        raise ValueError("no interrupt arrived during task execution")
+    if interrupts != (boundary + body) & 0xFF:
+        raise ValueError(
+            f"recorded interrupt total {interrupts} does not match "
+            f"boundary {boundary} plus body {body} modulo 256"
+        )
+    if block[12] != switches:
+        raise ValueError(
+            f"only {block[12]} of {switches} switches recorded a successful check"
+        )
     if block[13] != 0:
         raise ValueError(f"switch check failures: {block[13]}")
     if block[14] != 0:
         raise ValueError(f"canary failures: {block[14]}")
+    flags = block[15]
+    if flags & ~(FLAG_COPY | FLAG_RELOCATE):
+        raise ValueError(f"unknown strategy flag bits: {flags:#04x}")
     strategy = block[16]
     if strategy != STRATEGY_RELOCATE:
         raise ValueError(f"strategy {strategy} is not relocation")
-    if block[15] & FLAG_RELOCATE == 0:
-        raise ValueError("relocation strategy did not report success")
+    if flags != FLAG_RELOCATE:
+        raise ValueError(
+            f"relocation strategy flags are {flags:#04x}; expected "
+            f"{FLAG_RELOCATE:#04x}"
+        )
     if block[18] != rounds or block[19] != rounds:
         raise ValueError(
             f"step counts {block[18]}/{block[19]} do not match {rounds} rounds"
@@ -67,6 +86,8 @@ def parse_result(data: bytes) -> dict[str, int]:
     xfers = block[20] | (block[21] << 8)
     if xfers != 0:
         raise ValueError(f"relocation moved {xfers} page bytes per switch")
+    if any(block[24:32]):
+        raise ValueError("unused result bytes 24-31 are nonzero")
     return {
         "format": block[4],
         "cpu": block[5],
@@ -74,11 +95,13 @@ def parse_result(data: bytes) -> dict[str, int]:
         "failure": block[7],
         "rounds": rounds,
         "switches": switches,
-        "interrupts": block[11],
+        "interrupts": boundary + body,
+        "boundary_interrupts": boundary,
+        "body_interrupts": body,
         "checks_ok": block[12],
         "checks_failed": block[13],
         "canary_failed": block[14],
-        "flags": block[15],
+        "flags": flags,
         "strategy": strategy,
         "last_current": block[17],
         "step_a": block[18],
@@ -108,7 +131,9 @@ def main() -> None:
     print(
         "Context switch: "
         f"{STRATEGY_NAMES.get(result['strategy'], 'unknown')} complete "
-        f"({result['switches']} switches, {result['interrupts']} interrupts)"
+        f"({result['switches']} switches, {result['interrupts']} interrupts: "
+        f"{result['boundary_interrupts']} boundary, "
+        f"{result['body_interrupts']} body)"
     )
     print(
         f"Checks: {result['checks_ok']} passed, "
