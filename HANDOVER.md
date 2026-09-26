@@ -101,6 +101,13 @@ switch count, rejected transitions, and canary failures.
 
 ### 2. Qualify one real context switch
 
+**Qualified 2026-09-26.** `bench/context-switch` implements the spike, and
+[ADR 0008](docs/decisions/0008-context-switch-placement.md) records the chosen
+relocated page-zero/page-one ownership with a bounded save/copy fallback. The
+r5 image passes in `1986`, VICE 3.10, and on a physical C128. Canaries and
+validation are in-image; integration with the kernel panic path arrives with
+the scheduler.
+
 Implement the smallest assembly spike that switches between two synthetic
 8502 tasks and proves that all of the following survive independently:
 

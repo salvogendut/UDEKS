@@ -63,4 +63,6 @@ failures, and both boundary and body interrupts; the exact PRG, raw records,
 provenance, and the placement recommendation are recorded under
 [`bench/artifacts/2026-09-26-context-switch-r5`](../artifacts/2026-09-26-context-switch-r5/README.md)
 and [`bench/results/2026-09-26-context-switch`](../results/2026-09-26-context-switch/README.md).
-A physical C128 run remains required before the decision is frozen.
+Physical C128 runs completed with a full `CXSW` record and 128 of 128 checks,
+and [ADR 0008](../../docs/decisions/0008-context-switch-placement.md) records
+relocated page-zero/page-one ownership as the accepted strategy.

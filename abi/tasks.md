@@ -9,8 +9,9 @@ Tasking 0.1 is observational first. It represents the existing init service,
 the resident compatibility shell, the persistent bank-1 `/bin/ush`, and the
 managed `xclock` and `xwave` applications in one bounded table without changing
 how any of them are dispatched. Context switching, scheduling, and new syscall
-gates are added in later revisions, after the assembly context-switch spike
-selects and qualifies a save/copy strategy.
+gates are added in later revisions. The context-switch strategy is selected by
+[ADR 0008](../docs/decisions/0008-context-switch-placement.md): relocated
+page-zero/page-one ownership with a bounded save/copy fallback.
 
 The C header exposes this ABI as `UDEKS_LIFECYCLE_*` values and
 `udeks_lifecycle_*` calls, deliberately distinct from the loader's
@@ -137,9 +138,12 @@ The minimum per-task fields that the scheduler must eventually own are:
 
 Tasking 0.1 implements only the identity and lifecycle subset above; the
 resident table is private to the kernel and is not yet read by another CPU.
-Byte offsets for the context fields are deliberately not frozen until the
-context-switch spike chooses between relocated page-zero/page-one ownership
-and a bounded save/copy strategy, as required by the handover.
+The context-switch strategy is frozen by ADR 0008. A task owns a bank-1
+physical page for zero page and another for page one; the saved context is
+A, X, Y, P, and SP, the resume program counter, the selected MMU profile, and
+the task's page-0/page-1 bank and page selectors. The live stack stays in the
+task's relocated page one. Byte offsets for these fields remain internal to
+the resident kernel until the scheduler links.
 
 ## Diagnostic record
 

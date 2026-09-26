@@ -107,6 +107,9 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   zero-page contexts around a cooperative task poll.
 - [x] Add a synchronous common-RAM request record with task-side nonblocking
   `read`, bounded `write`, Unix descriptors, and Linux errno values.
+- [x] Qualify the cooperative context-switch core and select relocated
+  page-zero/page-one ownership
+  ([ADR 0008](decisions/0008-context-switch-placement.md)).
 - [ ] Implement task creation, exit, yield, sleep, and event wait.
 - [ ] Save and restore the selected compiler runtime and CPU context.
 - [ ] Add cooperative scheduling, then timer-driven preemption.

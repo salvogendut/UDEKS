@@ -69,6 +69,26 @@ record bytes `$F180-$F187`, `$F188-$F18F`, `$F190-$F197`, and `$F198-$F19F`.
 - The interrupt handler saves and restores A, X, Y, and P, and the boundary and
   body counters are both required to be nonzero and exact.
 
+## Physical C128
+
+The r5 image was run on a physical C128. Two transcribed screen records:
+
+| Run | Line 1 | Line 2 | Line 3 | Line 4 |
+|---|---|---|---|---|
+| first | `4358535701010200` | `4080009*80000002` | `020240400000|0_` | `1308000000000000` |
+| last | `4358535701010200` | `4080009-80000002` | `0202404000008815` | `130000000` |
+
+Both records decode as a complete run: magic `CXSW`, ABI `0.1`, state `2`,
+failure `0`, 64 rounds, 128 switches, 128 successful checks, no check or
+canary failures, strategy `2` (relocation), steps `64`/`64`, and zero page
+bytes per switch. Both interrupt classes were observed.
+
+A few glyphs in the transcription are overlays rather than clean hex digits
+(most likely the KERNAL cursor sitting on the readout row); the last record's
+interrupt counters are exact (`boundary $1388`, `body $0015`, total `$139D`,
+consistent with the recorded low byte `$9D`). The first record's low counter
+nibbles were partly obscured but show `boundary $13xx` and `body $08xx`.
+
 ## Decision input
 
 Both runs prove the relocated page-zero/page-one ownership path: A, X, Y, P,
@@ -80,6 +100,8 @@ already characterized by [`bench/context`](../../context/README.md) transfers
 the 33-byte context plus any live stack bytes.
 
 Recommendation: adopt relocated page-zero/page-one ownership for the
-cooperative scheduler, keep a bounded copy fallback, and confirm on a physical
-C128 before freezing the ABI. The spike remains outside the production kernel
-so the permanent scheduler placement is decided with this evidence.
+cooperative scheduler and keep a bounded copy fallback. The physical C128 runs
+confirm the recommendation, and
+[ADR 0008](../../../docs/decisions/0008-context-switch-placement.md) records it
+as accepted. The spike remains outside the production kernel; the scheduler
+revision integrates the qualified context path.
