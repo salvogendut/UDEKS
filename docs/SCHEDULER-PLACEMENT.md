@@ -7,7 +7,7 @@ regions for the bank-0 scheduler and the always-mapped switch tail. It is a
 budget and reclaim order, not an accepted decision: each reclaim step lands
 separately and must pass the emulator smoke gate below.
 
-Run the audit against a built image:
+Run the audit against a built image in the reference container:
 
 ```sh
 make 8502
@@ -15,24 +15,30 @@ python3 tools/placement_audit.py            # human-readable budget
 python3 tools/placement_audit.py --json     # machine-readable
 ```
 
+All linked-segment ends are inclusive. Gateway sizes are read from the
+absolute `_udeks_vic_gateway_size_*` exports in the assembled
+`vic_graphics_transport.o` through `od65`; they are not hardcoded, and the
+audit reports them as unavailable if the object or `od65` is missing.
+
 ## Current measurements
 
 From `build/8502/udeks-8502.map` (2026-09-26, ABI 0.3 branch):
 
 | Region | Address | Size | Notes |
 |---|---:|---:|---|
-| `STARTUP`-`BSS` | `$2000-$ACAB` | 35,500 | resident code, rodata, data, BSS |
-| free gap | `$ACAB-$AEFF` | 597 | between BSS and the fixed VIC shadow |
+| `STARTUP`-`BSS` | `$2000-$ACAB` | 36,012 | resident code, rodata, data, BSS |
+| free gap | `$ACAC-$AEFF` | 596 | between BSS end and the fixed VIC shadow |
 | `VICSHADOW` | `$AF00-$CEFF` | 8,192 reserved | 8,000-byte bitmap plus 192 bytes padding |
 | `SYSCALLS` | `$CF00-$CFF8` | 249 | fixed page |
 | `HIGHBSS` | `$E1B8-$E2E1` | 298 | VIC tables, overflow canary |
 | `MODULECODE`/`RODATA` | `$E300-$E643` | 836 | module-private code and data |
 | module gap | `$E644-$E6FF` | 188 | before the C stack at `$E700` |
 | `BOOTFSCODE` | `$F3EF-$F681` | 659 | bootfs request service |
-| VIC gateways | `$F68A + up to 254` | 254 | largest copy ends at `$F788` |
-| boot gateway | `$F700-$F7EF` | 240 | dead after stage 1 |
+| VIC gateway copies | `$F68A-$F7EF` | 358 | largest copy is the outline gateway (`$166`) |
+| transient task stack | `$F700-$F7EF` | 240 | cc65 software stack, top `$F7F0` |
 | `TASKREQUEST` | `$F800-$F905` | 262 | fixed request gateway |
 | task loader | `$F910-$FEFF` | 1,520 | installed by stage 1, full |
+| `TASKGATE` | `$FF05-$FFC4` | 192 | legacy bank-1 cooperative gate |
 
 Measured module sizes of the scheduler material already written:
 
@@ -54,18 +60,18 @@ These objects run once during boot or discovery and are dead afterwards:
 | `boot_console.o` | 1,450 | bordered boot-console composition |
 | `hardware_capability.o` | 968 | discovery policy service |
 | `probe.o` | 209 | VIC/VDC/REU/GeoRAM probes |
-| `crt0.o` | 176 | startup and BSS clear |
-| total | 2,803 | |
+| `crt0.o` | 174 | startup and BSS clear, excluding two zero-page bytes |
+| total | 2,801 | |
 
 Structural slack:
 
 | Item | Bytes | Condition |
 |---|---:|---|
-| BSS-to-shadow gap | 597 | already free |
+| BSS-to-shadow gap | 596 | already free |
 | VIC shadow padding | 192 | requires shrinking/linking the shadow to its 8,000-byte array |
 | `$1C00-$1FFF` bootstrap staging | 1,024 | requires stage-1 to keep or install a scheduler segment there |
 
-Total bank-0 reclaim: 2,803 + 597 + 192 + 1,024 = **4,616 bytes**.
+Total bank-0 reclaim: 2,801 + 596 + 192 + 1,024 = **4,613 bytes**.
 
 ## Proposed bank-0 scheduler region
 
@@ -76,7 +82,7 @@ Total bank-0 reclaim: 2,803 + 597 + 192 + 1,024 = **4,616 bytes**.
 | handlers, run queue, task table | 1,200 |
 | total | 5,210 |
 
-The reclaim budget covers 4,616 bytes, leaving about 594 bytes to be found
+The reclaim budget covers 4,613 bytes, leaving at least 597 bytes to be found
 either by trimming the handler budget or by the later shell-extraction
 milestone. The region is deliberately not contiguous yet: the reclaimed
 KERNEL bytes below the VIC shadow and the separate `$1C00-$1FFF` segment are
@@ -84,37 +90,45 @@ two linker areas until the VIC shadow placement is settled.
 
 ## Always-mapped switch tail
 
-The boot-gateway page `$F700-$F7EF` is 240 bytes and is dead after stage 1,
-but the largest VIC common-gateway copy (254 bytes at `$F68A`) reaches
-`$F788`. The uncontested remainder is therefore only **104 bytes**
-(`$F788-$F7EF`).
+There is no uncontested window in the upper common RAM. The outline gateway
+copy alone is 358 bytes, so the gateway copies occupy `$F68A-$F7EF`, and
+`$F700-$F7EF` is simultaneously the transient UDEX program's live cc65
+software stack with its top and guard at `$F7F0-$F7FF` (ADR 0003). A
+persistent switch routine placed there would be corrupted by either the
+outline blitter or a transient program's stack. The audit reports zero
+uncontested bytes and names both overlaps.
 
-A minimal tail fits that window if it is split into two small entries and the
-scheduling policy stays in bank 0:
+The promising replacement is the legacy bank-1 cooperative gate,
+`TASKGATE $FF05-$FFC4` (192 bytes). Once the scheduler replaces the `$FF13`
+poll and the `$FF16` request gate, that page can hold the switch tail. Until
+then, a tail there would collide with the active task-bank gateway.
 
-- **switch-out entry**: save A/X/Y/P/SP into the current task context, select
-  the kernel-visible profile, return to the bank-0 scheduler;
-- **switch-in entry**: restore A/X/Y/P/SP from the selected context and return
-  to the task after the bank-0 scheduler has written the page registers and
-  profile.
+Order of preference:
 
-Anything larger requires shortening the VIC gateway or moving its copy target,
-which needs its own smoke-tested change. Placing the policy wholesale in
-common RAM is not viable.
+1. retire `TASKGATE` as part of the scheduler migration and place the tail in
+   `$FF05-$FFC4`;
+2. otherwise relocate the outline gateway and the transient task stack first,
+   then reuse the freed upper windows.
+
+A minimal tail also fits a small budget if the policy stays in bank 0: a
+switch-out entry that saves A/X/Y/P/SP, selects the kernel-visible profile,
+and returns to the bank-0 scheduler, plus a switch-in entry that restores the
+selected context after the scheduler writes the page registers and profile.
 
 ## Reclaim order and validation
 
 Each step is a separate change with a `1986` and VICE smoke pass:
 
 1. Link `VICSHADOW` sequentially and at its 8,000-byte size; verify boot,
-   console, VIC graphics, and d71 staging.
+   console, VIC graphics, and D71 staging.
 2. Overlay or relocate `crt0.o`; verify boot and BSS clear.
 3. Relocate `boot_console.o`; verify the boot console is pixel-identical.
 4. Relocate `probe.o` and `hardware_capability.o`; verify the `HCAP` record is
    byte-identical.
 5. Reserve `$1C00-$1FFF` and install a scheduler segment through stage 1;
    verify the D71 and D64 boot paths.
-6. Place the switch tail in `$F788-$F7EF`; verify task switching, the VDC
+6. Retire the `$FF13`/`$FF16` `TASKGATE` path in the scheduler migration and
+   place the switch tail in `$FF05-$FFC4`; verify task switching, the VDC
    console, VIC windows, pointer input, and the Z80 worker.
 
 Compatibility paths stay in place until their replacement is covered by the
