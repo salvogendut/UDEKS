@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 from placement_audit import (
     COMMON_GATEWAY,
     TASK_GATE_BASE,
-    TASK_GATE_LIMIT,
+    TASK_GATE_END,
     VIC_SHADOW_START,
     audit,
     parse_map,
@@ -46,6 +46,7 @@ CODE                  0020AE  0023FA  00034C  00001
 BSS                   0023FB  00240A  000010  00001
 VICSHADOW             00AF00  00CEFF  002000  00001
 SYSCALLS              00CF00  00CFF8  0000F9  00001
+TASKGATE              00FF05  00FFC4  0000C0  00001
 
 """
 
@@ -102,11 +103,11 @@ class PlacementAuditTests(unittest.TestCase):
         self.assertIsNone(result["gateway_end"])
         self.assertNotIn("VIC common gateways", result["boot_page_overlaps"])
 
-    def test_legacy_task_gate_is_the_candidate_tail(self):
+    def test_legacy_task_gate_is_read_from_the_map(self):
         result = audit(FIXTURE, OBJECT_DUMP)
-        self.assertEqual(
-            result["legacy_task_gate_bytes"], TASK_GATE_LIMIT - TASK_GATE_BASE
-        )
+        self.assertEqual(result["task_gate"]["base"], TASK_GATE_BASE)
+        self.assertEqual(result["task_gate"]["end"], TASK_GATE_END)
+        self.assertEqual(result["task_gate"]["size"], 192)
 
     def test_fixture_is_missing_a_shadow_segment(self):
         with self.assertRaisesRegex(ValueError, "VICSHADOW"):
@@ -131,6 +132,34 @@ class PlacementVerifyTests(unittest.TestCase):
         failures = verify(result)
         self.assertTrue(
             any("expectation changed" in failure for failure in failures)
+        )
+
+    def test_gateway_growth_beyond_the_baseline_fails(self):
+        dump = OBJECT_DUMP.replace("0x00000166  (358)", "0x00000190  (400)")
+        result = audit(FIXTURE, dump)
+        failures = verify(result)
+        self.assertEqual(result["gateway_end"], COMMON_GATEWAY + 400 - 1)
+        self.assertTrue(any("baseline" in failure for failure in failures))
+        self.assertTrue(any("beyond" in failure for failure in failures))
+        self.assertTrue(any("$F800" in failure for failure in failures))
+
+    def test_relocated_task_gate_fails(self):
+        map_text = FIXTURE.replace(
+            "TASKGATE              00FF05  00FFC4  0000C0  00001",
+            "TASKGATE              00FE00  00FEBF  0000C0  00001",
+        )
+        failures = verify(audit(map_text, OBJECT_DUMP))
+        self.assertTrue(
+            any("TASKGATE moved" in failure for failure in failures)
+        )
+
+    def test_missing_task_gate_fails(self):
+        map_text = FIXTURE.replace(
+            "TASKGATE              00FF05  00FFC4  0000C0  00001\n", ""
+        )
+        failures = verify(audit(map_text, OBJECT_DUMP))
+        self.assertTrue(
+            any("missing" in failure for failure in failures)
         )
 
     def test_missing_overlap_names_fail(self):

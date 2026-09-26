@@ -138,7 +138,8 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
 	boot panic-probe framebuffer-assets user-sources user-programs \
-	task-state task-policy placement-check check doctor clean help
+	task-state task-policy placement-check placement-check-guard check \
+	doctor clean help
 
 all: 8502 z80 z80-asm
 
@@ -162,8 +163,16 @@ task-policy: $(BUILD_8502)/task_policy.o
 
 # Reference-container qualification: measures the real gateway copies and
 # fails if the placement expectations no longer hold.
-placement-check: $(KERNEL_BIN) $(BUILD_8502)/vic_graphics_transport.o
+placement-check: placement-check-guard $(KERNEL_BIN) \
+		$(BUILD_8502)/vic_graphics_transport.o
 	$(PYTHON) tools/placement_audit.py --verify
+
+placement-check-guard:
+	@command -v od65 >/dev/null 2>&1 || { \
+		echo "placement-check requires cc65/od65; run inside the reference container:" >&2; \
+		echo "  distrobox enter my-distrobox -- make placement-check" >&2; \
+		exit 1; \
+	}
 
 8502: $(KERNEL_BIN) $(KERNEL_PRG)
 
@@ -1250,7 +1259,7 @@ help:
 		'make user-programs  Link and package staged UDEX programs' \
 		'make task-state Compile the lifecycle module for cc65 (no link)' \
 		'make task-policy Compile the request policy module for cc65 (no link)' \
-		'make placement-check  Verify the real linker-map placement budget' \
+		'make placement-check  Verify the linker-map budget (reference container)' \
 		'make bench      Build comparable 8502 and Z80 benchmark images' \
 		'make bench-8502 Build only the 8502 benchmark image' \
 		'make bench-z80  Build only the Z80 benchmark image' \

@@ -11,9 +11,16 @@ Run the audit against a built image in the reference container:
 
 ```sh
 make 8502
+make placement-check                        # fail-fast qualification
 python3 tools/placement_audit.py            # human-readable budget
 python3 tools/placement_audit.py --json     # machine-readable
 ```
+
+`make placement-check` requires `cc65`/`od65` and refuses to run from the host
+with the exact container command. It compares the measured gateway sizes
+against the qualified `[254, 46, 68, 358]` baseline, rejects copies beyond
+`$F7EF` or into `$F800` and later, and requires the `TASKGATE` segment to be
+exactly `$FF05-$FFC4` in the map.
 
 All linked-segment ends are inclusive. Gateway sizes are read from the
 absolute `_udeks_vic_gateway_size_*` exports in the assembled

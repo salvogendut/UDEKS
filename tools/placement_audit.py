@@ -39,7 +39,11 @@ REQUEST_GATEWAY_LIMIT = 0xF910
 TASK_LOADER_BASE = 0xF910
 TASK_LOADER_LIMIT = 0xFF00
 TASK_GATE_BASE = 0xFF05
+TASK_GATE_END = 0xFFC4
 TASK_GATE_LIMIT = 0xFFC5
+HIGH_RESERVED_BASE = 0xF800
+GATEWAY_QUALIFIED_END = 0xF7EF
+GATEWAY_SIZE_BASELINE = (254, 46, 68, 358)
 
 GATEWAY_SIZE_SUFFIXES = ("vic", "sprite", "page", "outline")
 
@@ -176,9 +180,18 @@ def audit(
     if sizes is None:
         gateway_end = None
         gateway_total = None
+        gateway_high_overlap: list[str] = []
     else:
         gateway_total = max(sizes)
         gateway_end = COMMON_GATEWAY + gateway_total - 1
+        gateway_high_overlap = [
+            suffix
+            for suffix, size in zip(GATEWAY_SIZE_SUFFIXES, sizes)
+            if ranges_overlap(
+                (COMMON_GATEWAY, COMMON_GATEWAY + size - 1),
+                (HIGH_RESERVED_BASE, 0xFFFF),
+            )
+        ]
 
     boot_only = {}
     for name in BOOT_ONLY_OBJECTS:
@@ -227,7 +240,16 @@ def audit(
         ],
         "boot_page_overlaps": boot_page_overlaps,
         "uncontested_boot_page_bytes": uncontested_boot_page,
-        "legacy_task_gate_bytes": TASK_GATE_LIMIT - TASK_GATE_BASE,
+        "task_gate": (
+            {
+                "base": by_name["TASKGATE"][0],
+                "end": by_name["TASKGATE"][1],
+                "size": by_name["TASKGATE"][1] - by_name["TASKGATE"][0] + 1,
+            }
+            if "TASKGATE" in by_name
+            else None
+        ),
+        "gateway_high_overlap": gateway_high_overlap,
         "largest_objects": sorted(
             (
                 {
@@ -246,11 +268,29 @@ def audit(
 
 def verify(result: dict[str, object]) -> list[str]:
     failures: list[str] = []
-    if result["gateway_sizes"] is None:
+    sizes = result["gateway_sizes"]
+    if sizes is None:
         failures.append(
             "gateway sizes unavailable; build the object and run od65 in the "
             "reference container"
         )
+    else:
+        if tuple(sizes) != GATEWAY_SIZE_BASELINE:
+            failures.append(
+                f"gateway sizes {sizes} changed from the qualified baseline "
+                f"{list(GATEWAY_SIZE_BASELINE)}; update "
+                "docs/SCHEDULER-PLACEMENT.md"
+            )
+        if result["gateway_end"] > GATEWAY_QUALIFIED_END:
+            failures.append(
+                f"gateway copies reach ${result['gateway_end']:04X}, beyond "
+                f"the qualified ${GATEWAY_QUALIFIED_END:04X}"
+            )
+        if result["gateway_high_overlap"]:
+            failures.append(
+                "gateway copies overlap $F800 and later reserved ranges "
+                f"({', '.join(result['gateway_high_overlap'])})"
+            )
     if result["uncontested_boot_page_bytes"] != 0:
         failures.append(
             "boot-page overlap expectation changed; update "
@@ -259,8 +299,14 @@ def verify(result: dict[str, object]) -> list[str]:
     for name in ("VIC common gateways", "transient task stack"):
         if name not in result["boot_page_overlaps"]:
             failures.append(f"expected {name} to overlap the boot page")
-    if result["legacy_task_gate_bytes"] != TASK_GATE_LIMIT - TASK_GATE_BASE:
-        failures.append("legacy bank-1 task gate range changed")
+    gate = result["task_gate"]
+    if gate is None:
+        failures.append("TASKGATE segment is missing from the linker map")
+    elif gate["base"] != TASK_GATE_BASE or gate["end"] != TASK_GATE_END:
+        failures.append(
+            f"TASKGATE moved to ${gate['base']:04X}-${gate['end']:04X}; "
+            f"expected ${TASK_GATE_BASE:04X}-${TASK_GATE_END:04X}"
+        )
     return failures
 
 
@@ -283,6 +329,14 @@ def main() -> None:
         help="fail unless the real gateway sizes and overlap expectations hold",
     )
     args = parser.parse_args()
+
+    if args.verify and shutil.which("od65") is None:
+        print(
+            "placement-check requires cc65/od65; run it inside the reference "
+            "container:"
+        )
+        print("  distrobox enter my-distrobox -- make placement-check")
+        raise SystemExit(1)
 
     object_dump = None
     if args.object.exists() and shutil.which("od65"):
@@ -334,10 +388,14 @@ def main() -> None:
         f"{', '.join(result['boot_page_overlaps']) or 'none'}; "
         f"uncontested bytes {result['uncontested_boot_page_bytes']}"
     )
-    print(
-        f"Legacy bank-1 task gate: {result['legacy_task_gate_bytes']} bytes "
-        f"(${TASK_GATE_BASE:04X}-${TASK_GATE_LIMIT - 1:04X})"
-    )
+    gate = result["task_gate"]
+    if gate is None:
+        print("Legacy bank-1 task gate: missing from the map")
+    else:
+        print(
+            f"Legacy bank-1 task gate: {gate['size']} bytes "
+            f"(${gate['base']:04X}-${gate['end']:04X})"
+        )
 
 
 if __name__ == "__main__":
