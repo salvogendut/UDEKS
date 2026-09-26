@@ -13,7 +13,7 @@ class TaskBankGatewayTests(unittest.TestCase):
         loader = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
 
         self.assertIn("cc65_sp_index           = $00", gate)
-        self.assertIn("resident_cc65_sp        = $04", loader)
+        self.assertIn("resident_cc65_sp        = $06", loader)
         self.assertIn("user_cc65_sp            = $02", loader)
 
     def test_fixed_common_ram_contract_matches_public_header(self):

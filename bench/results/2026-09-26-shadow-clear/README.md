@@ -7,7 +7,8 @@ linked into the `$1C00-$1CFF` `BOOTCRT` page from the same linker invocation
 as the kernel, staged at `$AE00-$AEFF`, copied over the dead stage-1 page by
 the `$F700` final installer, and entered at `$1C00`. It clears BSS and the
 shadow through `__VICSHADOW_RUN__`/`__VICSHADOW_SIZE__`, then jumps to
-`_kernel_main` at `$2000`.
+`_kernel_main` (resident CODE starts at `$2000`; `_kernel_main` is at
+`$2A83`).
 
 `tools/shadow_boot_probe.py --vic-compare` copies the D71 and seeds the safe
 zero regions of the staged `$ABFE-$CEFF` image before boot:
@@ -44,7 +45,7 @@ readiness bytes and then:
 | `raw/D71.sha256` | 76 | hash of the built D71 the probe consumed |
 
 The probed D71 is
-`9813f14aea5d4777e52a7636c5038804ac533a214b235669bfbef1bf28bb1b41 udeks.d71`
+`7fe194ef9ddbd18c6487d292478aa3756e74f98a7c31250913c85b64c27c16b0 udeks.d71`
 (`raw/D71.sha256`); the disk image itself is a build artifact and is not
 committed.
 

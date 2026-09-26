@@ -278,6 +278,12 @@ def capture(args: argparse.Namespace) -> None:
         # waiting for a log marker.
         time.sleep(min(5.0, max(0.0, deadline - time.monotonic())))
         if args.raw_load:
+            # Launcher pokes need the inherited I/O map, so apply them before
+            # switching to flat RAM for the load.
+            if args.fast:
+                monitor_command(port, "> d030 01")
+            for address, byte in args.poke:
+                monitor_command(port, f"> {address:04x} {byte:02x}")
             # Flat bank-0 RAM so the load reaches the RAM under the BASIC and
             # KERNAL ROMs; crt0 re-establishes the native profiles on entry.
             monitor_command(port, "> ff00 3f")

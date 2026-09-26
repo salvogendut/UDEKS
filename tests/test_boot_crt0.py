@@ -39,31 +39,46 @@ class BootCrt0ConfigTests(unittest.TestCase):
 
 
 class ZeroPageAbiTests(unittest.TestCase):
-    def test_resident_and_app_zero_page_layouts_shift_together(self):
+    def test_kernel_links_reserve_the_uapp_compatibility_bytes(self):
+        for path in ("cfg/8502-bootstrap.cfg", "cfg/8502-panic-probe.cfg"):
+            with self.subTest(config=path):
+                config = (ROOT / path).read_text(encoding="utf-8")
+                self.assertIn(
+                    "ZP:     start = $0004, size = $001D", config
+                )
+
+    def test_uapp_01_zero_page_abi_is_unchanged(self):
         loader = (ROOT / "src/boot/stage1-gateway.s").read_text(
             encoding="utf-8"
         )
-        self.assertIn("RESIDENT_CC65_SP        = $04", loader)
+        self.assertIn("RESIDENT_CC65_SP        = $06", loader)
         self.assertIn("USER_CC65_SP            = $02", loader)
         imports = (ROOT / "user/lib/app_imports.s").read_text(encoding="utf-8")
         for name, address in (
-            ("sp", "04"),
-            ("sreg", "06"),
-            ("regsave", "08"),
-            ("ptr1", "0c"),
-            ("ptr2", "0e"),
-            ("ptr3", "10"),
-            ("ptr4", "12"),
-            ("tmp1", "14"),
-            ("tmp2", "15"),
-            ("tmp3", "16"),
-            ("tmp4", "17"),
-            ("regbank", "18"),
+            ("sp", "06"),
+            ("sreg", "08"),
+            ("regsave", "0a"),
+            ("ptr1", "0e"),
+            ("ptr2", "10"),
+            ("ptr3", "12"),
+            ("ptr4", "14"),
+            ("tmp1", "16"),
+            ("tmp2", "17"),
+            ("tmp3", "18"),
+            ("tmp4", "19"),
+            ("regbank", "1a"),
         ):
             self.assertTrue(
                 re.search(rf"^{name}\s+= \${address}$", imports, re.MULTILINE),
                 f"{name} is not at ${address}",
             )
+
+    def test_app_gateway_still_advertises_uapp_01(self):
+        gateway = (ROOT / "src/8502/app_gateway.s").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(".byte 'U', 'A', 'P', 'P'", gateway)
+        self.assertIn(".byte $00, $01", gateway)
 
 
 class BootCrt0BuildTests(unittest.TestCase):

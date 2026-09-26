@@ -444,9 +444,9 @@ BOOTFS_LIMIT_HI         = $d1
 TASK_SLOT               = $0200
 PERSISTENT_SLOT         = $9000
 TASK_BACKUP             = $8000
-; The resident image reserves two zero-page bytes before none.lib, while a
+; The resident image reserves four zero-page bytes before none.lib, while a
 ; standalone UDEX begins its runtime reservation at $02.
-RESIDENT_CC65_SP        = $04
+RESIDENT_CC65_SP        = $06
 USER_CC65_SP            = $02
 TASK_STACK_TOP          = $f7f0
 
