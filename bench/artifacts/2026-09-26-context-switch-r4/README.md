@@ -1,5 +1,9 @@
 # Context-switch spike artifact r4
 
+This revision was superseded by `../2026-09-26-context-switch-r5/`, which adds
+a VIC and VDC hex readout so a physical C128 run can be captured from the
+screen. It is kept as history.
+
 `context-switch.prg` is the standalone spike image qualified on 2026-09-26 on
 the `tasking-0.1` branch. It supersedes `-r3`: the context record now stores the
 live stack pointer directly, and each resume label verifies the previous

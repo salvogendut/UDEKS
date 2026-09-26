@@ -1,6 +1,6 @@
 # Context-switch spike results
 
-The corrected standalone context-switch spike (`-r4`) was run against the two
+The corrected standalone context-switch spike (`-r5`) was run against the two
 qualified emulators. Both completed the relocation strategy with one successful
 check per switch, no canary failure, and zero page bytes moved per switch.
 Interrupts were observed both inside the marked switch-boundary windows and
@@ -8,12 +8,12 @@ during task execution; the counters are 16-bit, so the totals are exact.
 
 | Run | Switches | Interrupts | Boundary | Body | Checks | Canary | Page bytes/switch |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| `1986` | 128 | 1349 | 887 | 462 | 128/128 | 0 | 0 |
-| VICE 3.10 | 128 | 7111 | 5019 | 2092 | 128/128 | 0 | 0 |
+| `1986` | 128 | 1366 | 875 | 491 | 128/128 | 0 | 0 |
+| VICE 3.10 | 128 | 7115 | 5001 | 2114 | 128/128 | 0 | 0 |
 
 The exact image is preserved as
-`bench/artifacts/2026-09-26-context-switch-r4/context-switch.prg`
-(SHA-256 `5bf1788a1b225da58b551b28d515a05f0e51864e9f43072c935ee9ad1a72d9f3`).
+`bench/artifacts/2026-09-26-context-switch-r5/context-switch.prg`
+(SHA-256 `dc16c97bc897868ec8a3c5da58cc42abd0c47fabaddbd50299a9aae13b7fc357`).
 Build and emulator provenance is in that directory's README.
 
 Reproduction:
@@ -35,6 +35,13 @@ python3 tools/context_switch_decode.py /tmp/ctx-vice.bin
 ```
 
 Verify the preserved bytes with `cd raw && sha256sum -c SHA256SUMS`.
+
+## Screen readout
+
+The r5 image prints the 32-byte record as four lines of 16 hex characters on
+both the 40-column VIC screen and the 80-column VDC screen before halting, so a
+physical C128 run can be captured without a monitor or disk save. The lines are
+record bytes `$F180-$F187`, `$F188-$F18F`, `$F190-$F197`, and `$F198-$F19F`.
 
 ## What the records prove
 

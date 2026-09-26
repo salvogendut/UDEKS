@@ -915,8 +915,8 @@ $(BUILD_CONTEXT_SWITCH)/gateway.o: bench/context-switch/gateway.s \
 	$(CA65) --cpu 6502 -o $@ $<
 
 $(CONTEXT_SWITCH_GATEWAY_BIN): $(BUILD_CONTEXT_SWITCH)/gateway.o \
-		cfg/8502-common-gateway.cfg
-	$(LD65) -C cfg/8502-common-gateway.cfg -o $@ $<
+		cfg/8502-context-switch-gateway.cfg
+	$(LD65) -C cfg/8502-context-switch-gateway.cfg -o $@ $<
 
 $(BUILD_CONTEXT_SWITCH)/launcher.o: bench/context-switch/launcher.s \
 		$(CONTEXT_SWITCH_GATEWAY_BIN) | $(BUILD_CONTEXT_SWITCH)
@@ -1171,6 +1171,7 @@ check:
 	cd bench/artifacts/2026-09-26-context-switch-r2 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-26-context-switch-r3 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-26-context-switch-r4 && sha256sum -c SHA256SUMS
+	cd bench/artifacts/2026-09-26-context-switch-r5 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-26-context-switch/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-memory-map-r1 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-memory-map-profiles/raw && sha256sum -c SHA256SUMS

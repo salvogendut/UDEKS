@@ -22,12 +22,13 @@ class ContextSwitchSourceTests(unittest.TestCase):
         cls.makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
 
     def test_core_runs_from_common_ram(self):
-        self.assertIn('.assert gateway_start = $f800', self.gateway)
-        self.assertIn('.assert gateway_end - gateway_start <= $0700', self.gateway)
-        self.assertIn("common: start = $f800, size = $0700", (
-            ROOT / "cfg/8502-common-gateway.cfg"
+        self.assertIn('.assert gateway_start = $f400', self.gateway)
+        self.assertIn('.assert gateway_end - gateway_start <= $0b00', self.gateway)
+        self.assertIn("common: start = $f400, size = $0b00", (
+            ROOT / "cfg/8502-context-switch-gateway.cfg"
         ).read_text(encoding="utf-8").lower())
         self.assertIn('main: start = $2800', self.config)
+        self.assertIn("gateway                 = $f400", self.launcher)
 
     def test_launcher_installs_the_core_and_result_header(self):
         self.assertIn(".incbin \"build/bench/context-switch/gateway.bin\"",
@@ -159,6 +160,15 @@ class ContextSwitchSourceTests(unittest.TestCase):
         self.assertIn("result_body_lo          = result + 23", self.gateway)
         self.assertIn("result_boundary_hi      = result + 24", self.gateway)
         self.assertIn("result_body_hi          = result + 25", self.gateway)
+
+    def test_result_is_printed_to_both_screens_before_halt(self):
+        self.assertIn("readout:", self.gateway)
+        self.assertIn("readout_hex_vic:", self.gateway)
+        self.assertIn("readout_hex_vdc:", self.gateway)
+        self.assertIn("sta vdc_address", self.gateway)
+        self.assertIn("sta vdc_data", self.gateway)
+        # Success and failure both jump to the readout.
+        self.assertEqual(self.gateway.count("jmp readout\n"), 2)
 
     def test_makefile_builds_the_standalone_prg(self):
         self.assertIn("bench-context-switch", self.makefile)

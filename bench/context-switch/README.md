@@ -11,7 +11,10 @@ python3 tools/context_switch_decode.py run.vsf
 ```
 
 The launcher runs at `$2800`, enables top common RAM, seeds bank-private
-sentinels, and copies the switch core to `$F800`. The core alternates two
+sentinels, and copies the switch core to `$F400` (reserved to `$FEFF`). After
+the result is final the core prints the 32-byte `CXSW` record as four lines of
+16 hex characters on both the 40-column VIC and 80-column VDC screens, then
+halts, so a physical C128 run can be captured by reading the screen. The core alternates two
 tasks, each with its own relocated page-zero and page-one allocation in bank 1:
 
 | Task | page 0 | page 1 | profile | stack base | seed A/X/Y | yield tag | resume markers |
@@ -54,10 +57,10 @@ The relocation strategy moves zero page-one bytes per switch (`XFER = 0`),
 which is the measured input for choosing it over the bounded copy primitive
 already characterized in [`bench/context`](../context/README.md).
 
-The corrected spike passes in `1986` (1349 interrupts) and VICE 3.10 (7111
+The corrected spike passes in `1986` (1366 interrupts) and VICE 3.10 (7115
 interrupts) with 128 switches, one successful check per switch, zero canary
 failures, and both boundary and body interrupts; the exact PRG, raw records,
 provenance, and the placement recommendation are recorded under
-[`bench/artifacts/2026-09-26-context-switch-r4`](../artifacts/2026-09-26-context-switch-r4/README.md)
+[`bench/artifacts/2026-09-26-context-switch-r5`](../artifacts/2026-09-26-context-switch-r5/README.md)
 and [`bench/results/2026-09-26-context-switch`](../results/2026-09-26-context-switch/README.md).
 A physical C128 run remains required before the decision is frozen.

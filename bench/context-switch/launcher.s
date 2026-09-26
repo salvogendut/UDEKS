@@ -22,7 +22,7 @@ MMU_PAGE0_BANK          = $d508
 MMU_PAGE1_PAGE          = $d509
 MMU_PAGE1_BANK          = $d50a
 
-GATEWAY                 = $f800
+GATEWAY                 = $f400
 ROUNDS                  = 64
 COPY_SOURCE             = $f8
 COPY_DESTINATION        = $fa
@@ -120,4 +120,4 @@ gateway_ready:
 gateway_image:
         .incbin "build/bench/context-switch/gateway.bin"
 gateway_image_end:
-        .assert gateway_image_end-gateway_image <= $0700, error, "switch core exceeds common reservation"
+        .assert gateway_image_end-gateway_image <= $0b00, error, "switch core exceeds common reservation"

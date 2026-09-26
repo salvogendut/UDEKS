@@ -50,6 +50,8 @@ CIA1_TA_LO              = $dc04
 CIA1_TA_HI              = $dc05
 CIA1_CRA                = $dc0e
 CIA2_ICR                = $dd0d
+VDC_ADDRESS             = $d600
+VDC_DATA                = $d601
 VIC_IRQ_STATUS          = $d019
 VIC_IRQ_MASK            = $d01a
 
@@ -684,8 +686,7 @@ strategy_done:
         sta MMU_PAGE1_PAGE
         ldx #$ff
         txs
-halt:
-        jmp halt
+        jmp readout
 
 fail_canary:
         inc canary_bad
@@ -708,8 +709,7 @@ fail_common:
         lda #$80
         ora fail_code
         sta RESULT_STATE
-fail_halt:
-        jmp fail_halt
+        jmp readout
 
 ; Task A. The two resume labels are distinct code, so the resume marker proves
 ; which program counter actually ran.
@@ -983,6 +983,141 @@ irq_acknowledge:
         pla
         rti
 
+; Print the 32-byte result as hex on the 40-column VIC screen and the
+; 80-column VDC screen, then halt. The VIC uses screen codes (A-F are $01-$06)
+; while the VDC uses ASCII codes (A-F are $41-$46).
+readout:
+        sei
+        lda #PROFILE_KERNEL_IO
+        sta MMU_LCR_KERNEL_IO
+        lda #$00
+        sta MMU_PAGE0_BANK
+        sta MMU_PAGE0_PAGE
+        sta MMU_PAGE1_BANK
+        lda #$01
+        sta MMU_PAGE1_PAGE
+
+        lda #$00
+        sta readout_row
+readout_row_loop:
+        lda readout_row
+        asl a
+        asl a
+        asl a
+        sta readout_tmp
+        asl a
+        asl a
+        clc
+        adc readout_tmp
+        sta readout_base
+
+        lda #<$05e0
+        clc
+        adc readout_base
+        sta readout_vic_store0+1
+        sta readout_vic_store1+1
+        lda #>$05e0
+        adc #$00
+        sta readout_vic_store0+2
+        sta readout_vic_store1+2
+        lda #<$d9e0
+        clc
+        adc readout_base
+        sta readout_color_store0+1
+        sta readout_color_store1+1
+        lda #>$d9e0
+        adc #$00
+        sta readout_color_store0+2
+        sta readout_color_store1+2
+
+        lda readout_row
+        asl a
+        asl a
+        asl a
+        asl a
+        sta readout_tmp
+        asl a
+        asl a
+        clc
+        adc readout_tmp
+        clc
+        adc #$c0
+        sta readout_vdc_lo
+        lda #$03
+        adc #$00
+        sta readout_vdc_hi
+
+        lda #$12
+        sta VDC_ADDRESS
+        lda readout_vdc_hi
+        sta VDC_DATA
+        lda #$13
+        sta VDC_ADDRESS
+        lda readout_vdc_lo
+        sta VDC_DATA
+        lda #$1f
+        sta VDC_ADDRESS
+
+        ldx #$00
+readout_byte_loop:
+        ldy readout_byte
+        lda RESULT,y
+        sta readout_tmp
+        lsr a
+        lsr a
+        lsr a
+        lsr a
+        tay
+        lda readout_hex_vic,y
+readout_vic_store0:
+        sta $05e0,x
+        lda #$01
+readout_color_store0:
+        sta $d9e0,x
+        lda readout_tmp
+        lsr a
+        lsr a
+        lsr a
+        lsr a
+        tay
+        lda readout_hex_vdc,y
+        sta VDC_DATA
+        inx
+        lda readout_tmp
+        and #$0f
+        tay
+        lda readout_hex_vic,y
+readout_vic_store1:
+        sta $05e0,x
+        lda #$01
+readout_color_store1:
+        sta $d9e0,x
+        lda readout_tmp
+        and #$0f
+        tay
+        lda readout_hex_vdc,y
+        sta VDC_DATA
+        inx
+        inc readout_byte
+        cpx #$10
+        bne readout_byte_loop
+
+        inc readout_row
+        lda readout_row
+        cmp #$04
+        beq :+
+        jmp readout_row_loop
+:
+readout_halt:
+        jmp readout_halt
+
+readout_hex_vic:
+        .byte $30, $31, $32, $33, $34, $35, $36, $37
+        .byte $38, $39, $01, $02, $03, $04, $05, $06
+readout_hex_vdc:
+        .byte $30, $31, $32, $33, $34, $35, $36, $37
+        .byte $38, $39, $41, $42, $43, $44, $45, $46
+
 current:        .byte $00
 round_index:    .byte $00
 switches_lo:    .byte $00
@@ -1009,6 +1144,12 @@ tmp_cmp:        .byte $00
 tmp_pad:        .byte $00
 a_last_p:       .byte $00
 b_last_p:       .byte $00
+readout_row:    .byte $00
+readout_byte:   .byte $00
+readout_base:   .byte $00
+readout_tmp:    .byte $00
+readout_vdc_lo: .byte $00
+readout_vdc_hi: .byte $00
 
 a_ctx_a:        .byte $00
 a_ctx_x:        .byte $00
@@ -1025,5 +1166,5 @@ b_ctx_sp:       .byte $00
 b_ctx_pc:       .word $0000
 
 gateway_end:
-        .assert gateway_end - gateway_start <= $0700, error, "switch core exceeds common reservation"
-        .assert gateway_start = $f800, error, "switch core moved"
+        .assert gateway_end - gateway_start <= $0b00, error, "switch core exceeds common reservation"
+        .assert gateway_start = $f400, error, "switch core moved"
