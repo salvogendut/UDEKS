@@ -47,3 +47,8 @@ common [task request record](task-request.md) through `$CF30` and the permanent
 task-side wrappers provide nonblocking `read`, bounded `write`, compatibility
 `exec`, foreground `wait`, and terminal `prompt`; signals and a true scheduler
 yield remain later operations.
+
+Request ABI 0.3 keeps those operations unchanged and reserves lifecycle
+operations `10`-`15` (`yield`, `exit`, `waitpid`, `sleep`, `cancel`, and
+`spawn`). The resident gateway accepts minor versions through `3` and returns
+`ENOSYS` for the reserved operations until their implementations land.
