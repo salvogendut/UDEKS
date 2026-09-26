@@ -44,7 +44,7 @@ apart from slot allocation by `create`, which is itself a distinct operation.
 | 3 | `DISPATCH` | `RUNNABLE` becomes `RUNNING`. |
 | 4 | `YIELD` | `RUNNING` voluntarily becomes `RUNNABLE`. |
 | 5 | `BLOCK` | `RUNNING` becomes `WAITING` on a validated reason. |
-| 6 | `UNBLOCK` | `WAITING` becomes `RUNNABLE`. |
+| 6 | `UNBLOCK` | `WAITING` becomes `RUNNABLE`; a `STOPPED` task notes the wake-up. |
 | 7 | `STOP` | `RUNNABLE`, `RUNNING`, or `WAITING` becomes `STOPPED`. |
 | 8 | `CONTINUE` | `STOPPED` becomes `RUNNABLE`, or `WAITING` if stopped blocked. |
 | 9 | `EXIT` | `NEW` or `RUNNING` becomes `ZOMBIE`; records exit status. |
@@ -57,7 +57,11 @@ the eight-bit exit or termination status. Other events ignore the argument.
 
 `STOP` never discards the condition a task is waiting on. A task stopped from
 `WAITING` keeps its wait reason and resumes as `WAITING` on `CONTINUE`; a task
-stopped from `RUNNABLE` or `RUNNING` resumes as `RUNNABLE`. `CANCEL` is the
+stopped from `RUNNABLE` or `RUNNING` resumes as `RUNNABLE`. A stopped task may
+still receive its wake-up: `UNBLOCK` from `STOPPED` clears the wait reason and
+records a `RUNNABLE` resume state while the visible state stays `STOPPED`, so a
+later `CONTINUE` cannot strand the task on an event that already happened.
+`CANCEL` is the
 abort path: it accepts the same Unix-like result the caller would pass to
 `EXIT`, so `Ctrl+C` records `128 + SIGINT`, normally `130`.
 

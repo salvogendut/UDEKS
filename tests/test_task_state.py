@@ -256,6 +256,20 @@ class LifecycleBehaviorTests(unittest.TestCase):
         self.assertEqual(self.apply(1, UNBLOCK), OK)
         self.assertEqual(self.state.udeks_lifecycle_get(1), RUNNABLE)
 
+    def test_wakeup_reaches_a_stopped_waiting_task(self):
+        self.create(1)
+        self.apply(1, ADMIT, 0)
+        self.apply(1, DISPATCH, 0)
+        self.apply(1, BLOCK, WAIT_INPUT)
+        self.apply(1, STOP)
+        self.assertEqual(self.state.udeks_lifecycle_get(1), STOPPED)
+        self.assertEqual(self.apply(1, UNBLOCK), OK)
+        self.assertEqual(self.state.udeks_lifecycle_get(1), STOPPED)
+        self.assertEqual(self.state.udeks_lifecycle_wait_reason(1), WAIT_NONE)
+        self.assertEqual(self.apply(1, CONTINUE), OK)
+        self.assertEqual(self.state.udeks_lifecycle_get(1), RUNNABLE)
+        self.assertEqual(self.state.udeks_lifecycle_rejected_count(), 0)
+
     def test_stop_and_continue_return_a_runnable_task_to_runnable(self):
         self.create(1)
         self.apply(1, ADMIT, 0)

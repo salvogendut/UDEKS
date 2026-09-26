@@ -24,7 +24,8 @@ static const unsigned char task_event_sources[UDEKS_LIFECYCLE_EVENT_CANCEL + 1u]
     (unsigned char)(1u << UDEKS_LIFECYCLE_STATE_RUNNABLE),
     (unsigned char)(1u << UDEKS_LIFECYCLE_STATE_RUNNING),
     (unsigned char)(1u << UDEKS_LIFECYCLE_STATE_RUNNING),
-    (unsigned char)(1u << UDEKS_LIFECYCLE_STATE_WAITING),
+    (unsigned char)((1u << UDEKS_LIFECYCLE_STATE_WAITING) |
+                    (1u << UDEKS_LIFECYCLE_STATE_STOPPED)),
     (unsigned char)((1u << UDEKS_LIFECYCLE_STATE_RUNNABLE) |
                     (1u << UDEKS_LIFECYCLE_STATE_RUNNING) |
                     (1u << UDEKS_LIFECYCLE_STATE_WAITING)),
@@ -188,6 +189,14 @@ unsigned char udeks_lifecycle_apply(
 
     if (event == UDEKS_LIFECYCLE_EVENT_BLOCK) {
         slot[TASK_SLOT_WAIT] = argument;
+    } else if (event == UDEKS_LIFECYCLE_EVENT_UNBLOCK) {
+        slot[TASK_SLOT_WAIT] = UDEKS_LIFECYCLE_WAIT_NONE;
+        if (state == UDEKS_LIFECYCLE_STATE_STOPPED) {
+            next = UDEKS_LIFECYCLE_STATE_STOPPED;
+            slot[TASK_SLOT_RESUME] = UDEKS_LIFECYCLE_STATE_RUNNABLE;
+        } else {
+            slot[TASK_SLOT_RESUME] = UDEKS_LIFECYCLE_STATE_FREE;
+        }
     } else if (event == UDEKS_LIFECYCLE_EVENT_STOP) {
         if (state == UDEKS_LIFECYCLE_STATE_WAITING) {
             slot[TASK_SLOT_RESUME] = UDEKS_LIFECYCLE_STATE_WAITING;
