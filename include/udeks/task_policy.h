@@ -13,8 +13,9 @@
 
 /* Validates one lifecycle request against the current table. The caller must
  * be the current RUNNING task; its id is passed explicitly so the policy can
- * be tested without the resident scheduler. Returns zero or a UDEKS_TREQ_*
- * errno:
+ * be tested without the resident scheduler. The operation range is checked
+ * first, so an unknown operation is ENOSYS regardless of any other field.
+ * Returns zero or a UDEKS_TREQ_* errno:
  *
  *   ENOSYS  operation is not an ABI 0.3 lifecycle operation;
  *   ESRCH   caller is undefined, or a CANCEL target is not a live child;
@@ -44,29 +45,36 @@ unsigned char udeks_task_policy_validate(
 /*
  * Spawn candidate preflight. The loader parses the UDEX header, resolves the
  * executable, and proposes a placement; it calls this before any allocation
- * metadata changes. The candidate is a 13-byte record of 16-bit little-endian
- * words; the reserved table holds 4-byte entries of base and size words for
- * every region the candidate must not overlap.
+ * metadata changes. The candidate is a 19-byte record holding the format
+ * identity and 16-bit little-endian memory words; the reserved table holds
+ * 4-byte entries of base and size words for every region the candidate must
+ * not overlap. Range arithmetic is inclusive, so a valid range may end exactly
+ * at the top of the address space ($FFFF).
  *
  * Returns zero, or:
  *
- *   ENOEXEC  unsupported CPU, zero-length image, or an entry outside the
+ *   ENOEXEC  wrong magic, unsupported major version, unsupported CPU, nonzero
+ *            executable flags, zero-length image, or an entry outside the
  *            image;
  *   EINVAL   missing, under-sized, overflowing, or image-overlapping stack;
  *   ENOMEM   address-space overflow or overlap with a reserved region.
  */
 #define UDEKS_TASK_POLICY_CPU_8502       1u
+#define UDEKS_TASK_POLICY_MAJOR_UDEX     0u
 #define UDEKS_TASK_POLICY_STACK_MIN      32u
-#define UDEKS_TASK_POLICY_CANDIDATE_SIZE 13u
+#define UDEKS_TASK_POLICY_CANDIDATE_SIZE 19u
 #define UDEKS_TASK_POLICY_RESERVED_SIZE  4u
 
-#define UDEKS_TASK_CANDIDATE_CPU         0u
-#define UDEKS_TASK_CANDIDATE_IMAGE_BASE  1u
-#define UDEKS_TASK_CANDIDATE_IMAGE_SIZE  3u
-#define UDEKS_TASK_CANDIDATE_BSS_SIZE    5u
-#define UDEKS_TASK_CANDIDATE_ENTRY       7u
-#define UDEKS_TASK_CANDIDATE_STACK_BASE  9u
-#define UDEKS_TASK_CANDIDATE_STACK_SIZE  11u
+#define UDEKS_TASK_CANDIDATE_MAGIC       0u
+#define UDEKS_TASK_CANDIDATE_MAJOR       4u
+#define UDEKS_TASK_CANDIDATE_CPU         5u
+#define UDEKS_TASK_CANDIDATE_FLAGS       6u
+#define UDEKS_TASK_CANDIDATE_IMAGE_BASE  7u
+#define UDEKS_TASK_CANDIDATE_IMAGE_SIZE  9u
+#define UDEKS_TASK_CANDIDATE_BSS_SIZE    11u
+#define UDEKS_TASK_CANDIDATE_ENTRY       13u
+#define UDEKS_TASK_CANDIDATE_STACK_BASE  15u
+#define UDEKS_TASK_CANDIDATE_STACK_SIZE  17u
 
 unsigned char udeks_task_policy_validate_spawn_candidate(
     const unsigned char *candidate,

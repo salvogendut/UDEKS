@@ -166,22 +166,27 @@ class TaskPolicyTests(unittest.TestCase):
         )
         return result, task_id.value, status.value, ticks.value
 
-    def make_candidate(self, cpu=1, image_base=0x0200, image_size=0x0800,
+    def make_candidate(self, magic=b"UDEX", major=0, cpu=1, flags=0,
+                       image_base=0x0200, image_size=0x0800,
                        bss_size=0x0100, entry=0x0300, stack_base=0x1000,
                        stack_size=0x0100):
-        candidate = (ctypes.c_ubyte * 13)()
+        candidate = (ctypes.c_ubyte * 19)()
+        for index, value in enumerate(magic):
+            candidate[index] = value
+        candidate[4] = major
+        candidate[5] = cpu
+        candidate[6] = flags
 
         def word(offset, value):
             candidate[offset] = value & 0xFF
             candidate[offset + 1] = (value >> 8) & 0xFF
 
-        candidate[0] = cpu
-        word(1, image_base)
-        word(3, image_size)
-        word(5, bss_size)
-        word(7, entry)
-        word(9, stack_base)
-        word(11, stack_size)
+        word(7, image_base)
+        word(9, image_size)
+        word(11, bss_size)
+        word(13, entry)
+        word(15, stack_base)
+        word(17, stack_size)
         return candidate
 
     def make_reserved(self, ranges):
@@ -221,6 +226,19 @@ class TaskPolicyTests(unittest.TestCase):
             with self.subTest(operation=operation):
                 result, _, _, _ = self.validate(operation)
                 self.assertEqual(result, ENOSYS)
+
+    def test_unknown_operation_precedes_other_validation(self):
+        self.start_caller()
+        self.assertEqual(
+            self.validate(99, descriptor=1, caller=9)[0], ENOSYS
+        )
+        self.assertEqual(
+            self.validate(1, flags=0x80, count=0, caller=9)[0], ENOSYS
+        )
+        self.assertEqual(
+            self.validate(0, descriptor=1, payload=[9] * PAYLOAD_SIZE)[0],
+            ENOSYS,
+        )
 
     def test_yield_and_exit_validation(self):
         self.start_caller()
@@ -458,13 +476,54 @@ class TaskPolicyTests(unittest.TestCase):
 
     def test_spawn_candidate_rejects_bad_format_and_cpu(self):
         self.assertEqual(
+            self.candidate_result(self.make_candidate(magic=b"UDEY")), ENOEXEC
+        )
+        self.assertEqual(
+            self.candidate_result(self.make_candidate(major=1)), ENOEXEC
+        )
+        self.assertEqual(
             self.candidate_result(self.make_candidate(cpu=2)), ENOEXEC
+        )
+        self.assertEqual(
+            self.candidate_result(self.make_candidate(flags=1)), ENOEXEC
         )
         self.assertEqual(
             self.candidate_result(self.make_candidate(image_size=0)), ENOEXEC
         )
         self.assertEqual(
             self.candidate_result(self.make_candidate(entry=0x0100)), ENOEXEC
+        )
+
+    def test_spawn_candidate_accepts_ranges_ending_at_address_space_top(self):
+        self.assertEqual(
+            self.candidate_result(
+                self.make_candidate(
+                    image_base=0xFF00, image_size=0x0100, bss_size=0,
+                    entry=0xFF00, stack_base=0x0100, stack_size=0x0100,
+                )
+            ),
+            OK,
+        )
+        self.assertEqual(
+            self.candidate_result(
+                self.make_candidate(
+                    image_base=0x0200, image_size=0x0100, bss_size=0,
+                    entry=0x0200, stack_base=0xFFE0, stack_size=0x0020,
+                )
+            ),
+            OK,
+        )
+        reserved = self.make_reserved([(0xF000, 0x1000)])
+        self.assertEqual(
+            self.candidate_result(
+                self.make_candidate(
+                    image_base=0x0200, image_size=0x0100, bss_size=0,
+                    entry=0x0200, stack_base=0xFFE0, stack_size=0x0020,
+                ),
+                reserved,
+                1,
+            ),
+            ENOMEM,
         )
 
     def test_spawn_candidate_rejects_bad_stacks(self):

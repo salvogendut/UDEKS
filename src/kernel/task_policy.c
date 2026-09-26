@@ -58,6 +58,11 @@ unsigned char udeks_task_policy_validate(
     *status = 0;
     *ticks = 0;
 
+    if (operation < UDEKS_TREQ_OP_YIELD ||
+        operation > UDEKS_TREQ_OP_SPAWN) {
+        return UDEKS_TREQ_ENOSYS;
+    }
+
     caller_state = udeks_lifecycle_get(caller_id);
     if (caller_state == UDEKS_LIFECYCLE_INVALID ||
         caller_state == UDEKS_LIFECYCLE_STATE_FREE) {
@@ -205,16 +210,30 @@ unsigned char udeks_task_policy_validate_spawn_candidate(
     unsigned int entry;
     unsigned int stack_base;
     unsigned int stack_size;
-    unsigned int image_end;
-    unsigned int stack_end;
+    unsigned int image_last;
+    unsigned int stack_last;
     unsigned int region_base;
     unsigned int region_size;
-    unsigned int region_end;
+    unsigned int region_last;
     unsigned char index;
 
+    if (candidate[UDEKS_TASK_CANDIDATE_MAGIC] != 'U' ||
+        candidate[UDEKS_TASK_CANDIDATE_MAGIC + 1u] != 'D' ||
+        candidate[UDEKS_TASK_CANDIDATE_MAGIC + 2u] != 'E' ||
+        candidate[UDEKS_TASK_CANDIDATE_MAGIC + 3u] != 'X') {
+        return UDEKS_TREQ_ENOEXEC;
+    }
+    if (candidate[UDEKS_TASK_CANDIDATE_MAJOR] !=
+            UDEKS_TASK_POLICY_MAJOR_UDEX) {
+        return UDEKS_TREQ_ENOEXEC;
+    }
     if (candidate[UDEKS_TASK_CANDIDATE_CPU] != UDEKS_TASK_POLICY_CPU_8502) {
         return UDEKS_TREQ_ENOEXEC;
     }
+    if (candidate[UDEKS_TASK_CANDIDATE_FLAGS] != 0) {
+        return UDEKS_TREQ_ENOEXEC;
+    }
+
     image_base = candidate_word(candidate, UDEKS_TASK_CANDIDATE_IMAGE_BASE);
     image_size = candidate_word(candidate, UDEKS_TASK_CANDIDATE_IMAGE_SIZE);
     bss_size = candidate_word(candidate, UDEKS_TASK_CANDIDATE_BSS_SIZE);
@@ -222,29 +241,33 @@ unsigned char udeks_task_policy_validate_spawn_candidate(
     stack_base = candidate_word(candidate, UDEKS_TASK_CANDIDATE_STACK_BASE);
     stack_size = candidate_word(candidate, UDEKS_TASK_CANDIDATE_STACK_SIZE);
 
+    /* All range math uses inclusive last addresses so a valid range may end
+     * exactly at $FFFF and the checks are identical on cc65 and the host. */
     if (image_size == 0) {
         return UDEKS_TREQ_ENOEXEC;
     }
-    if (image_size > 0xFFFFu - image_base) {
+    if (image_size - 1u > 0xFFFFu - image_base) {
         return UDEKS_TREQ_ENOMEM;
     }
-    image_end = image_base + image_size;
-    if (entry < image_base || entry >= image_end) {
+    image_last = image_base + image_size - 1u;
+    if (entry < image_base || entry > image_last) {
         return UDEKS_TREQ_ENOEXEC;
     }
-    if (bss_size > 0xFFFFu - image_end) {
-        return UDEKS_TREQ_ENOMEM;
+    if (bss_size != 0) {
+        if (bss_size - 1u > 0xFFFFu - image_last) {
+            return UDEKS_TREQ_ENOMEM;
+        }
+        image_last = image_last + bss_size;
     }
-    image_end = image_end + bss_size;
 
     if (stack_size < UDEKS_TASK_POLICY_STACK_MIN) {
         return UDEKS_TREQ_EINVAL;
     }
-    if (stack_size > 0xFFFFu - stack_base) {
+    if (stack_size - 1u > 0xFFFFu - stack_base) {
         return UDEKS_TREQ_EINVAL;
     }
-    stack_end = stack_base + stack_size;
-    if (stack_base < image_end && image_base < stack_end) {
+    stack_last = stack_base + stack_size - 1u;
+    if (stack_base <= image_last && image_base <= stack_last) {
         return UDEKS_TREQ_EINVAL;
     }
 
@@ -259,15 +282,15 @@ unsigned char udeks_task_policy_validate_spawn_candidate(
         if (region_size == 0) {
             continue;
         }
-        if (region_size > 0xFFFFu - region_base) {
-            region_end = 0xFFFFu;
+        if (region_size - 1u > 0xFFFFu - region_base) {
+            region_last = 0xFFFFu;
         } else {
-            region_end = region_base + region_size;
+            region_last = region_base + region_size - 1u;
         }
-        if (image_base < region_end && region_base < image_end) {
+        if (image_base <= region_last && region_base <= image_last) {
             return UDEKS_TREQ_ENOMEM;
         }
-        if (stack_base < region_end && region_base < stack_end) {
+        if (stack_base <= region_last && region_base <= stack_last) {
             return UDEKS_TREQ_ENOMEM;
         }
     }
