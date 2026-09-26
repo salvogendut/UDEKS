@@ -258,8 +258,12 @@ loads preserved PRGs, selects native 1/2 MHz mode when requested, waits for the
 result-state byte, and saves a raw decoder-ready block. It uses a temporary
 BASIC wrapper for pure machine-code PRGs without changing their payload bytes
 or addresses. See the [r2 VICE results](../bench/results/vice-3.10-2026-09-24-r2/README.md)
-for a complete command. Real-hardware verification still gates MMU, timing,
-video, IEC, and CPU-handoff milestones.
+for a complete command. `tools/shadow_boot_probe.py --vic-compare` boots the
+native D71 with tail sentinels patched into the payload, proves the `crt0`
+VIC-shadow clear, and compares the drawn bank-0 shadow with the bank-1 bitmap;
+`make shadow-probe` wraps it and the result is preserved in
+`bench/results/2026-09-26-shadow-clear`. Real-hardware verification still gates
+MMU, timing, video, IEC, and CPU-handoff milestones.
 
 For native disk tests, `tools/vice_capture.py --native-disk` attaches the D71
 at power-on instead of injecting a BASIC launcher. `1986` saves complete VSF

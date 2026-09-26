@@ -8,6 +8,7 @@
         .export _start
         .import _kernel_main
         .import __BSS_RUN__, __BSS_SIZE__
+        .import __VICSHADOW_RUN__, __VICSHADOW_SIZE__
         .importzp sp
 
         .segment "ZEROPAGE"
@@ -111,6 +112,37 @@ clear_tail_loop:
         bne clear_tail_loop
 
 bss_done:
+        ; The VIC shadow is a separate BSS segment placed after ordinary BSS,
+        ; so the linker-generated bounds are the only safe way to clear it.
+        ; Stage 1 no longer clears any shadow range: staging payloads now live
+        ; inside the shadow, and the reclaimed tail above it must survive.
+        lda #<__VICSHADOW_RUN__
+        sta bss_ptr
+        lda #>__VICSHADOW_RUN__
+        sta bss_ptr+1
+
+        lda #$00
+        ldx #>__VICSHADOW_SIZE__
+        beq shadow_tail
+        ldy #$00
+shadow_page:
+        sta (bss_ptr),y
+        iny
+        bne shadow_page
+        inc bss_ptr+1
+        dex
+        bne shadow_page
+
+shadow_tail:
+        ldy #$00
+shadow_tail_loop:
+        cpy #<__VICSHADOW_SIZE__
+        beq shadow_done
+        sta (bss_ptr),y
+        iny
+        bne shadow_tail_loop
+
+shadow_done:
         jsr _kernel_main
 
 halt:

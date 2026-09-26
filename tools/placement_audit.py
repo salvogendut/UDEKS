@@ -25,7 +25,6 @@ KERNEL_BASE = 0x2000
 KERNEL_LIMIT = 0xD000
 SYSCALL_PAGE = 0xCF00
 VIC_SHADOW_SEGMENT = "VICSHADOW"
-VIC_SHADOW_START = 0xAF00
 BOOTSTRAP_BASE = 0x1C00
 BOOTSTRAP_SIZE = 0x0400
 
@@ -203,8 +202,13 @@ def audit(
 
     kernel_used = data_end - KERNEL_BASE + 1
     kernel_gap = shadow_start - (data_end + 1)
+    free_after_shadow = max(0, SYSCALL_PAGE - (shadow_start + shadow_size))
     reclaim_total = (
-        sum(boot_only.values()) + kernel_gap + padding + BOOTSTRAP_SIZE
+        sum(boot_only.values())
+        + kernel_gap
+        + padding
+        + free_after_shadow
+        + BOOTSTRAP_SIZE
     )
 
     boot_page = (TRANSIENT_STACK_BASE, TRANSIENT_STACK_LIMIT - 1)
@@ -227,6 +231,7 @@ def audit(
         "vic_shadow_start": shadow_start,
         "vic_shadow_size": shadow_size,
         "vic_shadow_padding": padding,
+        "free_after_shadow": free_after_shadow,
         "gateway_sizes": sizes,
         "gateway_total": gateway_total,
         "gateway_end": gateway_end,
@@ -291,6 +296,16 @@ def verify(result: dict[str, object]) -> list[str]:
                 "gateway copies overlap $F800 and later reserved ranges "
                 f"({', '.join(result['gateway_high_overlap'])})"
             )
+    if result["vic_shadow_padding"] != 0:
+        failures.append(
+            f"VICSHADOW reserves {result['vic_shadow_padding']} padding bytes "
+            "beyond UDEKS_VIC_BITMAP_SIZE; link it at its bitmap size"
+        )
+    if result["kernel_gap"] != 0:
+        failures.append(
+            f"VICSHADOW starts {result['kernel_gap']} bytes after BSS; "
+            "link it sequentially"
+        )
     if result["uncontested_boot_page_bytes"] != 0:
         failures.append(
             "boot-page overlap expectation changed; update "
@@ -363,16 +378,19 @@ def main() -> None:
     if args.json:
         print(json.dumps(result, indent=2))
         return
+    shadow_end = result["vic_shadow_start"] + result["vic_shadow_size"] - 1
     print(
         f"Bank-0 data ends at ${result['data_end']:04X} "
         f"({result['kernel_used']} bytes); "
-        f"VIC shadow starts at ${result['vic_shadow_start']:04X}; "
-        f"gap {result['kernel_gap']} bytes"
+        f"VIC shadow ${result['vic_shadow_start']:04X}-${shadow_end:04X} "
+        f"({result['vic_shadow_size']} bytes)"
     )
     print(
-        f"VIC shadow padding {result['vic_shadow_padding']} bytes; "
-        f"boot-only objects {result['boot_only_total']} bytes"
+        f"Gap before shadow {result['kernel_gap']} bytes; "
+        f"free after shadow {result['free_after_shadow']} bytes; "
+        f"padding {result['vic_shadow_padding']} bytes"
     )
+    print(f"Boot-only objects {result['boot_only_total']} bytes")
     for name, size in result["boot_only"].items():
         print(f"  {name:24s} {size:5d}")
     print(f"Total bank-0 reclaim: {result['reclaim_total']} bytes")

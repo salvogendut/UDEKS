@@ -138,8 +138,8 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
 	boot panic-probe framebuffer-assets user-sources user-programs \
-	task-state task-policy placement-check placement-check-guard check \
-	doctor clean help
+	task-state task-policy placement-check placement-check-guard \
+	shadow-probe check doctor clean help
 
 all: 8502 z80 z80-asm
 
@@ -173,6 +173,20 @@ placement-check-guard:
 		echo "  distrobox enter my-distrobox -- make placement-check" >&2; \
 		exit 1; \
 	}
+
+# Host-side VICE qualification of the crt0 shadow clear, the reclaimed tail,
+# and the bank-0 shadow/bank-1 bitmap equality after an xclock repaint.  Build
+# the D71 in the reference container first; this target never invokes cc65.
+shadow-probe:
+	@test -f $(BOOT_D71) || { \
+		echo "shadow-probe needs $(BOOT_D71); run 'make boot' in the reference container first" >&2; \
+		exit 1; \
+	}
+	@command -v flatpak >/dev/null 2>&1 || { \
+		echo "shadow-probe requires Flatpak VICE (net.sf.VICE)" >&2; \
+		exit 1; \
+	}
+	$(PYTHON) tools/shadow_boot_probe.py --vic-compare
 
 8502: $(KERNEL_BIN) $(KERNEL_PRG)
 
@@ -1180,6 +1194,8 @@ check:
 		tools/build_d71.py \
 		tools/snapshot_extract.py \
 		tools/placement_audit.py \
+		tools/shadow_boot_probe.py \
+		tools/shadow_clear_decode.py \
 		tools/task_state_decode.py \
 		tools/vice_capture.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
@@ -1191,6 +1207,7 @@ check:
 	cd bench/results/1986-7556c23-2026-09-24-r2/repeats && sha256sum -c SHA256SUMS
 	cd bench/results/1986-7556c23-2026-09-24-r2/diagnostics && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-memory-map-smoke/raw && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-26-shadow-clear/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-26-context-switch-r1 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-26-context-switch-r2 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-26-context-switch-r3 && sha256sum -c SHA256SUMS
@@ -1260,6 +1277,7 @@ help:
 		'make task-state Compile the lifecycle module for cc65 (no link)' \
 		'make task-policy Compile the request policy module for cc65 (no link)' \
 		'make placement-check  Verify the linker-map budget (reference container)' \
+		'make shadow-probe  Qualify the VIC shadow clear in VICE (host flatpak)' \
 		'make bench      Build comparable 8502 and Z80 benchmark images' \
 		'make bench-8502 Build only the 8502 benchmark image' \
 		'make bench-z80  Build only the Z80 benchmark image' \

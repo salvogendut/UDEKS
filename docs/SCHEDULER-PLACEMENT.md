@@ -33,9 +33,9 @@ From `build/8502/udeks-8502.map` (2026-09-26, ABI 0.3 branch):
 
 | Region | Address | Size | Notes |
 |---|---:|---:|---|
-| `STARTUP`-`BSS` | `$2000-$ACAB` | 36,012 | resident code, rodata, data, BSS |
-| free gap | `$ACAC-$AEFF` | 596 | between BSS end and the fixed VIC shadow |
-| `VICSHADOW` | `$AF00-$CEFF` | 8,192 reserved | 8,000-byte bitmap plus 192 bytes padding |
+| `STARTUP`-`BSS` | `$2000-$ACD0` | 36,049 | resident code, rodata, data, BSS |
+| `VICSHADOW` | `$ACD1-$CC10` | 8,000 | bitmap shadow, linked sequentially at its array size |
+| free gap | `$CC11-$CEFF` | 751 | between the shadow and `SYSCALLS` |
 | `SYSCALLS` | `$CF00-$CFF8` | 249 | fixed page |
 | `HIGHBSS` | `$E1B8-$E2E1` | 298 | VIC tables, overflow canary |
 | `MODULECODE`/`RODATA` | `$E300-$E643` | 836 | module-private code and data |
@@ -67,18 +67,17 @@ These objects run once during boot or discovery and are dead afterwards:
 | `boot_console.o` | 1,450 | bordered boot-console composition |
 | `hardware_capability.o` | 968 | discovery policy service |
 | `probe.o` | 209 | VIC/VDC/REU/GeoRAM probes |
-| `crt0.o` | 174 | startup and BSS clear, excluding two zero-page bytes |
-| total | 2,801 | |
+| `crt0.o` | 211 | startup, BSS clear, and VIC shadow clear, excluding two zero-page bytes |
+| total | 2,838 | |
 
 Structural slack:
 
 | Item | Bytes | Condition |
-|---|---:|---|
-| BSS-to-shadow gap | 596 | already free |
-| VIC shadow padding | 192 | requires shrinking/linking the shadow to its 8,000-byte array |
+|---|---|---|
+| shadow tail gap `$CC11-$CEFF` | 751 | post-bootstrap reclaim; during boot it still carries task-loader staging (`$C800-$CDEF`) and task-gate staging (`$CE00-$CECA`), so a scheduler segment placed here must be installed or overlaid after those payloads are relocated |
 | `$1C00-$1FFF` bootstrap staging | 1,024 | requires stage-1 to keep or install a scheduler segment there |
 
-Total bank-0 reclaim: 2,801 + 596 + 192 + 1,024 = **4,613 bytes**.
+Total bank-0 reclaim: 2,838 + 751 + 1,024 = **4,613 bytes**.
 
 ## Proposed bank-0 scheduler region
 
@@ -91,9 +90,12 @@ Total bank-0 reclaim: 2,801 + 596 + 192 + 1,024 = **4,613 bytes**.
 
 The reclaim budget covers 4,613 bytes, leaving at least 597 bytes to be found
 either by trimming the handler budget or by the later shell-extraction
-milestone. The region is deliberately not contiguous yet: the reclaimed
-KERNEL bytes below the VIC shadow and the separate `$1C00-$1FFF` segment are
-two linker areas until the VIC shadow placement is settled.
+milestone. The VIC shadow placement is settled, so the reclaimed KERNEL bytes
+form one contiguous `$CC11-$CEFF` window; the separate `$1C00-$1FFF` segment
+remains a second linker area. The tail is not ordinary free RAM at reset: boot
+staging occupies it until stage 1 relocates the task loader and bank-1 task
+gate, so the scheduler segment must be installed after those payloads move or
+overlaid on the dead staging bytes.
 
 ## Always-mapped switch tail
 
@@ -132,8 +134,14 @@ selected context after the scheduler writes the page registers and profile.
 
 Each step is a separate change with a `1986` and VICE smoke pass:
 
-1. Link `VICSHADOW` sequentially and at its 8,000-byte size; verify boot,
-   console, VIC graphics, and D71 staging.
+1. Link `VICSHADOW` sequentially and at its 8,000-byte size; clear it from
+   `crt0` through `__VICSHADOW_RUN__`/`__VICSHADOW_SIZE__`, remove the
+   hardcoded stage-1 `$AF00` clear so the `$CC11-$CEFF` tail survives, and
+   verify boot, console, VIC graphics, and D71 staging. `make shadow-probe`
+   boots the patched D71 and must show the full shadow zeroed with tail
+   sentinels intact plus a drawn shadow identical to the bank-1 bitmap; the
+   2026-09-26 evidence is preserved in
+   `bench/results/2026-09-26-shadow-clear`.
 2. Overlay or relocate `crt0.o`; verify boot and BSS clear.
 3. Relocate `boot_console.o`; verify the boot console is pixel-identical.
 4. Relocate `probe.o` and `hardware_capability.o`; verify the `HCAP` record is

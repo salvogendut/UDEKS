@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import re
 import sys
 import unittest
 from pathlib import Path
@@ -11,9 +10,9 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 from placement_audit import (
     COMMON_GATEWAY,
+    SYSCALL_PAGE,
     TASK_GATE_BASE,
     TASK_GATE_END,
-    VIC_SHADOW_START,
     audit,
     parse_map,
     verify,
@@ -44,7 +43,7 @@ Name                   Start     End    Size  Align
 STARTUP               002000  0020AD  0000AE  00001
 CODE                  0020AE  0023FA  00034C  00001
 BSS                   0023FB  00240A  000010  00001
-VICSHADOW             00AF00  00CEFF  002000  00001
+VICSHADOW             00240B  00434A  001F40  00001
 SYSCALLS              00CF00  00CFF8  0000F9  00001
 TASKGATE              00FF05  00FFC4  0000C0  00001
 
@@ -75,13 +74,19 @@ class PlacementAuditTests(unittest.TestCase):
         result = audit(FIXTURE, OBJECT_DUMP)
         self.assertEqual(result["data_end"], 0x240A)
         self.assertEqual(result["kernel_used"], 0x240A - 0x2000 + 1)
-        self.assertEqual(result["kernel_gap"], VIC_SHADOW_START - 0x240B)
-        self.assertEqual(result["vic_shadow_padding"], 0x2000 - 8000)
+        self.assertEqual(result["kernel_gap"], 0)
+        self.assertEqual(result["vic_shadow_start"], 0x240B)
+        self.assertEqual(result["vic_shadow_size"], 0x1F40)
+        self.assertEqual(result["vic_shadow_padding"], 0)
+        self.assertEqual(
+            result["free_after_shadow"],
+            SYSCALL_PAGE - (0x240B + 0x1F40),
+        )
         self.assertEqual(result["boot_only"]["crt0.o"], 174)
         self.assertEqual(
             result["reclaim_total"],
             174 + 0x200 + 0x40 + 0x3C8
-            + (VIC_SHADOW_START - 0x240B) + 192 + 0x400,
+            + 0 + 0 + (SYSCALL_PAGE - (0x240B + 0x1F40)) + 0x400,
         )
 
     def test_gateway_sizes_come_from_the_assembled_object(self):
@@ -112,8 +117,32 @@ class PlacementAuditTests(unittest.TestCase):
     def test_fixture_is_missing_a_shadow_segment(self):
         with self.assertRaisesRegex(ValueError, "VICSHADOW"):
             audit(
-                FIXTURE.replace("VICSHADOW             00AF00  00CEFF  002000", "")
+                FIXTURE.replace("VICSHADOW             00240B  00434A  001F40", "")
             )
+
+    def test_reserved_shadow_padding_fails_verification(self):
+        map_text = FIXTURE.replace(
+            "VICSHADOW             00240B  00434A  001F40  00001",
+            "VICSHADOW             00240B  00440A  002000  00001",
+        )
+        result = audit(map_text, OBJECT_DUMP)
+        self.assertEqual(result["vic_shadow_padding"], 0x2000 - 8000)
+        failures = verify(result)
+        self.assertTrue(
+            any("padding" in failure for failure in failures)
+        )
+
+    def test_gap_before_shadow_fails_verification(self):
+        map_text = FIXTURE.replace(
+            "VICSHADOW             00240B  00434A  001F40  00001",
+            "VICSHADOW             00250B  00444A  001F40  00001",
+        )
+        result = audit(map_text, OBJECT_DUMP)
+        self.assertEqual(result["kernel_gap"], 0x100)
+        failures = verify(result)
+        self.assertTrue(
+            any("sequentially" in failure for failure in failures)
+        )
 
 
 class PlacementVerifyTests(unittest.TestCase):
@@ -175,16 +204,18 @@ class PlacementVerifyTests(unittest.TestCase):
 
 
 class PlacementContractTests(unittest.TestCase):
-    def test_shadow_constants_match_the_header_and_config(self):
+    def test_shadow_segment_is_sequential_at_its_bitmap_size(self):
         self.assertEqual(vic_bitmap_size(), 8000)
         config = (ROOT / "cfg/8502-bootstrap.cfg").read_text(encoding="utf-8")
-        match = re.search(
-            r"VICSHADOW:\s+load = KERNEL.*?start = \$([0-9A-Fa-f]+)",
-            config,
-            re.DOTALL,
+        clause = config.split("VICSHADOW:", 1)[1].split(";", 1)[0]
+        self.assertIn("load = KERNEL", clause)
+        self.assertNotIn("start", clause)
+        source = (ROOT / "src/services/display/vic_graphics.c").read_text(
+            encoding="utf-8"
         )
-        self.assertIsNotNone(match)
-        self.assertEqual(int(match.group(1), 16), VIC_SHADOW_START)
+        self.assertIn(
+            "udeks_vic_bitmap_shadow[UDEKS_VIC_BITMAP_SIZE]", source
+        )
 
     def test_makefile_runs_the_real_audit_in_the_reference_container(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
