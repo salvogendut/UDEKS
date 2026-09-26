@@ -1,62 +1,62 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "udeks/task_state.h"
 
-#define TASK_SLOT_INVALID     0xFFu
-#define TASK_TRANSITION_NONE  0xFFu
+#define TASK_SLOT_STRIDE    8u
+#define TASK_SLOT_PARENT    0u
+#define TASK_SLOT_STATE     1u
+#define TASK_SLOT_WAIT      2u
+#define TASK_SLOT_FLAGS     3u
+#define TASK_SLOT_EXIT      4u
+#define TASK_SLOT_DISPATCH  5u
 
-struct task_slot {
-    unsigned char parent;
-    unsigned char state;
-    unsigned char wait_reason;
-    unsigned char flags;
-    unsigned char exit_status;
-    unsigned char dispatches;
-};
+#define TASK_STATE_INVALID  0xFFu
 
 /*
- * Next state for each (current state, event) pair. Columns are events
- * ADMIT..CANCEL, so the index is event-2. CREATE is handled by allocation,
- * not by this table.
+ * Events ADMIT..CANCEL. Sources is a state bitmask; the next state depends
+ * only on the event for every accepted pair.
  */
-static const unsigned char task_transitions[UDEKS_TASK_STATE_ZOMBIE + 1u][10] = {
-    /* FREE */     { TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, TASK_TRANSITION_NONE },
-    /* NEW */      { UDEKS_TASK_STATE_RUNNABLE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, UDEKS_TASK_STATE_ZOMBIE,
-                     TASK_TRANSITION_NONE, UDEKS_TASK_STATE_ZOMBIE },
-    /* RUNNABLE */ { TASK_TRANSITION_NONE, UDEKS_TASK_STATE_RUNNING,
-                     TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, UDEKS_TASK_STATE_STOPPED,
-                     TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, UDEKS_TASK_STATE_ZOMBIE },
-    /* RUNNING */  { TASK_TRANSITION_NONE, UDEKS_TASK_STATE_RUNNING,
-                     UDEKS_TASK_STATE_RUNNABLE, UDEKS_TASK_STATE_WAITING,
-                     TASK_TRANSITION_NONE, UDEKS_TASK_STATE_STOPPED,
-                     TASK_TRANSITION_NONE, UDEKS_TASK_STATE_ZOMBIE,
-                     TASK_TRANSITION_NONE, UDEKS_TASK_STATE_ZOMBIE },
-    /* WAITING */  { TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     UDEKS_TASK_STATE_RUNNABLE, UDEKS_TASK_STATE_STOPPED,
-                     TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, UDEKS_TASK_STATE_ZOMBIE },
-    /* STOPPED */  { TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     UDEKS_TASK_STATE_RUNNABLE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, UDEKS_TASK_STATE_ZOMBIE },
-    /* ZOMBIE */   { TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     TASK_TRANSITION_NONE, TASK_TRANSITION_NONE,
-                     UDEKS_TASK_STATE_FREE, TASK_TRANSITION_NONE }
+static const unsigned char task_event_sources[UDEKS_TASK_EVENT_CANCEL + 1u] = {
+    0,
+    0,
+    (unsigned char)(1u << UDEKS_TASK_STATE_NEW),
+    (unsigned char)(1u << UDEKS_TASK_STATE_RUNNABLE),
+    (unsigned char)(1u << UDEKS_TASK_STATE_RUNNING),
+    (unsigned char)(1u << UDEKS_TASK_STATE_RUNNING),
+    (unsigned char)(1u << UDEKS_TASK_STATE_WAITING),
+    (unsigned char)((1u << UDEKS_TASK_STATE_RUNNABLE) |
+                    (1u << UDEKS_TASK_STATE_RUNNING) |
+                    (1u << UDEKS_TASK_STATE_WAITING)),
+    (unsigned char)(1u << UDEKS_TASK_STATE_STOPPED),
+    (unsigned char)((1u << UDEKS_TASK_STATE_NEW) |
+                    (1u << UDEKS_TASK_STATE_RUNNING)),
+    (unsigned char)(1u << UDEKS_TASK_STATE_ZOMBIE),
+    (unsigned char)((1u << UDEKS_TASK_STATE_NEW) |
+                    (1u << UDEKS_TASK_STATE_RUNNABLE) |
+                    (1u << UDEKS_TASK_STATE_RUNNING) |
+                    (1u << UDEKS_TASK_STATE_WAITING) |
+                    (1u << UDEKS_TASK_STATE_STOPPED))
 };
 
-static struct task_slot task_slots[UDEKS_TASK_MAX_TASKS];
+static const unsigned char task_event_next[UDEKS_TASK_EVENT_CANCEL + 1u] = {
+    0,
+    UDEKS_TASK_STATE_NEW,
+    UDEKS_TASK_STATE_RUNNABLE,
+    UDEKS_TASK_STATE_RUNNING,
+    UDEKS_TASK_STATE_RUNNABLE,
+    UDEKS_TASK_STATE_WAITING,
+    UDEKS_TASK_STATE_RUNNABLE,
+    UDEKS_TASK_STATE_STOPPED,
+    UDEKS_TASK_STATE_RUNNABLE,
+    UDEKS_TASK_STATE_ZOMBIE,
+    UDEKS_TASK_STATE_FREE,
+    UDEKS_TASK_STATE_ZOMBIE
+};
+
+static const unsigned char task_state_bit[UDEKS_TASK_STATE_ZOMBIE + 1u] = {
+    1u, 2u, 4u, 8u, 16u, 32u, 64u
+};
+
+static unsigned char task_slots[UDEKS_TASK_MAX_TASKS * TASK_SLOT_STRIDE];
 static unsigned char current_task;
 static unsigned char rejected_transitions;
 static unsigned char canary_failures;
@@ -64,25 +64,20 @@ static unsigned char last_event;
 static unsigned char table_ready;
 static unsigned int switch_count;
 
-static struct task_slot *task_slot(unsigned char id)
+static unsigned char *task_slot(unsigned char id)
 {
     if (id < 1u || id > UDEKS_TASK_MAX_TASKS) {
         return 0;
     }
-    return &task_slots[id - 1u];
+    return &task_slots[(unsigned char)((id - 1u) * TASK_SLOT_STRIDE)];
 }
 
 unsigned char udeks_task_state_reset(void)
 {
     unsigned char index;
 
-    for (index = 0; index < UDEKS_TASK_MAX_TASKS; ++index) {
-        task_slots[index].parent = UDEKS_TASK_ID_NONE;
-        task_slots[index].state = UDEKS_TASK_STATE_FREE;
-        task_slots[index].wait_reason = UDEKS_TASK_WAIT_NONE;
-        task_slots[index].flags = 0;
-        task_slots[index].exit_status = 0;
-        task_slots[index].dispatches = 0;
+    for (index = 0; index < (unsigned char)sizeof(task_slots); ++index) {
+        task_slots[index] = 0;
     }
     current_task = UDEKS_TASK_ID_NONE;
     rejected_transitions = 0;
@@ -96,14 +91,14 @@ unsigned char udeks_task_state_reset(void)
 unsigned char udeks_task_state_create(
     unsigned char id, unsigned char parent, unsigned char flags)
 {
-    struct task_slot *slot;
+    unsigned char *slot;
 
     slot = task_slot(id);
     if (slot == 0) {
         ++rejected_transitions;
         return UDEKS_TASK_BAD_ID;
     }
-    if (slot->state != UDEKS_TASK_STATE_FREE) {
+    if (slot[TASK_SLOT_STATE] != UDEKS_TASK_STATE_FREE) {
         ++rejected_transitions;
         return UDEKS_TASK_EXISTS;
     }
@@ -111,13 +106,9 @@ unsigned char udeks_task_state_create(
         ++rejected_transitions;
         return UDEKS_TASK_BAD_ID;
     }
-
-    slot->parent = parent;
-    slot->state = UDEKS_TASK_STATE_NEW;
-    slot->wait_reason = UDEKS_TASK_WAIT_NONE;
-    slot->flags = flags;
-    slot->exit_status = 0;
-    slot->dispatches = 0;
+    slot[TASK_SLOT_PARENT] = parent;
+    slot[TASK_SLOT_FLAGS] = flags;
+    slot[TASK_SLOT_STATE] = UDEKS_TASK_STATE_NEW;
     last_event = UDEKS_TASK_EVENT_CREATE;
     return UDEKS_TASK_OK;
 }
@@ -125,8 +116,7 @@ unsigned char udeks_task_state_create(
 unsigned char udeks_task_state_apply(
     unsigned char id, unsigned char event, unsigned char argument)
 {
-    struct task_slot *slot;
-    unsigned char next;
+    unsigned char *slot;
 
     slot = task_slot(id);
     if (slot == 0) {
@@ -144,14 +134,14 @@ unsigned char udeks_task_state_apply(
             ++rejected_transitions;
             return UDEKS_TASK_BUSY;
         }
-        if (current_task == id && slot->state == UDEKS_TASK_STATE_RUNNING) {
+        if (current_task == id &&
+            slot[TASK_SLOT_STATE] == UDEKS_TASK_STATE_RUNNING) {
             last_event = event;
             return UDEKS_TASK_OK;
         }
     }
-
-    next = task_transitions[slot->state][event - 2u];
-    if (next == TASK_TRANSITION_NONE) {
+    if ((task_event_sources[event] &
+         task_state_bit[slot[TASK_SLOT_STATE]]) == 0) {
         ++rejected_transitions;
         return UDEKS_TASK_BAD_STATE;
     }
@@ -162,40 +152,38 @@ unsigned char udeks_task_state_apply(
         return UDEKS_TASK_BAD_REASON;
     }
 
-    if (slot->state == UDEKS_TASK_STATE_RUNNING &&
-        next != UDEKS_TASK_STATE_RUNNING) {
-        current_task = UDEKS_TASK_ID_NONE;
-    }
     if (event == UDEKS_TASK_EVENT_DISPATCH) {
         current_task = id;
         ++switch_count;
-        ++slot->dispatches;
-    }
-    if (event == UDEKS_TASK_EVENT_EXIT) {
-        slot->exit_status = argument;
-    } else if (event == UDEKS_TASK_EVENT_CANCEL) {
-        slot->exit_status = 0;
+        ++slot[TASK_SLOT_DISPATCH];
+    } else if (current_task == id) {
+        current_task = UDEKS_TASK_ID_NONE;
     }
     if (event == UDEKS_TASK_EVENT_BLOCK) {
-        slot->wait_reason = argument;
+        slot[TASK_SLOT_WAIT] = argument;
     } else {
-        slot->wait_reason = UDEKS_TASK_WAIT_NONE;
+        slot[TASK_SLOT_WAIT] = UDEKS_TASK_WAIT_NONE;
+        if (event == UDEKS_TASK_EVENT_EXIT) {
+            slot[TASK_SLOT_EXIT] = argument;
+        } else if (event == UDEKS_TASK_EVENT_CANCEL) {
+            slot[TASK_SLOT_EXIT] = 0;
+        }
     }
 
-    slot->state = next;
+    slot[TASK_SLOT_STATE] = task_event_next[event];
     last_event = event;
     return UDEKS_TASK_OK;
 }
 
 unsigned char udeks_task_state_get(unsigned char id)
 {
-    struct task_slot *slot;
+    unsigned char *slot;
 
     slot = task_slot(id);
     if (slot == 0) {
-        return TASK_SLOT_INVALID;
+        return TASK_STATE_INVALID;
     }
-    return slot->state;
+    return slot[TASK_SLOT_STATE];
 }
 
 unsigned char udeks_task_state_current(void)
@@ -210,8 +198,10 @@ unsigned char udeks_task_state_runnable_count(void)
 
     count = 0;
     for (index = 0; index < UDEKS_TASK_MAX_TASKS; ++index) {
-        if (task_slots[index].state == UDEKS_TASK_STATE_RUNNABLE ||
-            task_slots[index].state == UDEKS_TASK_STATE_RUNNING) {
+        if (task_slots[index * TASK_SLOT_STRIDE + TASK_SLOT_STATE] ==
+                UDEKS_TASK_STATE_RUNNABLE ||
+            task_slots[index * TASK_SLOT_STRIDE + TASK_SLOT_STATE] ==
+                UDEKS_TASK_STATE_RUNNING) {
             ++count;
         }
     }
@@ -225,7 +215,8 @@ unsigned char udeks_task_state_defined_count(void)
 
     count = 0;
     for (index = 0; index < UDEKS_TASK_MAX_TASKS; ++index) {
-        if (task_slots[index].state != UDEKS_TASK_STATE_FREE) {
+        if (task_slots[index * TASK_SLOT_STRIDE + TASK_SLOT_STATE] !=
+                UDEKS_TASK_STATE_FREE) {
             ++count;
         }
     }

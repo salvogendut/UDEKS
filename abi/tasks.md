@@ -107,10 +107,21 @@ and a bounded save/copy strategy, as required by the handover.
 
 ## Diagnostic record
 
-The kernel continuously publishes a read-only 16-byte `UTSK` record in common
-RAM so emulator tests can observe the table without reaching into private
-state. It occupies `$F110-$F11F`, between the CIA time status at `$F100` and
-the keyboard status at `$F120`.
+Task 0.1 reserves a read-only 16-byte `UTSK` record in common RAM so emulator
+tests can observe the table without reaching into private state. It occupies
+`$F110-$F11F`, between the CIA time status at `$F100` and the keyboard status
+at `$F120`. The host-tested state module fills the record for host tests; the
+resident kernel publishes it once the table is linked behind the scheduler
+seam. The address is frozen now so later work cannot collide with neighboring
+records.
+
+The initial linker-map audit found the resident bank-0 image ending at `$ACAB`
+with the VIC-IIe shadow fixed at `$AF00`, leaving about 595 bytes before the
+shadow. The first complete state module compiles to roughly 1.2 KiB, so linking
+it unchanged cannot preserve the boot image. Resident publication therefore
+arrives together with the context-switch spike and a deliberate decision about
+where scheduler state and code live; it must not silently consume the gap or
+move the VIC-IIe shadow without its own boot-chain validation.
 
 | Offset | Size | Meaning |
 |---:|---:|---|
