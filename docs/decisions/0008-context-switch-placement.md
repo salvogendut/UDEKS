@@ -64,3 +64,5 @@ until the scheduler links; the semantic fields above are frozen.
   the memory map, task table, and allocator must account for.
 - The resident context-switch code must live in always-mapped RAM, which is an
   explicit placement constraint on the scheduler revision.
+- This ADR freezes the placement strategy only. A compiled C task using the
+  real cc65 software stack is the integration test for the scheduler revision.

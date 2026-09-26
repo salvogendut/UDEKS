@@ -111,7 +111,9 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   page-zero/page-one ownership
   ([ADR 0008](decisions/0008-context-switch-placement.md)).
 - [ ] Implement task creation, exit, yield, sleep, and event wait.
-- [ ] Save and restore the selected compiler runtime and CPU context.
+- [ ] Save and restore the selected compiler runtime and CPU context. A
+  compiled C task using the real cc65 software stack is the integration test
+  once the scheduler lands.
 - [ ] Add cooperative scheduling, then timer-driven preemption.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
