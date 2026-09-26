@@ -227,10 +227,17 @@ unsigned char udeks_task_policy_validate_spawn_candidate(
             UDEKS_TASK_POLICY_MAJOR_UDEX) {
         return UDEKS_TREQ_ENOEXEC;
     }
+    if (candidate[UDEKS_TASK_CANDIDATE_MINOR] >
+            UDEKS_TASK_POLICY_MINOR_UDEX) {
+        return UDEKS_TREQ_ENOEXEC;
+    }
     if (candidate[UDEKS_TASK_CANDIDATE_CPU] != UDEKS_TASK_POLICY_CPU_8502) {
         return UDEKS_TREQ_ENOEXEC;
     }
-    if (candidate[UDEKS_TASK_CANDIDATE_FLAGS] != 0) {
+    /* Valid flags are 0, persistent ($01), and managed ($02); unknown bits
+     * and the combined $03 value are rejected. */
+    if (candidate[UDEKS_TASK_CANDIDATE_FLAGS] >
+            UDEKS_TASK_POLICY_FLAG_MANAGED) {
         return UDEKS_TREQ_ENOEXEC;
     }
 
@@ -254,7 +261,7 @@ unsigned char udeks_task_policy_validate_spawn_candidate(
         return UDEKS_TREQ_ENOEXEC;
     }
     if (bss_size != 0) {
-        if (bss_size - 1u > 0xFFFFu - image_last) {
+        if (bss_size > 0xFFFFu - image_last) {
             return UDEKS_TREQ_ENOMEM;
         }
         image_last = image_last + bss_size;

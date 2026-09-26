@@ -143,15 +143,17 @@ ids are rejected with `ESRCH` (or `ECHILD` for `WAITPID`, as noted below).
   No free task slot or allocation: `ENOMEM`. A bad name length, a non-zero pad
   byte, a character outside letters, digits, `.`, `_`, `+`, and `-`, or
   reserved flag bits: `EINVAL`.
-- Before any allocation metadata changes, the loader resolves the executable,
-  parses its UDEX header, and preflights the proposed placement. The candidate
-  record carries the format identity, so a wrong magic, unsupported major
-  version, unsupported CPU, nonzero executable flags, a zero-length image, or
-  an entry outside the image is `ENOEXEC`; a missing, under-sized, or
-  image-overlapping stack is `EINVAL`; an address-space overflow or overlap
-  with the resident kernel, common RAM, display memory, or another task's
-  allocation is `ENOMEM`. Ranges are end-exclusive and may end exactly at
-  `$10000`.
+- Before any allocation metadata changes, the loader resolves the executable
+  and preflights the proposed placement. The candidate record holds the
+  unchanged 16-byte UDEX header plus the proposed stack base and size, so a
+  wrong magic, unsupported major or minor version, unsupported CPU,
+  invalid executable flags, a zero-length image, or an entry outside the image is
+  `ENOEXEC`; a missing, under-sized, or image-overlapping stack is `EINVAL`;
+  an address-space overflow or overlap with the resident kernel, common RAM,
+  display memory, or another task's allocation is `ENOMEM`. Valid UDEX 0.1
+  flags are `0`, persistent `$01`, and managed `$02`; unknown bits and the
+  combined `$03` value are rejected. Ranges may end exactly at the top of the
+  address space.
 
 ## Errors
 
@@ -215,7 +217,7 @@ no more immediate work.
 ## Placement note
 
 The fixed `$F800` request gateway uses 262 of its 265 reserved bytes as of ABI
-0.3, the host-testable policy compiles to 2,227 bytes (about 2.2 KiB) of cc65
+0.3, the host-testable policy compiles to 2,245 bytes (about 2.2 KiB) of cc65
 code without long-arithmetic helpers, and the lifecycle module is about 1.6 KiB
 of code plus 31 bytes of
 read-only data and 71 bytes of BSS. The bank-0 gap below the VIC shadow is about 596 bytes and

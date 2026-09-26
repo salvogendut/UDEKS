@@ -43,38 +43,46 @@ unsigned char udeks_task_policy_validate(
     unsigned char *status, unsigned int *ticks);
 
 /*
- * Spawn candidate preflight. The loader parses the UDEX header, resolves the
- * executable, and proposes a placement; it calls this before any allocation
- * metadata changes. The candidate is a 19-byte record holding the format
- * identity and 16-bit little-endian memory words; the reserved table holds
- * 4-byte entries of base and size words for every region the candidate must
- * not overlap. Range arithmetic is inclusive, so a valid range may end exactly
- * at the top of the address space ($FFFF).
+ * Spawn candidate preflight. The loader resolves the executable and proposes
+ * a placement; it calls this before any allocation metadata changes. A
+ * candidate is a 20-byte record: the unchanged 16-byte UDEX header followed
+ * by the proposed stack base and size. Multi-byte fields are little-endian,
+ * and the reserved table holds 4-byte entries of base and size words for
+ * every region the candidate must not overlap. Range arithmetic is inclusive,
+ * so a valid range may end exactly at the top of the address space ($FFFF).
+ *
+ * The header fields are validated against UDEX 0.1: major 0, minor 0 or 1,
+ * 8502 CPU, and flags 0, persistent ($01), or managed ($02); unknown bits and
+ * the combined $03 value are rejected.
  *
  * Returns zero, or:
  *
- *   ENOEXEC  wrong magic, unsupported major version, unsupported CPU, nonzero
- *            executable flags, zero-length image, or an entry outside the
- *            image;
+ *   ENOEXEC  wrong magic, unsupported major or minor version, unsupported
+ *            CPU, invalid executable flags, zero-length image, or an entry
+ *            outside the image;
  *   EINVAL   missing, under-sized, overflowing, or image-overlapping stack;
  *   ENOMEM   address-space overflow or overlap with a reserved region.
  */
 #define UDEKS_TASK_POLICY_CPU_8502       1u
 #define UDEKS_TASK_POLICY_MAJOR_UDEX     0u
+#define UDEKS_TASK_POLICY_MINOR_UDEX     1u
+#define UDEKS_TASK_POLICY_FLAG_PERSISTENT 0x01u
+#define UDEKS_TASK_POLICY_FLAG_MANAGED   0x02u
 #define UDEKS_TASK_POLICY_STACK_MIN      32u
-#define UDEKS_TASK_POLICY_CANDIDATE_SIZE 19u
+#define UDEKS_TASK_POLICY_CANDIDATE_SIZE 20u
 #define UDEKS_TASK_POLICY_RESERVED_SIZE  4u
 
 #define UDEKS_TASK_CANDIDATE_MAGIC       0u
 #define UDEKS_TASK_CANDIDATE_MAJOR       4u
-#define UDEKS_TASK_CANDIDATE_CPU         5u
-#define UDEKS_TASK_CANDIDATE_FLAGS       6u
-#define UDEKS_TASK_CANDIDATE_IMAGE_BASE  7u
-#define UDEKS_TASK_CANDIDATE_IMAGE_SIZE  9u
-#define UDEKS_TASK_CANDIDATE_BSS_SIZE    11u
-#define UDEKS_TASK_CANDIDATE_ENTRY       13u
-#define UDEKS_TASK_CANDIDATE_STACK_BASE  15u
-#define UDEKS_TASK_CANDIDATE_STACK_SIZE  17u
+#define UDEKS_TASK_CANDIDATE_MINOR       5u
+#define UDEKS_TASK_CANDIDATE_CPU         6u
+#define UDEKS_TASK_CANDIDATE_FLAGS       7u
+#define UDEKS_TASK_CANDIDATE_IMAGE_BASE  8u
+#define UDEKS_TASK_CANDIDATE_IMAGE_SIZE  10u
+#define UDEKS_TASK_CANDIDATE_BSS_SIZE    12u
+#define UDEKS_TASK_CANDIDATE_ENTRY       14u
+#define UDEKS_TASK_CANDIDATE_STACK_BASE  16u
+#define UDEKS_TASK_CANDIDATE_STACK_SIZE  18u
 
 unsigned char udeks_task_policy_validate_spawn_candidate(
     const unsigned char *candidate,
