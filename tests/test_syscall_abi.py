@@ -55,8 +55,8 @@ class SyscallAbiTests(unittest.TestCase):
         makefile = (ROOT / "Makefile").read_text()
         user_rule = makefile.split("$(USER_COWSAY_BIN):", 1)[1].split("\n\n", 1)[0]
         kernel_rule = makefile.split(
-            "$(KERNEL_BIN) $(CRT0_BIN) &:", 1
-        )[1].split("$(PANIC_PROBE_KERNEL_BIN):", 1)[0]
+            "$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) &:", 1
+        )[1].split("$(PANIC_PROBE_KERNEL_BIN)", 1)[0]
 
         self.assertIn("cfg/8502-user-app1.cfg", user_rule)
         self.assertIn("$(USER_SYSCALL_OBJ)", user_rule)

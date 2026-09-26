@@ -38,6 +38,37 @@ class BootCrt0ConfigTests(unittest.TestCase):
         self.assertNotIn("jmp $2000", stage1)
 
 
+class BootProbeConfigTests(unittest.TestCase):
+    def test_bootprobe_area_is_the_dead_boot_sector_page(self):
+        config = (ROOT / "cfg/8502-bootstrap.cfg").read_text(encoding="utf-8")
+        self.assertIn(
+            "BOOTPROBE: start = $0B00, size = $0100, type = ro,\n"
+            '               file = "build/boot/8502-probe.bin", fill = yes;',
+            config,
+        )
+        self.assertIn("PROBECODE: load = BOOTPROBE, type = ro;", config)
+
+    def test_probe_image_carries_its_scratch(self):
+        probe = (ROOT / "src/8502/probe.s").read_text(encoding="utf-8")
+        self.assertIn('.segment "PROBECODE"', probe)
+        self.assertNotIn('.segment "BSS"', probe)
+        for name in (
+            "probe_saved_reu",
+            "probe_saved_geo_page",
+            "probe_saved_geo_bank",
+            "probe_saved_geo_data",
+        ):
+            self.assertIn(f"{name}:\n        .byte $00", probe)
+
+    def test_stage1_moves_the_probe_over_the_dead_boot_page(self):
+        stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("final_copy_probe_source:", stage1)
+        self.assertIn("lda $ad00,y", stage1)
+        self.assertIn("sta $0b00,y", stage1)
+
+
 class ZeroPageAbiTests(unittest.TestCase):
     def test_kernel_links_reserve_the_uapp_compatibility_bytes(self):
         for path in ("cfg/8502-bootstrap.cfg", "cfg/8502-panic-probe.cfg"):
@@ -106,19 +137,21 @@ class ZeroPageAbiTests(unittest.TestCase):
 
 
 class BootCrt0BuildTests(unittest.TestCase):
-    def test_kernel_and_crt0_share_one_linker_invocation(self):
+    def test_kernel_crt0_and_probe_share_one_linker_invocation(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
-        self.assertIn("$(KERNEL_BIN) $(CRT0_BIN) &:", makefile)
+        self.assertIn(
+            "$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) &:", makefile
+        )
         self.assertIn(
             "$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $(KERNEL_BIN) \\",
             makefile,
         )
 
-    def test_boot_image_stages_crt0_and_prg_loads_from_its_page(self):
+    def test_boot_image_stages_crt0_probe_and_prg_loads_from_its_page(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
-        self.assertIn("--crt0 $(CRT0_BIN)", makefile)
+        self.assertIn("--crt0 $(CRT0_BIN) --probe $(PROBE_BIN)", makefile)
         self.assertIn("tools/join_boot_crt0.py", makefile)
-        self.assertIn("--load-address 0x1C00", makefile)
+        self.assertIn("--load-address 0x0B00", makefile)
 
 
 if __name__ == "__main__":

@@ -100,6 +100,18 @@ final_copy_request_tail:
         cpy #$09
         bne final_copy_request_tail
 
+        ; The staged probe moves over the dead boot-sector page; the kernel
+        ; runs it from $0B00 during hardware discovery.
+        lda #$ad
+        sta final_copy_probe_source+2
+        ldy #$00
+final_copy_probe_byte:
+final_copy_probe_source:
+        lda $ad00,y
+        sta $0b00,y
+        iny
+        bne final_copy_probe_byte
+
         ; Stage 1's $1C00 page is dead now that this installer runs from the
         ; protected $F700 page.  Move the staged crt0 over it and enter there:
         ; crt0 clears BSS and the whole VICSHADOW segment through its

@@ -34,8 +34,8 @@ class FramebufferBoundaryTests(unittest.TestCase):
 
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
         production_link = makefile.split(
-            "$(KERNEL_BIN) $(CRT0_BIN) &:", 1
-        )[1].split("$(PANIC_PROBE_KERNEL_BIN):", 1)[0]
+            "$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) &:", 1
+        )[1].split("$(PANIC_PROBE_KERNEL_BIN)", 1)[0]
         self.assertNotIn("vdc_framebuffer.o", production_link)
         self.assertNotIn("framebuffer_surface.o", production_link)
 

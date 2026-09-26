@@ -29,7 +29,7 @@ crt0.o:
 boot_console.o:
     CODE              Offs=000000  Size=000200  Align=00001  Fill=0000
 probe.o:
-    CODE              Offs=000200  Size=000040  Align=00001  Fill=0000
+    PROBECODE         Offs=000200  Size=000040  Align=00001  Fill=0000
 hardware_capability.o:
     CODE              Offs=000240  Size=0003C8  Align=00001  Fill=0000
 alpha.o:
@@ -40,6 +40,7 @@ Segment list:
 -------------
 Name                   Start     End    Size  Align
 ----------------------------------------------------
+PROBECODE             000B00  000BD0  0000D1  00001
 STARTUP               001C00  001CCE  0000CF  00001
 CODE                  002000  00234B  00034C  00001
 BSS                   00234C  00ABFD  0088B2  00001
@@ -83,9 +84,12 @@ class PlacementAuditTests(unittest.TestCase):
             SYSCALL_PAGE - (0xABFE + 0x1F40),
         )
         self.assertNotIn("crt0.o", result["boot_only"])
+        self.assertNotIn("probe.o", result["boot_only"])
+        self.assertEqual(result["probe_segment"]["start"], 0x0B00)
+        self.assertEqual(result["probe_segment"]["end"], 0x0BD0)
         self.assertEqual(
             result["reclaim_total"],
-            0x200 + 0x40 + 0x3C8
+            0x200 + 0x3C8
             + 0 + 0 + (SYSCALL_PAGE - (0xABFE + 0x1F40)) + 0x400,
         )
 
@@ -172,6 +176,26 @@ class PlacementAuditTests(unittest.TestCase):
         failures = verify(audit(map_text, OBJECT_DUMP))
         self.assertTrue(
             any("crt0 staging" in failure for failure in failures)
+        )
+
+    def test_probe_code_outside_boot_page_fails_verification(self):
+        map_text = FIXTURE.replace(
+            "PROBECODE             000B00  000BD0  0000D1  00001",
+            "PROBECODE             002000  0020D0  0000D1  00001",
+        )
+        failures = verify(audit(map_text, OBJECT_DUMP))
+        self.assertTrue(
+            any("PROBECODE" in failure for failure in failures)
+        )
+
+    def test_probe_staging_outside_shadow_fails_verification(self):
+        map_text = FIXTURE.replace(
+            "VICSHADOW             00ABFE  00CB3D  001F40  00001",
+            "VICSHADOW             00ABFE  00ACFD  000100  00001",
+        )
+        failures = verify(audit(map_text, OBJECT_DUMP))
+        self.assertTrue(
+            any("probe staging" in failure for failure in failures)
         )
 
 

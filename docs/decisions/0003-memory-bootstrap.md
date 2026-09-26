@@ -173,10 +173,11 @@ The native disk path uses two small stages before the resident kernel:
    rate, allowing the VDC text console and VIC-IIe to stay active together.
    The qualified VDC-only 2 MHz transition is an optional later policy.
 
-For development, `udeks-8502.prg` may be loaded directly at `$1C00` and entered
-with `SYS 7168`: it carries the staged crt0 page at `$1C00`, zero padding to
-`$2000`, and the resident kernel at `$2000`. This bypasses disk stages 0 and 1
-but must satisfy the same bank-0 placement contract.
+For development, `udeks-8502.prg` may be loaded directly from `$0B00` and
+entered at `$1C00` with `SYS 7168`: it carries the staged probe page at
+`$0B00`, zero padding to the crt0 page at `$1C00`, zero padding to `$2000`,
+and the resident kernel at `$2000`. This bypasses disk stages 0 and 1 but must
+satisfy the same bank-0 placement contract.
 
 ## Validation required for acceptance
 

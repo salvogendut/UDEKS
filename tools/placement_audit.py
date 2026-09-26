@@ -21,6 +21,8 @@ from build_d71 import (
     BOOTFS_TAIL_STAGING_ADDRESS,
     CRT0_SIZE,
     CRT0_STAGING_ADDRESS,
+    PROBE_SIZE,
+    PROBE_STAGING_ADDRESS,
 )
 
 
@@ -32,6 +34,8 @@ SYSCALL_PAGE = 0xCF00
 VIC_SHADOW_SEGMENT = "VICSHADOW"
 BOOTCRT_BASE = 0x1C00
 BOOTCRT_SIZE = 0x0100
+BOOTPROBE_BASE = 0x0B00
+BOOTPROBE_SIZE = 0x0100
 BOOTSTRAP_BASE = 0x1C00
 BOOTSTRAP_SIZE = 0x0400
 
@@ -54,17 +58,16 @@ GATEWAY_SIZE_BASELINE = (254, 46, 68, 358)
 GATEWAY_SIZE_SUFFIXES = ("vic", "sprite", "page", "outline")
 
 # Objects whose code runs only during boot or hardware discovery and is dead
-# afterwards. Relocating them is the first reclaim step.  crt0 is not listed:
-# it is staged in the VIC shadow and executed from the reclaimed $1C00 page,
-# so its bytes are already accounted for by the free tail.
+# afterwards. Relocating them is the first reclaim step.  crt0 and probe are
+# not listed: both are staged in the VIC shadow and executed from reclaimed
+# pages, so their bytes are already accounted for by the free tail.
 BOOT_ONLY_OBJECTS = (
     "boot_console.o",
-    "probe.o",
     "hardware_capability.o",
 )
 
 CODE_SEGMENTS = (
-    "STARTUP", "LOWCODE", "ONCE", "CODE", "RODATA", "DATA",
+    "STARTUP", "PROBECODE", "LOWCODE", "ONCE", "CODE", "RODATA", "DATA",
     "MODULECODE", "MODULERODATA", "BOOTFSCODE", "SYSCALLS",
     "TASKREQUEST", "TASKGATE",
 )
@@ -244,9 +247,18 @@ def audit(
             "base": CRT0_STAGING_ADDRESS,
             "end": CRT0_STAGING_ADDRESS + CRT0_SIZE - 1,
         },
+        "probe_staging": {
+            "base": PROBE_STAGING_ADDRESS,
+            "end": PROBE_STAGING_ADDRESS + PROBE_SIZE - 1,
+        },
         "startup": (
             {"start": by_name["STARTUP"][0], "end": by_name["STARTUP"][1]}
             if "STARTUP" in by_name
+            else None
+        ),
+        "probe_segment": (
+            {"start": by_name["PROBECODE"][0], "end": by_name["PROBECODE"][1]}
+            if "PROBECODE" in by_name
             else None
         ),
         "code_start": by_name["CODE"][0] if "CODE" in by_name else None,
@@ -347,6 +359,24 @@ def verify(result: dict[str, object]) -> list[str]:
         failures.append(
             "crt0 staging is outside the VIC shadow prefix or overlaps "
             "bootfs staging"
+        )
+    probe = result["probe_segment"]
+    if probe is None or not (
+        BOOTPROBE_BASE <= probe["start"]
+        and probe["end"] < BOOTPROBE_BASE + BOOTPROBE_SIZE
+    ):
+        failures.append(
+            "PROBECODE is not confined to the $0B00-$0BFF boot-probe page"
+        )
+    staging = result["probe_staging"]
+    if not (
+        result["vic_shadow_start"] <= staging["base"]
+        and staging["end"] < CRT0_STAGING_ADDRESS
+        and staging["end"] < result["vic_shadow_start"] + result["vic_shadow_size"]
+    ):
+        failures.append(
+            "probe staging is outside the VIC shadow prefix or overlaps "
+            "crt0 staging"
         )
     if result["uncontested_boot_page_bytes"] != 0:
         failures.append(

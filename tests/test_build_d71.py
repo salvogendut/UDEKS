@@ -14,6 +14,8 @@ from build_d71 import (
     CRT0_SIZE,
     CRT0_STAGING_ADDRESS,
     D64_SIZE,
+    PROBE_SIZE,
+    PROBE_STAGING_ADDRESS,
     BOOTFS_REQUEST_STAGING_ADDRESS,
     BOOTFS_REQUEST_STAGING_SIZE,
     MODULE_STAGING_ADDRESS,
@@ -186,6 +188,33 @@ class BuildD71Tests(unittest.TestCase):
         self.assertLessEqual(
             CRT0_STAGING_ADDRESS + CRT0_SIZE, BOOTFS_TAIL_STAGING_ADDRESS
         )
+
+    def test_probe_is_staged_below_crt0_staging(self):
+        probe = b"probe-image"
+        image = build_image(stage0(), b"", b"", b"", probe=probe)
+        payload = b"".join(
+            image[
+                sector_offset(track, sector) :
+                sector_offset(track, sector) + SECTOR_SIZE
+            ]
+            for track, sector in list(boot_locations(1 + PAYLOAD_BLOCKS))[1:]
+        )
+        offset = PROBE_STAGING_ADDRESS - 0x1C00
+        self.assertEqual(payload[offset : offset + len(probe)], probe)
+        self.assertLessEqual(
+            PROBE_STAGING_ADDRESS + PROBE_SIZE, CRT0_STAGING_ADDRESS
+        )
+
+    def test_rejects_oversize_probe(self):
+        with self.assertRaisesRegex(ValueError, "256-byte"):
+            build_image(
+                stage0(), b"", b"", b"", probe=bytes(PROBE_SIZE + 1)
+            )
+
+    def test_rejects_probe_staging_collision(self):
+        kernel = bytes(PROBE_STAGING_ADDRESS - 0x2000) + b"x"
+        with self.assertRaisesRegex(ValueError, "probe staging overlaps"):
+            build_image(stage0(), b"", kernel, b"", probe=b"p")
 
     def test_rejects_oversize_crt0(self):
         with self.assertRaisesRegex(ValueError, "256-byte"):

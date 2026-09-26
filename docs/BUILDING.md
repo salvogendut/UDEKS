@@ -73,10 +73,11 @@ program, and restores the slot on exit. Runtime qualification in both
 emulators and on hardware remains required before this milestone is closed.
 
 The 8502 artifacts are a raw resident image and a development PRG that loads
-at `$1C00` (staged crt0 page, zero padding to `$2000`, then the resident
-kernel) and is entered with `SYS 7168`; `--raw-load` in `tools/vice_capture.py`
-loads it through the monitor because the payload starts below the BASIC
-launcher. Its linker region ends before the `$D000` I/O aperture. The SDCC
+from `$0B00` (staged probe page, zero padding to the `$1C00` crt0 page, zero
+padding to `$2000`, then the resident kernel) and is entered at `$1C00` with
+`SYS 7168`; `--raw-load` in `tools/vice_capture.py` loads it through the
+monitor because the payload starts below the BASIC launcher. Its linker region
+ends before the `$D000` I/O aperture. The SDCC
 artifact is a fixed 8 KiB raw window covering `$2000`–`$3FFF`; only its leading
 bytes currently contain code. `make boot` packages both into a deterministic
 D71 and a side-one D64 compatibility image implementing the stage-0/stage-1 path in

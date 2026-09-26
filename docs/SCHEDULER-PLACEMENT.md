@@ -33,10 +33,11 @@ From `build/8502/udeks-8502.map` (2026-09-26, ABI 0.3 branch):
 
 | Region | Address | Size | Notes |
 |---|---:|---:|---|
+| `BOOTPROBE` (`PROBECODE`) | `$0B00-$0BFF` | 256 | staged probe, executed from the dead boot-sector page |
 | `BOOTCRT` (`STARTUP`) | `$1C00-$1CFF` | 256 | staged crt0, executed from the dead stage-1 page |
-| resident `CODE`-`BSS` | `$2000-$ABFD` | 35,838 | resident code, rodata, data, BSS |
-| `VICSHADOW` | `$ABFE-$CB3D` | 8,000 | bitmap shadow, linked sequentially at its array size |
-| free gap | `$CB3E-$CEFF` | 962 | between the shadow and `SYSCALLS` |
+| resident `CODE`-`BSS` | `$2000-$AB2C` | 35,629 | resident code, rodata, data, BSS |
+| `VICSHADOW` | `$AB2D-$CA6C` | 8,000 | bitmap shadow, linked sequentially at its array size |
+| free gap | `$CA6D-$CEFF` | 1,171 | between the shadow and `SYSCALLS` |
 | `SYSCALLS` | `$CF00-$CFF8` | 249 | fixed page |
 | `HIGHBSS` | `$E1B8-$E2E1` | 298 | VIC tables, overflow canary |
 | `MODULECODE`/`RODATA` | `$E300-$E643` | 836 | module-private code and data |
@@ -67,22 +68,23 @@ These objects run once during boot or discovery and are dead afterwards:
 |---|---:|---|
 | `boot_console.o` | 1,450 | bordered boot-console composition |
 | `hardware_capability.o` | 968 | discovery policy service |
-| `probe.o` | 209 | VIC/VDC/REU/GeoRAM probes |
-| total | 2,627 | |
+| total | 2,418 | |
 
-`crt0.o` is no longer resident: it is linked into the `$1C00-$1CFF` `BOOTCRT`
-page, staged at `$AE00-$AEFF`, and copied over the dead stage-1 page by the
-`$F700` final installer. Its 211 bytes now show up as free tail instead of
-boot-only resident code.
+`crt0.o` and `probe.o` are no longer resident. `crt0` is linked into the
+`$1C00-$1CFF` `BOOTCRT` page, staged at `$AE00-$AEFF`, and copied over the
+dead stage-1 page by the `$F700` final installer. `probe.o` is linked into the
+`$0B00-$0BFF` `BOOTPROBE` page, staged at `$AD00-$ADFF`, and copied over the
+dead boot-sector page by the same installer. Their 211 and 209 bytes now show
+up as free tail instead of boot-only resident code.
 
 Structural slack:
 
 | Item | Bytes | Condition |
 |---|---|---|
-| shadow tail gap `$CB3E-$CEFF` | 962 | post-bootstrap reclaim; during boot it still carries task-loader staging (`$C800-$CDEF`) and task-gate staging (`$CE00-$CECA`), so a scheduler segment placed here must be installed or overlaid after those payloads are relocated |
+| shadow tail gap `$CA6D-$CEFF` | 1,171 | post-bootstrap reclaim; during boot it still carries task-loader staging (`$C800-$CDEF`) and task-gate staging (`$CE00-$CECA`), so a scheduler segment placed here must be installed or overlaid after those payloads are relocated |
 | `$1C00-$1FFF` bootstrap staging | 1,024 | requires stage-1 to keep or install a scheduler segment there; `$1C00-$1CFF` currently holds the executed crt0 copy |
 
-Total bank-0 reclaim: 2,627 + 962 + 1,024 = **4,613 bytes**.
+Total bank-0 reclaim: 2,418 + 1,171 + 1,024 = **4,613 bytes**.
 
 ## Proposed bank-0 scheduler region
 
@@ -96,7 +98,7 @@ Total bank-0 reclaim: 2,627 + 962 + 1,024 = **4,613 bytes**.
 The reclaim budget covers 4,613 bytes, leaving at least 597 bytes to be found
 either by trimming the handler budget or by the later shell-extraction
 milestone. The VIC shadow placement is settled, so the reclaimed KERNEL bytes
-form one contiguous `$CB3E-$CEFF` window; the separate `$1C00-$1FFF` segment
+form one contiguous `$CA6D-$CEFF` window; the separate `$1C00-$1FFF` segment
 remains a second linker area. The tail is not ordinary free RAM at reset: boot
 staging occupies it until stage 1 relocates the task loader and bank-1 task
 gate, so the scheduler segment must be installed after those payloads move or
@@ -141,7 +143,7 @@ Each step is a separate change with a `1986` and VICE smoke pass:
 
 1. Link `VICSHADOW` sequentially and at its 8,000-byte size; clear it from
    `crt0` through `__VICSHADOW_RUN__`/`__VICSHADOW_SIZE__`, remove the
-   hardcoded stage-1 `$AF00` clear so the `$CB3E-$CEFF` tail survives, and
+   hardcoded stage-1 `$AF00` clear so the `$CA6D-$CEFF` tail survives, and
    verify boot, console, VIC graphics, and D71 staging. `make shadow-probe`
    boots the patched D71 and must show the full shadow zeroed with the tail
    preimage intact plus a drawn shadow identical to the bank-1 bitmap; the
@@ -152,8 +154,14 @@ Each step is a separate change with a `1986` and VICE smoke pass:
    dead stage-1 page from the `$F700` final installer before entering at
    `$1C00`; verify boot, BSS and shadow clear, the reclaimed tail, and the
    direct PRG boot.
-3. Relocate `boot_console.o`; verify the boot console is pixel-identical.
-4. Relocate `probe.o` and `hardware_capability.o`; verify the `HCAP` record is
+3. Relocate `probe.o` into the `$0B00-$0BFF` `BOOTPROBE` page, staged at
+   `$AD00-$ADFF` and copied over the dead boot-sector page by the final
+   installer; verify boot and the capability record.
+4. Produce a byte-accurate staging/lifetime map for `hardware_capability.o`
+   and `boot_console.o` before relocating either: both their staged source
+   images and runtime code must avoid bootfs staging, the declared C software
+   stack (`$E700-$EFF0`), and the future `$1C00-$1FFF` scheduler reservation.
+   Then relocate them and verify the `HCAP` record and the boot console are
    byte-identical.
 5. Reserve `$1C00-$1FFF` and install a scheduler segment through stage 1;
    verify the D71 and D64 boot paths.

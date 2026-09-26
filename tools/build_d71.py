@@ -30,6 +30,8 @@ TASK_BANK_GATE_STAGING_SIZE = 0x00CB
 Z80_SIZE = 0x2000
 CRT0_STAGING_ADDRESS = 0xAE00
 CRT0_SIZE = 0x0100
+PROBE_STAGING_ADDRESS = 0xAD00
+PROBE_SIZE = 0x0100
 BOOTFS_TAIL_STAGING_ADDRESS = 0xAF00
 MODULE_STAGING_ADDRESS = 0xBFBB
 MODULE_STAGING_SIZE = 0x0345
@@ -175,6 +177,20 @@ def install_crt0(kernel: bytearray, crt0: bytes) -> None:
     kernel[offset : offset + CRT0_SIZE] = crt0.ljust(CRT0_SIZE, b"\x00")
 
 
+def install_probe(kernel: bytearray, probe: bytes) -> None:
+    if len(probe) > PROBE_SIZE:
+        raise ValueError(
+            f"probe exceeds its {PROBE_SIZE}-byte reservation"
+        )
+    if PROBE_STAGING_ADDRESS + PROBE_SIZE > CRT0_STAGING_ADDRESS:
+        raise ValueError("probe staging is not below crt0 staging")
+    offset = PROBE_STAGING_ADDRESS - KERNEL_ADDRESS
+    region = kernel[offset : offset + PROBE_SIZE]
+    if any(region):
+        raise ValueError("probe staging overlaps resident kernel data")
+    kernel[offset : offset + PROBE_SIZE] = probe.ljust(PROBE_SIZE, b"\x00")
+
+
 def install_module(kernel: bytearray, module: bytes) -> None:
     if len(module) > MODULE_STAGING_SIZE:
         raise ValueError(
@@ -292,7 +308,7 @@ def build_image(
     task_loader: bytes = b"", task_bank_gateway: bytes = b"",
     task_request_gateway: bytes = b"",
     bootfs_request_service: bytes = b"",
-    ush: bytes = b"", crt0: bytes = b"",
+    ush: bytes = b"", crt0: bytes = b"", probe: bytes = b"",
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -311,6 +327,7 @@ def build_image(
         kernel.ljust(Z80_STAGING_ADDRESS - KERNEL_ADDRESS, b"\x00")
     )
     staged_z80 = bytearray(z80.ljust(Z80_SIZE, b"\x00"))
+    install_probe(staged_kernel, probe)
     install_crt0(staged_kernel, crt0)
     install_bootfs(staged_z80, staged_kernel, bootfs)
     install_module(staged_kernel, module)
@@ -349,6 +366,7 @@ def main() -> None:
     parser.add_argument("--stage1", type=Path, required=True)
     parser.add_argument("--kernel", type=Path, required=True)
     parser.add_argument("--crt0", type=Path, required=True)
+    parser.add_argument("--probe", type=Path, required=True)
     parser.add_argument("--z80", type=Path, required=True)
     parser.add_argument("--bootfs", type=Path)
     parser.add_argument("--module", type=Path)
@@ -379,6 +397,7 @@ def main() -> None:
             b"" if args.bootfs_request_service is None else args.bootfs_request_service.read_bytes(),
             b"" if args.ush is None else args.ush.read_bytes(),
             args.crt0.read_bytes(),
+            args.probe.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

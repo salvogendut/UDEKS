@@ -18,11 +18,13 @@ from shadow_clear_decode import (
 RAW = ROOT / "bench/results/2026-09-26-shadow-clear/raw"
 
 # Layout of the preserved 2026-09-26 build: the sequential 8,000-byte
-# VICSHADOW segment sits at $ABFE-$CB3D, the reclaimed tail runs to the fixed
-# SYSCALLS page at $CF00, boot staging starts at $AF00, and the staged crt0
-# occupies the live $AE00-$AEFF page below it.
-SHADOW_START = 0xABFE
+# VICSHADOW segment sits at $AB2D-$CA6C, the reclaimed tail runs to the fixed
+# SYSCALLS page at $CF00, boot staging starts at $AF00, and the live probe and
+# crt0 staging pages sit at $AD00-$ADFF and $AE00-$AEFF.
+SHADOW_START = 0xAB2D
 STAGING_START = 0xAF00
+PROBE_STAGING_ADDRESS = 0xAD00
+PROBE_SIZE = 0x0100
 CRT0_STAGING_ADDRESS = 0xAE00
 CRT0_SIZE = 0x0100
 
@@ -42,14 +44,17 @@ class ShadowClearEvidenceTests(unittest.TestCase):
 
     def test_preimage_seeds_the_reclaimed_prefix(self):
         preimage = (RAW / "shadow-preimage.bin").read_bytes()
-        prefix = preimage[: CRT0_STAGING_ADDRESS - SHADOW_START]
+        prefix = preimage[: PROBE_STAGING_ADDRESS - SHADOW_START]
         self.assertTrue(prefix)
         self.assertTrue(all(byte != 0 for byte in prefix))
-        staged = preimage[
-            CRT0_STAGING_ADDRESS - SHADOW_START :
-            CRT0_STAGING_ADDRESS - SHADOW_START + CRT0_SIZE
-        ]
-        self.assertTrue(any(byte != 0 for byte in staged))
+        for address, size in (
+            (PROBE_STAGING_ADDRESS, PROBE_SIZE),
+            (CRT0_STAGING_ADDRESS, CRT0_SIZE),
+        ):
+            staged = preimage[
+                address - SHADOW_START : address - SHADOW_START + size
+            ]
+            self.assertTrue(any(byte != 0 for byte in staged))
 
     def test_preserved_repaint_matches_the_bank1_bitmap(self):
         shadow = (RAW / "shadow-drawn.bin").read_bytes()
