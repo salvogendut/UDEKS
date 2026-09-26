@@ -1118,6 +1118,7 @@ check:
 		tools/build_bootfs.py \
 		tools/build_d71.py \
 		tools/snapshot_extract.py \
+		tools/task_state_decode.py \
 		tools/vice_capture.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-r2 && sha256sum -c SHA256SUMS

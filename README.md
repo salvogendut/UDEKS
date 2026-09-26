@@ -196,6 +196,7 @@ physical-hardware gates pass.
 - [Text-console and 1 MHz boot decision](docs/decisions/0006-text-console-default.md)
 - [Resident core and loadable service decision](docs/decisions/0007-resident-core-and-loadable-services.md)
 - [Mailbox ABI](abi/mailbox.md)
+- [Task lifecycle ABI](abi/tasks.md)
 - [UDEX executable format](abi/executable.md)
 - [Read-only boot filesystem format](abi/bootfs.md)
 - [Filesystem and Unix-like command direction](abi/filesystem.md)
