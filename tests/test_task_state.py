@@ -270,6 +270,20 @@ class LifecycleBehaviorTests(unittest.TestCase):
         self.assertEqual(self.state.udeks_lifecycle_get(1), RUNNABLE)
         self.assertEqual(self.state.udeks_lifecycle_rejected_count(), 0)
 
+    def test_spurious_wakeups_are_rejected(self):
+        self.create(1)
+        self.apply(1, ADMIT, 0)
+        self.apply(1, STOP, 0)
+        self.assertEqual(self.apply(1, UNBLOCK), BAD_STATE)
+        self.assertEqual(self.state.udeks_lifecycle_get(1), STOPPED)
+        self.apply(1, CONTINUE, 0)
+        self.apply(1, DISPATCH, 0)
+        self.apply(1, BLOCK, WAIT_CHILD)
+        self.apply(1, STOP, 0)
+        self.assertEqual(self.apply(1, UNBLOCK), OK)
+        self.assertEqual(self.apply(1, UNBLOCK), BAD_STATE)
+        self.assertEqual(self.state.udeks_lifecycle_get(1), STOPPED)
+
     def test_stop_and_continue_return_a_runnable_task_to_runnable(self):
         self.create(1)
         self.apply(1, ADMIT, 0)

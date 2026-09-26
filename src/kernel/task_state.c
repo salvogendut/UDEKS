@@ -170,6 +170,13 @@ unsigned char udeks_lifecycle_apply(
         ++rejected_requests;
         return UDEKS_LIFECYCLE_BAD_STATE;
     }
+    if (event == UDEKS_LIFECYCLE_EVENT_UNBLOCK &&
+        state == UDEKS_LIFECYCLE_STATE_STOPPED &&
+        (slot[TASK_SLOT_RESUME] != UDEKS_LIFECYCLE_STATE_WAITING ||
+         slot[TASK_SLOT_WAIT] == UDEKS_LIFECYCLE_WAIT_NONE)) {
+        ++rejected_requests;
+        return UDEKS_LIFECYCLE_BAD_STATE;
+    }
     if (event == UDEKS_LIFECYCLE_EVENT_BLOCK &&
         (argument == UDEKS_LIFECYCLE_WAIT_NONE ||
          argument > UDEKS_LIFECYCLE_WAIT_TERMINAL)) {

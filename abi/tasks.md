@@ -58,10 +58,12 @@ the eight-bit exit or termination status. Other events ignore the argument.
 `STOP` never discards the condition a task is waiting on. A task stopped from
 `WAITING` keeps its wait reason and resumes as `WAITING` on `CONTINUE`; a task
 stopped from `RUNNABLE` or `RUNNING` resumes as `RUNNABLE`. A stopped task may
-still receive its wake-up: `UNBLOCK` from `STOPPED` clears the wait reason and
-records a `RUNNABLE` resume state while the visible state stays `STOPPED`, so a
-later `CONTINUE` cannot strand the task on an event that already happened.
-`CANCEL` is the
+still receive its wake-up: `UNBLOCK` from `STOPPED` succeeds only while the
+task retains its waiting resume state and a wait reason; it clears the wait
+reason and records a `RUNNABLE` resume state while the visible state stays
+`STOPPED`, so a later `CONTINUE` cannot strand the task on an event that
+already happened. A spurious or repeated wake-up is rejected with
+`BAD_STATE`, as is stopping a task that was not waiting. `CANCEL` is the
 abort path: it accepts the same Unix-like result the caller would pass to
 `EXIT`, so `Ctrl+C` records `128 + SIGINT`, normally `130`.
 
