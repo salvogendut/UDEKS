@@ -92,12 +92,16 @@ ids are rejected with `ESRCH` (or `ECHILD` for `WAITPID`, as noted below).
 
 - Request: `count = 2`; payload bytes `0-1` are the target child id (`0` means
   any child); flags may set `NOHANG`.
-- Response on success: state complete, `result = 1`; payload bytes `0-1` are
-  the reaped child id, byte `2` is its eight-bit exit or termination status,
-  and byte `3` is zero.
-- `NOHANG` with no reapable child: error state, `EAGAIN`, `result = 0`, and
-  the payload is unchanged.
-- Target id that is not a child of the caller: `ECHILD`.
+- Matching child that is a zombie: state complete, `result = 1`; payload bytes
+  `0-1` are the reaped child id, byte `2` is its eight-bit exit or termination
+  status, byte `3` is zero, and the zombie is reaped.
+- Matching live child with `NOHANG`: state complete, `result = 0`, errno `0`,
+  and the payload is unchanged. This matches Linux `waitpid()` returning `0`
+  for a child that has not changed state.
+- Matching live child without `NOHANG`: the caller blocks until the child
+  exits, then the response above is published when the caller resumes.
+- No matching child, including a target that is not a child of the caller or
+  is outside the table: `ECHILD`.
 - Reserved flag bits or a nonzero descriptor: `EINVAL`.
 
 ### SLEEP (13)
@@ -119,13 +123,15 @@ ids are rejected with `ESRCH` (or `ECHILD` for `WAITPID`, as noted below).
 
 ### SPAWN (15)
 
-- Request: `count = 17`; payload byte `0` is the leaf-name length (`1..16`)
-  and bytes `1-16` are the leaf name; flags `0`.
+- Request: `count = 17`; payload byte `0` is the leaf-name length (`1..16`),
+  bytes `1-16` hold the leaf name, and the unused bytes after the name are
+  zero; flags `0`.
 - Response on success: state complete, `result = 1`; payload bytes `0-1` are
   the new task id, little-endian.
 - Name not found: `ENOENT`. Invalid UDEX image or unsupported CPU: `ENOEXEC`.
-  No free task slot or allocation: `ENOMEM`. Bad name length or reserved flag
-  bits: `EINVAL`.
+  No free task slot or allocation: `ENOMEM`. A bad name length, a non-zero pad
+  byte, a character outside letters, digits, `.`, `_`, `+`, and `-`, or
+  reserved flag bits: `EINVAL`.
 
 ## Errors
 
@@ -137,7 +143,7 @@ ids are rejected with `ESRCH` (or `ECHILD` for `WAITPID`, as noted below).
 | 8 | `ENOEXEC` | `SPAWN` |
 | 9 | `EBADF` | `READ`, `WRITE`, filesystem operations |
 | 10 | `ECHILD` | `WAITPID` |
-| 11 | `EAGAIN` | `READ` would-block, `WAITPID` `NOHANG` |
+| 11 | `EAGAIN` | `READ` would-block |
 | 12 | `ENOMEM` | `SPAWN` |
 | 16 | `EBUSY` | resource already owned |
 | 20 | `ENOTDIR` | filesystem operations |
@@ -166,7 +172,28 @@ job path has restored the prompt. `PROMPT` rearms the root terminal input
 field. The boundary uses `EIO` (5), `EBADF` (9), `EAGAIN` (11), `EINVAL` (22),
 `ENOSYS` (38), and `EPROTO` (71) exactly as documented in ABI 0.2.
 
-A request call itself is synchronous, not a scheduler yield; `EXEC` completion
-means that the command was accepted for deferred resident dispatch. A
-cooperative program must return from its `$9000` poll entry when it has no more
-immediate work.
+## Scheduling and record ownership
+
+The 0.2 operations complete synchronously; they do not schedule, and `EXEC`
+completion means only that the command was accepted for deferred resident
+dispatch. The 0.3 lifecycle operations may context-switch: `YIELD`, a blocking
+`WAITPID`, and `SLEEP` return only when the caller is resumed, `CANCEL` and the
+nonblocking calls return without switching, and `EXIT` never returns.
+
+`$F359` is a single shared record, so a blocked task cannot retain ownership of
+it. When a lifecycle request blocks or switches, the kernel snapshots the
+request (operation, flags, sequence, descriptor, count, and payload) into the
+task's own state, releases the shared record, and writes the response fields
+back—preserving the original sequence number—immediately before that task
+resumes from the `$FF16` gate. While the record is released, another task may
+use it. A task cancelled while blocked never resumes, so no response is
+written and the record stays available.
+
+A cooperative program must still return from its `$9000` poll entry when it has
+no more immediate work.
+
+## Placement note
+
+The fixed `$F800` request gateway uses 262 of its 265 reserved bytes as of ABI
+0.3. Resident lifecycle handlers cannot be added to that segment; they require
+a separate placement or trampoline decision before implementation.

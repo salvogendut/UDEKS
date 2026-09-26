@@ -115,6 +115,15 @@ class TaskRequestAbiTests(unittest.TestCase):
         self.assertIn("`ESRCH`", document)
         self.assertIn("`ECHILD`", document)
         self.assertIn("Rejection is atomic", document)
+        # Linux waitpid semantics: NOHANG on a live child succeeds with 0.
+        self.assertIn("Matching live child with `NOHANG`: state complete", document)
+        self.assertIn("`result = 0`", document)
+        # Blocking and shared-record ownership are frozen.
+        self.assertIn("Scheduling and record ownership", document)
+        self.assertIn("snapshots the", document)
+        self.assertIn("preserving the original sequence number", document)
+        self.assertIn("`EXIT` never returns", document)
+        self.assertIn("Placement note", document)
 
     def test_common_record_is_bounded_before_vic_outline_state(self):
         header = (ROOT / "include/udeks/task_request.h").read_text().lower()
