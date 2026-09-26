@@ -89,19 +89,41 @@ class ContextSwitchSourceTests(unittest.TestCase):
     def test_validation_uses_independent_expectations(self):
         for token in (
             "a_last_p", "b_last_p", "p_mask", "zp_seen_p",
-            "a_sp_odd", "a_sp_even", "b_sp_odd", "b_sp_even",
-            "a_pad", "b_pad",
+            "tmp_pad", "a_pad", "b_pad",
         ):
             self.assertIn(token, self.gateway)
         # Restored A is checked against a step-derived formula, not a record.
         self.assertIn("sbc #$01\n        clc\n        adc #a_atag", self.gateway)
         self.assertIn("sbc #$01\n        clc\n        adc #b_atag", self.gateway)
+        # The live stack pointer varies with a step-derived pad.
+        self.assertIn("and #$03\n        asl a\n        sta tmp_pad", self.gateway)
+        self.assertIn("adc #$02\n        clc\n        adc tmp_pad", self.gateway)
+
+    def test_restored_decimal_flag_drives_per_task_arithmetic(self):
+        self.assertIn("zp_dec_result", self.gateway)
+        self.assertIn("dec_a                   = $42", self.gateway)
+        self.assertIn("dec_b                   = $3c", self.gateway)
+        self.assertIn("require_imm dec_a, 16", self.gateway)
+        self.assertIn("require_imm dec_b, 16", self.gateway)
+        self.assertIn("sec\n        sed\n        jmp yield_core", self.gateway)
+        self.assertIn("sec\n        cld\n        jmp yield_core", self.gateway)
+        a_replay = self.gateway.split("yield_validate_a:", 1)[1].split(
+            "yield_validate_b:", 1)[0]
+        b_replay = self.gateway.split("yield_validate_b:", 1)[1].split(
+            "yield_accept:", 1)[0]
+        self.assertIn("sec\n        sed\n        php", a_replay)
+        self.assertIn("sec\n        cld\n        php", b_replay)
 
     def test_stack_sentinels_live_in_the_active_stack_region(self):
         self.assertIn("stack_page_base+1,x", self.gateway)
         self.assertIn("stack_page_base+2,x", self.gateway)
-        self.assertIn("lda #a_mark_low\n        pha", self.gateway)
-        self.assertIn("lda #b_mark_low\n        pha", self.gateway)
+        # The marker low byte is the current step, so stale stack data fails.
+        self.assertIn("lda zp_step\n        pha", self.gateway)
+        self.assertIn("cmp zp_step", self.gateway)
+        self.assertIn("lda #a_mark_high\n        pha", self.gateway)
+        self.assertIn("lda #b_mark_high\n        pha", self.gateway)
+        self.assertIn("pad_loop_a:", self.gateway)
+        self.assertIn("pad_loop_b:", self.gateway)
 
     def test_interrupt_handler_preserves_a_x_y_and_counts_sixteen_bits(self):
         handler = self.gateway.split("irq_handler:", 1)[1].split(

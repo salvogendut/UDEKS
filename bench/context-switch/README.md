@@ -30,8 +30,11 @@ Per switch the core qualifies:
   tags, not against the record;
 - processor status captured before any flag-changing instruction, restored
   after A/X/Y, and compared against a replay of the task tail (N, V, D, Z, C);
-- the stack pointer against the designated base minus the parity pad and
-  marker, plus the marker bytes in the actively used stack region;
+- decimal-mode isolation: the restored D flag drives a per-entry probe, so A
+  must produce a decimal result and B a binary result from the same operands;
+- variable live-SP restoration: a step-derived pad of zero to three words plus
+  a step-valued marker, with the exact live SP and marker bytes checked against
+  the step formula;
 - the resume marker against the parity-selected resume label, proving which
   program counter actually ran;
 - the zero-page sentinel, the page-bottom overflow canary, the task-visible
@@ -49,10 +52,10 @@ The relocation strategy moves zero page-one bytes per switch (`XFER = 0`),
 which is the measured input for choosing it over the bounded copy primitive
 already characterized in [`bench/context`](../context/README.md).
 
-The corrected spike passes in `1986` and VICE 3.10 with 128 switches, one
-successful check per switch, zero canary failures, and both boundary and body
-interrupts; the exact PRG, raw records, provenance, and the placement
-recommendation are recorded under
-[`bench/artifacts/2026-09-26-context-switch-r2`](../artifacts/2026-09-26-context-switch-r2/README.md)
+The corrected spike passes in `1986` (1087 interrupts) and VICE 3.10 (5019
+interrupts) with 128 switches, one successful check per switch, zero canary
+failures, and both boundary and body interrupts; the exact PRG, raw records,
+provenance, and the placement recommendation are recorded under
+[`bench/artifacts/2026-09-26-context-switch-r3`](../artifacts/2026-09-26-context-switch-r3/README.md)
 and [`bench/results/2026-09-26-context-switch`](../results/2026-09-26-context-switch/README.md).
 A physical C128 run remains required before the decision is frozen.

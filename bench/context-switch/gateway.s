@@ -62,9 +62,7 @@ A_YTAG                  = $a1
 B_YTAG                  = $b2
 A_ATAG                  = $40
 B_ATAG                  = $80
-A_MARK_LOW              = $5a
 A_MARK_HIGH             = $a5
-B_MARK_LOW              = $a5
 B_MARK_HIGH             = $5a
 A_PAD                   = $11
 B_PAD                   = $22
@@ -78,7 +76,10 @@ A_SP_EVEN               = A_SP_BASE - 2
 A_SP_ODD                = A_SP_BASE - 4
 B_SP_EVEN               = B_SP_BASE - 2
 B_SP_ODD                = B_SP_BASE - 4
-SEED_P                  = $21
+SEED_P_A                = $29
+SEED_P_B                = $21
+DEC_A                   = $42
+DEC_B                   = $3c
 P_MASK                  = $cb
 RESUME_A_EVEN           = $e0
 RESUME_A_ODD            = $e1
@@ -92,6 +93,7 @@ ZP_SENTINEL             = $02
 ZP_STEP                 = $03
 ZP_SEEN_P               = $04
 ZP_RESUME_SEEN          = $05
+ZP_DEC_RESULT           = $0b
 ZP_SEEN_A               = $07
 ZP_SEEN_X               = $08
 ZP_SEEN_Y               = $09
@@ -223,7 +225,7 @@ dispatch_task:
         sta a_ctx_x
         lda #A_YTAG
         sta a_ctx_y
-        lda #SEED_P
+        lda #SEED_P_A
         sta a_ctx_p
         sta a_last_p
         lda #A_SP_BASE
@@ -267,7 +269,7 @@ dispatch_task_b:
         sta b_ctx_x
         lda #B_YTAG
         sta b_ctx_y
-        lda #SEED_P
+        lda #SEED_P_B
         sta b_ctx_p
         sta b_last_p
         lda #B_SP_BASE
@@ -304,6 +306,7 @@ yield_core:
         sei
         pla
         sta tmp_p
+        cld
         lda #$00
         sta window_flag
         tsx
@@ -315,6 +318,7 @@ yield_core:
         jmp yield_validate_b
 :
 yield_validate_a:
+
         ; Restored A/X/Y observations against formulas, not the record.
         lda ZP_STEP
         sec
@@ -340,6 +344,10 @@ yield_validate_a:
 :
         lda ZP_STATE
         require_imm $00, 8
+
+        ; Restored D must have driven decimal arithmetic for this task.
+        lda ZP_DEC_RESULT
+        require_imm DEC_A, 16
 
         ; Restored P must match the task's last verified yield status.
         lda ZP_SEEN_P
@@ -377,8 +385,10 @@ yield_validate_a:
         ldx #A_SENTINEL
         ldy #A_YTAG
         sec
+        sed
         php
         pla
+        cld
         and #P_MASK
         sta tmp_cmp
         lda tmp_p
@@ -397,15 +407,14 @@ yield_validate_a:
         lda #2
         jmp fail_canary
 :
-        ; SP must equal the designated base minus the parity pad and marker.
+        ; SP must equal the designated base minus the variable pad and marker.
         lda ZP_STEP
-        and #$01
-        beq :+
-        lda #A_SP_ODD
-        jmp :++
-:
-        lda #A_SP_EVEN
-:
+        and #$03
+        asl a
+        sta tmp_pad
+        lda #(A_SP_BASE-2)
+        sec
+        sbc tmp_pad
         cmp tmp_sp
         beq :+
         lda #15
@@ -419,7 +428,7 @@ yield_validate_a:
         jmp fail_canary
 :
         lda STACK_PAGE_BASE+2,x
-        cmp #A_MARK_LOW
+        cmp ZP_STEP
         beq :+
         lda #11
         jmp fail_canary
@@ -453,22 +462,16 @@ yield_validate_a:
         sta a_ctx_y
         lda tmp_p
         sta a_ctx_p
-        lda ZP_STEP
-        and #$01
-        beq :+
-        lda tmp_sp
-        clc
-        adc #$04
-        jmp :++
-:
         lda tmp_sp
         clc
         adc #$02
-:
+        clc
+        adc tmp_pad
         sta a_ctx_sp
         jmp yield_accept
 
 yield_validate_b:
+
         lda ZP_STEP
         sec
         sbc #$01
@@ -493,6 +496,10 @@ yield_validate_b:
 :
         lda ZP_STATE
         require_imm $00, 8
+
+        ; Restored D must have kept B binary even after A ran decimal.
+        lda ZP_DEC_RESULT
+        require_imm DEC_B, 16
 
         lda ZP_SEEN_P
         and #P_MASK
@@ -527,6 +534,7 @@ yield_validate_b:
         ldx #B_SENTINEL
         ldy #B_YTAG
         sec
+        cld
         php
         pla
         and #P_MASK
@@ -548,13 +556,12 @@ yield_validate_b:
         jmp fail_canary
 :
         lda ZP_STEP
-        and #$01
-        beq :+
-        lda #B_SP_ODD
-        jmp :++
-:
-        lda #B_SP_EVEN
-:
+        and #$03
+        asl a
+        sta tmp_pad
+        lda #(B_SP_BASE-2)
+        sec
+        sbc tmp_pad
         cmp tmp_sp
         beq :+
         lda #15
@@ -568,7 +575,7 @@ yield_validate_b:
         jmp fail_canary
 :
         lda STACK_PAGE_BASE+2,x
-        cmp #B_MARK_LOW
+        cmp ZP_STEP
         beq :+
         lda #11
         jmp fail_canary
@@ -602,18 +609,11 @@ yield_validate_b:
         sta b_ctx_y
         lda tmp_p
         sta b_ctx_p
-        lda ZP_STEP
-        and #$01
-        beq :+
-        lda tmp_sp
-        clc
-        adc #$04
-        jmp :++
-:
         lda tmp_sp
         clc
         adc #$02
-:
+        clc
+        adc tmp_pad
         sta b_ctx_sp
 
 yield_accept:
@@ -747,16 +747,29 @@ task_a_resume1:
         stx ZP_RESUME_SEEN
 
 task_a_body:
+
         inc ZP_STEP
+
+        ; Uses the restored D flag: A must run decimal, B must run binary.
+        lda #$15
+        clc
+        adc #$27
+        sta ZP_DEC_RESULT
+        cld
+
+        ; Live stack use varies with the step: zero to three words of pad.
         lda ZP_STEP
-        and #$01
-        beq :+
+        and #$03
+        tax
+        beq no_pad_a
+pad_loop_a:
         lda #A_PAD
         pha
-        lda #A_PAD
         pha
-:
-        lda #A_MARK_LOW
+        dex
+        bne pad_loop_a
+no_pad_a:
+        lda ZP_STEP
         pha
         lda #A_MARK_HIGH
         pha
@@ -783,6 +796,7 @@ task_a_body:
         ldx #A_SENTINEL
         ldy #A_YTAG
         sec
+        sed
         jmp yield_core
 
 ; Task B. Same contract with distinct seed, tag, marker, pad, stack pointer,
@@ -813,16 +827,28 @@ task_b_resume1:
         stx ZP_RESUME_SEEN
 
 task_b_body:
+
         inc ZP_STEP
+
+        ; Uses the restored D flag: B must run binary even after A ran decimal.
+        lda #$15
+        clc
+        adc #$27
+        sta ZP_DEC_RESULT
+        cld
+
         lda ZP_STEP
-        and #$01
-        beq :+
+        and #$03
+        tax
+        beq no_pad_b
+pad_loop_b:
         lda #B_PAD
         pha
-        lda #B_PAD
         pha
-:
-        lda #B_MARK_LOW
+        dex
+        bne pad_loop_b
+no_pad_b:
+        lda ZP_STEP
         pha
         lda #B_MARK_HIGH
         pha
@@ -849,6 +875,7 @@ task_b_body:
         ldx #B_SENTINEL
         ldy #B_YTAG
         sec
+        cld
         jmp yield_core
 
 ; Preserve the interrupted task's A, X, Y, and P completely. Interrupts taken
@@ -903,6 +930,7 @@ tmp_y:          .byte $00
 tmp_p:          .byte $00
 tmp_sp:         .byte $00
 tmp_cmp:        .byte $00
+tmp_pad:        .byte $00
 a_last_p:       .byte $00
 b_last_p:       .byte $00
 

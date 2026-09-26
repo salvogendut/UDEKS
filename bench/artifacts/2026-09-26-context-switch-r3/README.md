@@ -1,15 +1,15 @@
-# Context-switch spike artifact r2
+# Context-switch spike artifact r3
 
-This revision was superseded by `../2026-09-26-context-switch-r3/` after the
-decimal-mode isolation and variable live-SP checks were added. It is kept as
-history.
+`context-switch.prg` is the standalone spike image qualified on 2026-09-26 on
+the `tasking-0.1` branch. It supersedes `-r2` by adding two qualifications
+required before the physical C128 run:
 
-`context-switch.prg` is the corrected standalone spike image qualified on
-2026-09-26 on the `tasking-0.1` branch. It supersedes the `-r1` artifact, whose
-validation compared restored values only against the same context record. This
-revision captures processor status before any flag-changing instruction,
-restores it after A/X/Y, and validates restored state against formulas derived
-from the current step rather than against the record.
+- decimal-mode isolation: each task's restored D flag drives a per-entry
+  arithmetic probe, so A computes a BCD result and B a binary result; a leaked
+  flag fails validation;
+- variable live-SP restoration: the task pushes a step-derived pad of zero to
+  three words plus a step-valued stack marker, and the core checks the exact
+  live stack pointer and marker contents against the step formula.
 
 It loads at `$2800`, enables top common RAM, copies the switch core to `$F800`,
 and publishes the `CXSW` record at `$F180`.

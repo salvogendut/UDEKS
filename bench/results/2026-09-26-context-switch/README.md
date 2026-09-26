@@ -1,6 +1,6 @@
 # Context-switch spike results
 
-The corrected standalone context-switch spike (`-r2`) was run against the two
+The corrected standalone context-switch spike (`-r3`) was run against the two
 qualified emulators. Both completed the relocation strategy with one successful
 check per switch, no canary failure, and zero page bytes moved per switch.
 Interrupts were observed both inside the marked switch-boundary windows and
@@ -8,12 +8,12 @@ during task execution; the counters are 16-bit, so the totals are exact.
 
 | Run | Switches | Interrupts | Boundary | Body | Checks | Canary | Page bytes/switch |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| `1986` | 128 | 867 | 469 | 398 | 128/128 | 0 | 0 |
-| VICE 3.10 | 128 | 4307 | 2891 | 1416 | 128/128 | 0 | 0 |
+| `1986` | 128 | 1087 | 447 | 640 | 128/128 | 0 | 0 |
+| VICE 3.10 | 128 | 5019 | 2913 | 2106 | 128/128 | 0 | 0 |
 
 The exact image is preserved as
-`bench/artifacts/2026-09-26-context-switch-r2/context-switch.prg`
-(SHA-256 `8d93a7ac5c795b491cf8aa7f72d1724d987692bf73eb375939430bd7e950b09a`).
+`bench/artifacts/2026-09-26-context-switch-r3/context-switch.prg`
+(SHA-256 `7230c06137a850b68fde8b4e508fc915513e6a13bd9cd3032c6c9601cffcedca`).
 Build and emulator provenance is in that directory's README.
 
 Reproduction:
@@ -52,6 +52,11 @@ Verify the preserved bytes with `cd raw && sha256sum -c SHA256SUMS`.
   relocated page one.
 - The resume marker identifies which of the two distinct resume labels actually
   executed, so a stale program counter cannot pass.
+- The restored D flag drives a per-entry arithmetic probe: A must produce a
+  decimal result and B a binary result from the same operands, so decimal mode
+  cannot leak between tasks.
+- The live stack pointer varies with a step-derived pad of zero to three words,
+  and the exact SP plus the step-valued marker bytes are checked each switch.
 - The interrupt handler saves and restores A, X, Y, and P, and the boundary and
   body counters are both required to be nonzero and exact.
 
