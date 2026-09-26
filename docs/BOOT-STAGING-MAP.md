@@ -117,3 +117,40 @@ exist: application slot 1 `$0200-$0AFF` (2,304 bytes) and application slot 2
 
 Until one of these lands, `hardware_capability.o` and `boot_console.o` stay
 resident and their bytes remain budgeted reclaim, not realized reclaim.
+
+## Scheduler delivery feasibility (measured 2026-09-26)
+
+The step-5 handoff reuses the scatter mechanism for the scheduler segment at
+`$1C00-$1FFF`:
+
+1. link a scheduler image of at most 1,024 bytes for `$1C00-$1FFF`;
+2. splice it into the free payload holes with a generic scatter manifest;
+3. gather it into a temporary application slot before crt0 runs;
+4. let crt0 clear BSS and the VIC shadow;
+5. return to the protected `$F700` installer, copy the scheduler into
+   `$1C00-$1FFF`, and enter `_kernel_main`.
+
+`bench/artifacts/2026-09-26-scheduler-delivery` measures the minimal
+self-contained gather and install routines:
+
+| Routine | Bytes |
+|---|---:|
+| scatter gather (manifest parse plus per-chunk copy) | 97 |
+| post-crt0 install (1,024-byte copy plus entry) | 35 |
+| **total required** | **132** |
+
+The FINAL segment currently ends at `$F7CD` (206 of 256 bytes used), leaving
+50 bytes before the `$F800` boundary. The delivery logic exceeds the protected
+page by **82 bytes**, so the first scheduler-delivery increment stops at the
+measurement instead of spilling into `$F800` or another live region.
+
+Remedies to evaluate next, in order:
+
+1. refactor the six inline installer copy loops into one shared copy routine
+   and re-measure; the estimated saving is 30-40 bytes, which does not close
+   the gap by itself;
+2. move the gather into a resident kernel routine called by stage 1, paying
+   its bytes as resident code instead of common RAM;
+3. split the delivery across a later boot stage, which requires the scheduler
+   chunks to survive crt0 (only 263 of the 1,078 free bytes are outside the
+   VIC shadow, so most of the image still needs the pre-crt0 gather).

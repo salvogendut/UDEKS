@@ -166,7 +166,12 @@ Each step is a separate change with a `1986` and VICE smoke pass:
    proceed to step 5 and revisit. Verify the `HCAP` record and the boot
    console are byte-identical once relocated.
 5. Reserve `$1C00-$1FFF` and install a scheduler segment through stage 1;
-   verify the D71 and D64 boot paths.
+   verify the D71 and D64 boot paths. The first delivery increment stops at
+   the measured shortfall: the `$F700` installer has 50 bytes free and the
+   gather plus install routines measure 132 bytes, 82 over the `$F800`
+   boundary. See `docs/BOOT-STAGING-MAP.md` and
+   `bench/artifacts/2026-09-26-scheduler-delivery`; do not spill into `$F800`
+   or another live region.
 6. Replace the implementation behind the frozen `$FF10` reset, `$FF13` poll,
    and `$FF16` request trampolines, reuse the `$FF05-$FFC4` reservation for
    the switch tail, and retire the old special-case polling; verify task
