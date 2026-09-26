@@ -16,6 +16,7 @@ from placement_audit import (
     VIC_SHADOW_START,
     audit,
     parse_map,
+    verify,
     vic_bitmap_size,
 )
 
@@ -114,6 +115,36 @@ class PlacementAuditTests(unittest.TestCase):
             )
 
 
+class PlacementVerifyTests(unittest.TestCase):
+    def test_valid_audit_has_no_failures(self):
+        self.assertEqual(verify(audit(FIXTURE, OBJECT_DUMP)), [])
+
+    def test_missing_measurements_fail(self):
+        failures = verify(audit(FIXTURE))
+        self.assertTrue(
+            any("unavailable" in failure for failure in failures)
+        )
+
+    def test_changed_overlap_expectation_fails(self):
+        result = audit(FIXTURE, OBJECT_DUMP)
+        result["uncontested_boot_page_bytes"] = 8
+        failures = verify(result)
+        self.assertTrue(
+            any("expectation changed" in failure for failure in failures)
+        )
+
+    def test_missing_overlap_names_fail(self):
+        result = audit(FIXTURE, OBJECT_DUMP)
+        result["boot_page_overlaps"] = []
+        failures = verify(result)
+        self.assertTrue(
+            any("VIC common gateways" in failure for failure in failures)
+        )
+        self.assertTrue(
+            any("transient task stack" in failure for failure in failures)
+        )
+
+
 class PlacementContractTests(unittest.TestCase):
     def test_shadow_constants_match_the_header_and_config(self):
         self.assertEqual(vic_bitmap_size(), 8000)
@@ -125,6 +156,18 @@ class PlacementContractTests(unittest.TestCase):
         )
         self.assertIsNotNone(match)
         self.assertEqual(int(match.group(1), 16), VIC_SHADOW_START)
+
+    def test_makefile_runs_the_real_audit_in_the_reference_container(self):
+        makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
+        self.assertIn("placement-check", makefile)
+        self.assertIn("tools/placement_audit.py --verify", makefile)
+
+    def test_frozen_task_bank_entries_are_documented(self):
+        placement = (ROOT / "docs/SCHEDULER-PLACEMENT.md").read_text(
+            encoding="utf-8"
+        )
+        for entry in ("`$FF10`", "`$FF13`", "`$FF16`"):
+            self.assertIn(entry, placement)
 
     def test_vic_source_exports_absolute_gateway_sizes(self):
         source = (ROOT / "src/8502/vic_graphics.s").read_text(encoding="utf-8")

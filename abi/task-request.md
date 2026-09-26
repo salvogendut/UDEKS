@@ -229,5 +229,8 @@ scheduling in bank 0 and retain only a small MMU/context-switch tail in
 always-mapped common RAM. Bank-0 space must first be reclaimed by extracting or
 relocating transitional services; the C policy is not placed wholesale in
 common RAM. [SCHEDULER-PLACEMENT.md](../docs/SCHEDULER-PLACEMENT.md) records
-the measured budget, the 104-byte uncontested tail window, and the reclaim
-order with its emulator gates.
+the measured budget, the fully occupied upper common RAM (zero uncontested
+bytes), and the reclaim order with its emulator gates. The switch tail is
+planned for the legacy `$FF05-$FFC4` reservation once the scheduler replaces
+the implementation behind the frozen `$FF10`, `$FF13`, and `$FF16` entry
+trampolines; those addresses remain the documented task-bank entry points.

@@ -244,6 +244,26 @@ def audit(
     }
 
 
+def verify(result: dict[str, object]) -> list[str]:
+    failures: list[str] = []
+    if result["gateway_sizes"] is None:
+        failures.append(
+            "gateway sizes unavailable; build the object and run od65 in the "
+            "reference container"
+        )
+    if result["uncontested_boot_page_bytes"] != 0:
+        failures.append(
+            "boot-page overlap expectation changed; update "
+            "docs/SCHEDULER-PLACEMENT.md"
+        )
+    for name in ("VIC common gateways", "transient task stack"):
+        if name not in result["boot_page_overlaps"]:
+            failures.append(f"expected {name} to overlap the boot page")
+    if result["legacy_task_gate_bytes"] != TASK_GATE_LIMIT - TASK_GATE_BASE:
+        failures.append("legacy bank-1 task gate range changed")
+    return failures
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -258,6 +278,10 @@ def main() -> None:
         help="assembled VIC transport object holding the gateway sizes",
     )
     parser.add_argument("--json", action="store_true")
+    parser.add_argument(
+        "--verify", action="store_true",
+        help="fail unless the real gateway sizes and overlap expectations hold",
+    )
     args = parser.parse_args()
 
     object_dump = None
@@ -272,6 +296,15 @@ def main() -> None:
         result = audit(args.map.read_text(encoding="utf-8"), object_dump)
     except (OSError, ValueError) as error:
         raise SystemExit(f"placement audit failed: {error}") from error
+
+    if args.verify:
+        failures = verify(result)
+        if failures:
+            for failure in failures:
+                print(f"placement audit failed: {failure}")
+            raise SystemExit(1)
+        print("placement audit OK")
+        return
 
     if args.json:
         print(json.dumps(result, indent=2))

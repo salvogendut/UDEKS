@@ -98,15 +98,21 @@ persistent switch routine placed there would be corrupted by either the
 outline blitter or a transient program's stack. The audit reports zero
 uncontested bytes and names both overlaps.
 
-The promising replacement is the legacy bank-1 cooperative gate,
-`TASKGATE $FF05-$FFC4` (192 bytes). Once the scheduler replaces the `$FF13`
-poll and the `$FF16` request gate, that page can hold the switch tail. Until
-then, a tail there would collide with the active task-bank gateway.
+The promising replacement is the legacy bank-1 cooperative gate reservation,
+`$FF05-$FFC4` (192 bytes). The task-bank ABI freezes `$FF10` (context reset),
+`$FF13` (cooperative poll), and `$FF16` (request/resume entry) as its public
+entry addresses, so the scheduler replaces the implementation *behind* those
+trampolines and keeps the trampolines at their published addresses; it does
+not retire the addresses themselves. A switch tail placed in the same
+reservation must preserve `$FF10`, `$FF13`, and `$FF16` and stay within the
+192 reserved bytes. Until then, a tail there would collide with the active
+task-bank gateway.
 
 Order of preference:
 
-1. retire `TASKGATE` as part of the scheduler migration and place the tail in
-   `$FF05-$FFC4`;
+1. replace the bodies behind the frozen `$FF10`, `$FF13`, and `$FF16` entry
+   trampolines as part of the scheduler migration and reuse the `$FF05-$FFC4`
+   reservation for the switch tail without moving those entries;
 2. otherwise relocate the outline gateway and the transient task stack first,
    then reuse the freed upper windows.
 
@@ -127,9 +133,10 @@ Each step is a separate change with a `1986` and VICE smoke pass:
    byte-identical.
 5. Reserve `$1C00-$1FFF` and install a scheduler segment through stage 1;
    verify the D71 and D64 boot paths.
-6. Retire the `$FF13`/`$FF16` `TASKGATE` path in the scheduler migration and
-   place the switch tail in `$FF05-$FFC4`; verify task switching, the VDC
-   console, VIC windows, pointer input, and the Z80 worker.
+6. Replace the implementation behind the frozen `$FF10` reset, `$FF13` poll,
+   and `$FF16` request trampolines, reuse the `$FF05-$FFC4` reservation for
+   the switch tail, and retire the old special-case polling; verify task
+   switching, the VDC console, VIC windows, pointer input, and the Z80 worker.
 
 Compatibility paths stay in place until their replacement is covered by the
 smoke sequence. No step is merged on the strength of a linker map alone.

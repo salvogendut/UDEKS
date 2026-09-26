@@ -138,7 +138,7 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
 	boot panic-probe framebuffer-assets user-sources user-programs \
-	task-state task-policy check doctor clean help
+	task-state task-policy placement-check check doctor clean help
 
 all: 8502 z80 z80-asm
 
@@ -159,6 +159,11 @@ user-programs: $(USER_BOOTFS)
 # Compile-only proof that the host-tested lifecycle modules build for cc65.
 task-state: $(BUILD_8502)/task_state.o
 task-policy: $(BUILD_8502)/task_policy.o
+
+# Reference-container qualification: measures the real gateway copies and
+# fails if the placement expectations no longer hold.
+placement-check: $(KERNEL_BIN) $(BUILD_8502)/vic_graphics_transport.o
+	$(PYTHON) tools/placement_audit.py --verify
 
 8502: $(KERNEL_BIN) $(KERNEL_PRG)
 
@@ -1245,6 +1250,7 @@ help:
 		'make user-programs  Link and package staged UDEX programs' \
 		'make task-state Compile the lifecycle module for cc65 (no link)' \
 		'make task-policy Compile the request policy module for cc65 (no link)' \
+		'make placement-check  Verify the real linker-map placement budget' \
 		'make bench      Build comparable 8502 and Z80 benchmark images' \
 		'make bench-8502 Build only the 8502 benchmark image' \
 		'make bench-z80  Build only the Z80 benchmark image' \
