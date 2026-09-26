@@ -7,6 +7,11 @@ processors, two display engines, banked RAM, and expansion hardware through one
 coherent executive. It is not a CP/M replacement running solely on the Z80, a
 C64-mode environment, or an attempt to imitate modern symmetric multiprocessing.
 
+The active implementation handover is [Tasking 0.1](../HANDOVER.md). It records
+the next concrete milestone, migration order, non-regression constraints, and
+acceptance gate; this document remains the longer-term architectural source of
+truth.
+
 ## Design principles
 
 1. **Hardware truth before metaphor.** The 8502 and Z80 alternate ownership of

@@ -99,6 +99,9 @@ display corruption.
 
 ## Phase 3 — Executive kernel
 
+The active execution sequence and acceptance criteria for this phase are in
+the [Tasking 0.1 handover](../HANDOVER.md).
+
 - [x] Freeze the initial 8502 syscall table and program-entry ABI.
 - [x] Link a bounded common-RAM gate that preserves resident and bank-1 cc65
   zero-page contexts around a cooperative task poll.
