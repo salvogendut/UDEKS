@@ -155,6 +155,7 @@ physical-hardware gates pass.
 ## Documents
 
 - [Architecture and implementation plan](docs/PLAN.md)
+- [Scheduler placement spike](docs/SCHEDULER-PLACEMENT.md)
 - [Development roadmap](docs/ROADMAP.md)
 - [Executive CPU benchmark plan](docs/BENCHMARKS.md)
 - [Initial emulator benchmark results](bench/results/2026-09-24-1986-initial.md)

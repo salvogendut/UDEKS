@@ -228,4 +228,6 @@ The preferred direction is to keep validation, lifecycle policy, and
 scheduling in bank 0 and retain only a small MMU/context-switch tail in
 always-mapped common RAM. Bank-0 space must first be reclaimed by extracting or
 relocating transitional services; the C policy is not placed wholesale in
-common RAM.
+common RAM. [SCHEDULER-PLACEMENT.md](../docs/SCHEDULER-PLACEMENT.md) records
+the measured budget, the 104-byte uncontested tail window, and the reclaim
+order with its emulator gates.
