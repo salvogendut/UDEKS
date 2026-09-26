@@ -80,6 +80,30 @@ class ZeroPageAbiTests(unittest.TestCase):
         self.assertIn(".byte 'U', 'A', 'P', 'P'", gateway)
         self.assertIn(".byte $00, $01", gateway)
 
+    def test_app_gateway_pins_the_published_runtime_addresses(self):
+        gateway = (ROOT / "src/8502/app_gateway.s").read_text(
+            encoding="utf-8"
+        )
+        for name, address in (
+            ("sp", "06"),
+            ("sreg", "08"),
+            ("regsave", "0a"),
+            ("ptr1", "0e"),
+            ("ptr2", "10"),
+            ("ptr3", "12"),
+            ("ptr4", "14"),
+            ("tmp1", "16"),
+            ("tmp2", "17"),
+            ("tmp3", "18"),
+            ("tmp4", "19"),
+            ("regbank", "1a"),
+        ):
+            self.assertIn(
+                f".assert {name} = ${address}, error, "
+                f'"UAPP 0.1 {name} moved"',
+                gateway,
+            )
+
 
 class BootCrt0BuildTests(unittest.TestCase):
     def test_kernel_and_crt0_share_one_linker_invocation(self):

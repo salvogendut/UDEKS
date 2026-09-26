@@ -84,15 +84,54 @@ def monitor_command(port: int, command: str) -> bytes:
         return reply
 
 
-def monitor_resume(port: int, command: str) -> None:
-    """Send a monitor command that resumes the CPU and emits no completion."""
-    with socket.create_connection(("127.0.0.1", port), timeout=2.0) as connection:
-        connection.settimeout(0.5)
-        connection.sendall(command.encode("ascii") + b"\n")
-        try:
-            connection.recv(4096)
-        except (ConnectionError, OSError):
-            pass
+def monitor_raw_load(
+    port: int,
+    program: Path,
+    entry: int,
+    fast: bool,
+    pokes: list[tuple[int, int]],
+) -> None:
+    """Load a raw image and enter it from one paused monitor session.
+
+    Every setup command runs with the CPU paused; only the final goto resumes
+    execution, so the flat-RAM load cannot race the running BASIC machine.
+    """
+    commands: list[tuple[str, bytes | None]] = []
+    if fast:
+        commands.append(("> d030 01", None))
+    for address, byte in pokes:
+        commands.append((f"> {address:04x} {byte:02x}", None))
+    # Flat bank-0 RAM so the load reaches the RAM under the BASIC and KERNAL
+    # ROMs; crt0 re-establishes the native profiles on entry.
+    commands.append(("> ff00 3f", None))
+    commands.append((f"load {quote_monitor_path(program)} 0", b"Loading"))
+    with socket.create_connection(("127.0.0.1", port), timeout=3.0) as connection:
+        connection.settimeout(30.0)
+        buffer = b""
+
+        def run(command: str, marker: bytes | None) -> None:
+            nonlocal buffer
+            start = len(buffer)
+            connection.sendall(command.encode("ascii") + b"\n")
+            while True:
+                fresh = buffer[start:]
+                if (
+                    fresh.endswith(b") ")
+                    and PROMPT_RE.search(fresh[-32:])
+                    and (marker is None or marker in fresh)
+                ):
+                    return
+                chunk = connection.recv(4096)
+                if not chunk:
+                    raise RuntimeError("VICE monitor closed during raw load")
+                buffer += chunk
+
+        # The first marked command consumes the connection's initial prompt so
+        # every later command's completion prompt is unambiguous.
+        run("m ff00 ff00", b":ff00")
+        for command, marker in commands:
+            run(command, marker)
+        connection.sendall(f"goto {entry:04x}\n".encode("ascii"))
 
 
 def choose_port() -> int:
@@ -278,17 +317,9 @@ def capture(args: argparse.Namespace) -> None:
         # waiting for a log marker.
         time.sleep(min(5.0, max(0.0, deadline - time.monotonic())))
         if args.raw_load:
-            # Launcher pokes need the inherited I/O map, so apply them before
-            # switching to flat RAM for the load.
-            if args.fast:
-                monitor_command(port, "> d030 01")
-            for address, byte in args.poke:
-                monitor_command(port, f"> {address:04x} {byte:02x}")
-            # Flat bank-0 RAM so the load reaches the RAM under the BASIC and
-            # KERNAL ROMs; crt0 re-establishes the native profiles on entry.
-            monitor_command(port, "> ff00 3f")
-            monitor_command(port, f"load {quote_monitor_path(program)} 0")
-            monitor_resume(port, f"goto {args.entry:04x}")
+            monitor_raw_load(
+                port, program, args.entry, args.fast, args.poke
+            )
         if args.keybuf_ready is not None or args.keybuf_ready_block is not None:
             while time.monotonic() < deadline:
                 try:

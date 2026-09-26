@@ -163,10 +163,12 @@ The native disk path uses two small stages before the resident kernel:
    two 64 KiB RAM banks, loads/copies the 8502 image to bank-0 `$2000`, installs
    the Z80 image at bank-1 `$2000`, and installs common gateways and vectors.
 4. Stage 1 selects the kernel-I/O profile, 4 KiB top common RAM, and physical
-   bank-0 pages zero/one, then jumps to the 8502 entry at `$2000`.
-5. The 8502 entry repeats the safe MMU/profile initialization idempotently,
-   clears BSS, initializes the mailbox, and enters C. No BASIC or KERNAL service
-   is part of the resident-kernel ABI after that point.
+   bank-0 pages zero/one, then copies the staged crt0 page over its own dead
+   `$1C00` page and enters it there.
+5. The crt0 entry repeats the safe MMU/profile initialization idempotently,
+   clears BSS and the VIC shadow, and jumps to `_kernel_main` in the resident
+   code at `$2000`, which initializes the mailbox and enters C. No BASIC or
+   KERNAL service is part of the resident-kernel ABI after that point.
 6. Service startup discovers video timing and remains at the inherited 1 MHz
    rate, allowing the VDC text console and VIC-IIe to stay active together.
    The qualified VDC-only 2 MHz transition is an optional later policy.

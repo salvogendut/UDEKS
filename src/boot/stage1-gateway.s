@@ -103,8 +103,8 @@ final_copy_request_tail:
         ; Stage 1's $1C00 page is dead now that this installer runs from the
         ; protected $F700 page.  Move the staged crt0 over it and enter there:
         ; crt0 clears BSS and the whole VICSHADOW segment through its
-        ; linker-generated bounds, then jumps to the resident kernel at $2000.
-        ; The reclaimed tail above the shadow must survive untouched.
+        ; linker-generated bounds, then jumps to _kernel_main in the resident
+        ; code.  The reclaimed tail above the shadow must survive untouched.
         lda #$ae
         sta final_copy_crt0_source+2
         ldy #$00
