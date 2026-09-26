@@ -17,6 +17,11 @@ import subprocess
 from pathlib import Path
 
 from bench_decode import parse_number
+from build_d71 import (
+    BOOTFS_TAIL_STAGING_ADDRESS,
+    CRT0_SIZE,
+    CRT0_STAGING_ADDRESS,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +30,8 @@ KERNEL_BASE = 0x2000
 KERNEL_LIMIT = 0xD000
 SYSCALL_PAGE = 0xCF00
 VIC_SHADOW_SEGMENT = "VICSHADOW"
+BOOTCRT_BASE = 0x1C00
+BOOTCRT_SIZE = 0x0100
 BOOTSTRAP_BASE = 0x1C00
 BOOTSTRAP_SIZE = 0x0400
 
@@ -47,12 +54,13 @@ GATEWAY_SIZE_BASELINE = (254, 46, 68, 358)
 GATEWAY_SIZE_SUFFIXES = ("vic", "sprite", "page", "outline")
 
 # Objects whose code runs only during boot or hardware discovery and is dead
-# afterwards. Relocating them is the first reclaim step.
+# afterwards. Relocating them is the first reclaim step.  crt0 is not listed:
+# it is staged in the VIC shadow and executed from the reclaimed $1C00 page,
+# so its bytes are already accounted for by the free tail.
 BOOT_ONLY_OBJECTS = (
     "boot_console.o",
     "probe.o",
     "hardware_capability.o",
-    "crt0.o",
 )
 
 CODE_SEGMENTS = (
@@ -232,6 +240,16 @@ def audit(
         "vic_shadow_size": shadow_size,
         "vic_shadow_padding": padding,
         "free_after_shadow": free_after_shadow,
+        "crt0_staging": {
+            "base": CRT0_STAGING_ADDRESS,
+            "end": CRT0_STAGING_ADDRESS + CRT0_SIZE - 1,
+        },
+        "startup": (
+            {"start": by_name["STARTUP"][0], "end": by_name["STARTUP"][1]}
+            if "STARTUP" in by_name
+            else None
+        ),
+        "code_start": by_name["CODE"][0] if "CODE" in by_name else None,
         "gateway_sizes": sizes,
         "gateway_total": gateway_total,
         "gateway_end": gateway_end,
@@ -305,6 +323,30 @@ def verify(result: dict[str, object]) -> list[str]:
         failures.append(
             f"VICSHADOW starts {result['kernel_gap']} bytes after BSS; "
             "link it sequentially"
+        )
+    startup = result["startup"]
+    if startup is None or not (
+        BOOTCRT_BASE <= startup["start"]
+        and startup["end"] < BOOTCRT_BASE + BOOTCRT_SIZE
+    ):
+        failures.append(
+            "STARTUP is not confined to the $1C00-$1CFF boot crt0 page"
+        )
+    if result["code_start"] != KERNEL_BASE:
+        code_start = result["code_start"] or 0
+        failures.append(
+            f"resident CODE starts at ${code_start:04X}; "
+            f"expected ${KERNEL_BASE:04X}"
+        )
+    staging = result["crt0_staging"]
+    if not (
+        result["vic_shadow_start"] <= staging["base"]
+        and staging["end"] < result["vic_shadow_start"] + result["vic_shadow_size"]
+        and staging["end"] < BOOTFS_TAIL_STAGING_ADDRESS
+    ):
+        failures.append(
+            "crt0 staging is outside the VIC shadow prefix or overlaps "
+            "bootfs staging"
         )
     if result["uncontested_boot_page_bytes"] != 0:
         failures.append(

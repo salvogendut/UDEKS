@@ -2,9 +2,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Decode the preserved shadow-clear boot probe blocks.
 
-`shadow-preimage.bin` is the staged `$ACD1-$CEFF` image: the 8,000-byte
-VICSHADOW segment (seeded nonzero across the newly reclaimed `$ACD1-$AEFF`
-prefix) followed by the reclaimed tail.  `shadow-after-boot.bin` is the same
+`shadow-preimage.bin` is the staged `$ABFE-$CEFF` image: the 8,000-byte
+VICSHADOW segment (seeded nonzero across the newly reclaimed `$ABFE-$ADFF`
+prefix, with the live `$AE00-$AEFF` crt0 staging) followed by the reclaimed
+tail.  `shadow-after-boot.bin` is the same
 window after crt0: the shadow must be entirely zero and every tail byte must
 still match the preimage.  `shadow-drawn.bin` and `vic-bitmap.bin` are both
 8,000 bytes and must match after a client repaint.
@@ -68,7 +69,7 @@ def main() -> None:
              "shadow-drawn.bin, and vic-bitmap.bin",
     )
     parser.add_argument("--shadow-start", type=lambda v: int(v, 0),
-                        default=0xACD1)
+                        default=0xABFE)
     args = parser.parse_args()
     window = (args.root / "shadow-after-boot.bin").read_bytes()
     preimage = (args.root / "shadow-preimage.bin").read_bytes()

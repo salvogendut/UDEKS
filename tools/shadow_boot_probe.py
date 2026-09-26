@@ -3,11 +3,12 @@
 """Qualify the VIC shadow clear and the reclaimed tail in a native VICE boot.
 
 The probe copies the native D71, seeds the staged shadow's newly reclaimed
-prefix ($ACD1-$AEFF) and the tail sentinels ($CECB/$CEFF) with a nonzero
-pattern, and boots the copy.  Because the seed travels with the payload, both
-stage 1 and crt0 run after it is planted.  Seeding the prefix that the staged
-image leaves zero means a clear that starts late cannot pass.  After boot the
-probe saves the same
+prefix below the live crt0 staging ($ABFE-$ADFF) and the tail sentinels
+($CECB/$CEFF) with a nonzero pattern, and boots the copy.  Because the seed
+travels with the payload, both stage 1 and crt0 run after it is planted.
+Seeding the prefix that the staged image leaves zero means a clear that starts
+late cannot pass; the $AE00-$AEFF crt0 staging is live and must not be
+seeded.  After boot the probe saves the same
 window and checks that crt0 cleared every VICSHADOW byte through
 __VICSHADOW_RUN__/__VICSHADOW_SIZE__ while the complete reclaimed tail still
 matches the preserved preimage byte for byte.
@@ -36,6 +37,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from build_d71 import (
     BOOTFS_TAIL_STAGING_ADDRESS,
+    CRT0_SIZE,
+    CRT0_STAGING_ADDRESS,
     PAYLOAD_BLOCKS,
     boot_locations,
     sector_offset,
@@ -123,7 +126,9 @@ def patch_payload(
     """Seed safe zero bytes and return the staged $shadow_start-$tail_end image."""
     image = bytearray(d71.read_bytes())
     locations = list(boot_locations(1 + PAYLOAD_BLOCKS))
-    prefix_end = BOOTFS_TAIL_STAGING_ADDRESS - 1
+    if CRT0_STAGING_ADDRESS + CRT0_SIZE > BOOTFS_TAIL_STAGING_ADDRESS:
+        raise ValueError("crt0 staging is not below bootfs staging")
+    prefix_end = CRT0_STAGING_ADDRESS - 1
     for offset, address in enumerate(range(shadow_start, prefix_end + 1)):
         disk_offset = payload_disk_offset(address, locations)
         if image[disk_offset] != 0:
@@ -139,10 +144,17 @@ def patch_payload(
             )
         image[disk_offset] = value
     target.write_bytes(image)
-    return bytes(
+    preimage = bytes(
         image[payload_disk_offset(address, locations)]
         for address in range(shadow_start, tail_end + 1)
     )
+    staged = preimage[
+        CRT0_STAGING_ADDRESS - shadow_start :
+        CRT0_STAGING_ADDRESS - shadow_start + CRT0_SIZE
+    ]
+    if not any(staged):
+        raise ValueError("crt0 staging is empty in the boot payload")
+    return preimage
 
 
 def capture_blocks(

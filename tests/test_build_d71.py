@@ -9,7 +9,10 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 from build_d71 import (
     BOOTFS_SIZE,
+    BOOTFS_TAIL_STAGING_ADDRESS,
     BOOTFS_Z80_OFFSET,
+    CRT0_SIZE,
+    CRT0_STAGING_ADDRESS,
     D64_SIZE,
     BOOTFS_REQUEST_STAGING_ADDRESS,
     BOOTFS_REQUEST_STAGING_SIZE,
@@ -167,6 +170,33 @@ class BuildD71Tests(unittest.TestCase):
                 stage0(), b"", b"", b"",
                 task_request_gateway=bytes(TASK_REQUEST_STAGING_SIZE + 1),
             )
+
+    def test_crt0_is_staged_below_bootfs_staging(self):
+        crt0 = b"crt0-image"
+        image = build_image(stage0(), b"", b"", b"", crt0=crt0)
+        payload = b"".join(
+            image[
+                sector_offset(track, sector) :
+                sector_offset(track, sector) + SECTOR_SIZE
+            ]
+            for track, sector in list(boot_locations(1 + PAYLOAD_BLOCKS))[1:]
+        )
+        offset = CRT0_STAGING_ADDRESS - 0x1C00
+        self.assertEqual(payload[offset : offset + len(crt0)], crt0)
+        self.assertLessEqual(
+            CRT0_STAGING_ADDRESS + CRT0_SIZE, BOOTFS_TAIL_STAGING_ADDRESS
+        )
+
+    def test_rejects_oversize_crt0(self):
+        with self.assertRaisesRegex(ValueError, "256-byte"):
+            build_image(
+                stage0(), b"", b"", b"", crt0=bytes(CRT0_SIZE + 1)
+            )
+
+    def test_rejects_crt0_staging_collision(self):
+        kernel = bytes(CRT0_STAGING_ADDRESS - 0x2000) + b"x"
+        with self.assertRaisesRegex(ValueError, "crt0 staging overlaps"):
+            build_image(stage0(), b"", kernel, b"", crt0=b"c")
 
     def test_task_loader_is_staged_in_reclaimable_vic_shadow(self):
         loader = b"task-loader"

@@ -25,7 +25,7 @@ Modules list:
 -------------
 crt0.o:
     ZEROPAGE          Offs=000000  Size=000002  Align=00001  Fill=0000
-    STARTUP           Offs=000000  Size=0000AE  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=0000CF  Align=00001  Fill=0000
 boot_console.o:
     CODE              Offs=000000  Size=000200  Align=00001  Fill=0000
 probe.o:
@@ -40,10 +40,10 @@ Segment list:
 -------------
 Name                   Start     End    Size  Align
 ----------------------------------------------------
-STARTUP               002000  0020AD  0000AE  00001
-CODE                  0020AE  0023FA  00034C  00001
-BSS                   0023FB  00240A  000010  00001
-VICSHADOW             00240B  00434A  001F40  00001
+STARTUP               001C00  001CCE  0000CF  00001
+CODE                  002000  00234B  00034C  00001
+BSS                   00234C  00ABFD  0088B2  00001
+VICSHADOW             00ABFE  00CB3D  001F40  00001
 SYSCALLS              00CF00  00CFF8  0000F9  00001
 TASKGATE              00FF05  00FFC4  0000C0  00001
 
@@ -68,25 +68,25 @@ class PlacementAuditTests(unittest.TestCase):
         from placement_audit import module_code_size
 
         self.assertEqual(modules["crt0.o"]["ZEROPAGE"], 2)
-        self.assertEqual(module_code_size(modules["crt0.o"]), 0xAE)
+        self.assertEqual(module_code_size(modules["crt0.o"]), 0xCF)
 
     def test_audit_uses_inclusive_segment_ends(self):
         result = audit(FIXTURE, OBJECT_DUMP)
-        self.assertEqual(result["data_end"], 0x240A)
-        self.assertEqual(result["kernel_used"], 0x240A - 0x2000 + 1)
+        self.assertEqual(result["data_end"], 0xABFD)
+        self.assertEqual(result["kernel_used"], 0xABFD - 0x2000 + 1)
         self.assertEqual(result["kernel_gap"], 0)
-        self.assertEqual(result["vic_shadow_start"], 0x240B)
+        self.assertEqual(result["vic_shadow_start"], 0xABFE)
         self.assertEqual(result["vic_shadow_size"], 0x1F40)
         self.assertEqual(result["vic_shadow_padding"], 0)
         self.assertEqual(
             result["free_after_shadow"],
-            SYSCALL_PAGE - (0x240B + 0x1F40),
+            SYSCALL_PAGE - (0xABFE + 0x1F40),
         )
-        self.assertEqual(result["boot_only"]["crt0.o"], 174)
+        self.assertNotIn("crt0.o", result["boot_only"])
         self.assertEqual(
             result["reclaim_total"],
-            174 + 0x200 + 0x40 + 0x3C8
-            + 0 + 0 + (SYSCALL_PAGE - (0x240B + 0x1F40)) + 0x400,
+            0x200 + 0x40 + 0x3C8
+            + 0 + 0 + (SYSCALL_PAGE - (0xABFE + 0x1F40)) + 0x400,
         )
 
     def test_gateway_sizes_come_from_the_assembled_object(self):
@@ -117,13 +117,13 @@ class PlacementAuditTests(unittest.TestCase):
     def test_fixture_is_missing_a_shadow_segment(self):
         with self.assertRaisesRegex(ValueError, "VICSHADOW"):
             audit(
-                FIXTURE.replace("VICSHADOW             00240B  00434A  001F40", "")
+                FIXTURE.replace("VICSHADOW             00ABFE  00CB3D  001F40", "")
             )
 
     def test_reserved_shadow_padding_fails_verification(self):
         map_text = FIXTURE.replace(
-            "VICSHADOW             00240B  00434A  001F40  00001",
-            "VICSHADOW             00240B  00440A  002000  00001",
+            "VICSHADOW             00ABFE  00CB3D  001F40  00001",
+            "VICSHADOW             00ABFE  00CBFD  002000  00001",
         )
         result = audit(map_text, OBJECT_DUMP)
         self.assertEqual(result["vic_shadow_padding"], 0x2000 - 8000)
@@ -134,14 +134,44 @@ class PlacementAuditTests(unittest.TestCase):
 
     def test_gap_before_shadow_fails_verification(self):
         map_text = FIXTURE.replace(
-            "VICSHADOW             00240B  00434A  001F40  00001",
-            "VICSHADOW             00250B  00444A  001F40  00001",
+            "VICSHADOW             00ABFE  00CB3D  001F40  00001",
+            "VICSHADOW             00ACFE  00CC3D  001F40  00001",
         )
         result = audit(map_text, OBJECT_DUMP)
         self.assertEqual(result["kernel_gap"], 0x100)
         failures = verify(result)
         self.assertTrue(
             any("sequentially" in failure for failure in failures)
+        )
+
+    def test_startup_outside_bootcrt_fails_verification(self):
+        map_text = FIXTURE.replace(
+            "STARTUP               001C00  001CCE  0000CF  00001",
+            "STARTUP               002000  0020CE  0000CF  00001",
+        )
+        failures = verify(audit(map_text, OBJECT_DUMP))
+        self.assertTrue(
+            any("STARTUP" in failure for failure in failures)
+        )
+
+    def test_code_not_at_kernel_base_fails_verification(self):
+        map_text = FIXTURE.replace(
+            "CODE                  002000  00234B  00034C  00001",
+            "CODE                  002100  00244B  00034C  00001",
+        )
+        failures = verify(audit(map_text, OBJECT_DUMP))
+        self.assertTrue(
+            any("CODE starts" in failure for failure in failures)
+        )
+
+    def test_crt0_staging_outside_shadow_fails_verification(self):
+        map_text = FIXTURE.replace(
+            "VICSHADOW             00ABFE  00CB3D  001F40  00001",
+            "VICSHADOW             00ABFE  00AE3D  000240  00001",
+        )
+        failures = verify(audit(map_text, OBJECT_DUMP))
+        self.assertTrue(
+            any("crt0 staging" in failure for failure in failures)
         )
 
 

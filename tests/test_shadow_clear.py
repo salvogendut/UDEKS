@@ -18,10 +18,13 @@ from shadow_clear_decode import (
 RAW = ROOT / "bench/results/2026-09-26-shadow-clear/raw"
 
 # Layout of the preserved 2026-09-26 build: the sequential 8,000-byte
-# VICSHADOW segment sits at $ACD1-$CC10, the reclaimed tail runs to the fixed
-# SYSCALLS page at $CF00, and boot staging starts at $AF00.
-SHADOW_START = 0xACD1
+# VICSHADOW segment sits at $ABFE-$CB3D, the reclaimed tail runs to the fixed
+# SYSCALLS page at $CF00, boot staging starts at $AF00, and the staged crt0
+# occupies the live $AE00-$AEFF page below it.
+SHADOW_START = 0xABFE
 STAGING_START = 0xAF00
+CRT0_STAGING_ADDRESS = 0xAE00
+CRT0_SIZE = 0x0100
 
 
 class ShadowClearEvidenceTests(unittest.TestCase):
@@ -39,9 +42,14 @@ class ShadowClearEvidenceTests(unittest.TestCase):
 
     def test_preimage_seeds_the_reclaimed_prefix(self):
         preimage = (RAW / "shadow-preimage.bin").read_bytes()
-        prefix = preimage[: STAGING_START - SHADOW_START]
+        prefix = preimage[: CRT0_STAGING_ADDRESS - SHADOW_START]
         self.assertTrue(prefix)
         self.assertTrue(all(byte != 0 for byte in prefix))
+        staged = preimage[
+            CRT0_STAGING_ADDRESS - SHADOW_START :
+            CRT0_STAGING_ADDRESS - SHADOW_START + CRT0_SIZE
+        ]
+        self.assertTrue(any(byte != 0 for byte in staged))
 
     def test_preserved_repaint_matches_the_bank1_bitmap(self):
         shadow = (RAW / "shadow-drawn.bin").read_bytes()
@@ -87,7 +95,7 @@ class ShadowClearSourceTests(unittest.TestCase):
         crt0 = (ROOT / "src/8502/crt0.s").read_text(encoding="utf-8")
         self.assertIn(".import __VICSHADOW_RUN__, __VICSHADOW_SIZE__", crt0)
         self.assertIn("ldx #>__VICSHADOW_SIZE__", crt0)
-        self.assertIn("sta (bss_ptr),y", crt0)
+        self.assertIn("sta (CLEAR_POINTER),y", crt0)
 
     def test_stage1_leaves_the_reclaimed_tail_alone(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text(

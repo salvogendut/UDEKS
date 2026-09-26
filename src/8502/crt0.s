@@ -1,7 +1,9 @@
 ; SPDX-License-Identifier: GPL-3.0-or-later
 ;
-; RAM-loaded 8502 entry point. The loader contract guarantees that this image
-; is resident in RAM bank 0 at $2000 before control arrives here.
+; Boot-time 8502 entry point. Stage 1 stages this image in the VIC shadow at
+; $AE00, copies it over the dead stage-1 page at $1C00, and enters there. It
+; is not part of the resident kernel: the resident core starts at $2000, and
+; the $1C00 page becomes reclaimable once this code has run.
 
         .include "mmu.inc"
 
@@ -11,9 +13,8 @@
         .import __VICSHADOW_RUN__, __VICSHADOW_SIZE__
         .importzp sp
 
-        .segment "ZEROPAGE"
-bss_ptr:
-        .res 2
+        ; Stage 1 retires its own $F8-$FC copy scratch before entering here.
+        CLEAR_POINTER = $f8
 
         .segment "STARTUP"
 _start:
@@ -86,19 +87,19 @@ _start:
         sta BOOT_STATUS_STATE
 
         lda #<__BSS_RUN__
-        sta bss_ptr
+        sta CLEAR_POINTER
         lda #>__BSS_RUN__
-        sta bss_ptr+1
+        sta CLEAR_POINTER+1
 
         lda #$00
         ldx #>__BSS_SIZE__
         beq clear_tail
         ldy #$00
 clear_page:
-        sta (bss_ptr),y
+        sta (CLEAR_POINTER),y
         iny
         bne clear_page
-        inc bss_ptr+1
+        inc CLEAR_POINTER+1
         dex
         bne clear_page
 
@@ -107,7 +108,7 @@ clear_tail:
 clear_tail_loop:
         cpy #<__BSS_SIZE__
         beq bss_done
-        sta (bss_ptr),y
+        sta (CLEAR_POINTER),y
         iny
         bne clear_tail_loop
 
@@ -117,19 +118,19 @@ bss_done:
         ; Stage 1 no longer clears any shadow range: staging payloads now live
         ; inside the shadow, and the reclaimed tail above it must survive.
         lda #<__VICSHADOW_RUN__
-        sta bss_ptr
+        sta CLEAR_POINTER
         lda #>__VICSHADOW_RUN__
-        sta bss_ptr+1
+        sta CLEAR_POINTER+1
 
         lda #$00
         ldx #>__VICSHADOW_SIZE__
         beq shadow_tail
         ldy #$00
 shadow_page:
-        sta (bss_ptr),y
+        sta (CLEAR_POINTER),y
         iny
         bne shadow_page
-        inc bss_ptr+1
+        inc CLEAR_POINTER+1
         dex
         bne shadow_page
 
@@ -138,13 +139,11 @@ shadow_tail:
 shadow_tail_loop:
         cpy #<__VICSHADOW_SIZE__
         beq shadow_done
-        sta (bss_ptr),y
+        sta (CLEAR_POINTER),y
         iny
         bne shadow_tail_loop
 
 shadow_done:
-        jsr _kernel_main
-
-halt:
-        sei
-        jmp halt
+        ; Enter the resident core without a return address: the $1C00 page is
+        ; reclaimable and must not hold a live frame.
+        jmp _kernel_main

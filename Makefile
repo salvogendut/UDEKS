@@ -29,6 +29,9 @@ BUILD_ASSETS := $(BUILD_DIR)/assets
 BUILD_USER := $(BUILD_DIR)/user
 
 KERNEL_BIN := $(BUILD_8502)/udeks-8502.bin
+CRT0_BIN := $(BUILD_BOOT)/8502-crt0.bin
+PANIC_PROBE_CRT0_BIN := $(BUILD_BOOT)/8502-crt0-panic-probe.bin
+KERNEL_DIRECT_BIN := $(BUILD_8502)/udeks-8502-direct.bin
 KERNEL_PRG := $(BUILD_8502)/udeks-8502.prg
 MODULE_BIN := $(BUILD_8502)/udeks-module.bin
 PANIC_PROBE_KERNEL_BIN := $(BUILD_8502)/udeks-8502-panic-probe.bin
@@ -684,7 +687,7 @@ $(BUILD_8502)/z80_handoff.o: src/8502/z80_handoff.s | $(BUILD_8502)
 $(BUILD_8502)/vic_graphics_transport.o: src/8502/vic_graphics.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
+$(KERNEL_BIN) $(CRT0_BIN) &: $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
 		$(BUILD_8502)/line_editor_read.o \
 		$(BUILD_8502)/z80_handoff.o \
@@ -720,9 +723,10 @@ $(KERNEL_BIN): $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/managed_apps.o \
 		$(BUILD_8502)/vdc_text_assets.o \
 		cfg/8502-bootstrap.cfg
-	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $@ $(filter %.o,$^)
+	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $(KERNEL_BIN) \
+		$(filter %.o,$^)
 
-$(PANIC_PROBE_KERNEL_BIN): $(BOOT_D71) \
+$(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) &: $(BOOT_D71) \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
 		$(BUILD_8502)/line_editor_read.o \
@@ -757,13 +761,17 @@ $(PANIC_PROBE_KERNEL_BIN): $(BOOT_D71) \
 		$(BUILD_8502)/vic_graphics.o \
 		$(BUILD_8502)/managed_apps.o \
 		$(BUILD_8502)/vdc_text_assets.o \
-		cfg/8502-bootstrap.cfg
-	$(CL65) -t none --cpu 6502 -C cfg/8502-bootstrap.cfg \
-		-m $(BUILD_8502)/udeks-8502-panic-probe.map -o $@ \
+		cfg/8502-panic-probe.cfg
+	$(CL65) -t none --cpu 6502 -C cfg/8502-panic-probe.cfg \
+		-m $(BUILD_8502)/udeks-8502-panic-probe.map \
+		-o $(PANIC_PROBE_KERNEL_BIN) \
 		$(filter %.o,$^)
 
-$(KERNEL_PRG): $(KERNEL_BIN) tools/bin_to_prg.py
-	$(PYTHON) tools/bin_to_prg.py --load-address 0x2000 $< $@
+$(KERNEL_DIRECT_BIN): $(CRT0_BIN) $(KERNEL_BIN) tools/join_boot_crt0.py
+	$(PYTHON) tools/join_boot_crt0.py $(CRT0_BIN) $(KERNEL_BIN) $@
+
+$(KERNEL_PRG): $(KERNEL_DIRECT_BIN) tools/bin_to_prg.py
+	$(PYTHON) tools/bin_to_prg.py --load-address 0x1C00 $< $@
 
 $(MODULE_BIN): $(KERNEL_BIN)
 	test -s $@
@@ -1134,7 +1142,8 @@ $(BUILD_BOOT)/stage1.o: src/boot/stage1.s $(STAGE1_GATEWAY_BIN) \
 $(STAGE1_BIN): $(BUILD_BOOT)/stage1.o cfg/8502-stage1.cfg
 	$(LD65) -C cfg/8502-stage1.cfg -o $@ $<
 
-$(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) $(MODULE_BIN) \
+$(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
+		$(CRT0_BIN) $(MODULE_BIN) \
 		$(Z80_BIN) $(USER_BOOTFS) \
 		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
@@ -1142,6 +1151,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) $(MODULE_BI
 		tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
+		--crt0 $(CRT0_BIN) \
 		--bootfs $(USER_BOOTFS) \
 		--module $(MODULE_BIN) \
 		--ush $(USER_USH_UDEX) \
@@ -1152,7 +1162,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) $(MODULE_BI
 		--d64-output $(BOOT_D64) $(BOOT_D71)
 
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
-		$(MODULE_BIN) \
+		$(PANIC_PROBE_CRT0_BIN) $(MODULE_BIN) \
 		$(Z80_BIN) $(USER_BOOTFS) \
 		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
@@ -1160,7 +1170,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(PANIC_PROBE_KERNEL_BIN) \
-		--z80 $(Z80_BIN) \
+		--crt0 $(PANIC_PROBE_CRT0_BIN) --z80 $(Z80_BIN) \
 		--bootfs $(USER_BOOTFS) \
 		--module $(MODULE_BIN) \
 		--ush $(USER_USH_UDEX) \
@@ -1193,6 +1203,7 @@ check:
 		tools/build_bootfs.py \
 		tools/build_d71.py \
 		tools/snapshot_extract.py \
+		tools/join_boot_crt0.py \
 		tools/placement_audit.py \
 		tools/shadow_boot_probe.py \
 		tools/shadow_clear_decode.py \

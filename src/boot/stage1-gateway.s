@@ -100,10 +100,20 @@ final_copy_request_tail:
         cpy #$09
         bne final_copy_request_tail
 
-        ; The resident crt0 clears the whole VICSHADOW segment through its
-        ; linker-generated bounds after this installer hands control to the
-        ; kernel.  Stage 1 must not clear the reclaimed tail above the
-        ; shadow: it is the window future scheduler code will occupy.
+        ; Stage 1's $1C00 page is dead now that this installer runs from the
+        ; protected $F700 page.  Move the staged crt0 over it and enter there:
+        ; crt0 clears BSS and the whole VICSHADOW segment through its
+        ; linker-generated bounds, then jumps to the resident kernel at $2000.
+        ; The reclaimed tail above the shadow must survive untouched.
+        lda #$ae
+        sta final_copy_crt0_source+2
+        ldy #$00
+final_copy_crt0_byte:
+final_copy_crt0_source:
+        lda $ae00,y
+        sta $1c00,y
+        iny
+        bne final_copy_crt0_byte
 
         lda #'Z'
         sta BOOT_CHAIN+8
@@ -119,7 +129,7 @@ final_copy_request_tail:
         sta BOOT_CHAIN_STATE
         lda #$00
         sta MMU_LCR_KERNEL_IO
-        jmp $2000
+        jmp $1c00
 final_install_end:
         .assert final_install_end <= $f800, error, "final installer exceeds protected common page"
 
@@ -434,9 +444,9 @@ BOOTFS_LIMIT_HI         = $d1
 TASK_SLOT               = $0200
 PERSISTENT_SLOT         = $9000
 TASK_BACKUP             = $8000
-; The resident image reserves four zero-page bytes before none.lib, while a
+; The resident image reserves two zero-page bytes before none.lib, while a
 ; standalone UDEX begins its runtime reservation at $02.
-RESIDENT_CC65_SP        = $06
+RESIDENT_CC65_SP        = $04
 USER_CC65_SP            = $02
 TASK_STACK_TOP          = $f7f0
 
