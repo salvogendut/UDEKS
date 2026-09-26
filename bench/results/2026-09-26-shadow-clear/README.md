@@ -4,8 +4,8 @@ The native D71 cold boot was probed in VICE 3.10 (Flatpak `net.sf.VICE`) on
 2026-09-26 with the sequential 8,000-byte `VICSHADOW` segment at `$ACD1-$CC10`
 and the reclaimed tail at `$CC11-$CEFF`.
 
-`tools/shadow_boot_probe.py --vic-compare` copies the D71 and seeds every safe
-zero byte of the staged `$ACD1-$CEFF` image before boot:
+`tools/shadow_boot_probe.py --vic-compare` copies the D71 and seeds the safe
+zero regions of the staged `$ACD1-$CEFF` image before boot:
 
 - the newly reclaimed `$ACD1-$AEFF` prefix, which the staged image leaves zero,
   gets a nonzero pattern so a clear that starts late cannot pass;

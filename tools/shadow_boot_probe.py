@@ -2,12 +2,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Qualify the VIC shadow clear and the reclaimed tail in a native VICE boot.
 
-The probe copies the native D71, seeds every safe zero byte of the staged
-shadow and tail with a nonzero pattern, and boots the copy.  Because the seed
-travels with the payload, both stage 1 and crt0 run after it is planted.  The
-seed covers the newly reclaimed shadow prefix ($ACD1-$AEFF) that the staged
-image leaves zero, so a clear that starts late cannot pass, and it keeps the
-whole $ACD1-$CEFF preimage nonzero.  After boot the probe saves the same
+The probe copies the native D71, seeds the staged shadow's newly reclaimed
+prefix ($ACD1-$AEFF) and the tail sentinels ($CECB/$CEFF) with a nonzero
+pattern, and boots the copy.  Because the seed travels with the payload, both
+stage 1 and crt0 run after it is planted.  Seeding the prefix that the staged
+image leaves zero means a clear that starts late cannot pass.  After boot the
+probe saves the same
 window and checks that crt0 cleared every VICSHADOW byte through
 __VICSHADOW_RUN__/__VICSHADOW_SIZE__ while the complete reclaimed tail still
 matches the preserved preimage byte for byte.
