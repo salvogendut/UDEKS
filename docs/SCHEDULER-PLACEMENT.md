@@ -158,12 +158,12 @@ Each step is a separate change with a `1986` and VICE smoke pass:
    `$AD00-$ADFF` and copied over the dead boot-sector page by the final
    installer; verify boot and the capability record in VICE and `1986`
    (evidence: `bench/results/2026-09-26-shadow-clear`).
-4. Produce a byte-accurate staging/lifetime map for `hardware_capability.o`
-   and `boot_console.o` before relocating either: both their staged source
-   images and runtime code must avoid bootfs staging, the declared C software
-   stack (`$E700-$EFF0`), and the future `$1C00-$1FFF` scheduler reservation.
-   Then relocate them and verify the `HCAP` record and the boot console are
-   byte-identical.
+4. `docs/BOOT-STAGING-MAP.md` records the byte-accurate staging/lifetime map:
+   the free payload holes total 960 bytes (largest 467), so neither
+   `hardware_capability.o` (968) nor `boot_console.o` (1,450) can be staged
+   today. Free a contiguous staging region (bank-1 round trip, a freed payload
+   region, or a scheduler-install overlay) before relocating either; then
+   verify the `HCAP` record and the boot console are byte-identical.
 5. Reserve `$1C00-$1FFF` and install a scheduler segment through stage 1;
    verify the D71 and D64 boot paths.
 6. Replace the implementation behind the frozen `$FF10` reset, `$FF13` poll,

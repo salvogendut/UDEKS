@@ -1207,6 +1207,7 @@ check:
 		tools/build_udex.py \
 		tools/build_bootfs.py \
 		tools/build_d71.py \
+		tools/boot_staging_map.py \
 		tools/snapshot_extract.py \
 		tools/join_boot_crt0.py \
 		tools/placement_audit.py \
