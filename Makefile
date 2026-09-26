@@ -1170,6 +1170,7 @@ check:
 	cd bench/artifacts/2026-09-26-context-switch-r1 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-26-context-switch-r2 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-26-context-switch-r3 && sha256sum -c SHA256SUMS
+	cd bench/artifacts/2026-09-26-context-switch-r4 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-26-context-switch/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-memory-map-r1 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-memory-map-profiles/raw && sha256sum -c SHA256SUMS

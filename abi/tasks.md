@@ -63,7 +63,7 @@ task retains its waiting resume state and a wait reason; it clears the wait
 reason and records a `RUNNABLE` resume state while the visible state stays
 `STOPPED`, so a later `CONTINUE` cannot strand the task on an event that
 already happened. A spurious or repeated wake-up is rejected with
-`BAD_STATE`, as is stopping a task that was not waiting. `CANCEL` is the
+`BAD_STATE`, as is waking a task that was not waiting. `CANCEL` is the
 abort path: it accepts the same Unix-like result the caller would pass to
 `EXIT`, so `Ctrl+C` records `128 + SIGINT`, normally `130`.
 

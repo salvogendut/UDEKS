@@ -230,9 +230,9 @@ dispatch_task:
         sta a_last_p
         lda #A_SP_BASE
         sta a_ctx_sp
-        lda #<task_a_resume0
+        lda #<task_a_first
         sta a_ctx_pc
-        lda #>task_a_resume0
+        lda #>task_a_first
         sta a_ctx_pc+1
         lda #$01
         sta a_primed
@@ -274,9 +274,9 @@ dispatch_task_b:
         sta b_last_p
         lda #B_SP_BASE
         sta b_ctx_sp
-        lda #<task_b_resume0
+        lda #<task_b_first
         sta b_ctx_pc
-        lda #>task_b_resume0
+        lda #>task_b_first
         sta b_ctx_pc+1
         lda #$01
         sta b_primed
@@ -463,10 +463,6 @@ yield_validate_a:
         lda tmp_p
         sta a_ctx_p
         lda tmp_sp
-        clc
-        adc #$02
-        clc
-        adc tmp_pad
         sta a_ctx_sp
         jmp yield_accept
 
@@ -610,10 +606,6 @@ yield_validate_b:
         lda tmp_p
         sta b_ctx_p
         lda tmp_sp
-        clc
-        adc #$02
-        clc
-        adc tmp_pad
         sta b_ctx_sp
 
 yield_accept:
@@ -721,6 +713,19 @@ fail_halt:
 
 ; Task A. The two resume labels are distinct code, so the resume marker proves
 ; which program counter actually ran.
+task_a_first:
+        sta ZP_SEEN_A
+        stx ZP_SEEN_X
+        sty ZP_SEEN_Y
+        php
+        pla
+        sta ZP_SEEN_P
+        ldx #RESUME_A_EVEN
+        stx ZP_RESUME_SEEN
+        lda #$00
+        sta window_flag
+        jmp task_a_body
+
 task_a_resume0:
         sta ZP_SEEN_A
         stx ZP_SEEN_X
@@ -728,11 +733,9 @@ task_a_resume0:
         php
         pla
         sta ZP_SEEN_P
-        lda #$00
-        sta window_flag
         ldx #RESUME_A_EVEN
         stx ZP_RESUME_SEEN
-        jmp task_a_body
+        jmp task_a_resume_check
 
 task_a_resume1:
         sta ZP_SEEN_A
@@ -741,10 +744,41 @@ task_a_resume1:
         php
         pla
         sta ZP_SEEN_P
-        lda #$00
-        sta window_flag
         ldx #RESUME_A_ODD
         stx ZP_RESUME_SEEN
+
+task_a_resume_check:
+        ; The previous marker and pad must have survived the other task.
+        cld
+        tsx
+        lda STACK_PAGE_BASE+1,x
+        cmp #A_MARK_HIGH
+        beq :+
+        lda #17
+        jmp fail_canary
+:
+        lda STACK_PAGE_BASE+2,x
+        cmp ZP_STEP
+        beq :+
+        lda #17
+        jmp fail_canary
+:
+        ; Pop the previous pad and marker, restoring the base stack pointer.
+        lda ZP_STEP
+        and #$03
+        asl a
+        clc
+        adc #$02
+        sta tmp_pad
+        txa
+        clc
+        adc tmp_pad
+        tax
+        txs
+        sed
+        lda #$00
+        sta window_flag
+        jmp task_a_body
 
 task_a_body:
 
@@ -801,6 +835,19 @@ no_pad_a:
 
 ; Task B. Same contract with distinct seed, tag, marker, pad, stack pointer,
 ; resume markers, and resume addresses.
+task_b_first:
+        sta ZP_SEEN_A
+        stx ZP_SEEN_X
+        sty ZP_SEEN_Y
+        php
+        pla
+        sta ZP_SEEN_P
+        ldx #RESUME_B_EVEN
+        stx ZP_RESUME_SEEN
+        lda #$00
+        sta window_flag
+        jmp task_b_body
+
 task_b_resume0:
         sta ZP_SEEN_A
         stx ZP_SEEN_X
@@ -808,11 +855,9 @@ task_b_resume0:
         php
         pla
         sta ZP_SEEN_P
-        lda #$00
-        sta window_flag
         ldx #RESUME_B_EVEN
         stx ZP_RESUME_SEEN
-        jmp task_b_body
+        jmp task_b_resume_check
 
 task_b_resume1:
         sta ZP_SEEN_A
@@ -821,10 +866,41 @@ task_b_resume1:
         php
         pla
         sta ZP_SEEN_P
-        lda #$00
-        sta window_flag
         ldx #RESUME_B_ODD
         stx ZP_RESUME_SEEN
+
+task_b_resume_check:
+        ; The previous marker and pad must have survived the other task.
+        cld
+        tsx
+        lda STACK_PAGE_BASE+1,x
+        cmp #B_MARK_HIGH
+        beq :+
+        lda #17
+        jmp fail_canary
+:
+        lda STACK_PAGE_BASE+2,x
+        cmp ZP_STEP
+        beq :+
+        lda #17
+        jmp fail_canary
+:
+        ; Pop the previous pad and marker, restoring the base stack pointer.
+        lda ZP_STEP
+        and #$03
+        asl a
+        clc
+        adc #$02
+        sta tmp_pad
+        txa
+        clc
+        adc tmp_pad
+        tax
+        txs
+        cld
+        lda #$00
+        sta window_flag
+        jmp task_b_body
 
 task_b_body:
 

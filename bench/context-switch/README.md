@@ -33,8 +33,10 @@ Per switch the core qualifies:
 - decimal-mode isolation: the restored D flag drives a per-entry probe, so A
   must produce a decimal result and B a binary result from the same operands;
 - variable live-SP restoration: a step-derived pad of zero to three words plus
-  a step-valued marker, with the exact live SP and marker bytes checked against
-  the step formula;
+  a step-valued marker, with the live SP stored directly in the record; each
+  resume label verifies the previous marker and pad on the live stack page and
+  pops the frame before preparing the next yield, so the frame must survive the
+  other task's execution;
 - the resume marker against the parity-selected resume label, proving which
   program counter actually ran;
 - the zero-page sentinel, the page-bottom overflow canary, the task-visible
@@ -52,10 +54,10 @@ The relocation strategy moves zero page-one bytes per switch (`XFER = 0`),
 which is the measured input for choosing it over the bounded copy primitive
 already characterized in [`bench/context`](../context/README.md).
 
-The corrected spike passes in `1986` (1087 interrupts) and VICE 3.10 (5019
+The corrected spike passes in `1986` (1349 interrupts) and VICE 3.10 (7111
 interrupts) with 128 switches, one successful check per switch, zero canary
 failures, and both boundary and body interrupts; the exact PRG, raw records,
 provenance, and the placement recommendation are recorded under
-[`bench/artifacts/2026-09-26-context-switch-r3`](../artifacts/2026-09-26-context-switch-r3/README.md)
+[`bench/artifacts/2026-09-26-context-switch-r4`](../artifacts/2026-09-26-context-switch-r4/README.md)
 and [`bench/results/2026-09-26-context-switch`](../results/2026-09-26-context-switch/README.md).
 A physical C128 run remains required before the decision is frozen.

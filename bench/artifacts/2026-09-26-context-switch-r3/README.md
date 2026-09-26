@@ -1,5 +1,9 @@
 # Context-switch spike artifact r3
 
+This revision was superseded by `../2026-09-26-context-switch-r4/`: the context
+SP was normalized back to a fixed base, so the variable-depth frame did not
+actually survive a switch. It is kept as history.
+
 `context-switch.prg` is the standalone spike image qualified on 2026-09-26 on
 the `tasking-0.1` branch. It supersedes `-r2` by adding two qualifications
 required before the physical C128 run:

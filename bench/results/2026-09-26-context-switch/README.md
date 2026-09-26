@@ -1,6 +1,6 @@
 # Context-switch spike results
 
-The corrected standalone context-switch spike (`-r3`) was run against the two
+The corrected standalone context-switch spike (`-r4`) was run against the two
 qualified emulators. Both completed the relocation strategy with one successful
 check per switch, no canary failure, and zero page bytes moved per switch.
 Interrupts were observed both inside the marked switch-boundary windows and
@@ -8,12 +8,12 @@ during task execution; the counters are 16-bit, so the totals are exact.
 
 | Run | Switches | Interrupts | Boundary | Body | Checks | Canary | Page bytes/switch |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| `1986` | 128 | 1087 | 447 | 640 | 128/128 | 0 | 0 |
-| VICE 3.10 | 128 | 5019 | 2913 | 2106 | 128/128 | 0 | 0 |
+| `1986` | 128 | 1349 | 887 | 462 | 128/128 | 0 | 0 |
+| VICE 3.10 | 128 | 7111 | 5019 | 2092 | 128/128 | 0 | 0 |
 
 The exact image is preserved as
-`bench/artifacts/2026-09-26-context-switch-r3/context-switch.prg`
-(SHA-256 `7230c06137a850b68fde8b4e508fc915513e6a13bd9cd3032c6c9601cffcedca`).
+`bench/artifacts/2026-09-26-context-switch-r4/context-switch.prg`
+(SHA-256 `5bf1788a1b225da58b551b28d515a05f0e51864e9f43072c935ee9ad1a72d9f3`).
 Build and emulator provenance is in that directory's README.
 
 Reproduction:
@@ -55,8 +55,10 @@ Verify the preserved bytes with `cd raw && sha256sum -c SHA256SUMS`.
 - The restored D flag drives a per-entry arithmetic probe: A must produce a
   decimal result and B a binary result from the same operands, so decimal mode
   cannot leak between tasks.
-- The live stack pointer varies with a step-derived pad of zero to three words,
-  and the exact SP plus the step-valued marker bytes are checked each switch.
+- The live stack pointer varies with a step-derived pad of zero to three words.
+  The context stores that live SP directly; the resume label verifies the
+  previous marker and pad against the live stack page and pops the frame
+  before preparing the next yield, so a frame must survive the other task.
 - The interrupt handler saves and restores A, X, Y, and P, and the boundary and
   body counters are both required to be nonzero and exact.
 
