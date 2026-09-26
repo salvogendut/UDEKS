@@ -96,6 +96,7 @@ unsigned char udeks_lifecycle_apply(
 
 /* Reads derived scheduler state. Invalid ids report UDEKS_LIFECYCLE_INVALID. */
 unsigned char udeks_lifecycle_get(unsigned char id);
+unsigned char udeks_lifecycle_parent(unsigned char id);
 unsigned char udeks_lifecycle_wait_reason(unsigned char id);
 unsigned char udeks_lifecycle_exit_status(unsigned char id);
 unsigned char udeks_lifecycle_current(void);

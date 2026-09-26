@@ -138,7 +138,7 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
 	boot panic-probe framebuffer-assets user-sources user-programs \
-	task-state check doctor clean help
+	task-state task-policy check doctor clean help
 
 all: 8502 z80 z80-asm
 
@@ -156,8 +156,9 @@ user-sources: $(USER_COWSAY_ASM) $(USER_DATE_ASM) $(USER_LS_ASM) $(USER_USH_ASM)
 
 user-programs: $(USER_BOOTFS)
 
-# Compile-only proof that the host-tested lifecycle module builds for cc65.
+# Compile-only proof that the host-tested lifecycle modules build for cc65.
 task-state: $(BUILD_8502)/task_state.o
+task-policy: $(BUILD_8502)/task_policy.o
 
 8502: $(KERNEL_BIN) $(KERNEL_PRG)
 
@@ -380,6 +381,11 @@ $(BUILD_8502)/task_state.s: src/kernel/task_state.c \
 		include/udeks/task_state.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/task_policy.s: src/kernel/task_policy.c \
+		include/udeks/task_policy.h include/udeks/task_request.h \
+		include/udeks/task_state.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/hardware_capability.s: src/services/capability/hardware.c \
 		include/udeks/capability.h include/udeks/vdc.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
@@ -544,6 +550,9 @@ $(BUILD_8502)/service_registry.o: $(BUILD_8502)/service_registry.s | $(BUILD_850
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/task_state.o: $(BUILD_8502)/task_state.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/task_policy.o: $(BUILD_8502)/task_policy.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/hardware_capability.o: $(BUILD_8502)/hardware_capability.s | $(BUILD_8502)
@@ -1234,6 +1243,7 @@ help:
 		'make user-sources  Compile staged user-program C sources' \
 		'make user-programs  Link and package staged UDEX programs' \
 		'make task-state Compile the lifecycle module for cc65 (no link)' \
+		'make task-policy Compile the request policy module for cc65 (no link)' \
 		'make bench      Build comparable 8502 and Z80 benchmark images' \
 		'make bench-8502 Build only the 8502 benchmark image' \
 		'make bench-z80  Build only the Z80 benchmark image' \

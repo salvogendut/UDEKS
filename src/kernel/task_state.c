@@ -245,6 +245,17 @@ unsigned char udeks_lifecycle_get(unsigned char id)
     return slot[TASK_SLOT_STATE];
 }
 
+unsigned char udeks_lifecycle_parent(unsigned char id)
+{
+    unsigned char *slot;
+
+    slot = task_slot(id);
+    if (slot == 0) {
+        return UDEKS_LIFECYCLE_INVALID;
+    }
+    return slot[TASK_SLOT_PARENT];
+}
+
 unsigned char udeks_lifecycle_wait_reason(unsigned char id)
 {
     unsigned char *slot;
