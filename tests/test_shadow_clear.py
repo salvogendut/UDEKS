@@ -8,6 +8,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
+from boot_chain_decode import parse_result as parse_boot_chain
+from capability_decode import parse_result as parse_capability
 from shadow_clear_decode import (
     SHADOW_SIZE,
     compare_shadow_bitmap,
@@ -93,6 +95,20 @@ class ShadowClearEvidenceTests(unittest.TestCase):
         self.assertTrue(result["shadow_cleared"])
         self.assertFalse(result["tail_intact"])
         self.assertEqual(result["tail_mismatches"], [10])
+
+
+class ShadowClearProbeEvidenceTests(unittest.TestCase):
+    def test_committed_capability_records_decode_and_match(self):
+        vice = (RAW / "capability-record.bin").read_bytes()
+        other = (RAW / "1986-f9c6a24-hcap.bin").read_bytes()
+        self.assertEqual(parse_capability(vice), parse_capability(other))
+        self.assertEqual(vice, other)
+
+    def test_committed_1986_boot_chain_decodes(self):
+        block = (RAW / "1986-f9c6a24-boot-chain.bin").read_bytes()
+        result = parse_boot_chain(block)
+        self.assertEqual(result["loader_state"], 2)
+        self.assertEqual(result["blocks"], 212)
 
 
 class ShadowClearSourceTests(unittest.TestCase):

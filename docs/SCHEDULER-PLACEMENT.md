@@ -156,7 +156,8 @@ Each step is a separate change with a `1986` and VICE smoke pass:
    direct PRG boot.
 3. Relocate `probe.o` into the `$0B00-$0BFF` `BOOTPROBE` page, staged at
    `$AD00-$ADFF` and copied over the dead boot-sector page by the final
-   installer; verify boot and the capability record.
+   installer; verify boot and the capability record in VICE and `1986`
+   (evidence: `bench/results/2026-09-26-shadow-clear`).
 4. Produce a byte-accurate staging/lifetime map for `hardware_capability.o`
    and `boot_console.o` before relocating either: both their staged source
    images and runtime code must avoid bootfs staging, the declared C software

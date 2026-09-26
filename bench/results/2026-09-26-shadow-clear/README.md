@@ -46,7 +46,9 @@ root-terminal readiness bytes and then:
 | `raw/shadow-after-boot.bin` | 9,171 | same window after crt0, before any client |
 | `raw/shadow-drawn.bin` | 8,000 | bank-0 shadow after `xinit` + `xclock` |
 | `raw/vic-bitmap.bin` | 8,000 | bank-1 `$6000-$7F3F` under the worker profile |
-| `raw/capability-record.bin` | 32 | `HCAP` record from the same D71, probe running from `$0B00` |
+| `raw/capability-record.bin` | 32 | `HCAP` record from the same D71 under VICE, probe running from `$0B00` |
+| `raw/1986-f9c6a24-hcap.bin` | 32 | same `HCAP` record extracted from the 1986 snapshot |
+| `raw/1986-f9c6a24-boot-chain.bin` | 48 | `$F040` boot chain from the 1986 snapshot |
 | `raw/D71.sha256` | 76 | hash of the built D71 the probe consumed |
 
 The probed D71 is
@@ -72,6 +74,39 @@ python3 tools/shadow_clear_decode.py bench/results/2026-09-26-shadow-clear/raw
 `tests/test_shadow_clear.py`, which re-checks the clear, the full-tail
 preimage match, the nonzero reclaimed prefix, and the shadow/bitmap equality.
 
-The probe gate uses the same D71: capture `$F0C0-$F0DF` with `--entry 0x1C00`
-and decode it, which yields `PAL, 8568-family revision 2, 64 KiB VDC RAM` and
-no expansions (`raw/capability-record.bin`).
+## Probe gate
+
+The probe gate uses the same D71 under VICE: capture `$F0C0-$F0DF` with
+`--entry 0x1C00` and decode it, which yields `PAL, 8568-family revision 2,
+64 KiB VDC RAM` and no expansions (`raw/capability-record.bin`).
+
+```sh
+python3 tools/vice_capture.py build/boot/udeks.d71 /tmp/udeks-hcap.bin \
+  --native-disk --entry 0x1c00 --result-address 0xf0c0 --result-size 32 \
+  --state-offset 5 --complete-value 2 --timeout 90
+python3 tools/capability_decode.py /tmp/udeks-hcap.bin
+```
+
+## 1986 qualification
+
+The same D71 was run in the `1986` C128DCR emulator at revision
+`f9c6a24590c697c2978a0988616d8e683f6d2d69` for 3,000 frames and a VSF
+snapshot was extracted. The `HCAP` record is byte-identical to the VICE
+record, and the boot chain reports `stage 0 -> stage 1 -> 8502 kernel
+complete` with the Z80 image verified.
+
+```sh
+cd /var/home/salvogendut/Dev/1986
+./1986 --disk /var/home/salvogendut/Dev/UDEKS/build/boot/udeks.d71 \
+  --frames 3000 --no-throttle --save-snapshot /tmp/udeks-1986.vsf
+cd /var/home/salvogendut/Dev/UDEKS
+python3 tools/snapshot_extract.py /tmp/udeks-1986.vsf /tmp/1986-hcap.bin \
+  --address 0xf0c0 --size 32
+python3 tools/snapshot_extract.py /tmp/udeks-1986.vsf /tmp/1986-boot.bin \
+  --address 0xf040 --size 48
+python3 tools/capability_decode.py /tmp/1986-hcap.bin
+python3 tools/boot_chain_decode.py /tmp/1986-boot.bin
+```
+
+`tests/test_shadow_clear.py` decodes both committed `HCAP` records and the
+1986 boot chain, and requires the two `HCAP` records to be byte-identical.
