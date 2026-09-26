@@ -120,6 +120,11 @@ class TaskRequestAbiTests(unittest.TestCase):
         self.assertIn("`result = 0`", document)
         # Blocking and shared-record ownership are frozen.
         self.assertIn("Scheduling and record ownership", document)
+        self.assertIn("require descriptor `0`", document)
+        self.assertIn("current and `RUNNING`", document)
+        self.assertIn("Selector `0` waits for any child", document)
+        self.assertIn("preflights the proposed placement", document)
+        self.assertIn("not cancellable through this operation", document)
         self.assertIn("snapshots the", document)
         self.assertIn("preserving the original sequence number", document)
         self.assertIn("`EXIT` never returns", document)

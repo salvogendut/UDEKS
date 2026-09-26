@@ -69,6 +69,11 @@ is implemented.
 |---|---|---|
 | `WAITPID` | `0x01` `NOHANG` | Return immediately when no child is reapable. |
 
+All 0.3 lifecycle operations require descriptor `0`; a nonzero descriptor is
+rejected with `EINVAL`. The caller must be the task the kernel reports as
+current and `RUNNING`: a lifecycle request from any other state is rejected
+with `EINVAL`, and an undefined caller with `ESRCH`.
+
 ## Payload layouts
 
 Task ids are little-endian 16-bit values. Id `0` means "no task"; `WAITPID`
@@ -100,9 +105,12 @@ ids are rejected with `ESRCH` (or `ECHILD` for `WAITPID`, as noted below).
   for a child that has not changed state.
 - Matching live child without `NOHANG`: the caller blocks until the child
   exits, then the response above is published when the caller resumes.
+- Selector `0` waits for any child: when no zombie exists the selector stays
+  `0` and the response is published when any child exits, not only the child
+  that happened to be observed first.
 - No matching child, including a target that is not a child of the caller or
   is outside the table: `ECHILD`.
-- Reserved flag bits or a nonzero descriptor: `EINVAL`.
+- Reserved flag bits: `EINVAL`.
 
 ### SLEEP (13)
 
@@ -120,6 +128,8 @@ ids are rejected with `ESRCH` (or `ECHILD` for `WAITPID`, as noted below).
   recorded as the target's exit status and is returned by `WAITPID`.
 - Unknown, reaped, or non-child target: `ESRCH`.
 - Target id `0`, the caller's own id, or a bad count: `EINVAL`.
+- Cancellation is limited to the caller's children: an unrelated live task is
+  not cancellable through this operation.
 
 ### SPAWN (15)
 
@@ -132,6 +142,12 @@ ids are rejected with `ESRCH` (or `ECHILD` for `WAITPID`, as noted below).
   No free task slot or allocation: `ENOMEM`. A bad name length, a non-zero pad
   byte, a character outside letters, digits, `.`, `_`, `+`, and `-`, or
   reserved flag bits: `EINVAL`.
+- Before any allocation metadata changes, the loader resolves the executable,
+  parses its UDEX header, and preflights the proposed placement: an unsupported
+  CPU, a zero-length image, or an entry outside the image is `ENOEXEC`; a
+  missing, under-sized, or image-overlapping stack is `EINVAL`; an
+  address-space overflow or overlap with the resident kernel, common RAM,
+  display memory, or another task's allocation is `ENOMEM`.
 
 ## Errors
 
@@ -195,5 +211,14 @@ no more immediate work.
 ## Placement note
 
 The fixed `$F800` request gateway uses 262 of its 265 reserved bytes as of ABI
-0.3. Resident lifecycle handlers cannot be added to that segment; they require
-a separate placement or trampoline decision before implementation.
+0.3, the host-testable policy compiles to about 1.1 KiB of cc65 code, and the
+lifecycle module is about 1.6 KiB of code plus 31 bytes of read-only data and
+71 bytes of BSS. The bank-0 gap below the VIC shadow is about 596 bytes and
+common RAM has no equivalent unallocated region, so neither module fits its
+current home unchanged.
+
+The preferred direction is to keep validation, lifecycle policy, and
+scheduling in bank 0 and retain only a small MMU/context-switch tail in
+always-mapped common RAM. Bank-0 space must first be reclaimed by extracting or
+relocating transitional services; the C policy is not placed wholesale in
+common RAM.
