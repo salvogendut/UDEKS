@@ -79,8 +79,8 @@ class ContextSwitchDecodeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "step counts"):
             parse_result(block)
         block = valid_record()
-        block[24] = 1
-        with self.assertRaisesRegex(ValueError, "bytes 24-31"):
+        block[26] = 1
+        with self.assertRaisesRegex(ValueError, "bytes 26-31"):
             parse_result(block)
 
     def test_requires_a_successful_check_for_every_switch(self):
@@ -116,13 +116,17 @@ class ContextSwitchDecodeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "does not match"):
             parse_result(block)
 
-    def test_accepts_the_truncated_interrupt_total_byte(self):
+    def test_accepts_sixteen_bit_interrupt_counters(self):
         block = valid_record()
-        block[22] = 200
+        block[22] = 44
+        block[24] = 1
         block[23] = 100
-        block[11] = (200 + 100) & 0xFF
+        block[25] = 0
+        block[11] = (300 + 100) & 0xFF
         result = parse_result(block)
-        self.assertEqual(result["interrupts"], 300)
+        self.assertEqual(result["boundary_interrupts"], 300)
+        self.assertEqual(result["body_interrupts"], 100)
+        self.assertEqual(result["interrupts"], 400)
 
     def test_rejects_a_non_relocation_result(self):
         block = valid_record()

@@ -49,8 +49,8 @@ def parse_result(data: bytes) -> dict[str, int]:
             f"switch count {switches} does not match {rounds} rounds"
         )
     interrupts = block[11]
-    boundary = block[22]
-    body = block[23]
+    boundary = block[22] | (block[24] << 8)
+    body = block[23] | (block[25] << 8)
     if boundary == 0:
         raise ValueError("no interrupt arrived in a switch-boundary window")
     if body == 0:
@@ -86,8 +86,8 @@ def parse_result(data: bytes) -> dict[str, int]:
     xfers = block[20] | (block[21] << 8)
     if xfers != 0:
         raise ValueError(f"relocation moved {xfers} page bytes per switch")
-    if any(block[24:32]):
-        raise ValueError("unused result bytes 24-31 are nonzero")
+    if any(block[26:32]):
+        raise ValueError("unused result bytes 26-31 are nonzero")
     return {
         "format": block[4],
         "cpu": block[5],

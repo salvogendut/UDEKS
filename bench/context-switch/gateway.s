@@ -3,10 +3,12 @@
 ; Runs from top common RAM while it alternates two synthetic 8502 tasks with
 ; relocated page-zero and page-one allocations and different MMU profiles.
 ;
-; Each task owns a separate context record and a distinct register pattern,
-; stack pointer, stack marker, and resume address. The interrupt handler saves
-; and restores A, X, and Y and classifies interrupts that arrive inside the
-; marked switch-boundary window.
+; Each task owns a separate context record, a distinct seed/yield register
+; pattern, stack pointer, stack marker, and two alternating resume addresses.
+; Validation compares the observed state against formulas derived from the
+; current step, not against the context record, so a stale or cross-wired
+; record cannot pass. P is captured before any flag-changing instruction,
+; restored after A/X/Y, and verified against a replay of the task tail.
 
         .setcpu "6502"
         .segment "CODE"
@@ -30,8 +32,10 @@ RESULT_STEP_A           = RESULT + 18
 RESULT_STEP_B           = RESULT + 19
 RESULT_XFER_LO          = RESULT + 20
 RESULT_XFER_HI          = RESULT + 21
-RESULT_BOUNDARY_IRQ     = RESULT + 22
-RESULT_BODY_IRQ         = RESULT + 23
+RESULT_BOUNDARY_LO      = RESULT + 22
+RESULT_BODY_LO          = RESULT + 23
+RESULT_BOUNDARY_HI      = RESULT + 24
+RESULT_BODY_HI          = RESULT + 25
 
 MMU_LCR_KERNEL_IO       = $ff01
 MMU_LCR_WORKER_IO       = $ff03
@@ -58,28 +62,36 @@ A_YTAG                  = $a1
 B_YTAG                  = $b2
 A_ATAG                  = $40
 B_ATAG                  = $80
-A_SEED_A                = $41
-A_SEED_X                = A_SENTINEL
-A_SEED_Y                = A_YTAG
-B_SEED_A                = $82
-B_SEED_X                = B_SENTINEL
-B_SEED_Y                = B_YTAG
 A_MARK_LOW              = $5a
 A_MARK_HIGH             = $a5
 B_MARK_LOW              = $a5
 B_MARK_HIGH             = $5a
+A_PAD                   = $11
+B_PAD                   = $22
 A_CANARY                = $3c
 B_CANARY                = $c3
 BANK_A                  = $a0
 BANK_B                  = $b0
-A_STACK_INIT            = $ff
-B_STACK_INIT            = $f5
+A_SP_BASE               = $ff
+B_SP_BASE               = $f5
+A_SP_EVEN               = A_SP_BASE - 2
+A_SP_ODD                = A_SP_BASE - 4
+B_SP_EVEN               = B_SP_BASE - 2
+B_SP_ODD                = B_SP_BASE - 4
+SEED_P                  = $21
+P_MASK                  = $cb
+RESUME_A_EVEN           = $e0
+RESUME_A_ODD            = $e1
+RESUME_B_EVEN           = $e2
+RESUME_B_ODD            = $e3
 ROUNDS                  = 64
 SWITCH_BUDGET_HI        = $04
 TIMER_PERIOD            = $40
 
 ZP_SENTINEL             = $02
 ZP_STEP                 = $03
+ZP_SEEN_P               = $04
+ZP_RESUME_SEEN          = $05
 ZP_SEEN_A               = $07
 ZP_SEEN_X               = $08
 ZP_SEEN_Y               = $09
@@ -93,15 +105,6 @@ FLAG_RELOCATE           = $02
         .macro require_imm value, code
         .local ok
         cmp #value
-        beq ok
-        lda #code
-        jmp fail_common
-ok:
-        .endmacro
-
-        .macro require_mem address, code
-        .local ok
-        cmp address
         beq ok
         lda #code
         jmp fail_common
@@ -129,6 +132,11 @@ gateway_start:
         lda #$00
         sta ZP_STEP
         sta ZP_STATE
+        sta ZP_SEEN_P
+        sta ZP_RESUME_SEEN
+        sta ZP_SEEN_A
+        sta ZP_SEEN_X
+        sta ZP_SEEN_Y
         lda #A_CANARY
         sta STACK_CANARY
 
@@ -141,6 +149,11 @@ gateway_start:
         lda #$00
         sta ZP_STEP
         sta ZP_STATE
+        sta ZP_SEEN_P
+        sta ZP_RESUME_SEEN
+        sta ZP_SEEN_A
+        sta ZP_SEEN_X
+        sta ZP_SEEN_Y
         lda #B_CANARY
         sta STACK_CANARY
 
@@ -181,8 +194,9 @@ gateway_start:
         sta current
         jmp dispatch_task
 
-; Dispatch the current task: select its ownership and profile, copy its own
-; record into the restore registers, and resume at its saved program counter.
+; Dispatch the current task: select its ownership and profile, restore its own
+; record with P last so A/X/Y loads cannot overwrite the restored flags, and
+; resume at the saved program counter.
 dispatch_task:
         lda current
         sta RESULT_CURRENT
@@ -203,44 +217,37 @@ dispatch_task:
 
         lda a_primed
         bne dispatch_task_a_ready
-        lda #A_SEED_A
+        lda #A_ATAG
         sta a_ctx_a
-        lda #A_SEED_X
+        lda #A_SENTINEL
         sta a_ctx_x
-        lda #A_SEED_Y
+        lda #A_YTAG
         sta a_ctx_y
-        lda #$05
+        lda #SEED_P
         sta a_ctx_p
-        lda #A_STACK_INIT
+        sta a_last_p
+        lda #A_SP_BASE
         sta a_ctx_sp
-        lda #<task_a_entry
+        lda #<task_a_resume0
         sta a_ctx_pc
-        lda #>task_a_entry
+        lda #>task_a_resume0
         sta a_ctx_pc+1
         lda #$01
         sta a_primed
 dispatch_task_a_ready:
-        lda a_ctx_a
-        sta a_disp_a
-        lda a_ctx_x
-        sta a_disp_x
-        lda a_ctx_y
-        sta a_disp_y
-
         lda #PROFILE_KERNEL_IO
         sta MMU_LCR_KERNEL_IO
 
         ldx a_ctx_sp
         txs
-        lda a_ctx_p
-        pha
-        plp
         lda #$01
         sta window_flag
+        lda a_ctx_p
+        pha
         lda a_ctx_a
         ldx a_ctx_x
         ldy a_ctx_y
-        cli
+        plp
         jmp (a_ctx_pc)
 
 dispatch_task_b:
@@ -254,59 +261,51 @@ dispatch_task_b:
 
         lda b_primed
         bne dispatch_task_b_ready
-        lda #B_SEED_A
+        lda #B_ATAG
         sta b_ctx_a
-        lda #B_SEED_X
+        lda #B_SENTINEL
         sta b_ctx_x
-        lda #B_SEED_Y
+        lda #B_YTAG
         sta b_ctx_y
-        lda #$05
+        lda #SEED_P
         sta b_ctx_p
-        lda #B_STACK_INIT
+        sta b_last_p
+        lda #B_SP_BASE
         sta b_ctx_sp
-        lda #<task_b_entry
+        lda #<task_b_resume0
         sta b_ctx_pc
-        lda #>task_b_entry
+        lda #>task_b_resume0
         sta b_ctx_pc+1
         lda #$01
         sta b_primed
 dispatch_task_b_ready:
-        lda b_ctx_a
-        sta b_disp_a
-        lda b_ctx_x
-        sta b_disp_x
-        lda b_ctx_y
-        sta b_disp_y
-
         lda #PROFILE_WORKER_IO
         sta MMU_LCR_WORKER_IO
 
         ldx b_ctx_sp
         txs
-        lda b_ctx_p
-        pha
-        plp
         lda #$01
         sta window_flag
+        lda b_ctx_p
+        pha
         lda b_ctx_a
         ldx b_ctx_x
         ldy b_ctx_y
-        cli
+        plp
         jmp (b_ctx_pc)
 
 ; A task reaches here with jmp after pushing its stack marker and storing its
-; resume address. Interrupts enabled up to the jmp make the boundary window
-; observable to the handler.
+; resume address. PHP runs before SEI so the captured status is the task's.
 yield_core:
-        sei
         sta tmp_a
-        lda #$00
-        sta window_flag
         stx tmp_x
         sty tmp_y
         php
+        sei
         pla
         sta tmp_p
+        lda #$00
+        sta window_flag
         tsx
         stx tmp_sp
 
@@ -316,36 +315,100 @@ yield_core:
         jmp yield_validate_b
 :
 yield_validate_a:
-        lda ZP_SEEN_A
-        require_mem a_disp_a, 5
-        lda ZP_SEEN_X
-        require_mem a_disp_x, 5
-        lda ZP_SEEN_Y
-        require_mem a_disp_y, 5
-        lda ZP_STATE
-        require_imm $00, 8
-        lda tmp_y
-        require_imm A_YTAG, 5
-        lda tmp_x
-        require_imm A_SENTINEL, 5
+        ; Restored A/X/Y observations against formulas, not the record.
         lda ZP_STEP
+        sec
+        sbc #$01
         clc
         adc #A_ATAG
-        cmp tmp_a
+        cmp ZP_SEEN_A
         beq :+
         lda #5
         jmp fail_common
 :
-        lda tmp_p
-        and #$01
-        bne :+
+        lda ZP_SEEN_X
+        cmp #A_SENTINEL
+        beq :+
+        lda #5
+        jmp fail_common
+:
+        lda ZP_SEEN_Y
+        cmp #A_YTAG
+        beq :+
+        lda #5
+        jmp fail_common
+:
+        lda ZP_STATE
+        require_imm $00, 8
+
+        ; Restored P must match the task's last verified yield status.
+        lda ZP_SEEN_P
+        and #P_MASK
+        sta tmp_cmp
+        lda a_last_p
+        and #P_MASK
+        cmp tmp_cmp
+        beq :+
         lda #6
         jmp fail_common
 :
+
+        ; The resume marker must match the parity of the PC that was dispatched.
+        lda ZP_STEP
+        sec
+        sbc #$01
+        and #$01
+        beq :+
+        lda #RESUME_A_ODD
+        jmp :++
+:
+        lda #RESUME_A_EVEN
+:
+        cmp ZP_RESUME_SEEN
+        beq :+
+        lda #14
+        jmp fail_common
+:
+
+        ; Replay the task tail: the yield status must equal the replay.
+        lda ZP_STEP
+        clc
+        adc #A_ATAG
+        ldx #A_SENTINEL
+        ldy #A_YTAG
+        sec
+        php
+        pla
+        and #P_MASK
+        sta tmp_cmp
+        lda tmp_p
+        and #P_MASK
+        cmp tmp_cmp
+        beq :+
+        lda #6
+        jmp fail_common
+:
+        lda tmp_p
+        sta a_last_p
+
         lda ZP_SENTINEL
         cmp #A_SENTINEL
         beq :+
         lda #2
+        jmp fail_canary
+:
+        ; SP must equal the designated base minus the parity pad and marker.
+        lda ZP_STEP
+        and #$01
+        beq :+
+        lda #A_SP_ODD
+        jmp :++
+:
+        lda #A_SP_EVEN
+:
+        cmp tmp_sp
+        beq :+
+        lda #15
         jmp fail_canary
 :
         ldx tmp_sp
@@ -390,43 +453,111 @@ yield_validate_a:
         sta a_ctx_y
         lda tmp_p
         sta a_ctx_p
+        lda ZP_STEP
+        and #$01
+        beq :+
+        lda tmp_sp
+        clc
+        adc #$04
+        jmp :++
+:
         lda tmp_sp
         clc
         adc #$02
+:
         sta a_ctx_sp
         jmp yield_accept
 
 yield_validate_b:
-        lda ZP_SEEN_A
-        require_mem b_disp_a, 5
-        lda ZP_SEEN_X
-        require_mem b_disp_x, 5
-        lda ZP_SEEN_Y
-        require_mem b_disp_y, 5
-        lda ZP_STATE
-        require_imm $00, 8
-        lda tmp_y
-        require_imm B_YTAG, 5
-        lda tmp_x
-        require_imm B_SENTINEL, 5
         lda ZP_STEP
+        sec
+        sbc #$01
         clc
         adc #B_ATAG
-        cmp tmp_a
+        cmp ZP_SEEN_A
         beq :+
         lda #5
         jmp fail_common
 :
-        lda tmp_p
-        and #$01
-        bne :+
+        lda ZP_SEEN_X
+        cmp #B_SENTINEL
+        beq :+
+        lda #5
+        jmp fail_common
+:
+        lda ZP_SEEN_Y
+        cmp #B_YTAG
+        beq :+
+        lda #5
+        jmp fail_common
+:
+        lda ZP_STATE
+        require_imm $00, 8
+
+        lda ZP_SEEN_P
+        and #P_MASK
+        sta tmp_cmp
+        lda b_last_p
+        and #P_MASK
+        cmp tmp_cmp
+        beq :+
         lda #6
         jmp fail_common
 :
+
+        lda ZP_STEP
+        sec
+        sbc #$01
+        and #$01
+        beq :+
+        lda #RESUME_B_ODD
+        jmp :++
+:
+        lda #RESUME_B_EVEN
+:
+        cmp ZP_RESUME_SEEN
+        beq :+
+        lda #14
+        jmp fail_common
+:
+
+        lda ZP_STEP
+        clc
+        adc #B_ATAG
+        ldx #B_SENTINEL
+        ldy #B_YTAG
+        sec
+        php
+        pla
+        and #P_MASK
+        sta tmp_cmp
+        lda tmp_p
+        and #P_MASK
+        cmp tmp_cmp
+        beq :+
+        lda #6
+        jmp fail_common
+:
+        lda tmp_p
+        sta b_last_p
+
         lda ZP_SENTINEL
         cmp #B_SENTINEL
         beq :+
         lda #2
+        jmp fail_canary
+:
+        lda ZP_STEP
+        and #$01
+        beq :+
+        lda #B_SP_ODD
+        jmp :++
+:
+        lda #B_SP_EVEN
+:
+        cmp tmp_sp
+        beq :+
+        lda #15
         jmp fail_canary
 :
         ldx tmp_sp
@@ -471,9 +602,18 @@ yield_validate_b:
         sta b_ctx_y
         lda tmp_p
         sta b_ctx_p
+        lda ZP_STEP
+        and #$01
+        beq :+
+        lda tmp_sp
+        clc
+        adc #$04
+        jmp :++
+:
         lda tmp_sp
         clc
         adc #$02
+:
         sta b_ctx_sp
 
 yield_accept:
@@ -510,24 +650,26 @@ strategy_done:
         sta RESULT_SWITCHES_HI
         lda checks_ok
         sta RESULT_CHECKS_OK
-        lda boundary_irqs
-        sta RESULT_BOUNDARY_IRQ
-        lda body_irqs
-        sta RESULT_BODY_IRQ
-        lda boundary_irqs
+        lda boundary_lo
+        sta RESULT_BOUNDARY_LO
+        lda boundary_hi
+        sta RESULT_BOUNDARY_HI
+        lda body_lo
+        sta RESULT_BODY_LO
+        lda body_hi
+        sta RESULT_BODY_HI
+        lda boundary_lo
         clc
-        adc body_irqs
+        adc body_lo
         sta RESULT_IRQ
-        bne :+
-        lda #9
-        jmp fail_common
-:
-        lda boundary_irqs
+        lda boundary_lo
+        ora boundary_hi
         bne :+
         lda #12
         jmp fail_common
 :
-        lda body_irqs
+        lda body_lo
+        ora body_hi
         bne :+
         lda #13
         jmp fail_common
@@ -577,28 +719,64 @@ fail_common:
 fail_halt:
         jmp fail_halt
 
-; Task A. Entry registers came from record A; the stack marker is pushed into
-; the actively used part of A's relocated page one.
-task_a_entry:
-        dec window_flag
+; Task A. The two resume labels are distinct code, so the resume marker proves
+; which program counter actually ran.
+task_a_resume0:
         sta ZP_SEEN_A
         stx ZP_SEEN_X
         sty ZP_SEEN_Y
-        inc ZP_STEP
+        php
+        pla
+        sta ZP_SEEN_P
+        lda #$00
+        sta window_flag
+        ldx #RESUME_A_EVEN
+        stx ZP_RESUME_SEEN
+        jmp task_a_body
 
+task_a_resume1:
+        sta ZP_SEEN_A
+        stx ZP_SEEN_X
+        sty ZP_SEEN_Y
+        php
+        pla
+        sta ZP_SEEN_P
+        lda #$00
+        sta window_flag
+        ldx #RESUME_A_ODD
+        stx ZP_RESUME_SEEN
+
+task_a_body:
+        inc ZP_STEP
+        lda ZP_STEP
+        and #$01
+        beq :+
+        lda #A_PAD
+        pha
+        lda #A_PAD
+        pha
+:
         lda #A_MARK_LOW
         pha
         lda #A_MARK_HIGH
         pha
 
-        lda #<task_a_resume
+        lda ZP_STEP
+        and #$01
+        bne :+
+        lda #<task_a_resume0
         sta a_ctx_pc
-        lda #>task_a_resume
+        lda #>task_a_resume0
         sta a_ctx_pc+1
-
+        jmp :++
+:
+        lda #<task_a_resume1
+        sta a_ctx_pc
+        lda #>task_a_resume1
+        sta a_ctx_pc+1
+:
         lda #$01
         sta window_flag
-
         lda ZP_STEP
         clc
         adc #A_ATAG
@@ -607,31 +785,64 @@ task_a_entry:
         sec
         jmp yield_core
 
-task_a_resume:
-        jmp task_a_entry
-
-; Task B. Same contract with distinct seed, tag, marker, stack pointer, and
-; resume address.
-task_b_entry:
-        dec window_flag
+; Task B. Same contract with distinct seed, tag, marker, pad, stack pointer,
+; resume markers, and resume addresses.
+task_b_resume0:
         sta ZP_SEEN_A
         stx ZP_SEEN_X
         sty ZP_SEEN_Y
-        inc ZP_STEP
+        php
+        pla
+        sta ZP_SEEN_P
+        lda #$00
+        sta window_flag
+        ldx #RESUME_B_EVEN
+        stx ZP_RESUME_SEEN
+        jmp task_b_body
 
+task_b_resume1:
+        sta ZP_SEEN_A
+        stx ZP_SEEN_X
+        sty ZP_SEEN_Y
+        php
+        pla
+        sta ZP_SEEN_P
+        lda #$00
+        sta window_flag
+        ldx #RESUME_B_ODD
+        stx ZP_RESUME_SEEN
+
+task_b_body:
+        inc ZP_STEP
+        lda ZP_STEP
+        and #$01
+        beq :+
+        lda #B_PAD
+        pha
+        lda #B_PAD
+        pha
+:
         lda #B_MARK_LOW
         pha
         lda #B_MARK_HIGH
         pha
 
-        lda #<task_b_resume
+        lda ZP_STEP
+        and #$01
+        bne :+
+        lda #<task_b_resume0
         sta b_ctx_pc
-        lda #>task_b_resume
+        lda #>task_b_resume0
         sta b_ctx_pc+1
-
+        jmp :++
+:
+        lda #<task_b_resume1
+        sta b_ctx_pc
+        lda #>task_b_resume1
+        sta b_ctx_pc+1
+:
         lda #$01
         sta window_flag
-
         lda ZP_STEP
         clc
         adc #B_ATAG
@@ -640,10 +851,7 @@ task_b_entry:
         sec
         jmp yield_core
 
-task_b_resume:
-        jmp task_b_entry
-
-; Preserve the interrupted task's A, X, and Y completely. Interrupts taken
+; Preserve the interrupted task's A, X, Y, and P completely. Interrupts taken
 ; while window_flag is set are counted as switch-boundary arrivals.
 irq_handler:
         pha
@@ -653,10 +861,16 @@ irq_handler:
         pha
         lda window_flag
         beq irq_body
-        inc boundary_irqs
+        inc boundary_lo
+        bne :+
+        inc boundary_hi
+:
         jmp irq_acknowledge
 irq_body:
-        inc body_irqs
+        inc body_lo
+        bne :+
+        inc body_hi
+:
 irq_acknowledge:
         lda CIA1_ICR
         pla
@@ -670,8 +884,10 @@ current:        .byte $00
 round_index:    .byte $00
 switches_lo:    .byte $00
 switches_hi:    .byte $00
-boundary_irqs:  .byte $00
-body_irqs:      .byte $00
+boundary_lo:    .byte $00
+boundary_hi:    .byte $00
+body_lo:        .byte $00
+body_hi:        .byte $00
 checks_ok:      .byte $00
 checks_bad:     .byte $00
 canary_bad:     .byte $00
@@ -686,6 +902,9 @@ tmp_x:          .byte $00
 tmp_y:          .byte $00
 tmp_p:          .byte $00
 tmp_sp:         .byte $00
+tmp_cmp:        .byte $00
+a_last_p:       .byte $00
+b_last_p:       .byte $00
 
 a_ctx_a:        .byte $00
 a_ctx_x:        .byte $00
@@ -693,9 +912,6 @@ a_ctx_y:        .byte $00
 a_ctx_p:        .byte $00
 a_ctx_sp:       .byte $00
 a_ctx_pc:       .word $0000
-a_disp_a:       .byte $00
-a_disp_x:       .byte $00
-a_disp_y:       .byte $00
 
 b_ctx_a:        .byte $00
 b_ctx_x:        .byte $00
@@ -703,9 +919,6 @@ b_ctx_y:        .byte $00
 b_ctx_p:        .byte $00
 b_ctx_sp:       .byte $00
 b_ctx_pc:       .word $0000
-b_disp_a:       .byte $00
-b_disp_x:       .byte $00
-b_disp_y:       .byte $00
 
 gateway_end:
         .assert gateway_end - gateway_start <= $0700, error, "switch core exceeds common reservation"

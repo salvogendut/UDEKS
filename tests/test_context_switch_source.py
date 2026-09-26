@@ -55,49 +55,70 @@ class ContextSwitchSourceTests(unittest.TestCase):
             "b_ctx_sp:", "b_ctx_pc:",
         ):
             self.assertIn(label, self.gateway)
-        self.assertIn("sta a_ctx_a", self.gateway)
-        self.assertIn("sta b_ctx_a", self.gateway)
         self.assertIn("jmp (a_ctx_pc)", self.gateway)
         self.assertIn("jmp (b_ctx_pc)", self.gateway)
-        self.assertIn("task_a_resume", self.gateway)
-        self.assertIn("task_b_resume", self.gateway)
 
-    def test_tasks_use_distinct_register_stack_and_marker_patterns(self):
-        self.assertIn("a_stack_init            = $ff", self.gateway)
-        self.assertIn("b_stack_init            = $f5", self.gateway)
+    def test_each_task_has_two_distinct_resume_entry_points(self):
+        for label in (
+            "task_a_resume0:", "task_a_resume1:",
+            "task_b_resume0:", "task_b_resume1:",
+        ):
+            self.assertIn(label, self.gateway)
         for constant in (
-            "a_seed_a", "b_seed_a", "a_ytag", "b_ytag", "a_mark_low",
-            "a_mark_high", "b_mark_low", "b_mark_high",
+            "resume_a_even", "resume_a_odd", "resume_b_even", "resume_b_odd",
         ):
             self.assertIn(constant, self.gateway)
+        self.assertIn("zp_resume_seen", self.gateway)
+
+    def test_status_is_captured_before_flags_change_and_restored_last(self):
+        yield_core = self.gateway.split("yield_core:", 1)[1].split(
+            "yield_validate_a:", 1)[0]
+        capture = yield_core.index("php")
+        self.assertLess(capture, yield_core.index("sei"))
+        self.assertLess(capture, yield_core.index("sta tmp_p"))
+        dispatch = self.gateway.split("dispatch_task_a_ready:", 1)[1].split(
+            "dispatch_task_b:", 1)[0]
+        for register_load in ("lda a_ctx_p\n",):
+            self.assertIn(register_load, dispatch)
+        self.assertLess(
+            dispatch.index("ldy a_ctx_y"),
+            dispatch.index("plp"),
+        )
+        self.assertLess(dispatch.index("plp"), dispatch.index("jmp (a_ctx_pc)"))
+
+    def test_validation_uses_independent_expectations(self):
+        for token in (
+            "a_last_p", "b_last_p", "p_mask", "zp_seen_p",
+            "a_sp_odd", "a_sp_even", "b_sp_odd", "b_sp_even",
+            "a_pad", "b_pad",
+        ):
+            self.assertIn(token, self.gateway)
+        # Restored A is checked against a step-derived formula, not a record.
+        self.assertIn("sbc #$01\n        clc\n        adc #a_atag", self.gateway)
+        self.assertIn("sbc #$01\n        clc\n        adc #b_atag", self.gateway)
 
     def test_stack_sentinels_live_in_the_active_stack_region(self):
         self.assertIn("stack_page_base+1,x", self.gateway)
         self.assertIn("stack_page_base+2,x", self.gateway)
         self.assertIn("lda #a_mark_low\n        pha", self.gateway)
         self.assertIn("lda #b_mark_low\n        pha", self.gateway)
-        self.assertIn("task_a_resume:\n        jmp task_a_entry", self.gateway)
-        self.assertIn("task_b_resume:\n        jmp task_b_entry", self.gateway)
-        self.assertIn("adc #$02\n        sta a_ctx_sp", self.gateway)
-        self.assertIn("adc #$02\n        sta b_ctx_sp", self.gateway)
 
-    def test_interrupt_handler_preserves_a_x_and_y(self):
+    def test_interrupt_handler_preserves_a_x_y_and_counts_sixteen_bits(self):
         handler = self.gateway.split("irq_handler:", 1)[1].split(
             "current:", 1)[0]
-        for instruction in (
-            "pha", "txa", "tya", "pla", "tay", "tax", "rti", "lda cia1_icr"
-        ):
+        for instruction in ("pha", "txa", "tya", "pla", "tay", "tax", "rti"):
             self.assertIn(instruction, handler)
-        for name in ("boundary_irqs", "body_irqs", "window_flag"):
+        for name in (
+            "boundary_lo", "boundary_hi", "body_lo", "body_hi",
+            "window_flag",
+        ):
             self.assertIn(name, handler)
 
-    def test_switch_boundary_window_is_marked_and_counted(self):
-        self.assertIn("sta window_flag", self.gateway)
-        self.assertIn("lda window_flag", self.gateway)
-        self.assertIn("inc boundary_irqs", self.gateway)
-        self.assertIn("inc body_irqs", self.gateway)
-        self.assertIn("result_boundary_irq     = result + 22", self.gateway)
-        self.assertIn("result_body_irq         = result + 23", self.gateway)
+    def test_result_publishes_sixteen_bit_interrupt_counters(self):
+        self.assertIn("result_boundary_lo      = result + 22", self.gateway)
+        self.assertIn("result_body_lo          = result + 23", self.gateway)
+        self.assertIn("result_boundary_hi      = result + 24", self.gateway)
+        self.assertIn("result_body_hi          = result + 25", self.gateway)
 
     def test_makefile_builds_the_standalone_prg(self):
         self.assertIn("bench-context-switch", self.makefile)

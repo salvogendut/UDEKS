@@ -1,19 +1,19 @@
 # Context-switch spike results
 
-The standalone context-switch spike was built from the `tasking-0.1` branch and
-run against the two qualified emulators. Both completed the relocation strategy
-with one successful check per switch, no canary failure, and zero page bytes
-moved per switch. Interrupts were observed both inside the marked
-switch-boundary windows and during task execution.
+The corrected standalone context-switch spike (`-r2`) was run against the two
+qualified emulators. Both completed the relocation strategy with one successful
+check per switch, no canary failure, and zero page bytes moved per switch.
+Interrupts were observed both inside the marked switch-boundary windows and
+during task execution; the counters are 16-bit, so the totals are exact.
 
 | Run | Switches | Interrupts | Boundary | Body | Checks | Canary | Page bytes/switch |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| `1986` | 128 | 334 | 170 | 164 | 128/128 | 0 | 0 |
-| VICE 3.10 | 128 | 310 | 203 | 107 | 128/128 | 0 | 0 |
+| `1986` | 128 | 867 | 469 | 398 | 128/128 | 0 | 0 |
+| VICE 3.10 | 128 | 4307 | 2891 | 1416 | 128/128 | 0 | 0 |
 
 The exact image is preserved as
-`bench/artifacts/2026-09-26-context-switch-r1/context-switch.prg`
-(SHA-256 `59d5aae56726299412cd4bc542b7e38d96702dc735c23ae28373648ae345bb0d`).
+`bench/artifacts/2026-09-26-context-switch-r2/context-switch.prg`
+(SHA-256 `8d93a7ac5c795b491cf8aa7f72d1724d987692bf73eb375939430bd7e950b09a`).
 Build and emulator provenance is in that directory's README.
 
 Reproduction:
@@ -38,15 +38,22 @@ Verify the preserved bytes with `cd raw && sha256sum -c SHA256SUMS`.
 
 ## What the records prove
 
-- Each task owns a separate context record; A and B use distinct seed
-  registers, yield tags, stack pointers, stack markers, and resume addresses,
-  so a cross-wired or stale record fails the per-task checks.
-- The stack marker is written into the actively used top of the relocated page
-  one, and the marker bytes are verified after every switch.
-- The interrupt handler saves and restores A, X, and Y, so an interrupt landing
-  at the switch boundary cannot corrupt the task accumulator.
-- Boundary and body interrupt counts both have to be nonzero, and every switch
-  must record a successful check, before the decoder accepts the record.
+- Each task owns a separate context record; A and B use distinct seed and yield
+  registers, stack pointers, parity pads, stack markers, and two alternating
+  resume labels.
+- Restored A/X/Y observations are checked against formulas derived from the
+  current step, not against the record, so a stale or cross-wired record cannot
+  pass.
+- Processor status is captured before any flag-changing instruction, restored
+  after A/X/Y, and compared against a replay of the task tail; the check covers
+  N, V, D, Z, and C.
+- The stack pointer must equal the designated base minus the parity pad and
+  marker, and the marker bytes are read from the actively used top of the
+  relocated page one.
+- The resume marker identifies which of the two distinct resume labels actually
+  executed, so a stale program counter cannot pass.
+- The interrupt handler saves and restores A, X, Y, and P, and the boundary and
+  body counters are both required to be nonzero and exact.
 
 ## Decision input
 

@@ -1,5 +1,9 @@
 # Context-switch spike artifact
 
+This revision was superseded by `../2026-09-26-context-switch-r2/` after review:
+its restored-state checks compared observations only against the same context
+record. It is kept as history; results are recorded from r2.
+
 `context-switch.prg` is the exact standalone spike image qualified on
 2026-09-26 on the `tasking-0.1` branch. It loads at `$2800`, enables top common
 RAM, copies the switch core to `$F800`, and publishes the `CXSW` record at
