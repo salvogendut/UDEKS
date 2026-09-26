@@ -12,6 +12,11 @@ how any of them are dispatched. Context switching, scheduling, and new syscall
 gates are added in later revisions, after the assembly context-switch spike
 selects and qualifies a save/copy strategy.
 
+The C header exposes this ABI as `UDEKS_LIFECYCLE_*` values and
+`udeks_lifecycle_*` calls, deliberately distinct from the loader's
+`UDEKS_TASK_*` record in `include/udeks/task.h`, so one source may include
+both headers.
+
 ## States
 
 Values are the byte stored in the task table and reported by the diagnostic
@@ -41,14 +46,20 @@ apart from slot allocation by `create`, which is itself a distinct operation.
 | 5 | `BLOCK` | `RUNNING` becomes `WAITING` on a validated reason. |
 | 6 | `UNBLOCK` | `WAITING` becomes `RUNNABLE`. |
 | 7 | `STOP` | `RUNNABLE`, `RUNNING`, or `WAITING` becomes `STOPPED`. |
-| 8 | `CONTINUE` | `STOPPED` becomes `RUNNABLE`. |
-| 9 | `EXIT` | `NEW` or `RUNNING` becomes `ZOMBIE`; records status. |
-| 10 | `REAP` | `ZOMBIE` becomes `FREE`; identity is released. |
-| 11 | `CANCEL` | Any live state becomes `ZOMBIE`; records status 0. |
+| 8 | `CONTINUE` | `STOPPED` becomes `RUNNABLE`, or `WAITING` if stopped blocked. |
+| 9 | `EXIT` | `NEW` or `RUNNING` becomes `ZOMBIE`; records exit status. |
+| 10 | `REAP` | `ZOMBIE` becomes `FREE`; the complete slot is cleared. |
+| 11 | `CANCEL` | Any live state becomes `ZOMBIE`; records termination status. |
 
-For `BLOCK` the event argument is a wait reason; for `EXIT` it is the eight-bit
-exit status. Other events ignore the argument. `CREATE` is rejected if passed
-to the generic transition operation.
+For `BLOCK` the event argument is a wait reason; for `EXIT` and `CANCEL` it is
+the eight-bit exit or termination status. Other events ignore the argument.
+`CREATE` is rejected if passed to the generic transition operation.
+
+`STOP` never discards the condition a task is waiting on. A task stopped from
+`WAITING` keeps its wait reason and resumes as `WAITING` on `CONTINUE`; a task
+stopped from `RUNNABLE` or `RUNNING` resumes as `RUNNABLE`. `CANCEL` is the
+abort path: it accepts the same Unix-like result the caller would pass to
+`EXIT`, so `Ctrl+C` records `128 + SIGINT`, normally `130`.
 
 ## Wait reasons
 
@@ -64,6 +75,16 @@ blocking transition.
 | 4 | `Z80` | Waiting for a bounded Z80 worker lease. |
 | 5 | `TERMINAL` | Waiting for terminal ownership. |
 
+## Task flags
+
+Flags are fixed for the lifetime of a slot in ABI 0.1. All other bits are
+reserved and must be zero; `create` rejects unknown bits with `BAD_FLAGS`.
+
+| Bit | Name | Meaning |
+|---:|---|---|
+| 0 | `USER` | Program task rather than an internal kernel participant. |
+| 1 | `PERSISTENT` | Retained across service passes instead of reclaimed on exit. |
+
 ## Transition result codes
 
 Every operation returns an eight-bit result. Zero is success. A rejected
@@ -73,19 +94,28 @@ counter published in the diagnostic record.
 | Value | Name | Meaning |
 |---:|---|---|
 | 0 | `OK` | Transition applied, or a same-task dispatch was a no-op. |
-| 1 | `BAD_ID` | Task id 0 or outside the bounded table. |
+| 1 | `BAD_ID` | Task id 0 or outside the table, or an invalid parent. |
 | 2 | `BAD_STATE` | The event is illegal for the slot's current state. |
 | 3 | `EXISTS` | `CREATE` targeted a slot that is not `FREE`. |
 | 4 | `TABLE_FULL` | Reserved; a fixed id table cannot fill implicitly. |
 | 5 | `BAD_REASON` | `BLOCK` reason was 0 or unknown. |
 | 6 | `BUSY` | `DISPATCH` targeted a task while another one is `RUNNING`. |
 | 7 | `BAD_EVENT` | Event value was 0 or unknown, including `CREATE`. |
+| 8 | `BAD_FLAGS` | `CREATE` flags set a reserved bit. |
 
 ## Bounded table
 
 The initial table has eight slots. Task ids are `1..8`; id `0` means "no
 task". A slot's state is `FREE` until `create` allocates it, so an id is an
 opaque handle and must be validated before every operation.
+
+A nonzero parent must name a different slot whose state is neither `FREE` nor
+`ZOMBIE`; self-parenting, out-of-range parents, and references to free or
+already-reaped slots are rejected with `BAD_ID`.
+
+`REAP` clears the complete slot, and `create` clears it again before
+allocating, so exit status, termination status, dispatch count, parent, flags,
+wait reason, and resume state never leak across slot reuse.
 
 The minimum per-task fields that the scheduler must eventually own are:
 
@@ -132,7 +162,7 @@ move the VIC-IIe shadow without its own boot-chain validation.
 | 7 | 1 | Current running task id; `0` when none |
 | 8 | 1 | Runnable count (`RUNNABLE` plus `RUNNING`) |
 | 9 | 1 | Defined count (every state except `FREE`) |
-| 10 | 1 | Rejected transitions since reset |
+| 10 | 1 | Rejected requests since reset |
 | 11 | 1 | Canary failures since reset |
 | 12 | 2 | Completed dispatches, little-endian |
 | 14 | 1 | Last accepted event value; `0` before the first transition |

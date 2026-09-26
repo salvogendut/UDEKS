@@ -133,7 +133,7 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	bench-context-8502 bench-context-z80 bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
 	boot panic-probe framebuffer-assets user-sources user-programs \
-	check doctor clean help
+	task-state check doctor clean help
 
 all: 8502 z80 z80-asm
 
@@ -150,6 +150,9 @@ user-sources: $(USER_COWSAY_ASM) $(USER_DATE_ASM) $(USER_LS_ASM) $(USER_USH_ASM)
 		$(USER_FILESYSTEM_OBJ) $(USER_POLL_ENTRY_OBJ)
 
 user-programs: $(USER_BOOTFS)
+
+# Compile-only proof that the host-tested lifecycle module builds for cc65.
+task-state: $(BUILD_8502)/task_state.o
 
 8502: $(KERNEL_BIN) $(KERNEL_PRG)
 
@@ -365,6 +368,10 @@ $(BUILD_8502)/service_registry.s: src/kernel/service_registry.c \
 		include/udeks/service.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/task_state.s: src/kernel/task_state.c \
+		include/udeks/task_state.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/hardware_capability.s: src/services/capability/hardware.c \
 		include/udeks/capability.h include/udeks/vdc.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
@@ -526,6 +533,9 @@ $(BUILD_8502)/framebuffer_surface.o: $(BUILD_8502)/framebuffer_surface.s | $(BUI
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/service_registry.o: $(BUILD_8502)/service_registry.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/task_state.o: $(BUILD_8502)/task_state.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/hardware_capability.o: $(BUILD_8502)/hardware_capability.s | $(BUILD_8502)
@@ -1189,6 +1199,7 @@ help:
 		'make framebuffer-assets  Pack the VDC boot-splash source artwork' \
 		'make user-sources  Compile staged user-program C sources' \
 		'make user-programs  Link and package staged UDEX programs' \
+		'make task-state Compile the lifecycle module for cc65 (no link)' \
 		'make bench      Build comparable 8502 and Z80 benchmark images' \
 		'make bench-8502 Build only the 8502 benchmark image' \
 		'make bench-z80  Build only the Z80 benchmark image' \
