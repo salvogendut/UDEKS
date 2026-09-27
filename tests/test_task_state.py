@@ -118,6 +118,10 @@ def compile_library(directory: str) -> ctypes.CDLL:
         ctypes.POINTER(ctypes.c_ubyte)
     ]
     loaded.udeks_lifecycle_publish.restype = None
+    loaded.udeks_lifecycle_bootstrap.argtypes = [
+        ctypes.POINTER(ctypes.c_ubyte)
+    ]
+    loaded.udeks_lifecycle_bootstrap.restype = ctypes.c_ubyte
     return loaded
 
 
@@ -158,6 +162,20 @@ class LifecycleBehaviorTests(unittest.TestCase):
         self.assertEqual(record[4:6], b"\x00\x01")
         self.assertEqual(record[6], 1)
         self.assertEqual(record[15], 0)
+
+    def test_bootstrap_registers_the_persistent_shell_as_running_task_one(self):
+        record = (ctypes.c_ubyte * STATUS_SIZE)()
+        self.assertEqual(self.state.udeks_lifecycle_bootstrap(record), OK)
+        self.assertEqual(self.state.udeks_lifecycle_current(), 1)
+        self.assertEqual(self.state.udeks_lifecycle_get(1), RUNNING)
+        self.assertEqual(self.state.udeks_lifecycle_defined_count(), 1)
+        self.assertEqual(self.state.udeks_lifecycle_runnable_count(), 1)
+        self.assertEqual(bytes(record[:4]), b"UTSK")
+        self.assertEqual(record[7], 1)
+        self.assertEqual(record[8], 1)
+        self.assertEqual(record[9], 1)
+        self.assertEqual(record[12], 1)
+        self.assertEqual(record[14], DISPATCH)
 
     def test_create_validates_ids_slots_and_flags(self):
         self.assertEqual(self.create(1), OK)

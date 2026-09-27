@@ -471,7 +471,7 @@ def probe(args: argparse.Namespace) -> None:
             deadline,
         )
 
-        window, scheduler_page, task_gate = capture_blocks(
+        window, scheduler_page, task_gate, lifecycle = capture_blocks(
             port,
             [
                 (
@@ -482,6 +482,7 @@ def probe(args: argparse.Namespace) -> None:
                 ),
                 (args.work / "scheduler-page.bin", 0x1C00, 0x1FFF, "kernel"),
                 (args.work / "task-gate.bin", 0xFF05, 0xFFCF, "kernel"),
+                (args.work / "lifecycle-status.bin", 0xF110, 0xF11F, "kernel"),
             ],
         )
         expected_page = args.scheduler_page.read_bytes()
@@ -494,6 +495,13 @@ def probe(args: argparse.Namespace) -> None:
             or task_gate[10:0xC0] != expected_gate[10:0xC0]
         ):
             raise SystemExit("scheduler did not install the permanent task gate")
+        if (
+            lifecycle[:7] != b"UTSK\x00\x01\x01"
+            or lifecycle[7:10] != b"\x01\x01\x01"
+            or lifecycle[12:15] != b"\x01\x00\x03"
+            or lifecycle[15] != 0
+        ):
+            raise SystemExit("persistent shell lifecycle bootstrap is invalid")
         shadow = window[:shadow_size]
         nonzero = sum(1 for byte in shadow if byte != 0)
         if nonzero:
@@ -503,8 +511,15 @@ def probe(args: argparse.Namespace) -> None:
         overlay_runtime_size = overlay_end - overlay_start + 1
         if tail[: len(overlay_image)] != overlay_image:
             raise SystemExit("installed scheduler tail differs from linked image")
-        if any(tail[len(overlay_image) : overlay_runtime_size]):
-            raise SystemExit("installed scheduler BSS is not clear")
+        scheduler_bss = tail[len(overlay_image) : overlay_runtime_size]
+        expected_bss = bytearray(len(scheduler_bss))
+        # The installer clears all 71 bytes before init registers the
+        # persistent shell as task 1.  The exact post-bootstrap image proves
+        # that the remaining slots and counters stayed clear.
+        expected_bss[0:8] = bytes((0, 3, 0, 3, 0, 1, 0, 0))
+        expected_bss[64:71] = bytes((1, 0, 0, 3, 1, 1, 0))
+        if scheduler_bss != expected_bss:
+            raise SystemExit("installed scheduler BSS/bootstrap state is invalid")
         preserved_tail = tail[overlay_runtime_size:]
         preserved_preimage = preimage_tail[overlay_runtime_size:]
         if preserved_tail != preserved_preimage:

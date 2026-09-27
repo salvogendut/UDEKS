@@ -9,9 +9,9 @@
         .import _udeks_shell_poll
         .export _udeks_init_service_descriptor
 
-TASK_BANK_RESET         = $ff10
 TASK_BANK_POLL          = $ff13
 PERSISTENT_LOAD         = $f910
+LIFECYCLE_BOOTSTRAP     = $1c1e
 TASK_STATE              = $f285
 USH_STATE               = $f3d9
 
@@ -24,10 +24,12 @@ init_start:
         ldx #>ush_name
         jsr PERSISTENT_LOAD
         bne init_shell_fallback
-        jsr TASK_BANK_RESET
-        jsr TASK_BANK_POLL
+        jsr LIFECYCLE_BOOTSTRAP
 init_shell_fallback:
         jmp _udeks_shell_start
+        ; Preserve the frozen resident/VIC-shadow boundary while replacing
+        ; the former reset+first-poll calls with the scheduler bootstrap gate.
+        .res $03, $ea
 
 init_poll:
         jsr TASK_BANK_POLL

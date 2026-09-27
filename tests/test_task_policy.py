@@ -85,6 +85,10 @@ def compile_library(directory: str) -> ctypes.CDLL:
         ctypes.POINTER(ctypes.c_ubyte)
     ]
     loaded.udeks_lifecycle_publish.restype = None
+    loaded.udeks_lifecycle_bootstrap.argtypes = [
+        ctypes.POINTER(ctypes.c_ubyte)
+    ]
+    loaded.udeks_lifecycle_bootstrap.restype = ctypes.c_ubyte
     loaded.udeks_task_policy_validate.argtypes = [
         ctypes.c_ubyte,
         ctypes.c_ubyte,

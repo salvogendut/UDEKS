@@ -129,6 +129,9 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   gate, and replace that gate with the permanent task gateway before entering
   the kernel. VICE is qualified; `1986` and physical hardware remain the
   acceptance gates for ADR 0012.
+- [x] Register persistent `/bin/ush` as running lifecycle task 1 at startup,
+  publish its `UTSK` state, and retain the proven `$FF13` poll path while the
+  cooperative resume mechanism is introduced.
 - [ ] Implement task creation, exit, yield, sleep, and event wait.
 - [ ] Save and restore the selected compiler runtime and CPU context. A
   compiled C task using the real cc65 software stack is the integration test

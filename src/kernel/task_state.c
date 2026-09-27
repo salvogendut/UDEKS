@@ -374,3 +374,25 @@ void udeks_lifecycle_publish(unsigned char *record)
 #ifdef __CC65__
 #pragma code-name(pop)
 #endif
+
+unsigned char udeks_lifecycle_bootstrap(unsigned char *record)
+{
+    unsigned char result;
+
+    result = udeks_lifecycle_reset();
+    if (result == UDEKS_LIFECYCLE_OK) {
+        result = udeks_lifecycle_create(
+            1u, UDEKS_LIFECYCLE_ID_NONE,
+            UDEKS_LIFECYCLE_FLAG_USER | UDEKS_LIFECYCLE_FLAG_PERSISTENT);
+    }
+    if (result == UDEKS_LIFECYCLE_OK) {
+        result = udeks_lifecycle_apply(
+            1u, UDEKS_LIFECYCLE_EVENT_ADMIT, 0u);
+    }
+    if (result == UDEKS_LIFECYCLE_OK) {
+        result = udeks_lifecycle_apply(
+            1u, UDEKS_LIFECYCLE_EVENT_DISPATCH, 0u);
+    }
+    udeks_lifecycle_publish(record);
+    return result;
+}

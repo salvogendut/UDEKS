@@ -58,6 +58,7 @@ class UserBoundaryTests(unittest.TestCase):
         makefile = (ROOT / "Makefile").read_text()
         config = (ROOT / "cfg/8502-user-bank1.cfg").read_text().lower()
         init = (ROOT / "src/services/init/descriptor.s").read_text().lower()
+        scheduler = (ROOT / "src/scheduler/scheduler.s").read_text().lower()
 
         self.assertIn("udeks_ush_poll", source)
         self.assertIn("udeks_read(UDEKS_STDIN", source)
@@ -72,9 +73,11 @@ class UserBoundaryTests(unittest.TestCase):
         self.assertIn("--entry ush=$(USER_USH_UDEX)", makefile)
         self.assertIn("--flags 0x01", makefile)
         self.assertIn("app: start = $9000", config)
-        self.assertIn("jsr task_bank_reset", init)
         self.assertIn("jsr task_bank_poll", init)
         self.assertIn("jsr persistent_load", init)
+        self.assertIn("jsr lifecycle_bootstrap", init)
+        self.assertIn("jsr $ff10", scheduler)
+        self.assertIn("jmp $ff13", scheduler)
         self.assertIn('.byte "ush", $00', init)
         self.assertIn("sta ush_state", init)
         self.assertNotRegex(

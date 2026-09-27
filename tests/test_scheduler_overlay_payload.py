@@ -59,6 +59,25 @@ class SchedulerOverlayPayloadTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "reaches \\$CE00"):
             build_overlay(b"p", b"t", overlay_map(1, 1, 0x0CE0))
 
+    def test_init_registers_ush_through_the_fixed_overlay_gate(self):
+        scheduler = (ROOT / "src/scheduler/scheduler.s").read_text(
+            encoding="utf-8"
+        ).lower()
+        init = (ROOT / "src/services/init/descriptor.s").read_text(
+            encoding="utf-8"
+        ).lower()
+        self.assertIn(
+            "_udeks_scheduler_lifecycle_bootstrap_gate = $1c1e", scheduler
+        )
+        self.assertIn("jsr _udeks_lifecycle_bootstrap", scheduler)
+        self.assertIn("jsr $ff10", scheduler)
+        self.assertIn("jmp $ff13", scheduler)
+        self.assertIn("lifecycle_bootstrap     = $1c1e", init)
+        load = init.index("jsr persistent_load")
+        bootstrap = init.index("jsr lifecycle_bootstrap", load)
+        self.assertLess(load, bootstrap)
+        self.assertNotIn("jsr task_bank_reset", init)
+
 
 if __name__ == "__main__":
     unittest.main()

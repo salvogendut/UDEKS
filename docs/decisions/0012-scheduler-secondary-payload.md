@@ -6,7 +6,7 @@
 ## Context
 
 The lifecycle state and request-policy modules now link within the frozen
-`$1C00-$1FFF` scheduler page and `$C120-$CEFF` tail. Their tail emits 3,057
+`$1C00-$1FFF` scheduler page and `$C120-$CEFF` tail. Their tail emits 3,164
 bytes and reserves 71 bytes of BSS. The original native autoboot payload has
 only 533 bytes of scatter capacity after all live staging is protected, so it
 cannot deliver this tail without corrupting the bootfs, task loader, common
@@ -44,9 +44,10 @@ The implementation is deliberately incremental:
 No KERNAL entry is retained or called after stage 0. Failure to load or
 validate the secondary payload is a boot-chain failure, never a partial
 scheduler start. VICE qualification covers D71 and D64 cold boot, exact linked
-page/tail installation, cleared scheduler BSS, permanent task-gate replacement,
-VIC shadow equality, and application-slot reuse. The ADR remains proposed
-until the same boot path passes in `1986` and on physical hardware.
+page/tail installation, the exact post-clear task-1 lifecycle BSS image,
+permanent task-gate replacement, VIC shadow equality, and application-slot
+reuse. The ADR remains proposed until the same boot path passes in `1986` and
+on physical hardware.
 
 ## Consequences
 

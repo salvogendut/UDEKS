@@ -1,6 +1,6 @@
 # UDEKS active handover — Tasking 0.1
 
-This is the active implementation plan after commit `92fa636`. It is intended
+This is the active implementation plan as of 2026-09-27. It is intended
 to let a future development session resume without reconstructing the current
 architectural priorities from the commit history. The detailed architecture
 remains in [`docs/PLAN.md`](docs/PLAN.md), the capability gates remain in
@@ -62,8 +62,10 @@ the task model, validate it, and only then remove the replaced special case.
 ## Current implementation status (2026-09-27)
 
 - Step 1 has a versioned lifecycle ABI, host-tested lifecycle state module,
-  and diagnostic/validation seam. The resident task table and its published
-  diagnostic record still need scheduler integration.
+  and diagnostic/validation seam. The installed scheduler now resets the
+  resident task table, registers persistent `/bin/ush` as running task 1, and
+  publishes the resulting `UTSK` record before entering the retained poll
+  path.
 - Step 2 is qualified in `1986`, VICE, and physical C128 hardware; ADR 0008
   freezes relocated page-zero/page-one ownership and the bounded copy
   fallback.
@@ -84,15 +86,16 @@ the task model, validate it, and only then remove the replaced special case.
   lifecycle/scheduler integration. The scheduler stub is only an
   installation/identity probe; it does not schedule tasks.
 - Lifecycle placement is active: `SCHEDOVR` carries the zero-padded 1 KiB
-  scheduler page and the lifecycle/policy tail at `$C120-$CD57`. Stage 0 loads
+  scheduler page and the lifecycle/policy tail at `$C120-$CDC2`. Stage 0 loads
   it into bank 1 with KERNAL `SETBNK`/`LOAD`; a 192-byte one-shot common-RAM
   installer validates and copies it, clears its BSS, and the scheduler entry
   replaces that installer with the permanent task gate. D71/D64 cold boot,
   exact page/tail installation, VIC repaint, and application-slot reuse pass
   in VICE. ADR 0012 remains proposed pending `1986` and physical C128 runs.
 - The next implementation increment is the Task Request ABI 0.3 resident
-  lifecycle handler seam: migrate one operation at a time behind `$CF30/$FF16`,
-  beginning with `YIELD` and `EXIT`, while keeping the 0.2 compatibility path.
+  lifecycle handler and cooperative-resume seam behind `$CF30/$FF16`.
+  `YIELD` must return only after task 1 is selected again, and `EXIT` must
+  never return; keep the 0.2 compatibility path until those invariants pass.
 
 ## Implementation plan
 
@@ -263,8 +266,8 @@ and bank ownership.
 
 ## First concrete change for the next session
 
-Link the task state and request-policy modules into the now-final
-`$1C00-$1FFF` plus `$C120-$CEFF` scheduler layout and migrate one
-operation at a time behind the existing `$CF30` record and frozen `$FF16`
-entry. Start with `YIELD` and nonblocking `WAITPID`, preserving the old poll
-path until a compiled cc65 task has crossed the qualified context-switch path.
+Add the resident Task Request ABI 0.3 dispatch seam and the smallest real
+cooperative resume path behind the existing `$CF30` record and frozen `$FF16`
+entry. Start with `YIELD`, preserving the old poll path until persistent
+`/bin/ush` has yielded and resumed through the qualified context-switch path;
+only then expose non-returning `EXIT` and nonblocking `WAITPID`.

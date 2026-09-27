@@ -121,13 +121,13 @@ sprite with `probe.o`.
 
 The original step-5 scatter handoff remains preserved as historical evidence.
 The production path now delivers the scheduler at `$1C00-$1FFF` and its tail
-at `$C120-$CD57`:
+at `$C120-$CDC2`:
 
 1. link the zero-padded scheduler page and lifecycle/policy tail;
 2. package both in the versioned `SCHEDOVR` side-one PRG;
 3. load it at `$5000` in bank 1 through stage-0 KERNAL `SETBNK`/`LOAD`;
 4. copy it through the exact 192-byte temporary task-gate installer into
-   `$1200-$15FF` and `$C120-$CD57`, validating its magic/checksum and clearing
+   `$1200-$15FF` and `$C120-$CDC2`, validating its magic/checksum and clearing
    the 71-byte BSS;
 4. crt0 clears BSS and the VIC shadow and returns to the fixed `$F7D8` copier;
 5. the 35-byte copier in FINAL copies the page into `$1C00-$1FFF`; the
@@ -144,9 +144,11 @@ write past `$15FF`.
 
 The old `USCT` scatter builder and frozen `$2003` entry remain available for
 compatibility and historical tests, but production boot no longer consumes
-the fragmented holes. The active page is 939 bytes padded to 1 KiB, and the
-tail is 3,057 emitted bytes plus 71 bytes of BSS. D71/D64 cold boots install
-both byte-exactly without touching the `$FFC5` IRQ trampoline.
+the fragmented holes. The active page is 955 bytes padded to 1 KiB, and the
+tail is 3,164 emitted bytes plus 71 bytes of BSS. D71/D64 cold boots install
+both byte-exactly without touching the `$FFC5` IRQ trampoline. After the
+installer clears BSS, the lifecycle bootstrap leaves the exact expected task-1
+state while all unused task slots remain zero.
 
 `bench/results/2026-09-26-scheduler-delivery` preserves the D71 and D64 cold
 boot captures; both equal the linked scheduler image zero-filled to the

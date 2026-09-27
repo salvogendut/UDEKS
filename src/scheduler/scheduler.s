@@ -8,6 +8,8 @@
         .export _scheduler_entry
         .export _udeks_scheduler_init
         .export _udeks_scheduler_tick
+        .export _udeks_scheduler_lifecycle_bootstrap_gate
+        .import _udeks_lifecycle_bootstrap
 
 KERNEL_ENTRY = $2000
 TASK_GATE_SOURCE = $ce00
@@ -40,6 +42,17 @@ _udeks_scheduler_init:
 
 _udeks_scheduler_tick:
         lda #$00
+        rts
+
+_udeks_scheduler_lifecycle_bootstrap_gate:
+        .assert _udeks_scheduler_lifecycle_bootstrap_gate = $1c1e, error, "lifecycle bootstrap gate moved"
+        lda #<$f110
+        ldx #>$f110
+        jsr _udeks_lifecycle_bootstrap
+        bne lifecycle_bootstrap_done
+        jsr $ff10
+        jmp $ff13
+lifecycle_bootstrap_done:
         rts
 
 scheduler_end:

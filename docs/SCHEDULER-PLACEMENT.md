@@ -121,20 +121,26 @@ builds this proof without installing it,
 so the qualified boot image continues to use the scheduler identity stub until
 the tail delivery and request handlers are ready together.
 
-The active link occupies 939 bytes at `$1C00-$1FAA` (zero-padded to a 1 KiB
-delivery page) and 3,128 runtime bytes at `$C120-$CD57` (3,057 emitted plus 71
-BSS), leaving 85 bytes in the page and 424 bytes in the tail. The bridge
+The active link occupies 955 bytes at `$1C00-$1FBA` (zero-padded to a 1 KiB
+delivery page) and 3,235 runtime bytes at `$C120-$CDC2` (3,164 emitted plus 71
+BSS), leaving 69 bytes in the page and 317 bytes in the tail. The bridge
 contract is 26 resident providers: 23
 absolute and three zero-page symbols. Any provider-count, address-class,
 normal/panic parity, or placement drift fails the build.
 
-`SCHEDOVR` now packages the page and 3,057 emitted tail bytes in one versioned
+`SCHEDOVR` now packages the page and 3,164 emitted tail bytes in one versioned
 PRG on side one of both D71 and D64 images. Stage 0 loads it into bank 1 and a
 192-byte one-shot `$FF05-$FFC4` installer copies it only after conflicting boot
 staging has moved. The scheduler entry restores the permanent task gate before
 entering `$2000`; the IRQ trampoline beginning at `$FFC5` is never overwritten.
 VICE qualifies exact installation and both disk formats; ADR 0012 still awaits
 `1986` and physical-hardware acceptance.
+
+The scheduler bootstrap gate at `$1C1E` now creates and dispatches persistent
+`/bin/ush` as task 1 before entering the retained `$FF13` poll path. The live
+probe verifies the exact post-bootstrap 71-byte BSS image: task 1 is running,
+the other seven slots remain clear, and only the expected lifecycle counters
+are set.
 
 ## Proposed bank-0 scheduler region
 
