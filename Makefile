@@ -38,6 +38,7 @@ SCHEDULER_OVERLAY_PAGE_BIN := $(BUILD_8502)/udeks-scheduler-overlay-page.bin
 SCHEDULER_OVERLAY_TAIL_BIN := $(BUILD_8502)/udeks-scheduler-overlay-tail.bin
 SCHEDULER_OVERLAY_MAP := $(BUILD_8502)/udeks-scheduler-overlay.map
 SCHEDULER_OVERLAY_PAYLOAD := $(BUILD_BOOT)/scheduler-overlay.prg
+SCHEDULER_OVERLAY_CONSTANTS := $(BUILD_8502)/scheduler-overlay-delivery.inc
 SCHEDULER_OVERLAY_BRIDGE_ASM := $(BUILD_8502)/scheduler-overlay-bridge.s
 SCHEDULER_OVERLAY_BRIDGE_OBJ := $(BUILD_8502)/scheduler-overlay-bridge.o
 SCHEDULER_RUNTIME_DIR := $(BUILD_8502)/scheduler-runtime
@@ -62,6 +63,8 @@ BOOT_CONSOLE_MAP := $(BUILD_8502)/8502-boot-console.map
 BOOT_CONSOLE_CONSTANTS := $(BUILD_8502)/boot-console-delivery.inc
 BOOT_CONSOLE_INSTALLER_OBJ := $(BUILD_BOOT)/boot-console-installer.o
 BOOT_CONSOLE_INSTALLER_BIN := $(BUILD_BOOT)/boot-console-installer.bin
+SCHEDULER_TAIL_INSTALLER_OBJ := $(BUILD_BOOT)/scheduler-tail-installer.o
+SCHEDULER_TAIL_INSTALLER_BIN := $(BUILD_BOOT)/scheduler-tail-installer.bin
 PANIC_PROBE_CRT0_BIN := $(BUILD_BOOT)/8502-crt0-panic-probe.bin
 PANIC_PROBE_PROBE_BIN := $(BUILD_BOOT)/8502-probe-panic-probe.bin
 KERNEL_DIRECT_BIN := $(BUILD_8502)/udeks-8502-direct.bin
@@ -201,7 +204,7 @@ task-policy: $(BUILD_8502)/task_policy.o
 # The production boot image continues to carry the qualified scheduler stub.
 scheduler-overlay: $(SCHEDULER_OVERLAY_PAGE_BIN) \
 		$(SCHEDULER_OVERLAY_TAIL_BIN) $(SCHEDULER_OVERLAY_MAP) \
-		$(SCHEDULER_OVERLAY_PAYLOAD)
+		$(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS)
 
 # Reference-container qualification: measures the real gateway copies and
 # fails if the placement expectations no longer hold.
@@ -732,6 +735,14 @@ $(BOOT_CONSOLE_INSTALLER_BIN): $(BOOT_CONSOLE_INSTALLER_OBJ) \
 		cfg/8502-boot-console-installer.cfg
 	$(LD65) -C cfg/8502-boot-console-installer.cfg -o $@ $<
 
+$(SCHEDULER_TAIL_INSTALLER_OBJ): src/boot/scheduler-tail-installer.s \
+		$(SCHEDULER_OVERLAY_CONSTANTS) | $(BUILD_BOOT)
+	$(CA65) --cpu 6502 -I $(BUILD_8502) -o $@ $<
+
+$(SCHEDULER_TAIL_INSTALLER_BIN): $(SCHEDULER_TAIL_INSTALLER_OBJ) \
+		cfg/8502-scheduler-tail-installer.cfg
+	$(LD65) -C cfg/8502-scheduler-tail-installer.cfg -o $@ $<
+
 $(BUILD_8502)/time.o: $(BUILD_8502)/time.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -925,10 +936,13 @@ $(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 		$(BUILD_8502)/task_policy.o $(SCHEDULER_RUNTIME_AND_OBJ) \
 		$(SCHEDULER_RUNTIME_ASLAX2_OBJ) $(SCHEDULER_OVERLAY_BRIDGE_OBJ)
 
-$(SCHEDULER_OVERLAY_PAYLOAD): $(SCHEDULER_OVERLAY_TAIL_BIN) \
+$(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS) &: \
+		$(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 		$(SCHEDULER_OVERLAY_MAP) tools/build_scheduler_overlay.py | $(BUILD_BOOT)
 	$(PYTHON) tools/build_scheduler_overlay.py \
-		$(SCHEDULER_OVERLAY_TAIL_BIN) $(SCHEDULER_OVERLAY_MAP) $@
+		$(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
+		$(SCHEDULER_OVERLAY_MAP) $(SCHEDULER_OVERLAY_PAYLOAD) \
+		$(SCHEDULER_OVERLAY_CONSTANTS)
 
 $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(PANIC_PROBE_PROBE_BIN) $(PANIC_PROBE_MAP) &: \
@@ -1353,8 +1367,8 @@ $(STAGE1_GATEWAY_BIN) $(TASK_LOADER_BIN) &: $(BUILD_BOOT)/stage1-gateway.o \
 		-o $(STAGE1_GATEWAY_BIN) $<
 
 $(BUILD_BOOT)/stage1.o: src/boot/stage1.s $(STAGE1_GATEWAY_BIN) \
-		$(VIC_BUSY_SPRITE_BIN) | $(BUILD_BOOT)
-	$(CA65) --cpu 6502 -o $@ $<
+		$(SCHEDULER_OVERLAY_CONSTANTS) | $(BUILD_BOOT)
+	$(CA65) --cpu 6502 -I $(BUILD_8502) -o $@ $<
 
 $(STAGE1_BIN): $(BUILD_BOOT)/stage1.o cfg/8502-stage1.cfg
 	$(LD65) -C cfg/8502-stage1.cfg -o $@ $<
@@ -1364,6 +1378,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(CRT0_BIN) $(PROBE_BIN) $(SCHEDULER_BIN) $(CAPABILITY_BIN) \
 		$(CAPABILITY_INSTALLER_BIN) $(BOOT_CONSOLE_BIN) \
 		$(BOOT_CONSOLE_INSTALLER_BIN) \
+		$(SCHEDULER_TAIL_INSTALLER_BIN) $(VIC_BUSY_SPRITE_BIN) \
 		$(SCHEDULER_OVERLAY_PAYLOAD) \
 		$(KERNEL_MAP) \
 		$(MODULE_BIN) \
@@ -1376,8 +1391,10 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(CRT0_BIN) --probe $(PROBE_BIN) \
-		--scheduler $(SCHEDULER_BIN) --map $(KERNEL_MAP) \
+		--map $(KERNEL_MAP) \
 		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) \
+		--scheduler-tail-installer $(SCHEDULER_TAIL_INSTALLER_BIN) \
+		--busy-sprite $(VIC_BUSY_SPRITE_BIN) \
 		--capability $(CAPABILITY_BIN) \
 		--capability-installer $(CAPABILITY_INSTALLER_BIN) \
 		--boot-console $(BOOT_CONSOLE_BIN) \
@@ -1396,6 +1413,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		$(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) \
 		$(SCHEDULER_BIN) $(CAPABILITY_BIN) $(CAPABILITY_INSTALLER_BIN) \
 		$(BOOT_CONSOLE_BIN) $(BOOT_CONSOLE_INSTALLER_BIN) \
+		$(SCHEDULER_TAIL_INSTALLER_BIN) $(VIC_BUSY_SPRITE_BIN) \
 		$(SCHEDULER_OVERLAY_PAYLOAD) \
 		$(PANIC_PROBE_MAP) $(MODULE_BIN) \
 		$(Z80_BIN) $(USER_BOOTFS) \
@@ -1408,8 +1426,10 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(PANIC_PROBE_CRT0_BIN) \
 		--probe $(PANIC_PROBE_PROBE_BIN) \
-		--scheduler $(SCHEDULER_BIN) --map $(PANIC_PROBE_MAP) \
+		--map $(PANIC_PROBE_MAP) \
 		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) \
+		--scheduler-tail-installer $(SCHEDULER_TAIL_INSTALLER_BIN) \
+		--busy-sprite $(VIC_BUSY_SPRITE_BIN) \
 		--capability $(CAPABILITY_BIN) \
 		--capability-installer $(CAPABILITY_INSTALLER_BIN) \
 		--boot-console $(BOOT_CONSOLE_BIN) \

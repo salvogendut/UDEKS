@@ -41,7 +41,7 @@ EMITTED = {
     "task_request": 265,
     "bootfs_request": 667,
     "task_loader": 1520,
-    "task_gate": 203,
+    "task_gate": 192,
 }
 
 # stage0's last nonzero byte is at $0B3D.
@@ -74,20 +74,20 @@ class BootStagingMapTests(unittest.TestCase):
                 ("staging hole", 0xC409, 0xC4EE),
                 ("staging hole", 0xC78A, 0xC7FF),
                 ("staging hole", 0xCDF0, 0xCDFF),
-                ("staging hole", 0xCECB, 0xCEFF),
+                ("staging hole", 0xCEC0, 0xCEFF),
                 ("boot-sector hole", 0x0B3E, 0x0BFF),
             ],
         )
         total = sum(end - start + 1 for _, start, end in holes)
         largest = max(end - start + 1 for _, start, end in holes)
-        self.assertEqual(total, 1078)
+        self.assertEqual(total, 1089)
         self.assertEqual(largest, 467)
 
     def test_no_realized_boot_only_object_remains_budgeted(self):
         result = analyze(FIXTURE, STAGE0, EMITTED)
         self.assertEqual(result["objects"], {})
         self.assertEqual(result["fits"], {})
-        self.assertEqual(result["hole_total"], 1078)
+        self.assertEqual(result["hole_total"], 1089)
         self.assertEqual(result["largest_hole"], 467)
 
     def test_realized_capability_staging_occupies_the_shadow_prefix(self):
@@ -136,13 +136,13 @@ class BootStagingMapTests(unittest.TestCase):
         self.assertEqual(
             (by_name["boot console installer staging"].start,
              by_name["boot console installer staging"].copied_end),
-            (0x0B40, 0x0BA2),
+            (0x0B50, 0x0BB2),
         )
         holes = free_holes(0xA1E0, 0x0B3D, regions)
-        self.assertIn(("boot-sector hole", 0x0B3E, 0x0B3F), holes)
-        self.assertIn(("boot-sector hole", 0x0BA3, 0x0BFF), holes)
+        self.assertIn(("boot-sector hole", 0x0B3E, 0x0B4F), holes)
+        self.assertIn(("boot-sector hole", 0x0BB3, 0x0BFF), holes)
         self.assertEqual(
-            sum(end - start + 1 for _, start, end in holes), 574
+            sum(end - start + 1 for _, start, end in holes), 585
         )
 
     def test_dead_padding_is_reported_separately(self):
@@ -154,7 +154,7 @@ class BootStagingMapTests(unittest.TestCase):
         self.assertNotIn("bootfs tail staging", padding)
         unowned = {name: end - start + 1 for name, start, end, _ in
                    result["unowned_padding"]}
-        self.assertEqual(unowned["stage-1 code padding"], 21)
+        self.assertEqual(unowned["stage-1 code padding"], 5)
         self.assertEqual(unowned["z80 tail padding"], 105)
 
 

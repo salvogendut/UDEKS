@@ -75,5 +75,5 @@ boot_console_sum:
         .word $0000
 
 boot_console_installer_end:
-        .assert boot_console_installer = $0b40, error, "boot-console installer moved"
-        .assert boot_console_installer_end <= $0c00, error, "boot-console installer exceeds boot page"
+        .assert boot_console_installer = $0b50, error, "boot-console installer moved"
+        .assert boot_console_installer_end <= $0bc0, error, "boot-console installer reaches busy sprite"

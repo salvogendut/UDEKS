@@ -10,6 +10,8 @@ sys.path.insert(0, str(ROOT / "tools"))
 from build_d71 import (
     BOOT_CONSOLE_INSTALLER_ADDRESS,
     BOOT_CONSOLE_SIZE,
+    BUSY_SPRITE_ADDRESS,
+    BUSY_SPRITE_SIZE,
     BOOT_DELIVERY_SIZE,
     BOOTFS_SIZE,
     BOOTFS_TAIL_STAGING_ADDRESS,
@@ -27,6 +29,8 @@ from build_d71 import (
     PAYLOAD_BLOCKS,
     PAYLOAD_SIZE,
     SCATTER_MANIFEST_ADDRESS,
+    SCHEDULER_TAIL_INSTALLER_SIZE,
+    SCHEDULER_TAIL_INSTALLER_STAGING_ADDRESS,
     SECTOR_SIZE,
     TASK_LOADER_STAGING_ADDRESS,
     TASK_LOADER_STAGING_SIZE,
@@ -440,10 +444,50 @@ class BuildD71Tests(unittest.TestCase):
         self.assertEqual(payload[offset : offset + len(gateway)], gateway)
 
     def test_rejects_oversize_task_bank_gateway(self):
-        with self.assertRaisesRegex(ValueError, "203-byte"):
+        with self.assertRaisesRegex(ValueError, "192-byte"):
             build_image(
                 stage0(), b"", b"", b"",
                 task_bank_gateway=bytes(TASK_BANK_GATE_STAGING_SIZE + 1),
+            )
+
+    def test_scheduler_tail_installer_is_staged_in_the_request_gap(self):
+        installer = bytes((index % 255) + 1 for index in range(
+            SCHEDULER_TAIL_INSTALLER_SIZE
+        ))
+        image = build_image(
+            stage0(), b"", b"", b"", scheduler_tail_installer=installer
+        )
+        payload = b"".join(
+            image[
+                sector_offset(track, sector) :
+                sector_offset(track, sector) + SECTOR_SIZE
+            ]
+            for track, sector in list(boot_locations(1 + PAYLOAD_BLOCKS))[1:]
+        )
+        offset = SCHEDULER_TAIL_INSTALLER_STAGING_ADDRESS - 0x1C00
+        self.assertEqual(payload[offset : offset + len(installer)], installer)
+
+    def test_scheduler_tail_installer_requires_the_exact_gate_size(self):
+        with self.assertRaisesRegex(ValueError, "expected 192"):
+            build_image(
+                stage0(), b"", b"", b"",
+                scheduler_tail_installer=bytes(
+                    SCHEDULER_TAIL_INSTALLER_SIZE - 1
+                ),
+            )
+
+    def test_busy_sprite_is_staged_after_the_boot_console_installer(self):
+        sprite = bytes((index % 255) + 1 for index in range(BUSY_SPRITE_SIZE))
+        image = build_image(stage0(), b"", b"", b"", busy_sprite=sprite)
+        sector = image[sector_offset(1, 0) : sector_offset(1, 0) + SECTOR_SIZE]
+        offset = BUSY_SPRITE_ADDRESS - 0x0B00
+        self.assertEqual(sector[offset : offset + len(sprite)], sprite)
+
+    def test_busy_sprite_requires_exactly_63_bytes(self):
+        with self.assertRaisesRegex(ValueError, "expected 63"):
+            build_image(
+                stage0(), b"", b"", b"",
+                busy_sprite=bytes(BUSY_SPRITE_SIZE - 1),
             )
 
     def test_rejects_header_layout_drift(self):

@@ -41,7 +41,7 @@ class SchedulerDeliveryEvidenceTests(unittest.TestCase):
 class SchedulerDeliveryContractTests(unittest.TestCase):
     def test_current_scatter_ceiling_and_all_chunks_are_locked(self):
         _, chunks, ceiling = scheduler_layout(0xAC3E, 0x0B3D, 766)
-        self.assertEqual(ceiling, 766)
+        self.assertEqual(ceiling, 777)
         self.assertEqual(
             chunks,
             [
@@ -50,29 +50,34 @@ class SchedulerDeliveryContractTests(unittest.TestCase):
                 (0xC409, 230),
                 (0xC78A, 118),
                 (0xCDF0, 16),
-                (0xCECB, 53),
+                (0xCEC0, 53),
             ],
         )
-        with self.assertRaisesRegex(ValueError, "deliver at most 766"):
-            scheduler_layout(0xAC3E, 0x0B3D, 767)
+        with self.assertRaisesRegex(ValueError, "deliver at most 777"):
+            scheduler_layout(0xAC3E, 0x0B3D, 778)
 
-    def test_stage1_gathers_before_the_probe_copy_and_copies_after_crt0(self):
+    def test_secondary_installer_runs_before_probe_and_page_copy_follows_crt0(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text(
             encoding="utf-8"
         )
-        gather = stage1.index("jsr $2003")
+        gather = stage1.index("jsr $ff05")
         probe = stage1.index("final_copy_probe_source:")
         install = stage1.index("scheduler_install:")
         self.assertLess(gather, probe)
         self.assertLess(probe, install)
         self.assertIn('.segment "SCHEDINSTALL"', stage1)
         self.assertIn("jmp $1c00", stage1)
+        stage0 = (ROOT / "src/boot/stage0.s").read_text(encoding="utf-8")
+        preload = (ROOT / "src/boot/stage1.s").read_text(encoding="utf-8")
+        self.assertIn("jsr $1fbb", stage0)
+        self.assertIn('.byte "SCHEDOVR"', preload)
+        self.assertIn("jsr $ffd5", preload)
 
     def test_capability_staging_is_excluded_from_scheduler_chunks(self):
         _, chunks, ceiling = scheduler_layout(
             0xA895, 0x0B3D, 297, 967 + 102
         )
-        self.assertEqual(ceiling, 634)
+        self.assertEqual(ceiling, 645)
         self.assertEqual(
             chunks,
             [(0x0B3E, 194), (0xACC2, 23), (0xC409, 80)],

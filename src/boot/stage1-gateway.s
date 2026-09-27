@@ -15,7 +15,7 @@ BOOT_CHAIN_DEST_SUM     = BOOT_CHAIN + 16
 MMU_LCR_KERNEL_IO       = $ff01
 MMU_LCR_KERNEL_FLAT     = $ff02
 MMU_LCR_WORKER_FLAT     = $ff04
-BUSY_SPRITE_SOURCE      = $1fc0
+BUSY_SPRITE_SOURCE      = $0bc0
 VIC_BUSY_TEMPLATE       = $4140
 
         ; This installer remains below $F800 while it replaces the boot-time
@@ -101,14 +101,11 @@ final_copy_request_tail:
         cpy #$09
         bne final_copy_request_tail
 
-        ; Gather and validate the scattered scheduler image into the temporary
-        ; application slot through the fixed kernel entry vector at $2003.
-        ; This runs before the probe copy replaces the boot-sector chunk.
-        jsr $2003
-        beq scheduler_gathered
-scheduler_gather_failed:
-        jmp scheduler_gather_failed
-scheduler_gathered:
+        ; The stage-0 KERNAL load left the versioned scheduler payload in
+        ; bank 1. The one-shot common-RAM installer validates it, copies the
+        ; page to $1200 and the tail to its linked bank-0 home, and clears its
+        ; BSS. The scheduler entry later replaces this temporary gate.
+        jsr $ff05
 
         ; The staged probe moves over the dead boot-sector page; the kernel
         ; runs it from $0B00 during hardware discovery.
@@ -388,16 +385,16 @@ copy_module_tail:
         lda #$00
         sta MMU_LCR_KERNEL_FLAT
 
-        ; Install the bank-1 8502 cooperative-task gate above the MMU register
-        ; hole. Its 203-byte reservation ends immediately before the existing
-        ; CPU-handoff gateway at $FFD0.
+        ; Install the one-shot scheduler-tail loader above the MMU register
+        ; hole. The scheduler entry replaces it with the permanent bank-1
+        ; task gate before entering the kernel.
         ldy #$00
-copy_task_bank_gate:
-        lda $ce00,y
+copy_scheduler_tail_installer:
+        lda $c409,y
         sta $ff05,y
         iny
-        cpy #$cb
-        bne copy_task_bank_gate
+        cpy #$c0
+        bne copy_scheduler_tail_installer
 
         ; Preserve the first installed bootfs-service page in otherwise free
         ; bank-1 RAM. VIC page commits borrow that common page as a transfer
@@ -447,9 +444,9 @@ capability_installed:
         ; The boot-only console composer is staged after the capability
         ; installer. Its one-shot copier occupies the dead boot-sector tail;
         ; it halts after publishing a boot-chain failure if validation fails.
-        ; The later scheduler gather clears only $1200-$15FF, below its
-        ; $1600-$1BA9 runtime home.
-        jsr $0b40
+        ; The scheduler installer uses $1200-$15FF, below its $1600-$1BA9
+        ; runtime home.
+        jsr $0b50
 
         ; The protected $F700 installer can now replace this executing
         ; $F800-$F9FF boot code without stack-page relocation.

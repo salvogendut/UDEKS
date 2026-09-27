@@ -27,7 +27,7 @@ TASK_REQUEST_STAGING_SIZE = 0x0109
 BOOTFS_REQUEST_STAGING_ADDRESS = 0xC4EF
 BOOTFS_REQUEST_STAGING_SIZE = 0x0311
 TASK_BANK_GATE_STAGING_ADDRESS = 0xCE00
-TASK_BANK_GATE_STAGING_SIZE = 0x00CB
+TASK_BANK_GATE_STAGING_SIZE = 0x00C0
 Z80_SIZE = 0x2000
 CRT0_STAGING_ADDRESS = 0xAE00
 CRT0_SIZE = 0x0100
@@ -39,7 +39,11 @@ BOOT_DELIVERY_SIZE = 0x010B
 CAPABILITY_SIZE = 0x03C7
 BOOT_CONSOLE_SIZE = 0x05AA
 BOOT_CONSOLE_DESTINATION = 0x1600
-BOOT_CONSOLE_INSTALLER_ADDRESS = 0x0B40
+BOOT_CONSOLE_INSTALLER_ADDRESS = 0x0B50
+BUSY_SPRITE_ADDRESS = 0x0BC0
+BUSY_SPRITE_SIZE = 63
+SCHEDULER_TAIL_INSTALLER_STAGING_ADDRESS = 0xC409
+SCHEDULER_TAIL_INSTALLER_SIZE = 0x00C0
 SCATTER_MANIFEST_MAX = 7 + 4 * 8
 SCATTER_MANIFEST_ADDRESS = PROBE_STAGING_ADDRESS - SCATTER_MANIFEST_MAX
 SCATTER_TEMP_ADDRESS = 0x1200
@@ -497,6 +501,34 @@ def install_boot_console_installer(
     boot_sector[offset:end] = installer
 
 
+def install_busy_sprite(boot_sector: bytearray, sprite: bytes) -> None:
+    if len(sprite) != BUSY_SPRITE_SIZE:
+        raise ValueError(
+            f"busy sprite is {len(sprite)} bytes; expected {BUSY_SPRITE_SIZE}"
+        )
+    offset = BUSY_SPRITE_ADDRESS - BOOT_SECTOR_BASE
+    end = offset + len(sprite)
+    region = boot_sector[offset:end]
+    if len(region) != len(sprite) or any(region):
+        raise ValueError("busy sprite overlaps boot-sector data")
+    boot_sector[offset:end] = sprite
+
+
+def install_scheduler_tail_installer(
+    kernel: bytearray, installer: bytes
+) -> None:
+    if len(installer) != SCHEDULER_TAIL_INSTALLER_SIZE:
+        raise ValueError(
+            f"scheduler tail installer is {len(installer)} bytes; expected "
+            f"{SCHEDULER_TAIL_INSTALLER_SIZE}"
+        )
+    offset = SCHEDULER_TAIL_INSTALLER_STAGING_ADDRESS - KERNEL_ADDRESS
+    region = kernel[offset : offset + len(installer)]
+    if len(region) != len(installer) or any(region):
+        raise ValueError("scheduler tail installer overlaps staged data")
+    kernel[offset : offset + len(installer)] = installer
+
+
 def install_module(kernel: bytearray, module: bytes) -> None:
     if len(module) > MODULE_STAGING_SIZE:
         raise ValueError(
@@ -598,7 +630,7 @@ def install_bootfs_request_service(kernel: bytearray, service: bytes) -> None:
 
 def install_task_bank_gateway(kernel: bytearray, gateway: bytes) -> None:
     if len(gateway) > TASK_BANK_GATE_STAGING_SIZE:
-        raise ValueError("task-bank gateway exceeds its 203-byte staging area")
+        raise ValueError("task-bank gateway exceeds its 192-byte staging area")
     offset = TASK_BANK_GATE_STAGING_ADDRESS - KERNEL_ADDRESS
     region = kernel[offset : offset + TASK_BANK_GATE_STAGING_SIZE]
     if any(region):
@@ -622,6 +654,8 @@ def build_image(
     boot_console_installer: bytes = b"",
     boot_delivery: bytes = b"",
     scheduler_overlay: bytes = b"",
+    scheduler_tail_installer: bytes = b"",
+    busy_sprite: bytes = b"",
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -646,10 +680,14 @@ def build_image(
     install_module(staged_kernel, module)
     validate_ush(bootfs, ush)
     install_task_request_gateway(staged_kernel, task_request_gateway)
+    if scheduler_tail_installer:
+        install_scheduler_tail_installer(staged_kernel, scheduler_tail_installer)
     install_bootfs_request_service(staged_kernel, bootfs_request_service)
     install_task_loader(staged_kernel, task_loader)
     install_task_bank_gateway(staged_kernel, task_bank_gateway)
     stage0_sector = bytearray(stage0.ljust(SECTOR_SIZE, b"\x00"))
+    if busy_sprite:
+        install_busy_sprite(stage0_sector, busy_sprite)
     delivery_size = len(boot_delivery)
     delivery_end = None if shadow_start is None else shadow_start + delivery_size
     if boot_delivery:
@@ -725,8 +763,10 @@ def main() -> None:
     parser.add_argument("--boot-delivery", type=Path, required=True)
     parser.add_argument("--crt0", type=Path, required=True)
     parser.add_argument("--probe", type=Path, required=True)
-    parser.add_argument("--scheduler", type=Path, required=True)
+    parser.add_argument("--scheduler", type=Path)
     parser.add_argument("--scheduler-overlay", type=Path, required=True)
+    parser.add_argument("--scheduler-tail-installer", type=Path, required=True)
+    parser.add_argument("--busy-sprite", type=Path, required=True)
     parser.add_argument("--capability", type=Path, required=True)
     parser.add_argument("--capability-installer", type=Path, required=True)
     parser.add_argument("--boot-console", type=Path, required=True)
@@ -765,7 +805,7 @@ def main() -> None:
             b"" if args.ush is None else args.ush.read_bytes(),
             args.crt0.read_bytes(),
             args.probe.read_bytes(),
-            args.scheduler.read_bytes(),
+            b"" if args.scheduler is None else args.scheduler.read_bytes(),
             shadow_start_from_map(args.map.read_text(encoding="utf-8")),
             args.capability.read_bytes(),
             args.capability_installer.read_bytes(),
@@ -773,6 +813,8 @@ def main() -> None:
             args.boot_console_installer.read_bytes(),
             args.boot_delivery.read_bytes(),
             args.scheduler_overlay.read_bytes(),
+            args.scheduler_tail_installer.read_bytes(),
+            args.busy_sprite.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

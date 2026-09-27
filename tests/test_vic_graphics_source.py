@@ -136,13 +136,13 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("_udeks_vic_pointer_set_y", source)
         self.assertIn("_udeks_vic_pointer_select_shape", source)
         self.assertIn("sprite_data_end-sprite_data = 63", source)
-        stage1 = (ROOT / "src/boot/stage1.s").read_text(encoding="utf-8")
         loader = (ROOT / "src/boot/stage1-gateway.s").read_text(
             encoding="utf-8"
         )
-        self.assertIn('.incbin "build/assets/24x21-pipe-sprite.vic"', stage1)
-        self.assertIn("busy_sprite_image_end-busy_sprite_image = 63", stage1)
-        self.assertIn("BUSY_SPRITE_SOURCE      = $1fc0", loader)
+        builder = (ROOT / "tools/build_d71.py").read_text(encoding="utf-8")
+        self.assertIn("BUSY_SPRITE_ADDRESS = 0x0BC0", builder)
+        self.assertIn("BUSY_SPRITE_SIZE = 63", builder)
+        self.assertIn("BUSY_SPRITE_SOURCE      = $0bc0", loader)
         self.assertIn("VIC_BUSY_TEMPLATE       = $4140", loader)
         self.assertIn("sta VIC_BUSY_TEMPLATE,y", loader)
         self.assertIn("sprite_swap_gateway:", source)

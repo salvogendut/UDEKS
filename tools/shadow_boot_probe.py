@@ -46,6 +46,8 @@ from build_d71 import (
     PROBE_STAGING_ADDRESS,
     SCATTER_MANIFEST_ADDRESS,
     SCATTER_MANIFEST_MAX,
+    SCHEDULER_TAIL_INSTALLER_SIZE,
+    SCHEDULER_TAIL_INSTALLER_STAGING_ADDRESS,
     boot_locations,
     scheduler_holes,
     sector_offset,
@@ -84,6 +86,16 @@ def shadow_bounds(map_path: Path) -> tuple[int, int]:
         if name == VIC_SHADOW_SEGMENT:
             return start, end - start + 1
     raise ValueError(f"{VIC_SHADOW_SEGMENT} segment is missing from the map")
+
+
+def scheduler_tail_bounds(map_path: Path) -> tuple[int, int, int]:
+    _, segments = parse_map(map_path.read_text(encoding="utf-8"))
+    by_name = {name: (start, end) for name, start, end in segments}
+    if "CODE" not in by_name or "BSS" not in by_name:
+        raise ValueError("scheduler overlay map lacks CODE or BSS")
+    code_start = by_name["CODE"][0]
+    bss_start, bss_end = by_name["BSS"]
+    return code_start, bss_start, bss_end
 
 
 def symbol_addresses(map_path: Path) -> dict[str, int]:
@@ -195,7 +207,12 @@ def patch_payload(
         (
             SCATTER_MANIFEST_ADDRESS,
             SCATTER_MANIFEST_ADDRESS + SCATTER_MANIFEST_MAX - 1,
-        )
+        ),
+        (
+            SCHEDULER_TAIL_INSTALLER_STAGING_ADDRESS,
+            SCHEDULER_TAIL_INSTALLER_STAGING_ADDRESS
+            + SCHEDULER_TAIL_INSTALLER_SIZE - 1,
+        ),
     ]
     occupied.extend(manifest_chunks(image, locations))
     for name, address, expected in (
@@ -246,15 +263,6 @@ def patch_payload(
         staged = preimage[address - shadow_start : address - shadow_start + size]
         if not any(staged):
             raise ValueError(f"{name} staging is empty in the boot payload")
-    if scheduler_size:
-        manifest = preimage[
-            SCATTER_MANIFEST_ADDRESS - shadow_start :
-            SCATTER_MANIFEST_ADDRESS - shadow_start + 4
-        ]
-        if manifest != b"USCT":
-            raise ValueError(
-                "scatter manifest is missing from the boot payload"
-            )
     return preimage
 
 
@@ -417,6 +425,14 @@ def probe(args: argparse.Namespace) -> None:
                 f"sentinel ${address:04X} is not in the reclaimed tail"
             )
     symbols = symbol_addresses(args.map.resolve())
+    overlay_start, overlay_bss, overlay_end = scheduler_tail_bounds(
+        args.scheduler_map.resolve()
+    )
+    overlay_image = args.scheduler_tail.read_bytes()
+    if overlay_start != shadow_start + shadow_size:
+        raise SystemExit("scheduler tail does not begin after VICSHADOW")
+    if len(overlay_image) != overlay_bss - overlay_start:
+        raise SystemExit("scheduler tail image and map disagree")
 
     args.work.mkdir(parents=True, exist_ok=True)
     probe_disk = args.work / "shadow-probe.d71"
@@ -455,7 +471,7 @@ def probe(args: argparse.Namespace) -> None:
             deadline,
         )
 
-        window = capture_blocks(
+        window, scheduler_page, task_gate = capture_blocks(
             port,
             [
                 (
@@ -463,34 +479,56 @@ def probe(args: argparse.Namespace) -> None:
                     shadow_start,
                     tail_end,
                     "kernel",
-                )
+                ),
+                (args.work / "scheduler-page.bin", 0x1C00, 0x1FFF, "kernel"),
+                (args.work / "task-gate.bin", 0xFF05, 0xFFCF, "kernel"),
             ],
-        )[0]
+        )
+        expected_page = args.scheduler_page.read_bytes()
+        if len(expected_page) != 0x0400 or scheduler_page != expected_page:
+            raise SystemExit("installed scheduler page differs from linked image")
+        expected_gate = args.task_bank_gate.read_bytes()
+        if (
+            len(expected_gate) != 0x00C0
+            or task_gate[:6] != expected_gate[:6]
+            or task_gate[10:0xC0] != expected_gate[10:0xC0]
+        ):
+            raise SystemExit("scheduler did not install the permanent task gate")
         shadow = window[:shadow_size]
         nonzero = sum(1 for byte in shadow if byte != 0)
         if nonzero:
             raise SystemExit(f"shadow is not cleared: {nonzero} nonzero bytes")
         tail = window[shadow_size:]
         preimage_tail = preimage[shadow_size:]
-        if tail != preimage_tail:
+        overlay_runtime_size = overlay_end - overlay_start + 1
+        if tail[: len(overlay_image)] != overlay_image:
+            raise SystemExit("installed scheduler tail differs from linked image")
+        if any(tail[len(overlay_image) : overlay_runtime_size]):
+            raise SystemExit("installed scheduler BSS is not clear")
+        preserved_tail = tail[overlay_runtime_size:]
+        preserved_preimage = preimage_tail[overlay_runtime_size:]
+        if preserved_tail != preserved_preimage:
             first = next(
                 offset
                 for offset, (actual, staged) in enumerate(
-                    zip(tail, preimage_tail)
+                    zip(preserved_tail, preserved_preimage)
                 )
                 if actual != staged
             )
             raise SystemExit(
                 f"reclaimed tail changed at "
-                f"${shadow_start + shadow_size + first:04X}: "
-                f"${tail[first]:02X} != ${preimage_tail[first]:02X}"
+                f"${overlay_end + 1 + first:04X}: "
+                f"${preserved_tail[first]:02X} != "
+                f"${preserved_preimage[first]:02X}"
             )
         print(
             f"shadow ${shadow_start:04X}-"
             f"${shadow_start + shadow_size - 1:04X} cleared "
             f"({shadow_size} bytes); reclaimed tail "
             f"${shadow_start + shadow_size:04X}-${tail_end:04X} "
-            f"matches its {len(tail)}-byte preimage"
+            f"contains the {overlay_runtime_size}-byte scheduler overlay; "
+            f"${overlay_end + 1:04X}-${tail_end:04X} matches its "
+            f"{len(preserved_tail)}-byte preimage"
         )
         for path, data in (
             (args.preimage_output, preimage),
@@ -597,6 +635,22 @@ def main() -> None:
     parser.add_argument(
         "--scheduler", type=Path,
         default=ROOT / "build/8502/udeks-scheduler.bin",
+    )
+    parser.add_argument(
+        "--scheduler-map", type=Path,
+        default=ROOT / "build/8502/udeks-scheduler-overlay.map",
+    )
+    parser.add_argument(
+        "--scheduler-tail", type=Path,
+        default=ROOT / "build/8502/udeks-scheduler-overlay-tail.bin",
+    )
+    parser.add_argument(
+        "--scheduler-page", type=Path,
+        default=ROOT / "build/8502/udeks-scheduler-overlay-page.bin",
+    )
+    parser.add_argument(
+        "--task-bank-gate", type=Path,
+        default=ROOT / "build/boot/task-bank-gateway.bin",
     )
     parser.add_argument(
         "--boot-delivery", type=Path,

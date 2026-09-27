@@ -27,11 +27,12 @@ the scheduler gather buffer.
    panic maps must agree on every address and type. The bridge asserts the
    entry, code, rodata, and BSS layout at link time.
 3. Stage the image at `$A718-$ACC1`. A 99-byte one-shot installer at
-   `$0B40-$0BA2` copies the exact image to `$1600`, verifies its 16-bit build
+   `$0B50-$0BB2` copies the exact image to `$1600`, verifies its 16-bit build
    checksum, and publishes a boot-chain failure before halting on mismatch.
 4. Run the console installer after capability installation and before entering
-   the protected final installer. The final installer gathers the scheduler
-   into `$1200-$15FF`, then replaces the complete `$0B00` page with `probe.o`.
+   the protected final installer. The final installer installs the scheduler
+   page through `$1200-$15FF`, then replaces the complete `$0B00` page with
+   `probe.o`.
 5. Reserve the installer's complete linked extent when allocating scheduler
    scatter chunks. Last-nonzero-byte inference is insufficient because a
    valid linked checksum may end in zero bytes.
@@ -49,9 +50,9 @@ the scheduler gather buffer.
   bytes, with 1,024 assigned to the installed scheduler page.
 - Stage-1 COMMON now uses all 512 bytes. FINAL remains 214 bytes and the fixed
   scheduler copier remains 35 bytes at `$F7D8`.
-- Free boot-payload holes total 574 bytes. After the fixed manifest carve and
-  the monotonic boot-sector rule, the scheduler scatter ceiling is 533 bytes;
-  the current 297-byte image fits.
+- The later `SCHEDOVR` path retired production scheduler scatter delivery;
+  the 574-byte/533-byte figures remain historical measurements of the earlier
+  boot path.
 - The direct development image carries the console composer at `$1600`, so it
   preserves the same runtime binding without executing the disk installer.
 
@@ -74,10 +75,11 @@ Until that independent run is recorded, this ADR remains proposed.
 
 - **Keep the object resident.** Rejected: it spends 1,450 scarce bytes on a
   one-shot presentation operation.
-- **Run from `$1200`.** Rejected: it collides with the scheduler gather page.
+- **Run from `$1200`.** Rejected: it collides with the scheduler page buffer.
 - **Use the resident scheduler gather.** Rejected: a contiguous extraction
   source and a direct exact-length copier are simpler, and the scheduler
-  manifest capacity is only 533 bytes after reservations.
+  manifest capacity was only 533 bytes after reservations; this remains a
+  rejection rationale for the historical scatter path.
 - **Infer free boot-sector bytes by scanning for nonzero data.** Rejected: it
   caused a real scheduler checksum failure when the linked installer ended in
   two zero bytes.

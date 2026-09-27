@@ -30,12 +30,16 @@ from build_d71 import (
     BOOTFS_TAIL_SIZE,
     BOOTFS_Z80_SIZE,
     BOOT_CONSOLE_INSTALLER_ADDRESS,
+    BUSY_SPRITE_ADDRESS,
+    BUSY_SPRITE_SIZE,
     CRT0_SIZE,
     CRT0_STAGING_ADDRESS,
     MODULE_STAGING_ADDRESS,
     MODULE_STAGING_SIZE,
     PROBE_SIZE,
     PROBE_STAGING_ADDRESS,
+    SCHEDULER_TAIL_INSTALLER_SIZE,
+    SCHEDULER_TAIL_INSTALLER_STAGING_ADDRESS,
     TASK_BANK_GATE_STAGING_ADDRESS,
     TASK_BANK_GATE_STAGING_SIZE,
     TASK_LOADER_STAGING_ADDRESS,
@@ -55,8 +59,8 @@ from placement_audit import (
 ROOT = Path(__file__).resolve().parents[1]
 BOOT_SECTOR_BASE = 0x0B00
 BOOT_SECTOR_SIZE = 0x0100
-STAGE1_CODE_END = 0x1FAA
-STAGE1_SPRITE_START = 0x1FC0
+STAGE1_CODE_END = 0x1FB5
+STAGE1_PRELOAD_START = 0x1FBB
 Z80_CODE_END = 0xD296
 Z80_STAGING_BASE = 0xD000
 Z80_STAGING_LIMIT = 0xF000
@@ -68,6 +72,8 @@ ARTIFACT_FILES = {
     "capability_installer": "build/boot/capability-installer.bin",
     "boot_console": "build/boot/8502-boot-console.bin",
     "boot_console_installer": "build/boot/boot-console-installer.bin",
+    "scheduler_tail_installer": "build/boot/scheduler-tail-installer.bin",
+    "busy_sprite": "build/assets/24x21-pipe-sprite.vic",
     "bootfs": "build/user/bootfs.img",
     "module": "build/8502/udeks-module.bin",
     "task_request": "build/boot/task-request-gateway.bin",
@@ -258,6 +264,30 @@ def staged_regions(
                 ),
             )
         )
+    if "scheduler_tail_installer" in emitted:
+        installer_size = emitted["scheduler_tail_installer"]
+        regions.append(
+            StagedRegion(
+                "scheduler tail installer staging",
+                SCHEDULER_TAIL_INSTALLER_STAGING_ADDRESS,
+                SCHEDULER_TAIL_INSTALLER_SIZE,
+                SCHEDULER_TAIL_INSTALLER_SIZE,
+                installer_size,
+                "load..scheduler-entry",
+            )
+        )
+    if "busy_sprite" in emitted:
+        sprite_size = emitted["busy_sprite"]
+        regions.append(
+            StagedRegion(
+                "busy sprite staging",
+                BUSY_SPRITE_ADDRESS,
+                BUSY_SPRITE_SIZE,
+                BUSY_SPRITE_SIZE,
+                sprite_size,
+                "load..stage1",
+            )
+        )
     return regions
 
 
@@ -321,7 +351,7 @@ def unowned_padding() -> list[tuple[str, int, int, str]]:
         (
             "stage-1 code padding",
             STAGE1_CODE_END + 1,
-            STAGE1_SPRITE_START - 1,
+            STAGE1_PRELOAD_START - 1,
             "copied dead stage-1 page padding",
         ),
         (

@@ -341,6 +341,9 @@ void udeks_lifecycle_note_canary_failure(void)
     ++canary_failures;
 }
 
+#ifdef __CC65__
+#pragma code-name(push, "SCHEDULER")
+#endif
 void udeks_lifecycle_publish(unsigned char *record)
 {
     unsigned int switches;
@@ -368,3 +371,6 @@ void udeks_lifecycle_publish(unsigned char *record)
     record[UDEKS_UTSK_LAST_EVENT] = last_event;
     record[UDEKS_UTSK_RESERVED] = 0;
 }
+#ifdef __CC65__
+#pragma code-name(pop)
+#endif

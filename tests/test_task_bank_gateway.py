@@ -21,7 +21,7 @@ class TaskBankGatewayTests(unittest.TestCase):
         header = (ROOT / "include/udeks/task_bank.h").read_text().lower()
         gate = (ROOT / "src/8502/task_bank_gateway.s").read_text().lower()
 
-        self.assertIn("taskgate: start = $ff05, size = $00cb", config)
+        self.assertIn("taskgate: start = $ff05, size = $00c0", config)
         self.assertIn("udeks_task_bank_gate_base         0xff05u", header)
         self.assertIn("udeks_task_bank_reset             0xff10u", header)
         self.assertIn("udeks_task_bank_poll              0xff13u", header)
@@ -54,12 +54,16 @@ class TaskBankGatewayTests(unittest.TestCase):
         ):
             self.assertIn(instruction, poll)
 
-    def test_stage1_installs_exact_reserved_gateway_size(self):
+    def test_stage1_installs_temporary_gate_and_scheduler_replaces_it(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
+        scheduler = (ROOT / "src/scheduler/scheduler.s").read_text().lower()
 
-        self.assertIn("lda $ce00,y", stage1)
+        self.assertIn("lda $c409,y", stage1)
         self.assertIn("sta $ff05,y", stage1)
-        self.assertIn("cpy #$cb", stage1)
+        self.assertIn("cpy #$c0", stage1)
+        self.assertIn("task_gate_source = $ce00", scheduler)
+        self.assertIn("task_gate_destination = $ff05", scheduler)
+        self.assertIn("task_gate_size = $c0", scheduler)
 
     def test_stage1_relocates_bootfs_and_installs_runtime_loader(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()

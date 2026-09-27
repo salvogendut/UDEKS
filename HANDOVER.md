@@ -83,15 +83,16 @@ the task model, validate it, and only then remove the replaced special case.
   in place at `$A1E0`, leaving the complete `$C120-$CEFF` tail available for
   lifecycle/scheduler integration. The scheduler stub is only an
   installation/identity probe; it does not schedule tasks.
-- Lifecycle placement has entered integration: `make scheduler-overlay` links
-  the transition engine into the 1 KiB scheduler page and the remaining state,
-  policy, constants, and BSS into `$C120-$CEFF`, using a generated bridge that
-  requires normal/panic resident-runtime parity. This is deliberately a
-  link-only proof; stage 1 still installs the known-good identity stub.
-- The tail-delivery prerequisite has started under ADR 0012: the disk builder
-  emits a checksummed, versioned `SCHEDOVR` PRG on side one of both D71 and
-  D64. The KERNAL `SETBNK`/`LOAD` stage-0 consumer and bounded bank-1-to-bank-0
-  installer are the next increment; the file is not executed or trusted yet.
+- Lifecycle placement is active: `SCHEDOVR` carries the zero-padded 1 KiB
+  scheduler page and the lifecycle/policy tail at `$C120-$CD57`. Stage 0 loads
+  it into bank 1 with KERNAL `SETBNK`/`LOAD`; a 192-byte one-shot common-RAM
+  installer validates and copies it, clears its BSS, and the scheduler entry
+  replaces that installer with the permanent task gate. D71/D64 cold boot,
+  exact page/tail installation, VIC repaint, and application-slot reuse pass
+  in VICE. ADR 0012 remains proposed pending `1986` and physical C128 runs.
+- The next implementation increment is the Task Request ABI 0.3 resident
+  lifecycle handler seam: migrate one operation at a time behind `$CF30/$FF16`,
+  beginning with `YIELD` and `EXIT`, while keeping the 0.2 compatibility path.
 
 ## Implementation plan
 

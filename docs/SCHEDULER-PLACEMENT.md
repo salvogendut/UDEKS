@@ -85,7 +85,7 @@ map above.
 
 `boot_console.o` is also realized reclaim: its exact 1,450-byte image is
 linked separately at `$1600-$1BA9`, staged at `$A718-$ACC1`, and installed by
-a 99-byte checksum gate at `$0B40-$0BA2`. The installer runs before the
+a 99-byte checksum gate at `$0B50-$0BB2`. The installer runs before the
 scheduler gather and is then overwritten by the relocated probe. The
 scheduler allocator reserves the installer's complete linked extent, including
 zero-valued tail bytes. The console image is dead after service startup and
@@ -121,18 +121,20 @@ builds this proof without installing it,
 so the qualified boot image continues to use the scheduler identity stub until
 the tail delivery and request handlers are ready together.
 
-The qualified link occupies 904 bytes at `$1C00-$1F87` and 3,430 runtime bytes
-at `$C120-$CE85` (3,359 emitted plus 71 BSS), leaving 120 bytes in the page and
-122 bytes in the tail. The bridge contract is 26 resident providers: 23
+The active link occupies 939 bytes at `$1C00-$1FAA` (zero-padded to a 1 KiB
+delivery page) and 3,128 runtime bytes at `$C120-$CD57` (3,057 emitted plus 71
+BSS), leaving 85 bytes in the page and 424 bytes in the tail. The bridge
+contract is 26 resident providers: 23
 absolute and three zero-page symbols. Any provider-count, address-class,
 normal/panic parity, or placement drift fails the build.
 
-The first delivery increment packages the 3,359 emitted tail bytes in a
-versioned `SCHEDOVR` PRG on side one of both D71 and D64 images. The ordinary
-disk file is outside the fixed 212-sector native payload, so it does not reuse
-or weaken any staging reservation. ADR 0012 defines the staged bank-1 load and
-bounded installer that will consume it; the current increment proves only the
-deterministic media/file layer and leaves boot behavior unchanged.
+`SCHEDOVR` now packages the page and 3,057 emitted tail bytes in one versioned
+PRG on side one of both D71 and D64 images. Stage 0 loads it into bank 1 and a
+192-byte one-shot `$FF05-$FFC4` installer copies it only after conflicting boot
+staging has moved. The scheduler entry restores the permanent task gate before
+entering `$2000`; the IRQ trampoline beginning at `$FFC5` is never overwritten.
+VICE qualifies exact installation and both disk formats; ADR 0012 still awaits
+`1986` and physical-hardware acceptance.
 
 ## Proposed bank-0 scheduler region
 
@@ -223,7 +225,7 @@ Each step is a separate change with a `1986` and VICE smoke pass:
    `make capability-probe`; VICE and `1986` qualification is preserved in
    `bench/results/2026-09-27-capability-relocation`. ADR 0009 is accepted.
 7. Link `boot_console.o` separately at `$1600`, stage its exact image at
-   `$A718-$ACC1`, install it through the one-shot `$0B40` checksum gate, and
+   `$A718-$ACC1`, install it through the one-shot `$0B50` checksum gate, and
    reserve the installer's full extent from scheduler scatter allocation.
    `make boot-console-probe` verifies exact D71/D64 slot images and safe xwave
    reuse; the independent `1986` pass remains before ADR 0010 acceptance.

@@ -10,9 +10,22 @@
         .export _udeks_scheduler_tick
 
 KERNEL_ENTRY = $2000
+TASK_GATE_SOURCE = $ce00
+TASK_GATE_DESTINATION = $ff05
+TASK_GATE_SIZE = $c0
 
         .segment "SCHEDULER"
 _scheduler_entry:
+        ; The one-shot tail installer temporarily owns TASKGATE. Its source
+        ; at $CE00 remains intact because the installed tail ends below it.
+        ; Replace it before any bank-1 task can enter the public gates.
+        ldy #$00
+install_task_gate:
+        lda TASK_GATE_SOURCE,y
+        sta TASK_GATE_DESTINATION,y
+        iny
+        cpy #TASK_GATE_SIZE
+        bne install_task_gate
         jmp KERNEL_ENTRY
         .assert _scheduler_entry = $1c00, error, "scheduler entry moved"
 
@@ -28,13 +41,6 @@ _udeks_scheduler_init:
 _udeks_scheduler_tick:
         lda #$00
         rts
-
-; Deterministic pattern that spans multiple scatter chunks so cold-boot
-; verification exercises multi-chunk gathering.
-scheduler_pattern:
-        .repeat 280, index
-        .byte (index * 7 + 3) & $FF
-        .endrepeat
 
 scheduler_end:
         .assert scheduler_end <= $2000, error, "scheduler exceeds its page"

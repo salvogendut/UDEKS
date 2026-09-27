@@ -33,15 +33,17 @@ The audit distinguishes three sizes per staged region:
 | capability staging | `$A2EB` | 967 | 967 | 967 | `load..crt0` |
 | capability installer staging | `$A6B2` | 102 | 102 | 102 | `load..crt0` |
 | boot-console staging | `$A718` | 1,450 | 1,450 | 1,450 | `load..crt0` |
-| boot-console installer | `$0B40` | 99 | 99 | 99 | `load..probe-copy` |
+| boot-console installer | `$0B50` | 99 | 99 | 99 | `load..probe-copy` |
+| busy sprite | `$0BC0` | 63 | 63 | 63 | `load..stage1` |
 | probe staging | `$AD00` | 209 | 256 | 256 | `load..crt0` |
 | crt0 staging | `$AE00` | 207 | 256 | 256 | `load..crt0` |
 | bootfs tail staging | `$AF00` | 4,283 | 5,120 | 5,120 | `load..stage1` |
 | module staging | `$BFBB` | 836 | 837 | 837 | `load..stage1` |
 | task request staging | `$C300` | 265 | 265 | 265 | `load..stage1` |
+| scheduler-tail installer | `$C409` | 192 | 192 | 192 | `load..scheduler-entry` |
 | bootfs request staging | `$C4EF` | 667 | 667 | 785 | `load..stage1` |
 | task loader staging | `$C800` | 1,507 | 1,520 | 1,520 | `load..stage1` |
-| task gate staging | `$CE00` | 203 | 203 | 203 | `load..stage1` |
+| task gate staging | `$CE00` | 192 | 192 | 192 | `load..scheduler-entry` |
 
 The bootfs request container is `$0311` bytes, but the final installer copies
 two pages plus `$9B` bytes (`$029B`, the linked reservation), so
@@ -49,21 +51,22 @@ two pages plus `$9B` bytes (`$029B`, the linked reservation), so
 including the module staging bytes, so that overlap yields no hole. The VIC
 shadow spans `$A1E0-$C11F`; the tail runs to the fixed `SYSCALLS` page at
 `$CF00`. The boot sector is `$0B00-$0BFF`, of which stage 0 occupies
-`$0B00-$0B3D`; the boot-console installer reserves `$0B40-$0BA2` even when
-its linked tail bytes are zero.
+`$0B00-$0B4D`; the boot-console installer reserves `$0B50-$0BB2`, and the
+busy sprite occupies `$0BC0-$0BFE` until stage 1 copies it to bank 1.
 
 ## Free payload holes
 
 | Hole | Range | Size | Free |
 |---|---:|---:|---|
 | shadow prefix remainder | `$ACC2-$ACFF` | 62 | after crt0 |
-| shadow mid | `$C409-$C4EE` | 230 | after crt0 |
+| shadow mid | `$C4C9-$C4EE` | 38 | after crt0 |
 | bootfs-request container tail | `$C78A-$C7FF` | 118 | after stage 1 |
 | loader tail | `$CDF0-$CDFF` | 16 | after stage 1 |
-| gate tail | `$CECB-$CEFF` | 53 | after stage 1 |
-| boot-sector gap | `$0B3E-$0B3F` | 2 | after stage 0 |
-| boot-sector tail | `$0BA3-$0BFF` | 93 | after the console installer |
-| **total** | | **574** | largest contiguous **230** |
+| gate tail | `$CEC0-$CEFF` | 64 | after stage 1 |
+| boot-sector gap | `$0B4E-$0B4F` | 2 | after stage 0 |
+| installer/sprite gap | `$0BB3-$0BBF` | 13 | after stage 1 |
+| boot-sector tail | `$0BFF` | 1 | after stage 1 |
+| **total** | | **314** | largest contiguous **118** |
 
 ## Boot-only objects
 
@@ -85,7 +88,7 @@ BSS and occupies `$1600-$1BA9`, above the scheduler gather at `$1200-$15FF`.
 | crt0 staging | `$AECF-$AEFF` | 49 | copied to `$1C00`, dead |
 | module staging | `$C2FF` | 1 | copied to `$E300`, dead |
 | task loader staging | `$CDE3-$CDEF` | 13 | copied to `$F910`, dead |
-| stage-1 code | `$1FAB-$1FBF` | 21 | dead stage-1 page padding |
+| stage-1 code | `$1FB6-$1FBA` | 5 | dead stage-1 page padding |
 | Z80 tail | `$D297-$D2FF` | 105 | copied into bank 1 |
 
 These bytes are copied but not live. They are reported for completeness and
@@ -103,32 +106,33 @@ exist: application slot 1 `$0200-$0AFF` (2,304 bytes) and application slot 2
   installer occupy `$A2EB-$A717`, and the service runs once from application
   slot 1.
 - `boot_console.o` is realized reclaim. Extraction supplies the contiguous
-  `$A718-$ACC1` source; its 99-byte installer runs from `$0B40-$0BA2`, and the
+  `$A718-$ACC1` source; its 99-byte installer runs from `$0B50-$0BB2`, and the
   composer runs once from the upper part of application slot 2.
 - `boot_delivery.o` is realized reclaim. It executes in place from
   `$A1E0-$A2EA` through the fixed `$2003` vector, gathers the scheduler, and is
   then erased by crt0. It needs neither a runtime copy nor resident storage.
 
 The boot-console relocation deliberately does not consume the scheduler's
-`$1200-$15FF` gather buffer. Stage 1 installs the composer first, gathers the
-scheduler second, then overwrites the console installer with `probe.o`.
+`$1200-$15FF` page buffer. Stage 1 installs the composer first, installs the
+secondary scheduler payload second, then overwrites the console installer and
+sprite with `probe.o`.
 
-## Scheduler delivery (implemented 2026-09-26)
+## Scheduler delivery (activated 2026-09-27)
 
-The step-5 handoff delivers the scheduler segment at `$1C00-$1FFF`:
+The original step-5 scatter handoff remains preserved as historical evidence.
+The production path now delivers the scheduler at `$1C00-$1FFF` and its tail
+at `$C120-$CD57`:
 
-1. link the scheduler image (`cfg/8502-scheduler.cfg`);
-2. splice it into the free payload holes with a `USCT` scatter manifest at
-   `$ACD9` (`tools/build_d71.py --scheduler --map`);
-3. gather it into the temporary application slot `$1200-$15FF` before crt0
-   through the fixed `$2003` kernel entry vector; the boot-only `BOOTDELIVERY`
-   routine (267 staged bytes at `$A1E0`, no BSS or cc65 state) validates the
-   manifest magic and the 16-bit image checksum and
-   records failures in the boot-chain record;
+1. link the zero-padded scheduler page and lifecycle/policy tail;
+2. package both in the versioned `SCHEDOVR` side-one PRG;
+3. load it at `$5000` in bank 1 through stage-0 KERNAL `SETBNK`/`LOAD`;
+4. copy it through the exact 192-byte temporary task-gate installer into
+   `$1200-$15FF` and `$C120-$CD57`, validating its magic/checksum and clearing
+   the 71-byte BSS;
 4. crt0 clears BSS and the VIC shadow and returns to the fixed `$F7D8` copier;
-5. the 35-byte copier in FINAL copies the gathered page into `$1C00-$1FFF`
-   and enters the scheduler, whose entry continues through the fixed `$2000`
-   kernel-main vector into `_kernel_main`.
+5. the 35-byte copier in FINAL copies the page into `$1C00-$1FFF`; the
+   scheduler entry restores the permanent `$FF05-$FFC4` task gate and
+   continues through the fixed `$2000` kernel-main vector.
 
 `bench/artifacts/2026-09-26-scheduler-delivery` preserves the sizing
 measurement that motivated the resident gather: the self-contained gather plus
@@ -138,13 +142,11 @@ copier in FINAL, with 15 bytes of headroom. The hardened gather bounds the
 entry count, source ranges, and destination, so a malformed manifest cannot
 write past `$15FF`.
 
-The measured scatter ceiling was **766 bytes** before capability relocation.
-Registering `$A2EB-$ACC1` and the complete `$0B40-$0BA2` installer extent as
-occupied reduces the current ceiling to **533 bytes**. The two-byte
-`$0B3E-$0B3F` gap is below the later installer and is intentionally not used
-by the monotonic scatter allocator. A larger scheduler image is rejected by
-`tools/build_d71.py` until more staging is freed. The 297-byte linked scheduler
-spans three chunks and both cold boots install it byte-exactly.
+The old `USCT` scatter builder and frozen `$2003` entry remain available for
+compatibility and historical tests, but production boot no longer consumes
+the fragmented holes. The active page is 939 bytes padded to 1 KiB, and the
+tail is 3,057 emitted bytes plus 71 bytes of BSS. D71/D64 cold boots install
+both byte-exactly without touching the `$FFC5` IRQ trampoline.
 
 `bench/results/2026-09-26-scheduler-delivery` preserves the D71 and D64 cold
 boot captures; both equal the linked scheduler image zero-filled to the

@@ -49,20 +49,20 @@ class BootConsoleRelocationContractTests(unittest.TestCase):
         self.assertIn("cmp #>BOOT_CONSOLE_IMAGE_CHECKSUM", installer)
         self.assertIn("sta BOOT_CHAIN_FAILURE", installer)
         self.assertIn("sta BOOT_CHAIN_STATE", installer)
-        self.assertIn("boot_console_installer = $0b40", installer)
+        self.assertIn("boot_console_installer = $0b50", installer)
 
     def test_stage1_installs_console_before_probe_overwrites_installer(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text(
             encoding="utf-8"
         )
         capability = stage1.index("jsr CAPABILITY_INSTALLER")
-        console = stage1.index("jsr $0b40", capability)
+        console = stage1.index("jsr $0b50", capability)
         final = stage1.index("jmp final_install", console)
-        gather = stage1.index("jsr $2003")
-        probe = stage1.index("final_copy_probe_source:", gather)
+        install = stage1.index("jsr $ff05")
+        probe = stage1.index("final_copy_probe_source:", install)
         self.assertLess(capability, console)
         self.assertLess(console, final)
-        self.assertLess(gather, probe)
+        self.assertLess(install, probe)
 
     def test_resident_links_use_binding_not_console_object(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
