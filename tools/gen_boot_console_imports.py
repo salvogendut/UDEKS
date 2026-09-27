@@ -28,7 +28,7 @@ RODATA_SIZE = 0x021B
 DESTINATION = 0x1600
 CAPABILITY_SIZE = 0x03C7
 PROBE_STAGING_ADDRESS = 0xAD00
-ACTIVATION_SIZE = 59
+ACTIVATION_SIZE = 45
 
 
 def object_imports(path: str) -> list[tuple[str, str]]:
@@ -171,6 +171,7 @@ def write_constants(
             f"BOOT_CONSOLE_IMAGE_CHECKSUM = ${checksum:04x}",
             f"BOOT_CONSOLE_DESTINATION = ${DESTINATION:04x}",
             f"TASK_SWITCH_ACTIVATION_DESTINATION = ${DESTINATION + len(image):04x}",
+            f"TASK_SWITCH_ACTIVATION_SIZE = ${len(activation):02x}",
             "",
         ]
     )

@@ -33,7 +33,7 @@ The audit distinguishes three sizes per staged region:
 | capability staging | `$A2EB` | 967 | 967 | 967 | `load..crt0` |
 | capability installer staging | `$A6B2` | 102 | 102 | 102 | `load..crt0` |
 | boot-console staging | `$A718` | 1,450 | 1,450 | 1,450 | `load..crt0` |
-| dormant task-switch activator | `$ACC2` | 59 | 59 | 59 | `load..crt0` |
+| dormant task-switch activator | `$ACC2` | 45 | 45 | 45 | `load..crt0` |
 | boot-console installer | `$0B50` | 99 | 99 | 99 | `load..probe-copy` |
 | busy sprite | `$0BC0` | 63 | 63 | 63 | `load..stage1` |
 | probe staging | `$AD00` | 209 | 256 | 256 | `load..crt0` |
@@ -59,7 +59,7 @@ busy sprite occupies `$0BC0-$0BFE` until stage 1 copies it to bank 1.
 
 | Hole | Range | Size | Free |
 |---|---:|---:|---|
-| shadow prefix remainder | `$ACFD-$ACFF` | 3 | after crt0 |
+| shadow prefix remainder | `$ACEF-$ACFF` | 17 | after crt0 |
 | shadow mid | `$C4C9-$C4EE` | 38 | after crt0 |
 | bootfs-request container tail | `$C78A-$C7FF` | 118 | after stage 1 |
 | loader tail | `$CDF0-$CDFF` | 16 | after stage 1 |
@@ -67,11 +67,12 @@ busy sprite occupies `$0BC0-$0BFE` until stage 1 copies it to bank 1.
 | boot-sector gap | `$0B4E-$0B4F` | 2 | after stage 0 |
 | installer/sprite gap | `$0BB3-$0BBF` | 13 | after stage 1 |
 | boot-sector tail | `$0BFF` | 1 | after stage 1 |
-| **total** | | **255** | largest contiguous **118** |
+| **total** | | **269** | largest contiguous **118** |
 
-The boot-console checksum/copy covers one contiguous 1,509-byte delivery:
-the 1,450-byte composer followed by the 59-byte dormant task-switch activator.
-The latter lands at `$1BAA-$1BE4`, after the composer, but is not called until
+The boot-console checksum/copy covers one contiguous 1,495-byte delivery:
+the 1,450-byte composer followed by the 45-byte dormant task-switch activator.
+The latter lands at `$1BAA-$1BD6`, after the composer, and the installer also
+copies it to its `$F68A-$F6B6` common-RAM run address. It is not called until
 the ABI 0.3 `YIELD` path can safely replace the legacy persistent-poll entry.
 The former `$ACD9` scatter-manifest reservation belongs to the superseded
 inline scheduler-delivery path; a build that requests that compatibility path

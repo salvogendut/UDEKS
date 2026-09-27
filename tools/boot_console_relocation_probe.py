@@ -24,6 +24,7 @@ from vice_capture import choose_port
 
 ROOT = Path(__file__).resolve().parents[1]
 BOOT_CONSOLE_ADDRESS = 0x1600
+TASK_ACTIVATION_ADDRESS = 0xF68A
 XWAVE_STATUS_STATE_ADDRESS = 0xF265
 XWAVE_STATUS_RUNNING = 3
 
@@ -53,7 +54,8 @@ def probe_disk(
         )
         before_path = work / f"{disk.suffix[1:]}-slot2-at-start.bin"
         installed_image = boot_console + task_activation
-        before = sp.capture_blocks(
+        common_path = work / f"{disk.suffix[1:]}-task-activation-common.bin"
+        before, common = sp.capture_blocks(
             port,
             [
                 (
@@ -61,13 +63,24 @@ def probe_disk(
                     BOOT_CONSOLE_ADDRESS,
                     BOOT_CONSOLE_ADDRESS + len(installed_image) - 1,
                     "kernel",
-                )
+                ),
+                (
+                    common_path,
+                    TASK_ACTIVATION_ADDRESS,
+                    TASK_ACTIVATION_ADDRESS + len(task_activation) - 1,
+                    "kernel",
+                ),
             ],
-        )[0]
+        )
         before_path.write_bytes(before)
+        common_path.write_bytes(common)
         if before != installed_image:
             raise RuntimeError(
                 f"{disk.name}: slot 2 lacks the console/activation image"
+            )
+        if common != task_activation:
+            raise RuntimeError(
+                f"{disk.name}: common workspace lacks the dormant activator"
             )
         print(f"{disk.name}: console and dormant activation match", flush=True)
 

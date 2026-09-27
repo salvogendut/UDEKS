@@ -144,7 +144,8 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   reservation. Its separate resident binding also fits eight context records
   and callbacks in 314 of the 317 post-overlay bytes, plus six fixed page
   vectors. Their bounded post-startup delivery is now present: the page
-  vectors and 59-byte activator at `$1BAA` are checksum covered, while the
+  vectors and 45-byte activator staged at `$1BAA` and installed at `$F68A` are
+  checksum covered, while the
   appended context/gate images are exact-size build-locked pending the runtime
   activation gate. Activation remains
   disabled until the `$CF30` suspend/resume contract and a real user-space

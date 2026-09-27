@@ -109,7 +109,8 @@ the task model, validate it, and only then remove the replaced special case.
   half of that transition is now built: `SCHEDOVR` ABI 0.3 appends the exact,
   build-locked 225-byte context image and 192-byte gate, its normal checksum
   covers the six fixed page vectors, and the boot-console installer checksums and installs a
-  59-byte post-startup activator at `$1BAA`. The activator remains deliberately
+  45-byte post-startup activator at `$1BAA` and copies it directly to its
+  `$F68A` common-RAM run address. The activator remains deliberately
   dormant because the appended images still need an activation-time integrity
   gate and the current `/bin/ush` entry returns after each poll and
   cannot resume from a persistent task stack. The next increment is the

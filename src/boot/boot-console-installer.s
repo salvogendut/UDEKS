@@ -60,6 +60,16 @@ boot_console_tail_sum_ready:
         lda boot_console_sum+1
         cmp #>BOOT_CONSOLE_IMAGE_CHECKSUM
         bne boot_console_failed
+
+        ; The bytes following the composer are linked for the common VIC
+        ; gateway workspace. Install them there while this one-shot copier is
+        ; still alive; init invokes them only after the composer is dead.
+        ldy #TASK_SWITCH_ACTIVATION_SIZE-1
+copy_task_activation:
+        lda TASK_SWITCH_ACTIVATION_DESTINATION,y
+        sta $f68a,y
+        dey
+        bpl copy_task_activation
         lda #$00
         rts
 

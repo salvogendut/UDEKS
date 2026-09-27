@@ -63,11 +63,15 @@ class TaskSwitchActivationTests(unittest.TestCase):
             encoding="utf-8"
         ).lower()
         self.assertIn("app:    start = $1baa, size = $003e", config)
-        self.assertIn("common: start = $f68a, size = $0030", config)
+        self.assertIn("common: start = $f68a, size = $003e", config)
         self.assertIn("activation_common_end-activation_common <= $30", source)
         self.assertIn("sta mmu_lcr_worker_flat", source)
         self.assertIn("sta mmu_lcr_kernel_io", source)
         self.assertIn("sta task_activation_tail_destination,y", source)
+        installer = (ROOT / "src/boot/boot-console-installer.s").read_text(
+            encoding="utf-8"
+        ).lower()
+        self.assertIn("sta $f68a,y", installer)
 
     def test_delivery_is_dormant_until_yield_is_integrated(self):
         init = (ROOT / "src/services/init/descriptor.s").read_text(
