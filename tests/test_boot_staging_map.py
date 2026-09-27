@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 from boot_staging_map import analyze, free_holes, staged_regions
 
 
-# Synthetic map mirroring the 2026-09-26 layout: the sequential shadow at
+# Synthetic pre-delivery fixture: the then-current sequential shadow at
 # $AB2D-$CA6C, the staged boot pages, and the two remaining boot-only objects.
 FIXTURE = """\
 Modules list:

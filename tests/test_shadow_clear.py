@@ -26,7 +26,7 @@ RAW = ROOT / "bench/results/2026-09-26-shadow-clear/raw"
 SCHEDULER_RAW = ROOT / "bench/results/2026-09-26-scheduler-delivery/raw"
 
 # Layout of the preserved 2026-09-26 build: the sequential 8,000-byte
-# VICSHADOW segment sits at $AC1E-$CB5D, the reclaimed tail runs to the fixed
+# VICSHADOW segment sits at $AC3E-$CB7D, the reclaimed tail runs to the fixed
 # SYSCALLS page at $CF00, boot staging starts at $AF00, the live probe and
 # crt0 staging pages sit at $AD00-$ADFF and $AE00-$AEFF, and the scheduler
 # scatter manifest sits at $ACD9.

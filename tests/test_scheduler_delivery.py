@@ -1,10 +1,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import sys
 import unittest
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+
+from build_d71 import scheduler_layout
+
+
 RAW = ROOT / "bench/results/2026-09-26-scheduler-delivery/raw"
 SCHEDULER_ADDRESS = 0x1C00
 SCHEDULER_PAGE_SIZE = 0x0400
@@ -33,6 +39,23 @@ class SchedulerDeliveryEvidenceTests(unittest.TestCase):
 
 
 class SchedulerDeliveryContractTests(unittest.TestCase):
+    def test_current_scatter_ceiling_and_all_chunks_are_locked(self):
+        _, chunks, ceiling = scheduler_layout(0xAC3E, 0x0B3D, 766)
+        self.assertEqual(ceiling, 766)
+        self.assertEqual(
+            chunks,
+            [
+                (0x0B3E, 194),
+                (0xAC3E, 155),
+                (0xC409, 230),
+                (0xC78A, 118),
+                (0xCDF0, 16),
+                (0xCECB, 53),
+            ],
+        )
+        with self.assertRaisesRegex(ValueError, "deliver at most 766"):
+            scheduler_layout(0xAC3E, 0x0B3D, 767)
+
     def test_stage1_gathers_before_the_probe_copy_and_copies_after_crt0(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text(
             encoding="utf-8"

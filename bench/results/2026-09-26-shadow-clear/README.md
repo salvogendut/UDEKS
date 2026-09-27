@@ -9,13 +9,15 @@ resident:
   invocation as the kernel, staged at `$AE00-$AEFF`, copied over the dead
   stage-1 page by the `$F700` final installer, and entered at `$1C00`. It
   clears BSS and the shadow through `__VICSHADOW_RUN__`/`__VICSHADOW_SIZE__`,
-  then jumps to `_kernel_main` (resident CODE starts at `$2000`).
+  then returns to the fixed `$F7D8` scheduler installer. The installed
+  scheduler enters the kernel through the fixed `$2000` vector (resident
+  CODE starts at `$2006`).
 - `probe.o` is linked into the `$0B00-$0BFF` `BOOTPROBE` page, staged at
   `$AD00-$ADFF`, and copied over the dead boot-sector page by the same final
   installer; the kernel runs its machine probes from `$0B00`.
 
 `tools/shadow_boot_probe.py --vic-compare` copies the D71 and seeds the safe
-zero regions of the staged `$AB2D-$CEFF` image before boot:
+zero regions of the staged `$AC3E-$CEFF` image before boot:
 
 - the newly reclaimed shadow ranges below the live probe staging and
   around the scatter manifest get a nonzero pattern so a clear that starts
@@ -31,7 +33,7 @@ The seed travels with the payload, so stage 1, crt0, and the probe all run
 after it is planted. After boot the probe waits for the console and
 root-terminal readiness bytes and then:
 
-- saves `$AB2D-$CEFF` with the kernel MMU profile and requires all 8,000
+- saves `$AC3E-$CEFF` with the kernel MMU profile and requires all 8,000
   shadow bytes to be zero, including both staging sources;
 - compares all 898 tail bytes against the preserved preimage and requires
   an exact match, so a clear that overruns the shadow cannot pass;
@@ -44,8 +46,8 @@ root-terminal readiness bytes and then:
 
 | File | Bytes | Meaning |
 |---|---:|---|
-| `raw/shadow-preimage.bin` | 9,171 | staged `$AB2D-$CEFF` image after seeding |
-| `raw/shadow-after-boot.bin` | 9,171 | same window after crt0, before any client |
+| `raw/shadow-preimage.bin` | 8,898 | staged `$AC3E-$CEFF` image after seeding |
+| `raw/shadow-after-boot.bin` | 8,898 | same window after crt0, before any client |
 | `raw/shadow-drawn.bin` | 8,000 | bank-0 shadow after `xinit` + `xclock` |
 | `raw/vic-bitmap.bin` | 8,000 | bank-1 `$6000-$7F3F` under the worker profile |
 | `raw/capability-record.bin` | 32 | `HCAP` record from the same D71 under VICE, probe running from `$0B00` |

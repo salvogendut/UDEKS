@@ -43,7 +43,7 @@ The bootfs request container is `$0311` bytes, but the final installer copies
 two pages plus `$9B` bytes (`$029B`, the linked reservation), so
 `$C78A-$C7FF` is free. The bootfs tail copy covers its full container,
 including the module staging bytes, so that overlap yields no hole. The VIC
-shadow spans `$AB2D-$CA6C`; the tail runs to the fixed `SYSCALLS` page at
+shadow spans `$AC3E-$CB7D`; the tail runs to the fixed `SYSCALLS` page at
 `$CF00`. The boot sector is `$0B00-$0BFF`, of which stage 0 occupies
 `$0B00-$0B3D`.
 
