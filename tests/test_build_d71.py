@@ -40,6 +40,7 @@ from build_d71 import (
     build_image,
     d64_compatibility_image,
     sector_offset,
+    install_prg_file,
 )
 from build_bootfs import build_bootfs
 
@@ -78,6 +79,34 @@ class BuildD71Tests(unittest.TestCase):
     def test_d64_compatibility_image_rejects_nonstandard_source(self):
         with self.assertRaisesRegex(ValueError, "standard D71"):
             d64_compatibility_image(bytes(D64_SIZE))
+
+    def test_side_one_prg_round_trips_through_directory_chain(self):
+        image = bytearray(build_image(stage0(), b"", b"", b""))
+        data = bytes(index & 0xFF for index in range(700))
+        install_prg_file(image, "schedovr", data)
+        directory = sector_offset(18, 1) + 2
+        self.assertEqual(image[directory], 0x82)
+        self.assertEqual(image[directory + 3 : directory + 11], b"SCHEDOVR")
+        track = image[directory + 1]
+        sector = image[directory + 2]
+        result = bytearray()
+        blocks = 0
+        while track != 0:
+            offset = sector_offset(track, sector)
+            next_track = image[offset]
+            next_sector = image[offset + 1]
+            used = 254 if next_track else next_sector - 1
+            result += image[offset + 2 : offset + 2 + used]
+            track, sector = next_track, next_sector
+            blocks += 1
+        self.assertEqual(bytes(result), data)
+        self.assertEqual(
+            int.from_bytes(image[directory + 28 : directory + 30], "little"),
+            blocks,
+        )
+        self.assertEqual(
+            bytes(image[:D64_SIZE]), d64_compatibility_image(bytes(image))
+        )
 
     def test_native_payload_round_trips_from_sequential_sectors(self):
         first = b"stage-one"

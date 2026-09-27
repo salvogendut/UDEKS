@@ -124,6 +124,9 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   reclaimed scheduler page/tail overlay and bind to an identical resident
   cc65 runtime in normal and panic maps; installation remains part of the
   lifecycle-handler increment.
+- [x] Package the scheduler tail as a checksummed `SCHEDOVR` side-one PRG in
+  both D71 and D64 images; the stage-0 bank-1 load and bounded tail installer
+  remain before the overlay can become active (ADR 0012).
 - [ ] Implement task creation, exit, yield, sleep, and event wait.
 - [ ] Save and restore the selected compiler runtime and CPU context. A
   compiled C task using the real cc65 software stack is the integration test

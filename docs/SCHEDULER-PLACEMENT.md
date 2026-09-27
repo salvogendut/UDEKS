@@ -127,6 +127,13 @@ at `$C120-$CE85` (3,359 emitted plus 71 BSS), leaving 120 bytes in the page and
 absolute and three zero-page symbols. Any provider-count, address-class,
 normal/panic parity, or placement drift fails the build.
 
+The first delivery increment packages the 3,359 emitted tail bytes in a
+versioned `SCHEDOVR` PRG on side one of both D71 and D64 images. The ordinary
+disk file is outside the fixed 212-sector native payload, so it does not reuse
+or weaken any staging reservation. ADR 0012 defines the staged bank-1 load and
+bounded installer that will consume it; the current increment proves only the
+deterministic media/file layer and leaves boot behavior unchanged.
+
 ## Proposed bank-0 scheduler region
 
 | Use | Budget |

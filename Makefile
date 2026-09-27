@@ -37,6 +37,7 @@ SCHEDULER_BIN := $(BUILD_8502)/udeks-scheduler.bin
 SCHEDULER_OVERLAY_PAGE_BIN := $(BUILD_8502)/udeks-scheduler-overlay-page.bin
 SCHEDULER_OVERLAY_TAIL_BIN := $(BUILD_8502)/udeks-scheduler-overlay-tail.bin
 SCHEDULER_OVERLAY_MAP := $(BUILD_8502)/udeks-scheduler-overlay.map
+SCHEDULER_OVERLAY_PAYLOAD := $(BUILD_BOOT)/scheduler-overlay.prg
 SCHEDULER_OVERLAY_BRIDGE_ASM := $(BUILD_8502)/scheduler-overlay-bridge.s
 SCHEDULER_OVERLAY_BRIDGE_OBJ := $(BUILD_8502)/scheduler-overlay-bridge.o
 SCHEDULER_RUNTIME_DIR := $(BUILD_8502)/scheduler-runtime
@@ -199,7 +200,8 @@ task-policy: $(BUILD_8502)/task_policy.o
 # Link-only proof for lifecycle/policy placement and resident-runtime binding.
 # The production boot image continues to carry the qualified scheduler stub.
 scheduler-overlay: $(SCHEDULER_OVERLAY_PAGE_BIN) \
-		$(SCHEDULER_OVERLAY_TAIL_BIN) $(SCHEDULER_OVERLAY_MAP)
+		$(SCHEDULER_OVERLAY_TAIL_BIN) $(SCHEDULER_OVERLAY_MAP) \
+		$(SCHEDULER_OVERLAY_PAYLOAD)
 
 # Reference-container qualification: measures the real gateway copies and
 # fails if the placement expectations no longer hold.
@@ -923,6 +925,11 @@ $(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 		$(BUILD_8502)/task_policy.o $(SCHEDULER_RUNTIME_AND_OBJ) \
 		$(SCHEDULER_RUNTIME_ASLAX2_OBJ) $(SCHEDULER_OVERLAY_BRIDGE_OBJ)
 
+$(SCHEDULER_OVERLAY_PAYLOAD): $(SCHEDULER_OVERLAY_TAIL_BIN) \
+		$(SCHEDULER_OVERLAY_MAP) tools/build_scheduler_overlay.py | $(BUILD_BOOT)
+	$(PYTHON) tools/build_scheduler_overlay.py \
+		$(SCHEDULER_OVERLAY_TAIL_BIN) $(SCHEDULER_OVERLAY_MAP) $@
+
 $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(PANIC_PROBE_PROBE_BIN) $(PANIC_PROBE_MAP) &: \
 		$(BUILD_8502)/kernel_entry.o \
@@ -1357,6 +1364,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(CRT0_BIN) $(PROBE_BIN) $(SCHEDULER_BIN) $(CAPABILITY_BIN) \
 		$(CAPABILITY_INSTALLER_BIN) $(BOOT_CONSOLE_BIN) \
 		$(BOOT_CONSOLE_INSTALLER_BIN) \
+		$(SCHEDULER_OVERLAY_PAYLOAD) \
 		$(KERNEL_MAP) \
 		$(MODULE_BIN) \
 		$(Z80_BIN) $(USER_BOOTFS) \
@@ -1369,6 +1377,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(CRT0_BIN) --probe $(PROBE_BIN) \
 		--scheduler $(SCHEDULER_BIN) --map $(KERNEL_MAP) \
+		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) \
 		--capability $(CAPABILITY_BIN) \
 		--capability-installer $(CAPABILITY_INSTALLER_BIN) \
 		--boot-console $(BOOT_CONSOLE_BIN) \
@@ -1387,6 +1396,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		$(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) \
 		$(SCHEDULER_BIN) $(CAPABILITY_BIN) $(CAPABILITY_INSTALLER_BIN) \
 		$(BOOT_CONSOLE_BIN) $(BOOT_CONSOLE_INSTALLER_BIN) \
+		$(SCHEDULER_OVERLAY_PAYLOAD) \
 		$(PANIC_PROBE_MAP) $(MODULE_BIN) \
 		$(Z80_BIN) $(USER_BOOTFS) \
 		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
@@ -1399,6 +1409,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--crt0 $(PANIC_PROBE_CRT0_BIN) \
 		--probe $(PANIC_PROBE_PROBE_BIN) \
 		--scheduler $(SCHEDULER_BIN) --map $(PANIC_PROBE_MAP) \
+		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) \
 		--capability $(CAPABILITY_BIN) \
 		--capability-installer $(CAPABILITY_INSTALLER_BIN) \
 		--boot-console $(BOOT_CONSOLE_BIN) \
@@ -1445,6 +1456,7 @@ check:
 		tools/gen_capability_imports.py \
 		tools/gen_boot_console_imports.py \
 		tools/gen_scheduler_overlay_imports.py \
+		tools/build_scheduler_overlay.py \
 		tools/shadow_boot_probe.py \
 		tools/shadow_clear_decode.py \
 		tools/task_state_decode.py \

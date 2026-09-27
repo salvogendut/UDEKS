@@ -55,6 +55,7 @@ BOOTFS_TAIL_SIZE = 0x1400
 BOOTFS_SIZE = BOOTFS_Z80_SIZE + BOOTFS_TAIL_SIZE
 PAYLOAD_SIZE = 0xD400
 PAYLOAD_BLOCKS = PAYLOAD_SIZE // SECTOR_SIZE
+SCHEDULER_OVERLAY_NAME = "SCHEDOVR"
 
 
 def sectors_per_track(track: int) -> int:
@@ -142,6 +143,70 @@ def mark_used(image: bytearray, track: int, sector: int) -> None:
     if image[byte_offset] & mask:
         image[byte_offset] &= ~mask
         image[count_offset] -= 1
+
+
+def sector_is_free(image: bytes, track: int, sector: int) -> bool:
+    if track > D64_TRACK_COUNT:
+        return False
+    bam = sector_offset(18, 0)
+    entry = bam + 4 + (track - 1) * 4
+    return bool(image[entry + 1 + sector // 8] & (1 << (sector & 7)))
+
+
+def install_prg_file(image: bytearray, name: str, data: bytes) -> None:
+    """Install one closed PRG on side one so the D64 view also contains it."""
+    if not data:
+        raise ValueError("disk PRG is empty")
+    try:
+        encoded = name.upper().encode("ascii")
+    except UnicodeEncodeError as error:
+        raise ValueError("disk filename must be ASCII") from error
+    if not 1 <= len(encoded) <= 16:
+        raise ValueError("disk filename must be 1..16 characters")
+    blocks = (len(data) + 253) // 254
+    available: list[tuple[int, int]] = []
+    for track in range(1, D64_TRACK_COUNT + 1):
+        if track == 18:
+            continue
+        for sector in range(sectors_per_track(track)):
+            if sector_is_free(image, track, sector):
+                available.append((track, sector))
+                if len(available) == blocks:
+                    break
+        if len(available) == blocks:
+            break
+    if len(available) != blocks:
+        raise ValueError("side one has no room for disk PRG")
+
+    directory = sector_offset(18, 1)
+    entry = None
+    for slot in range(8):
+        candidate = directory + 2 + slot * 32
+        if image[candidate] == 0:
+            entry = candidate
+            break
+    if entry is None:
+        raise ValueError("first directory sector is full")
+
+    for index, (track, sector) in enumerate(available):
+        chunk = data[index * 254 : (index + 1) * 254]
+        offset = sector_offset(track, sector)
+        if index + 1 < len(available):
+            image[offset] = available[index + 1][0]
+            image[offset + 1] = available[index + 1][1]
+        else:
+            image[offset] = 0
+            image[offset + 1] = len(chunk) + 1
+        image[offset + 2 : offset + 2 + len(chunk)] = chunk
+        mark_used(image, track, sector)
+
+    image[entry] = 0x82
+    image[entry + 1] = available[0][0]
+    image[entry + 2] = available[0][1]
+    image[entry + 3 : entry + 19] = encoded.ljust(16, b"\xa0")
+    # Directory entries begin at sector offset 2; the block count is at
+    # sector-relative bytes 30-31, hence entry-relative bytes 28-29.
+    image[entry + 28 : entry + 30] = blocks.to_bytes(2, "little")
 
 
 def boot_locations(blocks: int):
@@ -556,6 +621,7 @@ def build_image(
     boot_console: bytes = b"",
     boot_console_installer: bytes = b"",
     boot_delivery: bytes = b"",
+    scheduler_overlay: bytes = b"",
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -644,6 +710,10 @@ def build_image(
         offset = sector_offset(track, sector)
         image[offset : offset + SECTOR_SIZE] = data
         mark_used(image, track, sector)
+    if scheduler_overlay:
+        install_prg_file(
+            image, SCHEDULER_OVERLAY_NAME, scheduler_overlay
+        )
     return bytes(image)
 
 
@@ -656,6 +726,7 @@ def main() -> None:
     parser.add_argument("--crt0", type=Path, required=True)
     parser.add_argument("--probe", type=Path, required=True)
     parser.add_argument("--scheduler", type=Path, required=True)
+    parser.add_argument("--scheduler-overlay", type=Path, required=True)
     parser.add_argument("--capability", type=Path, required=True)
     parser.add_argument("--capability-installer", type=Path, required=True)
     parser.add_argument("--boot-console", type=Path, required=True)
@@ -701,6 +772,7 @@ def main() -> None:
             args.boot_console.read_bytes(),
             args.boot_console_installer.read_bytes(),
             args.boot_delivery.read_bytes(),
+            args.scheduler_overlay.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

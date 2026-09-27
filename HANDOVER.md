@@ -88,6 +88,10 @@ the task model, validate it, and only then remove the replaced special case.
   policy, constants, and BSS into `$C120-$CEFF`, using a generated bridge that
   requires normal/panic resident-runtime parity. This is deliberately a
   link-only proof; stage 1 still installs the known-good identity stub.
+- The tail-delivery prerequisite has started under ADR 0012: the disk builder
+  emits a checksummed, versioned `SCHEDOVR` PRG on side one of both D71 and
+  D64. The KERNAL `SETBNK`/`LOAD` stage-0 consumer and bounded bank-1-to-bank-0
+  installer are the next increment; the file is not executed or trusted yet.
 
 ## Implementation plan
 
