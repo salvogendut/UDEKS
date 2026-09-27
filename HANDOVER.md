@@ -410,3 +410,21 @@ Consume the 49-byte reserve only under placement gates; if it cannot cover
 the state, make the service-placement decision explicitly. Do not introduce
 recursive service polls into raster loops. General task allocation, per-task
 VFS/descriptors/CWD, older tasking hardware gates and preemption remain pending.
+
+## Focused cached replay (issue #6 continuation)
+
+The `graphics-bounded-replay` branch builds on the unmerged raster-integration
+branch. The focused xwave damage callback resets its draw cursor and returns;
+normal application polls replay up to four cached vertices each without more
+Z80 rows. An obscured wave still replays synchronously under the manager's
+damage clip to respect windows above it. Host wireframe equivalence, D71/D64
+native drag/cancel/console gates, VICE graphics/app smoke and bitmap equality
+qualify this narrow increment. Last native drag waits for replay completion,
+then checks the worker still recorded exactly 21 leases. Worst tested cached
+drag release falls from 541 to 266 PAL frames, but the image takes additional
+polls to fill: 674 PAL frames after the last release in the saved native
+run. This trades complete-image time for interleaved input. Issue #6 and
+real-hardware qualification remain open. See
+[the bounded-replay note](docs/BOUNDED-REPLAY.md). The next design decision is
+an occlusion-aware, cancellable compositor that bounds damage/chrome/obscured
+client work too; do not treat this focused optimization as that compositor.

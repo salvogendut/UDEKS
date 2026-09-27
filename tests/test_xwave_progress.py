@@ -91,18 +91,31 @@ int main(void) {
             assert(leases-l<=1 && lines-n<=8);
             if (i==10) {
                 unsigned saved_offset=draw_offset;
-                allowed=0; udeks_xwave_poll(); allowed=1;
+                allowed=0; udeks_xwave_poll();
                 assert(draw_offset==saved_offset);
                 memset(actual,0,sizeof actual); paint(1);
                 assert(leases==l || leases==l+1);
                 assert(draw_offset==saved_offset);
+                /* Obscured damage still replays the clipped cached prefix. */
+                allowed=1;
+                memset(actual,0,sizeof actual);
+                unsigned before=lines;
+                paint(1);
+                assert(draw_offset==0 && draw_row==0 && lines==before);
+                /* Focused damage yields to polls without reacquiring rows. */
             }
         }
-        assert(draw_row==21 && leases==21 && commits==147);
+        assert(draw_row==21 && leases==21 && commits>=147);
         check_bitmap();
         unsigned l=leases;
         gx=12; gy=12; gw=220; gh=160;
-        memset(actual,0,sizeof actual); paint(1); check_bitmap();
+        memset(actual,0,sizeof actual); paint(1);
+        assert(draw_row==0 && leases==l);
+        for(unsigned i=0; draw_row<21 && i<200; ++i) {
+            unsigned n=lines; udeks_xwave_poll();
+            assert(lines-n<=8 && leases==l);
+        }
+        assert(draw_row==21); check_bitmap();
         assert(leases==l); /* resize must not recompute mathematical samples */
         udeks_xwave_stop(); assert(!udeks_xwave_is_running());
         udeks_xwave_poll(); assert(leases==l);
