@@ -320,13 +320,18 @@ and bank ownership.
 ## First concrete change for the next session
 
 PR #3 merged the lifecycle foundation as `00060f4`. Work continues on
-`tasking-0.1-event-waits`; [the event-wait proposal](docs/EVENT-WAITS.md)
+`tasking-0.1-event-waits`, tracked by [issue #4](https://github.com/salvogendut/UDEKS/issues/4);
+[the event-wait proposal](docs/EVENT-WAITS.md)
 defines the initial stdin-readiness scope, private request ownership,
 placement constraints, and regression gates. ABI 0.3 is still the only
 advertised request contract; the proposed 0.4 `POLL` is not implemented.
 
-Next add the pure validation/readiness policy and host tests, then measure the
-handler refactor before adding resident code. The fixed handler has no spare
-bytes; the overlay gap has 501. Reuse the private request snapshot used by
-`WAITPID` and `SLEEP`, keep event publication bounded, and ensure cancellation
-and slot reuse cannot publish a stale response.
+The pure `task_poll_policy` validation/readiness model now has 17 host tests
+and a cc65 compile-only target; all 613 tests pass. It emits 515 CODE bytes
+before helper costs and must not be linked wholesale into the 501-byte gap.
+Boot images remain byte-identical and the public version remains 0.3.
+
+Next measure the handler refactor before adding resident code. The fixed
+handler has no spare bytes; the overlay gap has 501. Reuse the private request
+snapshot used by `WAITPID` and `SLEEP`, keep event publication bounded, and
+ensure cancellation and slot reuse cannot publish a stale response.

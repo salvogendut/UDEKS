@@ -231,7 +231,7 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
 	boot panic-probe framebuffer-assets user-sources user-programs \
-	task-state task-policy task-scheduler task-switch-tail task-switch-activation scheduler-overlay placement-check \
+	task-state task-policy task-poll-policy task-scheduler task-switch-tail task-switch-activation scheduler-overlay placement-check \
 	placement-check-guard \
 	shadow-probe capability-probe boot-console-probe task-yield-probe \
 	task-exit-probe task-waitpid-probe task-spawn-loader-probe task-spawn-probe \
@@ -257,6 +257,7 @@ user-programs: $(USER_BOOTFS)
 # Compile-only proof that the host-tested lifecycle modules build for cc65.
 task-state: $(BUILD_8502)/task_state.o
 task-policy: $(BUILD_8502)/task_policy.o
+task-poll-policy: $(BUILD_8502)/task_poll_policy.o
 
 task-scheduler: $(BUILD_8502)/task_scheduler.o
 
@@ -728,6 +729,11 @@ $(BUILD_8502)/task_policy.s: src/kernel/task_policy.c \
 		include/udeks/task_state.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/task_poll_policy.s: src/kernel/task_poll_policy.c \
+		include/udeks/task_poll_policy.h include/udeks/task_request.h \
+		include/udeks/task_state.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/task_scheduler.s: src/kernel/task_scheduler.c \
 		include/udeks/task_scheduler.h include/udeks/task_state.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
@@ -905,6 +911,9 @@ $(BUILD_8502)/task_state.o: $(BUILD_8502)/task_state.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/task_policy.o: $(BUILD_8502)/task_policy.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/task_poll_policy.o: $(BUILD_8502)/task_poll_policy.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/task_scheduler.o: $(BUILD_8502)/task_scheduler.s | $(BUILD_8502)
@@ -2124,6 +2133,7 @@ help:
 		'make user-programs  Link and package staged UDEX programs' \
 		'make task-state Compile the lifecycle module for cc65 (no link)' \
 		'make task-policy Compile the request policy module for cc65 (no link)' \
+		'make task-poll-policy Compile the proposed event-wait policy (no link)' \
 		'make placement-check  Verify the linker-map budget (reference container)' \
 		'make shadow-probe  Qualify the VIC shadow clear in VICE (host flatpak)' \
 		'make task-spawn-loader-probe  Qualify load-only SPAWN delivery in VICE' \

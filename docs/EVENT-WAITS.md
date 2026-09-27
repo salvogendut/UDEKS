@@ -1,9 +1,39 @@
 # Tasking 0.1 — event-wait increment
 
 Status: design proposal, started on `tasking-0.1-event-waits` after PR #3
-merged as `00060f4` on 2026-09-27. No new request operation is implemented or
-advertised by this document. [Task Request ABI 0.3](../abi/task-request.md)
-remains the published contract.
+merged as `00060f4` on 2026-09-27. Tracking issue:
+[#4](https://github.com/salvogendut/UDEKS/issues/4). The pure policy below is
+implemented, but no new resident request operation is installed or advertised.
+[Task Request ABI 0.3](../abi/task-request.md) remains the published contract.
+
+## First increment: pure policy (2026-09-27)
+
+`src/kernel/task_poll_policy.c` implements request validation and a pure
+readiness/deadline decision. Its constants live separately in
+`include/udeks/task_poll_policy.h`; they do not extend the public ABI header.
+Validation preserves the complete input record, every task slot and lifecycle
+counter, and the decoded output on rejection. Protocol-envelope errors take
+precedence over operation/version availability; then caller, descriptor, and
+payload checks apply in that order.
+
+Seventeen host tests cover those rules, 16-bit mask/timeout bounds, all flag
+and descriptor bytes, finite clock wrap, immediate/infinite waits, readiness
+winning a timeout tie, non-consuming observations of actual line-editor
+submissions, and the existing stopped-waiter lifecycle behavior. These tests
+do not claim to qualify resident registration, private response publication,
+or cancellation/slot-reuse cleanup; those remain increment 3.
+
+`make task-poll-policy` compiles and assembles this reference implementation
+without linking it. The reference cc65 build emits 515 CODE bytes with zero
+DATA/RODATA/BSS/zero-page allocation, before any imported helper cost. It does
+not fit wholesale in the 501-byte overlay gap. Keep it as the executable
+specification while measuring the bounded resident implementation/refactor;
+do not add it to the link based on the source file's apparent size.
+
+`make check` passes 613 tests and `make placement-check` passes. Rebuilding
+normal D71/D64 leaves both images and the resident kernel byte-identical to
+the merged baseline. No emulator requalification is claimed for this
+compile-only change, and ABI 0.3 remains advertised.
 
 ## First useful event: stdin readability
 
@@ -68,7 +98,10 @@ and files/device-handle semantics are separate extensions.
 4. Scan at most the eight task slots during the resident service pass. Test
    readiness before deadline expiry when both are observed in the same pass.
    Use the existing wrap-safe 16-bit clock for finite deadlines; never treat
-   the infinite sentinel as an arithmetic deadline.
+   the infinite sentinel as an arithmetic deadline. The signed-difference
+   rule requires examining finite waits within half a clock cycle (32,768
+   logical ticks) of the deadline; arbitrary multi-wrap suspension is not
+   supported by that representation.
 5. Mark a matching private request ready once. Publish its response with its
    original sequence only when that task resumes. Do not read console data
    in the scheduler, allocate memory in an IRQ, or reschedule from an IRQ.

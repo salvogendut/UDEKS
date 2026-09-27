@@ -168,8 +168,10 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   invalid bounds and exact blocking wake/resume ownership.
 - [x] Implement child-only `CANCEL`, including atomic rejection, blocked-wait
   cleanup, status 130 zombies, and subsequent `WAITPID` reap on D71 and D64.
-- [ ] Implement event wait; the first stdin-readiness increment and its
-  placement/test gates are proposed in [EVENT-WAITS.md](EVENT-WAITS.md).
+- [x] Host-test and cc65-compile the proposed stdin-readiness validation and
+  timeout policy without linking or advertising the ABI extension.
+- [ ] Implement resident event wait and migrate shell input waiting;
+  placement/test gates are in [EVENT-WAITS.md](EVENT-WAITS.md) and issue #4.
 - [x] Save and restore the selected compiler runtime and CPU context behind
   the production scheduler gate. Physical-hardware qualification of the
   integrated path remains part of the milestone acceptance gate.

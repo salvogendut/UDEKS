@@ -38,6 +38,7 @@ make z80-asm    # build the independent RASM smoke image
 make boot       # build build/boot/udeks.d71 for native C128 autoboot
 make panic-probe  # build a non-release D71 that injects descriptor failure
 make placement-check  # verify the real linker-map placement budget (reference container)
+make task-poll-policy  # cc65 compile-only event-wait reference policy; not linked
 make framebuffer-assets  # pack the 64x64 XPM as a 512-byte VDC bitmap
 make user-sources  # compile staged user programs separately from the kernel
 make user-programs  # link and package standalone UDEX programs
