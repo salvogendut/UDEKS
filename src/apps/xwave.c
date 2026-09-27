@@ -9,8 +9,6 @@
     (*(volatile unsigned char *)(UDEKS_XWAVE_STATUS_BASE + (offset)))
 #define SAMPLE_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_WAVE_BUFFER_BASE + (offset)))
-#define PREVIOUS_HEIGHT_BYTE(offset) \
-    (*(volatile unsigned char *)(UDEKS_XWAVE_ROW_BASE + (offset)))
 
 #define WINDOW_X             144u
 #define WINDOW_Y              88u
@@ -37,16 +35,17 @@ static unsigned char window_y;
 static unsigned int window_width;
 static unsigned char window_height;
 static unsigned char surface_cache[SURFACE_SAMPLES];
-static unsigned char surface_cache_valid;
-static unsigned int surface_cache_width;
-static unsigned char surface_cache_height;
+static unsigned char sampled_rows;
+static unsigned char draw_row;
+static unsigned char draw_column;
+static unsigned int draw_offset;
+static unsigned char point_row;
+static unsigned char point_column;
+static unsigned int point_offset;
 
 static void increment_counter(unsigned char offset)
 {
-    ++STATUS_BYTE(offset);
-    if (STATUS_BYTE(offset) == 0) {
-        ++STATUS_BYTE(offset + 1u);
-    }
+    ++*(volatile unsigned short *)(UDEKS_XWAVE_STATUS_BASE + offset);
 }
 
 static signed char local_surface_height(
@@ -111,73 +110,53 @@ static int project_y(int local_y)
             PROJECTED_HEIGHT;
 }
 
+/* One vertex and its incoming edges. Heights survive moves and resizes. */
+static void draw_point(void)
+{
+    /* Non-reentrant paint scratch; no callbacks/polls occur inside a line. */
+    static int local_x;
+    static int local_y;
+    static int plot_x;
+    static int plot_y;
+
+    local_x = (int)(point_column + SURFACE_ROWS - 1u - point_row) * 4;
+    local_y = 28 + point_column + point_row;
+    plot_x = project_x(local_x);
+    plot_y = project_y(local_y - (signed char)surface_cache[point_offset]);
+    if (point_column != 0 && (point_row & 1u) == 0) {
+        udeks_vic_bitmap_line(
+            project_x(local_x - 4),
+            project_y(local_y - 1 - (signed char)surface_cache[point_offset - 1u]),
+            plot_x, plot_y, UDEKS_VIC_COLOR_BLACK);
+    }
+    if (point_row != 0 && (point_column & 1u) == 0) {
+        udeks_vic_bitmap_line(
+            project_x(local_x + 4),
+            project_y(local_y - 1 -
+                (signed char)surface_cache[point_offset - SURFACE_COLUMNS]),
+            plot_x, plot_y, UDEKS_VIC_COLOR_BLACK);
+    }
+}
+
 static void paint_wave(unsigned char handle)
 {
-    unsigned char row;
-    unsigned char column;
-    signed char previous_height;
-    int local_x;
-    int local_y;
-    int previous_local_x;
-    int previous_local_y;
-    int plot_x;
-    int plot_y;
-    int previous_x;
-    int previous_y;
-    signed char height;
-    unsigned int cache_offset;
-    unsigned char refresh_samples;
-
     if (udeks_window_get_geometry(
             handle, &window_x, &window_y,
             &window_width, &window_height) != UDEKS_WINDOW_OK) {
         return;
     }
 
-    refresh_samples = surface_cache_valid == 0 ||
-        surface_cache_width != window_width ||
-        surface_cache_height != window_height;
-    cache_offset = 0;
-    for (row = 0; row < SURFACE_ROWS; ++row) {
-        if (refresh_samples != 0) {
-            sample_row(row);
-            for (column = 0; column < SURFACE_COLUMNS; ++column) {
-                surface_cache[cache_offset + column] = SAMPLE_BYTE(column);
-            }
+    /* Damage callbacks restore only the computed prefix, never acquire Z80. */
+    point_offset = 0;
+    for (point_row = 0; point_row < draw_row; ++point_row) {
+        for (point_column = 0; point_column < SURFACE_COLUMNS; ++point_column) {
+            draw_point();
+            ++point_offset;
         }
-        previous_x = 0;
-        previous_y = 0;
-        for (column = 0; column < SURFACE_COLUMNS; ++column) {
-            height = (signed char)surface_cache[cache_offset + column];
-            local_x = (int)(column + SURFACE_ROWS - 1u - row) * 4;
-            local_y = 28 + column + row - height;
-            plot_x = project_x(local_x);
-            plot_y = project_y(local_y);
-            if (column != 0 && (row & 1u) == 0) {
-                udeks_vic_bitmap_line(
-                    previous_x, previous_y, plot_x, plot_y,
-                    UDEKS_VIC_COLOR_BLACK);
-            }
-            if (row != 0 && (column & 1u) == 0) {
-                previous_height =
-                    (signed char)PREVIOUS_HEIGHT_BYTE(column);
-                previous_local_x = local_x + 4;
-                previous_local_y = 27 + column + row - previous_height;
-                udeks_vic_bitmap_line(
-                    project_x(previous_local_x),
-                    project_y(previous_local_y),
-                    plot_x, plot_y, UDEKS_VIC_COLOR_BLACK);
-            }
-            PREVIOUS_HEIGHT_BYTE(column) = (unsigned char)height;
-            previous_x = plot_x;
-            previous_y = plot_y;
-        }
-        cache_offset += SURFACE_COLUMNS;
     }
-    if (refresh_samples != 0) {
-        surface_cache_valid = 1;
-        surface_cache_width = window_width;
-        surface_cache_height = window_height;
+    for (point_column = 0; point_column < draw_column; ++point_column) {
+        draw_point();
+        ++point_offset;
     }
     STATUS_BYTE(8) = window_handle;
     STATUS_BYTE(9) = SURFACE_ROWS;
@@ -210,11 +189,14 @@ unsigned char udeks_xwave_initialize(void)
     STATUS_BYTE(1) = 'W';
     STATUS_BYTE(2) = 'A';
     STATUS_BYTE(3) = 'V';
-    STATUS_BYTE(4) = 3;
+    STATUS_BYTE(4) = 4;
     STATUS_BYTE(5) = UDEKS_XWAVE_READY;
     STATUS_BYTE(7) = 0x07u;
     window_handle = UDEKS_WINDOW_NONE;
-    surface_cache_valid = 0;
+    sampled_rows = 0;
+    draw_row = 0;
+    draw_column = 0;
+    draw_offset = 0;
     return UDEKS_XWAVE_OK;
 }
 
@@ -242,11 +224,44 @@ unsigned char udeks_xwave_start(void)
 
 unsigned char udeks_xwave_poll(void)
 {
+    unsigned char budget;
+    unsigned char column;
     if (STATUS_BYTE(5) != UDEKS_XWAVE_RUNNING) {
         return UDEKS_XWAVE_OK;
     }
     STATUS_BYTE(24) = udeks_window_is_dragging(window_handle);
     STATUS_BYTE(25) = udeks_window_is_focused(window_handle);
+    if (draw_row == SURFACE_ROWS ||
+        udeks_window_begin_paint(window_handle) != UDEKS_WINDOW_OK) {
+        return UDEKS_XWAVE_OK;
+    }
+    /* One bounded worker lease, then at most four vertices per poll. */
+    if (sampled_rows == draw_row) {
+        sample_row(draw_row);
+        for (column = 0; column < SURFACE_COLUMNS; ++column) {
+            surface_cache[draw_offset + column] = SAMPLE_BYTE(column);
+        }
+        ++sampled_rows;
+    }
+    budget = 4;
+    point_row = draw_row;
+    point_column = draw_column;
+    point_offset = draw_offset;
+    do {
+        draw_point();
+        ++point_offset;
+        ++point_column;
+        if (point_column == SURFACE_COLUMNS) {
+            point_column = 0;
+            ++draw_row;
+            break;
+        }
+    } while (--budget != 0);
+    draw_column = point_column;
+    draw_offset = point_offset;
+    udeks_window_end_paint();
+    STATUS_BYTE(26) = draw_row;
+    STATUS_BYTE(27) = draw_column;
     return UDEKS_XWAVE_OK;
 }
 

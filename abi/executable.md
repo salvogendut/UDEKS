@@ -1,5 +1,14 @@
 # UDEKS executable format 0.1
 
+The managed-app call table at `$CF50` now advertises UAPP 0.2, 53 three-byte
+vectors. All 51 UAPP 0.1 vectors and runtime zero-page addresses are unchanged.
+The appended `$CFF9` `udeks_window_begin_paint(handle)` validates a topmost,
+non-dragged window and clips drawing to its interior; `$CFFC`
+`udeks_window_end_paint()` resets the clip and commits dirty bitmap pages.
+Callers must pair a successful begin with end before returning to service
+polling; these are not re-entrant compositor entry points. New xwave images
+require UAPP 0.2; old managed images remain compatible with the new kernel.
+
 UDEKS executables use a compiler-neutral 16-byte header followed immediately
 by a flat linked image. Multi-byte fields are little-endian. Format 0.1 is a
 fixed-address bootstrap format: it deliberately has no relocation records,

@@ -1,6 +1,6 @@
 ; SPDX-License-Identifier: GPL-3.0-or-later
 ;
-; Link-time names for the fixed UAPP 0.1 table. No private resident symbol is
+; Link-time names for the append-only UAPP 0.2 table. No private resident symbol is
 ; imported by a graphical UDEX image.
 
         .setcpu "6502"
@@ -95,3 +95,6 @@ tosumoda0   = $cfed
 tosumula0   = $cff0
 tosumulax   = $cff3
 addeqysp    = $cff6
+.export _udeks_window_begin_paint, _udeks_window_end_paint
+_udeks_window_begin_paint = $cff9
+_udeks_window_end_paint = $cffc

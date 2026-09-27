@@ -52,8 +52,9 @@ _udeks_keyboard_scan:
         sta saved_ddra
         lda CIA1_DDRB
         sta saved_ddrb
-        lda VIC_KEYBOARD_SELECT
-        sta saved_vic_select
+        ; The scan exits with the selector idle ($ff), never this snapshot.
+        ; Keep three bytes here to balance the bounded-paint commit call.
+        .res 3, $ea
 
         lda #$ff
         sta CIA1_DDRA

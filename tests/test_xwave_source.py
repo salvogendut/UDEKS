@@ -21,7 +21,7 @@ class XwaveSourceTests(unittest.TestCase):
         self.assertIn("udeks_window_is_dragging(window_handle)", source)
         self.assertIn("udeks_window_is_focused(window_handle)", source)
         self.assertIn("surface_cache[SURFACE_SAMPLES]", source)
-        self.assertIn("if (refresh_samples != 0)", source)
+        self.assertIn("if (sampled_rows == draw_row)", source)
 
     def test_computation_uses_bounded_z80_batches_and_8502_fallback(self):
         source = (ROOT / "src/apps/xwave.c").read_text(encoding="utf-8")
@@ -31,10 +31,10 @@ class XwaveSourceTests(unittest.TestCase):
         self.assertIn("#define SURFACE_COLUMNS       25u", source)
         self.assertIn("udeks_z80_submit(", source)
         self.assertIn("local_surface_height", source)
-        self.assertIn("PREVIOUS_HEIGHT_BYTE", source)
+        self.assertIn("surface_cache[point_offset - SURFACE_COLUMNS]", source)
         self.assertIn("PROJECTED_WIDTH", source)
-        self.assertIn("column != 0 && (row & 1u) == 0", source)
-        self.assertIn("row != 0 && (column & 1u) == 0", source)
+        self.assertIn("point_column != 0 && (point_row & 1u) == 0", source)
+        self.assertIn("point_row != 0 && (point_column & 1u) == 0", source)
         self.assertIn(
             "window_height - UDEKS_WINDOW_TITLE_HEIGHT - 5u", source
         )

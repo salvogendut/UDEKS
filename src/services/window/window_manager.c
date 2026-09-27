@@ -263,6 +263,7 @@ unsigned char udeks_window_begin_paint(unsigned char handle)
 void udeks_window_end_paint(void)
 {
     udeks_vic_bitmap_reset_clip();
+    udeks_vic_bitmap_commit();
 }
 
 static unsigned char paint_window_damage(unsigned char handle)

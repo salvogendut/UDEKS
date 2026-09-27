@@ -13,6 +13,7 @@ static C128 *machine;
 static unsigned slots;
 static const char *snapshot_path;
 static unsigned max_press_frames, max_release_frames;
+static unsigned last_release_frames;
 
 static unsigned byte(unsigned address) { return machine->mem.ram[address]; }
 static unsigned word(unsigned address) { return byte(address) | (byte(address + 1) << 8); }
@@ -53,6 +54,7 @@ static void key(SDL_Scancode code) {
     require(word(0xF136) != releases && !(byte(0xF138 + row) & (1u << col)),
             "keyboard release was not sampled");
     elapsed = c128_frame_count - started;
+    last_release_frames = elapsed;
     if (elapsed > max_release_frames) max_release_frames = elapsed;
     frames(6);
 }
@@ -81,10 +83,11 @@ static void command(const char *line) {
     unsigned before = byte(0xF3D8);
     text(line); key(SDL_SCANCODE_RETURN);
     wait_byte(0xF3D8, (before + 1) & 255, "typed command was not accepted");
-    frames(400);
+    if (strcmp(line, "xwave") != 0) frames(400);
     require(byte(0xF164) == length && word(0xF165) == checksum,
             "typed submission differs from expected text");
-    printf("command: %.*s -> accepted\n", (int)length, edited); fflush(stdout);
+    printf("command: %.*s -> accepted (Return release=%u frames)\n",
+           (int)length, edited, last_release_frames); fflush(stdout);
 }
 static void idle(void) {
     wait_byte(slots + 1, 4, "shell did not return to input waiting");
@@ -148,27 +151,54 @@ int main(int argc, char **argv) {
     pointer_to(150, 106);
     unsigned starts = word(0xF240 + 24), finishes = word(0xF240 + 26);
     joyports_mouse_button(&machine->joyports, 0, false, true);
-    for (unsigned limit = 0; limit < 500 && word(0xF258) == starts; ++limit) frames(1);
+    for (unsigned limit = 0; limit < 500 &&
+         (word(0xF258) == starts || byte(0xF248) == 0); ++limit) frames(1);
     require(word(0xF240 + 24) == starts + 1 && byte(0xF248) != 0,
             "mouse button did not begin a window drag");
     pointer_to(174, 122);
     for (unsigned limit = 0; limit < 500 && word(0xF256) == 0; ++limit) frames(1);
     require(word(0xF240 + 22) != 0, "window outline did not move");
     joyports_mouse_button(&machine->joyports, 0, false, false);
-    for (unsigned limit = 0; limit < 500 && word(0xF25A) == finishes; ++limit) frames(1);
+    for (unsigned limit = 0; limit < 500 &&
+         (word(0xF25A) == finishes || byte(0xF248) != 0); ++limit) frames(1);
     require(word(0xF240 + 26) == finishes + 1 && byte(0xF248) == 0,
             "mouse release did not finish window drag");
     printf("drag: starts=%u moves=%u finishes=%u\n", word(0xF258), word(0xF256), word(0xF25A));
     idle();
     command("echo pointer released"); idle();
     command("xwave"); require(byte(0xF265) == 3, "foreground wave did not start");
-    frames(100);
+    require(byte(0xF27A) < 21, "initial wave completed before cancellation test");
+    printf("wave: cancel during row=%u column=%u leases=%u\n",
+           byte(0xF27A), byte(0xF27B), word(0xF26C));
+    unsigned cancel_start = c128_frame_count;
     c128_key_event(machine, SDL_SCANCODE_LCTRL, true);
     key(SDL_SCANCODE_C);
     c128_key_event(machine, SDL_SCANCODE_LCTRL, false);
     wait_byte(0xF265, 2, "Ctrl+C did not stop foreground wave"); idle();
+    require(byte(0xF27A) < 21, "Ctrl+C only completed after full plotting");
+    printf("wave: cancelled in %u frames, row=%u\n",
+           c128_frame_count - cancel_start, byte(0xF27A));
     require(byte(0xF225) == 3, "Ctrl+C stopped background clock");
     command("echo console alive"); idle();
+    command("xwave &");
+    wait_byte(0xF27A, 21, "background wave did not finish bounded plotting");
+    require(word(0xF26C) == 21 && word(0xF26E) == 0,
+            "wave did not acquire exactly 21 successful row leases");
+    unsigned cached_leases = word(0xF26C);
+    pointer_to(166, 132);
+    starts = word(0xF258); finishes = word(0xF25A);
+    joyports_mouse_button(&machine->joyports, 0, false, true);
+    for (unsigned limit = 0; limit < 10000 &&
+         (word(0xF258) == starts || byte(0xF248) == 0); ++limit) frames(1);
+    require(word(0xF258) == starts + 1 && byte(0xF248), "wave drag did not start");
+    pointer_to(142, 104);
+    joyports_mouse_button(&machine->joyports, 0, false, false);
+    for (unsigned limit = 0; limit < 10000 &&
+         (word(0xF25A) == finishes || byte(0xF248)); ++limit) frames(1);
+    require(word(0xF25A) == finishes + 1 && !byte(0xF248), "wave drag did not finish");
+    require(word(0xF26C) == cached_leases, "wave move reacquired Z80");
+    printf("wave: complete rows=%u leases=%u; cached drag without recomputation\n",
+           byte(0xF27A), word(0xF26C));
     require(byte(0xF11B) == 0, "lifecycle canary failures");
     printf("sampling: maximum press=%u release=%u frames (functional, not a latency benchmark)\n",
            max_press_frames, max_release_frames);

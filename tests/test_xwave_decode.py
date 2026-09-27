@@ -26,6 +26,17 @@ def valid_record() -> bytearray:
 
 
 class XwaveDecodeTests(unittest.TestCase):
+    def test_progress_format_partial_and_complete(self):
+        block = valid_record()
+        block[4] = 4
+        block[26:28] = bytes((0, 4))
+        self.assertEqual(parse_result(block)["row_vertices"], 4)
+        block[26:28] = bytes((21, 0))
+        self.assertEqual(parse_result(block)["completed_rows"], 21)
+        for cursor in ((22, 0), (21, 1), (0, 25)):
+            block[26:28] = bytes(cursor)
+            with self.assertRaisesRegex(ValueError, "progress cursor"):
+                parse_result(block)
     def test_accepts_running_dual_engine_plot(self):
         result = parse_result(valid_record())
         self.assertEqual(result["state"], 3)
