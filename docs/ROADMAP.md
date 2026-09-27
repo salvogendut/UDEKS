@@ -137,8 +137,8 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   synchronous `YIELD` syscall.
 - [x] Qualify relocated page-zero/page-one switching with two compiled cc65
   tasks retaining live C frames, private software stacks, and stack canaries
-  for 64 switches in `1986` and VICE at 1/2 MHz. Physical hardware and
-  production `$FF16` integration remain pending.
+  for 64 switches in `1986` and VICE at 1/2 MHz. Physical hardware remains
+  pending; production `$FF16` integration is qualified separately below.
 - [x] Fit a production-shaped save/restore tail behind the frozen
   `$FF10/$FF13/$FF16` entries: 191 bytes in the exact 192-byte common-RAM
   reservation. Its separate resident binding also fits eight context records
@@ -172,8 +172,10 @@ the [Tasking 0.1 handover](../HANDOVER.md).
 - [x] Save and restore the selected compiler runtime and CPU context behind
   the production scheduler gate. Physical-hardware qualification of the
   integrated path remains part of the milestone acceptance gate.
-- [ ] Extend cooperative scheduling beyond the initial shell task, then add
-  timer-driven preemption.
+- [x] Extend cooperative scheduling to the initial task-2/APP1 child alongside
+  the persistent shell task.
+- [ ] Generalize task allocation beyond the initial two-task configuration,
+  then add timer-driven preemption.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

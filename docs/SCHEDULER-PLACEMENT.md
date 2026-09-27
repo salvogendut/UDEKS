@@ -117,7 +117,7 @@ in the production boot. The
 `$1C00-$1FFF` scheduler page beside the delivery stub; the remainder of
 `task_state.o`, `task_scheduler.o`, the private blocking-wait records, their
 constants, and their 154-byte BSS are
-linked into `$C120-$C70D`. `task_policy.o` remains the host-tested,
+linked into `$C120-$C70A`. `task_policy.o` remains the host-tested,
 cc65-compile-qualified specification and is not resident. A generated,
 zero-byte private bridge binds only
 their external cc65 runtime imports and requires normal/panic map address and
@@ -127,7 +127,7 @@ overlay rather than growing the resident runtime. `make scheduler-overlay`
 builds the exact page and tail subsequently packaged into `SCHEDOVR`.
 
 The active core occupies 1,018 bytes at `$1C00-$1FF9` (zero-padded to a 1 KiB
-delivery page) and 1,518 runtime bytes at `$C120-$C70D` (1,364 emitted plus
+delivery page) and 1,515 runtime bytes at `$C120-$C70A` (1,361 emitted plus
 154 BSS). The packaged tail pads to the 1,213-byte handler at `$C900-$CDBC`,
 immediately before the fixed 323-byte context binding at `$CDBD-$CEFF`. The
 bridge contract is 22 resident providers: 19 absolute and three zero-page

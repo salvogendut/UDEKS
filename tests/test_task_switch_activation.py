@@ -192,6 +192,20 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertIn("ldx #$82", probe)
         self.assertIn("lda #$0e", probe)
 
+    def test_cancel_checks_the_high_byte_before_low_byte_special_cases(self):
+        source = (ROOT / "src/scheduler/task_wait_state.s").read_text(
+            encoding="utf-8"
+        ).lower()
+        handler = source.split("_udeks_task_cancel_request:", 1)[1]
+        high = handler.index("lda treq_payload+1\n        bne cancel_missing")
+        zero = handler.index("lda treq_payload\n        beq cancel_invalid")
+        own = handler.index("cmp _udeks_lifecycle_current_private")
+        child = handler.index("cmp #task_count+1")
+        self.assertLess(high, zero)
+        self.assertLess(zero, own)
+        self.assertLess(own, child)
+        self.assertNotIn("cmp treq_payload", handler[:high])
+
 
 if __name__ == "__main__":
     unittest.main()

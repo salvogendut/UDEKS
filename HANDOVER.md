@@ -67,8 +67,8 @@ the task model, validate it, and only then remove the replaced special case.
   resident task table, registers persistent `/bin/ush` as running task 1, and
   publishes the resulting `UTSK` record before entering the retained poll
   path. A bounded C round-robin selector is linked into the scheduler page and
-  host-tested across empty, sparse, wrapped, and yielded run queues; it is not
-  called until the context-save/resume tail lands.
+  host-tested across empty, sparse, wrapped, and yielded run queues; the
+  installed context-save/resume tail calls it between cooperative task runs.
 - Step 2 is qualified in `1986`, VICE, and physical C128 hardware; ADR 0008
   freezes relocated page-zero/page-one ownership and the bounded copy
   fallback. The follow-on `UCCS` spike now also switches two real cc65 tasks
@@ -83,8 +83,8 @@ the task model, validate it, and only then remove the replaced special case.
   deliver a scheduler image to `$1C00-$1FFF`; crt0 and probe are split boot
   outputs; the boot-only capability service is linked at `$0200`, installed
   before crt0, and safely overwritten by applications after startup. ADR 0009
-  records the accepted capability relocation. This is delivery and reclaim
-  infrastructure, not a working scheduler.
+  records the accepted capability relocation. These placements now support
+  the installed scheduler and lifecycle handlers described below.
 - `boot_console.o` is now a split boot image at `$1600`, and VICE proves it is
   safely overwritten by `xwave`; ADR 0010 remains proposed until the
   independent `1986` pass. The final boot-only gather is also split and runs
@@ -143,8 +143,11 @@ the task model, validate it, and only then remove the replaced special case.
   rejected, while the maximum 600-tick request blocks and resumes with its
   original sequence after at least 600 logical ticks.
 - Child-only `CANCEL` is qualified on D71 and D64. Zero, self, free,
-  unrelated, and already-zombie targets are rejected atomically. Cancelling a
-  blocked child clears its private wait snapshot, preserves status 130 in a
+  unrelated, already-zombie, and full-width out-of-table targets are rejected
+  without mutating the target. The resident regression covers `$0100`, `$0101`,
+  `$0102`, and `$FFFF`, preventing low-byte aliasing of zero/self/live-child
+  IDs. Cancelling a blocked child clears its private wait snapshot, preserves
+  status 130 in a
   zombie, and lets the parent reap that status through `WAITPID`.
 
 ## Implementation plan

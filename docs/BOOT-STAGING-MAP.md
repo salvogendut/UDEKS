@@ -153,7 +153,7 @@ copier in FINAL, with 15 bytes of headroom. The hardened gather bounds the
 entry count, source ranges, and destination, so a malformed manifest cannot
 write past `$15FF`.
 
-The linked core occupies `$C120-$C70D` including BSS. The packaged tail pads
+The linked core occupies `$C120-$C70A` including BSS. The packaged tail pads
 to the permanent 1,213-byte lifecycle handler at `$C900-$CDBC`; the context
 binding follows immediately at `$CDBD-$CEFF`. The old `USCT` scatter builder and frozen
 `$2003` entry remain available for compatibility and historical tests, but

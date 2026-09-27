@@ -361,6 +361,20 @@ class TaskPolicyTests(unittest.TestCase):
             self.validate(CANCEL_OP, count=3, payload=[2, 0, 130])[0], ESRCH
         )
 
+    def test_cancel_rejects_full_width_ids_without_low_byte_aliasing(self):
+        self.start_caller()
+        self.add_child(2)
+        before = self.snapshot()
+        for high in (1, 255):
+            for low in (0, 1, 2, 8, 9, 255):
+                with self.subTest(target=(high << 8) | low):
+                    self.assertEqual(
+                        self.validate(
+                            CANCEL_OP, count=3, payload=[low, high, 130]
+                        )[0], ESRCH,
+                    )
+                    self.assertEqual(self.snapshot(), before)
+
     def test_sleep_range_and_units(self):
         self.start_caller()
         result, _, _, ticks = self.validate(

@@ -16,8 +16,12 @@ FLAGS                   = TREQ+$0d
 PAYLOAD                 = TREQ+$0e
 GATE                    = $ff16
 PROBE                   = $f040
+WAIT_SEED               = $91
+WAIT_ZOMBIE             = $92
 
 _task_cancel_probe_entry:
+        lda #$00
+        sta PROBE+4                    ; do not reuse the boot ABI minor as phase
         lda #'U'
         sta TREQ
         lda #'T'
@@ -73,12 +77,56 @@ _task_cancel_probe_entry:
         lda SEQUENCE
         sta PROBE+13
 
-        lda #$01
+        lda #WAIT_SEED
         sta PROBE+4
 wait_seed:
         lda PROBE+4
         cmp #$a6
         bne wait_seed
+
+        lda #$00                       ; $0100 is missing, not the zero selector
+        ldx #$01
+        ldy #$78
+        jsr cancel_request_wide
+        lda STATE
+        sta PROBE+31
+        lda ERROR
+        sta PROBE+32
+        lda SEQUENCE
+        sta PROBE+33
+
+        lda #$01                       ; $0101 is missing, not the current task
+        ldx #$01
+        ldy #$79
+        jsr cancel_request_wide
+        lda STATE
+        sta PROBE+34
+        lda ERROR
+        sta PROBE+35
+        lda SEQUENCE
+        sta PROBE+36
+
+        lda #$02                       ; $0102 must not cancel live child 2
+        ldx #$01
+        ldy #$7a
+        jsr cancel_request_wide
+        lda STATE
+        sta PROBE+37
+        lda ERROR
+        sta PROBE+38
+        lda SEQUENCE
+        sta PROBE+39
+
+        lda #$ff                       ; $ffff is missing, not a slot index
+        ldx #$ff
+        ldy #$7b
+        jsr cancel_request_wide
+        lda STATE
+        sta PROBE+40
+        lda ERROR
+        sta PROBE+41
+        lda SEQUENCE
+        sta PROBE+42
 
         lda #$03                       ; unrelated live task -> ESRCH
         ldx #$82
@@ -104,7 +152,7 @@ wait_seed:
         lda SEQUENCE
         sta PROBE+21
 
-        lda #$02
+        lda #WAIT_ZOMBIE
         sta PROBE+4                    ; monitor checks zombie and wait cleanup
 wait_zombie:
         lda PROBE+4
@@ -165,6 +213,15 @@ cancel_request:
         lda #$00
         sta PAYLOAD+1
         stx PAYLOAD+2
+        jmp cancel_submit
+
+; A=target low, X=target high, Y=sequence. Status is always 130 here.
+cancel_request_wide:
+        sta PAYLOAD
+        stx PAYLOAD+1
+        lda #$82
+        sta PAYLOAD+2
+cancel_submit:
         sty SEQUENCE
         lda #$0e
         sta OPERATION

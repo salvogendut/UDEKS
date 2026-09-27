@@ -22,6 +22,9 @@ from vice_capture import choose_port, parse_monitor_byte
 ROOT = Path(__file__).resolve().parents[1]
 PROBE = 0xF040
 PHASE = PROBE + 4
+WAIT_SEED = 0x91
+WAIT_ZOMBIE = 0x92
+RECORD_SIZE = 43
 HANDLER_ADDRESS = 0xC900
 
 
@@ -140,12 +143,12 @@ def run(
     work.mkdir(parents=True, exist_ok=True)
     try:
         print(f"{disk.name}: booting CANCEL parent", flush=True)
-        sp.wait_for_byte(port, PHASE, 1, deadline)
+        sp.wait_for_byte(port, PHASE, WAIT_SEED, deadline)
         seed_targets(port, slots, waits, 0xA6)
-        sp.wait_for_byte(port, PHASE, 2, deadline)
+        sp.wait_for_byte(port, PHASE, WAIT_ZOMBIE, deadline)
 
         blocks = [
-            (work / "task-cancel-mid-record.bin", PROBE, PROBE + 30, "kernel"),
+            (work / "task-cancel-mid-record.bin", PROBE, PROBE + RECORD_SIZE - 1, "kernel"),
             (work / "task-cancel-zombie.bin", slots + 8, slots + 15, "kernel"),
             (work / "task-cancel-event.bin", last_event, last_event, "kernel"),
         ]
@@ -169,7 +172,7 @@ def run(
         record, lifecycle, installed = sp.capture_blocks(
             port,
             [
-                (work / "task-cancel-record.bin", PROBE, PROBE + 30, "kernel"),
+                (work / "task-cancel-record.bin", PROBE, PROBE + RECORD_SIZE - 1, "kernel"),
                 (work / "task-cancel-lifecycle.bin", slots, slots + 23, "kernel"),
                 (
                     work / "task-cancel-handler.bin",
@@ -195,6 +198,15 @@ def run(
             raise RuntimeError(f"zombie-target response is {record[22:25].hex()}")
         if record[25:31] != bytes((2, 1, 0, 0x77, 2, 130)):
             raise RuntimeError(f"WAITPID reap response is {record[25:31].hex()}")
+        for offset, target, sequence in (
+            (31, 0x0100, 0x78), (34, 0x0101, 0x79),
+            (37, 0x0102, 0x7A), (40, 0xFFFF, 0x7B),
+        ):
+            response = record[offset:offset + 3]
+            if response != bytes((0x80, 3, sequence)):
+                raise RuntimeError(
+                    f"16-bit target ${target:04X} response is {response.hex()}"
+                )
         if lifecycle[8:16] != bytes(8):
             raise RuntimeError("WAITPID did not clear the cancelled child slot")
         if lifecycle[16:18] != bytes((0, 2)):
@@ -202,7 +214,7 @@ def run(
         if installed != handler:
             raise RuntimeError("installed lifecycle handler differs from build")
         print(
-            f"{disk.name}: invalid/free/unrelated rejected; blocked child -> "
+            f"{disk.name}: invalid/16-bit/free/unrelated rejected; blocked child -> "
             "ZOMBIE(130), wait snapshot cleared, WAITPID reaped",
             flush=True,
         )

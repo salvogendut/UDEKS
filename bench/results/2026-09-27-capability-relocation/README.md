@@ -36,4 +36,3 @@ SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ../1986/1986 \
 
 The exact final D71 used for the preserved 1986 record has SHA-256
 `b3cf253c87ed6ced13f2cea4dfb3937f4b02d01f72c1e36e8f10968ad52efd6a`.
-

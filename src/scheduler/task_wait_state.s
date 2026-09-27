@@ -151,8 +151,6 @@ _udeks_task_cancel_request:
 :
         lda _udeks_lifecycle_current_private
         beq cancel_missing
-        cmp TREQ_PAYLOAD
-        beq cancel_invalid
         sec
         sbc #$01
         asl a
@@ -162,11 +160,14 @@ _udeks_task_cancel_request:
         lda _udeks_lifecycle_slots_private+TASK_SLOT_STATE,x
         cmp #TASK_STATE_RUNNING
         bne cancel_invalid
-        lda TREQ_PAYLOAD
-        beq cancel_invalid
+        ; Task ids are 16-bit. Reject the high byte before interpreting the
+        ; low byte as the zero selector, the caller, or a child slot.
         lda TREQ_PAYLOAD+1
         bne cancel_missing
         lda TREQ_PAYLOAD
+        beq cancel_invalid
+        cmp _udeks_lifecycle_current_private
+        beq cancel_invalid
         cmp #TASK_COUNT+1
         bcs cancel_missing
         sec
