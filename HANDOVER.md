@@ -320,7 +320,8 @@ and bank ownership.
 ## First concrete change for the next session
 
 PR #3 merged the lifecycle foundation as `00060f4`; PR #5 merged the event-wait
-implementation as `1b7a6e0`. Work continues on `xwave-responsive-rendering`,
+implementation as `1b7a6e0`; PR #7 merged bounded xwave rendering as `6aadcf3`.
+Work continues on `graphics-raster-audit`,
 tracked by [issue #6](https://github.com/salvogendut/UDEKS/issues/6);
 issue #4 retains its manual and hardware qualification gates.
 [the event-wait proposal](docs/EVENT-WAITS.md)
@@ -350,6 +351,11 @@ Initial xwave painting delayed a release scan by 689 frames in the baseline.
 The [bounded-rendering increment](docs/XWAVE-RESPONSIVENESS.md) now permits
 Ctrl+C during row 0 and completes with 21 cached row leases. Cached compositor
 replay and closing-window redraw remain synchronous; issue #6 stays open.
+The user reported the manual 1986 interaction check looked good. The next
+[compile-only raster audit](docs/GRAPHICS-RASTER-AUDIT.md) measures a 49-byte
+net object saving for static temporaries; it has not changed production or
+qualified runtime timing/placement/non-reentrancy. Follow its gates before
+integrating it or treating those bytes as available space.
 Complete physical-C128 and manual SDL/host input and
 performance gates for issue #4. Then generalize
 task allocation and migrate shell jobs/graphical applications to ordinary
