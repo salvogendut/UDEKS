@@ -39,6 +39,16 @@ class InputSmokeTests(unittest.TestCase):
         self.assertIn("history submitted different text", source)
         self.assertIn("Ctrl+C stopped background clock", source)
 
+    def test_drag_stress_covers_partial_cached_render_and_dispatcher_integrity(self):
+        source = (ROOT / "tools/1986_input_smoke.c").read_text()
+        self.assertIn("stress must start during partial painting", source)
+        self.assertIn("wait_byte(0xF27A, 21", source)
+        self.assertIn("outline preparation corrupted lifecycle dispatcher", source)
+        self.assertIn("drag release corrupted lifecycle dispatcher", source)
+        self.assertIn("cached drag reacquired Z80", source)
+        self.assertIn("stress Ctrl+C did not stop wave", source)
+        self.assertIn('command("echo console alive")', source)
+
     def test_preserved_input_evidence_is_complete_and_hash_verified(self):
         report = ROOT / "bench/results/2026-09-27-event-waits-1986"
         artifacts = ROOT / "bench/artifacts/2026-09-27-event-waits-input"

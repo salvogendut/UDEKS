@@ -298,7 +298,11 @@ static void prepare_outline(
     OUTLINE_BUFFER[base + 5u] =
         (unsigned char)(0xFFu >> (x & 7u));
     OUTLINE_BUFFER[base + 6u] =
-        (unsigned char)(0xFFu << (7u - (right & 7u)));
+        /* The reference cc65 -Oirs miscompiles the left-shift expression
+         * here: its pointer store uses the mask as the destination index.
+         * Complementing a right shift produces the same byte without that
+         * unsafe generated sequence (e.g. $F395 + $80 -> live code $F415). */
+        (unsigned char)~(0x7Fu >> (right & 7u));
     address = (unsigned int)(0x6000u + bitmap_offset(x, y + 1u));
     outline_word(base, 7u, address);
     OUTLINE_BUFFER[base + 9u] =

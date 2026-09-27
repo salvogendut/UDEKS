@@ -1,0 +1,31 @@
+command: echo smoke -> accepted (Return release=188 frames)
+history: count=1 recalls=0 -> 1 scan=83
+command: xinit -> accepted (Return release=158 frames)
+command: xclock & -> accepted (Return release=262 frames)
+command: xwave -> accepted (Return release=366 frames)
+stress 0: x=3 y=1 row=0 column=12 PC=$44A6
+stress 1: x=40 y=24 row=0 column=16 PC=$91E8
+stress 2: x=77 y=47 row=0 column=20 PC=$2207
+stress 3: x=114 y=70 row=0 column=24 PC=$03CA
+stress 4: x=151 y=93 row=1 column=0 PC=$5F5C
+stress 5: x=35 y=19 row=1 column=4 PC=$4452
+stress 6: x=72 y=42 row=1 column=8 PC=$5F57
+stress 7: x=109 y=65 row=1 column=12 PC=$5DFA
+stress 8: x=146 y=88 row=1 column=16 PC=$5D4C
+stress 9: x=30 y=14 row=1 column=20 PC=$9329
+stress 10: x=67 y=37 row=1 column=24 PC=$91C0
+stress 11: x=104 y=60 row=2 column=0 PC=$926C
+stress 12: x=141 y=83 row=2 column=4 PC=$220A
+FAIL: stress drag did not finish (frame 19401, PC $FF31, request 01/04/00)
+trace PC=$F805 drag=2 buttons=0 moves=113 finishes=13
+trace PC=$FF68 drag=2 buttons=0 moves=113 finishes=13
+trace PC=$9270 drag=2 buttons=0 moves=113 finishes=13
+trace PC=$9016 drag=2 buttons=0 moves=113 finishes=13
+trace PC=$9244 drag=2 buttons=0 moves=113 finishes=13
+trace PC=$F800 drag=2 buttons=0 moves=113 finishes=13
+trace PC=$F82E drag=2 buttons=0 moves=113 finishes=13
+trace PC=$FFA9 drag=2 buttons=0 moves=113 finishes=13
+trace PC=$96F2 drag=2 buttons=0 moves=113 finishes=13
+trace PC=$9221 drag=2 buttons=0 moves=113 finishes=13
+trace PC=$FF44 drag=2 buttons=0 moves=113 finishes=13
+trace PC=$F805 drag=2 buttons=0 moves=113 finishes=13
