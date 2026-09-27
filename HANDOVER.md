@@ -319,7 +319,14 @@ and bank ownership.
 
 ## First concrete change for the next session
 
-Define the first scheduler event-wait operation and its wake-source ownership.
-Reuse the private request snapshot used by `WAITPID` and `SLEEP`; keep event
-publication bounded and ensure a cancelled waiter cannot consume a later
-event.
+PR #3 merged the lifecycle foundation as `00060f4`. Work continues on
+`tasking-0.1-event-waits`; [the event-wait proposal](docs/EVENT-WAITS.md)
+defines the initial stdin-readiness scope, private request ownership,
+placement constraints, and regression gates. ABI 0.3 is still the only
+advertised request contract; the proposed 0.4 `POLL` is not implemented.
+
+Next add the pure validation/readiness policy and host tests, then measure the
+handler refactor before adding resident code. The fixed handler has no spare
+bytes; the overlay gap has 501. Reuse the private request snapshot used by
+`WAITPID` and `SLEEP`, keep event publication bounded, and ensure cancellation
+and slot reuse cannot publish a stale response.
