@@ -116,8 +116,8 @@ in the production boot. The
 607-byte `udeks_lifecycle_apply()` transition engine is assigned to the
 `$1C00-$1FFF` scheduler page beside the delivery stub; the remainder of
 `task_state.o`, `task_scheduler.o`, the private blocking-wait records, their
-constants, and their 151-byte BSS are
-linked into `$C120-$C5C9`. `task_policy.o` remains the host-tested,
+constants, and their 154-byte BSS are
+linked into `$C120-$C66E`. `task_policy.o` remains the host-tested,
 cc65-compile-qualified specification and is not resident. A generated,
 zero-byte private bridge binds only
 their external cc65 runtime imports and requires normal/panic map address and
@@ -127,15 +127,15 @@ overlay rather than growing the resident runtime. `make scheduler-overlay`
 builds the exact page and tail subsequently packaged into `SCHEDOVR`.
 
 The active core occupies 1,018 bytes at `$1C00-$1FF9` (zero-padded to a 1 KiB
-delivery page) and 1,194 runtime bytes at `$C120-$C5C9` (1,043 emitted plus
-151 BSS). The packaged tail pads to the 1,029-byte handler at `$C900-$CD04`,
-leaving a 184-byte preserved gap before the fixed 323-byte context binding at
+delivery page) and 1,359 runtime bytes at `$C120-$C66E` (1,205 emitted plus
+154 BSS). The packaged tail pads to the 1,206-byte handler at `$C900-$CDB5`,
+leaving a 7-byte preserved gap before the fixed 323-byte context binding at
 `$CDBD-$CEFF`. The bridge contract is 20
 resident providers: 17 absolute and three zero-page symbols. Any
 provider-count, address-class,
 normal/panic parity, or placement drift fails the build.
 
-`SCHEDOVR` now packages the page and 3,045 copied tail bytes in one versioned
+`SCHEDOVR` now packages the page and 3,222 copied tail bytes in one versioned
 PRG on side one of both D71 and D64 images. Stage 0 loads it into bank 1 and a
 192-byte one-shot `$FF05-$FFC4` installer copies it only after conflicting boot
 staging has moved. The scheduler entry restores the permanent task gate before
@@ -145,7 +145,7 @@ VICE qualifies exact installation and both disk formats; ADR 0012 still awaits
 
 The scheduler bootstrap gate at `$1C1E` now creates and dispatches persistent
 `/bin/ush` as task 1 before entering the retained `$FF13` poll path. The live
-probe verifies the exact post-bootstrap 151-byte BSS image: task 1 is running,
+probe verifies the exact post-bootstrap 154-byte BSS image: task 1 is running,
 the other seven slots remain clear, and only the expected lifecycle counters
 are set.
 
@@ -164,7 +164,7 @@ page's exact `$1FFA-$1FFF` remainder and provides fixed reset/select vectors;
 its generated bridge rejects any drift in the active overlay end, symbol
 types, or seven-symbol callback contract.
 
-`SCHEDOVR` installs the 1,029-byte lifecycle handler in its checksummed bank-0
+`SCHEDOVR` installs the 1,206-byte lifecycle handler in its checksummed bank-0
 tail and carries the 234 emitted context bytes plus the 192-byte common tail
 as its activation extension. After the boot-console service has finished, the
 42-byte activator copies the extension images into their final homes,
@@ -172,7 +172,7 @@ calls the fixed reset vector, and returns to init. Task 1 owns bank-1 physical
 pages `$D1/$D2`; the former `$80/$81` choice is forbidden because the native
 loader uses `$8000-$8A00` as its application backup. VICE qualifies repeated
 D71/D64 yields, resumes, command dispatch, and non-returning `EXIT` through
-this installed path. The lifecycle handler occupies `$C900-$CD04`, outside
+this installed path. The lifecycle handler occupies `$C900-$CDB5`, outside
 both application slots; `xclock` can therefore use its complete allocation.
 
 ## Proposed bank-0 scheduler region
@@ -238,7 +238,7 @@ returns to the kernel poll frame and leaves the task suspended. `YIELD` uses
 the latter path and resumes only after the scheduler selects task 1 again.
 
 The post-startup delivery path is link-qualified. `SCHEDOVR` ABI 0.3 includes
-the permanent 1,029-byte handler in its bank-0 tail and appends the exact,
+the permanent 1,206-byte handler in its bank-0 tail and appends the exact,
 build-locked 234 emitted context bytes and 192-byte common tail. The
 six `$1FFA-$1FFF` callback vectors are installed as part of the scheduler
 page and covered by its existing checksum. A 42-byte body fits the
@@ -261,6 +261,11 @@ pages and context, publishes the slot atomically, and uses a common `$F280`
 launcher to convert normal return into `EXIT(A)`. Two complete D71/D64
 spawn/reap cycles with a compiled cc65 child qualify its software stack and
 slot reuse.
+The raster IRQ calls fixed gate `$C906` once per frame; overlay-owned
+normalization advances a wrap-safe 16-bit clock at 60 logical ticks/s on PAL
+and NTSC. `SLEEP` snapshots its deadline and request, releases `$F359`, and a
+pre-dispatch service pass makes expired TIMER waiters runnable. D71/D64 prove
+invalid 0/601 bounds and an exact 120-tick block/resume.
 
 ## Reclaim order and validation
 

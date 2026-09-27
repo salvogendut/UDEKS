@@ -54,7 +54,7 @@
 #define UDEKS_TREQ_OP_CLOSE              9u
 
 /* ABI 0.3 lifecycle operations. YIELD, EXIT, both immediate and blocking
- * WAITPID, and SPAWN are live; SLEEP and CANCEL remain ENOSYS. Successful
+ * WAITPID, SLEEP, and SPAWN are live; CANCEL remains ENOSYS. Successful
  * EXIT never returns to its caller. */
 #define UDEKS_TREQ_OP_YIELD             10u
 #define UDEKS_TREQ_OP_EXIT              11u

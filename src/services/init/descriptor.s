@@ -32,6 +32,7 @@ init_shell_fallback:
         .res $03, $ea
 
 init_poll:
+        jsr $c903                       ; wake expired SLEEP requests
         jsr TASK_BANK_POLL
         jmp _udeks_shell_poll
 

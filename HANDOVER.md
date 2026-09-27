@@ -77,8 +77,8 @@ the task model, validate it, and only then remove the replaced special case.
 - Step 3 has Task Request ABI 0.3 operations for `YIELD`, `EXIT`, `WAITPID`,
   `SLEEP`, `CANCEL`, and `SPAWN`, plus a pure host-tested policy layer.
   Production `YIELD`, non-returning `EXIT`, and immediate, nonblocking, and
-  blocking `WAITPID`, plus task-2 `SPAWN`, are implemented; `SLEEP` and
-  `CANCEL` still report `ENOSYS` through the compatibility fallback.
+  blocking `WAITPID`, bounded `SLEEP`, plus task-2 `SPAWN`, are implemented;
+  `CANCEL` still reports `ENOSYS` through the compatibility fallback.
 - The placement prerequisite for steps 3 and 4 is qualified. Stage 1 can
   deliver a scheduler image to `$1C00-$1FFF`; crt0 and probe are split boot
   outputs; the boot-only capability service is linked at `$0200`, installed
@@ -91,7 +91,7 @@ the task model, validate it, and only then remove the replaced special case.
   in place at `$A1E0`, leaving the complete `$C120-$CEFF` tail available for
   lifecycle/scheduler integration.
 - Lifecycle placement is active: `SCHEDOVR` carries the zero-padded 1 KiB
-  scheduler page and the installed lifecycle tail at `$C120-$CD04`. Stage 0
+  scheduler page and the installed lifecycle tail at `$C120-$CDB5`. Stage 0
   loads it into bank 1 with KERNAL `SETBNK`/`LOAD`; a 192-byte one-shot
   common-RAM installer validates and copies it, clears its BSS, and the
   scheduler entry replaces that installer with the permanent task gate.
@@ -107,8 +107,8 @@ the task model, validate it, and only then remove the replaced special case.
   callbacks occupy the exact `$CDBD-$CEFF` 323-byte window, while fixed
   callback vectors consume the page's final six bytes at `$1FFA-$1FFF`.
   `SCHEDOVR` ABI 0.3 appends the exact, build-locked 234-byte context image and
-  192-byte gate; its checksummed bank-0 tail also installs the 1,029-byte
-  lifecycle handler at `$C900-$CD04`, outside both application slots. The
+  192-byte gate; its checksummed bank-0 tail also installs the 1,206-byte
+  lifecycle handler at `$C900-$CDB5`, outside both application slots. The
   normal checksum covers the
   six fixed page vectors, and the boot-console installer checksums and installs a
   42-byte post-startup activator at `$1BAA` and copies it directly to its
@@ -137,6 +137,11 @@ the task model, validate it, and only then remove the replaced special case.
   a compiled cc65 child through two spawn, blocking-wait, status-37 reap
   cycles with original sequences `$44/$66`, proving the real compiler stack,
   task-slot, and APP1 reuse.
+- Bounded `SLEEP` is qualified on D71 and D64. The raster IRQ advances an
+  overlay-owned 16-bit clock at 60 logical ticks/s on PAL and NTSC; the
+  resident service pass wakes expired TIMER waiters. Zero and 601 ticks are
+  rejected, while the maximum 600-tick request blocks and resumes with its
+  original sequence after at least 600 logical ticks.
 
 ## Implementation plan
 
@@ -307,7 +312,7 @@ and bank ownership.
 
 ## First concrete change for the next session
 
-Implement bounded `SLEEP` against the monotonic 1/60-second kernel tick. Keep
-the shared request record released while the caller sleeps, wake it through
-the same private-response path used by blocking `WAITPID`, and qualify zero,
-maximum, wrap-adjacent, and multi-task deadlines before implementing `CANCEL`.
+Implement `CANCEL` for live child tasks, using status 130 for the first
+`Ctrl+C` path. Preserve zombie status for `WAITPID`, wake a blocked parent
+through its private response snapshot, and prove rejection of self, unrelated,
+free, and already-zombie targets without mutation.

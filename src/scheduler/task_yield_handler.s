@@ -8,6 +8,8 @@
         .setcpu "6502"
 
         .export _udeks_task_yield_handler
+        .import _udeks_task_sleep_poll
+        .import _udeks_task_tick_advance
         .import _udeks_task_context_save_current
         .import _udeks_task_contexts_private
         .import _udeks_lifecycle_slots_private
@@ -24,6 +26,8 @@
         .import _udeks_task_wait_selector_high_private
         .import _udeks_task_wait_child_private
         .import _udeks_task_wait_status_private
+        .import _udeks_monotonic_ticks_low
+        .import _udeks_monotonic_ticks_high
         .import _udeks_bootfs_finish_error
         .import _udeks_bootfs_finish_ok
 
@@ -60,6 +64,7 @@ ERR_ENOMEM              = $0c
 OP_YIELD                = $0a
 OP_EXIT                 = $0b
 OP_WAITPID              = $0c
+OP_SLEEP                = $0d
 OP_SPAWN                = $0f
 WAITPID_NOHANG          = $01
 TASK_SLOT_STRIDE        = $08
@@ -81,6 +86,7 @@ LIFECYCLE_EXIT          = $09
 LIFECYCLE_REAP          = $0a
 LIFECYCLE_ADMIT         = $02
 WAIT_CHILD              = $01
+WAIT_TIMER              = $03
 WAIT_BLOCKED            = $01
 WAIT_READY              = $02
 ERR_ECHILD              = $0a
@@ -111,6 +117,13 @@ TASK_LOADER_BAD_SIZE    = $09
         .segment "YIELDHANDLER"
 
 _udeks_task_yield_handler:
+        jmp lifecycle_request
+task_sleep_poll_gate:
+        jmp _udeks_task_sleep_poll
+task_tick_advance_gate:
+        jmp _udeks_task_tick_advance
+
+lifecycle_request:
         lda TREQ_DESCRIPTOR
         beq :+
         jmp yield_invalid
@@ -128,6 +141,10 @@ _udeks_task_yield_handler:
         cmp #OP_WAITPID
         bne :+
         jmp request_waitpid
+:
+        cmp #OP_SLEEP
+        bne :+
+        jmp request_sleep
 :
         cmp #OP_SPAWN
         bne :+
@@ -371,6 +388,81 @@ spawn_return_trampoline:
 spawn_return_failed:
         jmp spawn_return_failed
 spawn_return_trampoline_end:
+
+request_sleep:
+        lda TREQ_FLAGS
+        beq :+
+        jmp yield_invalid
+:
+        lda TREQ_COUNT
+        cmp #$02
+        beq :+
+        jmp yield_invalid
+:
+        lda TREQ_PAYLOAD
+        ora TREQ_PAYLOAD+1
+        bne :+
+        jmp yield_invalid
+:
+        lda TREQ_PAYLOAD+1
+        cmp #$02
+        bcc sleep_range_valid
+        bne sleep_invalid
+        lda TREQ_PAYLOAD
+        cmp #$59
+        bcc sleep_range_valid
+sleep_invalid:
+        jmp yield_invalid
+sleep_range_valid:
+        jsr current_slot
+        beq :+
+        jmp yield_invalid
+:
+        lda _udeks_lifecycle_current_private
+        sec
+        sbc #$01
+        tay
+        lda TREQ_OPERATION
+        sta _udeks_task_wait_operation_private,y
+        lda TREQ_SEQUENCE
+        sta _udeks_task_wait_sequence_private,y
+        lda TREQ_DESCRIPTOR
+        sta _udeks_task_wait_descriptor_private,y
+        lda TREQ_COUNT
+        sta _udeks_task_wait_count_private,y
+        lda TREQ_FLAGS
+        sta _udeks_task_wait_flags_private,y
+        clc
+        lda _udeks_monotonic_ticks_low
+        adc TREQ_PAYLOAD
+        sta _udeks_task_wait_selector_private,y
+        lda _udeks_monotonic_ticks_high
+        adc TREQ_PAYLOAD+1
+        sta _udeks_task_wait_selector_high_private,y
+        lda #WAIT_BLOCKED
+        sta _udeks_task_wait_state_private,y
+        jsr _udeks_task_context_save_current
+
+        lda _udeks_lifecycle_current_private
+        sec
+        sbc #$01
+        asl a
+        asl a
+        asl a
+        tax
+        lda #WAIT_TIMER
+        sta _udeks_lifecycle_slots_private+TASK_SLOT_WAIT,x
+        lda #TASK_STATE_WAITING
+        sta _udeks_lifecycle_slots_private+TASK_SLOT_STATE,x
+        lda #LIFECYCLE_BLOCK
+        sta _udeks_lifecycle_last_event_private
+        lda #$00
+        sta _udeks_lifecycle_current_private
+        sta TREQ_STATE
+        sta TREQ_RESULT
+        sta TREQ_ERROR
+        sec
+        rts
 
 request_yield:
         lda TREQ_COUNT
@@ -666,4 +758,6 @@ yield_invalid:
 
 yield_handler_end:
         .assert _udeks_task_yield_handler = $c900, error, "lifecycle handler moved"
+        .assert task_sleep_poll_gate = $c903, error, "SLEEP poll gate moved"
+        .assert task_tick_advance_gate = $c906, error, "scheduler tick gate moved"
         .assert yield_handler_end <= $cdbd, error, "lifecycle handler reaches context binding"

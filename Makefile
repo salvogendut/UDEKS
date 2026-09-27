@@ -153,6 +153,8 @@ TASK_WAITPID_PROBE_D71 := $(BUILD_BOOT)/udeks-task-waitpid-probe.d71
 TASK_WAITPID_PROBE_D64 := $(BUILD_BOOT)/udeks-task-waitpid-probe.d64
 TASK_SPAWN_PROBE_D71 := $(BUILD_BOOT)/udeks-task-spawn-probe.d71
 TASK_SPAWN_PROBE_D64 := $(BUILD_BOOT)/udeks-task-spawn-probe.d64
+TASK_SLEEP_PROBE_D71 := $(BUILD_BOOT)/udeks-task-sleep-probe.d71
+TASK_SLEEP_PROBE_D64 := $(BUILD_BOOT)/udeks-task-sleep-probe.d64
 PANIC_PROBE_D71 := $(BUILD_BOOT)/udeks-panic-probe.d71
 VDC_SPLASH_BIN := $(BUILD_ASSETS)/udekspipe-64.vdc
 VDC_WORDMARK_BIN := $(BUILD_ASSETS)/udekusu-64.vdc
@@ -198,6 +200,10 @@ USER_SPAWN_CHILD_OBJ := $(BUILD_USER)/task-spawn-child.o
 USER_SPAWN_CHILD_BIN := $(BUILD_USER)/task-spawn-child.bin
 USER_SPAWN_CHILD_UDEX := $(BUILD_USER)/task-spawn-child.udx
 USER_SPAWN_PROBE_BOOTFS := $(BUILD_USER)/task-spawn-probe-bootfs.img
+USER_SLEEP_PROBE_OBJ := $(BUILD_USER)/task-sleep-probe.o
+USER_SLEEP_PROBE_BIN := $(BUILD_USER)/task-sleep-probe.bin
+USER_SLEEP_PROBE_UDEX := $(BUILD_USER)/task-sleep-probe.udx
+USER_SLEEP_PROBE_BOOTFS := $(BUILD_USER)/task-sleep-probe-bootfs.img
 USER_APP_IMPORTS_OBJ := $(BUILD_USER)/app_imports.o
 USER_XCLOCK_ASM := $(BUILD_USER)/xclock.s
 USER_XCLOCK_OBJ := $(BUILD_USER)/xclock.o
@@ -223,6 +229,7 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	placement-check-guard \
 	shadow-probe capability-probe boot-console-probe task-yield-probe \
 	task-exit-probe task-waitpid-probe task-spawn-loader-probe task-spawn-probe \
+	task-sleep-probe \
 	check doctor clean help
 
 all: 8502 z80 z80-asm
@@ -364,6 +371,14 @@ task-spawn-probe: $(TASK_SPAWN_PROBE_D71) $(TASK_SPAWN_PROBE_D64)
 	}
 	$(PYTHON) tools/task_spawn_probe.py
 	$(PYTHON) tools/task_spawn_probe.py --disk $(TASK_SPAWN_PROBE_D64)
+
+task-sleep-probe: $(TASK_SLEEP_PROBE_D71) $(TASK_SLEEP_PROBE_D64)
+	@command -v flatpak >/dev/null 2>&1 || { \
+		echo "task-sleep-probe requires Flatpak VICE (net.sf.VICE)" >&2; \
+		exit 1; \
+	}
+	$(PYTHON) tools/task_sleep_probe.py
+	$(PYTHON) tools/task_sleep_probe.py --disk $(TASK_SLEEP_PROBE_D64)
 
 8502: $(KERNEL_BIN) $(KERNEL_PRG) $(SCHEDULER_BIN) $(CAPABILITY_BIN) \
 	$(BOOT_DELIVERY_BIN)
@@ -583,6 +598,20 @@ $(USER_SPAWN_PROBE_BOOTFS): $(USER_SPAWN_PARENT_UDEX) \
 	$(PYTHON) tools/build_bootfs.py --max-size 0x2DBC \
 		--entry child=$(USER_SPAWN_CHILD_UDEX) \
 		--entry ush=$(USER_SPAWN_PARENT_UDEX) $@
+
+$(USER_SLEEP_PROBE_OBJ): user/probes/task_sleep.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(USER_SLEEP_PROBE_BIN): $(USER_SLEEP_PROBE_OBJ) cfg/8502-user-bank1.cfg
+	$(LD65) -C cfg/8502-user-bank1.cfg -o $@ $<
+
+$(USER_SLEEP_PROBE_UDEX): $(USER_SLEEP_PROBE_BIN) tools/build_udex.py
+	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x9000 \
+		--entry-address 0x9000 --flags 0x01 $< $@
+
+$(USER_SLEEP_PROBE_BOOTFS): $(USER_SLEEP_PROBE_UDEX) tools/build_bootfs.py
+	$(PYTHON) tools/build_bootfs.py --max-size 0x2DBC \
+		--entry ush=$(USER_SLEEP_PROBE_UDEX) $@
 
 $(USER_APP_IMPORTS_OBJ): user/lib/app_imports.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
@@ -1207,6 +1236,9 @@ $(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 		-u _udeks_task_wait_selector_high_private \
 		-u _udeks_task_wait_child_private \
 		-u _udeks_task_wait_status_private \
+		-u _udeks_task_sleep_poll \
+		-u _udeks_task_tick_advance \
+		-u _udeks_monotonic_ticks_low -u _udeks_monotonic_ticks_high \
 		$(BUILD_8502)/scheduler.o $(BUILD_8502)/task_state.o \
 		$(BUILD_8502)/task_scheduler.o $(TASK_WAIT_STATE_OBJ) \
 		$(SCHEDULER_RUNTIME_AND_OBJ) \
@@ -1835,6 +1867,38 @@ $(TASK_SPAWN_PROBE_D71) $(TASK_SPAWN_PROBE_D64) &: $(STAGE0_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) \
 		--d64-output $(TASK_SPAWN_PROBE_D64) $(TASK_SPAWN_PROBE_D71)
 
+$(TASK_SLEEP_PROBE_D71) $(TASK_SLEEP_PROBE_D64) &: $(STAGE0_BIN) \
+		$(STAGE1_BIN) $(KERNEL_BIN) $(BOOT_DELIVERY_BIN) $(CRT0_BIN) \
+		$(PROBE_BIN) $(SCHEDULER_BIN) $(CAPABILITY_BIN) \
+		$(CAPABILITY_INSTALLER_BIN) $(BOOT_CONSOLE_BIN) \
+		$(TASK_SWITCH_ACTIVATION_BIN) $(BOOT_CONSOLE_INSTALLER_BIN) \
+		$(SCHEDULER_TAIL_INSTALLER_BIN) $(VIC_BUSY_SPRITE_BIN) \
+		$(SCHEDULER_OVERLAY_PAYLOAD) $(KERNEL_MAP) $(MODULE_BIN) \
+		$(Z80_BIN) $(USER_SLEEP_PROBE_BOOTFS) $(USER_SLEEP_PROBE_UDEX) \
+		$(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
+		$(BOOTFS_REQUEST_SERVICE_BIN) $(TASK_BANK_GATE_BIN) \
+		tools/build_d71.py
+	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
+		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
+		--boot-delivery $(BOOT_DELIVERY_BIN) \
+		--crt0 $(CRT0_BIN) --probe $(PROBE_BIN) \
+		--map $(KERNEL_MAP) \
+		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) \
+		--scheduler-tail-installer $(SCHEDULER_TAIL_INSTALLER_BIN) \
+		--busy-sprite $(VIC_BUSY_SPRITE_BIN) \
+		--capability $(CAPABILITY_BIN) \
+		--capability-installer $(CAPABILITY_INSTALLER_BIN) \
+		--boot-console $(BOOT_CONSOLE_BIN) \
+		--task-switch-activation $(TASK_SWITCH_ACTIVATION_BIN) \
+		--boot-console-installer $(BOOT_CONSOLE_INSTALLER_BIN) \
+		--bootfs $(USER_SLEEP_PROBE_BOOTFS) \
+		--module $(MODULE_BIN) --ush $(USER_SLEEP_PROBE_UDEX) \
+		--task-loader $(TASK_LOADER_BIN) \
+		--task-request-gateway $(TASK_REQUEST_GATE_BIN) \
+		--bootfs-request-service $(BOOTFS_REQUEST_SERVICE_BIN) \
+		--task-bank-gateway $(TASK_BANK_GATE_BIN) \
+		--d64-output $(TASK_SLEEP_PROBE_D64) $(TASK_SLEEP_PROBE_D71)
+
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		$(BOOT_DELIVERY_BIN) \
 		$(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) \
@@ -1914,6 +1978,7 @@ check:
 		tools/task_state_decode.py tools/task_yield_probe.py \
 		tools/task_exit_probe.py tools/task_waitpid_probe.py \
 		tools/task_spawn_loader_probe.py tools/task_spawn_probe.py \
+		tools/task_sleep_probe.py \
 		tools/vice_capture.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-r2 && sha256sum -c SHA256SUMS
@@ -2002,6 +2067,7 @@ help:
 		'make shadow-probe  Qualify the VIC shadow clear in VICE (host flatpak)' \
 		'make task-spawn-loader-probe  Qualify load-only SPAWN delivery in VICE' \
 		'make task-spawn-probe  Qualify SPAWN/EXIT/WAITPID lifecycle in VICE' \
+		'make task-sleep-probe  Qualify bounded SLEEP on D71 and D64 in VICE' \
 		'make capability-probe  Qualify relocated capability startup and slot reuse' \
 		'make bench      Build comparable 8502 and Z80 benchmark images' \
 		'make bench-8502 Build only the 8502 benchmark image' \

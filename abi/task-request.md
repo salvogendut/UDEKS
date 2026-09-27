@@ -7,7 +7,7 @@ fixed `$CF30` vector, and restores bank 1 before returning.
 
 ABI 0.3 keeps every 0.2 operation number and behavior unchanged and adds
 lifecycle operations `10`-`15`. `YIELD`, `EXIT`, immediate/nonblocking and
-blocking `WAITPID`, and `SPAWN` are implemented; `SLEEP` and `CANCEL` remain
+blocking `WAITPID`, `SLEEP`, and `SPAWN` are implemented; `CANCEL` remains
 `ENOSYS`. Rebuilt 0.3 clients may keep using the 0.2 operations unchanged, and
 the resident version check accepts minor `0`, `1`, `2`, and `3`.
 
@@ -126,6 +126,10 @@ released, and child exit publishes the response only when the parent resumes.
   units, from `1` through `600` (ten seconds); flags `0`.
 - Response on success: state complete, `result = 0`, errno `0`.
 - Zero or out-of-range ticks: `EINVAL`.
+- The scheduler maintains a 16-bit modulo clock normalized to 60 logical ticks
+  per second by the raster IRQ: NTSC advances once per frame; PAL distributes
+  six ticks over five frames. Durations are limited to 600, so signed deadline
+  subtraction remains unambiguous across counter wrap.
 
 ### CANCEL (14)
 
@@ -237,8 +241,8 @@ retain their existing return convention until they migrate to lifecycle tasks.
 The fixed `$F800` request gateway uses 262 of its 265 reserved bytes as of ABI
 0.3, and the host-testable policy compiles to 2,245 bytes (about 2.2 KiB) of
 cc65 code without long-arithmetic helpers. The active scheduler core occupies
-1,043 emitted bytes plus 151 bytes of BSS at `$C120-$C5C9`; the permanent
-1,029-byte lifecycle request handler occupies `$C900-$CD04` outside both
+1,205 emitted bytes plus 154 bytes of BSS at `$C120-$C66E`; the permanent
+1,206-byte lifecycle request handler occupies `$C900-$CDB5` outside both
 application slots. Its per-task wait snapshots preserve blocking requests
 while the shared record is released. The policy module remains
 compile-qualified but nonresident.

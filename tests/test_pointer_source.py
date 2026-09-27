@@ -60,13 +60,15 @@ class PointerSourceTests(unittest.TestCase):
         self.assertIn("apply_y_delta:", source)
         self.assertIn("_udeks_pointer_resynchronize:", source)
         self.assertIn("JOYSTICK_STEP           = 5", source)
+        self.assertIn("SCHEDULER_TICK          = $c906", source)
+        self.assertIn("jsr SCHEDULER_TICK", source)
 
         joystick = (ROOT / "include/udeks/joystick.h").read_text(
             encoding="utf-8"
         )
         self.assertIn("#define UDEKS_JOYSTICK_STEP     5", joystick)
 
-    def test_pointer_poll_precedes_keyboard_scan(self):
+    def test_pointer_service_precedes_keyboard_and_needs_no_poll(self):
         table = (ROOT / "src/services/table.s").read_text(encoding="utf-8")
         pointer = table.index(".addr _udeks_pointer_service_descriptor")
         keyboard = table.index(".addr _udeks_keyboard_service_descriptor")
@@ -75,7 +77,8 @@ class PointerSourceTests(unittest.TestCase):
             ROOT / "src/services/input/pointer_descriptor.s"
         ).read_text(encoding="utf-8")
         self.assertIn(".byte $05, $01", descriptor)
-        self.assertIn(".addr _udeks_pointer_poll", descriptor)
+        self.assertNotIn("_udeks_pointer_poll", descriptor)
+        self.assertIn(".addr $0000             ; input is paced entirely by the raster IRQ", descriptor)
 
     def test_keyboard_isolated_during_control_port_activity(self):
         source = (ROOT / "src/services/input/keyboard.c").read_text(

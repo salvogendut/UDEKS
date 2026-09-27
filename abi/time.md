@@ -18,6 +18,10 @@ Applications use `udeks_time_now()` and never access CIA registers directly.
 The C128 has no battery-backed clock, so the published value is the machine's
 TOD value rather than persistent civil time.
 
+Task deadlines use a separate 16-bit monotonic scheduler clock. The raster IRQ
+normalizes NTSC's 60 frames/s and PAL's 50 frames/s to 60 logical ticks/s;
+`SLEEP` never depends on the settable TOD or BASIC `TI` wall-clock mirror.
+
 The 24-byte `TIME` record begins at `$F200`:
 
 | Offset | Size | Meaning |

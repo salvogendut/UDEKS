@@ -124,6 +124,11 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertIn("sta _udeks_task_wait_sequence_private,y", source)
         self.assertIn("sta _udeks_task_wait_state_private,y", source)
         self.assertIn("request_spawn:", source)
+        self.assertIn("request_sleep:", source)
+        self.assertIn("cmp #$59", source)
+        self.assertIn("sta _udeks_task_wait_selector_high_private,y", source)
+        self.assertIn("task_sleep_poll_gate = $c903", source)
+        self.assertIn("task_tick_advance_gate = $c906", source)
         self.assertIn("jsr spawn_loader", source)
         self.assertIn("task2_launcher          = task_status", source)
         self.assertIn("sta treq_descriptor", source)
@@ -147,6 +152,26 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertIn("unsigned char udeks_program_main", child)
         self.assertIn("jsr pusha", entry)
         self.assertIn("jmp _udeks_program_main", entry)
+
+    def test_sleep_clock_and_wake_policy_are_overlay_owned(self):
+        wait_state = (ROOT / "src/scheduler/task_wait_state.s").read_text(
+            encoding="utf-8"
+        ).lower()
+        init = (ROOT / "src/services/init/descriptor.s").read_text(
+            encoding="utf-8"
+        ).lower()
+        probe = (ROOT / "user/probes/task_sleep.s").read_text(
+            encoding="utf-8"
+        ).lower()
+        self.assertIn("_udeks_task_tick_advance:", wait_state)
+        self.assertIn("adc #$06", wait_state)
+        self.assertIn("cmp #$0a", wait_state)
+        self.assertIn("_udeks_task_sleep_poll:", wait_state)
+        self.assertIn("sbc _udeks_task_wait_selector_high_private,y", wait_state)
+        self.assertIn("jsr $c903", init)
+        self.assertIn("lda #<$0258", probe)
+        self.assertIn("ldy #>$0258", probe)
+        self.assertIn("lda #<$0259", probe)
 
 
 if __name__ == "__main__":
