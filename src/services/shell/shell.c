@@ -13,6 +13,10 @@
 #include "udeks/xclock.h"
 #include "udeks/xwave.h"
 
+/* Private overlay bridge: native ush owns submissions once it is ready. */
+extern unsigned char udeks_shell_read_line(
+    unsigned char *text, unsigned char capacity);
+
 #define STATUS_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_SHELL_STATUS_BASE + (offset)))
 
@@ -549,7 +553,7 @@ unsigned char udeks_shell_poll(void)
         STATUS_BYTE(STATUS_PENDING_EXEC) = 0;
         result = UDEKS_LINE_EDITOR_OK;
     } else {
-        result = udeks_line_editor_get_line(
+        result = udeks_shell_read_line(
             command_line, sizeof(command_line));
     }
     if (result == UDEKS_LINE_EDITOR_EMPTY) {

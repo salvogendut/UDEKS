@@ -26,7 +26,7 @@ class ShellSourceTests(unittest.TestCase):
     def test_shell_uses_registry_dispatch_and_rearms_terminal_prompt(self):
         source = (ROOT / "src/services/shell/shell.c").read_text(encoding="utf-8")
         self.assertIn("static const struct shell_command commands[]", source)
-        self.assertIn("udeks_line_editor_get_line(", source)
+        self.assertIn("udeks_shell_read_line(", source)
         self.assertIn("udeks_root_terminal_prompt()", source)
         for command in (
             "help",

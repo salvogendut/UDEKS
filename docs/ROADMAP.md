@@ -145,7 +145,7 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   and callbacks in all 323 post-overlay bytes, plus six fixed page
   vectors. Their bounded post-startup delivery is active: the page
   vectors and 42-byte activator staged at `$1BAA` and installed at `$F68A` are
-  checksum covered. The installed context/gate images and 1,213-byte handler now
+  checksum covered. The installed context/gate images and lifecycle handler now
   implement the `$CF30` carry contract; persistent `/bin/ush` repeatedly
   yields, resumes, and accepts commands in VICE from both D71 and D64.
 - [x] Implement production cooperative `YIELD` for persistent `/bin/ush`.
@@ -168,7 +168,13 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   invalid bounds and exact blocking wake/resume ownership.
 - [x] Implement child-only `CANCEL`, including atomic rejection, blocked-wait
   cleanup, status 130 zombies, and subsequent `WAITPID` reap on D71 and D64.
-- [ ] Implement event wait.
+- [x] Host-test and cc65-compile the proposed stdin-readiness validation and
+  timeout policy without linking or advertising the ABI extension.
+- [x] Implement resident ABI 0.4 `POLL` and migrate idle shell input waiting.
+  The compiled-C probe and graphics/utility smoke pass on D71/D64 in VICE;
+  independent 1986 machine-input typing/history, dragging and foreground Ctrl+C
+  pass on both formats; physical-C128, manual host input and performance gates remain
+  in [EVENT-WAITS.md](EVENT-WAITS.md) and issue #4.
 - [x] Save and restore the selected compiler runtime and CPU context behind
   the production scheduler gate. Physical-hardware qualification of the
   integrated path remains part of the milestone acceptance gate.

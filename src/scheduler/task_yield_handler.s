@@ -11,6 +11,8 @@
         .import _udeks_task_sleep_poll
         .import _udeks_task_tick_advance
         .import _udeks_task_cancel_request
+        .import _udeks_task_poll_request
+        .import _udeks_task_console_get_line
         .import _udeks_task_context_save_current
         .import _udeks_task_contexts_private
         .import _udeks_lifecycle_slots_private
@@ -124,8 +126,19 @@ task_sleep_poll_gate:
         jmp _udeks_task_sleep_poll
 task_tick_advance_gate:
         jmp _udeks_task_tick_advance
+task_wait_snapshot_gate:
+        jmp wait_snapshot
+task_block_caller_gate:
+        jmp block_caller
+task_console_get_line_gate:
+        jmp _udeks_task_console_get_line
 
 lifecycle_request:
+        lda TREQ_OPERATION
+        cmp #$10
+        bne :+
+        jmp _udeks_task_poll_request
+:
         lda TREQ_DESCRIPTOR
         beq :+
         jmp yield_invalid
@@ -424,20 +437,7 @@ sleep_range_valid:
         beq :+
         jmp yield_invalid
 :
-        lda _udeks_lifecycle_current_private
-        sec
-        sbc #$01
-        tay
-        lda TREQ_OPERATION
-        sta _udeks_task_wait_operation_private,y
-        lda TREQ_SEQUENCE
-        sta _udeks_task_wait_sequence_private,y
-        lda TREQ_DESCRIPTOR
-        sta _udeks_task_wait_descriptor_private,y
-        lda TREQ_COUNT
-        sta _udeks_task_wait_count_private,y
-        lda TREQ_FLAGS
-        sta _udeks_task_wait_flags_private,y
+        jsr wait_snapshot
         clc
         lda _udeks_monotonic_ticks_low
         adc TREQ_PAYLOAD
@@ -445,30 +445,8 @@ sleep_range_valid:
         lda _udeks_monotonic_ticks_high
         adc TREQ_PAYLOAD+1
         sta _udeks_task_wait_selector_high_private,y
-        lda #WAIT_BLOCKED
-        sta _udeks_task_wait_state_private,y
-        jsr _udeks_task_context_save_current
-
-        lda _udeks_lifecycle_current_private
-        sec
-        sbc #$01
-        asl a
-        asl a
-        asl a
-        tax
         lda #WAIT_TIMER
-        sta _udeks_lifecycle_slots_private+TASK_SLOT_WAIT,x
-        lda #TASK_STATE_WAITING
-        sta _udeks_lifecycle_slots_private+TASK_SLOT_STATE,x
-        lda #LIFECYCLE_BLOCK
-        sta _udeks_lifecycle_last_event_private
-        lda #$00
-        sta _udeks_lifecycle_current_private
-        sta TREQ_STATE
-        sta TREQ_RESULT
-        sta TREQ_ERROR
-        sec
-        rts
+        jmp block_caller
 
 request_yield:
         lda TREQ_COUNT
@@ -582,48 +560,13 @@ wait_live_child:
 wait_blocking:
         ; Snapshot the fields required to publish this task's eventual
         ; response, then release the shared request record before sleeping.
-        lda _udeks_lifecycle_current_private
-        sec
-        sbc #$01
-        tay
-        lda TREQ_OPERATION
-        sta _udeks_task_wait_operation_private,y
-        lda TREQ_SEQUENCE
-        sta _udeks_task_wait_sequence_private,y
-        lda TREQ_DESCRIPTOR
-        sta _udeks_task_wait_descriptor_private,y
-        lda TREQ_COUNT
-        sta _udeks_task_wait_count_private,y
-        lda TREQ_FLAGS
-        sta _udeks_task_wait_flags_private,y
+        jsr wait_snapshot
         lda TREQ_PAYLOAD
         sta _udeks_task_wait_selector_private,y
         lda TREQ_PAYLOAD+1
         sta _udeks_task_wait_selector_high_private,y
-        lda #WAIT_BLOCKED
-        sta _udeks_task_wait_state_private,y
-        jsr _udeks_task_context_save_current
-
-        lda _udeks_lifecycle_current_private
-        sec
-        sbc #$01
-        asl a
-        asl a
-        asl a
-        tax
         lda #WAIT_CHILD
-        sta _udeks_lifecycle_slots_private+TASK_SLOT_WAIT,x
-        lda #TASK_STATE_WAITING
-        sta _udeks_lifecycle_slots_private+TASK_SLOT_STATE,x
-        lda #LIFECYCLE_BLOCK
-        sta _udeks_lifecycle_last_event_private
-        lda #$00
-        sta _udeks_lifecycle_current_private
-        sta TREQ_STATE
-        sta TREQ_RESULT
-        sta TREQ_ERROR
-        sec
-        rts
+        jmp block_caller
 
 wait_reap:
         lda _udeks_lifecycle_slots_private+TASK_SLOT_EXIT,x
@@ -762,8 +705,57 @@ yield_invalid:
         lda #ERR_EINVAL
         jmp _udeks_bootfs_finish_error
 
+; Private overlay helpers behind fixed $C909/$C90C veneers. The caller has
+; completed validation. Snapshot returns Y=current-1; block receives the wait
+; reason in A and never returns to the task until it is selected again.
+wait_snapshot:
+        lda _udeks_lifecycle_current_private
+        sec
+        sbc #$01
+        tay
+        lda TREQ_OPERATION
+        sta _udeks_task_wait_operation_private,y
+        lda TREQ_SEQUENCE
+        sta _udeks_task_wait_sequence_private,y
+        lda TREQ_DESCRIPTOR
+        sta _udeks_task_wait_descriptor_private,y
+        lda TREQ_COUNT
+        sta _udeks_task_wait_count_private,y
+        lda TREQ_FLAGS
+        sta _udeks_task_wait_flags_private,y
+        rts
+
+block_caller:
+        pha
+        lda #WAIT_BLOCKED
+        sta _udeks_task_wait_state_private,y
+        jsr _udeks_task_context_save_current
+        lda _udeks_lifecycle_current_private
+        sec
+        sbc #$01
+        asl a
+        asl a
+        asl a
+        tax
+        pla
+        sta _udeks_lifecycle_slots_private+TASK_SLOT_WAIT,x
+        lda #TASK_STATE_WAITING
+        sta _udeks_lifecycle_slots_private+TASK_SLOT_STATE,x
+        lda #LIFECYCLE_BLOCK
+        sta _udeks_lifecycle_last_event_private
+        lda #$00
+        sta _udeks_lifecycle_current_private
+        sta TREQ_STATE
+        sta TREQ_RESULT
+        sta TREQ_ERROR
+        sec
+        rts
+
 yield_handler_end:
         .assert _udeks_task_yield_handler = $c900, error, "lifecycle handler moved"
         .assert task_sleep_poll_gate = $c903, error, "SLEEP poll gate moved"
         .assert task_tick_advance_gate = $c906, error, "scheduler tick gate moved"
+        .assert task_wait_snapshot_gate = $c909, error, "private wait snapshot gate moved"
+        .assert task_block_caller_gate = $c90c, error, "private block gate moved"
+        .assert task_console_get_line_gate = $c90f, error, "private console ownership gate moved"
         .assert yield_handler_end <= $cdbd, error, "lifecycle handler reaches context binding"

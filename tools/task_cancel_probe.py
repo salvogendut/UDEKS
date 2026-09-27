@@ -47,7 +47,8 @@ def wait_symbols(path: Path) -> dict[str, int]:
 
 
 def seed_targets(
-    port: int, slots: int, waits: dict[str, int], signal: int
+    port: int, slots: int, waits: dict[str, int], signal: int,
+    input_wait: bool = False,
 ) -> None:
     """Install a blocked child and unrelated task in one paused session."""
     child = bytes((1, 4, 3, 1, 0, 0, 0, 0))
@@ -64,6 +65,9 @@ def seed_targets(
         "child": 0,
         "status": 0,
     }
+    if input_wait:
+        child = bytes((1, 4, 2, 1, 0, 0, 0, 0))
+        pending.update(operation=16, count=4, child=0xFF, status=0xFF)
     with socket.create_connection(("127.0.0.1", port), timeout=3.0) as connection:
         connection.settimeout(15.0)
         buffer = b""
@@ -129,7 +133,7 @@ def release(port: int, signal: int) -> None:
 
 def run(
     disk: Path, overlay_map: Path, handler_path: Path,
-    timeout: float, flatpak_id: str,
+    timeout: float, flatpak_id: str, input_wait: bool = False,
 ) -> None:
     symbols = scheduler_symbols(overlay_map)
     waits = wait_symbols(overlay_map)
@@ -144,7 +148,7 @@ def run(
     try:
         print(f"{disk.name}: booting CANCEL parent", flush=True)
         sp.wait_for_byte(port, PHASE, WAIT_SEED, deadline)
-        seed_targets(port, slots, waits, 0xA6)
+        seed_targets(port, slots, waits, 0xA6, input_wait)
         sp.wait_for_byte(port, PHASE, WAIT_ZOMBIE, deadline)
 
         blocks = [
@@ -242,9 +246,12 @@ def main() -> None:
     )
     parser.add_argument("--timeout", type=float, default=90.0)
     parser.add_argument("--flatpak-id", default="net.sf.VICE")
+    parser.add_argument("--input-wait", action="store_true",
+                        help="seed a POLL/INPUT subscription instead of SLEEP")
     args = parser.parse_args()
     try:
-        run(args.disk, args.map, args.handler, args.timeout, args.flatpak_id)
+        run(args.disk, args.map, args.handler, args.timeout, args.flatpak_id,
+            args.input_wait)
     except (KeyError, OSError, RuntimeError, TimeoutError, ValueError) as error:
         raise SystemExit(f"task-CANCEL probe failed: {error}") from error
     print("task-CANCEL probe OK")

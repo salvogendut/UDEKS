@@ -38,6 +38,7 @@ make z80-asm    # build the independent RASM smoke image
 make boot       # build build/boot/udeks.d71 for native C128 autoboot
 make panic-probe  # build a non-release D71 that injects descriptor failure
 make placement-check  # verify the real linker-map placement budget (reference container)
+make task-poll-policy  # cc65 compile-only event-wait reference policy; not linked
 make framebuffer-assets  # pack the 64x64 XPM as a 512-byte VDC bitmap
 make user-sources  # compile staged user programs separately from the kernel
 make user-programs  # link and package standalone UDEX programs
@@ -256,6 +257,25 @@ The Z80 side has two intentionally separate paths:
 Do not attempt to feed SDCC `.rel` files to RASM.
 
 ## Emulator plan
+
+Task Request ABI 0.4 input waits have a dedicated compiled-C qualification
+task. Build the disks in the reference container, then run the host VICE probe:
+
+```sh
+distrobox enter my-distrobox -- make -j8 boot build/boot/udeks-task-poll-probe.d71
+python3 tools/task_poll_probe.py
+python3 tools/task_poll_probe.py --disk build/boot/udeks-task-poll-probe.d64
+python3 tools/task_yield_probe.py
+python3 tools/task_yield_probe.py --disk build/boot/udeks.d64
+```
+
+`make task-poll-probe` wraps building/running both formats when the toolchain
+and Flatpak are available in the same environment. `task_cancel_probe.py
+--input-wait` reuses the cancellation probe with a blocked INPUT subscription.
+The compiled probe preserves local stack arrays across finite/infinite and
+stopped waits. Additional monitor-seeded subscriptions qualify wake scanning,
+not extra task allocation. Line injection selects bank 0 and preserves the
+paused CPU's live MMU profile, including during VIC/Z80 activity.
 
 The local `../1986` C128DCR emulator is the primary integration target. VICE
 3.10 is installed as Flatpak `net.sf.VICE`; it supplies `x128` and `c1541` as

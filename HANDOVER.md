@@ -107,7 +107,7 @@ the task model, validate it, and only then remove the replaced special case.
   callbacks occupy the exact `$CDBD-$CEFF` 323-byte window, while fixed
   callback vectors consume the page's final six bytes at `$1FFA-$1FFF`.
   `SCHEDOVR` ABI 0.3 appends the exact, build-locked 234-byte context image and
-  192-byte gate; its checksummed bank-0 tail also installs the 1,213-byte
+  192-byte gate; its checksummed bank-0 tail also installs the 1,163-byte
   lifecycle handler at `$C900-$CDBC`, outside both application slots. The
   normal checksum covers the
   six fixed page vectors, and the boot-console installer checksums and installs a
@@ -319,7 +319,34 @@ and bank ownership.
 
 ## First concrete change for the next session
 
-Define the first scheduler event-wait operation and its wake-source ownership.
-Reuse the private request snapshot used by `WAITPID` and `SLEEP`; keep event
-publication bounded and ensure a cancelled waiter cannot consume a later
-event.
+PR #3 merged the lifecycle foundation as `00060f4`. Work continues on
+`tasking-0.1-event-waits`, tracked by [issue #4](https://github.com/salvogendut/UDEKS/issues/4);
+[the event-wait proposal](docs/EVENT-WAITS.md)
+defines the initial stdin-readiness scope, private request ownership,
+placement constraints, and regression gates. ABI 0.4 `POLL` is now installed,
+and idle native ush blocks on INPUT rather than repeatedly reading/yielding.
+The pure C policy remains compile-only; its bounded assembly equivalent
+reuses the WAITPID/SLEEP snapshots without extra BSS. Remaining space is
+141 core bytes and 50 handler bytes; the resident/VIC-shadow boundary and
+published task/runtime addresses are unchanged.
+
+The compiled-C POLL probe passes on D71/D64: validation, finite wrap, infinite
+wake, chunked/empty reads, stopped wake/continue, sequence restoration and live
+stack locals. Seeded subscriptions qualify multiple waiters and ready/expiry
+precedence. INPUT cancellation clears its snapshot. The shell/graphics smoke
+checks stable idle suspensions and xinit/xclock/xwave plus console utilities.
+Native ownership suppresses the resident compatibility shell's competing
+input read, while preserving deferred EXEC and foreground job handling.
+
+Independent 1986 machine-input smoke now passes on D71/D64: exact submitted
+text, backspace/history, 1351 outline dragging, foreground Ctrl+C, background
+clock survival and subsequent console input. The tracked emulator sources are
+unchanged. The smoke exposed an inherited `$D02F` selector/arbitration bug;
+the scanner now leaves extended columns idle with the resident layout unchanged.
+See [the input report](bench/results/2026-09-27-event-waits-1986/README.md).
+Initial xwave painting delayed a release scan by 689 frames, so no responsiveness
+qualification is claimed. Complete physical-C128 and manual SDL/host input and
+performance gates for issue #4. Then generalize
+task allocation and migrate shell jobs/graphical applications to ordinary
+lifecycle tasks. Do not claim Tasking 0.1 complete or discharge the older
+ADR 0010/0012 and integrated-context hardware gates from these VICE results.

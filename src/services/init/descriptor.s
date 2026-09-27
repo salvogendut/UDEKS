@@ -8,6 +8,8 @@
         .import _udeks_shell_start
         .import _udeks_shell_poll
         .export _udeks_init_service_descriptor
+        .export _udeks_shell_read_line
+_udeks_shell_read_line = $c90f
 
 TASK_BANK_POLL          = $ff13
 PERSISTENT_LOAD         = $f910
@@ -32,7 +34,7 @@ init_shell_fallback:
         .res $03, $ea
 
 init_poll:
-        jsr $c903                       ; wake expired SLEEP requests
+        jsr $c903                       ; wake SLEEP/input event requests
         jsr TASK_BANK_POLL
         jmp _udeks_shell_poll
 

@@ -261,12 +261,12 @@ task_validate_signature:
         dex
         bpl task_validate_signature
         lda TREQ_BASE+$05
-        cmp #$04
+        cmp #$05
         bcs task_protocol_trampoline
         lda TREQ_STATE
         cmp #TREQ_REQUEST
         bne task_protocol_trampoline
-        ; ABI 0.3 lifecycle operations are owned by the installed fallback
+        ; ABI 0.3 lifecycle/0.4 POLL operations are owned by the installed fallback
         ; service; this compatibility gate deliberately does not decode them.
         lda TREQ_OPERATION
         cmp #$0a
