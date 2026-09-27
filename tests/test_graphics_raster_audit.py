@@ -10,14 +10,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
-from graphics_raster_audit import static_scratch_variant, static_arguments_variant, segment_sizes
+from graphics_raster_audit import automatic_locals_variant, static_scratch_variant, static_arguments_variant, segment_sizes
 
 
 class GraphicsRasterAuditTests(unittest.TestCase):
-    def test_preserved_report_matches_the_audited_source(self):
+    def test_preserved_historical_report_budget(self):
         report = json.loads((ROOT / 'bench/results/2026-09-27-graphics-raster-audit/report.json').read_text())
-        source = (ROOT / 'src/services/display/vic_graphics.c').read_bytes()
-        self.assertEqual(report['source_sha256'], hashlib.sha256(source).hexdigest())
+        # Pre-fix source fingerprint is historical, not the current production
+        # module. The fixed-source integration has its own preserved evidence.
+        self.assertRegex(report['source_sha256'], r'^[0-9a-f]{64}$')
         self.assertEqual(report['code_saved'], report['baseline']['CODE'] - report['static-scratch']['CODE'])
         self.assertEqual(report['bss_added'], report['static-scratch']['BSS'] - report['baseline']['BSS'])
         self.assertEqual(report['net_object_bytes_saved'], 49)
@@ -27,8 +28,9 @@ class GraphicsRasterAuditTests(unittest.TestCase):
     def test_only_two_local_declaration_blocks_change(self):
         original = (ROOT / 'src/services/display/vic_graphics.c').read_text()
         variant = static_scratch_variant(original)
-        self.assertEqual(variant.replace('    static ', '    '), original)
+        self.assertEqual(automatic_locals_variant(variant), automatic_locals_variant(original))
         self.assertEqual(variant.count('    static '), 18)
+        self.assertEqual(static_scratch_variant(variant), variant)
 
     def test_layout_drift_fails_closed(self):
         with self.assertRaisesRegex(ValueError, 'declaration block'):
@@ -45,7 +47,7 @@ class GraphicsRasterAuditTests(unittest.TestCase):
 
     def test_baseline_and_static_variant_against_pixel_reference(self):
         original = (ROOT / 'src/services/display/vic_graphics.c').read_text()
-        for source in (original, static_scratch_variant(original), static_arguments_variant(original)):
+        for source in (automatic_locals_variant(original), static_scratch_variant(original), static_arguments_variant(original)):
             # Keep the real clear/pixel/line/fill implementation. Discard unused
             # hardware-facing sections at link time, and replace only MMIO state.
             source = source.split('void udeks_vic_bitmap_set_clip(', 1)[0]

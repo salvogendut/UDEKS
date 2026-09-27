@@ -16,13 +16,25 @@ ROOT = Path(__file__).resolve().parents[1]
 FUNCTIONS = ('udeks_vic_bitmap_line', 'udeks_vic_bitmap_fill')
 
 
+def automatic_locals_variant(source):
+    """Retain an automatic-local reference after production integrates scratch."""
+    for function in FUNCTIONS:
+        pattern = (r'(void ' + function + r'\([^{}]*\)\n\{\n)'
+                   r'((?:    (?:static )?(?:int|unsigned int|unsigned char) \w+;\n)+)')
+        def replace(match):
+            return match[1] + match[2].replace('    static ', '    ')
+        source, count = re.subn(pattern, replace, source)
+        if count != 1:
+            raise ValueError(f'{function}: expected exactly one local declaration block')
+    return source
+
+
 def static_scratch_variant(source):
+    source = automatic_locals_variant(source)
     for function in FUNCTIONS:
         pattern = (r'(void ' + function + r'\([^{}]*\)\n\{\n)'
                    r'((?:    (?:int|unsigned int|unsigned char) \w+;\n)+)')
-        def replace(match):
-            return match[1] + match[2].replace('    ', '    static ')
-        source, count = re.subn(pattern, replace, source)
+        source, count = re.subn(pattern, lambda m: m[1] + m[2].replace('    ', '    static '), source)
         if count != 1:
             raise ValueError(f'{function}: expected exactly one local declaration block')
     return source
@@ -72,7 +84,7 @@ def main():
               'cc65': subprocess.check_output(['cc65', '--version'], stderr=subprocess.STDOUT,
                                                text=True).strip(),
               'qualification': 'compile-only; no resident link or runtime speed claim'}
-    variants = (('baseline', original), ('static-scratch', static_scratch_variant(original)),
+    variants = (('baseline', automatic_locals_variant(original)), ('static-scratch', static_scratch_variant(original)),
                 ('static-arguments', static_arguments_variant(original)))
     for name, source in variants:
         path = args.work / name

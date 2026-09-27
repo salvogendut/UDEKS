@@ -42,6 +42,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--work', type=Path, default=ROOT / 'build/graphics-raster-link')
     parser.add_argument('--candidate', type=Path, default=ROOT / 'build/graphics-raster-audit/static-scratch.o')
+    parser.add_argument('--baseline', type=Path, default=ROOT / 'build/graphics-raster-audit/baseline.o',
+                        help='automatic-local reference object, even after scratch integration')
     args = parser.parse_args()
     args.work.mkdir(parents=True, exist_ok=True)
     output = subprocess.check_output(['make', '-Bn', 'build/8502/udeks-8502.bin'], cwd=ROOT, text=True)
@@ -54,7 +56,7 @@ def main():
     cfg = args.work / 'experimental.cfg'
     cfg.write_text(config)
     report = {'qualification': 'link-budget only; experimental images must not be booted'}
-    for label, candidate in (('baseline', None), ('static-scratch', args.candidate)):
+    for label, candidate in (('baseline', args.baseline), ('static-scratch', args.candidate)):
         directory = args.work / label
         directory.mkdir(exist_ok=True)
         # Each link has its own split-output directory too.

@@ -596,5 +596,10 @@ _udeks_vic_gateway_size_outline = outline_gateway_end-outline_gateway
 ; This is resident padding, not part of any copied common-RAM gateway.
 outline_mask_placement_reserve:
         .res 8, $ea
+; Scratch-only line/fill storage removes 81 CODE bytes but adds 32 BSS bytes.
+; Hold the measured net 49-byte saving here to retain the same shadow/staging
+; boundary. Future compositor work may consume it only with placement gates.
+raster_scratch_placement_reserve:
+        .res 49, $ea
         .export _udeks_vic_gateway_size_vic, _udeks_vic_gateway_size_sprite
         .export _udeks_vic_gateway_size_page, _udeks_vic_gateway_size_outline

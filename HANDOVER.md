@@ -321,7 +321,7 @@ and bank ownership.
 
 PR #3 merged the lifecycle foundation as `00060f4`; PR #5 merged the event-wait
 implementation as `1b7a6e0`; PR #7 merged bounded xwave rendering as `6aadcf3`.
-Work continues on `graphics-raster-audit`,
+Work continues on `graphics-raster-integration` (issue #10),
 tracked by [issue #6](https://github.com/salvogendut/UDEKS/issues/6);
 issue #4 retains its manual and hardware qualification gates.
 [the event-wait proposal](docs/EVENT-WAITS.md)
@@ -356,8 +356,9 @@ The user reported the manual 1986 interaction check looked good. The next
 and approximately 12% lower line/24% lower fill timer counts in isolated 1986
 and VICE probes. All pixels/dirty flags match an independent reference. Current
 cooperative/IRQ paths do not reenter scratch, but future preemption needs
-serialization. The candidate link moves the shadow to `$A1AF`; production is
-unchanged. Preserve the `$A1E0` staging contract explicitly, regenerate import
+serialization. The historical candidate link moved the shadow to `$A1AF`;
+production was unchanged at that checkpoint. Preserve the `$A1E0` staging
+contract explicitly, regenerate import
 bridges and qualify the integrated image before consuming the savings. Raw
 CIA counts differ by about one per 65,536 events across the emulators; the
 evidence retains that discrepancy and makes no physical-cycle claim.
@@ -383,3 +384,29 @@ drag-freeze functional hardware gate, not unrelated tasking gates or timing
 qualification. Manual SDL confirmation remains outstanding. Rebase and
 requalify `graphics-raster-audit` on this fix before integrating its scratch
 optimization; its earlier checkpoint is not a qualification of this revision.
+
+## Raster integration continuation (issue #10)
+
+The scratch-only line/fill optimization is integrated atop PR #9. It removes
+81 CODE bytes and adds 32 BSS bytes; a named 49-byte CODE reserve preserves
+the frozen `$A1E0` shadow boundary. Normal private bridges are regenerated;
+no common-RAM gate, UAPP runtime address or legacy row reservation changes.
+The audit and standalone builders retain an automatic-local reference even
+though production now uses static locals. Drawing remains cooperative,
+non-yielding and non-reentrant; preemption needs service serialization.
+
+Clean parallel builds are deterministic. Native D71/D64 drag stress, console
+recovery and clock survival pass, as do VICE scheduler/app smoke and complete
+bank-0/bank-1 bitmap equality. Primitive timer counts improve about 12% for
+lines and 24% for fills. The same active-display native script reduces worst
+partial/cached drag-release latency 348/619 → 290/541 PAL frames. Cached
+repaint is still much too slow, so issue #6 remains open; this does not finish
+Tasking 0.1. Exact evidence is in
+`bench/results/2026-09-28-graphics-raster-integration/`.
+
+Next: review/test this integrated disk on physical C128, then design a bounded
+cached-compositor continuation with explicit ownership and cancellation.
+Consume the 49-byte reserve only under placement gates; if it cannot cover
+the state, make the service-placement decision explicitly. Do not introduce
+recursive service polls into raster loops. General task allocation, per-task
+VFS/descriptors/CWD, older tasking hardware gates and preemption remain pending.

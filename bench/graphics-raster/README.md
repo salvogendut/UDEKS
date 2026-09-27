@@ -1,8 +1,10 @@
 # Standalone raster timing suite
 
 This benchmark extracts the actual line/fill functions from the display service
-and compares automatic locals with the proposed static scratch storage. It
+and compares an automatic-local reference with integrated static scratch storage. It
 does not boot UDEKS or replace production build outputs.
+The builder normalizes only those declaration blocks, so the reference remains
+available after the production service switches to static locals.
 
 ```sh
 distrobox enter my-distrobox -- python3 tools/graphics_raster_bench_build.py

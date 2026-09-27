@@ -5,7 +5,7 @@ import argparse
 import re
 import subprocess
 from pathlib import Path
-from graphics_raster_audit import ROOT, static_scratch_variant
+from graphics_raster_audit import ROOT, automatic_locals_variant, static_scratch_variant
 
 
 def function(source, name):
@@ -39,7 +39,7 @@ def main():
     launcher = args.work / 'launcher.o'
     subprocess.run(['ca65', '--cpu', '6502', '-o', str(launcher),
                     str(ROOT / 'bench/graphics-raster/launcher.s')], check=True)
-    for variant, text in enumerate((source, static_scratch_variant(source))):
+    for variant, text in enumerate((automatic_locals_variant(source), static_scratch_variant(source))):
         name = ('baseline', 'static-scratch')[variant]
         unit = args.work / (name + '.c')
         unit.write_text(raster_unit(text))

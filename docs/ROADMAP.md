@@ -185,6 +185,9 @@ the [Tasking 0.1 handover](../HANDOVER.md).
 - [ ] Qualify responsive graphics under input pressure (issue #6): xwave initial
   drawing now advances in four-vertex polls; synchronous compositor replay and
   exposed-window redraw still need work before performance acceptance.
+  Issue #10 integrates scratch-only raster storage with preserved placement;
+  emulator primitive and drag-release timings improve, but cached repaint still
+  takes seconds. Bounded compositor work and physical qualification remain.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.
