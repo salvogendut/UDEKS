@@ -20,6 +20,7 @@ from shadow_clear_decode import (
     compare_shadow_bitmap,
     parse_window,
 )
+from shadow_boot_probe import preserved_gap_size, validate_gap_preimage
 
 
 RAW = ROOT / "bench/results/2026-09-26-shadow-clear/raw"
@@ -125,6 +126,28 @@ class ShadowClearProbeEvidenceTests(unittest.TestCase):
         result = parse_boot_chain(block)
         self.assertEqual(result["loader_state"], 2)
         self.assertEqual(result["blocks"], 212)
+
+
+class ShadowClearGapTests(unittest.TestCase):
+    def test_handler_may_end_exactly_at_context(self):
+        self.assertEqual(preserved_gap_size(0xC120, 3229, 0xCDBD, 0xCF00), 0)
+        validate_gap_preimage(b"")
+
+    def test_nonempty_gap_requires_nonzero_preimage(self):
+        self.assertEqual(preserved_gap_size(0xC120, 3228, 0xCDBD, 0xCF00), 1)
+        validate_gap_preimage(b"\x5a")
+        with self.assertRaisesRegex(ValueError, "no test data"):
+            validate_gap_preimage(b"\x00")
+
+    def test_overlapping_or_out_of_tail_regions_still_fail(self):
+        for size, context, limit in (
+            (3230, 0xCDBD, 0xCF00),
+            (-1, 0xCDBD, 0xCF00),
+            (3229, 0xCF01, 0xCF00),
+        ):
+            with self.subTest(size=size, context=context, limit=limit):
+                with self.assertRaisesRegex(ValueError, "outside the tail"):
+                    preserved_gap_size(0xC120, size, context, limit)
 
 
 class ShadowClearSourceTests(unittest.TestCase):

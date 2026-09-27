@@ -113,6 +113,22 @@ def scheduler_installed_tail(path: Path) -> bytes:
     return image[start:end]
 
 
+def preserved_gap_size(
+    tail_start: int, installed_size: int, context_start: int, tail_limit: int
+) -> int:
+    """Validate half-open tail bounds, allowing exact handler/context adjacency."""
+    gap_start = tail_start + installed_size
+    if not tail_start <= gap_start <= context_start <= tail_limit:
+        raise ValueError("preserved scheduler/context gap is outside the tail")
+    return context_start - gap_start
+
+
+def validate_gap_preimage(gap: bytes) -> None:
+    """An existing free gap needs test data; an adjacent layout has no gap."""
+    if gap and not any(gap):
+        raise ValueError("preserved scheduler/context gap has no test data")
+
+
 def symbol_addresses(map_path: Path) -> dict[str, int]:
     values: dict[str, int] = {}
     wanted = {
@@ -283,8 +299,7 @@ def patch_payload(
     preserved_gap = preimage[
         preserved_gap_start - shadow_start : context_start - shadow_start
     ]
-    if not any(preserved_gap):
-        raise ValueError("preserved scheduler/context gap has no test data")
+    validate_gap_preimage(preserved_gap)
     return preimage
 
 
@@ -449,13 +464,11 @@ def probe(args: argparse.Namespace) -> None:
     installed_tail = scheduler_installed_tail(args.scheduler_payload.resolve())
     context_start = context_binding_start(args.task_context_map.resolve())
     preserved_gap_start = overlay_start + len(installed_tail)
-    if not (
-        shadow_start + shadow_size <= preserved_gap_start
-        < context_start <= tail_end + 1
-    ):
-        raise SystemExit("preserved scheduler/context gap is outside the tail")
     if overlay_start != shadow_start + shadow_size:
         raise SystemExit("scheduler tail does not begin after VICSHADOW")
+    gap_size = preserved_gap_size(
+        overlay_start, len(installed_tail), context_start, tail_end + 1
+    )
     if len(overlay_image) != overlay_bss - overlay_start:
         raise SystemExit("scheduler tail image and map disagree")
 
@@ -575,14 +588,19 @@ def probe(args: argparse.Namespace) -> None:
                 f"${preserved_tail[first]:02X} != "
                 f"${preserved_preimage[first]:02X}"
             )
+        gap_report = (
+            f"${preserved_gap_start:04X}-${context_start - 1:04X} matches its "
+            f"{gap_size}-byte preimage"
+            if gap_size else
+            f"handler/context are adjacent at ${context_start:04X} (no free gap)"
+        )
         print(
             f"shadow ${shadow_start:04X}-"
             f"${shadow_start + shadow_size - 1:04X} cleared "
             f"({shadow_size} bytes); reclaimed tail "
             f"${shadow_start + shadow_size:04X}-${tail_end:04X} "
             f"contains the {len(installed_tail)}-byte installed scheduler tail; "
-            f"${preserved_gap_start:04X}-${context_start - 1:04X} matches its "
-            f"{len(preserved_tail)}-byte preimage"
+            f"{gap_report}"
         )
         for path, data in (
             (args.preimage_output, preimage),
