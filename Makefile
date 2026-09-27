@@ -735,7 +735,7 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &: \
 		$(BUILD_8502)/vic_graphics.o \
 		$(BUILD_8502)/managed_apps.o \
 		$(BUILD_8502)/vdc_text_assets.o \
-		cfg/8502-bootstrap.cfg
+		cfg/8502-bootstrap.cfg | $(BUILD_8502) $(BUILD_BOOT)
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $(KERNEL_BIN) \
 		$(filter %.o,$^)
 
@@ -782,7 +782,7 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(BUILD_8502)/vic_graphics.o \
 		$(BUILD_8502)/managed_apps.o \
 		$(BUILD_8502)/vdc_text_assets.o \
-		cfg/8502-panic-probe.cfg
+		cfg/8502-panic-probe.cfg | $(BUILD_8502) $(BUILD_BOOT)
 	$(CL65) -t none --cpu 6502 -C cfg/8502-panic-probe.cfg \
 		-m $(BUILD_8502)/udeks-8502-panic-probe.map \
 		-o $(PANIC_PROBE_KERNEL_BIN) \
