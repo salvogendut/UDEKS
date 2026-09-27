@@ -1,12 +1,12 @@
 # Bank-0 boot staging and lifetime map
 
-Reclaim step 4 requires a byte-accurate map before `hardware_capability.o`
-(967 staged bytes, 968 runtime bytes) or `boot_console.o` (1,450 bytes) can be
-relocated. The map is derived from `tools/boot_staging_map.py`, the linker
+This byte-accurate map records the realized `hardware_capability.o`
+relocation and the remaining constraints on `boot_console.o` (1,450 bytes).
+The map is derived from `tools/boot_staging_map.py`, the linker
 map, the emitted staging artifacts, the installer copy lengths, and the
 payload staging containers in `tools/build_d71.py`; the numbers are locked by
 `tests/test_boot_staging_map.py` and `--check` fails if a contiguous hole ever
-becomes large enough for a staged object.
+becomes large enough for the remaining staged object.
 
 The audit distinguishes three sizes per staged region:
 
@@ -30,6 +30,8 @@ The audit distinguishes three sizes per staged region:
 
 | Region | Start | Emitted | Copied | Container | Live |
 |---|---:|---:|---:|---:|---|
+| capability staging | `$A895` | 967 | 967 | 967 | `load..crt0` |
+| capability installer staging | `$AC5C` | 102 | 102 | 102 | `load..crt0` |
 | probe staging | `$AD00` | 209 | 256 | 256 | `load..crt0` |
 | crt0 staging | `$AE00` | 207 | 256 | 256 | `load..crt0` |
 | bootfs tail staging | `$AF00` | 4,283 | 5,120 | 5,120 | `load..stage1` |
@@ -43,7 +45,7 @@ The bootfs request container is `$0311` bytes, but the final installer copies
 two pages plus `$9B` bytes (`$029B`, the linked reservation), so
 `$C78A-$C7FF` is free. The bootfs tail copy covers its full container,
 including the module staging bytes, so that overlap yields no hole. The VIC
-shadow spans `$AC3E-$CB7D`; the tail runs to the fixed `SYSCALLS` page at
+shadow spans `$A895-$C7D4`; the tail runs to the fixed `SYSCALLS` page at
 `$CF00`. The boot sector is `$0B00-$0BFF`, of which stage 0 occupies
 `$0B00-$0B3D`.
 
@@ -51,24 +53,24 @@ shadow spans `$AC3E-$CB7D`; the tail runs to the fixed `SYSCALLS` page at
 
 | Hole | Range | Size | Free |
 |---|---:|---:|---|
-| shadow prefix | `$AC3E-$ACFF` | 194 | after crt0 |
+| shadow prefix remainder | `$ACC2-$ACFF` | 62 | after crt0 |
 | shadow mid | `$C409-$C4EE` | 230 | after crt0 |
 | bootfs-request container tail | `$C78A-$C7FF` | 118 | after stage 1 |
 | loader tail | `$CDF0-$CDFF` | 16 | after stage 1 |
 | gate tail | `$CECB-$CEFF` | 53 | after stage 1 |
 | boot-sector tail | `$0B3E-$0BFF` | 194 | after stage 0 |
-| **total** | | **805** | largest contiguous **230** |
+| **total** | | **673** | largest contiguous **230** |
 
 ## Boot-only objects
 
 | Object | Staged | Runtime | Runs at | Profile |
 |---|---:|---:|---|---|
-| `hardware_capability.o` | 967 | 968 | `boot`, capability service start | bank 0, I/O visible |
+| `hardware_capability.o` | 967 | 968 | `boot`, relocated to `$0200-$05C7` | bank 0, I/O visible |
 | `boot_console.o` | 1,450 | 1,450 | `boot`, console start | bank 0, I/O visible |
 
-Only initialized bytes need staging; the one-byte BSS of
-`hardware_capability.o` is a runtime allocation. Both objects call resident
-kernel functions, so they cannot run under the worker profile.
+Only initialized bytes need staging; the capability installer's exact copy
+clears the service's one-byte BSS at `$05C7`. Both objects call resident kernel
+functions, so they cannot run under the worker profile.
 
 ## Copied but dead padding (not available)
 
@@ -92,29 +94,25 @@ Runtime homes free during `boot` and outside the step-4 exclusions
 exist: application slot 1 `$0200-$0AFF` (2,304 bytes) and application slot 2
 `$1200-$1BFF` (2,560 bytes).
 
-- `hardware_capability.o` (967) no longer fits the aggregate free payload
-  (805), so it remains blocked along with `boot_console.o`.
-- `boot_console.o` (1,450) exceeds the aggregate and remains blocked; it also
+- `hardware_capability.o` is realized reclaim. Extraction moved the shadow to
+  `$A895`; the image and its 102-byte installer occupy `$A895-$ACC1`, and the
+  service runs once from application slot 1.
+- `boot_console.o` (1,450) exceeds the remaining 673-byte aggregate and remains
+  blocked; it also
   needs a contiguous runtime home, which only the application slots provide.
 
 ## Options
 
-1. **Scatter-copy `hardware_capability.o`.** Add a four-chunk staging splice
-   and a matching stage-1 scatter copy into application slot 1. Realizes 967
-   bytes of reclaim now, at the cost of a fragmented installer and a
-   `build_d71.py` container split. Worth it only if the scheduler needs the
-   bytes before the next reclaim step lands.
-2. **Defer and reserve `$1C00-$1FFF` first (reclaim step 5).** Leave both
-   objects resident, install the scheduler segment through stage 1, and
-   revisit the boot-only objects once the scheduler's own staging and
-   lifetime requirements are known.
-3. **Do not use a scheduler-install overlay yet.** The two objects occupy
-   separate CODE, RODATA, and BSS contributions, so there is no validated
-   contiguous region for a scheduler to overlay, and no defined source from
-   which that scheduler would be installed.
+1. **Use the installed scheduler/late-boot delivery mechanism.** Define a
+   contiguous runtime home and a source lifetime for `boot_console.o`, then
+   install it after the payload containers it would otherwise overlap are
+   consumed.
+2. **Extract more presentation code first.** Shrinking or moving adjacent
+   boot presentation can create a contiguous source without weakening the
+   staging ownership rules.
 
-Until one of these lands, `hardware_capability.o` and `boot_console.o` stay
-resident and their bytes remain budgeted reclaim, not realized reclaim.
+Until one of these lands, `boot_console.o` stays resident and its bytes remain
+budgeted reclaim, not realized reclaim.
 
 ## Scheduler delivery (implemented 2026-09-26)
 
@@ -141,9 +139,11 @@ copier in FINAL, with 15 bytes of headroom. The hardened gather bounds the
 entry count, source ranges, and destination, so a malformed manifest cannot
 write past `$15FF`.
 
-The measured scatter ceiling after the manifest carve is **766 bytes**; a
+The measured scatter ceiling was **766 bytes** before capability relocation.
+Registering `$A895-$ACC1` as occupied reduces the current ceiling to **634
+bytes**; a
 larger scheduler image is rejected by `tools/build_d71.py` until more staging
-is freed. The 297-byte linked scheduler spans two chunks and both cold boots
+is freed. The 297-byte linked scheduler spans three chunks and both cold boots
 install it byte-exactly.
 
 `bench/results/2026-09-26-scheduler-delivery` preserves the D71 and D64 cold

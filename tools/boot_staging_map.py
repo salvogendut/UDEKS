@@ -59,9 +59,11 @@ STAGE1_SPRITE_START = 0x1FC0
 Z80_CODE_END = 0xD296
 Z80_STAGING_BASE = 0xD000
 Z80_STAGING_LIMIT = 0xF000
-BOOT_ONLY_OBJECTS = ("hardware_capability.o", "boot_console.o")
+BOOT_ONLY_OBJECTS = ("boot_console.o",)
 
 ARTIFACT_FILES = {
+    "capability": "build/boot/8502-capability.bin",
+    "capability_installer": "build/boot/capability-installer.bin",
     "bootfs": "build/user/bootfs.img",
     "module": "build/8502/udeks-module.bin",
     "task_request": "build/boot/task-request-gateway.bin",
@@ -97,14 +99,16 @@ class StagedRegion:
         return max(0, self.copied_size - self.emitted_size)
 
 
-def staged_regions(emitted: dict[str, int]) -> list[StagedRegion]:
+def staged_regions(
+    emitted: dict[str, int], shadow_start: int | None = None
+) -> list[StagedRegion]:
     """Staging regions with the installer's actual copied lengths."""
     emitted = dict(emitted)
     if "bootfs_tail" not in emitted:
         if "bootfs" not in emitted:
             raise ValueError("bootfs artifact size is required")
         emitted["bootfs_tail"] = emitted["bootfs"] - BOOTFS_Z80_SIZE
-    return [
+    regions = [
         StagedRegion(
             "probe staging",
             PROBE_STAGING_ADDRESS,
@@ -172,6 +176,34 @@ def staged_regions(emitted: dict[str, int]) -> list[StagedRegion]:
             "load..stage1",
         ),
     ]
+    if "capability" in emitted or "capability_installer" in emitted:
+        if shadow_start is None:
+            raise ValueError("capability staging requires the shadow start")
+        capability_size = emitted.get("capability", 0)
+        installer_size = emitted.get("capability_installer", 0)
+        if not capability_size or not installer_size:
+            raise ValueError("both capability staging artifacts are required")
+        regions.extend(
+            (
+                StagedRegion(
+                    "capability staging",
+                    shadow_start,
+                    capability_size,
+                    capability_size,
+                    capability_size,
+                    "load..crt0",
+                ),
+                StagedRegion(
+                    "capability installer staging",
+                    shadow_start + capability_size,
+                    installer_size,
+                    installer_size,
+                    installer_size,
+                    "load..crt0",
+                ),
+            )
+        )
+    return regions
 
 
 def shadow_bounds(map_text: str) -> tuple[int, int]:
@@ -282,7 +314,7 @@ def analyze(
     emitted = dict(emitted)
     emitted["probe"] = probe_end - probe_start + 1
     emitted["crt0"] = startup_end - startup_start + 1
-    regions = staged_regions(emitted)
+    regions = staged_regions(emitted, shadow_start)
     holes = free_holes(shadow_start, stage0_end(stage0), regions)
     sizes = object_sizes(map_text)
     largest = max((end - start + 1 for _, start, end in holes), default=0)

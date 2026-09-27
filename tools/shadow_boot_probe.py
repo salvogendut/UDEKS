@@ -172,6 +172,8 @@ def patch_payload(
     shadow_size: int,
     tail_end: int,
     scheduler_size: int,
+    capability: bytes,
+    capability_installer: bytes,
 ) -> bytes:
     """Seed safe zero bytes and return the staged $shadow_start-$tail_end image."""
     image = bytearray(d71.read_bytes())
@@ -183,11 +185,29 @@ def patch_payload(
     shadow_end = shadow_start + shadow_size - 1
     occupied = [
         (
+            shadow_start,
+            shadow_start + len(capability) + len(capability_installer) - 1,
+        ),
+        (
             SCATTER_MANIFEST_ADDRESS,
             SCATTER_MANIFEST_ADDRESS + SCATTER_MANIFEST_MAX - 1,
         )
     ]
     occupied.extend(manifest_chunks(image, locations))
+    for name, address, expected in (
+        ("capability", shadow_start, capability),
+        (
+            "capability installer",
+            shadow_start + len(capability),
+            capability_installer,
+        ),
+    ):
+        actual = bytes(
+            image[payload_disk_offset(address + offset, locations)]
+            for offset in range(len(expected))
+        )
+        if actual != expected:
+            raise ValueError(f"{name} staging differs from its linked image")
     for start, end in seed_ranges(shadow_start, shadow_end, occupied):
         for offset, address in enumerate(range(start, end + 1)):
             disk_offset = payload_disk_offset(address, locations)
@@ -392,6 +412,8 @@ def probe(args: argparse.Namespace) -> None:
     scheduler_size = (
         args.scheduler.stat().st_size if args.scheduler.is_file() else 0
     )
+    capability = args.capability.read_bytes()
+    capability_installer = args.capability_installer.read_bytes()
     preimage = patch_payload(
         d71,
         probe_disk,
@@ -399,6 +421,8 @@ def probe(args: argparse.Namespace) -> None:
         shadow_size,
         tail_end,
         scheduler_size,
+        capability,
+        capability_installer,
     )
 
     port = choose_port()
@@ -558,6 +582,14 @@ def main() -> None:
     parser.add_argument(
         "--scheduler", type=Path,
         default=ROOT / "build/8502/udeks-scheduler.bin",
+    )
+    parser.add_argument(
+        "--capability", type=Path,
+        default=ROOT / "build/boot/8502-capability.bin",
+    )
+    parser.add_argument(
+        "--capability-installer", type=Path,
+        default=ROOT / "build/boot/capability-installer.bin",
     )
     parser.add_argument("--work", type=Path, default=ROOT / "build/vice")
     parser.add_argument(

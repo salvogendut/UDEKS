@@ -142,15 +142,21 @@ class BootCrt0BuildTests(unittest.TestCase):
             "$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &:", makefile
         )
         self.assertIn(
-            "$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $(KERNEL_BIN) \\",
+            "$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) $$(cat $(CAPABILITY_FORCE_IMPORTS)) -o $(KERNEL_BIN) \\",
             makefile,
         )
+        self.assertEqual(
+            makefile.count("$$(cat $(CAPABILITY_FORCE_IMPORTS))"), 2
+        )
 
-    def test_boot_image_stages_crt0_probe_and_prg_loads_from_its_page(self):
+    def test_boot_image_stages_boot_only_images_and_prg_loads_from_slot_one(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
         self.assertIn("--crt0 $(CRT0_BIN) --probe $(PROBE_BIN)", makefile)
-        self.assertIn("tools/join_boot_crt0.py", makefile)
-        self.assertIn("--load-address 0x0B00", makefile)
+        self.assertIn(
+            "tools/join_boot_crt0.py $(CAPABILITY_BIN) $(PROBE_BIN)",
+            makefile,
+        )
+        self.assertIn("--load-address 0x0200", makefile)
 
 
 if __name__ == "__main__":

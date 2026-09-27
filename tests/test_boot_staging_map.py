@@ -12,7 +12,8 @@ from boot_staging_map import analyze, free_holes, staged_regions
 
 
 # Synthetic pre-delivery fixture: the then-current sequential shadow at
-# $AB2D-$CA6C, the staged boot pages, and the two remaining boot-only objects.
+# $AB2D-$CA6C, the staged boot pages, and the boot-only objects before the
+# capability relocation was realized.
 FIXTURE = """\
 Modules list:
 -------------
@@ -85,23 +86,32 @@ class BootStagingMapTests(unittest.TestCase):
     def test_objects_are_measured_as_staged_and_runtime(self):
         result = analyze(FIXTURE, STAGE0, EMITTED)
         self.assertEqual(
-            result["objects"]["hardware_capability.o"],
-            {"staged": 967, "runtime": 968},
-        )
-        self.assertEqual(
             result["objects"]["boot_console.o"],
             {"staged": 1450, "runtime": 1450},
         )
         self.assertEqual(result["hole_total"], 1078)
         self.assertEqual(result["largest_hole"], 467)
-        self.assertFalse(
-            result["fits"]["hardware_capability.o"]["single_hole"]
-        )
-        self.assertTrue(
-            result["fits"]["hardware_capability.o"]["aggregate"]
-        )
         self.assertFalse(result["fits"]["boot_console.o"]["single_hole"])
         self.assertFalse(result["fits"]["boot_console.o"]["aggregate"])
+
+    def test_realized_capability_staging_occupies_the_shadow_prefix(self):
+        emitted = {
+            **EMITTED,
+            "capability": 967,
+            "capability_installer": 102,
+        }
+        regions = staged_regions(
+            {**emitted, "probe": 209, "crt0": 207}, 0xA895
+        )
+        by_name = {region.name: region for region in regions}
+        self.assertEqual(
+            (by_name["capability staging"].start,
+             by_name["capability staging"].copied_end),
+            (0xA895, 0xAC5B),
+        )
+        self.assertEqual(
+            by_name["capability installer staging"].start, 0xAC5C
+        )
 
     def test_dead_padding_is_reported_separately(self):
         result = analyze(FIXTURE, STAGE0, EMITTED)

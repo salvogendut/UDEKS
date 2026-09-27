@@ -4,6 +4,7 @@
 ; $D000-$EFFF to its resident bank-1 location at $2000-$3FFF.
 
         .setcpu "6502"
+        .include "capability-delivery.inc"
 
 BOOT_CHAIN              = $f050
 BOOT_CHAIN_STATE        = BOOT_CHAIN + 12
@@ -433,6 +434,15 @@ copy_busy_sprite:
         bne copy_busy_sprite
         lda #$00
         sta MMU_LCR_KERNEL_FLAT
+
+        ; The capability image and this one-shot installer occupy the newly
+        ; reclaimed lower shadow. Copy and checksum the image before the
+        ; protected installer enters crt0 and clears that shadow.
+        jsr CAPABILITY_INSTALLER
+        beq capability_installed
+capability_install_failed:
+        jmp capability_install_failed
+capability_installed:
 
         ; The protected $F700 installer can now replace this executing
         ; $F800-$F9FF boot code without stack-page relocation.

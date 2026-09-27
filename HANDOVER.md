@@ -59,6 +59,28 @@ qualified.
 Do not delete these paths in one rewrite. Put each existing participant behind
 the task model, validate it, and only then remove the replaced special case.
 
+## Current implementation status (2026-09-27)
+
+- Step 1 has a versioned lifecycle ABI, host-tested lifecycle state module,
+  and diagnostic/validation seam. The resident task table and its published
+  diagnostic record still need scheduler integration.
+- Step 2 is qualified in `1986`, VICE, and physical C128 hardware; ADR 0008
+  freezes relocated page-zero/page-one ownership and the bounded copy
+  fallback.
+- Step 3 has Task Request ABI 0.3 operations for `YIELD`, `EXIT`, `WAITPID`,
+  `SLEEP`, `CANCEL`, and `SPAWN`, plus a pure host-tested policy layer. The
+  resident handlers are not implemented yet, so the new operations still
+  report `ENOSYS` through the compatibility fallback.
+- The placement prerequisite for steps 3 and 4 is qualified. Stage 1 can
+  deliver a scheduler image to `$1C00-$1FFF`; crt0 and probe are split boot
+  outputs; the boot-only capability service is linked at `$0200`, installed
+  before crt0, and safely overwritten by applications after startup. ADR 0009
+  records the accepted capability relocation. This is delivery and reclaim
+  infrastructure, not a working scheduler.
+- `boot_console.o` and the resident scheduler gather remain boot-only reclaim
+  candidates. The scheduler stub is only an installation/identity probe; it
+  does not schedule tasks.
+
 ## Implementation plan
 
 ### 0. Preserve a known-good baseline
@@ -228,8 +250,9 @@ and bank ownership.
 
 ## First concrete change for the next session
 
-Create `abi/tasks.md` and a host-tested task-state transition module without
-changing boot behavior. Then add the read-only task diagnostic record and show
-the existing init, shell, and managed applications in that table. This creates
-an observable seam for the assembly context-switch spike while keeping the
-current system bootable.
+Freeze the final bank-0 overlay layout for the resident lifecycle modules,
+including the remaining `boot_console.o` and boot-delivery reclaim. Then link
+the task state and request-policy modules into that layout and migrate one
+operation at a time behind the existing `$CF30` record and frozen `$FF16`
+entry. Start with `YIELD` and nonblocking `WAITPID`, preserving the old poll
+path until a compiled cc65 task has crossed the qualified context-switch path.

@@ -11,6 +11,7 @@ from build_d71 import (
     BOOTFS_SIZE,
     BOOTFS_TAIL_STAGING_ADDRESS,
     BOOTFS_Z80_OFFSET,
+    CAPABILITY_SIZE,
     CRT0_SIZE,
     CRT0_STAGING_ADDRESS,
     D64_SIZE,
@@ -22,6 +23,7 @@ from build_d71 import (
     MODULE_STAGING_SIZE,
     PAYLOAD_BLOCKS,
     PAYLOAD_SIZE,
+    SCATTER_MANIFEST_ADDRESS,
     SECTOR_SIZE,
     TASK_LOADER_STAGING_ADDRESS,
     TASK_LOADER_STAGING_SIZE,
@@ -204,6 +206,49 @@ class BuildD71Tests(unittest.TestCase):
         self.assertLessEqual(
             PROBE_STAGING_ADDRESS + PROBE_SIZE, CRT0_STAGING_ADDRESS
         )
+
+    def test_capability_and_installer_are_staged_at_shadow_start(self):
+        shadow_start = 0xA895
+        capability = bytes((index % 251) + 1 for index in range(CAPABILITY_SIZE))
+        installer = b"capability-installer"
+        image = build_image(
+            stage0(), b"", b"", b"", capability=capability,
+            capability_installer=installer, shadow_start=shadow_start,
+        )
+        payload = b"".join(
+            image[
+                sector_offset(track, sector) :
+                sector_offset(track, sector) + SECTOR_SIZE
+            ]
+            for track, sector in list(boot_locations(1 + PAYLOAD_BLOCKS))[1:]
+        )
+        offset = shadow_start - 0x1C00
+        self.assertEqual(payload[offset : offset + len(capability)], capability)
+        self.assertEqual(
+            payload[offset + len(capability) :][: len(installer)], installer
+        )
+
+    def test_capability_requires_exact_size_and_installer(self):
+        with self.assertRaisesRegex(ValueError, "expected 967"):
+            build_image(
+                stage0(), b"", b"", b"", capability=b"short",
+                capability_installer=b"installer", shadow_start=0xA895,
+            )
+        with self.assertRaisesRegex(ValueError, "installer is empty"):
+            build_image(
+                stage0(), b"", b"", b"",
+                capability=bytes(CAPABILITY_SIZE), shadow_start=0xA895,
+            )
+
+    def test_capability_installer_cannot_reach_scheduler_manifest(self):
+        installer_size = SCATTER_MANIFEST_ADDRESS - (0xA895 + CAPABILITY_SIZE) + 1
+        with self.assertRaisesRegex(ValueError, "reaches the scheduler manifest"):
+            build_image(
+                stage0(), b"", b"", b"",
+                capability=bytes(CAPABILITY_SIZE),
+                capability_installer=bytes(installer_size),
+                shadow_start=0xA895,
+            )
 
     def test_rejects_oversize_probe(self):
         with self.assertRaisesRegex(ValueError, "256-byte"):

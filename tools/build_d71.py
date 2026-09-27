@@ -35,6 +35,7 @@ PROBE_STAGING_ADDRESS = 0xAD00
 PROBE_SIZE = 0x0100
 BOOTFS_TAIL_STAGING_ADDRESS = 0xAF00
 SCHEDULER_SIZE = 0x0400
+CAPABILITY_SIZE = 0x03C7
 SCATTER_MANIFEST_MAX = 7 + 4 * 8
 SCATTER_MANIFEST_ADDRESS = PROBE_STAGING_ADDRESS - SCATTER_MANIFEST_MAX
 SCATTER_TEMP_ADDRESS = 0x1200
@@ -214,20 +215,21 @@ def shadow_start_from_map(map_text: str) -> int:
 
 
 def scheduler_holes(
-    shadow_start: int, stage0_end: int
+    shadow_start: int, stage0_end: int, capability_size: int = 0
 ) -> list[list[int]]:
-    regions = sorted(
-        (
-            (PROBE_STAGING_ADDRESS, PROBE_SIZE),
-            (CRT0_STAGING_ADDRESS, CRT0_SIZE),
-            (BOOTFS_TAIL_STAGING_ADDRESS, BOOTFS_TAIL_SIZE),
-            (MODULE_STAGING_ADDRESS, MODULE_STAGING_SIZE),
-            (TASK_REQUEST_STAGING_ADDRESS, TASK_REQUEST_STAGING_SIZE),
-            (BOOTFS_REQUEST_STAGING_ADDRESS, BOOTFS_REQUEST_COPIED_SIZE),
-            (TASK_LOADER_STAGING_ADDRESS, TASK_LOADER_STAGING_SIZE),
-            (TASK_BANK_GATE_STAGING_ADDRESS, TASK_BANK_GATE_STAGING_SIZE),
-        )
-    )
+    regions = [
+        (PROBE_STAGING_ADDRESS, PROBE_SIZE),
+        (CRT0_STAGING_ADDRESS, CRT0_SIZE),
+        (BOOTFS_TAIL_STAGING_ADDRESS, BOOTFS_TAIL_SIZE),
+        (MODULE_STAGING_ADDRESS, MODULE_STAGING_SIZE),
+        (TASK_REQUEST_STAGING_ADDRESS, TASK_REQUEST_STAGING_SIZE),
+        (BOOTFS_REQUEST_STAGING_ADDRESS, BOOTFS_REQUEST_COPIED_SIZE),
+        (TASK_LOADER_STAGING_ADDRESS, TASK_LOADER_STAGING_SIZE),
+        (TASK_BANK_GATE_STAGING_ADDRESS, TASK_BANK_GATE_STAGING_SIZE),
+    ]
+    if capability_size:
+        regions.append((shadow_start, capability_size))
+    regions.sort()
     holes: list[list[int]] = []
     cursor = shadow_start
     for start, size in regions:
@@ -241,10 +243,11 @@ def scheduler_holes(
 
 
 def scheduler_layout(
-    shadow_start: int, stage0_end: int, scheduler_size: int
+    shadow_start: int, stage0_end: int, scheduler_size: int,
+    capability_size: int = 0,
 ) -> tuple[tuple[int, int], list[tuple[int, int]], int]:
     """Manifest, chunk regions, and delivery ceiling for the given size."""
-    holes = scheduler_holes(shadow_start, stage0_end)
+    holes = scheduler_holes(shadow_start, stage0_end, capability_size)
     manifest_start = SCATTER_MANIFEST_ADDRESS
     manifest_end = manifest_start + SCATTER_MANIFEST_MAX - 1
     manifest_hole = None
@@ -287,6 +290,7 @@ def install_scheduler(
     boot_sector: bytearray,
     scheduler: bytes,
     shadow_start: int,
+    capability_size: int = 0,
 ) -> None:
     if len(scheduler) > SCHEDULER_SIZE:
         raise ValueError(
@@ -302,7 +306,7 @@ def install_scheduler(
         + BOOT_SECTOR_BASE
     )
     (manifest_start, manifest_end), chunk_regions, _ = scheduler_layout(
-        shadow_start, stage0_end, len(scheduler)
+        shadow_start, stage0_end, len(scheduler), capability_size
     )
     chunks: list[tuple[int, int, int]] = []
     offset = 0
@@ -332,6 +336,40 @@ def install_scheduler(
             if any(kernel[offset : offset + take]):
                 raise ValueError("scheduler chunk overlaps resident kernel data")
             kernel[offset : offset + take] = data
+
+
+def install_capability(
+    kernel: bytearray, capability: bytes, shadow_start: int
+) -> None:
+    if len(capability) != CAPABILITY_SIZE:
+        raise ValueError(
+            f"capability image is {len(capability)} bytes; expected "
+            f"{CAPABILITY_SIZE}"
+        )
+    end = shadow_start + len(capability)
+    if end > SCATTER_MANIFEST_ADDRESS:
+        raise ValueError("capability staging reaches the scheduler manifest")
+    offset = shadow_start - KERNEL_ADDRESS
+    region = kernel[offset : offset + len(capability)]
+    if len(region) != len(capability) or any(region):
+        raise ValueError("capability staging overlaps resident kernel data")
+    kernel[offset : offset + len(capability)] = capability
+
+
+def install_capability_installer(
+    kernel: bytearray, installer: bytes, shadow_start: int
+) -> None:
+    if not installer:
+        raise ValueError("capability installer is empty")
+    start = shadow_start + CAPABILITY_SIZE
+    end = start + len(installer)
+    if end > SCATTER_MANIFEST_ADDRESS:
+        raise ValueError("capability installer reaches the scheduler manifest")
+    offset = start - KERNEL_ADDRESS
+    region = kernel[offset : offset + len(installer)]
+    if len(region) != len(installer) or any(region):
+        raise ValueError("capability installer overlaps staged data")
+    kernel[offset : offset + len(installer)] = installer
 
 
 def install_module(kernel: bytearray, module: bytes) -> None:
@@ -453,6 +491,8 @@ def build_image(
     bootfs_request_service: bytes = b"",
     ush: bytes = b"", crt0: bytes = b"", probe: bytes = b"",
     scheduler: bytes = b"", shadow_start: int | None = None,
+    capability: bytes = b"",
+    capability_installer: bytes = b"",
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -481,11 +521,19 @@ def build_image(
     install_task_loader(staged_kernel, task_loader)
     install_task_bank_gateway(staged_kernel, task_bank_gateway)
     stage0_sector = bytearray(stage0.ljust(SECTOR_SIZE, b"\x00"))
+    if capability:
+        if shadow_start is None:
+            raise ValueError("capability staging requires the shadow start")
+        install_capability(staged_kernel, capability, shadow_start)
+        install_capability_installer(
+            staged_kernel, capability_installer, shadow_start
+        )
     if scheduler:
         if shadow_start is None:
             raise ValueError("scheduler staging requires the shadow start")
         install_scheduler(
-            staged_kernel, stage0_sector, scheduler, shadow_start
+            staged_kernel, stage0_sector, scheduler, shadow_start,
+            len(capability) + len(capability_installer),
         )
 
     payload = (
@@ -519,6 +567,8 @@ def main() -> None:
     parser.add_argument("--crt0", type=Path, required=True)
     parser.add_argument("--probe", type=Path, required=True)
     parser.add_argument("--scheduler", type=Path, required=True)
+    parser.add_argument("--capability", type=Path, required=True)
+    parser.add_argument("--capability-installer", type=Path, required=True)
     parser.add_argument("--map", type=Path, required=True)
     parser.add_argument("--z80", type=Path, required=True)
     parser.add_argument("--bootfs", type=Path)
@@ -553,6 +603,8 @@ def main() -> None:
             args.probe.read_bytes(),
             args.scheduler.read_bytes(),
             shadow_start_from_map(args.map.read_text(encoding="utf-8")),
+            args.capability.read_bytes(),
+            args.capability_installer.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

@@ -84,7 +84,7 @@ static unsigned char descriptor_is_valid(void)
     return 0;
 }
 
-unsigned char udeks_service_start_all(void)
+unsigned char udeks_service_start_all_once(void)
 {
     unsigned char validation;
 

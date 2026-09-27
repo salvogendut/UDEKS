@@ -68,6 +68,27 @@ class SchedulerDeliveryContractTests(unittest.TestCase):
         self.assertIn('.segment "SCHEDINSTALL"', stage1)
         self.assertIn("jmp $1c00", stage1)
 
+    def test_capability_staging_is_excluded_from_scheduler_chunks(self):
+        _, chunks, ceiling = scheduler_layout(
+            0xA895, 0x0B3D, 297, 967 + 102
+        )
+        self.assertEqual(ceiling, 634)
+        self.assertEqual(
+            chunks,
+            [(0x0B3E, 194), (0xACC2, 23), (0xC409, 80)],
+        )
+        for start, length in chunks:
+            self.assertTrue(start + length <= 0xA895 or start > 0xACC1)
+
+    def test_capability_installs_before_crt0_clears_its_source(self):
+        stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text(
+            encoding="utf-8"
+        )
+        call = stage1.index("jsr CAPABILITY_INSTALLER")
+        final = stage1.index("jmp final_install", call)
+        self.assertLess(call, final)
+        self.assertIn("capability_install_failed:", stage1)
+
     def test_crt0_returns_to_the_fixed_scheduler_copier(self):
         crt0 = (ROOT / "src/8502/crt0.s").read_text(encoding="utf-8")
         self.assertIn("jmp $f7d8", crt0)

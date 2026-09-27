@@ -110,6 +110,11 @@ the [Tasking 0.1 handover](../HANDOVER.md).
 - [x] Qualify the cooperative context-switch core and select relocated
   page-zero/page-one ownership
   ([ADR 0008](decisions/0008-context-switch-placement.md)).
+- [x] Freeze Task Request ABI 0.3 lifecycle operations and errno behavior, and
+  host-validate lifecycle transitions plus mutation-free request policy.
+- [x] Qualify the scheduler delivery path and reclaim the VIC shadow, crt0,
+  probe, and boot-only capability placements without breaking D71/D64 boot or
+  application-slot reuse ([ADR 0009](decisions/0009-boot-only-capability-relocation.md)).
 - [ ] Implement task creation, exit, yield, sleep, and event wait.
 - [ ] Save and restore the selected compiler runtime and CPU context. A
   compiled C task using the real cc65 software stack is the integration test

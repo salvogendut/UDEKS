@@ -67,7 +67,6 @@ GATEWAY_SIZE_SUFFIXES = ("vic", "sprite", "page", "outline")
 # pages, so their bytes are already accounted for by the free tail.
 BOOT_ONLY_OBJECTS = (
     "boot_console.o",
-    "hardware_capability.o",
     "boot_delivery.o",
 )
 

@@ -89,6 +89,7 @@ class PlacementAuditTests(unittest.TestCase):
         )
         self.assertNotIn("crt0.o", result["boot_only"])
         self.assertNotIn("probe.o", result["boot_only"])
+        self.assertNotIn("hardware_capability.o", result["boot_only"])
         self.assertEqual(result["boot_only"]["boot_delivery.o"], 0xEB)
         self.assertEqual(result["probe_segment"]["start"], 0x0B00)
         self.assertEqual(result["probe_segment"]["end"], 0x0BD0)
@@ -97,7 +98,7 @@ class PlacementAuditTests(unittest.TestCase):
         self.assertEqual(result["code_start"], 0x2006)
         self.assertEqual(
             result["reclaim_total"],
-            0x200 + 0x3C8 + 0xEB
+            0x200 + 0xEB
             + 0 + 0 + (SYSCALL_PAGE - (0xAC00 + 0x1F40)) + 0x400,
         )
 
