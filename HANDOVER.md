@@ -75,8 +75,9 @@ the task model, validate it, and only then remove the replaced special case.
   in `1986` and VICE at 1/2 MHz. Its physical-C128 run remains outstanding.
 - Step 3 has Task Request ABI 0.3 operations for `YIELD`, `EXIT`, `WAITPID`,
   `SLEEP`, `CANCEL`, and `SPAWN`, plus a pure host-tested policy layer.
-  Production `YIELD` is implemented; the other lifecycle operations still
-  report `ENOSYS` through the compatibility fallback.
+  Production `YIELD` and non-returning `EXIT` are implemented; the other
+  lifecycle operations still report `ENOSYS` through the compatibility
+  fallback.
 - The placement prerequisite for steps 3 and 4 is qualified. Stage 1 can
   deliver a scheduler image to `$1C00-$1FFF`; crt0 and probe are split boot
   outputs; the boot-only capability service is linked at `$0200`, installed
@@ -104,15 +105,17 @@ the task model, validate it, and only then remove the replaced special case.
   callbacks occupy the exact `$CDC3-$CEFF` 317-byte window, while fixed
   callback vectors consume the page's final six bytes at `$1FFA-$1FFF`.
   `SCHEDOVR` ABI 0.3 appends the exact, build-locked 228-byte context image,
-  192-byte gate, and 44-byte `YIELD` handler; its normal checksum covers the
+  192-byte gate, and 142-byte lifecycle handler; its normal checksum covers the
   six fixed page vectors, and the boot-console installer checksums and installs a
-  59-byte post-startup activator at `$1BAA` and copies it directly to its
-  `$F68A` common-RAM run address. Persistent `/bin/ush` now polls, yields, and
+  61-byte post-startup activator at `$1BAA` and copies it directly to its
+  `$F68A` common-RAM run address. The lifecycle handler is installed over the
+  dead boot/probe page at `$0B00-$0B8D`. Persistent `/bin/ush` now polls, yields, and
   resumes through the `$CF30` carry contract. D71 and D64 VICE probes observe
   repeated context switches and accept `xinit`; the xwave slot-reuse probe
   also remains green. Task 1 owns bank-1 pages `$D1/$D2`, above bootfs and
-  outside the loader's `$8000-$8A00` backup. The next lifecycle operation is
-  non-returning `EXIT`, followed by nonblocking `WAITPID`.
+  outside the loader's `$8000-$8A00` backup. Dedicated D71/D64 tasks also
+  prove that `EXIT(37)` becomes a zombie, releases the request record, and
+  cannot resume. The next lifecycle operation is nonblocking `WAITPID`.
 
 ## Implementation plan
 
@@ -283,6 +286,6 @@ and bank ownership.
 
 ## First concrete change for the next session
 
-Implement non-returning `EXIT` behind the active `$CF30`/`$FF16` path, with an
-emulator probe that proves the exiting task cannot resume. Then add
-nonblocking `WAITPID` so a parent can observe and reap the zombie.
+Implement nonblocking `WAITPID` so a parent can observe and reap the zombie
+created by the qualified `EXIT` path. Preserve the shared-record ownership
+rules before adding blocking waits or a second general task.

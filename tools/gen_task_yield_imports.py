@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Bind the post-bootstrap YIELD handler to the qualified scheduler images."""
+"""Bind the post-bootstrap lifecycle handler to qualified scheduler images."""
 
 from __future__ import annotations
 
@@ -16,6 +16,7 @@ EXPECTED = {
     "_udeks_bootfs_finish_error": "02",
     "_udeks_lifecycle_current_private": "02",
     "_udeks_lifecycle_last_event_private": "02",
+    "_udeks_lifecycle_rejected_private": "02",
     "_udeks_lifecycle_slots_private": "02",
     "_udeks_task_context_save_current": "02",
 }

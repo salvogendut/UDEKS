@@ -38,6 +38,7 @@ OP_GETDENTS             = $07
 OP_STAT                 = $08
 OP_CLOSE                = $09
 OP_YIELD                = $0a
+OP_EXIT                 = $0b
 ERR_ENOENT              = $02
 ERR_EBADF               = $09
 ERR_EMFILE              = $18
@@ -49,7 +50,9 @@ DIRECTORY_FD            = $03
 _udeks_bootfs_request:
         lda TREQ_OPERATION
         cmp #OP_YIELD
-        beq request_yield
+        beq request_lifecycle
+        cmp #OP_EXIT
+        beq request_lifecycle
         cmp #OP_OPEN
         beq request_open
         cmp #OP_GETDENTS
@@ -61,8 +64,8 @@ _udeks_bootfs_request:
         lda #ERR_ENOSYS
         jmp finish_error
 
-request_yield:
-        jmp $1c00
+request_lifecycle:
+        jmp $0b00
 
 request_open:
         lda DIRECTORY_KIND
@@ -353,14 +356,13 @@ finish_error:
         lda #$00
         sta TREQ_RESULT
         lda #STATE_ERROR
-        sta TREQ_STATE
-        clc
-        rts
+        bne finish_state
 finish_ok:
         sta TREQ_RESULT
         lda #$00
         sta TREQ_ERROR
         lda #STATE_COMPLETE
+finish_state:
         sta TREQ_STATE
         lda #$00
         clc

@@ -59,12 +59,12 @@ static const unsigned char task_state_bit[UDEKS_LIFECYCLE_STATE_ZOMBIE + 1u] = {
     1u, 2u, 4u, 8u, 16u, 32u, 64u
 };
 
-/* Private link-time anchors used by the bounded first YIELD handler. They are
+/* Private link-time anchors used by the bounded lifecycle handler. They are
  * not public ABI; the generated bridge binds them from the overlay map. */
 unsigned char udeks_lifecycle_slots_private[
     UDEKS_LIFECYCLE_MAX_TASKS * TASK_SLOT_STRIDE];
 unsigned char udeks_lifecycle_current_private;
-static unsigned char rejected_requests;
+unsigned char udeks_lifecycle_rejected_private;
 static unsigned char canary_failures;
 unsigned char udeks_lifecycle_last_event_private;
 static unsigned char table_ready;
@@ -98,7 +98,7 @@ unsigned char udeks_lifecycle_reset(void)
         udeks_lifecycle_slots_private[index] = 0;
     }
     udeks_lifecycle_current_private = UDEKS_LIFECYCLE_ID_NONE;
-    rejected_requests = 0;
+    udeks_lifecycle_rejected_private = 0;
     canary_failures = 0;
     udeks_lifecycle_last_event_private = 0;
     table_ready = 1;
@@ -114,15 +114,15 @@ unsigned char udeks_lifecycle_create(
 
     slot = task_slot(id);
     if (slot == 0) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_BAD_ID;
     }
     if ((flags & (unsigned char)~TASK_FLAG_MASK) != 0) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_BAD_FLAGS;
     }
     if (slot[TASK_SLOT_STATE] != UDEKS_LIFECYCLE_STATE_FREE) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_EXISTS;
     }
     if (parent != UDEKS_LIFECYCLE_ID_NONE) {
@@ -130,7 +130,7 @@ unsigned char udeks_lifecycle_create(
         if (parent == id || parent_slot == 0 ||
             parent_slot[TASK_SLOT_STATE] == UDEKS_LIFECYCLE_STATE_FREE ||
             parent_slot[TASK_SLOT_STATE] == UDEKS_LIFECYCLE_STATE_ZOMBIE) {
-            ++rejected_requests;
+            ++udeks_lifecycle_rejected_private;
             return UDEKS_LIFECYCLE_BAD_ID;
         }
     }
@@ -155,12 +155,12 @@ unsigned char udeks_lifecycle_apply(
 
     slot = task_slot(id);
     if (slot == 0) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_BAD_ID;
     }
     if (event <= UDEKS_LIFECYCLE_EVENT_CREATE ||
         event > UDEKS_LIFECYCLE_EVENT_CANCEL) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_BAD_EVENT;
     }
     state = slot[TASK_SLOT_STATE];
@@ -168,7 +168,7 @@ unsigned char udeks_lifecycle_apply(
     if (event == UDEKS_LIFECYCLE_EVENT_DISPATCH) {
         if (udeks_lifecycle_current_private != UDEKS_LIFECYCLE_ID_NONE &&
             udeks_lifecycle_current_private != id) {
-            ++rejected_requests;
+            ++udeks_lifecycle_rejected_private;
             return UDEKS_LIFECYCLE_BUSY;
         }
         if (udeks_lifecycle_current_private == id &&
@@ -178,20 +178,20 @@ unsigned char udeks_lifecycle_apply(
         }
     }
     if ((task_event_sources[event] & task_state_bit[state]) == 0) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_BAD_STATE;
     }
     if (event == UDEKS_LIFECYCLE_EVENT_UNBLOCK &&
         state == UDEKS_LIFECYCLE_STATE_STOPPED &&
         (slot[TASK_SLOT_RESUME] != UDEKS_LIFECYCLE_STATE_WAITING ||
          slot[TASK_SLOT_WAIT] == UDEKS_LIFECYCLE_WAIT_NONE)) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_BAD_STATE;
     }
     if (event == UDEKS_LIFECYCLE_EVENT_BLOCK &&
         (argument == UDEKS_LIFECYCLE_WAIT_NONE ||
          argument > UDEKS_LIFECYCLE_WAIT_TERMINAL)) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_BAD_REASON;
     }
 
@@ -339,7 +339,7 @@ unsigned int udeks_lifecycle_switch_count(void)
 
 unsigned char udeks_lifecycle_rejected_count(void)
 {
-    return rejected_requests;
+    return udeks_lifecycle_rejected_private;
 }
 
 unsigned char udeks_lifecycle_canary_failures(void)
@@ -374,7 +374,7 @@ void udeks_lifecycle_publish(unsigned char *record)
     record[UDEKS_UTSK_CURRENT] = udeks_lifecycle_current_private;
     record[UDEKS_UTSK_RUNNABLE] = udeks_lifecycle_runnable_count();
     record[UDEKS_UTSK_DEFINED] = udeks_lifecycle_defined_count();
-    record[UDEKS_UTSK_REJECTED] = rejected_requests;
+    record[UDEKS_UTSK_REJECTED] = udeks_lifecycle_rejected_private;
     record[UDEKS_UTSK_CANARY] = canary_failures;
     switches = switch_count;
     record[UDEKS_UTSK_SWITCHES_LO] = (unsigned char)(switches & 0xFFu);

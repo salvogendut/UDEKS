@@ -58,7 +58,7 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertIn("TASK_ACTIVATION_TAIL_SOURCE = $54ff", constants)
         self.assertIn("TASK_ACTIVATION_TAIL_SIZE = $c0", constants)
         self.assertIn("TASK_ACTIVATION_YIELD_SOURCE = $55bf", constants)
-        self.assertIn("TASK_ACTIVATION_YIELD_DESTINATION = $1c00", constants)
+        self.assertIn("TASK_ACTIVATION_YIELD_DESTINATION = $0b00", constants)
         self.assertIn("TASK_ACTIVATION_YIELD_SIZE = $0d", constants)
 
     def test_activation_fits_the_only_contiguous_post_console_window(self):
@@ -75,6 +75,7 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertIn("sta mmu_lcr_kernel_io", source)
         self.assertIn("sta task_activation_tail_destination,y", source)
         self.assertIn("sta task_activation_yield_destination,y", source)
+        self.assertIn("cpy #task_activation_yield_size", source)
         self.assertIn("jsr $ff10", source)
         installer = (ROOT / "src/boot/boot-console-installer.s").read_text(
             encoding="utf-8"
@@ -88,18 +89,20 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertIn("jsr _udeks_lifecycle_bootstrap", scheduler)
         self.assertIn("jmp $f68a", scheduler)
 
-    def test_yield_handler_saves_context_and_suspends_only_on_success(self):
+    def test_lifecycle_handler_yields_and_never_resumes_successful_exit(self):
         source = (ROOT / "src/scheduler/task_yield_handler.s").read_text(
             encoding="utf-8"
         ).lower()
         self.assertIn("jsr _udeks_task_context_save_current", source)
-        self.assertIn("sta _udeks_lifecycle_slots_private+task_state_offset", source)
-        self.assertIn("sta _udeks_lifecycle_current_private", source)
+        self.assertIn("jsr current_slot", source)
+        self.assertIn("sta _udeks_lifecycle_slots_private+task_slot_state,x", source)
+        self.assertIn("sta _udeks_lifecycle_slots_private+task_slot_exit,x", source)
         self.assertIn("sta _udeks_lifecycle_last_event_private", source)
         self.assertIn("sta treq_state", source)
         self.assertIn("sec", source)
         self.assertIn("yield_invalid:", source)
         self.assertIn("jmp _udeks_bootfs_finish_error", source)
+        self.assertIn("_udeks_task_yield_handler = $0b00", source)
 
 
 if __name__ == "__main__":

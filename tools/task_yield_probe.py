@@ -87,6 +87,7 @@ def probe_disk(disk: Path, map_path: Path, timeout: float, flatpak_id: str) -> N
                 f"{byte(port, UTSK_RUNNABLE):02x}, gate={gate.hex()}, "
                 f"source={source[:6]!r}, live={live[:6]!r}"
             )
+        sp.wait_for_byte(port, TREQ_STATE, TREQ_COMPLETE, deadline)
         initial_request_state = byte(port, TREQ_STATE)
         initial_request_operation = byte(port, TREQ_STATE + 1)
         initial_request_error = byte(port, TREQ_ERROR)

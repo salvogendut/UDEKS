@@ -89,7 +89,7 @@ def build_overlay(
     if context or context_map_text or switch_tail or yield_handler:
         if not context or not context_map_text or not switch_tail or not yield_handler:
             raise ValueError(
-                "task activation requires context, map, switch tail, and YIELD handler"
+                "task activation requires context, map, switch tail, and lifecycle handler"
             )
         context_segments = map_segments(context_map_text)
         if "CODE" not in context_segments or "BSS" not in context_segments:
@@ -105,7 +105,7 @@ def build_overlay(
         if len(switch_tail) != 0xC0:
             raise ValueError("task-switch tail is not the 192-byte gate image")
         if len(yield_handler) == 0 or len(yield_handler) > 0xFF:
-            raise ValueError("task-YIELD handler is empty or exceeds the bounded copier")
+            raise ValueError("lifecycle handler is empty or exceeds the bounded copier")
         context_source = LOAD_ADDRESS + HEADER_SIZE + len(page) + len(tail)
         switch_source = context_source + len(context)
         yield_source = switch_source + len(switch_tail)
@@ -120,7 +120,7 @@ def build_overlay(
             "TASK_ACTIVATION_TAIL_DESTINATION = $ff05\n"
             f"TASK_ACTIVATION_TAIL_SIZE = ${len(switch_tail):02x}\n"
             f"TASK_ACTIVATION_YIELD_SOURCE = ${yield_source:04x}\n"
-            "TASK_ACTIVATION_YIELD_DESTINATION = $1c00\n"
+            "TASK_ACTIVATION_YIELD_DESTINATION = $0b00\n"
             f"TASK_ACTIVATION_YIELD_SIZE = ${len(yield_handler):02x}\n"
             f"TASK_ACTIVATION_EXTENSION_CHECKSUM = ${sum(extension) & 0xffff:04x}\n"
         )

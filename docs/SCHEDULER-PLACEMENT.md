@@ -86,8 +86,8 @@ map above.
 `boot_console.o` is also realized reclaim: its exact 1,450-byte image is
 linked separately at `$1600-$1BA9`, staged at `$A718-$ACC1`, and installed by
 a 99-byte checksum gate at `$0B50-$0BB2`. The same copy/checksum now covers a
-59-byte task-switch activator staged at `$ACC2-$ACFC`, copied through
-`$1BAA-$1BE4`, and installed at its `$F68A-$F6C4` common-RAM run address. The
+61-byte task-switch activator staged at `$ACC2-$ACFE`, copied through
+`$1BAA-$1BE6`, and installed at its `$F68A-$F6C6` common-RAM run address. The
 installer runs before the
 scheduler gather and is then overwritten by the relocated probe. The
 scheduler allocator reserves the installer's complete linked extent, including
@@ -160,12 +160,14 @@ its generated bridge rejects any drift in the active overlay end, symbol
 types, or five-symbol callback contract.
 
 `SCHEDOVR` carries the 228 emitted context bytes, the 192-byte common tail, and
-the 44-byte `YIELD` handler in bank 1. After the boot-console service has
-finished, the 59-byte activator copies those images into their final homes,
+the 142-byte lifecycle handler in bank 1. After the boot-console service has
+finished, the 61-byte activator copies those images into their final homes,
 calls the fixed reset vector, and returns to init. Task 1 owns bank-1 physical
 pages `$D1/$D2`; the former `$80/$81` choice is forbidden because the native
 loader uses `$8000-$8A00` as its application backup. VICE qualifies repeated
-D71/D64 yields, resumes, and command dispatch through this installed path.
+D71/D64 yields, resumes, command dispatch, and non-returning `EXIT` through
+this installed path. The lifecycle handler occupies `$0B00-$0B8D`, replacing
+the boot-only probe after hardware discovery.
 
 ## Proposed bank-0 scheduler region
 
@@ -230,16 +232,17 @@ returns to the kernel poll frame and leaves the task suspended. `YIELD` uses
 the latter path and resumes only after the scheduler selects task 1 again.
 
 The post-startup delivery path is link-qualified. `SCHEDOVR` ABI 0.3 appends
-the exact, build-locked 228 emitted context bytes, 192-byte tail, and 44-byte
-`YIELD` handler in bank 1. The
+the exact, build-locked 228 emitted context bytes, 192-byte tail, and 142-byte
+lifecycle handler in bank 1. The
 six `$1FFA-$1FFF` callback vectors are installed as part of the scheduler
-page and covered by its existing checksum. A 59-byte body fits the
+page and covered by its existing checksum. A 61-byte body fits the
 post-console staging window and is copied directly to the disposable `$F68A`
 VIC gateway workspace. It copies the context image to
 `$CDC3`, lets the reset callback clear its 89-byte BSS through `$CEFF`,
-replaces `$FF05-$FFC4`, and replaces the retired scheduler bootstrap prefix at
-`$1C00` with the request handler. Persistent `/bin/ush` now yields and resumes
-through that path.
+replaces `$FF05-$FFC4`, and installs the request handler over the dead probe at
+`$0B00`. Persistent `/bin/ush` now yields and resumes through that path;
+successful `EXIT` leaves a status-bearing zombie and never restores its task
+context.
 
 ## Reclaim order and validation
 

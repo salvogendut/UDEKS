@@ -28,7 +28,7 @@ RODATA_SIZE = 0x021B
 DESTINATION = 0x1600
 CAPABILITY_SIZE = 0x03C7
 PROBE_STAGING_ADDRESS = 0xAD00
-ACTIVATION_SIZE = 59
+ACTIVATION_SIZE = 61
 
 
 def object_imports(path: str) -> list[tuple[str, str]]:

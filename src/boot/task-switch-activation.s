@@ -44,14 +44,15 @@ copy_switch_tail:
 
         ; Replace the scheduler's retired one-shot bootstrap prefix only after
         ; it tail-calls this common body. The fixed vectors at $1FFA survive.
-        ldy #TASK_ACTIVATION_YIELD_SIZE-1
+        ldy #$00
 copy_yield_handler:
         sta MMU_LCR_WORKER_FLAT
         lda TASK_ACTIVATION_YIELD_SOURCE,y
         sta MMU_LCR_KERNEL_IO
         sta TASK_ACTIVATION_YIELD_DESTINATION,y
-        dey
-        bpl copy_yield_handler
+        iny
+        cpy #TASK_ACTIVATION_YIELD_SIZE
+        bne copy_yield_handler
 
         ; Initialize context records and relocated task pages through the new
         ; fixed reset vector, then return directly to init_start.
@@ -62,6 +63,6 @@ activation_common_end:
         .assert TASK_ACTIVATION_CONTEXT_IMAGE_SIZE <= $ff, error, "context image needs a wider copier"
         .assert TASK_ACTIVATION_CONTEXT_BSS_SIZE <= $80, error, "context BSS exceeds branch range"
         .assert TASK_ACTIVATION_TAIL_SIZE <= $ff, error, "switch tail needs a wider copier"
-        .assert TASK_ACTIVATION_YIELD_SIZE <= $ff, error, "YIELD handler needs a wider copier"
+        .assert TASK_ACTIVATION_YIELD_SIZE <= $ff, error, "lifecycle handler needs a wider copier"
         .assert activation_common = $f68a, error, "activation common run address moved"
         .assert activation_common_end-activation_common <= $3e, error, "activation common body exceeds 62 bytes"

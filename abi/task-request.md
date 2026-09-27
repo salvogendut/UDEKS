@@ -93,6 +93,9 @@ ids are rejected with `ESRCH` (or `ECHILD` for `WAITPID`, as noted below).
 - The call does not return to the caller on success. The status is published
   when the parent reaps the task with `WAITPID`. Returning from a normal UDEX
   entry is equivalent to `EXIT` with the entry's result.
+- The initial production handler releases the shared request record, marks the
+  caller `ZOMBIE`, and returns only to the kernel poll frame; D71/D64 probes
+  verify that the retired task cannot issue another request.
 
 ### WAITPID (12)
 
