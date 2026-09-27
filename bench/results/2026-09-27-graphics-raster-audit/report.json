@@ -1,0 +1,38 @@
+{
+  "source_sha256": "b46df572db0de5499c6558abac3bc3b3f889d63086e54f5efd5d1e159968ba41",
+  "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44",
+  "qualification": "compile-only; no resident link or runtime speed claim",
+  "baseline": {
+    "CODE": 4347,
+    "RODATA": 0,
+    "BSS": 0,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0,
+    "VICSHADOW": 8000
+  },
+  "static-scratch": {
+    "CODE": 4266,
+    "RODATA": 0,
+    "BSS": 32,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0,
+    "VICSHADOW": 8000
+  },
+  "static-arguments": {
+    "CODE": 4342,
+    "RODATA": 0,
+    "BSS": 50,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0,
+    "VICSHADOW": 8000
+  },
+  "code_saved": 81,
+  "bss_added": 32,
+  "net_object_bytes_saved": 49,
+  "arguments_code_saved": 5,
+  "arguments_bss_added": 50,
+  "arguments_net_object_bytes_saved": -45
+}
