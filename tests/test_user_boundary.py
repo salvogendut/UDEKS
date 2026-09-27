@@ -76,8 +76,11 @@ class UserBoundaryTests(unittest.TestCase):
         self.assertIn("jsr task_bank_poll", init)
         self.assertIn("jsr persistent_load", init)
         self.assertIn("jsr lifecycle_bootstrap", init)
-        self.assertIn("jsr $ff10", scheduler)
-        self.assertIn("jmp $ff13", scheduler)
+        self.assertIn("jmp $f68a", scheduler)
+        poll_entry = (ROOT / "user/lib/poll_entry.s").read_text().lower()
+        self.assertIn("jsr _udeks_ush_poll", poll_entry)
+        self.assertIn("jsr _udeks_yield", poll_entry)
+        self.assertIn("jmp _udeks_task_poll_entry", poll_entry)
         self.assertIn('.byte "ush", $00', init)
         self.assertIn("sta ush_state", init)
         self.assertNotRegex(

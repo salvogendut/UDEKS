@@ -82,7 +82,7 @@ class TaskRequestAbiTests(unittest.TestCase):
         ):
             self.assertEqual(values[f"UDEKS_TREQ_{name}"], value)
 
-    def test_dispatcher_accepts_03_and_stubs_new_operations(self):
+    def test_dispatcher_accepts_03_and_routes_yield(self):
         dispatcher = (ROOT / "src/8502/syscall_gate.s").read_text().lower()
         bootfs = (
             ROOT / "src/services/filesystem/bootfs_request.s"
@@ -92,6 +92,9 @@ class TaskRequestAbiTests(unittest.TestCase):
         self.assertIn("cmp #$0a", dispatcher)
         self.assertIn("task_request_fallback:", dispatcher)
         self.assertIn("jmp _udeks_bootfs_request", dispatcher)
+        self.assertIn("cmp #op_yield", bootfs)
+        self.assertIn("request_yield:", bootfs)
+        self.assertIn("jmp $1c00", bootfs)
         # The bootfs fallback answers unknown operations with ENOSYS.
         self.assertIn("lda #err_enosys", bootfs)
         self.assertIn("jmp finish_error", bootfs)

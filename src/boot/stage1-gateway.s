@@ -349,7 +349,7 @@ bootfs_tail_destination:
         bne relocate_bootfs_tail_page
 
         ; The compact high-memory module occupies the otherwise unused tail
-        ; of bootfs staging. Install its fixed $345-byte reservation before
+        ; of bootfs staging. Install its fixed $344-byte reservation before
         ; the VIC shadow staging range is cleared.
         lda #$00
         sta MMU_LCR_KERNEL_FLAT

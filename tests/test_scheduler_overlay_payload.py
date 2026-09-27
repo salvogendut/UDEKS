@@ -70,8 +70,7 @@ class SchedulerOverlayPayloadTests(unittest.TestCase):
             "_udeks_scheduler_lifecycle_bootstrap_gate = $1c1e", scheduler
         )
         self.assertIn("jsr _udeks_lifecycle_bootstrap", scheduler)
-        self.assertIn("jsr $ff10", scheduler)
-        self.assertIn("jmp $ff13", scheduler)
+        self.assertIn("jmp $f68a", scheduler)
         self.assertIn("lifecycle_bootstrap     = $1c1e", init)
         load = init.index("jsr persistent_load")
         bootstrap = init.index("jsr lifecycle_bootstrap", load)

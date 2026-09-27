@@ -211,8 +211,9 @@ resumes from the `$FF16` gate. While the record is released, another task may
 use it. A task cancelled while blocked never resumes, so no response is
 written and the record stays available.
 
-A cooperative program must still return from its `$9000` poll entry when it has
-no more immediate work.
+The persistent `/bin/ush` task calls `YIELD` after each bounded poll and resumes
+inside that request before beginning its next poll. Other legacy UDEX entries
+retain their existing return convention until they migrate to lifecycle tasks.
 
 ## Placement note
 

@@ -2,8 +2,8 @@
 ;
 ; Production-shaped Tasking 0.1 common-RAM tail prototype. It preserves the
 ; published $FF10/$FF13/$FF16 entries and fits the exact $FF05-$FFC4 legacy
-; reservation. It is deliberately not installed yet: the resident callbacks
-; and task entry wrapper must land before it can replace task_bank_gateway.s.
+; reservation. The post-startup activator installs it after the resident
+; callbacks and persistent task entry have become available.
 
         .setcpu "6502"
         .include "task_switch_context.inc"
@@ -16,7 +16,7 @@
         .export _udeks_task_switch_request_gate
 
 MMU_LCR_KERNEL_IO       = $ff01
-MMU_LCR_WORKER_FLAT     = $ff04
+MMU_LCR_WORKER_IO       = $ff03
 MMU_PAGE0_PAGE          = $d507
 MMU_PAGE0_BANK          = $d508
 MMU_PAGE1_PAGE          = $d509
@@ -131,7 +131,7 @@ tail_restore:
         lda context_page1_page
         sta MMU_PAGE1_PAGE
         lda #$00
-        sta MMU_LCR_WORKER_FLAT
+        sta MMU_LCR_WORKER_IO
         ldx context_sp
         txs
         lda context_p

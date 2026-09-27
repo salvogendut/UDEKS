@@ -35,8 +35,8 @@ class TaskContextBindingTests(unittest.TestCase):
         source = (
             ROOT / "src/scheduler/task_context.s"
         ).read_text().lower()
-        self.assertIn("task_page0              = $80", source)
-        self.assertIn("task_page1              = $81", source)
+        self.assertIn("task_page0              = $d1", source)
+        self.assertIn("task_page1              = $d2", source)
         self.assertIn("task_page_bank          = $01", source)
         self.assertIn("task_soft_stack         = $eff0", source)
         self.assertIn("task_contexts:          .res task_count * task_context_size", source)
@@ -49,6 +49,16 @@ class TaskContextBindingTests(unittest.TestCase):
         self.assertIn("lda task_switch_context,y", source)
         self.assertIn("jsr _udeks_scheduler_select_next", source)
         self.assertIn("jsr _udeks_lifecycle_apply", source)
+
+    def test_selected_record_uses_the_preserved_task_id(self):
+        source = (
+            ROOT / "src/scheduler/task_context.s"
+        ).read_text().lower()
+        self.assertIn(
+            "load_selected:\n        lda current_task\n"
+            "        jsr context_pointer",
+            source,
+        )
 
 
 if __name__ == "__main__":

@@ -42,6 +42,10 @@ TASK_CONTEXT_VECTORS_BIN := $(BUILD_8502)/task-context-vectors.bin
 TASK_CONTEXT_MAP := $(BUILD_8502)/task-context-binding.map
 TASK_CONTEXT_BRIDGE_ASM := $(BUILD_8502)/task-context-bridge.s
 TASK_CONTEXT_BRIDGE_OBJ := $(BUILD_8502)/task-context-bridge.o
+TASK_YIELD_HANDLER_OBJ := $(BUILD_8502)/task-yield-handler.o
+TASK_YIELD_BRIDGE_ASM := $(BUILD_8502)/task-yield-bridge.s
+TASK_YIELD_BRIDGE_OBJ := $(BUILD_8502)/task-yield-bridge.o
+TASK_YIELD_HANDLER_BIN := $(BUILD_8502)/task-yield-handler.bin
 TASK_SWITCH_ACTIVATION_OBJ := $(BUILD_BOOT)/task-switch-activation.o
 TASK_SWITCH_ACTIVATION_BIN := $(BUILD_BOOT)/task-switch-activation.bin
 SCHEDULER_OVERLAY_PAGE_BIN := $(BUILD_8502)/udeks-scheduler-overlay-page.bin
@@ -193,7 +197,8 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	boot panic-probe framebuffer-assets user-sources user-programs \
 	task-state task-policy task-scheduler task-switch-tail task-switch-activation scheduler-overlay placement-check \
 	placement-check-guard \
-	shadow-probe capability-probe boot-console-probe check doctor clean help
+	shadow-probe capability-probe boot-console-probe task-yield-probe \
+	check doctor clean help
 
 all: 8502 z80 z80-asm
 
@@ -280,6 +285,20 @@ boot-console-probe:
 		exit 1; \
 	}
 	$(PYTHON) tools/boot_console_relocation_probe.py
+
+# Host-side VICE qualification of persistent /bin/ush yielding and resuming
+# through the production task gate on both native disk formats.
+task-yield-probe:
+	@test -f $(BOOT_D71) -a -f $(BOOT_D64) || { \
+		echo "task-yield-probe needs both boot disks; run 'make boot' in the reference container first" >&2; \
+		exit 1; \
+	}
+	@command -v flatpak >/dev/null 2>&1 || { \
+		echo "task-yield-probe requires Flatpak VICE (net.sf.VICE)" >&2; \
+		exit 1; \
+	}
+	$(PYTHON) tools/task_yield_probe.py
+	$(PYTHON) tools/task_yield_probe.py --disk $(BOOT_D64)
 
 8502: $(KERNEL_BIN) $(KERNEL_PRG) $(SCHEDULER_BIN) $(CAPABILITY_BIN) \
 	$(BOOT_DELIVERY_BIN)
@@ -469,7 +488,7 @@ $(USER_XWAVE_UDEX): $(USER_XWAVE_BIN) tools/build_udex.py
 $(USER_BOOTFS): $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_LS_UDEX) \
 		$(USER_USH_UDEX) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) \
 		tools/build_bootfs.py
-	$(PYTHON) tools/build_bootfs.py --max-size 0x2DBB \
+	$(PYTHON) tools/build_bootfs.py --max-size 0x2DBC \
 		--entry cowsay=$(USER_COWSAY_UDEX) \
 		--entry date=$(USER_DATE_UDEX) \
 		--entry ls=$(USER_LS_UDEX) \
@@ -928,7 +947,8 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &: \
 		cfg/8502-bootstrap.cfg | $(BUILD_8502) $(BUILD_BOOT)
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) \
 		$$(cat $(CAPABILITY_FORCE_IMPORTS)) \
-		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) -o $(KERNEL_BIN) \
+		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) \
+		-u _udeks_bootfs_finish_error -o $(KERNEL_BIN) \
 		$(filter %.o,$^)
 
 $(BUILD_8502)/scheduler.o: src/scheduler/scheduler.s | $(BUILD_8502)
@@ -968,8 +988,28 @@ $(TASK_CONTEXT_BIN) $(TASK_CONTEXT_VECTORS_BIN) $(TASK_CONTEXT_MAP) &: \
 		$(BUILD_8502)/task_context_vectors.o $(TASK_CONTEXT_BRIDGE_OBJ) \
 		cfg/8502-task-context.cfg
 	$(LD65) -C cfg/8502-task-context.cfg -m $(TASK_CONTEXT_MAP) \
+		-u _udeks_task_context_save_current \
 		-o $(TASK_CONTEXT_BIN) $(BUILD_8502)/task_context.o \
 		$(TASK_CONTEXT_BRIDGE_OBJ) $(BUILD_8502)/task_context_vectors.o
+
+$(TASK_YIELD_HANDLER_OBJ): src/scheduler/task_yield_handler.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(TASK_YIELD_BRIDGE_ASM): $(TASK_YIELD_HANDLER_OBJ) \
+		$(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_MAP) \
+		$(KERNEL_MAP) $(PANIC_PROBE_MAP) \
+		tools/gen_task_yield_imports.py tools/gen_scheduler_overlay_imports.py
+	$(PYTHON) tools/gen_task_yield_imports.py $(TASK_YIELD_HANDLER_OBJ) \
+		$(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_MAP) \
+		$(KERNEL_MAP) $(PANIC_PROBE_MAP) $@
+
+$(TASK_YIELD_BRIDGE_OBJ): $(TASK_YIELD_BRIDGE_ASM)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(TASK_YIELD_HANDLER_BIN): $(TASK_YIELD_HANDLER_OBJ) $(TASK_YIELD_BRIDGE_OBJ) \
+		cfg/8502-task-yield-handler.cfg
+	$(LD65) -C cfg/8502-task-yield-handler.cfg -o $@ \
+		$(TASK_YIELD_HANDLER_OBJ) $(TASK_YIELD_BRIDGE_OBJ)
 
 # The resident kernel already supplies every cc65 helper used by the overlay
 # except these two modules. Extract precisely those providers; never link a
@@ -1003,6 +1043,9 @@ $(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 	$(LD65) -C cfg/8502-scheduler-overlay.cfg \
 		-m $(SCHEDULER_OVERLAY_MAP) -o $(SCHEDULER_OVERLAY_PAGE_BIN) \
 		-u _udeks_lifecycle_apply -u _udeks_scheduler_select_next \
+		-u _udeks_lifecycle_slots_private \
+		-u _udeks_lifecycle_current_private \
+		-u _udeks_lifecycle_last_event_private \
 		$(BUILD_8502)/scheduler.o $(BUILD_8502)/task_state.o \
 		$(BUILD_8502)/task_policy.o $(BUILD_8502)/task_scheduler.o \
 		$(SCHEDULER_RUNTIME_AND_OBJ) \
@@ -1012,6 +1055,7 @@ $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS) &: \
 		$(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 		$(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_BIN) $(TASK_CONTEXT_MAP) \
 		$(TASK_CONTEXT_VECTORS_BIN) $(TASK_SWITCH_TAIL_BIN) \
+		$(TASK_YIELD_HANDLER_BIN) \
 		tools/build_scheduler_overlay.py | $(BUILD_BOOT)
 	$(PYTHON) tools/build_scheduler_overlay.py \
 		$(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
@@ -1020,6 +1064,7 @@ $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS) &: \
 		--activation-context $(TASK_CONTEXT_BIN) \
 		--activation-context-map $(TASK_CONTEXT_MAP) \
 		--activation-tail $(TASK_SWITCH_TAIL_BIN) \
+		--activation-yield-handler $(TASK_YIELD_HANDLER_BIN) \
 		--activation-vectors $(TASK_CONTEXT_VECTORS_BIN)
 
 $(TASK_SWITCH_ACTIVATION_OBJ): src/boot/task-switch-activation.s \
@@ -1074,6 +1119,7 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 	$(CL65) -t none --cpu 6502 -C cfg/8502-panic-probe.cfg \
 		$$(cat $(CAPABILITY_FORCE_IMPORTS)) \
 		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) \
+		-u _udeks_bootfs_finish_error \
 		-m $(BUILD_8502)/udeks-8502-panic-probe.map \
 		-o $(PANIC_PROBE_KERNEL_BIN) \
 		$(filter %.o,$^)
@@ -1604,10 +1650,11 @@ check:
 		tools/gen_boot_console_imports.py \
 		tools/gen_scheduler_overlay_imports.py \
 		tools/gen_task_context_imports.py \
+		tools/gen_task_yield_imports.py \
 		tools/build_scheduler_overlay.py \
 		tools/shadow_boot_probe.py \
 		tools/shadow_clear_decode.py \
-		tools/task_state_decode.py \
+		tools/task_state_decode.py tools/task_yield_probe.py \
 		tools/vice_capture.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-r2 && sha256sum -c SHA256SUMS

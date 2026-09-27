@@ -38,6 +38,7 @@ def build_overlay(
     context: bytes = b"",
     context_map_text: str = "",
     switch_tail: bytes = b"",
+    yield_handler: bytes = b"",
     vectors: bytes = b"",
 ) -> tuple[bytes, str]:
     segments = map_segments(map_text)
@@ -85,25 +86,30 @@ def build_overlay(
         raise AssertionError("scheduler overlay header size drifted")
     extension = b""
     activation_constants = ""
-    if context or context_map_text or switch_tail:
-        if not context or not context_map_text or not switch_tail:
-            raise ValueError("task activation requires context, map, and switch tail")
+    if context or context_map_text or switch_tail or yield_handler:
+        if not context or not context_map_text or not switch_tail or not yield_handler:
+            raise ValueError(
+                "task activation requires context, map, switch tail, and YIELD handler"
+            )
         context_segments = map_segments(context_map_text)
         if "CODE" not in context_segments or "BSS" not in context_segments:
             raise ValueError("task-context map lacks CODE or BSS")
         context_start = context_segments["CODE"][0]
         context_bss, context_bss_end, context_bss_size = context_segments["BSS"]
-        if context_start != 0xCDC3 or context_bss_end != 0xCEFC:
-            raise ValueError("task-context placement is not $CDC3-$CEFC")
+        if context_start != 0xCDC3 or context_bss_end != 0xCEFF:
+            raise ValueError("task-context placement is not $CDC3-$CEFF")
         if len(context) != context_bss - context_start:
             raise ValueError("task-context emitted image does not reach its BSS")
         if len(context) > 0xFF or context_bss_size > 0x80:
             raise ValueError("task-context activation exceeds the bounded copier")
         if len(switch_tail) != 0xC0:
             raise ValueError("task-switch tail is not the 192-byte gate image")
+        if len(yield_handler) == 0 or len(yield_handler) > 0xFF:
+            raise ValueError("task-YIELD handler is empty or exceeds the bounded copier")
         context_source = LOAD_ADDRESS + HEADER_SIZE + len(page) + len(tail)
         switch_source = context_source + len(context)
-        extension = context + switch_tail
+        yield_source = switch_source + len(switch_tail)
+        extension = context + switch_tail + yield_handler
         activation_constants = (
             f"TASK_ACTIVATION_CONTEXT_SOURCE = ${context_source:04x}\n"
             f"TASK_ACTIVATION_CONTEXT_DESTINATION = ${context_start:04x}\n"
@@ -113,6 +119,9 @@ def build_overlay(
             f"TASK_ACTIVATION_TAIL_SOURCE = ${switch_source:04x}\n"
             "TASK_ACTIVATION_TAIL_DESTINATION = $ff05\n"
             f"TASK_ACTIVATION_TAIL_SIZE = ${len(switch_tail):02x}\n"
+            f"TASK_ACTIVATION_YIELD_SOURCE = ${yield_source:04x}\n"
+            "TASK_ACTIVATION_YIELD_DESTINATION = $1c00\n"
+            f"TASK_ACTIVATION_YIELD_SIZE = ${len(yield_handler):02x}\n"
             f"TASK_ACTIVATION_EXTENSION_CHECKSUM = ${sum(extension) & 0xffff:04x}\n"
         )
     payload = (
@@ -150,6 +159,7 @@ def main() -> None:
     parser.add_argument("--activation-context", type=Path)
     parser.add_argument("--activation-context-map", type=Path)
     parser.add_argument("--activation-tail", type=Path)
+    parser.add_argument("--activation-yield-handler", type=Path)
     parser.add_argument("--activation-vectors", type=Path)
     args = parser.parse_args()
     try:
@@ -159,6 +169,7 @@ def main() -> None:
             b"" if args.activation_context is None else args.activation_context.read_bytes(),
             "" if args.activation_context_map is None else args.activation_context_map.read_text(encoding="utf-8"),
             b"" if args.activation_tail is None else args.activation_tail.read_bytes(),
+            b"" if args.activation_yield_handler is None else args.activation_yield_handler.read_bytes(),
             b"" if args.activation_vectors is None else args.activation_vectors.read_bytes(),
         )
     except ValueError as error:

@@ -142,20 +142,19 @@ the [Tasking 0.1 handover](../HANDOVER.md).
 - [x] Fit a production-shaped save/restore tail behind the frozen
   `$FF10/$FF13/$FF16` entries: 191 bytes in the exact 192-byte common-RAM
   reservation. Its separate resident binding also fits eight context records
-  and callbacks in 314 of the 317 post-overlay bytes, plus six fixed page
-  vectors. Their bounded post-startup delivery is now present: the page
-  vectors and 45-byte activator staged at `$1BAA` and installed at `$F68A` are
-  checksum covered, while the
-  appended context/gate images are exact-size build-locked pending the runtime
-  activation gate. Activation remains
-  disabled until the `$CF30` suspend/resume contract and a real user-space
-  `YIELD` replace the legacy returning poll entry.
-- [ ] Implement task creation, exit, yield, sleep, and event wait.
-- [ ] Save and restore the selected compiler runtime and CPU context. A
-  compiled C task using the real cc65 software stack now passes as a
-  standalone integration spike; this item closes when the same mechanism is
-  active behind the production scheduler gate.
-- [ ] Add cooperative scheduling, then timer-driven preemption.
+  and callbacks in all 317 post-overlay bytes, plus six fixed page
+  vectors. Their bounded post-startup delivery is active: the page
+  vectors and 59-byte activator staged at `$1BAA` and installed at `$F68A` are
+  checksum covered. The installed context/gate images and 44-byte handler now
+  implement the `$CF30` carry contract; persistent `/bin/ush` repeatedly
+  yields, resumes, and accepts commands in VICE from both D71 and D64.
+- [x] Implement production cooperative `YIELD` for persistent `/bin/ush`.
+- [ ] Implement task creation, exit, sleep, and event wait.
+- [x] Save and restore the selected compiler runtime and CPU context behind
+  the production scheduler gate. Physical-hardware qualification of the
+  integrated path remains part of the milestone acceptance gate.
+- [ ] Extend cooperative scheduling beyond the initial shell task, then add
+  timer-driven preemption.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

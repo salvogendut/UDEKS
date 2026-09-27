@@ -53,7 +53,7 @@
 #define UDEKS_TREQ_OP_STAT               8u
 #define UDEKS_TREQ_OP_CLOSE              9u
 
-/* ABI 0.3 lifecycle operations. They return ENOSYS until implemented. */
+/* ABI 0.3 lifecycle operations. YIELD is live; the others remain ENOSYS. */
 #define UDEKS_TREQ_OP_YIELD             10u
 #define UDEKS_TREQ_OP_EXIT              11u
 #define UDEKS_TREQ_OP_WAITPID           12u

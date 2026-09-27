@@ -9,6 +9,7 @@
         .segment "BOOTFSCODE"
 
         .export _udeks_bootfs_request
+        .export _udeks_bootfs_finish_error
 
 MMU_LCR_KERNEL_IO       = $ff01
 MMU_LCR_WORKER_FLAT     = $ff04
@@ -36,6 +37,7 @@ OP_OPEN                 = $06
 OP_GETDENTS             = $07
 OP_STAT                 = $08
 OP_CLOSE                = $09
+OP_YIELD                = $0a
 ERR_ENOENT              = $02
 ERR_EBADF               = $09
 ERR_EMFILE              = $18
@@ -46,6 +48,8 @@ DIRECTORY_FD            = $03
 
 _udeks_bootfs_request:
         lda TREQ_OPERATION
+        cmp #OP_YIELD
+        beq request_yield
         cmp #OP_OPEN
         beq request_open
         cmp #OP_GETDENTS
@@ -56,6 +60,9 @@ _udeks_bootfs_request:
         jeq request_close
         lda #ERR_ENOSYS
         jmp finish_error
+
+request_yield:
+        jmp $1c00
 
 request_open:
         lda DIRECTORY_KIND
@@ -340,13 +347,14 @@ set_entry_address:
         sta ENTRY_ADDRESS_HIGH
         rts
 
+_udeks_bootfs_finish_error:
 finish_error:
         sta TREQ_ERROR
         lda #$00
         sta TREQ_RESULT
         lda #STATE_ERROR
         sta TREQ_STATE
-        lda TREQ_ERROR
+        clc
         rts
 finish_ok:
         sta TREQ_RESULT
@@ -355,6 +363,7 @@ finish_ok:
         lda #STATE_COMPLETE
         sta TREQ_STATE
         lda #$00
+        clc
         rts
 
 bootfs_request_end:

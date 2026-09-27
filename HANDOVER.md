@@ -74,8 +74,8 @@ the task model, validate it, and only then remove the replaced special case.
   64 times with live C frames and distinct software stacks, byte-identically
   in `1986` and VICE at 1/2 MHz. Its physical-C128 run remains outstanding.
 - Step 3 has Task Request ABI 0.3 operations for `YIELD`, `EXIT`, `WAITPID`,
-  `SLEEP`, `CANCEL`, and `SPAWN`, plus a pure host-tested policy layer. The
-  resident handlers are not implemented yet, so the new operations still
+  `SLEEP`, `CANCEL`, and `SPAWN`, plus a pure host-tested policy layer.
+  Production `YIELD` is implemented; the other lifecycle operations still
   report `ENOSYS` through the compatibility fallback.
 - The placement prerequisite for steps 3 and 4 is qualified. Stage 1 can
   deliver a scheduler image to `$1C00-$1FFF`; crt0 and probe are split boot
@@ -99,25 +99,20 @@ the task model, validate it, and only then remove the replaced special case.
   `$FF10/$FF13/$FF16` entries: its separate link occupies `$FF05-$FFC3`, 191
   of the exact 192 reserved bytes. It captures A/X/Y/P/SP and the continuation
   before remapping, preserves the resident kernel stack, and restores the
-  selected task's relocated page zero/page one and CPU context. It is not yet
-  installed: the boot image deliberately retains the qualified 0.2 gateway.
-  Its resident binding is also link-qualified separately: eight 11-byte
-  records plus reset/save/select callbacks occupy `$CDC3-$CEFC` (314 of the
-  active overlay's 317 free bytes), while fixed callback vectors consume the
-  page's final six bytes at `$1FFA-$1FFF`. It is not in `SCHEDOVR` because the
-  active boot still reads the old gate source at `$CE00-$CEBF`. The delivery
-  half of that transition is now built: `SCHEDOVR` ABI 0.3 appends the exact,
-  build-locked 225-byte context image and 192-byte gate, its normal checksum
-  covers the six fixed page vectors, and the boot-console installer checksums and installs a
-  45-byte post-startup activator at `$1BAA` and copies it directly to its
-  `$F68A` common-RAM run address. The activator remains deliberately
-  dormant because the appended images still need an activation-time integrity
-  gate and the current `/bin/ush` entry returns after each poll and
-  cannot resume from a persistent task stack. The next increment is the
-  `$CF30` carry contract and a real ABI 0.3 `YIELD`; only then should init call
-  the activator and retire the 0.2 gate.
-  `YIELD` must return only after task 1 is selected again, and `EXIT` must
-  never return; keep the 0.2 compatibility path until those invariants pass.
+  selected task's relocated page zero/page one and CPU context. The boot image
+  installs it after startup. Eight 11-byte records plus reset/save/select
+  callbacks occupy the exact `$CDC3-$CEFF` 317-byte window, while fixed
+  callback vectors consume the page's final six bytes at `$1FFA-$1FFF`.
+  `SCHEDOVR` ABI 0.3 appends the exact, build-locked 228-byte context image,
+  192-byte gate, and 44-byte `YIELD` handler; its normal checksum covers the
+  six fixed page vectors, and the boot-console installer checksums and installs a
+  59-byte post-startup activator at `$1BAA` and copies it directly to its
+  `$F68A` common-RAM run address. Persistent `/bin/ush` now polls, yields, and
+  resumes through the `$CF30` carry contract. D71 and D64 VICE probes observe
+  repeated context switches and accept `xinit`; the xwave slot-reuse probe
+  also remains green. Task 1 owns bank-1 pages `$D1/$D2`, above bootfs and
+  outside the loader's `$8000-$8A00` backup. The next lifecycle operation is
+  non-returning `EXIT`, followed by nonblocking `WAITPID`.
 
 ## Implementation plan
 
@@ -288,8 +283,6 @@ and bank ownership.
 
 ## First concrete change for the next session
 
-Add the resident Task Request ABI 0.3 dispatch seam and the smallest real
-cooperative resume path behind the existing `$CF30` record and frozen `$FF16`
-entry. Start with `YIELD`, preserving the old poll path until persistent
-`/bin/ush` has yielded and resumed through the qualified context-switch path;
-only then expose non-returning `EXIT` and nonblocking `WAITPID`.
+Implement non-returning `EXIT` behind the active `$CF30`/`$FF16` path, with an
+emulator probe that proves the exiting task cannot resume. Then add
+nonblocking `WAITPID` so a parent can observe and reap the zombie.

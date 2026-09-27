@@ -83,3 +83,17 @@ and
 This qualifies the compiler runtime and resume mechanism in emulation; it does
 not by itself activate scheduling behind `$FF16`. A physical-C128 run of this
 compiled integration image remains the final portability gate.
+
+## Production integration
+
+The production scheduler now installs the qualified save/select/restore tail
+behind `$FF10/$FF13/$FF16` after service startup. Persistent `/bin/ush` owns
+bank-1 physical pages `$D1/$D2`, yields through the Task Request ABI 0.3
+record, and resumes on its preserved cc65 and hardware stacks. Pages
+`$80-$89` are excluded from production task allocation because the native
+loader uses `$8000-$8A00` as its application backup. `$D1/$D2` begin directly
+above the bootfs image ending at `$D0FF` and are dead before task activation.
+
+VICE qualification on both D71 and D64 observes repeated successful switches
+and command dispatch after resume. Physical-C128 qualification of this
+integrated path remains part of the Tasking 0.1 acceptance gate.

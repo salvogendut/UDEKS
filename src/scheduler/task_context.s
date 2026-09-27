@@ -24,8 +24,10 @@ TASK_COUNT              = $08
 TASK_CONTEXT_SIZE       = TASK_SWITCH_CONTEXT_SIZE
 TASK_ENTRY              = $9000
 TASK_SOFT_STACK         = $eff0
-TASK_PAGE0              = $80
-TASK_PAGE1              = $81
+; $80-$89 back the transient APP1 save area. Task 1 instead owns the first two
+; pages above bootfs ($A000-$D0FF), which are dead after native boot.
+TASK_PAGE0              = $d1
+TASK_PAGE1              = $d2
 TASK_PAGE_BANK          = $01
 TASK_STACK_CANARY       = $a5
 
@@ -116,6 +118,7 @@ select_runnable:
         jsr _udeks_lifecycle_apply
         bne no_selected_task
 load_selected:
+        lda current_task
         jsr context_pointer
         ldy #TASK_CONTEXT_SIZE-1
 copy_context_in:

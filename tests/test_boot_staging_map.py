@@ -145,14 +145,14 @@ class BootStagingMapTests(unittest.TestCase):
             sum(end - start + 1 for _, start, end in holes), 585
         )
 
-    def test_dormant_activation_consumes_the_post_console_prefix(self):
+    def test_activation_consumes_the_post_console_prefix(self):
         emitted = {
             **EMITTED,
             "boot_delivery": 267,
             "capability": 967,
             "capability_installer": 102,
             "boot_console": 1450,
-            "task_activation": 45,
+            "task_activation": 59,
             "boot_console_installer": 99,
         }
         regions = staged_regions(
@@ -161,9 +161,9 @@ class BootStagingMapTests(unittest.TestCase):
         console = next(
             region for region in regions if region.name == "boot console staging"
         )
-        self.assertEqual((console.start, console.copied_end), (0xA718, 0xACEE))
+        self.assertEqual((console.start, console.copied_end), (0xA718, 0xACFC))
         self.assertIn(
-            ("staging hole", 0xACEF, 0xACFF),
+            ("staging hole", 0xACFD, 0xACFF),
             free_holes(0xA1E0, 0x0B3D, regions),
         )
 
@@ -172,7 +172,7 @@ class BootStagingMapTests(unittest.TestCase):
         padding = {item["name"]: item for item in result["padding"]}
         self.assertEqual(padding["probe staging"]["size"], 47)
         self.assertEqual(padding["crt0 staging"]["size"], 49)
-        self.assertEqual(padding["module staging"]["size"], 1)
+        self.assertNotIn("module staging", padding)
         self.assertNotIn("bootfs tail staging", padding)
         unowned = {name: end - start + 1 for name, start, end, _ in
                    result["unowned_padding"]}

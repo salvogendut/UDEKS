@@ -50,10 +50,13 @@ _udeks_scheduler_lifecycle_bootstrap_gate:
         ldx #>$f110
         jsr _udeks_lifecycle_bootstrap
         bne lifecycle_bootstrap_done
-        jsr $ff10
-        jmp $ff13
+        ; Tail-call the common installer: it may now overwrite this retired
+        ; bootstrap prefix and its RTS returns directly to init_start.
+        jmp $f68a
 lifecycle_bootstrap_done:
         rts
+        ; Runtime YIELD may replace the entire one-shot prefix through $1C2D.
+        .res 3, $ea
 
 scheduler_end:
         .assert scheduler_end <= $2000, error, "scheduler exceeds its page"

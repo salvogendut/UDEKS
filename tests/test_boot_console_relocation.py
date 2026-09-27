@@ -51,7 +51,7 @@ class BootConsoleRelocationContractTests(unittest.TestCase):
         self.assertIn("sta BOOT_CHAIN_STATE", installer)
         self.assertIn("boot_console_installer = $0b50", installer)
 
-    def test_installer_checksum_covers_the_dormant_activation_image(self):
+    def test_installer_checksum_covers_the_activation_image(self):
         generator = (ROOT / "tools/gen_boot_console_imports.py").read_text(
             encoding="utf-8"
         )

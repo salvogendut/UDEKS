@@ -391,7 +391,7 @@ task_finish_error:
         sta TREQ_RESULT
         lda #TREQ_STATE_ERROR
         sta TREQ_STATE
-        lda TREQ_ERROR
+        clc
         rts
 
 task_finish_ok:
@@ -401,6 +401,7 @@ task_finish_ok:
         lda #TREQ_COMPLETE
         sta TREQ_STATE
         lda #$00
+        clc
         rts
 
 task_signature:

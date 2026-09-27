@@ -86,8 +86,8 @@ map above.
 `boot_console.o` is also realized reclaim: its exact 1,450-byte image is
 linked separately at `$1600-$1BA9`, staged at `$A718-$ACC1`, and installed by
 a 99-byte checksum gate at `$0B50-$0BB2`. The same copy/checksum now covers a
-45-byte dormant task-switch activator staged at `$ACC2-$ACEE`, copied through
-`$1BAA-$1BD6`, and installed at its `$F68A-$F6B6` common-RAM run address. The
+59-byte task-switch activator staged at `$ACC2-$ACFC`, copied through
+`$1BAA-$1BE4`, and installed at its `$F68A-$F6C4` common-RAM run address. The
 installer runs before the
 scheduler gather and is then overwritten by the relocated probe. The
 scheduler allocator reserves the installer's complete linked extent, including
@@ -146,29 +146,26 @@ are set.
 
 The page also contains a 63-byte C round-robin selector. It scans the bounded
 eight-slot lifecycle table exactly once, considers only `RUNNABLE` entries,
-and wraps after the caller's task id. It deliberately remains disconnected
-from `$FF16` until the common-RAM context-save/resume path can honor the ABI
-rule that `YIELD` returns only after the caller is selected again.
+and wraps after the caller's task id. The production `$FF16` path now invokes
+it after a successful `YIELD`, and returns to the caller only after that task
+is selected again.
 
-The resident callback/context-table binding is now qualified as a separate,
-non-installed link. Its 217 bytes of code, 8 bytes of read-only offsets, and
-89 bytes of BSS occupy `$CDC3-$CEFC`, leaving three bytes in the 317-byte
-post-overlay window. The eight records each retain the same 11-byte CPU/MMU
+The resident callback/context-table binding is now installed after startup.
+Its 220 bytes of code, 8 bytes of read-only offsets, and 89 bytes of BSS occupy
+the exact `$CDC3-$CEFF` 317-byte post-overlay window. The eight records each
+retain the same 11-byte CPU/MMU
 context exchanged by the common tail. A separate six-byte patch occupies the
 page's exact `$1FFA-$1FFF` remainder and provides fixed reset/select vectors;
 its generated bridge rejects any drift in the active overlay end, symbol
 types, or five-symbol callback contract.
 
-This binding is intentionally absent from `SCHEDOVR`. The active boot still
-needs the old permanent gate staged at `$CE00-$CEBF` until the scheduler entry
-copies it to `$FF05`, so installing the context bytes through `$CEFC` would
-destroy that source. `$1600` is not a temporary alternative: the relocated
-boot-console composer remains live there through console service startup. The
-next installer increment must either preserve/install the new task gate from a
-genuinely dead source or defer the `$CE00-$CEFC` context installation until
-after startup. The failed lifetime experiment was not retained in production;
-the VICE shadow probe confirms the active 3,235-byte overlay and console boot
-remain unchanged.
+`SCHEDOVR` carries the 228 emitted context bytes, the 192-byte common tail, and
+the 44-byte `YIELD` handler in bank 1. After the boot-console service has
+finished, the 59-byte activator copies those images into their final homes,
+calls the fixed reset vector, and returns to init. Task 1 owns bank-1 physical
+pages `$D1/$D2`; the former `$80/$81` choice is forbidden because the native
+loader uses `$8000-$8A00` as its application backup. VICE qualifies repeated
+D71/D64 yields, resumes, and command dispatch through this installed path.
 
 ## Proposed bank-0 scheduler region
 
@@ -222,30 +219,27 @@ switch-out entry that saves A/X/Y/P/SP, selects the kernel-visible profile,
 and returns to the bank-0 scheduler, plus a switch-in entry that restores the
 selected context after the scheduler writes the page registers and profile.
 
-The first production-shaped tail prototype now links at `$FF05-$FFC3`: 191
+The production tail links at `$FF05-$FFC3`: 191
 bytes of the exact 192-byte reservation, with one byte of headroom. It keeps
 the frozen `$FF10`, `$FF13`, and `$FF16` entries, captures a task's live
 A/X/Y/P/SP and resume PC before changing the MMU mapping, restores the kernel
 hardware stack for resident dispatch, and restores the selected task's page
 zero, page one, CPU registers, and continuation. The `$CF30` dispatcher carry
-contract used by this prototype is deliberately not active yet: carry clear
-means that the caller resumes synchronously, while carry set returns to the
-kernel poll frame and leaves the task suspended. The prototype remains a
-separate build artifact until the resident callbacks snapshot per-task state
-and implement that contract; the boot image still installs the qualified 0.2
-gateway.
+contract is active: carry clear resumes a synchronous request, while carry set
+returns to the kernel poll frame and leaves the task suspended. `YIELD` uses
+the latter path and resumes only after the scheduler selects task 1 again.
 
-The post-startup delivery path is also link-qualified. `SCHEDOVR` ABI 0.3
-appends the exact, build-locked 225 emitted context bytes and the 192-byte tail
-in bank 1; an activation-time integrity gate remains required before use. The
+The post-startup delivery path is link-qualified. `SCHEDOVR` ABI 0.3 appends
+the exact, build-locked 228 emitted context bytes, 192-byte tail, and 44-byte
+`YIELD` handler in bank 1. The
 six `$1FFA-$1FFF` callback vectors are installed as part of the scheduler
-page and covered by its existing checksum. A 45-byte body fits the
+page and covered by its existing checksum. A 59-byte body fits the
 post-console staging window and is copied directly to the disposable `$F68A`
 VIC gateway workspace. It copies the context image to
-`$CDC3`, clears its 89-byte BSS through `$CEFC`, and replaces `$FF05-$FFC4`.
-The image is delivered but intentionally not invoked while `/bin/ush` still
-uses the returning 0.2 poll convention. The activation call is coupled to the
-real ABI 0.3 `YIELD`/resume contract.
+`$CDC3`, lets the reset callback clear its 89-byte BSS through `$CEFF`,
+replaces `$FF05-$FFC4`, and replaces the retired scheduler bootstrap prefix at
+`$1C00` with the request handler. Persistent `/bin/ush` now yields and resumes
+through that path.
 
 ## Reclaim order and validation
 

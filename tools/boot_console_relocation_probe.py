@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Qualify the relocated boot console and dormant switch activator under VICE.
+"""Qualify the relocated boot console and installed switch activator under VICE.
 
 Both native disk formats must retain an exact copy of the linked composer at
 $1600 after startup.  The D71 run then starts xwave in application slot 2 and
@@ -80,9 +80,9 @@ def probe_disk(
             )
         if common != task_activation:
             raise RuntimeError(
-                f"{disk.name}: common workspace lacks the dormant activator"
+                f"{disk.name}: common workspace lacks the switch activator"
             )
-        print(f"{disk.name}: console and dormant activation match", flush=True)
+        print(f"{disk.name}: console and activation match", flush=True)
 
         if exercise_reuse:
             inject_until_state(

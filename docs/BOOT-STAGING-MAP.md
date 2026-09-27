@@ -33,13 +33,13 @@ The audit distinguishes three sizes per staged region:
 | capability staging | `$A2EB` | 967 | 967 | 967 | `load..crt0` |
 | capability installer staging | `$A6B2` | 102 | 102 | 102 | `load..crt0` |
 | boot-console staging | `$A718` | 1,450 | 1,450 | 1,450 | `load..crt0` |
-| dormant task-switch activator | `$ACC2` | 45 | 45 | 45 | `load..crt0` |
+| task-switch activator | `$ACC2` | 59 | 59 | 59 | `load..crt0` |
 | boot-console installer | `$0B50` | 99 | 99 | 99 | `load..probe-copy` |
 | busy sprite | `$0BC0` | 63 | 63 | 63 | `load..stage1` |
 | probe staging | `$AD00` | 209 | 256 | 256 | `load..crt0` |
 | crt0 staging | `$AE00` | 207 | 256 | 256 | `load..crt0` |
 | bootfs tail staging | `$AF00` | 4,283 | 5,120 | 5,120 | `load..stage1` |
-| module staging | `$BFBB` | 836 | 837 | 837 | `load..stage1` |
+| module staging | `$BFBB` | 836 | 836 | 836 | `load..stage1` |
 | task request staging | `$C300` | 265 | 265 | 265 | `load..stage1` |
 | scheduler-tail installer | `$C409` | 192 | 192 | 192 | `load..scheduler-entry` |
 | bootfs request staging | `$C4EF` | 667 | 667 | 785 | `load..stage1` |
@@ -59,21 +59,21 @@ busy sprite occupies `$0BC0-$0BFE` until stage 1 copies it to bank 1.
 
 | Hole | Range | Size | Free |
 |---|---:|---:|---|
-| shadow prefix remainder | `$ACEF-$ACFF` | 17 | after crt0 |
+| shadow prefix remainder | `$ACFD-$ACFF` | 3 | after crt0 |
 | shadow mid | `$C4C9-$C4EE` | 38 | after crt0 |
 | bootfs-request container tail | `$C78A-$C7FF` | 118 | after stage 1 |
 | loader tail | `$CDF0-$CDFF` | 16 | after stage 1 |
 | gate tail | `$CEC0-$CEFF` | 64 | after stage 1 |
 | boot-sector gap | `$0B4E-$0B4F` | 2 | after stage 0 |
-| installer/sprite gap | `$0BB3-$0BBF` | 13 | after stage 1 |
+| installer/sprite gap | `$0BBE-$0BBF` | 2 | after stage 1 |
 | boot-sector tail | `$0BFF` | 1 | after stage 1 |
-| **total** | | **269** | largest contiguous **118** |
+| **total** | | **244** | largest contiguous **118** |
 
-The boot-console checksum/copy covers one contiguous 1,495-byte delivery:
-the 1,450-byte composer followed by the 45-byte dormant task-switch activator.
-The latter lands at `$1BAA-$1BD6`, after the composer, and the installer also
-copies it to its `$F68A-$F6B6` common-RAM run address. It is not called until
-the ABI 0.3 `YIELD` path can safely replace the legacy persistent-poll entry.
+The boot-console checksum/copy covers one contiguous 1,509-byte delivery:
+the 1,450-byte composer followed by the 59-byte task-switch activator.
+The latter lands at `$1BAA-$1BE4`, after the composer, and the installer also
+copies it to its `$F68A-$F6C4` common-RAM run address. The scheduler bootstrap
+calls it after service startup to install the ABI 0.3 `YIELD` path.
 The former `$ACD9` scatter-manifest reservation belongs to the superseded
 inline scheduler-delivery path; a build that requests that compatibility path
 must reject this overlapping placement rather than silently combining them.
@@ -96,7 +96,6 @@ BSS and occupies `$1600-$1BA9`, above the scheduler gather at `$1200-$15FF`.
 |---|---:|---:|---|
 | probe staging | `$ADD1-$ADFF` | 47 | copied to `$0B00`, dead |
 | crt0 staging | `$AECF-$AEFF` | 49 | copied to `$1C00`, dead |
-| module staging | `$C2FF` | 1 | copied to `$E300`, dead |
 | task loader staging | `$CDE3-$CDEF` | 13 | copied to `$F910`, dead |
 | stage-1 code | `$1FB6-$1FBA` | 5 | dead stage-1 page padding |
 | Z80 tail | `$D297-$D2FF` | 105 | copied into bank 1 |

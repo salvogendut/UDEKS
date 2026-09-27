@@ -412,7 +412,7 @@ class BuildD71Tests(unittest.TestCase):
             build_image(stage0(), b"", b"", b"", bootfs=bootfs, module=b"m")
 
     def test_rejects_oversize_module(self):
-        with self.assertRaisesRegex(ValueError, "837-byte"):
+        with self.assertRaisesRegex(ValueError, "836-byte"):
             build_image(
                 stage0(), b"", b"", b"",
                 module=bytes(MODULE_STAGING_SIZE + 1),
