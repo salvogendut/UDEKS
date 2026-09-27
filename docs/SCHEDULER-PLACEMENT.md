@@ -147,6 +147,26 @@ and wraps after the caller's task id. It deliberately remains disconnected
 from `$FF16` until the common-RAM context-save/resume path can honor the ABI
 rule that `YIELD` returns only after the caller is selected again.
 
+The resident callback/context-table binding is now qualified as a separate,
+non-installed link. Its 217 bytes of code, 8 bytes of read-only offsets, and
+89 bytes of BSS occupy `$CDC3-$CEFC`, leaving three bytes in the 317-byte
+post-overlay window. The eight records each retain the same 11-byte CPU/MMU
+context exchanged by the common tail. A separate six-byte patch occupies the
+page's exact `$1FFA-$1FFF` remainder and provides fixed reset/select vectors;
+its generated bridge rejects any drift in the active overlay end, symbol
+types, or five-symbol callback contract.
+
+This binding is intentionally absent from `SCHEDOVR`. The active boot still
+needs the old permanent gate staged at `$CE00-$CEBF` until the scheduler entry
+copies it to `$FF05`, so installing the context bytes through `$CEFC` would
+destroy that source. `$1600` is not a temporary alternative: the relocated
+boot-console composer remains live there through console service startup. The
+next installer increment must either preserve/install the new task gate from a
+genuinely dead source or defer the `$CE00-$CEFC` context installation until
+after startup. The failed lifetime experiment was not retained in production;
+the VICE shadow probe confirms the active 3,235-byte overlay and console boot
+remain unchanged.
+
 ## Proposed bank-0 scheduler region
 
 | Use | Budget |

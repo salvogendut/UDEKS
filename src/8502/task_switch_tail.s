@@ -6,6 +6,8 @@
 ; and task entry wrapper must land before it can replace task_bank_gateway.s.
 
         .setcpu "6502"
+        .include "task_switch_context.inc"
+
         .segment "TASKGATE"
 
         .export _udeks_task_switch_tail
@@ -20,8 +22,8 @@ MMU_PAGE0_BANK          = $d508
 MMU_PAGE1_PAGE          = $d509
 MMU_PAGE1_BANK          = $d50a
 
-SCHEDULER_RESET         = $cdd0
-SCHEDULER_SELECT        = $cdd3
+SCHEDULER_RESET         = $1ffa
+SCHEDULER_SELECT        = $1ffd
 TASK_REQUEST_DISPATCH   = $cf30
 
 TASK_NOT_READY          = $01
@@ -156,6 +158,9 @@ context_page0_page:     .byte $00
 context_page0_bank:     .byte $00
 context_page1_page:     .byte $00
 context_page1_bank:     .byte $00
+
+        .assert context_a = TASK_SWITCH_CONTEXT, error, "task context record moved"
+        .assert context_page1_bank - context_a + 1 = TASK_SWITCH_CONTEXT_SIZE, error, "task context record size drift"
 
 task_switch_tail_end:
         .assert task_switch_tail_end <= $ffc5, error, "task-switch tail exceeds $FF05-$FFC4"

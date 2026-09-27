@@ -101,8 +101,15 @@ the task model, validate it, and only then remove the replaced special case.
   before remapping, preserves the resident kernel stack, and restores the
   selected task's relocated page zero/page one and CPU context. It is not yet
   installed: the boot image deliberately retains the qualified 0.2 gateway.
-  The next implementation increment is the resident callback/context-table
-  binding plus the `$CF30` carry contract, followed by a real ABI 0.3 `YIELD`.
+  Its resident binding is also link-qualified separately: eight 11-byte
+  records plus reset/save/select callbacks occupy `$CDC3-$CEFC` (314 of the
+  active overlay's 317 free bytes), while fixed callback vectors consume the
+  page's final six bytes at `$1FFA-$1FFF`. It is not in `SCHEDOVR` because the
+  active boot still reads the old gate source at `$CE00-$CEBF`; `$1600` cannot
+  hold it because the boot-console composer remains live there through
+  service startup. The next increment is therefore the post-startup delivery
+  transition for the new gate/context binding, then the `$CF30` carry contract
+  and a real ABI 0.3 `YIELD`.
   `YIELD` must return only after task 1 is selected again, and `EXIT` must
   never return; keep the 0.2 compatibility path until those invariants pass.
 

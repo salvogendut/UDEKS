@@ -141,8 +141,10 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   production `$FF16` integration remain pending.
 - [x] Fit a production-shaped save/restore tail behind the frozen
   `$FF10/$FF13/$FF16` entries: 191 bytes in the exact 192-byte common-RAM
-  reservation. It remains a non-installed artifact until the resident
-  scheduler callbacks and `$CF30` suspend/resume contract are connected.
+  reservation. Its separate resident binding also fits eight context records
+  and callbacks in 314 of the 317 post-overlay bytes, plus six fixed page
+  vectors. Both remain non-installed until their post-startup delivery and
+  the `$CF30` suspend/resume contract are connected.
 - [ ] Implement task creation, exit, yield, sleep, and event wait.
 - [ ] Save and restore the selected compiler runtime and CPU context. A
   compiled C task using the real cc65 software stack now passes as a

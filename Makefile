@@ -37,6 +37,11 @@ PROBE_BIN := $(BUILD_BOOT)/8502-probe.bin
 SCHEDULER_BIN := $(BUILD_8502)/udeks-scheduler.bin
 TASK_SWITCH_TAIL_BIN := $(BUILD_8502)/task-switch-tail.bin
 TASK_SWITCH_TAIL_MAP := $(BUILD_8502)/task-switch-tail.map
+TASK_CONTEXT_BIN := $(BUILD_8502)/task-context-binding.bin
+TASK_CONTEXT_VECTORS_BIN := $(BUILD_8502)/task-context-vectors.bin
+TASK_CONTEXT_MAP := $(BUILD_8502)/task-context-binding.map
+TASK_CONTEXT_BRIDGE_ASM := $(BUILD_8502)/task-context-bridge.s
+TASK_CONTEXT_BRIDGE_OBJ := $(BUILD_8502)/task-context-bridge.o
 SCHEDULER_OVERLAY_PAGE_BIN := $(BUILD_8502)/udeks-scheduler-overlay-page.bin
 SCHEDULER_OVERLAY_TAIL_BIN := $(BUILD_8502)/udeks-scheduler-overlay-tail.bin
 SCHEDULER_OVERLAY_MAP := $(BUILD_8502)/udeks-scheduler-overlay.map
@@ -210,7 +215,8 @@ task-policy: $(BUILD_8502)/task_policy.o
 
 task-scheduler: $(BUILD_8502)/task_scheduler.o
 
-task-switch-tail: $(TASK_SWITCH_TAIL_BIN)
+task-switch-tail: $(TASK_SWITCH_TAIL_BIN) $(TASK_CONTEXT_BIN) \
+		$(TASK_CONTEXT_VECTORS_BIN) $(TASK_CONTEXT_MAP)
 
 # Build the active lifecycle/policy overlay and its resident-runtime binding.
 scheduler-overlay: $(SCHEDULER_OVERLAY_PAGE_BIN) \
@@ -219,7 +225,8 @@ scheduler-overlay: $(SCHEDULER_OVERLAY_PAGE_BIN) \
 
 # Reference-container qualification: measures the real gateway copies and
 # fails if the placement expectations no longer hold.
-placement-check: placement-check-guard scheduler-overlay $(KERNEL_BIN) $(BOOT_DELIVERY_BIN) \
+placement-check: placement-check-guard scheduler-overlay task-switch-tail \
+		$(KERNEL_BIN) $(BOOT_DELIVERY_BIN) \
 		$(BUILD_8502)/vic_graphics_transport.o
 	$(PYTHON) tools/placement_audit.py --verify
 
@@ -922,6 +929,7 @@ $(BUILD_8502)/scheduler.o: src/scheduler/scheduler.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/task_switch_tail.o: src/8502/task_switch_tail.s \
+		src/8502/task_switch_context.inc \
 		| $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -932,6 +940,30 @@ $(TASK_SWITCH_TAIL_BIN) $(TASK_SWITCH_TAIL_MAP) &: $(BUILD_8502)/task_switch_tai
 
 $(SCHEDULER_BIN): $(BUILD_8502)/scheduler.o cfg/8502-scheduler.cfg
 	$(LD65) -C cfg/8502-scheduler.cfg -o $@ $(BUILD_8502)/scheduler.o
+
+$(BUILD_8502)/task_context.o: src/scheduler/task_context.s \
+		src/8502/task_switch_context.inc | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/task_context_vectors.o: src/scheduler/task_context_vectors.s \
+		| $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(TASK_CONTEXT_BRIDGE_ASM): $(BUILD_8502)/task_context.o \
+		$(SCHEDULER_OVERLAY_MAP) tools/gen_task_context_imports.py
+	$(PYTHON) tools/gen_task_context_imports.py \
+		$(BUILD_8502)/task_context.o $(SCHEDULER_OVERLAY_MAP) $@
+
+$(TASK_CONTEXT_BRIDGE_OBJ): $(TASK_CONTEXT_BRIDGE_ASM)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(TASK_CONTEXT_BIN) $(TASK_CONTEXT_VECTORS_BIN) $(TASK_CONTEXT_MAP) &: \
+		$(BUILD_8502)/task_context.o \
+		$(BUILD_8502)/task_context_vectors.o $(TASK_CONTEXT_BRIDGE_OBJ) \
+		cfg/8502-task-context.cfg
+	$(LD65) -C cfg/8502-task-context.cfg -m $(TASK_CONTEXT_MAP) \
+		-o $(TASK_CONTEXT_BIN) $(BUILD_8502)/task_context.o \
+		$(TASK_CONTEXT_BRIDGE_OBJ) $(BUILD_8502)/task_context_vectors.o
 
 # The resident kernel already supplies every cc65 helper used by the overlay
 # except these two modules. Extract precisely those providers; never link a
@@ -964,6 +996,7 @@ $(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 		$(SCHEDULER_OVERLAY_BRIDGE_OBJ) cfg/8502-scheduler-overlay.cfg
 	$(LD65) -C cfg/8502-scheduler-overlay.cfg \
 		-m $(SCHEDULER_OVERLAY_MAP) -o $(SCHEDULER_OVERLAY_PAGE_BIN) \
+		-u _udeks_lifecycle_apply -u _udeks_scheduler_select_next \
 		$(BUILD_8502)/scheduler.o $(BUILD_8502)/task_state.o \
 		$(BUILD_8502)/task_policy.o $(BUILD_8502)/task_scheduler.o \
 		$(SCHEDULER_RUNTIME_AND_OBJ) \
@@ -1544,6 +1577,7 @@ check:
 		tools/gen_capability_imports.py \
 		tools/gen_boot_console_imports.py \
 		tools/gen_scheduler_overlay_imports.py \
+		tools/gen_task_context_imports.py \
 		tools/build_scheduler_overlay.py \
 		tools/shadow_boot_probe.py \
 		tools/shadow_clear_decode.py \

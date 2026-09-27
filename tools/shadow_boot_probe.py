@@ -513,9 +513,10 @@ def probe(args: argparse.Namespace) -> None:
             raise SystemExit("installed scheduler tail differs from linked image")
         scheduler_bss = tail[len(overlay_image) : overlay_runtime_size]
         expected_bss = bytearray(len(scheduler_bss))
-        # The installer clears all 71 bytes before init registers the
-        # persistent shell as task 1.  The exact post-bootstrap image proves
-        # that the remaining slots and counters stayed clear.
+        # The installer clears the complete linked BSS before init registers
+        # the persistent shell as task 1. The exact lifecycle prefix proves
+        # that its remaining slots/counters stayed clear; the appended context
+        # records remain zero until the production switch tail is installed.
         expected_bss[0:8] = bytes((0, 3, 0, 3, 0, 1, 0, 0))
         expected_bss[64:71] = bytes((1, 0, 0, 3, 1, 1, 0))
         if scheduler_bss != expected_bss:
