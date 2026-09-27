@@ -85,6 +85,10 @@ See [LICENSE](LICENSE).
   public task/stream ABI. It now owns terminal lines and runs `echo`, `help`,
   and `uname` natively, forwarding commands still awaiting extraction through
   a bounded compatibility request.
+  Task Request ABI 0.4 adds non-consuming stdin `POLL`: idle `ush` sleeps
+  until a submitted line is readable. A compiled-C probe qualifies finite and
+  infinite waits, wake/response ownership and stack preservation on both disk
+  formats in VICE; independent emulator/hardware gates remain open.
 
 ## Hardware model
 

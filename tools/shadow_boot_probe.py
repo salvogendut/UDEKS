@@ -378,8 +378,38 @@ def inject_line(port: int, symbols: dict[str, int], text: str) -> None:
     record[: len(payload)] = payload
     record[length_address - text_address] = len(payload)
     record[length_address - text_address + 1] = 1
-    values = " ".join(f"{byte:02x}" for byte in record)
-    monitor_command(port, f"> {text_address:04x} {values}")
+    write_kernel_blocks(port, [(text_address, bytes(record))])
+
+
+def write_kernel_blocks(port: int, writes: list[tuple[int, bytes]]) -> None:
+    """Atomically mutate bank-0 records, preserving the CPU's live MMU map."""
+    for address, data in writes:
+        if not data or address < 0 or address + len(data) > 0x10000:
+            raise ValueError("monitor write must fit in 64 KiB")
+    with socket.create_connection(("127.0.0.1", port), timeout=3) as connection:
+        connection.settimeout(10)
+        buffer = b""
+
+        def run(command: str, marker: bytes | None = None) -> bytes:
+            nonlocal buffer
+            start = len(buffer)
+            connection.sendall(command.encode("ascii") + b"\n")
+            while True:
+                fresh = buffer[start:]
+                if (fresh.endswith(b") ") and PROMPT_RE.search(fresh[-32:])
+                        and (marker is None or marker in fresh)):
+                    return fresh
+                chunk = connection.recv(4096)
+                if not chunk:
+                    raise RuntimeError("VICE monitor closed during kernel write")
+                buffer += chunk
+
+        live = parse_monitor_byte(run("m ff00 ff00", b":ff00"), 0xFF00)
+        run("> ff01 00")
+        for address, data in writes:
+            run(f"> {address:04x} " + data.hex(" "))
+        run(f"> ff00 {live:02x}")
+        connection.sendall(b"x\n")
 
 
 def launch_vice(

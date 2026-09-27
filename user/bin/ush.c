@@ -175,6 +175,9 @@ unsigned char udeks_ush_poll(void)
         return UDEKS_EXIT_SUCCESS;
     }
 
+    if (udeks_poll(UDEKS_STDIN, UDEKS_TREQ_POLL_FOREVER) != 1u) {
+        return UDEKS_EXIT_SUCCESS;
+    }
     count = udeks_read(UDEKS_STDIN, buffer, sizeof(buffer));
     if (count == UDEKS_IO_ERROR) {
         return UDEKS_EXIT_SUCCESS;

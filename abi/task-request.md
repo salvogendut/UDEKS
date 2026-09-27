@@ -1,4 +1,4 @@
-# Bank-task request ABI 0.3
+# Bank-task request ABI 0.4
 
 Bank-1 8502 tasks exchange bounded requests with the resident kernel through a
 38-byte record in top common RAM. The task fills the record and calls `$FF16`.
@@ -9,7 +9,10 @@ ABI 0.3 keeps every 0.2 operation number and behavior unchanged and adds
 lifecycle operations `10`-`15`. `YIELD`, `EXIT`, immediate/nonblocking and
 blocking `WAITPID`, `SLEEP`, `CANCEL`, and `SPAWN` are implemented. Rebuilt
 0.3 clients may keep using the 0.2 operations unchanged, and
-the resident version check accepts minor `0`, `1`, `2`, and `3`.
+the resident version check accepts minor `0`, `1`, `2`, `3`, and `4`.
+ABI 0.4 adds non-consuming stdin readiness (`POLL`, operation 16). A 0.0–0.3
+request for operation 16 returns `ENOSYS`; an unsupported future minor returns
+`EPROTO`. Operations 1–15 retain their existing numbers and behavior.
 
 ## Record
 
@@ -19,7 +22,7 @@ The record occupies `$F359-$F37E`:
 |---:|---:|---|
 | 0 | 4 | ASCII magic `UTRQ` |
 | 4 | 1 | ABI major (`0`) |
-| 5 | 1 | ABI minor (`3`) |
+| 5 | 1 | ABI minor (`4`) |
 | 6 | 1 | State |
 | 7 | 1 | Operation |
 | 8 | 1 | Sequence number |
@@ -51,13 +54,14 @@ States are idle (`0`), request (`1`), complete (`2`), and error (`$80`).
 | 13 | `SLEEP` | 0.3 | Sleep for bounded kernel ticks. |
 | 14 | `CANCEL` | 0.3 | Terminate another task. |
 | 15 | `SPAWN` | 0.3 | Load and create a new task. |
+| 16 | `POLL` | 0.4 | Wait for stdin readability without consuming input. |
 
 `EXEC` (`3`) is not task creation and its meaning does not change: it remains
 the bounded command-line bridge for the resident compatibility shell. Real
 loader-backed task creation is `SPAWN` (`15`).
 
-All other operation values return `ENOSYS`, checked before any other field
-so an unknown operation is never reported as a malformed known operation.
+After validating the protocol envelope, all other operation values return
+`ENOSYS` before operation-specific field checks.
 
 ## Flags
 
@@ -217,10 +221,36 @@ field. The boundary uses `EIO` (5), `EBADF` (9), `EAGAIN` (11), `EINVAL` (22),
 
 ## Scheduling and record ownership
 
+### POLL (16, introduced in 0.4)
+
+- Request: descriptor `0` (stdin), flags `0`, count `4`. Payload bytes `0–1`
+  contain a little-endian mask, currently exactly `0x0001` (readable).
+  Bytes `2–3` contain a little-endian timeout in logical 1/60-second ticks:
+  `0` for immediate, `1–600` for finite, `0xFFFF` for infinite.
+- Response: complete, errno `0`, result `1` and mask `0x0001` when readable;
+  result `0` and mask `0` when an immediate/finite wait expires. Preserve
+  both timeout bytes and the original sequence; response flags remain `0`.
+- Undefined callers receive `ESRCH`; a defined caller not current/`RUNNING`
+  receives `EINVAL`; descriptors other than stdin receive `EBADF`; malformed
+  flags, count, mask or timeout receive `EINVAL`. Validation precedes any
+  lifecycle, allocation, or subscription mutation.
+- A submitted line is readable through its final newline, including an empty
+  line. `POLL` does not consume or reserve input: another permitted reader can
+  drain it before `READ`, which may then return `EAGAIN`.
+- Registration snapshots into the existing private per-task arrays and
+  releases the shared request. A bounded eight-slot service scan observes
+  readiness before finite expiry, marks the response ready once, and publishes
+  only when the caller resumes. Infinite waits have no arithmetic deadline.
+  Finite comparisons are wrap-safe provided the wake scan occurs within half
+  the 16-bit clock period of the deadline.
+- Ready stopped tasks remain stopped with a `RUNNABLE` saved resume state.
+  Cancellation discards their subscriptions and responses. STOP/CONTINUE are
+  still private lifecycle operations, not public request operations.
+
 The 0.2 operations complete synchronously; they do not schedule, and `EXEC`
 completion means only that the command was accepted for deferred resident
 dispatch. The 0.3 lifecycle operations may context-switch: `YIELD`, a blocking
-`WAITPID`, and `SLEEP` return only when the caller is resumed, `CANCEL` and the
+`WAITPID`, `SLEEP`, and a blocking 0.4 `POLL` return only when the caller is resumed; `CANCEL` and the
 nonblocking calls return without switching, and `EXIT` never returns.
 
 `$F359` is a single shared record, so a blocked task cannot retain ownership of
@@ -232,8 +262,13 @@ resumes from the `$FF16` gate. While the record is released, another task may
 use it. A task cancelled while blocked never resumes, so no response is
 written and the record stays available.
 
-The persistent `/bin/ush` task calls `YIELD` after each bounded poll and resumes
-inside that request before beginning its next poll. Other legacy UDEX entries
+The persistent `/bin/ush` task blocks in `POLL(stdin, infinite)` while idle,
+then reads the submitted line. It retains `YIELD` between bounded work passes
+and the compatibility foreground-job `WAIT` path. The resident shell still
+dispatches pending `EXEC` and graphical jobs, but its private input bridge
+returns `EMPTY` while native ush advertises `READY` at `$F3D9`. Init resets
+that ownership byte at boot; lifecycle-driven terminal ownership is deferred.
+Other legacy UDEX entries
 retain their existing return convention until they migrate to lifecycle tasks.
 
 ## Placement note
@@ -241,11 +276,13 @@ retain their existing return convention until they migrate to lifecycle tasks.
 The fixed `$F800` request gateway uses 262 of its 265 reserved bytes as of ABI
 0.3, and the host-testable policy compiles to 2,245 bytes (about 2.2 KiB) of
 cc65 code without long-arithmetic helpers. The active scheduler core occupies
-1,364 emitted bytes plus 154 bytes of BSS at `$C120-$C70D`; the permanent
-1,213-byte lifecycle request handler occupies `$C900-$CDBC` outside both
+1,721 emitted bytes plus 154 bytes of BSS at `$C120-$C872`; the permanent
+1,163-byte lifecycle request handler occupies `$C900-$CD8A` outside both
 application slots. Its per-task wait snapshots preserve blocking requests
 while the shared record is released. The policy module remains
-compile-qualified but nonresident.
+compile-qualified but nonresident. ABI 0.4 uses bounded assembly equivalent to
+the host-tested POLL policy; it adds no BSS. The measured remaining gaps are
+141 bytes before `$C900` and 50 bytes before the fixed `$CDBD` context binding.
 
 The preferred direction is to keep validation, lifecycle policy, and
 scheduling in bank 0 and retain only a small MMU/context-switch tail in

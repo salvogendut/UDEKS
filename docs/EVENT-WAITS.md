@@ -1,10 +1,46 @@
 # Tasking 0.1 — event-wait increment
 
-Status: design proposal, started on `tasking-0.1-event-waits` after PR #3
+Status: resident ABI 0.4 implemented on `tasking-0.1-event-waits` after PR #3
 merged as `00060f4` on 2026-09-27. Tracking issue:
 [#4](https://github.com/salvogendut/UDEKS/issues/4). The pure policy below is
-implemented, but no new resident request operation is installed or advertised.
-[Task Request ABI 0.3](../abi/task-request.md) remains the published contract.
+implemented as a compile-only reference. Bounded assembly installs `POLL` and
+native ush now blocks while idle. [Task Request ABI 0.4](../abi/task-request.md)
+is the published contract. Independent 1986/physical-C128 and manual input
+qualification remain open; this does not complete Tasking 0.1.
+
+## Resident increment (2026-09-27)
+
+The separately qualified WAITPID/SLEEP snapshot/suspend refactor recovered
+63 handler bytes. POLL and the console-ownership bridge use the existing
+overlay: 1,721 emitted core bytes + 154 BSS, ending `$C872` (141 bytes free),
+and 1,163 handler bytes ending `$CD8A` (50 free). No additional BSS or resident
+kernel growth is required. The `$FF10/$FF13/$FF16`, `$CF30`, UAPP zero page,
+and `$CDBD` context binding stay fixed.
+
+POLL reuses private child/status bytes for the original timeout,
+selector bytes for finite deadlines, and the flags byte for private readiness.
+Public flags remain zero. Infinite registration skips deadline arithmetic.
+Cancellation/SPAWN cleanup already clears all ten snapshot arrays.
+
+A live probe found that the resident compatibility shell could drain a
+submission while the native task was stopped. Its input call now goes through
+private `$C90F`: native `USH READY` suppresses only that second reader, not
+resident EXEC/foreground processing. This is transitional input ownership,
+not a general controlling-TTY implementation.
+
+`make task-poll-probe` builds and tests a compiled cc65 task on D71 and D64.
+It covers immediate/rejected requests (including old/future versions), finite
+clock wrap, infinite wake, repeated/partial reads through the final newline,
+empty lines, stopped wake/continue, shared-record sequence restoration, and
+live local-array preservation. Monitor-seeded stopped subscriptions additionally
+qualify multiple waiters and readiness winning simultaneous expiry; they do
+not claim to launch more than the initial two CPU contexts.
+`task_cancel_probe.py --input-wait` qualifies disposal of an INPUT subscription.
+The shell smoke probe now requires a stable idle suspension counter, wakes
+native ush, and checks graphics/utility command processing.
+The final suite passes 626 host tests and placement-check; the clean parallel
+build is deterministic. Exact probe disks, linker maps and raw records are in
+[the event-wait qualification report](../bench/results/2026-09-27-event-waits/README.md).
 
 ## First increment: pure policy (2026-09-27)
 
@@ -56,9 +92,9 @@ console access rights. Readiness grants no reservation: if another permitted
 reader drains the input before a resumed task reads, `READ` may still return
 `EAGAIN` and the task must wait again.
 
-## Proposed request extension — review before freezing
+## Request extension — implemented
 
-Use the existing `$F359` record and `$CF30`/`$FF16` gates. Propose minor 0.4
+Use the existing `$F359` record and `$CF30`/`$FF16` gates. Minor 0.4
 and operation 16, `POLL`, without renumbering operations 1–15 or silently
 changing 0.3 behavior. Older minor versions must continue to reject operation
 16 with `ENOSYS`; a kernel without 0.4 support still rejects the new version.

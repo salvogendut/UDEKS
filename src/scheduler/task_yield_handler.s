@@ -11,6 +11,8 @@
         .import _udeks_task_sleep_poll
         .import _udeks_task_tick_advance
         .import _udeks_task_cancel_request
+        .import _udeks_task_poll_request
+        .import _udeks_task_console_get_line
         .import _udeks_task_context_save_current
         .import _udeks_task_contexts_private
         .import _udeks_lifecycle_slots_private
@@ -128,8 +130,15 @@ task_wait_snapshot_gate:
         jmp wait_snapshot
 task_block_caller_gate:
         jmp block_caller
+task_console_get_line_gate:
+        jmp _udeks_task_console_get_line
 
 lifecycle_request:
+        lda TREQ_OPERATION
+        cmp #$10
+        bne :+
+        jmp _udeks_task_poll_request
+:
         lda TREQ_DESCRIPTOR
         beq :+
         jmp yield_invalid
@@ -748,4 +757,5 @@ yield_handler_end:
         .assert task_tick_advance_gate = $c906, error, "scheduler tick gate moved"
         .assert task_wait_snapshot_gate = $c909, error, "private wait snapshot gate moved"
         .assert task_block_caller_gate = $c90c, error, "private block gate moved"
+        .assert task_console_get_line_gate = $c90f, error, "private console ownership gate moved"
         .assert yield_handler_end <= $cdbd, error, "lifecycle handler reaches context binding"

@@ -41,6 +41,7 @@ OP_YIELD                = $0a
 OP_EXIT                 = $0b
 OP_WAITPID              = $0c
 OP_SPAWN                = $0f
+OP_POLL                 = $10
 ERR_ENOENT              = $02
 ERR_EBADF               = $09
 ERR_EMFILE              = $18
@@ -61,7 +62,7 @@ _udeks_bootfs_request:
         jeq request_close
         cmp #OP_YIELD
         bcc request_unsupported
-        cmp #OP_SPAWN+1
+        cmp #OP_POLL+1
         bcc request_lifecycle
 request_unsupported:
         lda #ERR_ENOSYS

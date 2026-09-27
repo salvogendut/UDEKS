@@ -117,7 +117,8 @@ in the production boot. The
 `$1C00-$1FFF` scheduler page beside the delivery stub; the remainder of
 `task_state.o`, `task_scheduler.o`, the private blocking-wait records, their
 constants, and their 154-byte BSS are
-linked into `$C120-$C70A`. `task_policy.o` remains the host-tested,
+linked into `$C120-$C872` including the ABI 0.4 input-wait implementation.
+`task_policy.o` remains the host-tested,
 cc65-compile-qualified specification and is not resident. A generated,
 zero-byte private bridge binds only
 their external cc65 runtime imports and requires normal/panic map address and
@@ -127,15 +128,15 @@ overlay rather than growing the resident runtime. `make scheduler-overlay`
 builds the exact page and tail subsequently packaged into `SCHEDOVR`.
 
 The active core occupies 1,018 bytes at `$1C00-$1FF9` (zero-padded to a 1 KiB
-delivery page) and 1,515 runtime bytes at `$C120-$C70A` (1,361 emitted plus
-154 BSS). The packaged tail pads to the 1,213-byte handler at `$C900-$CDBC`,
-immediately before the fixed 323-byte context binding at `$CDBD-$CEFF`. The
-bridge contract is 22 resident providers: 19 absolute and three zero-page
+delivery page) and 1,875 runtime bytes at `$C120-$C872` (1,721 emitted plus
+154 BSS). The packaged tail pads to the 1,163-byte handler at `$C900-$CD8A`,
+leaving 50 bytes before the fixed 323-byte context binding at `$CDBD-$CEFF`. The
+bridge contract is 24 resident providers: 21 absolute and three zero-page
 symbols. Any
 provider-count, address-class,
 normal/panic parity, or placement drift fails the build.
 
-`SCHEDOVR` now packages the page and 3,229 copied tail bytes in one versioned
+`SCHEDOVR` now packages the page and 3,179 copied tail bytes in one versioned
 PRG on side one of both D71 and D64 images. Stage 0 loads it into bank 1 and a
 192-byte one-shot `$FF05-$FFC4` installer copies it only after conflicting boot
 staging has moved. The scheduler entry restores the permanent task gate before
@@ -164,7 +165,7 @@ page's exact `$1FFA-$1FFF` remainder and provides fixed reset/select vectors;
 its generated bridge rejects any drift in the active overlay end, symbol
 types, or seven-symbol callback contract.
 
-`SCHEDOVR` installs the 1,213-byte lifecycle handler in its checksummed bank-0
+`SCHEDOVR` installs the 1,163-byte lifecycle handler in its checksummed bank-0
 tail and carries the 234 emitted context bytes plus the 192-byte common tail
 as its activation extension. After the boot-console service has finished, the
 42-byte activator copies the extension images into their final homes,
@@ -238,7 +239,7 @@ returns to the kernel poll frame and leaves the task suspended. `YIELD` uses
 the latter path and resumes only after the scheduler selects task 1 again.
 
 The post-startup delivery path is link-qualified. `SCHEDOVR` ABI 0.3 includes
-the permanent 1,213-byte handler in its bank-0 tail and appends the exact,
+the permanent 1,163-byte handler in its bank-0 tail and appends the exact,
 build-locked 234 emitted context bytes and 192-byte common tail. The
 six `$1FFA-$1FFF` callback vectors are installed as part of the scheduler
 page and covered by its existing checksum. A 42-byte body fits the
@@ -246,7 +247,8 @@ post-console staging window and is copied directly to the disposable `$F68A`
 VIC gateway workspace. It copies the context image to
 `$CDBD`, lets the reset callback clear its 89-byte BSS through `$CEFF`,
 replaces `$FF05-$FFC4`; the request handler is already live at `$C900`.
-Persistent `/bin/ush` now yields and resumes through that path;
+Persistent `/bin/ush` yields and resumes through that path and ABI 0.4 now
+blocks idle input through POLL;
 successful `EXIT` leaves a status-bearing zombie and never restores its task
 context. The same handler implements immediate/nonblocking `WAITPID`: a live
 child with `NOHANG` returns zero, a zombie is reaped with its status and its

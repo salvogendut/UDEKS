@@ -157,6 +157,8 @@ TASK_SLEEP_PROBE_D71 := $(BUILD_BOOT)/udeks-task-sleep-probe.d71
 TASK_SLEEP_PROBE_D64 := $(BUILD_BOOT)/udeks-task-sleep-probe.d64
 TASK_CANCEL_PROBE_D71 := $(BUILD_BOOT)/udeks-task-cancel-probe.d71
 TASK_CANCEL_PROBE_D64 := $(BUILD_BOOT)/udeks-task-cancel-probe.d64
+TASK_POLL_PROBE_D71 := $(BUILD_BOOT)/udeks-task-poll-probe.d71
+TASK_POLL_PROBE_D64 := $(BUILD_BOOT)/udeks-task-poll-probe.d64
 PANIC_PROBE_D71 := $(BUILD_BOOT)/udeks-panic-probe.d71
 VDC_SPLASH_BIN := $(BUILD_ASSETS)/udekspipe-64.vdc
 VDC_WORDMARK_BIN := $(BUILD_ASSETS)/udekusu-64.vdc
@@ -206,6 +208,11 @@ USER_SLEEP_PROBE_OBJ := $(BUILD_USER)/task-sleep-probe.o
 USER_SLEEP_PROBE_BIN := $(BUILD_USER)/task-sleep-probe.bin
 USER_SLEEP_PROBE_UDEX := $(BUILD_USER)/task-sleep-probe.udx
 USER_SLEEP_PROBE_BOOTFS := $(BUILD_USER)/task-sleep-probe-bootfs.img
+USER_POLL_PROBE_ASM := $(BUILD_USER)/task-poll-probe.s
+USER_POLL_PROBE_OBJ := $(BUILD_USER)/task-poll-probe.o
+USER_POLL_PROBE_BIN := $(BUILD_USER)/task-poll-probe.bin
+USER_POLL_PROBE_UDEX := $(BUILD_USER)/task-poll-probe.udx
+USER_POLL_PROBE_BOOTFS := $(BUILD_USER)/task-poll-probe-bootfs.img
 USER_CANCEL_PROBE_OBJ := $(BUILD_USER)/task-cancel-probe.o
 USER_CANCEL_PROBE_BIN := $(BUILD_USER)/task-cancel-probe.bin
 USER_CANCEL_PROBE_UDEX := $(BUILD_USER)/task-cancel-probe.udx
@@ -235,7 +242,7 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	placement-check-guard \
 	shadow-probe capability-probe boot-console-probe task-yield-probe \
 	task-exit-probe task-waitpid-probe task-spawn-loader-probe task-spawn-probe \
-	task-sleep-probe task-cancel-probe \
+	task-sleep-probe task-cancel-probe task-poll-probe \
 	check doctor clean help
 
 all: 8502 z80 z80-asm
@@ -386,6 +393,13 @@ task-sleep-probe: $(TASK_SLEEP_PROBE_D71) $(TASK_SLEEP_PROBE_D64)
 	}
 	$(PYTHON) tools/task_sleep_probe.py
 	$(PYTHON) tools/task_sleep_probe.py --disk $(TASK_SLEEP_PROBE_D64)
+
+task-poll-probe: $(TASK_POLL_PROBE_D71) $(TASK_POLL_PROBE_D64)
+	@command -v flatpak >/dev/null 2>&1 || { \
+		echo "task-poll-probe requires Flatpak VICE (net.sf.VICE)" >&2; exit 1; \
+	}
+	$(PYTHON) tools/task_poll_probe.py
+	$(PYTHON) tools/task_poll_probe.py --disk $(TASK_POLL_PROBE_D64)
 
 task-cancel-probe: $(TASK_CANCEL_PROBE_D71) $(TASK_CANCEL_PROBE_D64)
 	@command -v flatpak >/dev/null 2>&1 || { \
@@ -627,6 +641,26 @@ $(USER_SLEEP_PROBE_UDEX): $(USER_SLEEP_PROBE_BIN) tools/build_udex.py
 $(USER_SLEEP_PROBE_BOOTFS): $(USER_SLEEP_PROBE_UDEX) tools/build_bootfs.py
 	$(PYTHON) tools/build_bootfs.py --max-size 0x2DBC \
 		--entry ush=$(USER_SLEEP_PROBE_UDEX) $@
+
+$(USER_POLL_PROBE_ASM): user/probes/task_poll.c user/include/udeks/program.h \
+		include/udeks/task_request.h | $(BUILD_USER)
+	$(CC65) $(CFLAGS_8502) -I user/include -I include -o $@ $<
+
+$(USER_POLL_PROBE_OBJ): $(USER_POLL_PROBE_ASM) | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(USER_POLL_PROBE_BIN): $(USER_POLL_ENTRY_OBJ) $(USER_TASK_STREAM_OBJ) \
+		$(USER_POLL_PROBE_OBJ) cfg/8502-user-bank1.cfg
+	$(CL65) -t none --cpu 6502 -C cfg/8502-user-bank1.cfg \
+		-m $(BUILD_USER)/task-poll-probe.map -o $@ $(filter %.o,$^)
+
+$(USER_POLL_PROBE_UDEX): $(USER_POLL_PROBE_BIN) tools/build_udex.py
+	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x9000 \
+		--entry-address 0x9000 --bss-size 0x0050 --flags 0x01 $< $@
+
+$(USER_POLL_PROBE_BOOTFS): $(USER_POLL_PROBE_UDEX) tools/build_bootfs.py
+	$(PYTHON) tools/build_bootfs.py --max-size 0x2DBC \
+		--entry ush=$(USER_POLL_PROBE_UDEX) $@
 
 $(USER_CANCEL_PROBE_OBJ): user/probes/task_cancel.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
@@ -1157,6 +1191,7 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &: \
 		$$(cat $(CAPABILITY_FORCE_IMPORTS)) \
 		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) \
 		-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok \
+		-u _udeks_line_editor_get_line \
 		-o $(KERNEL_BIN) \
 		$(filter %.o,$^)
 
@@ -1274,6 +1309,8 @@ $(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 		-u _udeks_task_wait_child_private \
 		-u _udeks_task_wait_status_private \
 		-u _udeks_task_cancel_request \
+		-u _udeks_task_poll_request \
+		-u _udeks_task_console_get_line \
 		-u _udeks_task_sleep_poll \
 		-u _udeks_task_tick_advance \
 		-u _udeks_monotonic_ticks_low -u _udeks_monotonic_ticks_high \
@@ -1351,6 +1388,7 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$$(cat $(CAPABILITY_FORCE_IMPORTS)) \
 		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) \
 		-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok \
+		-u _udeks_line_editor_get_line \
 		-m $(BUILD_8502)/udeks-8502-panic-probe.map \
 		-o $(PANIC_PROBE_KERNEL_BIN) \
 		$(filter %.o,$^)
@@ -1937,6 +1975,36 @@ $(TASK_SLEEP_PROBE_D71) $(TASK_SLEEP_PROBE_D64) &: $(STAGE0_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) \
 		--d64-output $(TASK_SLEEP_PROBE_D64) $(TASK_SLEEP_PROBE_D71)
 
+$(TASK_POLL_PROBE_D71) $(TASK_POLL_PROBE_D64) &: $(STAGE0_BIN) \
+		$(STAGE1_BIN) $(KERNEL_BIN) $(BOOT_DELIVERY_BIN) $(CRT0_BIN) \
+		$(PROBE_BIN) $(SCHEDULER_BIN) $(CAPABILITY_BIN) \
+		$(CAPABILITY_INSTALLER_BIN) $(BOOT_CONSOLE_BIN) \
+		$(TASK_SWITCH_ACTIVATION_BIN) $(BOOT_CONSOLE_INSTALLER_BIN) \
+		$(SCHEDULER_TAIL_INSTALLER_BIN) $(VIC_BUSY_SPRITE_BIN) \
+		$(SCHEDULER_OVERLAY_PAYLOAD) $(KERNEL_MAP) $(MODULE_BIN) \
+		$(Z80_BIN) $(USER_POLL_PROBE_BOOTFS) $(USER_POLL_PROBE_UDEX) \
+		$(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
+		$(BOOTFS_REQUEST_SERVICE_BIN) $(TASK_BANK_GATE_BIN) \
+		tools/build_d71.py
+	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
+		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
+		--boot-delivery $(BOOT_DELIVERY_BIN) \
+		--crt0 $(CRT0_BIN) --probe $(PROBE_BIN) --map $(KERNEL_MAP) \
+		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) \
+		--scheduler-tail-installer $(SCHEDULER_TAIL_INSTALLER_BIN) \
+		--busy-sprite $(VIC_BUSY_SPRITE_BIN) \
+		--capability $(CAPABILITY_BIN) \
+		--capability-installer $(CAPABILITY_INSTALLER_BIN) \
+		--boot-console $(BOOT_CONSOLE_BIN) \
+		--task-switch-activation $(TASK_SWITCH_ACTIVATION_BIN) \
+		--boot-console-installer $(BOOT_CONSOLE_INSTALLER_BIN) \
+		--bootfs $(USER_POLL_PROBE_BOOTFS) --module $(MODULE_BIN) \
+		--ush $(USER_POLL_PROBE_UDEX) --task-loader $(TASK_LOADER_BIN) \
+		--task-request-gateway $(TASK_REQUEST_GATE_BIN) \
+		--bootfs-request-service $(BOOTFS_REQUEST_SERVICE_BIN) \
+		--task-bank-gateway $(TASK_BANK_GATE_BIN) \
+		--d64-output $(TASK_POLL_PROBE_D64) $(TASK_POLL_PROBE_D71)
+
 $(TASK_CANCEL_PROBE_D71) $(TASK_CANCEL_PROBE_D64) &: $(STAGE0_BIN) \
 		$(STAGE1_BIN) $(KERNEL_BIN) $(BOOT_DELIVERY_BIN) $(CRT0_BIN) \
 		$(PROBE_BIN) $(SCHEDULER_BIN) $(CAPABILITY_BIN) \
@@ -2048,7 +2116,7 @@ check:
 		tools/task_state_decode.py tools/task_yield_probe.py \
 		tools/task_exit_probe.py tools/task_waitpid_probe.py \
 		tools/task_spawn_loader_probe.py tools/task_spawn_probe.py \
-		tools/task_sleep_probe.py tools/task_cancel_probe.py \
+		tools/task_sleep_probe.py tools/task_cancel_probe.py tools/task_poll_probe.py \
 		tools/vice_capture.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-r2 && sha256sum -c SHA256SUMS
@@ -2060,6 +2128,8 @@ check:
 	cd bench/results/1986-7556c23-2026-09-24-r2/diagnostics && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-memory-map-smoke/raw && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-26-shadow-clear/raw && sha256sum -c SHA256SUMS
+	cd bench/artifacts/2026-09-27-event-waits && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-27-event-waits/raw && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-26-scheduler-delivery/raw && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-27-capability-relocation/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-26-scheduler-delivery && sha256sum -c SHA256SUMS
@@ -2139,6 +2209,7 @@ help:
 		'make task-spawn-loader-probe  Qualify load-only SPAWN delivery in VICE' \
 		'make task-spawn-probe  Qualify SPAWN/EXIT/WAITPID lifecycle in VICE' \
 		'make task-sleep-probe  Qualify bounded SLEEP on D71 and D64 in VICE' \
+		'make task-poll-probe   Qualify compiled-C stdin POLL on D71 and D64' \
 		'make task-cancel-probe  Qualify child CANCEL and WAITPID status in VICE' \
 		'make capability-probe  Qualify relocated capability startup and slot reuse' \
 		'make bench      Build comparable 8502 and Z80 benchmark images' \

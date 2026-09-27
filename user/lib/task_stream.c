@@ -5,6 +5,8 @@
 
 #define REQUEST_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_TASK_REQUEST_BASE + (offset)))
+#define REQUEST_PAYLOAD \
+    ((volatile unsigned char *)(UDEKS_TASK_REQUEST_BASE + UDEKS_TREQ_PAYLOAD))
 
 typedef unsigned char (*task_request_gate)(void);
 
@@ -15,8 +17,6 @@ unsigned char submit_request(
     unsigned char operation, unsigned char descriptor,
     unsigned char count)
 {
-    task_request_gate gate;
-
     ++request_sequence;
     REQUEST_BYTE(UDEKS_TREQ_MAGIC0) = 'U';
     REQUEST_BYTE(UDEKS_TREQ_MAGIC1) = 'T';
@@ -32,8 +32,7 @@ unsigned char submit_request(
     REQUEST_BYTE(UDEKS_TREQ_ERROR) = 0;
     REQUEST_BYTE(UDEKS_TREQ_FLAGS) = 0;
     REQUEST_BYTE(UDEKS_TREQ_STATE) = UDEKS_TREQ_STATE_REQUEST;
-    gate = (task_request_gate)UDEKS_TASK_BANK_REQUEST;
-    gate();
+    ((task_request_gate)UDEKS_TASK_BANK_REQUEST)();
     if (REQUEST_BYTE(UDEKS_TREQ_STATE) != UDEKS_TREQ_STATE_COMPLETE) {
         udeks_errno = REQUEST_BYTE(UDEKS_TREQ_ERROR);
         return UDEKS_IO_ERROR;
@@ -42,31 +41,21 @@ unsigned char submit_request(
     return REQUEST_BYTE(UDEKS_TREQ_RESULT);
 }
 
-unsigned char udeks_write_byte(
-    unsigned char descriptor, unsigned char value)
-{
-    REQUEST_BYTE(UDEKS_TREQ_PAYLOAD) = value;
-    return submit_request(UDEKS_TREQ_OP_WRITE, descriptor, 1u) == 1u ? 0u : 1u;
-}
-
 unsigned char udeks_write(
     unsigned char descriptor, const unsigned char *text)
 {
     unsigned char count;
-    unsigned char index;
 
     while (*text != 0) {
         count = 0;
         while (count < UDEKS_TASK_REQUEST_PAYLOAD_SIZE && text[count] != 0) {
-            REQUEST_BYTE(UDEKS_TREQ_PAYLOAD + count) = text[count];
+            REQUEST_PAYLOAD[count] = text[count];
             ++count;
         }
         if (submit_request(UDEKS_TREQ_OP_WRITE, descriptor, count) != count) {
             return 1u;
         }
-        for (index = 0; index < count; ++index) {
-            ++text;
-        }
+        text += count;
     }
     return 0u;
 }
@@ -85,7 +74,7 @@ unsigned char udeks_read(
         return result;
     }
     for (index = 0; index < result; ++index) {
-        buffer[index] = REQUEST_BYTE(UDEKS_TREQ_PAYLOAD + index);
+        buffer[index] = REQUEST_PAYLOAD[index];
     }
     return result;
 }

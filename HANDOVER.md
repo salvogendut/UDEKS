@@ -107,7 +107,7 @@ the task model, validate it, and only then remove the replaced special case.
   callbacks occupy the exact `$CDBD-$CEFF` 323-byte window, while fixed
   callback vectors consume the page's final six bytes at `$1FFA-$1FFF`.
   `SCHEDOVR` ABI 0.3 appends the exact, build-locked 234-byte context image and
-  192-byte gate; its checksummed bank-0 tail also installs the 1,213-byte
+  192-byte gate; its checksummed bank-0 tail also installs the 1,163-byte
   lifecycle handler at `$C900-$CDBC`, outside both application slots. The
   normal checksum covers the
   six fixed page vectors, and the boot-console installer checksums and installs a
@@ -323,15 +323,23 @@ PR #3 merged the lifecycle foundation as `00060f4`. Work continues on
 `tasking-0.1-event-waits`, tracked by [issue #4](https://github.com/salvogendut/UDEKS/issues/4);
 [the event-wait proposal](docs/EVENT-WAITS.md)
 defines the initial stdin-readiness scope, private request ownership,
-placement constraints, and regression gates. ABI 0.3 is still the only
-advertised request contract; the proposed 0.4 `POLL` is not implemented.
+placement constraints, and regression gates. ABI 0.4 `POLL` is now installed,
+and idle native ush blocks on INPUT rather than repeatedly reading/yielding.
+The pure C policy remains compile-only; its bounded assembly equivalent
+reuses the WAITPID/SLEEP snapshots without extra BSS. Remaining space is
+141 core bytes and 50 handler bytes; the resident/VIC-shadow boundary and
+published task/runtime addresses are unchanged.
 
-The pure `task_poll_policy` validation/readiness model now has 17 host tests
-and a cc65 compile-only target; all 613 tests pass. It emits 515 CODE bytes
-before helper costs and must not be linked wholesale into the 501-byte gap.
-Boot images remain byte-identical and the public version remains 0.3.
+The compiled-C POLL probe passes on D71/D64: validation, finite wrap, infinite
+wake, chunked/empty reads, stopped wake/continue, sequence restoration and live
+stack locals. Seeded subscriptions qualify multiple waiters and ready/expiry
+precedence. INPUT cancellation clears its snapshot. The shell/graphics smoke
+checks stable idle suspensions and xinit/xclock/xwave plus console utilities.
+Native ownership suppresses the resident compatibility shell's competing
+input read, while preserving deferred EXEC and foreground job handling.
 
-Next measure the handler refactor before adding resident code. The fixed
-handler has no spare bytes; the overlay gap has 501. Reuse the private request
-snapshot used by `WAITPID` and `SLEEP`, keep event publication bounded, and
-ensure cancellation and slot reuse cannot publish a stale response.
+Next complete independent 1986/physical-C128 and manual typing/history,
+pointer/dragging and foreground Ctrl+C gates for issue #4. Then generalize
+task allocation and migrate shell jobs/graphical applications to ordinary
+lifecycle tasks. Do not claim Tasking 0.1 complete or discharge the older
+ADR 0010/0012 and integrated-context hardware gates from these VICE results.

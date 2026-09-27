@@ -35,7 +35,7 @@
 #define UDEKS_TREQ_PAYLOAD               14u
 
 #define UDEKS_TASK_REQUEST_ABI_MAJOR     0u
-#define UDEKS_TASK_REQUEST_ABI_MINOR     3u
+#define UDEKS_TASK_REQUEST_ABI_MINOR     4u
 
 #define UDEKS_TREQ_STATE_IDLE            0u
 #define UDEKS_TREQ_STATE_REQUEST         1u
@@ -62,6 +62,13 @@
 #define UDEKS_TREQ_OP_SLEEP             13u
 #define UDEKS_TREQ_OP_CANCEL            14u
 #define UDEKS_TREQ_OP_SPAWN             15u
+
+/* ABI 0.4: non-consuming stdin readiness, logical 1/60 second timeout. */
+#define UDEKS_TREQ_OP_POLL              16u
+#define UDEKS_TREQ_POLL_COUNT            4u
+#define UDEKS_TREQ_POLL_READABLE         1u
+#define UDEKS_TREQ_POLL_TIMEOUT_MAX    600u
+#define UDEKS_TREQ_POLL_FOREVER     0xFFFFu
 
 #define UDEKS_TREQ_EXEC_COMPLETE         0u
 #define UDEKS_TREQ_EXEC_FOREGROUND       1u

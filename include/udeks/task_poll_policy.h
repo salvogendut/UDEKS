@@ -2,9 +2,9 @@
 #ifndef UDEKS_TASK_POLL_POLICY_H
 #define UDEKS_TASK_POLL_POLICY_H
 
-/* Experimental, host-tested specification for docs/EVENT-WAITS.md.
- * Compile-only on cc65: NOT a published syscall or a resident component.
- * Keep these constants separate from the advertised Task Request ABI 0.3.
+/* Host-tested reference specification for Task Request ABI 0.4 POLL.
+ * Compile-only on cc65: the resident equivalent is bounded assembly.
+ * Tests lock these constants against the published request header.
  */
 #define UDEKS_POLL_POLICY_ABI_MAJOR       0u
 #define UDEKS_POLL_POLICY_ABI_MINOR       4u

@@ -234,12 +234,12 @@ class PollPolicyTests(unittest.TestCase):
 
 
 class PollPolicyBoundaryTests(unittest.TestCase):
-    def test_experimental_operation_is_not_advertised(self):
+    def test_resident_operation_is_advertised(self):
         header = (ROOT / "include/udeks/task_request.h").read_text()
-        self.assertRegex(header, r"#define UDEKS_TASK_REQUEST_ABI_MINOR\s+3u")
-        self.assertNotIn("UDEKS_TREQ_OP_POLL", header)
+        self.assertRegex(header, r"#define UDEKS_TASK_REQUEST_ABI_MINOR\s+4u")
+        self.assertRegex(header, r"#define UDEKS_TREQ_OP_POLL\s+16u")
         source = (ROOT / "src/8502/syscall_gate.s").read_text()
-        self.assertIn("lda TREQ_BASE+$05\n        cmp #$04", source)
+        self.assertIn("lda TREQ_BASE+$05\n        cmp #$05", source)
 
     def test_policy_is_compile_only_and_does_not_mutate_or_consume(self):
         source = (ROOT / "src/kernel/task_poll_policy.c").read_text()

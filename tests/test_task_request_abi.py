@@ -24,7 +24,7 @@ class TaskRequestAbiTests(unittest.TestCase):
     def test_lifecycle_operations_and_layouts_are_frozen(self):
         values = self.defines("include/udeks/task_request.h")
 
-        self.assertEqual(values["UDEKS_TASK_REQUEST_ABI_MINOR"], 3)
+        self.assertEqual(values["UDEKS_TASK_REQUEST_ABI_MINOR"], 4)
         # 0.2 operation numbers and behavior are preserved.
         self.assertEqual(values["UDEKS_TREQ_OP_READ"], 1)
         self.assertEqual(values["UDEKS_TREQ_OP_WRITE"], 2)
@@ -88,14 +88,14 @@ class TaskRequestAbiTests(unittest.TestCase):
             ROOT / "src/services/filesystem/bootfs_request.s"
         ).read_text().lower()
 
-        self.assertIn("cmp #$04", dispatcher)
+        self.assertIn("cmp #$05", dispatcher)
         self.assertIn("cmp #$0a", dispatcher)
         self.assertIn("task_request_fallback:", dispatcher)
         self.assertIn("jmp _udeks_bootfs_request", dispatcher)
         self.assertIn("cmp #op_yield", bootfs)
         self.assertIn("request_lifecycle:", bootfs)
         self.assertIn("cmp #op_yield", bootfs)
-        self.assertIn("cmp #op_spawn+1", bootfs)
+        self.assertIn("cmp #op_poll+1", bootfs)
         self.assertIn("jmp $c900", bootfs)
         # The bootfs fallback answers unknown operations with ENOSYS.
         self.assertIn("lda #err_enosys", bootfs)
@@ -133,7 +133,7 @@ class TaskRequestAbiTests(unittest.TestCase):
         self.assertIn("invalid executable flags", document)
         self.assertIn("persistent `$01`", document)
         self.assertIn("managed `$02`", document)
-        self.assertIn("checked before any other field", document)
+        self.assertIn("before operation-specific field checks", document)
         self.assertIn("2,245 bytes", document)
         self.assertIn("not cancellable through this operation", document)
         self.assertIn("snapshots the", document)

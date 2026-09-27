@@ -24,6 +24,8 @@ EXPECTED = {
     "_udeks_task_context_save_current": "02",
     "_udeks_task_contexts_private": "02",
     "_udeks_task_cancel_request": "02",
+    "_udeks_task_poll_request": "02",
+    "_udeks_task_console_get_line": "02",
     "_udeks_task_sleep_poll": "02",
     "_udeks_task_tick_advance": "02",
     "_udeks_task_wait_child_private": "02",

@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import shadow_boot_probe as sp
 from capability_relocation_probe import inject_until_state
 from vice_capture import choose_port, monitor_command, parse_monitor_byte
+from task_waitpid_probe import scheduler_symbols
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -103,8 +104,16 @@ def probe_disk(
             flush=True,
         )
         first = wait_for_switches(port, 2, deadline)
+        slots = scheduler_symbols(
+            ROOT / "build/8502/udeks-scheduler-overlay.map"
+        )["_udeks_lifecycle_slots_private"]
+        sp.wait_for_byte(port, slots + 1, 4, deadline)
+        if byte(port, slots + 2) != 2:
+            raise RuntimeError("idle shell is not waiting for INPUT")
         time.sleep(0.5)
-        second = wait_for_switches(port, first + 1, deadline)
+        second = word(port, TAIL_SWITCHES_LOW)
+        if second != first:
+            raise RuntimeError("idle shell continues to poll/yield without input")
         if byte(port, UTSK_CURRENT) not in (0, 1):
             raise RuntimeError("invalid current-task id")
         if byte(port, UTSK_RUNNABLE) > 1:
@@ -127,10 +136,20 @@ def probe_disk(
             deadline,
         )
         print(f"{disk.name}: xclock active", flush=True)
+        inject_until_state(
+            port, symbols, "xwave &", 0xF265,
+            3, deadline,
+        )
+        print(f"{disk.name}: xwave active", flush=True)
+        for command in ("cowsay event-waits", "ls", "cd bin", "pwd", "echo awake"):
+            before = byte(port, 0xF3D8)
+            sp.inject_line(port, symbols, command)
+            sp.wait_for_byte(port, 0xF3D8, (before + 1) & 0xFF, deadline)
+            sp.wait_for_byte(port, slots + 1, 4, deadline)
         third = wait_for_switches(port, second + 1, deadline)
         print(
             f"{disk.name}: {first}->{second}->{third} cooperative suspensions, "
-            "xinit/xclock accepted",
+            "xinit/xclock/xwave and utility commands accepted; input waits restored",
             flush=True,
         )
     finally:

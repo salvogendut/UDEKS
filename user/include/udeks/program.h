@@ -20,6 +20,8 @@ unsigned char udeks_write(
     unsigned char descriptor, const unsigned char *text);
 unsigned char udeks_read(
     unsigned char descriptor, unsigned char *buffer, unsigned char count);
+/* Returns 1 when readable, 0 on timeout, UDEKS_IO_ERROR on failure. */
+unsigned char udeks_poll(unsigned char descriptor, unsigned int timeout);
 unsigned char udeks_exec_line(
     const unsigned char *line, unsigned char length);
 unsigned char udeks_wait_foreground(void);

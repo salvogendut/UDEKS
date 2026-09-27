@@ -1,0 +1,197 @@
+Modules list:
+-------------
+poll_entry.o:
+    STARTUP           Offs=000000  Size=000064  Align=00001  Fill=0000
+task_stream.o:
+    CODE              Offs=000000  Size=00021B  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000002  Align=00001  Fill=0000
+task-poll-probe.o:
+    CODE              Offs=00021B  Size=000594  Align=00001  Fill=0000
+    BSS               Offs=000002  Size=000001  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=0007AF  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=0007C0  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(call.o):
+    CODE              Offs=0007CE  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=0007D5  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=0007DE  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=0007EB  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp8.o):
+    CODE              Offs=0007F8  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=000805  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000833  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=00083A  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=000850  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000855  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=00085A  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=00085F  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=00088B  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=0008A1  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=0008BB  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=0008D1  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               009000  009063  000064  00001
+CODE                  009064  009941  0008DE  00001
+BSS                   009942  009944  000003  00001
+
+
+Exports list by name:
+---------------------
+_submit_request           00920C RLA    _udeks_errno              009942 RLA    
+_udeks_poll               00901C RLA    _udeks_read               0090FD RLA    
+_udeks_submit_simple      00900B RLA    _udeks_ush_poll           009370 RLA    
+addeqysp                  009815 RLA    addysp                    009825 RLA    
+booleq                    0098C9 RLA    callax                    009832 RLA    
+decsp1                    009839 RLA    decsp2                    009842 RLA    
+decsp3                    00984F RLA    decsp8                    00985C RLA    
+incsp1                    009897 RLA    incsp2                    0098A6 RLA    
+incsp3                    0098B4 RLA    incsp4                    0098B9 RLA    
+incsp6                    0098BE RLA    ptr1                      00000A RLZ    
+pusha                     0098F3 RLA    pusha0                    009907 RLA    
+pushax                    009909 RLA    sp                        000002 RLZ    
+sreg                      000004 RLZ    staspidx                  00991F RLA    
+subysp                    009935 RLA    tmp1                      000012 RLZ    
+tosicmp0                  009869 RLA    
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+ptr1                      00000A RLZ    tmp1                      000012 RLZ    
+_udeks_submit_simple      00900B RLA    _udeks_poll               00901C RLA    
+_udeks_read               0090FD RLA    _submit_request           00920C RLA    
+_udeks_ush_poll           009370 RLA    addeqysp                  009815 RLA    
+addysp                    009825 RLA    callax                    009832 RLA    
+decsp1                    009839 RLA    decsp2                    009842 RLA    
+decsp3                    00984F RLA    decsp8                    00985C RLA    
+tosicmp0                  009869 RLA    incsp1                    009897 RLA    
+incsp2                    0098A6 RLA    incsp3                    0098B4 RLA    
+incsp4                    0098B9 RLA    incsp6                    0098BE RLA    
+booleq                    0098C9 RLA    pusha                     0098F3 RLA    
+pusha0                    009907 RLA    pushax                    009909 RLA    
+staspidx                  00991F RLA    subysp                    009935 RLA    
+_udeks_errno              009942 RLA    
+
+
+Imports list:
+-------------
+_submit_request (task_stream.o):
+    poll_entry.o              user/lib/poll_entry.s(16)
+_udeks_errno (task_stream.o):
+    task-poll-probe.o         build/user/task-poll-probe.s(13)
+_udeks_poll (poll_entry.o):
+    task-poll-probe.o         build/user/task-poll-probe.s(15)
+_udeks_read (task_stream.o):
+    task-poll-probe.o         build/user/task-poll-probe.s(14)
+_udeks_submit_simple (poll_entry.o):
+    task_stream.o             build/user/task_stream.s(20)
+_udeks_ush_poll (task-poll-probe.o):
+    poll_entry.o              user/lib/poll_entry.s(15)
+addeqysp (addeqsp.o):
+    task_stream.o             build/user/task_stream.s(370)
+addysp (addysp.o):
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    task-poll-probe.o         build/user/task-poll-probe.s(773)
+    task-poll-probe.o         build/user/task-poll-probe.s(773)
+booleq (makebool.o):
+    task-poll-probe.o         build/user/task-poll-probe.s(773)
+callax (call.o):
+    task-poll-probe.o         build/user/task-poll-probe.s(773)
+    task_stream.o             build/user/task_stream.s(370)
+decsp1 (decsp1.o):
+    task-poll-probe.o         build/user/task-poll-probe.s(773)
+    task_stream.o             build/user/task_stream.s(370)
+decsp2 (decsp2.o):
+    task_stream.o             build/user/task_stream.s(370)
+    task_stream.o             build/user/task_stream.s(370)
+    task_stream.o             build/user/task_stream.s(370)
+    poll_entry.o              user/lib/poll_entry.s(17)
+decsp3 (decsp3.o):
+    task-poll-probe.o         build/user/task-poll-probe.s(773)
+    task_stream.o             build/user/task_stream.s(370)
+decsp8 (decsp8.o):
+    task-poll-probe.o         build/user/task-poll-probe.s(773)
+incsp1 (incsp1.o):
+    poll_entry.o              user/lib/poll_entry.s(18)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    task-poll-probe.o         build/user/task-poll-probe.s(773)
+incsp3 (incsp3.o):
+    task_stream.o             build/user/task_stream.s(370)
+incsp4 (incsp4.o):
+    task_stream.o             build/user/task_stream.s(370)
+incsp6 (incsp6.o):
+    task_stream.o             build/user/task_stream.s(370)
+    task_stream.o             build/user/task_stream.s(370)
+ptr1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    call.o                    runtime/call.s(8)
+    task-poll-probe.o         build/user/task-poll-probe.s(11)
+    task_stream.o             build/user/task_stream.s(11)
+pusha (pusha.o):
+    task-poll-probe.o         build/user/task-poll-probe.s(773)
+    task-poll-probe.o         build/user/task-poll-probe.s(773)
+    task-poll-probe.o         build/user/task-poll-probe.s(773)
+    task_stream.o             build/user/task_stream.s(370)
+    task_stream.o             build/user/task_stream.s(370)
+    task_stream.o             build/user/task_stream.s(370)
+pusha0 (pushax.o):
+    task-poll-probe.o         build/user/task-poll-probe.s(773)
+pushax (pushax.o):
+    task_stream.o             build/user/task_stream.s(370)
+    task_stream.o             build/user/task_stream.s(370)
+sp (zeropage.o):
+    subysp.o                  runtime/subysp.s(9)
+    staspidx.o                runtime/staspidx.s(9)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp8.o                  runtime/decsp8.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    task-poll-probe.o         build/user/task-poll-probe.s(10)
+    task_stream.o             build/user/task_stream.s(10)
+    poll_entry.o              user/lib/poll_entry.s(19)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+    task_stream.o             build/user/task_stream.s(10)
+staspidx (staspidx.o):
+    task_stream.o             build/user/task_stream.s(370)
+    task_stream.o             build/user/task_stream.s(370)
+subysp (subysp.o):
+    task-poll-probe.o         build/user/task-poll-probe.s(773)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+tosicmp0 (icmp.o):
+    task-poll-probe.o         build/user/task-poll-probe.s(773)
+
