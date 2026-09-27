@@ -110,11 +110,72 @@ the [Tasking 0.1 handover](../HANDOVER.md).
 - [x] Qualify the cooperative context-switch core and select relocated
   page-zero/page-one ownership
   ([ADR 0008](decisions/0008-context-switch-placement.md)).
-- [ ] Implement task creation, exit, yield, sleep, and event wait.
-- [ ] Save and restore the selected compiler runtime and CPU context. A
-  compiled C task using the real cc65 software stack is the integration test
-  once the scheduler lands.
-- [ ] Add cooperative scheduling, then timer-driven preemption.
+- [x] Freeze Task Request ABI 0.3 lifecycle operations and errno behavior, and
+  host-validate lifecycle transitions plus mutation-free request policy.
+- [x] Qualify the scheduler delivery path and reclaim the VIC shadow, crt0,
+  probe, and boot-only capability placements without breaking D71/D64 boot or
+  application-slot reuse ([ADR 0009](decisions/0009-boot-only-capability-relocation.md)).
+- [ ] Accept the boot-console relocation after its VICE-qualified D71/D64 and
+  slot-2 reuse path also passes in `1986`
+  ([ADR 0010](decisions/0010-boot-console-relocation.md)).
+- [x] Extract the final resident boot-delivery gather into the lower VIC
+  shadow, preserving the frozen `$2003` entry and the scheduler checksum gate.
+- [x] Prove that the lifecycle state and request-policy modules fit the
+  reclaimed scheduler page/tail overlay and bind to an identical resident
+  cc65 runtime in normal and panic maps; installation remains part of the
+  lifecycle-handler increment.
+- [x] Load the checksummed scheduler page/tail `SCHEDOVR` payload into bank 1
+  from both D71 and D64, install it through the bounded `$FF05-$FFC4` one-shot
+  gate, and replace that gate with the permanent task gateway before entering
+  the kernel. VICE is qualified; `1986` and physical hardware remain the
+  acceptance gates for ADR 0012.
+- [x] Register persistent `/bin/ush` as running lifecycle task 1 at startup,
+  publish its `UTSK` state, and retain the proven `$FF13` poll path while the
+  cooperative resume mechanism is introduced.
+- [x] Add the bounded round-robin runnable-task selector and host-test empty,
+  sparse, wrapped, and post-yield selection without exposing a premature
+  synchronous `YIELD` syscall.
+- [x] Qualify relocated page-zero/page-one switching with two compiled cc65
+  tasks retaining live C frames, private software stacks, and stack canaries
+  for 64 switches in `1986` and VICE at 1/2 MHz. Physical hardware remains
+  pending; production `$FF16` integration is qualified separately below.
+- [x] Fit a production-shaped save/restore tail behind the frozen
+  `$FF10/$FF13/$FF16` entries: 191 bytes in the exact 192-byte common-RAM
+  reservation. Its separate resident binding also fits eight context records
+  and callbacks in all 323 post-overlay bytes, plus six fixed page
+  vectors. Their bounded post-startup delivery is active: the page
+  vectors and 42-byte activator staged at `$1BAA` and installed at `$F68A` are
+  checksum covered. The installed context/gate images and 1,213-byte handler now
+  implement the `$CF30` carry contract; persistent `/bin/ush` repeatedly
+  yields, resumes, and accepts commands in VICE from both D71 and D64.
+- [x] Implement production cooperative `YIELD` for persistent `/bin/ush`.
+- [x] Implement non-returning `EXIT`, preserving zombie status for `WAITPID`.
+- [x] Implement immediate and `NOHANG` `WAITPID`, including atomic zombie
+  reap and Linux-compatible `ECHILD` behavior.
+- [x] Implement blocking `WAITPID` with private per-task request ownership;
+  qualify child `EXIT(37)` waking and resuming its parent on D71 and D64.
+- [x] Add the bounded `$F919` SPAWN loader seam: validate a flag-zero UDEX and
+  copy its image/BSS into bank-1 APP1 without entering it; qualify byte-exact
+  loading and a pre-seeded nonzero BSS on D71 and D64 before task-table
+  mutation is introduced.
+- [x] Implement atomic `SPAWN` task creation for the initial task-2/APP1
+  allocation, including relocated `$D3/$D4` context pages, normal-return
+  conversion to `EXIT(status)`, blocking parent `WAITPID`, and slot reuse.
+  A compiled cc65 child completes two spawn/exit/reap cycles from both D71
+  and D64.
+- [x] Implement bounded `SLEEP` over a wrap-safe 16-bit monotonic clock,
+  normalized to 60 logical ticks/s on PAL and NTSC. D71/D64 probes qualify
+  invalid bounds and exact blocking wake/resume ownership.
+- [x] Implement child-only `CANCEL`, including atomic rejection, blocked-wait
+  cleanup, status 130 zombies, and subsequent `WAITPID` reap on D71 and D64.
+- [ ] Implement event wait.
+- [x] Save and restore the selected compiler runtime and CPU context behind
+  the production scheduler gate. Physical-hardware qualification of the
+  integrated path remains part of the milestone acceptance gate.
+- [x] Extend cooperative scheduling to the initial task-2/APP1 child alongside
+  the persistent shell task.
+- [ ] Generalize task allocation beyond the initial two-task configuration,
+  then add timer-driven preemption.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

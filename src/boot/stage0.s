@@ -8,6 +8,7 @@
 
 BOOT_CHAIN              = $f050
 BOOT_CHAIN_STATE        = BOOT_CHAIN + 12
+BOOT_CHAIN_FAILURE      = BOOT_CHAIN + 13
 BOOT_CHAIN_BLOCKS       = BOOT_CHAIN + 18
 BOOT_CHAIN_VERSION      = BOOT_CHAIN + 19
 
@@ -41,7 +42,15 @@ clear_chain:
         sta BOOT_CHAIN_VERSION
         lda #$d4
         sta BOOT_CHAIN_BLOCKS
+        jsr $1fbb
+        beq secondary_payload_ready
+        sta BOOT_CHAIN_FAILURE
+        ora #$80
+        sta BOOT_CHAIN_STATE
+secondary_payload_failed:
+        jmp secondary_payload_failed
+secondary_payload_ready:
         jmp $1c00
 
 stage0_end:
-        .assert stage0_end - $0b00 <= $0100, error, "stage 0 exceeds boot sector"
+        .assert stage0_end <= $0b50, error, "stage 0 overlaps boot installer"

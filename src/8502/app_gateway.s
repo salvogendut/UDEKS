@@ -29,6 +29,25 @@
         .import tosaddax, tosicmp, tossuba0, tossubax
         .import tosudiva0, tosumoda0, tosumula0, tosumulax
 
+        ; UAPP 0.1 publishes none.lib's runtime zero page at fixed addresses.
+        ; Keep the linked symbols pinned so no new object can silently shift
+        ; the layout that managed UDEX images were built against.
+        .importzp sp, sreg, regsave, regbank
+        .importzp ptr1, ptr2, ptr3, ptr4
+        .importzp tmp1, tmp2, tmp3, tmp4
+        .assert sp = $06, error, "UAPP 0.1 sp moved"
+        .assert sreg = $08, error, "UAPP 0.1 sreg moved"
+        .assert regsave = $0a, error, "UAPP 0.1 regsave moved"
+        .assert ptr1 = $0e, error, "UAPP 0.1 ptr1 moved"
+        .assert ptr2 = $10, error, "UAPP 0.1 ptr2 moved"
+        .assert ptr3 = $12, error, "UAPP 0.1 ptr3 moved"
+        .assert ptr4 = $14, error, "UAPP 0.1 ptr4 moved"
+        .assert tmp1 = $16, error, "UAPP 0.1 tmp1 moved"
+        .assert tmp2 = $17, error, "UAPP 0.1 tmp2 moved"
+        .assert tmp3 = $18, error, "UAPP 0.1 tmp3 moved"
+        .assert tmp4 = $19, error, "UAPP 0.1 tmp4 moved"
+        .assert regbank = $1a, error, "UAPP 0.1 regbank moved"
+
 _udeks_app_gateway:
         .assert _udeks_app_gateway = $cf50, error, "app gateway moved"
         .byte 'U', 'A', 'P', 'P'

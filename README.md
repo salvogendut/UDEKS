@@ -155,6 +155,7 @@ physical-hardware gates pass.
 ## Documents
 
 - [Architecture and implementation plan](docs/PLAN.md)
+- [Scheduler placement spike](docs/SCHEDULER-PLACEMENT.md)
 - [Development roadmap](docs/ROADMAP.md)
 - [Executive CPU benchmark plan](docs/BENCHMARKS.md)
 - [Initial emulator benchmark results](bench/results/2026-09-24-1986-initial.md)
@@ -196,6 +197,9 @@ physical-hardware gates pass.
 - [Text-console and 1 MHz boot decision](docs/decisions/0006-text-console-default.md)
 - [Resident core and loadable service decision](docs/decisions/0007-resident-core-and-loadable-services.md)
 - [Context-switch placement decision](docs/decisions/0008-context-switch-placement.md)
+- [Boot-only capability relocation decision](docs/decisions/0009-boot-only-capability-relocation.md)
+- [Boot-console relocation decision](docs/decisions/0010-boot-console-relocation.md)
+- [Boot-delivery shadow-execution decision](docs/decisions/0011-boot-delivery-shadow-execution.md)
 - [Mailbox ABI](abi/mailbox.md)
 - [Task lifecycle ABI](abi/tasks.md)
 - [UDEX executable format](abi/executable.md)

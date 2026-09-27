@@ -581,3 +581,13 @@ vertical_mask:           .byte $00
 outline_gateway_end:
         .assert outline_gateway_end-outline_gateway > $100, error, "VIC outline gateway unexpectedly fits one page"
         .assert outline_gateway_end-outline_gateway < $200, error, "VIC outline gateway exceeds common workspace"
+
+        ; Absolute build symbols consumed by tools/placement_audit.py so the
+        ; common-RAM budget measures the real gateway copies instead of
+        ; constants.
+_udeks_vic_gateway_size_vic = vic_gateway_end-vic_gateway
+_udeks_vic_gateway_size_sprite = sprite_swap_gateway_end-sprite_swap_gateway
+_udeks_vic_gateway_size_page = page_gateway_end-page_gateway
+_udeks_vic_gateway_size_outline = outline_gateway_end-outline_gateway
+        .export _udeks_vic_gateway_size_vic, _udeks_vic_gateway_size_sprite
+        .export _udeks_vic_gateway_size_page, _udeks_vic_gateway_size_outline

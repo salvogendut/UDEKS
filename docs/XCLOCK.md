@@ -29,10 +29,11 @@ on release. Its close box, `xclock -q`, or
 VDC-console `Ctrl+C` terminates it. `xclock` starts VIC graphics automatically
 when needed. The shell remains responsive on the independent VDC display.
 
-Rendering is prepared in an aligned 8 KiB bank-0 shadow bitmap. Pixel, line,
-rectangle, and fill operations mark dirty 256-byte pages; a common-RAM gateway
-copies only those pages into the bank-1 VIC bitmap. The final page copy stops
-at `$7F3F`, preserving the pointer sprite at `$7FC0`. The default `HH:MM`
+Rendering is prepared in an 8,000-byte bank-0 shadow bitmap linked at its array
+size. Pixel, line, rectangle, and fill operations mark dirty 256-byte pages; a
+common-RAM gateway copies only those pages into the bank-1 VIC bitmap. The
+final page copy stops at `$7F3F`, preserving the pointer sprite at `$7FC0`. The
+default `HH:MM`
 clock requests one managed damage repaint per minute. This costs more than an
 isolated incremental hand update, but allows the compositor to reconstruct the
 clock and every intersecting higher window in correct z-order. A move uses the

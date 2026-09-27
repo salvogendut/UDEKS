@@ -20,17 +20,19 @@ VIDEO_UNKNOWN           = $00
 VIDEO_PAL               = $01
 VIDEO_NTSC              = $02
 
-        .segment "BSS"
+        ; The probe is staged in the VIC shadow and copied over the dead
+        ; boot-sector page at $0B00, so its scratch bytes travel with it.
+        .segment "PROBECODE"
 probe_saved_reu:
-        .res 1
+        .byte $00
 probe_saved_geo_page:
-        .res 1
+        .byte $00
 probe_saved_geo_bank:
-        .res 1
+        .byte $00
 probe_saved_geo_data:
-        .res 1
+        .byte $00
 
-        .segment "CODE"
+        .segment "PROBECODE"
 
 ; PAL reaches raster $120; NTSC wraps near $106. Each phase has a complete
 ; 16-bit polling bound so a missing or frozen VIC returns UNKNOWN.

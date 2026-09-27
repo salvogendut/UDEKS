@@ -84,6 +84,56 @@ def monitor_command(port: int, command: str) -> bytes:
         return reply
 
 
+def monitor_raw_load(
+    port: int,
+    program: Path,
+    entry: int,
+    fast: bool,
+    pokes: list[tuple[int, int]],
+) -> None:
+    """Load a raw image and enter it from one paused monitor session.
+
+    Every setup command runs with the CPU paused; only the final goto resumes
+    execution, so the flat-RAM load cannot race the running BASIC machine.
+    """
+    commands: list[tuple[str, bytes | None]] = []
+    if fast:
+        commands.append(("> d030 01", None))
+    for address, byte in pokes:
+        commands.append((f"> {address:04x} {byte:02x}", None))
+    # Flat bank-0 RAM so the load reaches the RAM under the BASIC and KERNAL
+    # ROMs; crt0 re-establishes the native profiles on entry.
+    commands.append(("> ff00 3f", None))
+    commands.append((f"load {quote_monitor_path(program)} 0", b"Loading"))
+    with socket.create_connection(("127.0.0.1", port), timeout=3.0) as connection:
+        connection.settimeout(30.0)
+        buffer = b""
+
+        def run(command: str, marker: bytes | None) -> None:
+            nonlocal buffer
+            start = len(buffer)
+            connection.sendall(command.encode("ascii") + b"\n")
+            while True:
+                fresh = buffer[start:]
+                if (
+                    fresh.endswith(b") ")
+                    and PROMPT_RE.search(fresh[-32:])
+                    and (marker is None or marker in fresh)
+                ):
+                    return
+                chunk = connection.recv(4096)
+                if not chunk:
+                    raise RuntimeError("VICE monitor closed during raw load")
+                buffer += chunk
+
+        # The first marked command consumes the connection's initial prompt so
+        # every later command's completion prompt is unambiguous.
+        run("m ff00 ff00", b":ff00")
+        for command, marker in commands:
+            run(command, marker)
+        connection.sendall(f"goto {entry:04x}\n".encode("ascii"))
+
+
 def choose_port() -> int:
     with socket.socket() as listener:
         listener.bind(("127.0.0.1", 0))
@@ -157,8 +207,10 @@ def capture(args: argparse.Namespace) -> None:
     screenshot = None if args.screenshot is None else args.screenshot.resolve()
     if not program.is_file():
         raise SystemExit(f"input image does not exist: {program}")
-    if args.autostart and args.native_disk:
-        raise SystemExit("--autostart and --native-disk are mutually exclusive")
+    if sum((args.autostart, args.native_disk, args.raw_load)) > 1:
+        raise SystemExit(
+            "--autostart, --native-disk, and --raw-load are mutually exclusive"
+        )
     if not 0 <= args.entry <= 0xFFFF:
         raise SystemExit("entry address must fit in 16 bits")
     if not 0 <= args.result_address <= 0xFFFF:
@@ -186,7 +238,7 @@ def capture(args: argparse.Namespace) -> None:
     port = choose_port()
 
     launch_program = program
-    if not args.autostart and not args.native_disk:
+    if not args.autostart and not args.native_disk and not args.raw_load:
         try:
             wrapper_path.write_bytes(make_basic_wrapper(program.read_bytes(), args.entry))
         except ValueError as error:
@@ -215,15 +267,20 @@ def capture(args: argparse.Namespace) -> None:
         "-remotemonitor",
         "-remotemonitoraddress",
         f"ip4://127.0.0.1:{port}",
-        "-initbreak",
-        f"0x{args.entry:04x}",
-        "-moncommands",
-        str(commands_path),
     ]
+    if not args.raw_load:
+        command.extend(
+            (
+                "-initbreak",
+                f"0x{args.entry:04x}",
+                "-moncommands",
+                str(commands_path),
+            )
+        )
     command.extend(args.vice_arg)
     if args.native_disk:
         command.extend(("-8", str(launch_program)))
-    else:
+    elif not args.raw_load:
         command.extend(("-autostart", str(launch_program)))
     log_file = log_path.open("wb")
     master_fd, slave_fd = pty.openpty()
@@ -259,6 +316,10 @@ def capture(args: argparse.Namespace) -> None:
         # redirected logs, so a short fixed grace period is more reliable than
         # waiting for a log marker.
         time.sleep(min(5.0, max(0.0, deadline - time.monotonic())))
+        if args.raw_load:
+            monitor_raw_load(
+                port, program, args.entry, args.fast, args.poke
+            )
         if args.keybuf_ready is not None or args.keybuf_ready_block is not None:
             while time.monotonic() < deadline:
                 try:
@@ -518,6 +579,12 @@ def main() -> None:
         "--native-disk",
         action="store_true",
         help="attach a C128 native-autoboot disk instead of autostarting a PRG",
+    )
+    parser.add_argument(
+        "--raw-load",
+        action="store_true",
+        help="load the PRG through the monitor and jump to --entry; use for "
+             "images that start below the BASIC launcher",
     )
     parser.add_argument("--timeout", type=float, default=20.0)
     parser.add_argument(

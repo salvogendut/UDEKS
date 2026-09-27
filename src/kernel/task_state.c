@@ -59,11 +59,14 @@ static const unsigned char task_state_bit[UDEKS_LIFECYCLE_STATE_ZOMBIE + 1u] = {
     1u, 2u, 4u, 8u, 16u, 32u, 64u
 };
 
-static unsigned char task_slots[UDEKS_LIFECYCLE_MAX_TASKS * TASK_SLOT_STRIDE];
-static unsigned char current_task;
-static unsigned char rejected_requests;
+/* Private link-time anchors used by the bounded lifecycle handler. They are
+ * not public ABI; the generated bridge binds them from the overlay map. */
+unsigned char udeks_lifecycle_slots_private[
+    UDEKS_LIFECYCLE_MAX_TASKS * TASK_SLOT_STRIDE];
+unsigned char udeks_lifecycle_current_private;
+unsigned char udeks_lifecycle_rejected_private;
 static unsigned char canary_failures;
-static unsigned char last_event;
+unsigned char udeks_lifecycle_last_event_private;
 static unsigned char table_ready;
 static unsigned int switch_count;
 
@@ -72,7 +75,8 @@ static unsigned char *task_slot(unsigned char id)
     if (id < 1u || id > UDEKS_LIFECYCLE_MAX_TASKS) {
         return 0;
     }
-    return &task_slots[(unsigned char)((id - 1u) * TASK_SLOT_STRIDE)];
+    return &udeks_lifecycle_slots_private[
+        (unsigned char)((id - 1u) * TASK_SLOT_STRIDE)];
 }
 
 static void task_slot_clear(unsigned char *slot)
@@ -88,13 +92,15 @@ unsigned char udeks_lifecycle_reset(void)
 {
     unsigned char index;
 
-    for (index = 0; index < (unsigned char)sizeof(task_slots); ++index) {
-        task_slots[index] = 0;
+    for (index = 0;
+         index < (unsigned char)sizeof(udeks_lifecycle_slots_private);
+         ++index) {
+        udeks_lifecycle_slots_private[index] = 0;
     }
-    current_task = UDEKS_LIFECYCLE_ID_NONE;
-    rejected_requests = 0;
+    udeks_lifecycle_current_private = UDEKS_LIFECYCLE_ID_NONE;
+    udeks_lifecycle_rejected_private = 0;
     canary_failures = 0;
-    last_event = 0;
+    udeks_lifecycle_last_event_private = 0;
     table_ready = 1;
     switch_count = 0;
     return UDEKS_LIFECYCLE_OK;
@@ -108,15 +114,15 @@ unsigned char udeks_lifecycle_create(
 
     slot = task_slot(id);
     if (slot == 0) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_BAD_ID;
     }
     if ((flags & (unsigned char)~TASK_FLAG_MASK) != 0) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_BAD_FLAGS;
     }
     if (slot[TASK_SLOT_STATE] != UDEKS_LIFECYCLE_STATE_FREE) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_EXISTS;
     }
     if (parent != UDEKS_LIFECYCLE_ID_NONE) {
@@ -124,7 +130,7 @@ unsigned char udeks_lifecycle_create(
         if (parent == id || parent_slot == 0 ||
             parent_slot[TASK_SLOT_STATE] == UDEKS_LIFECYCLE_STATE_FREE ||
             parent_slot[TASK_SLOT_STATE] == UDEKS_LIFECYCLE_STATE_ZOMBIE) {
-            ++rejected_requests;
+            ++udeks_lifecycle_rejected_private;
             return UDEKS_LIFECYCLE_BAD_ID;
         }
     }
@@ -133,10 +139,13 @@ unsigned char udeks_lifecycle_create(
     slot[TASK_SLOT_PARENT] = parent;
     slot[TASK_SLOT_FLAGS] = flags;
     slot[TASK_SLOT_STATE] = UDEKS_LIFECYCLE_STATE_NEW;
-    last_event = UDEKS_LIFECYCLE_EVENT_CREATE;
+    udeks_lifecycle_last_event_private = UDEKS_LIFECYCLE_EVENT_CREATE;
     return UDEKS_LIFECYCLE_OK;
 }
 
+#ifdef __CC65__
+#pragma code-name(push, "SCHEDULER")
+#endif
 unsigned char udeks_lifecycle_apply(
     unsigned char id, unsigned char event, unsigned char argument)
 {
@@ -146,52 +155,54 @@ unsigned char udeks_lifecycle_apply(
 
     slot = task_slot(id);
     if (slot == 0) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_BAD_ID;
     }
     if (event <= UDEKS_LIFECYCLE_EVENT_CREATE ||
         event > UDEKS_LIFECYCLE_EVENT_CANCEL) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_BAD_EVENT;
     }
     state = slot[TASK_SLOT_STATE];
 
     if (event == UDEKS_LIFECYCLE_EVENT_DISPATCH) {
-        if (current_task != UDEKS_LIFECYCLE_ID_NONE && current_task != id) {
-            ++rejected_requests;
+        if (udeks_lifecycle_current_private != UDEKS_LIFECYCLE_ID_NONE &&
+            udeks_lifecycle_current_private != id) {
+            ++udeks_lifecycle_rejected_private;
             return UDEKS_LIFECYCLE_BUSY;
         }
-        if (current_task == id && state == UDEKS_LIFECYCLE_STATE_RUNNING) {
-            last_event = event;
+        if (udeks_lifecycle_current_private == id &&
+            state == UDEKS_LIFECYCLE_STATE_RUNNING) {
+            udeks_lifecycle_last_event_private = event;
             return UDEKS_LIFECYCLE_OK;
         }
     }
     if ((task_event_sources[event] & task_state_bit[state]) == 0) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_BAD_STATE;
     }
     if (event == UDEKS_LIFECYCLE_EVENT_UNBLOCK &&
         state == UDEKS_LIFECYCLE_STATE_STOPPED &&
         (slot[TASK_SLOT_RESUME] != UDEKS_LIFECYCLE_STATE_WAITING ||
          slot[TASK_SLOT_WAIT] == UDEKS_LIFECYCLE_WAIT_NONE)) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_BAD_STATE;
     }
     if (event == UDEKS_LIFECYCLE_EVENT_BLOCK &&
         (argument == UDEKS_LIFECYCLE_WAIT_NONE ||
          argument > UDEKS_LIFECYCLE_WAIT_TERMINAL)) {
-        ++rejected_requests;
+        ++udeks_lifecycle_rejected_private;
         return UDEKS_LIFECYCLE_BAD_REASON;
     }
 
     next = task_event_next[event];
 
     if (event == UDEKS_LIFECYCLE_EVENT_DISPATCH) {
-        current_task = id;
+        udeks_lifecycle_current_private = id;
         ++switch_count;
         ++slot[TASK_SLOT_DISPATCH];
-    } else if (current_task == id) {
-        current_task = UDEKS_LIFECYCLE_ID_NONE;
+    } else if (udeks_lifecycle_current_private == id) {
+        udeks_lifecycle_current_private = UDEKS_LIFECYCLE_ID_NONE;
     }
 
     if (event == UDEKS_LIFECYCLE_EVENT_BLOCK) {
@@ -230,9 +241,12 @@ unsigned char udeks_lifecycle_apply(
         task_slot_clear(slot);
     }
     slot[TASK_SLOT_STATE] = next;
-    last_event = event;
+    udeks_lifecycle_last_event_private = event;
     return UDEKS_LIFECYCLE_OK;
 }
+#ifdef __CC65__
+#pragma code-name(pop)
+#endif
 
 unsigned char udeks_lifecycle_get(unsigned char id)
 {
@@ -243,6 +257,17 @@ unsigned char udeks_lifecycle_get(unsigned char id)
         return UDEKS_LIFECYCLE_INVALID;
     }
     return slot[TASK_SLOT_STATE];
+}
+
+unsigned char udeks_lifecycle_parent(unsigned char id)
+{
+    unsigned char *slot;
+
+    slot = task_slot(id);
+    if (slot == 0) {
+        return UDEKS_LIFECYCLE_INVALID;
+    }
+    return slot[TASK_SLOT_PARENT];
 }
 
 unsigned char udeks_lifecycle_wait_reason(unsigned char id)
@@ -269,7 +294,7 @@ unsigned char udeks_lifecycle_exit_status(unsigned char id)
 
 unsigned char udeks_lifecycle_current(void)
 {
-    return current_task;
+    return udeks_lifecycle_current_private;
 }
 
 unsigned char udeks_lifecycle_runnable_count(void)
@@ -279,9 +304,11 @@ unsigned char udeks_lifecycle_runnable_count(void)
 
     count = 0;
     for (index = 0; index < UDEKS_LIFECYCLE_MAX_TASKS; ++index) {
-        if (task_slots[index * TASK_SLOT_STRIDE + TASK_SLOT_STATE] ==
+        if (udeks_lifecycle_slots_private[
+                index * TASK_SLOT_STRIDE + TASK_SLOT_STATE] ==
                 UDEKS_LIFECYCLE_STATE_RUNNABLE ||
-            task_slots[index * TASK_SLOT_STRIDE + TASK_SLOT_STATE] ==
+            udeks_lifecycle_slots_private[
+                index * TASK_SLOT_STRIDE + TASK_SLOT_STATE] ==
                 UDEKS_LIFECYCLE_STATE_RUNNING) {
             ++count;
         }
@@ -296,7 +323,8 @@ unsigned char udeks_lifecycle_defined_count(void)
 
     count = 0;
     for (index = 0; index < UDEKS_LIFECYCLE_MAX_TASKS; ++index) {
-        if (task_slots[index * TASK_SLOT_STRIDE + TASK_SLOT_STATE] !=
+        if (udeks_lifecycle_slots_private[
+                index * TASK_SLOT_STRIDE + TASK_SLOT_STATE] !=
                 UDEKS_LIFECYCLE_STATE_FREE) {
             ++count;
         }
@@ -311,7 +339,7 @@ unsigned int udeks_lifecycle_switch_count(void)
 
 unsigned char udeks_lifecycle_rejected_count(void)
 {
-    return rejected_requests;
+    return udeks_lifecycle_rejected_private;
 }
 
 unsigned char udeks_lifecycle_canary_failures(void)
@@ -324,6 +352,9 @@ void udeks_lifecycle_note_canary_failure(void)
     ++canary_failures;
 }
 
+#ifdef __CC65__
+#pragma code-name(push, "SCHEDULER")
+#endif
 void udeks_lifecycle_publish(unsigned char *record)
 {
     unsigned int switches;
@@ -340,14 +371,40 @@ void udeks_lifecycle_publish(unsigned char *record)
         record[UDEKS_UTSK_STATE] = (unsigned char)(
             UDEKS_LIFECYCLE_ERROR | 1u);
     }
-    record[UDEKS_UTSK_CURRENT] = current_task;
+    record[UDEKS_UTSK_CURRENT] = udeks_lifecycle_current_private;
     record[UDEKS_UTSK_RUNNABLE] = udeks_lifecycle_runnable_count();
     record[UDEKS_UTSK_DEFINED] = udeks_lifecycle_defined_count();
-    record[UDEKS_UTSK_REJECTED] = rejected_requests;
+    record[UDEKS_UTSK_REJECTED] = udeks_lifecycle_rejected_private;
     record[UDEKS_UTSK_CANARY] = canary_failures;
     switches = switch_count;
     record[UDEKS_UTSK_SWITCHES_LO] = (unsigned char)(switches & 0xFFu);
     record[UDEKS_UTSK_SWITCHES_HI] = (unsigned char)(switches >> 8);
-    record[UDEKS_UTSK_LAST_EVENT] = last_event;
+    record[UDEKS_UTSK_LAST_EVENT] =
+        udeks_lifecycle_last_event_private;
     record[UDEKS_UTSK_RESERVED] = 0;
+}
+#ifdef __CC65__
+#pragma code-name(pop)
+#endif
+
+unsigned char udeks_lifecycle_bootstrap(unsigned char *record)
+{
+    unsigned char result;
+
+    result = udeks_lifecycle_reset();
+    if (result == UDEKS_LIFECYCLE_OK) {
+        result = udeks_lifecycle_create(
+            1u, UDEKS_LIFECYCLE_ID_NONE,
+            UDEKS_LIFECYCLE_FLAG_USER | UDEKS_LIFECYCLE_FLAG_PERSISTENT);
+    }
+    if (result == UDEKS_LIFECYCLE_OK) {
+        result = udeks_lifecycle_apply(
+            1u, UDEKS_LIFECYCLE_EVENT_ADMIT, 0u);
+    }
+    if (result == UDEKS_LIFECYCLE_OK) {
+        result = udeks_lifecycle_apply(
+            1u, UDEKS_LIFECYCLE_EVENT_DISPATCH, 0u);
+    }
+    udeks_lifecycle_publish(record);
+    return result;
 }

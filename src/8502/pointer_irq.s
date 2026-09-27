@@ -8,7 +8,6 @@
         .setcpu "6502"
 
         .export _udeks_pointer_start
-        .export _udeks_pointer_poll
         .export _udeks_pointer_resynchronize
         .export _udeks_pointer_keyboard_allowed
         .export _udeks_pointer_x
@@ -17,6 +16,7 @@
         .import _udeks_control_ports_active
 
 PTR                     = $f1d0
+SCHEDULER_TICK          = $c906
 IRQ_TRAMPOLINE          = $ffc5
 IRQ_RETURN              = $f909
 
@@ -153,12 +153,6 @@ copy_return_stub:
         lda #$00
         rts
 
-; Sampling and decoding happen in the ISR.  Poll remains an ABI lifecycle
-; hook and reports success without making input latency depend on service work.
-_udeks_pointer_poll:
-        lda #$00
-        rts
-
 ; The IRQ stream never stops during a repaint, so there is no stale baseline
 ; to discard after dragging.  Preserve this API for the window service.
 _udeks_pointer_resynchronize:
@@ -240,6 +234,7 @@ raster_irq:
         jmp irq_sample
 
 irq_select:
+        jsr SCHEDULER_TICK
         ; Read joystick 2 at both high and low drive levels on the opposite
         ; keyboard-matrix half.  A keyboard-induced low changes with that
         ; level; a grounded joystick switch persists in both samples.
@@ -268,7 +263,7 @@ irq_select:
         and active_switches
         sta PTR+12
         lda #$00
-        sta CIA1_DDRA
+        ; DDRA remains zero from the start of this sample phase.
         sta CIA1_DDRB
         lda saved_pra
         sta CIA1_PRA

@@ -11,7 +11,7 @@ typedef unsigned char (*task_request_gate)(void);
 unsigned char udeks_errno;
 static unsigned char request_sequence;
 
-static unsigned char submit_request(
+unsigned char submit_request(
     unsigned char operation, unsigned char descriptor,
     unsigned char count)
 {
@@ -108,12 +108,14 @@ unsigned char udeks_exec_line(
     return submit_request(UDEKS_TREQ_OP_EXEC, 0, length);
 }
 
+unsigned char udeks_submit_simple(unsigned char operation);
+
 unsigned char udeks_wait_foreground(void)
 {
-    return submit_request(UDEKS_TREQ_OP_WAIT, 0, 0);
+    return udeks_submit_simple(UDEKS_TREQ_OP_WAIT);
 }
 
 unsigned char udeks_prompt(void)
 {
-    return submit_request(UDEKS_TREQ_OP_PROMPT, 0, 0);
+    return udeks_submit_simple(UDEKS_TREQ_OP_PROMPT);
 }

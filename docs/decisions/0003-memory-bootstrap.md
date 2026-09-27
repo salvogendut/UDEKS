@@ -121,7 +121,7 @@ The common area is partitioned conservatively:
 | `$F150-$F16F` | Root-terminal line-editor diagnostics |
 | `$F170-$F18F` | Shell diagnostics and foreground-job state |
 | `$F190-$F27F` | Worker, graphics, pointer, time, window, and application diagnostics |
-| `$F280-$F2A5` | Reserved diagnostic space |
+| `$F280-$F2A5` | Task-loader status/header; task-2 normal-return launcher while APP1 runs |
 | `$F2A6` | Bootstrap root-session working-directory token |
 | `$F2A7-$F2AF` | Reserved diagnostic space |
 | `$F2B0-$F2FF` | Resident Z80 stack (80 bytes, SP starts at `$F300`) |
@@ -163,17 +163,27 @@ The native disk path uses two small stages before the resident kernel:
    two 64 KiB RAM banks, loads/copies the 8502 image to bank-0 `$2000`, installs
    the Z80 image at bank-1 `$2000`, and installs common gateways and vectors.
 4. Stage 1 selects the kernel-I/O profile, 4 KiB top common RAM, and physical
-   bank-0 pages zero/one, then jumps to the 8502 entry at `$2000`.
-5. The 8502 entry repeats the safe MMU/profile initialization idempotently,
-   clears BSS, initializes the mailbox, and enters C. No BASIC or KERNAL service
-   is part of the resident-kernel ABI after that point.
+   bank-0 pages zero/one. Through the fixed `$2003` vector it runs the staged
+   scheduler gather in place at `$A1E0`, then copies the staged crt0 page over
+   its own dead `$1C00` page and enters it there.
+5. The crt0 entry repeats the safe MMU/profile initialization idempotently,
+   clears BSS and the VIC shadow, and returns to the protected `$F7D8`
+   scheduler copier, which installs the gathered scheduler segment over the
+   dead `$1C00-$1FFF` page; the scheduler entry continues through the fixed
+   `$2000` kernel entry vector into `_kernel_main`, which initializes the
+   mailbox and enters C. No BASIC or KERNAL service is part of the
+   resident-kernel ABI after that point.
 6. Service startup discovers video timing and remains at the inherited 1 MHz
    rate, allowing the VDC text console and VIC-IIe to stay active together.
    The qualified VDC-only 2 MHz transition is an optional later policy.
 
-For development, `udeks-8502.prg` may be loaded directly at `$2000` and entered
-with `SYS 8192`. This bypasses disk stages 0 and 1 but must satisfy the same
-bank-0 placement contract.
+For development, `udeks-8502.prg` may be loaded directly from `$0200` and
+entered at `$1C00` with `SYS 7168`: it carries the boot-only capability
+service in application slot 1, the probe page at `$0B00`, the gathered
+scheduler at `$1200`, the boot-only console composer at `$1600`, crt0 at
+`$1C00`, and the resident kernel at `$2000`.
+This bypasses disk stages 0 and 1 but must satisfy the same bank-0 placement
+contract.
 
 ## Validation required for acceptance
 

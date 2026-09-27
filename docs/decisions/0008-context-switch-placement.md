@@ -66,3 +66,34 @@ until the scheduler links; the semantic fields above are frozen.
   explicit placement constraint on the scheduler revision.
 - This ADR freezes the placement strategy only. A compiled C task using the
   real cc65 software stack is the integration test for the scheduler revision.
+
+## Compiled-runtime qualification
+
+The 2026-09-27 `UCCS` integration spike applies the accepted relocation
+strategy to two real cc65 tasks. Each task retains a live volatile local array,
+a 16-bit accumulator, the cc65 software-stack pointer, and its hardware-stack
+return frame across 32 yields. `1986` revision `4867cf2` and VICE 3.10 at both
+1 MHz and 2 MHz produced the same complete 32-byte record: 64 switches,
+steps 32/32, sums `$1444/$4741`, software stacks `$70F0/$71F0`, and no canary
+or context failure. The exact image and results are preserved under
+[`bench/artifacts/2026-09-27-context-switch-c-r1`](../../bench/artifacts/2026-09-27-context-switch-c-r1/README.md)
+and
+[`bench/results/2026-09-27-context-switch-c`](../../bench/results/2026-09-27-context-switch-c/README.md).
+
+This qualifies the compiler runtime and resume mechanism in emulation; it does
+not by itself activate scheduling behind `$FF16`. A physical-C128 run of this
+compiled integration image remains the final portability gate.
+
+## Production integration
+
+The production scheduler now installs the qualified save/select/restore tail
+behind `$FF10/$FF13/$FF16` after service startup. Persistent `/bin/ush` owns
+bank-1 physical pages `$D1/$D2`, yields through the Task Request ABI 0.3
+record, and resumes on its preserved cc65 and hardware stacks. Pages
+`$80-$89` are excluded from production task allocation because the native
+loader uses `$8000-$8A00` as its application backup. `$D1/$D2` begin directly
+above the bootfs image ending at `$D0FF` and are dead before task activation.
+
+VICE qualification on both D71 and D64 observes repeated successful switches
+and command dispatch after resume. Physical-C128 qualification of this
+integrated path remains part of the Tasking 0.1 acceptance gate.

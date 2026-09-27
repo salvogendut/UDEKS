@@ -24,6 +24,7 @@ unsigned char udeks_exec_line(
     const unsigned char *line, unsigned char length);
 unsigned char udeks_wait_foreground(void);
 unsigned char udeks_prompt(void);
+unsigned char udeks_yield(void);
 unsigned char udeks_open(const unsigned char *path, unsigned char flags);
 unsigned char udeks_getdents(
     unsigned char descriptor, unsigned char *buffer, unsigned char capacity);

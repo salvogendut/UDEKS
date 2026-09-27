@@ -101,6 +101,8 @@ def compile_library(directory: str) -> ctypes.CDLL:
     loaded.udeks_lifecycle_apply.restype = ctypes.c_ubyte
     loaded.udeks_lifecycle_get.argtypes = [ctypes.c_ubyte]
     loaded.udeks_lifecycle_get.restype = ctypes.c_ubyte
+    loaded.udeks_lifecycle_parent.argtypes = [ctypes.c_ubyte]
+    loaded.udeks_lifecycle_parent.restype = ctypes.c_ubyte
     loaded.udeks_lifecycle_wait_reason.argtypes = [ctypes.c_ubyte]
     loaded.udeks_lifecycle_wait_reason.restype = ctypes.c_ubyte
     loaded.udeks_lifecycle_exit_status.argtypes = [ctypes.c_ubyte]
@@ -116,6 +118,10 @@ def compile_library(directory: str) -> ctypes.CDLL:
         ctypes.POINTER(ctypes.c_ubyte)
     ]
     loaded.udeks_lifecycle_publish.restype = None
+    loaded.udeks_lifecycle_bootstrap.argtypes = [
+        ctypes.POINTER(ctypes.c_ubyte)
+    ]
+    loaded.udeks_lifecycle_bootstrap.restype = ctypes.c_ubyte
     return loaded
 
 
@@ -156,6 +162,20 @@ class LifecycleBehaviorTests(unittest.TestCase):
         self.assertEqual(record[4:6], b"\x00\x01")
         self.assertEqual(record[6], 1)
         self.assertEqual(record[15], 0)
+
+    def test_bootstrap_registers_the_persistent_shell_as_running_task_one(self):
+        record = (ctypes.c_ubyte * STATUS_SIZE)()
+        self.assertEqual(self.state.udeks_lifecycle_bootstrap(record), OK)
+        self.assertEqual(self.state.udeks_lifecycle_current(), 1)
+        self.assertEqual(self.state.udeks_lifecycle_get(1), RUNNING)
+        self.assertEqual(self.state.udeks_lifecycle_defined_count(), 1)
+        self.assertEqual(self.state.udeks_lifecycle_runnable_count(), 1)
+        self.assertEqual(bytes(record[:4]), b"UTSK")
+        self.assertEqual(record[7], 1)
+        self.assertEqual(record[8], 1)
+        self.assertEqual(record[9], 1)
+        self.assertEqual(record[12], 1)
+        self.assertEqual(record[14], DISPATCH)
 
     def test_create_validates_ids_slots_and_flags(self):
         self.assertEqual(self.create(1), OK)
@@ -341,6 +361,18 @@ class LifecycleBehaviorTests(unittest.TestCase):
         self.assertEqual(self.state.udeks_lifecycle_current(), 0)
         self.assertEqual(self.state.udeks_lifecycle_switch_count(), 0)
         self.assertEqual(self.state.udeks_lifecycle_rejected_count(), before + 3)
+
+    def test_parent_accessor_tracks_creation_and_reap(self):
+        self.create(1)
+        self.create(2, parent=1)
+        self.assertEqual(self.state.udeks_lifecycle_parent(2), 1)
+        self.assertEqual(self.state.udeks_lifecycle_parent(1), 0)
+        self.assertEqual(self.state.udeks_lifecycle_parent(0), INVALID)
+        self.apply(2, ADMIT)
+        self.apply(2, DISPATCH)
+        self.apply(2, EXIT, 0)
+        self.apply(2, REAP)
+        self.assertEqual(self.state.udeks_lifecycle_parent(2), 0)
 
     def test_invalid_ids_report_invalid_reads(self):
         self.assertEqual(self.state.udeks_lifecycle_get(0), INVALID)

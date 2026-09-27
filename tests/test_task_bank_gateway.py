@@ -21,7 +21,7 @@ class TaskBankGatewayTests(unittest.TestCase):
         header = (ROOT / "include/udeks/task_bank.h").read_text().lower()
         gate = (ROOT / "src/8502/task_bank_gateway.s").read_text().lower()
 
-        self.assertIn("taskgate: start = $ff05, size = $00cb", config)
+        self.assertIn("taskgate: start = $ff05, size = $00c0", config)
         self.assertIn("udeks_task_bank_gate_base         0xff05u", header)
         self.assertIn("udeks_task_bank_reset             0xff10u", header)
         self.assertIn("udeks_task_bank_poll              0xff13u", header)
@@ -54,15 +54,20 @@ class TaskBankGatewayTests(unittest.TestCase):
         ):
             self.assertIn(instruction, poll)
 
-    def test_stage1_installs_exact_reserved_gateway_size(self):
+    def test_stage1_installs_temporary_gate_and_scheduler_replaces_it(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
+        scheduler = (ROOT / "src/scheduler/scheduler.s").read_text().lower()
 
-        self.assertIn("lda $ce00,y", stage1)
+        self.assertIn("lda $c409,y", stage1)
         self.assertIn("sta $ff05,y", stage1)
-        self.assertIn("cpy #$cb", stage1)
+        self.assertIn("cpy #$c0", stage1)
+        self.assertIn("task_gate_source = $ce00", scheduler)
+        self.assertIn("task_gate_destination = $ff05", scheduler)
+        self.assertIn("task_gate_size = $c0", scheduler)
 
     def test_stage1_relocates_bootfs_and_installs_runtime_loader(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
+        task_header = (ROOT / "include/udeks/task.h").read_text().lower()
 
         self.assertIn("lda $2300,y", stage1)
         self.assertIn("bootfs_destination:\n        sta $0300,y", stage1)
@@ -80,13 +85,23 @@ class TaskBankGatewayTests(unittest.TestCase):
         self.assertIn("lda $c300,y", stage1)
         self.assertIn("sta $f800,y", stage1)
         self.assertIn("sta $f900,y\n        iny\n        cpy #$09", stage1)
-        self.assertIn("final_clear_vic_shadow:", stage1)
-        self.assertIn("sta $af00,y", stage1)
-        self.assertIn("ldx #$20", stage1)
+        self.assertNotIn("final_clear_vic_shadow", stage1)
         self.assertIn("lda $c500,y", stage1)
         self.assertIn("sta $4000,y\n        iny\n        bne backup_service_page", stage1)
         self.assertIn("bootfs_base             = $a000", stage1)
         self.assertIn("task_managed_loader_entry:", stage1)
+        self.assertIn("task_spawn_loader_entry:", stage1)
+        self.assertIn("task_spawn_loader_entry = $f919", stage1)
+        self.assertIn("udeks_spawn_loader_entry        0xf919u", task_header)
+        self.assertIn("ldy #$80", stage1)
+        self.assertIn("bmi task_copy_persistent", stage1)
+
+        clear_bss = stage1.split("task_clear_bss:", 1)[1].split(
+            "task_clear_bss_pointer_ready:", 1
+        )[0]
+        self.assertIn("cmp #$02", clear_bss)
+        self.assertIn("beq task_clear_bss_pointer_ready", clear_bss)
+        self.assertIn("lda task_copy_store_persistent+1", clear_bss)
 
     def test_runtime_loader_is_installed_from_protected_final_page(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()

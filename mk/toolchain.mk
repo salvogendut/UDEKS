@@ -4,6 +4,8 @@ CC65 ?= cc65
 CA65 ?= ca65
 LD65 ?= ld65
 CL65 ?= cl65
+AR65 ?= ar65
+CC65_NONE_LIB ?= /usr/share/cc65/lib/none.lib
 
 SDCC ?= sdcc
 SDASZ80 ?= sdasz80
@@ -18,4 +20,4 @@ LDFLAGS_8502 := -C cfg/8502-bootstrap.cfg -m build/8502/udeks-8502.map
 CFLAGS_Z80 := -mz80 --std-c11 --opt-code-size -I include
 LDFLAGS_Z80 := -mz80 --no-std-crt0 --code-loc 0x2000 --data-loc 0x3000
 
-REQUIRED_TOOLS := $(CC65) $(CA65) $(LD65) $(CL65) $(SDCC) $(SDASZ80) $(RASM) $(PYTHON)
+REQUIRED_TOOLS := $(CC65) $(CA65) $(LD65) $(CL65) $(AR65) $(SDCC) $(SDASZ80) $(RASM) $(PYTHON)

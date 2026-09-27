@@ -15,7 +15,7 @@ extern void udeks_vic_bitmap_commit_page(unsigned char page);
 extern void udeks_vic_bitmap_outline_blit(void);
 
 #pragma bss-name(push, "VICSHADOW")
-unsigned char udeks_vic_bitmap_shadow[8192];
+unsigned char udeks_vic_bitmap_shadow[UDEKS_VIC_BITMAP_SIZE];
 #pragma bss-name(pop)
 
 #define bitmap_rows ((unsigned int *)UDEKS_VIC_ROW_TABLE_BASE)

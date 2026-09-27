@@ -4,6 +4,7 @@
 ; stage 0 ran, copies a common-RAM gateway into place, and transfers to it.
 
         .setcpu "6502"
+        .include "scheduler-overlay-delivery.inc"
         .segment "CODE"
 
 BOOT_CHAIN              = $f050
@@ -125,11 +126,46 @@ gateway_image:
         .incbin "build/boot/stage1-gateway.bin"
 gateway_image_end:
         .assert gateway_image_end-gateway_image <= $0300, error, "stage-1 gateway exceeds boot reservation"
-        .assert gateway_image_end <= $1fc0, error, "stage-1 gateway overlaps the busy sprite"
+        .assert gateway_image_end <= $1fbb, error, "stage-1 gateway overlaps the secondary loader"
 
-        .segment "SPRITE"
-busy_sprite_image:
-        .incbin "build/assets/24x21-pipe-sprite.vic"
-busy_sprite_image_end:
-        .assert busy_sprite_image_end-busy_sprite_image = 63, error, "VIC busy sprite size drift"
-        .assert busy_sprite_image_end <= $2000, error, "stage 1 exceeds reserved $1C00-$1FFF range"
+        ; Called by stage 0 while the inherited KERNAL jump table is still
+        ; mapped. LOAD relocates SCHEDOVR into bank 1; UDEKS never calls the
+        ; KERNAL again after this routine returns.
+        .segment "PRELOAD"
+secondary_payload_load:
+        lda #$00
+        jsr $ff90                   ; SETMSG: keep native boot quiet
+        lda #scheduler_name_end-scheduler_name
+        ldx #<scheduler_name
+        ldy #>scheduler_name
+        jsr $ffbd                   ; SETNAM
+        lda #$01                    ; data bank 1
+        ldx #$00                    ; filename in bank 0
+        jsr $ff68                   ; SETBNK
+        lda #$00
+        ldx $ba                     ; preserve the device that booted us
+        cpx #$08
+        bcs :+
+        ldx #$08
+:
+        ldy #$00                    ; relocation load
+        jsr $ffba                   ; SETLFS
+        lda #$00                    ; LOAD, not VERIFY
+        ldx #<SCHEDULER_OVERLAY_LOAD
+        ldy #>SCHEDULER_OVERLAY_LOAD
+        jsr $ffd5
+        bcs secondary_load_failed
+        cpx #<SCHEDULER_OVERLAY_END
+        bne secondary_load_failed
+        cpy #>SCHEDULER_OVERLAY_END
+        bne secondary_load_failed
+        lda #$00
+        rts
+secondary_load_failed:
+        lda #$0d
+        rts
+scheduler_name:
+        .byte "SCHEDOVR"
+scheduler_name_end:
+        .assert secondary_payload_load = $1fbb, error, "secondary loader moved"
+        .assert scheduler_name_end <= $2000, error, "secondary loader exceeds stage-1 page"

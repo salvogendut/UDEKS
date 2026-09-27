@@ -96,6 +96,7 @@ unsigned char udeks_lifecycle_apply(
 
 /* Reads derived scheduler state. Invalid ids report UDEKS_LIFECYCLE_INVALID. */
 unsigned char udeks_lifecycle_get(unsigned char id);
+unsigned char udeks_lifecycle_parent(unsigned char id);
 unsigned char udeks_lifecycle_wait_reason(unsigned char id);
 unsigned char udeks_lifecycle_exit_status(unsigned char id);
 unsigned char udeks_lifecycle_current(void);
@@ -110,5 +111,10 @@ void udeks_lifecycle_note_canary_failure(void);
 
 /* Writes the 16-byte UTSK diagnostic record to a caller-owned buffer. */
 void udeks_lifecycle_publish(unsigned char *record);
+
+/* Transitional bootstrap for the persistent /bin/ush poller. It resets the
+ * table, creates task 1 as a persistent user task, admits and dispatches it,
+ * and publishes the supplied diagnostic record. */
+unsigned char udeks_lifecycle_bootstrap(unsigned char *record);
 
 #endif

@@ -24,6 +24,12 @@ MMU profiles:
 | `$FF13` | Run one cooperative poll at `$9000` |
 | `$FF16` | Perform one synchronous common-record request |
 
+The post-bootstrap loader reservation also exposes a private scheduler seam at
+`$F919`. Given a zero-terminated bootfs leaf name in `A/X`, it validates an
+ordinary flag-zero UDEX, copies its image and BSS into bank-1 APP1 at `$0200`,
+and returns without entering it. The lifecycle handler owns this seam; it is
+not a user syscall and does not allocate or publish a task by itself.
+
 The poll gate performs this bounded transition:
 
 1. mask interrupts and save the resident cc65 zero-page reservation `$02-$1F`;
@@ -47,3 +53,11 @@ common [task request record](task-request.md) through `$CF30` and the permanent
 task-side wrappers provide nonblocking `read`, bounded `write`, compatibility
 `exec`, foreground `wait`, and terminal `prompt`; signals and a true scheduler
 yield remain later operations.
+
+Request ABI 0.3 keeps those operations unchanged and defines lifecycle
+operations `10`-`15` (`yield`, `exit`, `waitpid`, `sleep`, `cancel`, and
+`spawn`). `YIELD`, `EXIT`, immediate and blocking `WAITPID`, `SLEEP`,
+child-only `CANCEL`, and `SPAWN` are active.
+Tasking 0.1 admits one ordinary child as task 2 in APP1. Its relocated page
+zero/page one use bank-1 physical pages `$D3/$D4`; a common-RAM launcher calls
+the validated UDEX entry and converts a normal return into `EXIT(status)`.

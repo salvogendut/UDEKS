@@ -37,6 +37,7 @@ make z80        # build build/z80/udeks-z80.bin through SDCC
 make z80-asm    # build the independent RASM smoke image
 make boot       # build build/boot/udeks.d71 for native C128 autoboot
 make panic-probe  # build a non-release D71 that injects descriptor failure
+make placement-check  # verify the real linker-map placement budget (reference container)
 make framebuffer-assets  # pack the 64x64 XPM as a 512-byte VDC bitmap
 make user-sources  # compile staged user programs separately from the kernel
 make user-programs  # link and package standalone UDEX programs
@@ -71,8 +72,14 @@ first task slot, supplies a private C stack and cc65 zero page, runs the
 program, and restores the slot on exit. Runtime qualification in both
 emulators and on hardware remains required before this milestone is closed.
 
-The 8502 artifacts are a raw resident image and a development PRG linked/loaded
-at `$2000`. Its linker region ends before the `$D000` I/O aperture. The SDCC
+The 8502 artifacts are a raw resident image and a development PRG that loads
+from `$0200` (boot-only capability service in application slot 1, probe page
+at `$0B00`, scheduler at `$1200`, boot-only console composer at `$1600`, crt0
+at `$1C00`, and the resident kernel at `$2000`) and is entered at `$1C00` with
+`SYS 7168`; `--raw-load` in
+`tools/vice_capture.py` loads it through the
+monitor because the payload starts below the BASIC launcher. Its linker region
+ends before the `$D000` I/O aperture. The SDCC
 artifact is a fixed 8 KiB raw window covering `$2000`–`$3FFF`; only its leading
 bytes currently contain code. `make boot` packages both into a deterministic
 D71 and a side-one D64 compatibility image implementing the stage-0/stage-1 path in
@@ -257,8 +264,12 @@ loads preserved PRGs, selects native 1/2 MHz mode when requested, waits for the
 result-state byte, and saves a raw decoder-ready block. It uses a temporary
 BASIC wrapper for pure machine-code PRGs without changing their payload bytes
 or addresses. See the [r2 VICE results](../bench/results/vice-3.10-2026-09-24-r2/README.md)
-for a complete command. Real-hardware verification still gates MMU, timing,
-video, IEC, and CPU-handoff milestones.
+for a complete command. `tools/shadow_boot_probe.py --vic-compare` boots the
+native D71 with tail sentinels patched into the payload, proves the `crt0`
+VIC-shadow clear, and compares the drawn bank-0 shadow with the bank-1 bitmap;
+`make shadow-probe` wraps it and the result is preserved in
+`bench/results/2026-09-26-shadow-clear`. Real-hardware verification still gates
+MMU, timing, video, IEC, and CPU-handoff milestones.
 
 For native disk tests, `tools/vice_capture.py --native-disk` attaches the D71
 at power-on instead of injecting a BASIC launcher. `1986` saves complete VSF

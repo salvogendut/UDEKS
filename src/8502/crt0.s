@@ -1,18 +1,19 @@
 ; SPDX-License-Identifier: GPL-3.0-or-later
 ;
-; RAM-loaded 8502 entry point. The loader contract guarantees that this image
-; is resident in RAM bank 0 at $2000 before control arrives here.
+; Boot-time 8502 entry point. Stage 1 stages this image in the VIC shadow at
+; $AE00, copies it over the dead stage-1 page at $1C00, and enters there. It
+; is not part of the resident kernel: the resident core starts at $2000, and
+; the $1C00 page becomes reclaimable once this code has run.
 
         .include "mmu.inc"
 
         .export _start
-        .import _kernel_main
         .import __BSS_RUN__, __BSS_SIZE__
+        .import __VICSHADOW_RUN__, __VICSHADOW_SIZE__
         .importzp sp
 
-        .segment "ZEROPAGE"
-bss_ptr:
-        .res 2
+        ; Stage 1 retires its own $F8-$FC copy scratch before entering here.
+        CLEAR_POINTER = $f8
 
         .segment "STARTUP"
 _start:
@@ -85,19 +86,19 @@ _start:
         sta BOOT_STATUS_STATE
 
         lda #<__BSS_RUN__
-        sta bss_ptr
+        sta CLEAR_POINTER
         lda #>__BSS_RUN__
-        sta bss_ptr+1
+        sta CLEAR_POINTER+1
 
         lda #$00
         ldx #>__BSS_SIZE__
         beq clear_tail
         ldy #$00
 clear_page:
-        sta (bss_ptr),y
+        sta (CLEAR_POINTER),y
         iny
         bne clear_page
-        inc bss_ptr+1
+        inc CLEAR_POINTER+1
         dex
         bne clear_page
 
@@ -106,13 +107,43 @@ clear_tail:
 clear_tail_loop:
         cpy #<__BSS_SIZE__
         beq bss_done
-        sta (bss_ptr),y
+        sta (CLEAR_POINTER),y
         iny
         bne clear_tail_loop
 
 bss_done:
-        jsr _kernel_main
+        ; The VIC shadow is a separate BSS segment placed after ordinary BSS,
+        ; so the linker-generated bounds are the only safe way to clear it.
+        ; Stage 1 no longer clears any shadow range: staging payloads now live
+        ; inside the shadow, and the reclaimed tail above it must survive.
+        lda #<__VICSHADOW_RUN__
+        sta CLEAR_POINTER
+        lda #>__VICSHADOW_RUN__
+        sta CLEAR_POINTER+1
 
-halt:
-        sei
-        jmp halt
+        lda #$00
+        ldx #>__VICSHADOW_SIZE__
+        beq shadow_tail
+        ldy #$00
+shadow_page:
+        sta (CLEAR_POINTER),y
+        iny
+        bne shadow_page
+        inc CLEAR_POINTER+1
+        dex
+        bne shadow_page
+
+shadow_tail:
+        ldy #$00
+shadow_tail_loop:
+        cpy #<__VICSHADOW_SIZE__
+        beq shadow_done
+        sta (CLEAR_POINTER),y
+        iny
+        bne shadow_tail_loop
+
+shadow_done:
+        ; Return to the protected scheduler copier at $F7D8.  It installs the
+        ; gathered scheduler image over this dead page and enters the
+        ; scheduler entry, which continues through the kernel entry vector.
+        jmp $f7d8

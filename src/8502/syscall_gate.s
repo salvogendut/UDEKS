@@ -261,16 +261,18 @@ task_validate_signature:
         dex
         bpl task_validate_signature
         lda TREQ_BASE+$05
-        cmp #$03
+        cmp #$04
         bcs task_protocol_trampoline
-        lda TREQ_FLAGS
-        bne task_protocol_trampoline
         lda TREQ_STATE
         cmp #TREQ_REQUEST
         bne task_protocol_trampoline
-        jmp task_dispatch_operation
-task_protocol_trampoline:
-        jmp task_protocol_error
+        ; ABI 0.3 lifecycle operations are owned by the installed fallback
+        ; service; this compatibility gate deliberately does not decode them.
+        lda TREQ_OPERATION
+        cmp #$0a
+        bcs task_request_fallback
+        lda TREQ_FLAGS
+        bne task_protocol_trampoline
 task_dispatch_operation:
         lda TREQ_OPERATION
         cmp #TREQ_OP_READ
@@ -284,10 +286,12 @@ task_dispatch_operation:
         jmp task_wait
 task_check_prompt:
         cmp #TREQ_OP_PROMPT
-        bne :+
+        bne task_request_fallback
         jmp task_prompt
-:
+task_request_fallback:
         jmp _udeks_bootfs_request
+task_protocol_trampoline:
+        jmp task_protocol_error
 
 task_read:
         lda TREQ_DESCRIPTOR
@@ -387,7 +391,7 @@ task_finish_error:
         sta TREQ_RESULT
         lda #TREQ_STATE_ERROR
         sta TREQ_STATE
-        lda TREQ_ERROR
+        clc
         rts
 
 task_finish_ok:
@@ -397,6 +401,7 @@ task_finish_ok:
         lda #TREQ_COMPLETE
         sta TREQ_STATE
         lda #$00
+        clc
         rts
 
 task_signature:

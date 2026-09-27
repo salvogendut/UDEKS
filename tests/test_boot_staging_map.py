@@ -1,0 +1,184 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+import sys
+import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+
+from boot_staging_map import analyze, free_holes, staged_regions
+
+
+# Synthetic pre-delivery fixture: the then-current sequential shadow at
+# $AB2D-$CA6C, the staged boot pages, and the boot-only objects before the
+# capability relocation was realized.
+FIXTURE = """\
+Modules list:
+-------------
+hardware_capability.o:
+    CODE              Offs=000000  Size=0003C7  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000001  Align=00001  Fill=0000
+boot_console.o:
+    CODE              Offs=000000  Size=00038F  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=00021B  Align=00001  Fill=0000
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+PROBECODE             000B00  000BD0  0000D1  00001
+STARTUP               001C00  001CCE  0000CF  00001
+VICSHADOW             00AB2D  00CA6C  001F40  00001
+
+"""
+
+# Emitted staging artifacts, byte-accurate for the 2026-09-26 build.
+EMITTED = {
+    "bootfs": 11707,
+    "module": 836,
+    "task_request": 265,
+    "bootfs_request": 667,
+    "task_loader": 1520,
+    "task_gate": 192,
+}
+
+# stage0's last nonzero byte is at $0B3D.
+STAGE0 = bytes(0x3D) + b"\x01"
+
+
+class BootStagingMapTests(unittest.TestCase):
+    def test_copied_ranges_are_disjoint_or_nested(self):
+        regions = sorted(staged_regions({**EMITTED, "probe": 209, "crt0": 207}),
+                         key=lambda region: region.start)
+        for index, first in enumerate(regions):
+            for second in regions[index + 1:]:
+                disjoint = first.copied_end < second.start
+                nested = (
+                    first.start <= second.start
+                    and second.copied_end <= first.copied_end
+                )
+                self.assertTrue(
+                    disjoint or nested,
+                    f"{first.name} partially overlaps {second.name}",
+                )
+
+    def test_free_hole_arithmetic_is_byte_accurate(self):
+        regions = staged_regions({**EMITTED, "probe": 209, "crt0": 207})
+        holes = free_holes(0xAB2D, 0x0B3D, regions)
+        self.assertEqual(
+            holes,
+            [
+                ("staging hole", 0xAB2D, 0xACFF),
+                ("staging hole", 0xC409, 0xC4EE),
+                ("staging hole", 0xC78A, 0xC7FF),
+                ("staging hole", 0xCDF0, 0xCDFF),
+                ("staging hole", 0xCEC0, 0xCEFF),
+                ("boot-sector hole", 0x0B3E, 0x0BFF),
+            ],
+        )
+        total = sum(end - start + 1 for _, start, end in holes)
+        largest = max(end - start + 1 for _, start, end in holes)
+        self.assertEqual(total, 1089)
+        self.assertEqual(largest, 467)
+
+    def test_no_realized_boot_only_object_remains_budgeted(self):
+        result = analyze(FIXTURE, STAGE0, EMITTED)
+        self.assertEqual(result["objects"], {})
+        self.assertEqual(result["fits"], {})
+        self.assertEqual(result["hole_total"], 1089)
+        self.assertEqual(result["largest_hole"], 467)
+
+    def test_realized_capability_staging_occupies_the_shadow_prefix(self):
+        emitted = {
+            **EMITTED,
+            "boot_delivery": 267,
+            "capability": 967,
+            "capability_installer": 102,
+        }
+        regions = staged_regions(
+            {**emitted, "probe": 209, "crt0": 207}, 0xA1E0
+        )
+        by_name = {region.name: region for region in regions}
+        self.assertEqual(
+            (by_name["boot delivery staging"].start,
+             by_name["boot delivery staging"].copied_end),
+            (0xA1E0, 0xA2EA),
+        )
+        self.assertEqual(
+            (by_name["capability staging"].start,
+             by_name["capability staging"].copied_end),
+            (0xA2EB, 0xA6B1),
+        )
+        self.assertEqual(
+            by_name["capability installer staging"].start, 0xA6B2
+        )
+
+    def test_realized_boot_console_uses_slot_two_and_boot_sector_installer(self):
+        emitted = {
+            **EMITTED,
+            "boot_delivery": 267,
+            "capability": 967,
+            "capability_installer": 102,
+            "boot_console": 1450,
+            "boot_console_installer": 99,
+        }
+        regions = staged_regions(
+            {**emitted, "probe": 209, "crt0": 207}, 0xA1E0
+        )
+        by_name = {region.name: region for region in regions}
+        self.assertEqual(
+            (by_name["boot console staging"].start,
+             by_name["boot console staging"].copied_end),
+            (0xA718, 0xACC1),
+        )
+        self.assertEqual(
+            (by_name["boot console installer staging"].start,
+             by_name["boot console installer staging"].copied_end),
+            (0x0B50, 0x0BB2),
+        )
+        holes = free_holes(0xA1E0, 0x0B3D, regions)
+        self.assertIn(("boot-sector hole", 0x0B3E, 0x0B4F), holes)
+        self.assertIn(("boot-sector hole", 0x0BB3, 0x0BFF), holes)
+        self.assertEqual(
+            sum(end - start + 1 for _, start, end in holes), 585
+        )
+
+    def test_activation_consumes_the_post_console_prefix(self):
+        emitted = {
+            **EMITTED,
+            "boot_delivery": 267,
+            "capability": 967,
+            "capability_installer": 102,
+            "boot_console": 1450,
+            "task_activation": 42,
+            "boot_console_installer": 99,
+        }
+        regions = staged_regions(
+            {**emitted, "probe": 209, "crt0": 207}, 0xA1E0
+        )
+        console = next(
+            region for region in regions if region.name == "boot console staging"
+        )
+        self.assertEqual((console.start, console.copied_end), (0xA718, 0xACEB))
+        self.assertIn(
+            ("staging hole", 0xACEC, 0xACFF),
+            free_holes(0xA1E0, 0x0B3D, regions),
+        )
+
+    def test_dead_padding_is_reported_separately(self):
+        result = analyze(FIXTURE, STAGE0, EMITTED)
+        padding = {item["name"]: item for item in result["padding"]}
+        self.assertEqual(padding["probe staging"]["size"], 47)
+        self.assertEqual(padding["crt0 staging"]["size"], 49)
+        self.assertNotIn("module staging", padding)
+        self.assertNotIn("bootfs tail staging", padding)
+        unowned = {name: end - start + 1 for name, start, end, _ in
+                   result["unowned_padding"]}
+        self.assertEqual(unowned["stage-1 code padding"], 5)
+        self.assertEqual(unowned["z80 tail padding"], 105)
+
+
+if __name__ == "__main__":
+    unittest.main()

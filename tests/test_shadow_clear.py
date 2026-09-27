@@ -1,0 +1,168 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+import sys
+import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+
+from boot_chain_decode import parse_result as parse_boot_chain
+from build_d71 import (
+    SCATTER_MANIFEST_ADDRESS,
+    SCATTER_MANIFEST_MAX,
+    scheduler_layout,
+)
+from capability_decode import parse_result as parse_capability
+from shadow_clear_decode import (
+    SHADOW_SIZE,
+    compare_shadow_bitmap,
+    parse_window,
+)
+from shadow_boot_probe import preserved_gap_size, validate_gap_preimage
+
+
+RAW = ROOT / "bench/results/2026-09-26-shadow-clear/raw"
+SCHEDULER_RAW = ROOT / "bench/results/2026-09-26-scheduler-delivery/raw"
+
+# Layout of the preserved 2026-09-26 build: the sequential 8,000-byte
+# VICSHADOW segment sits at $AC3E-$CB7D, the reclaimed tail runs to the fixed
+# SYSCALLS page at $CF00, boot staging starts at $AF00, the live probe and
+# crt0 staging pages sit at $AD00-$ADFF and $AE00-$AEFF, and the scheduler
+# scatter manifest sits at $ACD9.
+SHADOW_START = 0xAC3E
+STAGING_START = 0xAF00
+PROBE_STAGING_ADDRESS = 0xAD00
+PROBE_SIZE = 0x0100
+CRT0_STAGING_ADDRESS = 0xAE00
+CRT0_SIZE = 0x0100
+
+
+class ShadowClearEvidenceTests(unittest.TestCase):
+    def test_preserved_boot_clears_the_whole_shadow_and_keeps_the_tail(self):
+        window = (RAW / "shadow-after-boot.bin").read_bytes()
+        preimage = (RAW / "shadow-preimage.bin").read_bytes()
+        result = parse_window(window, preimage, SHADOW_START, SHADOW_SIZE)
+        self.assertEqual(len(window), 0xCF00 - SHADOW_START)
+        self.assertEqual(len(preimage), len(window))
+        self.assertTrue(result["shadow_cleared"])
+        self.assertTrue(result["tail_intact"])
+        self.assertEqual(
+            result["tail_size"], 0xCF00 - SHADOW_START - SHADOW_SIZE
+        )
+
+    def test_preimage_seeds_the_reclaimed_prefix(self):
+        preimage = (RAW / "shadow-preimage.bin").read_bytes()
+        prefix = preimage[: PROBE_STAGING_ADDRESS - SHADOW_START]
+        scheduler = (SCHEDULER_RAW / "udeks-scheduler.bin").read_bytes()
+        (manifest_start, manifest_end), chunks, _ = scheduler_layout(
+            SHADOW_START, 0x0B3D, len(scheduler)
+        )
+        self.assertEqual(preimage[manifest_start - SHADOW_START :][:4], b"USCT")
+        live = set(range(manifest_start, manifest_end + 1))
+        for start, take in chunks:
+            live.update(range(start, start + take))
+        for offset, byte in enumerate(prefix):
+            if SHADOW_START + offset not in live:
+                self.assertNotEqual(byte, 0)
+        for address, size in (
+            (PROBE_STAGING_ADDRESS, PROBE_SIZE),
+            (CRT0_STAGING_ADDRESS, CRT0_SIZE),
+        ):
+            staged = preimage[
+                address - SHADOW_START : address - SHADOW_START + size
+            ]
+            self.assertTrue(any(byte != 0 for byte in staged))
+
+    def test_preserved_repaint_matches_the_bank1_bitmap(self):
+        shadow = (RAW / "shadow-drawn.bin").read_bytes()
+        bitmap = (RAW / "vic-bitmap.bin").read_bytes()
+        self.assertEqual(len(shadow), SHADOW_SIZE)
+        self.assertEqual(len(bitmap), SHADOW_SIZE)
+        self.assertEqual(compare_shadow_bitmap(shadow, bitmap), [])
+
+    def test_decoder_rejects_a_truncated_window(self):
+        preimage = (RAW / "shadow-preimage.bin").read_bytes()
+        with self.assertRaisesRegex(ValueError, "truncated"):
+            parse_window(
+                bytes(SHADOW_SIZE - 1),
+                preimage[: SHADOW_SIZE - 1],
+                SHADOW_START,
+                SHADOW_SIZE,
+            )
+
+    def test_decoder_rejects_a_late_clear(self):
+        window = bytearray((RAW / "shadow-after-boot.bin").read_bytes())
+        preimage = (RAW / "shadow-preimage.bin").read_bytes()
+        window[0] = 0x11
+        result = parse_window(
+            bytes(window), preimage, SHADOW_START, SHADOW_SIZE
+        )
+        self.assertFalse(result["shadow_cleared"])
+        self.assertTrue(result["tail_intact"])
+
+    def test_decoder_rejects_a_clobbered_tail(self):
+        window = bytearray((RAW / "shadow-after-boot.bin").read_bytes())
+        preimage = (RAW / "shadow-preimage.bin").read_bytes()
+        window[SHADOW_SIZE + 10] = 0
+        result = parse_window(
+            bytes(window), preimage, SHADOW_START, SHADOW_SIZE
+        )
+        self.assertTrue(result["shadow_cleared"])
+        self.assertFalse(result["tail_intact"])
+        self.assertEqual(result["tail_mismatches"], [10])
+
+
+class ShadowClearProbeEvidenceTests(unittest.TestCase):
+    def test_committed_capability_records_decode_and_match(self):
+        vice = (RAW / "capability-record.bin").read_bytes()
+        other = (RAW / "1986-f9c6a24-hcap.bin").read_bytes()
+        self.assertEqual(parse_capability(vice), parse_capability(other))
+        self.assertEqual(vice, other)
+
+    def test_committed_1986_boot_chain_decodes(self):
+        block = (RAW / "1986-f9c6a24-boot-chain.bin").read_bytes()
+        result = parse_boot_chain(block)
+        self.assertEqual(result["loader_state"], 2)
+        self.assertEqual(result["blocks"], 212)
+
+
+class ShadowClearGapTests(unittest.TestCase):
+    def test_handler_may_end_exactly_at_context(self):
+        self.assertEqual(preserved_gap_size(0xC120, 3229, 0xCDBD, 0xCF00), 0)
+        validate_gap_preimage(b"")
+
+    def test_nonempty_gap_requires_nonzero_preimage(self):
+        self.assertEqual(preserved_gap_size(0xC120, 3228, 0xCDBD, 0xCF00), 1)
+        validate_gap_preimage(b"\x5a")
+        with self.assertRaisesRegex(ValueError, "no test data"):
+            validate_gap_preimage(b"\x00")
+
+    def test_overlapping_or_out_of_tail_regions_still_fail(self):
+        for size, context, limit in (
+            (3230, 0xCDBD, 0xCF00),
+            (-1, 0xCDBD, 0xCF00),
+            (3229, 0xCF01, 0xCF00),
+        ):
+            with self.subTest(size=size, context=context, limit=limit):
+                with self.assertRaisesRegex(ValueError, "outside the tail"):
+                    preserved_gap_size(0xC120, size, context, limit)
+
+
+class ShadowClearSourceTests(unittest.TestCase):
+    def test_crt0_clears_the_shadow_through_linker_bounds(self):
+        crt0 = (ROOT / "src/8502/crt0.s").read_text(encoding="utf-8")
+        self.assertIn(".import __VICSHADOW_RUN__, __VICSHADOW_SIZE__", crt0)
+        self.assertIn("ldx #>__VICSHADOW_SIZE__", crt0)
+        self.assertIn("sta (CLEAR_POINTER),y", crt0)
+
+    def test_stage1_leaves_the_reclaimed_tail_alone(self):
+        stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("final_clear_vic_shadow", stage1)
+
+
+if __name__ == "__main__":
+    unittest.main()

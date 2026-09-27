@@ -1,6 +1,6 @@
 # UDEKS active handover — Tasking 0.1
 
-This is the active implementation plan after commit `92fa636`. It is intended
+This is the active implementation plan as of 2026-09-27. It is intended
 to let a future development session resume without reconstructing the current
 architectural priorities from the commit history. The detailed architecture
 remains in [`docs/PLAN.md`](docs/PLAN.md), the capability gates remain in
@@ -45,9 +45,10 @@ qualified.
 - `/bin/ush` is a persistent bank-1 program entered through the returning
   `$FF13` common-RAM gate. Its cc65 zero-page context is saved at
   `$E2E2-$E2FF`, and its software stack begins at `$EFF0`.
-- Bank-1 task requests use the synchronous record at `$F359-$F37E` and the
-  `$FF16` request gate. The record currently supports `READ`, `WRITE`, `EXEC`,
-  `WAIT`, and `PROMPT`.
+- Bank-1 task requests use the shared record at `$F359-$F37E` and the `$FF16`
+  request gate. ABI 0.3 adds lifecycle operations to the original synchronous
+  console/filesystem operations; blocking `WAITPID` now snapshots ownership
+  privately while the shared record is released.
 - Transient UDEX commands run synchronously in a saved loader slot.
 - `xclock` and `xwave` are standalone UDEX images, but flag bit 1 still selects
   a six-vector managed-application lifecycle and two fixed retained slots.
@@ -58,6 +59,96 @@ qualified.
 
 Do not delete these paths in one rewrite. Put each existing participant behind
 the task model, validate it, and only then remove the replaced special case.
+
+## Current implementation status (2026-09-27)
+
+- Step 1 has a versioned lifecycle ABI, host-tested lifecycle state module,
+  and diagnostic/validation seam. The installed scheduler now resets the
+  resident task table, registers persistent `/bin/ush` as running task 1, and
+  publishes the resulting `UTSK` record before entering the retained poll
+  path. A bounded C round-robin selector is linked into the scheduler page and
+  host-tested across empty, sparse, wrapped, and yielded run queues; the
+  installed context-save/resume tail calls it between cooperative task runs.
+- Step 2 is qualified in `1986`, VICE, and physical C128 hardware; ADR 0008
+  freezes relocated page-zero/page-one ownership and the bounded copy
+  fallback. The follow-on `UCCS` spike now also switches two real cc65 tasks
+  64 times with live C frames and distinct software stacks, byte-identically
+  in `1986` and VICE at 1/2 MHz. Its physical-C128 run remains outstanding.
+- Step 3 has Task Request ABI 0.3 operations for `YIELD`, `EXIT`, `WAITPID`,
+  `SLEEP`, `CANCEL`, and `SPAWN`, plus a pure host-tested policy layer.
+  Production `YIELD`, non-returning `EXIT`, and immediate, nonblocking, and
+  blocking `WAITPID`, bounded `SLEEP`, child-only `CANCEL`, plus task-2
+  `SPAWN`, are implemented.
+- The placement prerequisite for steps 3 and 4 is qualified. Stage 1 can
+  deliver a scheduler image to `$1C00-$1FFF`; crt0 and probe are split boot
+  outputs; the boot-only capability service is linked at `$0200`, installed
+  before crt0, and safely overwritten by applications after startup. ADR 0009
+  records the accepted capability relocation. These placements now support
+  the installed scheduler and lifecycle handlers described below.
+- `boot_console.o` is now a split boot image at `$1600`, and VICE proves it is
+  safely overwritten by `xwave`; ADR 0010 remains proposed until the
+  independent `1986` pass. The final boot-only gather is also split and runs
+  in place at `$A1E0`, leaving the complete `$C120-$CEFF` tail available for
+  lifecycle/scheduler integration.
+- Lifecycle placement is active: `SCHEDOVR` carries the zero-padded 1 KiB
+  scheduler page and the installed lifecycle tail at `$C120-$CDBC`. Stage 0
+  loads it into bank 1 with KERNAL `SETBNK`/`LOAD`; a 192-byte one-shot
+  common-RAM installer validates and copies it, clears its BSS, and the
+  scheduler entry replaces that installer with the permanent task gate.
+  D71/D64 cold boot,
+  exact page/tail installation, VIC repaint, and application-slot reuse pass
+  in VICE. ADR 0012 remains proposed pending `1986` and physical C128 runs.
+- The production-shaped save/select/restore tail now fits behind the frozen
+  `$FF10/$FF13/$FF16` entries: its separate link occupies `$FF05-$FFC3`, 191
+  of the exact 192 reserved bytes. It captures A/X/Y/P/SP and the continuation
+  before remapping, preserves the resident kernel stack, and restores the
+  selected task's relocated page zero/page one and CPU context. The boot image
+  installs it after startup. Eight 11-byte records plus reset/save/select
+  callbacks occupy the exact `$CDBD-$CEFF` 323-byte window, while fixed
+  callback vectors consume the page's final six bytes at `$1FFA-$1FFF`.
+  `SCHEDOVR` ABI 0.3 appends the exact, build-locked 234-byte context image and
+  192-byte gate; its checksummed bank-0 tail also installs the 1,213-byte
+  lifecycle handler at `$C900-$CDBC`, outside both application slots. The
+  normal checksum covers the
+  six fixed page vectors, and the boot-console installer checksums and installs a
+  42-byte post-startup activator at `$1BAA` and copies it directly to its
+  `$F68A` common-RAM run address. Persistent `/bin/ush` now polls, yields, and
+  resumes through the `$CF30` carry contract. D71 and D64 VICE probes observe
+  repeated context switches and accept `xinit`; the xwave slot-reuse probe
+  also remains green. Task 1 owns bank-1 pages `$D1/$D2`, above bootfs and
+  outside the loader's `$8000-$8A00` backup. Dedicated D71/D64 tasks also
+  prove that `EXIT(37)` becomes a zombie, releases the request record, and
+  cannot resume. D71/D64 probes also prove live-child `WAITPID|NOHANG` returns
+  zero, zombie status 37 is reaped with result one, the complete child slot is
+  cleared, and a repeated wait returns `ECHILD`. The two-task D71/D64 probe
+  additionally proves that blocking `WAITPID` releases the shared request,
+  the child can issue `EXIT(37)`, and the parent resumes with result one and
+  its original sequence `$44`.
+- The first `SPAWN` increment is qualified: the common loader exposes a
+  scheduler-private `$F919` load-only entry, validates a flag-zero bootfs UDEX,
+  and copies its image/BSS into bank-1 APP1 without entering it. The loader is
+  exactly 1,520 bytes in its frozen `$F910-$FEFF` reservation. D71 and D64
+  probes load `/bin/cowsay` byte-exactly and clear a pre-seeded 32-byte BSS;
+  lifecycle allocation and context admission are now layered on this seam.
+- Full `SPAWN` is qualified on D71 and D64. The handler validates the request
+  before loading, initializes task 2's `$D3/$D4` relocated pages and private
+  context, and publishes its `RUNNABLE` slot last. A common `$F280` launcher
+  converts the child's normal return into `EXIT(A)`. A persistent parent runs
+  a compiled cc65 child through two spawn, blocking-wait, status-37 reap
+  cycles with original sequences `$44/$66`, proving the real compiler stack,
+  task-slot, and APP1 reuse.
+- Bounded `SLEEP` is qualified on D71 and D64. The raster IRQ advances an
+  overlay-owned 16-bit clock at 60 logical ticks/s on PAL and NTSC; the
+  resident service pass wakes expired TIMER waiters. Zero and 601 ticks are
+  rejected, while the maximum 600-tick request blocks and resumes with its
+  original sequence after at least 600 logical ticks.
+- Child-only `CANCEL` is qualified on D71 and D64. Zero, self, free,
+  unrelated, already-zombie, and full-width out-of-table targets are rejected
+  without mutating the target. The resident regression covers `$0100`, `$0101`,
+  `$0102`, and `$FFFF`, preventing low-byte aliasing of zero/self/live-child
+  IDs. Cancelling a blocked child clears its private wait snapshot, preserves
+  status 130 in a
+  zombie, and lets the parent reap that status through `WAITPID`.
 
 ## Implementation plan
 
@@ -228,8 +319,7 @@ and bank ownership.
 
 ## First concrete change for the next session
 
-Create `abi/tasks.md` and a host-tested task-state transition module without
-changing boot behavior. Then add the read-only task diagnostic record and show
-the existing init, shell, and managed applications in that table. This creates
-an observable seam for the assembly context-switch spike while keeping the
-current system bootable.
+Define the first scheduler event-wait operation and its wake-source ownership.
+Reuse the private request snapshot used by `WAITPID` and `SLEEP`; keep event
+publication bounded and ensure a cancelled waiter cannot consume a later
+event.

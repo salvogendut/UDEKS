@@ -94,7 +94,9 @@ class VicGraphicsSourceTests(unittest.TestCase):
         )
         config = (ROOT / "cfg/8502-bootstrap.cfg").read_text(encoding="utf-8")
         self.assertIn('bss-name(push, "VICSHADOW")', source)
-        self.assertIn("udeks_vic_bitmap_shadow[8192]", source)
+        self.assertIn(
+            "udeks_vic_bitmap_shadow[UDEKS_VIC_BITMAP_SIZE]", source
+        )
         self.assertIn("dirty_pages[pixel_offset >> 8] = 1", source)
         self.assertIn("udeks_vic_bitmap_commit_page(page)", source)
         self.assertIn("udeks_vic_bitmap_outline_toggle", source)
@@ -113,7 +115,8 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("offset += 8u", fill)
         self.assertNotIn("for (column", fill)
         self.assertIn("VICSHADOW:", config)
-        self.assertIn("start = $AF00", config)
+        shadow = config.split("VICSHADOW:", 1)[1].split(";", 1)[0]
+        self.assertNotIn("start", shadow)
 
     def test_display_module_does_not_drive_window_or_application_policy(self):
         source = (ROOT / "src/services/display/vic_graphics.c").read_text(
@@ -133,13 +136,13 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("_udeks_vic_pointer_set_y", source)
         self.assertIn("_udeks_vic_pointer_select_shape", source)
         self.assertIn("sprite_data_end-sprite_data = 63", source)
-        stage1 = (ROOT / "src/boot/stage1.s").read_text(encoding="utf-8")
         loader = (ROOT / "src/boot/stage1-gateway.s").read_text(
             encoding="utf-8"
         )
-        self.assertIn('.incbin "build/assets/24x21-pipe-sprite.vic"', stage1)
-        self.assertIn("busy_sprite_image_end-busy_sprite_image = 63", stage1)
-        self.assertIn("BUSY_SPRITE_SOURCE      = $1fc0", loader)
+        builder = (ROOT / "tools/build_d71.py").read_text(encoding="utf-8")
+        self.assertIn("BUSY_SPRITE_ADDRESS = 0x0BC0", builder)
+        self.assertIn("BUSY_SPRITE_SIZE = 63", builder)
+        self.assertIn("BUSY_SPRITE_SOURCE      = $0bc0", loader)
         self.assertIn("VIC_BUSY_TEMPLATE       = $4140", loader)
         self.assertIn("sta VIC_BUSY_TEMPLATE,y", loader)
         self.assertIn("sprite_swap_gateway:", source)

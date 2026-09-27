@@ -4,6 +4,7 @@
 ; $D000-$EFFF to its resident bank-1 location at $2000-$3FFF.
 
         .setcpu "6502"
+        .include "capability-delivery.inc"
 
 BOOT_CHAIN              = $f050
 BOOT_CHAIN_STATE        = BOOT_CHAIN + 12
@@ -14,7 +15,7 @@ BOOT_CHAIN_DEST_SUM     = BOOT_CHAIN + 16
 MMU_LCR_KERNEL_IO       = $ff01
 MMU_LCR_KERNEL_FLAT     = $ff02
 MMU_LCR_WORKER_FLAT     = $ff04
-BUSY_SPRITE_SOURCE      = $1fc0
+BUSY_SPRITE_SOURCE      = $0bc0
 VIC_BUSY_TEMPLATE       = $4140
 
         ; This installer remains below $F800 while it replaces the boot-time
@@ -100,21 +101,38 @@ final_copy_request_tail:
         cpy #$09
         bne final_copy_request_tail
 
-        ; The 8 KiB VIC shadow reclaims bank-0 bootstrap staging RAM.  Clear
-        ; it only after every staged image has reached its permanent home so
-        ; the first partial window commit cannot expose boot payload bytes.
-        lda #$af
-        sta final_clear_vic_shadow+2
-        lda #$00
-        ldx #$20
+        ; The stage-0 KERNAL load left the versioned scheduler payload in
+        ; bank 1. The one-shot common-RAM installer validates it, copies the
+        ; page to $1200 and the tail to its linked bank-0 home, and clears its
+        ; BSS. The scheduler entry later replaces this temporary gate.
+        jsr $ff05
+
+        ; The staged probe moves over the dead boot-sector page; the kernel
+        ; runs it from $0B00 during hardware discovery.
+        lda #$ad
+        sta final_copy_probe_source+2
         ldy #$00
-final_clear_vic_shadow:
-        sta $af00,y
+final_copy_probe_byte:
+final_copy_probe_source:
+        lda $ad00,y
+        sta $0b00,y
         iny
-        bne final_clear_vic_shadow
-        inc final_clear_vic_shadow+2
-        dex
-        bne final_clear_vic_shadow
+        bne final_copy_probe_byte
+
+        ; Stage 1's $1C00 page is dead now that this installer runs from the
+        ; protected $F700 page.  Move the staged crt0 over it and enter there:
+        ; crt0 clears BSS and the whole VICSHADOW segment through its
+        ; linker-generated bounds, then jumps to _kernel_main in the resident
+        ; code.  The reclaimed tail above the shadow must survive untouched.
+        lda #$ae
+        sta final_copy_crt0_source+2
+        ldy #$00
+final_copy_crt0_byte:
+final_copy_crt0_source:
+        lda $ae00,y
+        sta $1c00,y
+        iny
+        bne final_copy_crt0_byte
 
         lda #'Z'
         sta BOOT_CHAIN+8
@@ -130,9 +148,36 @@ final_clear_vic_shadow:
         sta BOOT_CHAIN_STATE
         lda #$00
         sta MMU_LCR_KERNEL_IO
-        jmp $2000
+        jmp $1c00
 final_install_end:
-        .assert final_install_end <= $f800, error, "final installer exceeds protected common page"
+        .assert final_install_end <= $f7d8, error, "final installer exceeds protected common page"
+
+        ; Runs after crt0 returns to the fixed $F7D8 entry: copy the gathered
+        ; scheduler into its reserved page and enter the scheduler entry.
+        .segment "SCHEDINSTALL"
+scheduler_install:
+        lda #$12
+        sta scheduler_install_source+2
+        lda #$1c
+        sta scheduler_install_destination+2
+        ldx #$04
+scheduler_install_page:
+        ldy #$00
+scheduler_install_byte:
+scheduler_install_source:
+        lda $1200,y
+scheduler_install_destination:
+        sta $1c00,y
+        iny
+        bne scheduler_install_byte
+        inc scheduler_install_source+2
+        inc scheduler_install_destination+2
+        dex
+        bne scheduler_install_page
+        jmp $1c00
+scheduler_install_end:
+        .assert scheduler_install = $f7d8, error, "scheduler installer moved"
+        .assert scheduler_install_end <= $f800, error, "scheduler installer exceeds protected common page"
 
         .segment "CODE"
 
@@ -304,7 +349,7 @@ bootfs_tail_destination:
         bne relocate_bootfs_tail_page
 
         ; The compact high-memory module occupies the otherwise unused tail
-        ; of bootfs staging. Install its fixed $345-byte reservation before
+        ; of bootfs staging. Install its fixed $344-byte reservation before
         ; the VIC shadow staging range is cleared.
         lda #$00
         sta MMU_LCR_KERNEL_FLAT
@@ -340,16 +385,16 @@ copy_module_tail:
         lda #$00
         sta MMU_LCR_KERNEL_FLAT
 
-        ; Install the bank-1 8502 cooperative-task gate above the MMU register
-        ; hole. Its 203-byte reservation ends immediately before the existing
-        ; CPU-handoff gateway at $FFD0.
+        ; Install the one-shot scheduler-tail loader above the MMU register
+        ; hole. The scheduler entry replaces it with the permanent bank-1
+        ; task gate before entering the kernel.
         ldy #$00
-copy_task_bank_gate:
-        lda $ce00,y
+copy_scheduler_tail_installer:
+        lda $c409,y
         sta $ff05,y
         iny
-        cpy #$cb
-        bne copy_task_bank_gate
+        cpy #$c0
+        bne copy_scheduler_tail_installer
 
         ; Preserve the first installed bootfs-service page in otherwise free
         ; bank-1 RAM. VIC page commits borrow that common page as a transfer
@@ -386,6 +431,22 @@ copy_busy_sprite:
         bne copy_busy_sprite
         lda #$00
         sta MMU_LCR_KERNEL_FLAT
+
+        ; The capability image and this one-shot installer occupy the newly
+        ; reclaimed lower shadow. Copy and checksum the image before the
+        ; protected installer enters crt0 and clears that shadow.
+        jsr CAPABILITY_INSTALLER
+        beq capability_installed
+capability_install_failed:
+        jmp capability_install_failed
+capability_installed:
+
+        ; The boot-only console composer is staged after the capability
+        ; installer. Its one-shot copier occupies the dead boot-sector tail;
+        ; it halts after publishing a boot-chain failure if validation fails.
+        ; The scheduler installer uses $1200-$15FF, below its $1600-$1BA9
+        ; runtime home.
+        jsr $0b50
 
         ; The protected $F700 installer can now replace this executing
         ; $F800-$F9FF boot code without stack-page relocation.
@@ -472,11 +533,26 @@ task_loader_entry:
 task_managed_loader_entry:
         .assert task_managed_loader_entry = $f916, error, "managed loader entry moved"
         jmp task_load_managed
+task_spawn_loader_entry:
+        .assert task_spawn_loader_entry = $f919, error, "spawn loader entry moved"
+        ; The lifecycle handler passes a zero-padded name in common RAM.
+        ; Copy an ordinary UDEX into bank-1 APP1 but do not enter it.
+        pha
+        ldy #$80
+        lda #>TASK_SLOT
+task_load_named_destination:
+        sta task_copy_store_persistent+2
+        lda #<TASK_SLOT
+        sta task_copy_store_persistent+1
+        pla
+        jmp task_load_named
 
 task_load_persistent:
         ; init passes a direct bank-0 pointer to the bootfs program name in AX.
+        pha
         ldy #$01
-        bne task_load_named
+        lda #>PERSISTENT_SLOT
+        bne task_load_named_destination
 task_load_managed:
         ; The resident application manager supplies a direct name pointer.
         ldy #$02
@@ -839,8 +915,9 @@ task_header_load:
         beq :+
         jmp task_bad_cpu
 :
-        lda TASK_HEADER+7
-        cmp task_load_mode
+        lda task_load_mode
+        and #$7f
+        cmp TASK_HEADER+7
         beq :+
         jmp task_bad_flags
 :
@@ -851,6 +928,7 @@ task_header_load:
         lda TASK_HEADER+9
         ldx task_load_mode
         beq task_check_foreground_load
+        bmi task_check_foreground_load
         cpx #$01
         bne task_check_managed_load
         cmp #$90
@@ -943,22 +1021,15 @@ task_check_entry:
 task_valid:
         lda task_load_mode
         beq task_save_foreground
+        bmi task_copy_persistent
         cmp #$02
         beq task_copy_managed
-        lda #<PERSISTENT_SLOT
-        sta task_copy_store_persistent+1
-        lda #>PERSISTENT_SLOT
-        sta task_copy_store_persistent+2
+task_copy_persistent:
         lda TASK_IMAGE_LO
         sta task_remaining_lo
         lda TASK_IMAGE_HI
         sta task_remaining_hi
 task_copy_persistent_byte:
-        lda task_remaining_lo
-        ora task_remaining_hi
-        bne :+
-        jmp task_clear_bss
-:
 task_copy_load_persistent:
         ; Both source and destination are in bank 1 while this map is active.
         lda $ffff
@@ -977,7 +1048,10 @@ task_copy_store_persistent:
         dec task_remaining_hi
 :
         dec task_remaining_lo
-        jmp task_copy_persistent_byte
+        lda task_remaining_lo
+        ora task_remaining_hi
+        bne task_copy_persistent_byte
+        jmp task_clear_bss
 
 task_copy_managed:
         lda #$00
@@ -1058,8 +1132,8 @@ task_copy_decrement_low:
 task_clear_bss:
         lda task_load_mode
         beq task_clear_bss_pointer_ready
-        cmp #$01
-        bne task_clear_bss_pointer_ready
+        cmp #$02
+        beq task_clear_bss_pointer_ready
         lda task_copy_store_persistent+1
         sta task_bss_store+1
         lda task_copy_store_persistent+2
