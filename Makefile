@@ -31,6 +31,9 @@ BUILD_USER := $(BUILD_DIR)/user
 KERNEL_BIN := $(BUILD_8502)/udeks-8502.bin
 CRT0_BIN := $(BUILD_BOOT)/8502-crt0.bin
 PROBE_BIN := $(BUILD_BOOT)/8502-probe.bin
+SCHEDULER_BIN := $(BUILD_8502)/udeks-scheduler.bin
+KERNEL_MAP := $(BUILD_8502)/udeks-8502.map
+PANIC_PROBE_MAP := $(BUILD_8502)/udeks-8502-panic-probe.map
 PANIC_PROBE_CRT0_BIN := $(BUILD_BOOT)/8502-crt0-panic-probe.bin
 PANIC_PROBE_PROBE_BIN := $(BUILD_BOOT)/8502-probe-panic-probe.bin
 KERNEL_DIRECT_BIN := $(BUILD_8502)/udeks-8502-direct.bin
@@ -193,7 +196,7 @@ shadow-probe:
 	}
 	$(PYTHON) tools/shadow_boot_probe.py --vic-compare
 
-8502: $(KERNEL_BIN) $(KERNEL_PRG)
+8502: $(KERNEL_BIN) $(KERNEL_PRG) $(SCHEDULER_BIN)
 
 z80: $(Z80_BIN)
 
@@ -671,6 +674,12 @@ $(BUILD_8502)/vdc.o: src/8502/vdc.s | $(BUILD_8502)
 $(BUILD_8502)/panic.o: src/8502/panic.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/kernel_entry.o: src/8502/kernel_entry.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/boot_delivery.o: src/8502/boot_delivery.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/probe.o: src/8502/probe.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -689,7 +698,9 @@ $(BUILD_8502)/z80_handoff.o: src/8502/z80_handoff.s | $(BUILD_8502)
 $(BUILD_8502)/vic_graphics_transport.o: src/8502/vic_graphics.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) &: $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
+$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) &: \
+		$(BUILD_8502)/kernel_entry.o $(BUILD_8502)/boot_delivery.o \
+		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
 		$(BUILD_8502)/line_editor_read.o \
 		$(BUILD_8502)/z80_handoff.o \
@@ -728,8 +739,14 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) &: $(BUILD_8502)/crt0.o $(BUILD_8502)/vdc
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) -o $(KERNEL_BIN) \
 		$(filter %.o,$^)
 
+$(SCHEDULER_BIN): src/scheduler/scheduler.s cfg/8502-scheduler.cfg \
+		| $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $(BUILD_8502)/scheduler.o $<
+	$(LD65) -C cfg/8502-scheduler.cfg -o $@ $(BUILD_8502)/scheduler.o
+
 $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) &: \
 		$(BOOT_D71) \
+		$(BUILD_8502)/kernel_entry.o $(BUILD_8502)/boot_delivery.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
 		$(BUILD_8502)/line_editor_read.o \
@@ -1147,7 +1164,8 @@ $(STAGE1_BIN): $(BUILD_BOOT)/stage1.o cfg/8502-stage1.cfg
 	$(LD65) -C cfg/8502-stage1.cfg -o $@ $<
 
 $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
-		$(CRT0_BIN) $(PROBE_BIN) $(MODULE_BIN) \
+		$(CRT0_BIN) $(PROBE_BIN) $(SCHEDULER_BIN) $(KERNEL_MAP) \
+		$(MODULE_BIN) \
 		$(Z80_BIN) $(USER_BOOTFS) \
 		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
@@ -1156,6 +1174,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--crt0 $(CRT0_BIN) --probe $(PROBE_BIN) \
+		--scheduler $(SCHEDULER_BIN) --map $(KERNEL_MAP) \
 		--bootfs $(USER_BOOTFS) \
 		--module $(MODULE_BIN) \
 		--ush $(USER_USH_UDEX) \
@@ -1166,7 +1185,8 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--d64-output $(BOOT_D64) $(BOOT_D71)
 
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
-		$(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) $(MODULE_BIN) \
+		$(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) \
+		$(SCHEDULER_BIN) $(PANIC_PROBE_MAP) $(MODULE_BIN) \
 		$(Z80_BIN) $(USER_BOOTFS) \
 		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
@@ -1175,7 +1195,9 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(PANIC_PROBE_KERNEL_BIN) \
 		--crt0 $(PANIC_PROBE_CRT0_BIN) \
-		--probe $(PANIC_PROBE_PROBE_BIN) --z80 $(Z80_BIN) \
+		--probe $(PANIC_PROBE_PROBE_BIN) \
+		--scheduler $(SCHEDULER_BIN) --map $(PANIC_PROBE_MAP) \
+		--z80 $(Z80_BIN) \
 		--bootfs $(USER_BOOTFS) \
 		--module $(MODULE_BIN) \
 		--ush $(USER_USH_UDEX) \
@@ -1208,6 +1230,7 @@ check:
 		tools/build_bootfs.py \
 		tools/build_d71.py \
 		tools/boot_staging_map.py \
+		tools/scheduler_delivery_probe.py \
 		tools/snapshot_extract.py \
 		tools/join_boot_crt0.py \
 		tools/placement_audit.py \
@@ -1225,6 +1248,7 @@ check:
 	cd bench/results/1986-7556c23-2026-09-24-r2/diagnostics && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-memory-map-smoke/raw && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-26-shadow-clear/raw && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-26-scheduler-delivery/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-26-scheduler-delivery && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-26-context-switch-r1 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-26-context-switch-r2 && sha256sum -c SHA256SUMS

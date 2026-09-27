@@ -37,12 +37,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from build_d71 import (
     BOOTFS_TAIL_STAGING_ADDRESS,
+    BOOT_SECTOR_BASE,
+    BOOT_SECTOR_SIZE,
     CRT0_SIZE,
     CRT0_STAGING_ADDRESS,
     PAYLOAD_BLOCKS,
     PROBE_SIZE,
     PROBE_STAGING_ADDRESS,
+    SCATTER_MANIFEST_ADDRESS,
     boot_locations,
+    scheduler_holes,
+    scheduler_layout,
     sector_offset,
 )
 from placement_audit import VIC_SHADOW_SEGMENT, parse_map, vic_bitmap_size
@@ -122,8 +127,53 @@ def payload_disk_offset(address: int, locations: list[tuple[int, int]]) -> int:
     return sector_offset(track, sector) + byte_offset
 
 
+def boot_sector_stage0_end(image: bytes, locations: list[tuple[int, int]]) -> int:
+    track, sector = locations[0]
+    start = sector_offset(track, sector)
+    boot = image[start : start + BOOT_SECTOR_SIZE]
+    last = max((offset for offset, byte in enumerate(boot) if byte), default=0)
+    return BOOT_SECTOR_BASE + last
+
+
+def seed_ranges(
+    shadow_start: int,
+    shadow_end: int,
+    stage0_end: int,
+    scheduler_size: int,
+) -> list[tuple[int, int]]:
+    """Free shadow byte ranges that are not live staging."""
+    occupied: list[tuple[int, int]] = []
+    if scheduler_size:
+        (manifest_start, manifest_end), chunks = scheduler_layout(
+            shadow_start, stage0_end, scheduler_size
+        )
+        occupied = [(manifest_start, manifest_end)]
+        occupied += [(start, start + take - 1) for start, take in chunks]
+    ranges: list[tuple[int, int]] = []
+    for start, end in scheduler_holes(shadow_start, stage0_end):
+        start = max(start, shadow_start)
+        end = min(end, shadow_end)
+        if start > end:
+            continue
+        cursor = start
+        for occupied_start, occupied_end in sorted(occupied):
+            if occupied_end < cursor or occupied_start > end:
+                continue
+            if occupied_start > cursor:
+                ranges.append((cursor, min(occupied_start - 1, end)))
+            cursor = max(cursor, occupied_end + 1)
+        if cursor <= end:
+            ranges.append((cursor, end))
+    return ranges
+
+
 def patch_payload(
-    d71: Path, target: Path, shadow_start: int, tail_end: int
+    d71: Path,
+    target: Path,
+    shadow_start: int,
+    shadow_size: int,
+    tail_end: int,
+    scheduler_size: int,
 ) -> bytes:
     """Seed safe zero bytes and return the staged $shadow_start-$tail_end image."""
     image = bytearray(d71.read_bytes())
@@ -132,14 +182,18 @@ def patch_payload(
         raise ValueError("crt0 staging is not below bootfs staging")
     if PROBE_STAGING_ADDRESS + PROBE_SIZE > CRT0_STAGING_ADDRESS:
         raise ValueError("probe staging is not below crt0 staging")
-    prefix_end = PROBE_STAGING_ADDRESS - 1
-    for offset, address in enumerate(range(shadow_start, prefix_end + 1)):
-        disk_offset = payload_disk_offset(address, locations)
-        if image[disk_offset] != 0:
-            raise ValueError(
-                f"shadow prefix ${address:04X} does not overlay a zero byte"
-            )
-        image[disk_offset] = (offset % 255) + 1
+    shadow_end = shadow_start + shadow_size - 1
+    stage0_end = boot_sector_stage0_end(image, locations)
+    for start, end in seed_ranges(
+        shadow_start, shadow_end, stage0_end, scheduler_size
+    ):
+        for offset, address in enumerate(range(start, end + 1)):
+            disk_offset = payload_disk_offset(address, locations)
+            if image[disk_offset] != 0:
+                raise ValueError(
+                    f"shadow prefix ${address:04X} does not overlay a zero byte"
+                )
+            image[disk_offset] = (offset % 255) + 1
     for address, value in SENTINEL_ADDRESSES:
         disk_offset = payload_disk_offset(address, locations)
         if image[disk_offset] != 0:
@@ -159,6 +213,15 @@ def patch_payload(
         staged = preimage[address - shadow_start : address - shadow_start + size]
         if not any(staged):
             raise ValueError(f"{name} staging is empty in the boot payload")
+    if scheduler_size:
+        manifest = preimage[
+            SCATTER_MANIFEST_ADDRESS - shadow_start :
+            SCATTER_MANIFEST_ADDRESS - shadow_start + 4
+        ]
+        if manifest != b"USCT":
+            raise ValueError(
+                "scatter manifest is missing from the boot payload"
+            )
     return preimage
 
 
@@ -324,7 +387,17 @@ def probe(args: argparse.Namespace) -> None:
 
     args.work.mkdir(parents=True, exist_ok=True)
     probe_disk = args.work / "shadow-probe.d71"
-    preimage = patch_payload(d71, probe_disk, shadow_start, tail_end)
+    scheduler_size = (
+        args.scheduler.stat().st_size if args.scheduler.is_file() else 0
+    )
+    preimage = patch_payload(
+        d71,
+        probe_disk,
+        shadow_start,
+        shadow_size,
+        tail_end,
+        scheduler_size,
+    )
 
     port = choose_port()
     process, master_fd = launch_vice(probe_disk, port, args.flatpak_id)
@@ -479,6 +552,10 @@ def main() -> None:
     )
     parser.add_argument(
         "--map", type=Path, default=ROOT / "build/8502/udeks-8502.map"
+    )
+    parser.add_argument(
+        "--scheduler", type=Path,
+        default=ROOT / "build/8502/udeks-scheduler.bin",
     )
     parser.add_argument("--work", type=Path, default=ROOT / "build/vice")
     parser.add_argument(

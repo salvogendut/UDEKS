@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 from pathlib import Path
 
 
@@ -33,6 +34,13 @@ CRT0_SIZE = 0x0100
 PROBE_STAGING_ADDRESS = 0xAD00
 PROBE_SIZE = 0x0100
 BOOTFS_TAIL_STAGING_ADDRESS = 0xAF00
+SCHEDULER_SIZE = 0x0400
+SCATTER_MANIFEST_MAX = 7 + 4 * 8
+SCATTER_MANIFEST_ADDRESS = PROBE_STAGING_ADDRESS - SCATTER_MANIFEST_MAX
+SCATTER_TEMP_ADDRESS = 0x1200
+BOOT_SECTOR_BASE = 0x0B00
+BOOT_SECTOR_SIZE = 0x0100
+SYSCALL_PAGE = 0xCF00
 MODULE_STAGING_ADDRESS = 0xBFBB
 MODULE_STAGING_SIZE = 0x0345
 USH_ALLOCATION_SIZE = 0x0A00
@@ -191,6 +199,131 @@ def install_probe(kernel: bytearray, probe: bytes) -> None:
     kernel[offset : offset + PROBE_SIZE] = probe.ljust(PROBE_SIZE, b"\x00")
 
 
+BOOTFS_REQUEST_COPIED_SIZE = 0x029B
+
+
+def shadow_start_from_map(map_text: str) -> int:
+    match = re.search(
+        r"^VICSHADOW\s+([0-9A-Fa-f]+)\s+([0-9A-Fa-f]+)",
+        map_text,
+        re.MULTILINE,
+    )
+    if match is None:
+        raise ValueError("VICSHADOW segment is missing from the linker map")
+    return int(match.group(1), 16)
+
+
+def scheduler_holes(
+    shadow_start: int, stage0_end: int
+) -> list[list[int]]:
+    regions = sorted(
+        (
+            (PROBE_STAGING_ADDRESS, PROBE_SIZE),
+            (CRT0_STAGING_ADDRESS, CRT0_SIZE),
+            (BOOTFS_TAIL_STAGING_ADDRESS, BOOTFS_TAIL_SIZE),
+            (MODULE_STAGING_ADDRESS, MODULE_STAGING_SIZE),
+            (TASK_REQUEST_STAGING_ADDRESS, TASK_REQUEST_STAGING_SIZE),
+            (BOOTFS_REQUEST_STAGING_ADDRESS, BOOTFS_REQUEST_COPIED_SIZE),
+            (TASK_LOADER_STAGING_ADDRESS, TASK_LOADER_STAGING_SIZE),
+            (TASK_BANK_GATE_STAGING_ADDRESS, TASK_BANK_GATE_STAGING_SIZE),
+        )
+    )
+    holes: list[list[int]] = []
+    cursor = shadow_start
+    for start, size in regions:
+        if start > cursor:
+            holes.append([cursor, start - 1])
+        cursor = max(cursor, start + size)
+    if cursor <= SYSCALL_PAGE - 1:
+        holes.append([cursor, SYSCALL_PAGE - 1])
+    holes.append([stage0_end + 1, BOOT_SECTOR_BASE + BOOT_SECTOR_SIZE - 1])
+    return sorted(holes)
+
+
+def scheduler_layout(
+    shadow_start: int, stage0_end: int, scheduler_size: int
+) -> tuple[tuple[int, int], list[tuple[int, int]]]:
+    """Manifest and chunk regions for a scheduler image of the given size."""
+    holes = scheduler_holes(shadow_start, stage0_end)
+    manifest_start = SCATTER_MANIFEST_ADDRESS
+    manifest_end = manifest_start + SCATTER_MANIFEST_MAX - 1
+    manifest_hole = None
+    for index, (start, end) in enumerate(holes):
+        if start <= manifest_start and manifest_end <= end:
+            manifest_hole = index
+            break
+    if manifest_hole is None:
+        raise ValueError("scatter manifest is outside the free payload holes")
+    holes[manifest_hole] = [manifest_end + 1, holes[manifest_hole][1]]
+    chunks: list[tuple[int, int]] = []
+    offset = 0
+    for start, end in holes:
+        if offset >= scheduler_size:
+            break
+        take = min(end - start + 1, scheduler_size - offset)
+        if take <= 0:
+            continue
+        chunks.append((start, take))
+        offset += take
+    if offset < scheduler_size:
+        raise ValueError("scheduler does not fit the scatter holes")
+    if len(chunks) > 8:
+        raise ValueError("scatter manifest entry limit exceeded")
+    return (manifest_start, manifest_end), chunks
+
+
+def install_scheduler(
+    kernel: bytearray,
+    boot_sector: bytearray,
+    scheduler: bytes,
+    shadow_start: int,
+) -> None:
+    if len(scheduler) > SCHEDULER_SIZE:
+        raise ValueError(
+            f"scheduler exceeds its {SCHEDULER_SIZE}-byte reservation"
+        )
+    if not scheduler:
+        raise ValueError("scheduler image is empty")
+    stage0_end = (
+        max(
+            (offset for offset, byte in enumerate(boot_sector) if byte),
+            default=0,
+        )
+        + BOOT_SECTOR_BASE
+    )
+    (manifest_start, manifest_end), chunk_regions = scheduler_layout(
+        shadow_start, stage0_end, len(scheduler)
+    )
+    chunks: list[tuple[int, int, int]] = []
+    offset = 0
+    for start, take in chunk_regions:
+        chunks.append((start, take, offset))
+        offset += take
+    checksum = sum(scheduler) & 0xFFFF
+    manifest = bytearray(b"USCT")
+    manifest.append(len(chunks))
+    manifest += checksum.to_bytes(2, "little")
+    for start, take, _ in chunks:
+        manifest += start.to_bytes(2, "little")
+        manifest += take.to_bytes(2, "little")
+    kernel_offset = manifest_start - KERNEL_ADDRESS
+    if any(kernel[kernel_offset : kernel_offset + len(manifest)]):
+        raise ValueError("scatter manifest overlaps resident kernel data")
+    kernel[kernel_offset : kernel_offset + len(manifest)] = manifest
+    for start, take, chunk_offset in chunks:
+        data = scheduler[chunk_offset : chunk_offset + take]
+        if start < BOOT_SECTOR_BASE + BOOT_SECTOR_SIZE:
+            sector_start = start - BOOT_SECTOR_BASE
+            if any(boot_sector[sector_start : sector_start + take]):
+                raise ValueError("scheduler chunk overlaps boot-sector data")
+            boot_sector[sector_start : sector_start + take] = data
+        else:
+            offset = start - KERNEL_ADDRESS
+            if any(kernel[offset : offset + take]):
+                raise ValueError("scheduler chunk overlaps resident kernel data")
+            kernel[offset : offset + take] = data
+
+
 def install_module(kernel: bytearray, module: bytes) -> None:
     if len(module) > MODULE_STAGING_SIZE:
         raise ValueError(
@@ -309,6 +442,7 @@ def build_image(
     task_request_gateway: bytes = b"",
     bootfs_request_service: bytes = b"",
     ush: bytes = b"", crt0: bytes = b"", probe: bytes = b"",
+    scheduler: bytes = b"", shadow_start: int | None = None,
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -336,6 +470,13 @@ def build_image(
     install_bootfs_request_service(staged_kernel, bootfs_request_service)
     install_task_loader(staged_kernel, task_loader)
     install_task_bank_gateway(staged_kernel, task_bank_gateway)
+    stage0_sector = bytearray(stage0.ljust(SECTOR_SIZE, b"\x00"))
+    if scheduler:
+        if shadow_start is None:
+            raise ValueError("scheduler staging requires the shadow start")
+        install_scheduler(
+            staged_kernel, stage0_sector, scheduler, shadow_start
+        )
 
     payload = (
         stage1.ljust(KERNEL_ADDRESS - STAGE1_ADDRESS, b"\x00")
@@ -346,7 +487,7 @@ def build_image(
         raise AssertionError("native boot payload layout drifted")
 
     image = blank_d71()
-    sectors = [stage0.ljust(SECTOR_SIZE, b"\x00")]
+    sectors = [bytes(stage0_sector)]
     sectors.extend(
         payload[offset : offset + SECTOR_SIZE]
         for offset in range(0, len(payload), SECTOR_SIZE)
@@ -367,6 +508,8 @@ def main() -> None:
     parser.add_argument("--kernel", type=Path, required=True)
     parser.add_argument("--crt0", type=Path, required=True)
     parser.add_argument("--probe", type=Path, required=True)
+    parser.add_argument("--scheduler", type=Path, required=True)
+    parser.add_argument("--map", type=Path, required=True)
     parser.add_argument("--z80", type=Path, required=True)
     parser.add_argument("--bootfs", type=Path)
     parser.add_argument("--module", type=Path)
@@ -398,6 +541,8 @@ def main() -> None:
             b"" if args.ush is None else args.ush.read_bytes(),
             args.crt0.read_bytes(),
             args.probe.read_bytes(),
+            args.scheduler.read_bytes(),
+            shadow_start_from_map(args.map.read_text(encoding="utf-8")),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

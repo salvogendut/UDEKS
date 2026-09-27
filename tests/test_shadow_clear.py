@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
 from boot_chain_decode import parse_result as parse_boot_chain
+from build_d71 import SCATTER_MANIFEST_ADDRESS, SCATTER_MANIFEST_MAX
 from capability_decode import parse_result as parse_capability
 from shadow_clear_decode import (
     SHADOW_SIZE,
@@ -20,10 +21,11 @@ from shadow_clear_decode import (
 RAW = ROOT / "bench/results/2026-09-26-shadow-clear/raw"
 
 # Layout of the preserved 2026-09-26 build: the sequential 8,000-byte
-# VICSHADOW segment sits at $AB2D-$CA6C, the reclaimed tail runs to the fixed
-# SYSCALLS page at $CF00, boot staging starts at $AF00, and the live probe and
-# crt0 staging pages sit at $AD00-$ADFF and $AE00-$AEFF.
-SHADOW_START = 0xAB2D
+# VICSHADOW segment sits at $AC1E-$CB5D, the reclaimed tail runs to the fixed
+# SYSCALLS page at $CF00, boot staging starts at $AF00, the live probe and
+# crt0 staging pages sit at $AD00-$ADFF and $AE00-$AEFF, and the scheduler
+# scatter manifest sits at $ACD9.
+SHADOW_START = 0xAC1E
 STAGING_START = 0xAF00
 PROBE_STAGING_ADDRESS = 0xAD00
 PROBE_SIZE = 0x0100
@@ -47,8 +49,13 @@ class ShadowClearEvidenceTests(unittest.TestCase):
     def test_preimage_seeds_the_reclaimed_prefix(self):
         preimage = (RAW / "shadow-preimage.bin").read_bytes()
         prefix = preimage[: PROBE_STAGING_ADDRESS - SHADOW_START]
-        self.assertTrue(prefix)
-        self.assertTrue(all(byte != 0 for byte in prefix))
+        manifest_start = SCATTER_MANIFEST_ADDRESS - SHADOW_START
+        self.assertEqual(preimage[manifest_start : manifest_start + 4], b"USCT")
+        seeded = prefix[:manifest_start] + prefix[
+            manifest_start + SCATTER_MANIFEST_MAX :
+        ]
+        self.assertTrue(seeded)
+        self.assertTrue(all(byte != 0 for byte in seeded))
         for address, size in (
             (PROBE_STAGING_ADDRESS, PROBE_SIZE),
             (CRT0_STAGING_ADDRESS, CRT0_SIZE),

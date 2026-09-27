@@ -23,8 +23,7 @@ class BootCrt0ConfigTests(unittest.TestCase):
         self.assertIn(".import __BSS_RUN__, __BSS_SIZE__", crt0)
         self.assertIn(".import __VICSHADOW_RUN__, __VICSHADOW_SIZE__", crt0)
         self.assertIn("CLEAR_POINTER = $f8", crt0)
-        self.assertIn("jmp _kernel_main", crt0)
-        self.assertNotIn('jsr _kernel_main', crt0)
+        self.assertIn("jmp $f7d8", crt0)
         self.assertNotIn('.segment "ZEROPAGE"', crt0)
 
     def test_stage1_copies_crt0_over_its_own_dead_page(self):

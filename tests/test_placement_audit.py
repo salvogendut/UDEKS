@@ -32,6 +32,8 @@ probe.o:
     PROBECODE         Offs=000200  Size=000040  Align=00001  Fill=0000
 hardware_capability.o:
     CODE              Offs=000240  Size=0003C8  Align=00001  Fill=0000
+boot_delivery.o:
+    BOOTDELIVERY      Offs=000000  Size=0000EB  Align=00001  Fill=0000
 alpha.o:
     CODE              Offs=000608  Size=000100  Align=00001  Fill=0000
     BSS               Offs=000000  Size=000010  Align=00001  Fill=0000
@@ -42,9 +44,11 @@ Name                   Start     End    Size  Align
 ----------------------------------------------------
 PROBECODE             000B00  000BD0  0000D1  00001
 STARTUP               001C00  001CCE  0000CF  00001
-CODE                  002000  00234B  00034C  00001
-BSS                   00234C  00ABFD  0088B2  00001
-VICSHADOW             00ABFE  00CB3D  001F40  00001
+KERNELENTRY           002000  002005  000006  00001
+CODE                  002006  002351  00034C  00001
+BSS                   002352  00AB14  0087C3  00001
+BOOTDELIVERY          00AB15  00ABFF  0000EB  00001
+VICSHADOW             00AC00  00CB3F  001F40  00001
 SYSCALLS              00CF00  00CFF8  0000F9  00001
 TASKGATE              00FF05  00FFC4  0000C0  00001
 
@@ -73,24 +77,28 @@ class PlacementAuditTests(unittest.TestCase):
 
     def test_audit_uses_inclusive_segment_ends(self):
         result = audit(FIXTURE, OBJECT_DUMP)
-        self.assertEqual(result["data_end"], 0xABFD)
-        self.assertEqual(result["kernel_used"], 0xABFD - 0x2000 + 1)
+        self.assertEqual(result["data_end"], 0xABFF)
+        self.assertEqual(result["kernel_used"], 0xABFF - 0x2000 + 1)
         self.assertEqual(result["kernel_gap"], 0)
-        self.assertEqual(result["vic_shadow_start"], 0xABFE)
+        self.assertEqual(result["vic_shadow_start"], 0xAC00)
         self.assertEqual(result["vic_shadow_size"], 0x1F40)
         self.assertEqual(result["vic_shadow_padding"], 0)
         self.assertEqual(
             result["free_after_shadow"],
-            SYSCALL_PAGE - (0xABFE + 0x1F40),
+            SYSCALL_PAGE - (0xAC00 + 0x1F40),
         )
         self.assertNotIn("crt0.o", result["boot_only"])
         self.assertNotIn("probe.o", result["boot_only"])
+        self.assertEqual(result["boot_only"]["boot_delivery.o"], 0xEB)
         self.assertEqual(result["probe_segment"]["start"], 0x0B00)
         self.assertEqual(result["probe_segment"]["end"], 0x0BD0)
+        self.assertEqual(result["kernel_entry"]["start"], 0x2000)
+        self.assertEqual(result["kernel_entry"]["end"], 0x2005)
+        self.assertEqual(result["code_start"], 0x2006)
         self.assertEqual(
             result["reclaim_total"],
-            0x200 + 0x3C8
-            + 0 + 0 + (SYSCALL_PAGE - (0xABFE + 0x1F40)) + 0x400,
+            0x200 + 0x3C8 + 0xEB
+            + 0 + 0 + (SYSCALL_PAGE - (0xAC00 + 0x1F40)) + 0x400,
         )
 
     def test_gateway_sizes_come_from_the_assembled_object(self):
@@ -121,13 +129,13 @@ class PlacementAuditTests(unittest.TestCase):
     def test_fixture_is_missing_a_shadow_segment(self):
         with self.assertRaisesRegex(ValueError, "VICSHADOW"):
             audit(
-                FIXTURE.replace("VICSHADOW             00ABFE  00CB3D  001F40", "")
+                FIXTURE.replace("VICSHADOW             00AC00  00CB3F  001F40", "")
             )
 
     def test_reserved_shadow_padding_fails_verification(self):
         map_text = FIXTURE.replace(
-            "VICSHADOW             00ABFE  00CB3D  001F40  00001",
-            "VICSHADOW             00ABFE  00CBFD  002000  00001",
+            "VICSHADOW             00AC00  00CB3F  001F40  00001",
+            "VICSHADOW             00AC00  00CBFF  002000  00001",
         )
         result = audit(map_text, OBJECT_DUMP)
         self.assertEqual(result["vic_shadow_padding"], 0x2000 - 8000)
@@ -138,8 +146,8 @@ class PlacementAuditTests(unittest.TestCase):
 
     def test_gap_before_shadow_fails_verification(self):
         map_text = FIXTURE.replace(
-            "VICSHADOW             00ABFE  00CB3D  001F40  00001",
-            "VICSHADOW             00ACFE  00CC3D  001F40  00001",
+            "VICSHADOW             00AC00  00CB3F  001F40  00001",
+            "VICSHADOW             00AD00  00CC3F  001F40  00001",
         )
         result = audit(map_text, OBJECT_DUMP)
         self.assertEqual(result["kernel_gap"], 0x100)
@@ -160,7 +168,7 @@ class PlacementAuditTests(unittest.TestCase):
 
     def test_code_not_at_kernel_base_fails_verification(self):
         map_text = FIXTURE.replace(
-            "CODE                  002000  00234B  00034C  00001",
+            "CODE                  002006  002351  00034C  00001",
             "CODE                  002100  00244B  00034C  00001",
         )
         failures = verify(audit(map_text, OBJECT_DUMP))
@@ -168,10 +176,20 @@ class PlacementAuditTests(unittest.TestCase):
             any("CODE starts" in failure for failure in failures)
         )
 
+    def test_kernel_entry_outside_2000_fails_verification(self):
+        map_text = FIXTURE.replace(
+            "KERNELENTRY           002000  002005  000006  00001",
+            "KERNELENTRY           002100  002105  000006  00001",
+        )
+        failures = verify(audit(map_text, OBJECT_DUMP))
+        self.assertTrue(
+            any("kernel entry" in failure for failure in failures)
+        )
+
     def test_crt0_staging_outside_shadow_fails_verification(self):
         map_text = FIXTURE.replace(
-            "VICSHADOW             00ABFE  00CB3D  001F40  00001",
-            "VICSHADOW             00ABFE  00AE3D  000240  00001",
+            "VICSHADOW             00AC00  00CB3F  001F40  00001",
+            "VICSHADOW             00AC00  00AD3F  000140  00001",
         )
         failures = verify(audit(map_text, OBJECT_DUMP))
         self.assertTrue(
@@ -190,8 +208,8 @@ class PlacementAuditTests(unittest.TestCase):
 
     def test_probe_staging_outside_shadow_fails_verification(self):
         map_text = FIXTURE.replace(
-            "VICSHADOW             00ABFE  00CB3D  001F40  00001",
-            "VICSHADOW             00ABFE  00ACFD  000100  00001",
+            "VICSHADOW             00AC00  00CB3F  001F40  00001",
+            "VICSHADOW             00AC00  00ACFF  000100  00001",
         )
         failures = verify(audit(map_text, OBJECT_DUMP))
         self.assertTrue(

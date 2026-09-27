@@ -100,6 +100,15 @@ final_copy_request_tail:
         cpy #$09
         bne final_copy_request_tail
 
+        ; Gather and validate the scattered scheduler image into the temporary
+        ; application slot through the fixed kernel entry vector at $2003.
+        ; This runs before the probe copy replaces the boot-sector chunk.
+        jsr $2003
+        beq scheduler_gathered
+scheduler_gather_failed:
+        jmp scheduler_gather_failed
+scheduler_gathered:
+
         ; The staged probe moves over the dead boot-sector page; the kernel
         ; runs it from $0B00 during hardware discovery.
         lda #$ad
@@ -143,7 +152,34 @@ final_copy_crt0_source:
         sta MMU_LCR_KERNEL_IO
         jmp $1c00
 final_install_end:
-        .assert final_install_end <= $f800, error, "final installer exceeds protected common page"
+        .assert final_install_end <= $f7d8, error, "final installer exceeds protected common page"
+
+        ; Runs after crt0 returns to the fixed $F7D8 entry: copy the gathered
+        ; scheduler into its reserved page and enter the scheduler entry.
+        .segment "SCHEDINSTALL"
+scheduler_install:
+        lda #$12
+        sta scheduler_install_source+2
+        lda #$1c
+        sta scheduler_install_destination+2
+        ldx #$04
+scheduler_install_page:
+        ldy #$00
+scheduler_install_byte:
+scheduler_install_source:
+        lda $1200,y
+scheduler_install_destination:
+        sta $1c00,y
+        iny
+        bne scheduler_install_byte
+        inc scheduler_install_source+2
+        inc scheduler_install_destination+2
+        dex
+        bne scheduler_install_page
+        jmp $1c00
+scheduler_install_end:
+        .assert scheduler_install = $f7d8, error, "scheduler installer moved"
+        .assert scheduler_install_end <= $f800, error, "scheduler installer exceeds protected common page"
 
         .segment "CODE"
 

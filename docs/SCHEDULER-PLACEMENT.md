@@ -35,9 +35,10 @@ From `build/8502/udeks-8502.map` (2026-09-26, ABI 0.3 branch):
 |---|---:|---:|---|
 | `BOOTPROBE` (`PROBECODE`) | `$0B00-$0BFF` | 256 | staged probe, executed from the dead boot-sector page |
 | `BOOTCRT` (`STARTUP`) | `$1C00-$1CFF` | 256 | staged crt0, executed from the dead stage-1 page |
-| resident `CODE`-`BSS` | `$2000-$AB2C` | 35,629 | resident code, rodata, data, BSS |
-| `VICSHADOW` | `$AB2D-$CA6C` | 8,000 | bitmap shadow, linked sequentially at its array size |
-| free gap | `$CA6D-$CEFF` | 1,171 | between the shadow and `SYSCALLS` |
+| `KERNELENTRY` vectors | `$2000-$2005` | 6 | fixed kernel-main and boot-delivery entries |
+| resident `CODE`-`BOOTDELIVERY` | `$2006-$AC1D` | 35,864 | code, rodata, data, BSS, boot-only gather |
+| `VICSHADOW` | `$AC1E-$CB5D` | 8,000 | bitmap shadow, linked sequentially at its array size |
+| free gap | `$CB5E-$CEFF` | 930 | between the shadow and `SYSCALLS` |
 | `SYSCALLS` | `$CF00-$CFF8` | 249 | fixed page |
 | `HIGHBSS` | `$E1B8-$E2E1` | 298 | VIC tables, overflow canary |
 | `MODULECODE`/`RODATA` | `$E300-$E643` | 836 | module-private code and data |
@@ -68,7 +69,8 @@ These objects run once during boot or discovery and are dead afterwards:
 |---|---:|---|
 | `boot_console.o` | 1,450 | bordered boot-console composition |
 | `hardware_capability.o` | 968 | discovery policy service |
-| total | 2,418 | |
+| `boot_delivery.o` | 235 | resident scatter gather for the scheduler delivery |
+| total | 2,653 | |
 
 `crt0.o` and `probe.o` are no longer resident. `crt0` is linked into the
 `$1C00-$1CFF` `BOOTCRT` page, staged at `$AE00-$AEFF`, and copied over the
@@ -81,10 +83,12 @@ Structural slack:
 
 | Item | Bytes | Condition |
 |---|---|---|
-| shadow tail gap `$CA6D-$CEFF` | 1,171 | post-bootstrap reclaim; during boot it still carries task-loader staging (`$C800-$CDEF`) and task-gate staging (`$CE00-$CECA`), so a scheduler segment placed here must be installed or overlaid after those payloads are relocated |
-| `$1C00-$1FFF` bootstrap staging | 1,024 | requires stage-1 to keep or install a scheduler segment there; `$1C00-$1CFF` currently holds the executed crt0 copy |
+| shadow tail gap `$CB5E-$CEFF` | 930 | post-bootstrap reclaim; during boot it still carries task-loader staging (`$C800-$CDEF`) and task-gate staging (`$CE00-$CECA`), so a scheduler segment placed here must be installed or overlaid after those payloads are relocated |
+| `$1C00-$1FFF` bootstrap staging | 1,024 | **consumed by the scheduler delivery**: stage 1 gathers the linked scheduler image and the `$F7D8` copier installs it there after crt0 |
 
-Total bank-0 reclaim: 2,418 + 1,171 + 1,024 = **4,613 bytes**.
+Total bank-0 reclaim: 2,653 + 930 + 1,024 = **4,607 bytes**. Of that,
+1,024 is now occupied by the scheduler segment itself, leaving 3,583 bytes for
+the remaining boot-only objects and scheduler growth.
 
 ## Proposed bank-0 scheduler region
 
@@ -95,11 +99,12 @@ Total bank-0 reclaim: 2,418 + 1,171 + 1,024 = **4,613 bytes**.
 | handlers, run queue, task table | 1,200 |
 | total | 5,210 |
 
-The reclaim budget covers 4,613 bytes, leaving at least 597 bytes to be found
-either by trimming the handler budget or by the later shell-extraction
-milestone. The VIC shadow placement is settled, so the reclaimed KERNEL bytes
-form one contiguous `$CA6D-$CEFF` window; the separate `$1C00-$1FFF` segment
-remains a second linker area. The tail is not ordinary free RAM at reset: boot
+The reclaim budget covers 4,607 bytes, of which the scheduler delivery now
+occupies the `$1C00-$1FFF` reservation, leaving 3,583 bytes to be found either
+by trimming the handler budget or by the later shell-extraction milestone. The
+VIC shadow placement is settled, so the reclaimed KERNEL bytes form one
+contiguous `$CB5E-$CEFF` window; the scheduler segment is installed in the
+separate `$1C00-$1FFF` area. The tail is not ordinary free RAM at reset: boot
 staging occupies it until stage 1 relocates the task loader and bank-1 task
 gate, so the scheduler segment must be installed after those payloads move or
 overlaid on the dead staging bytes.
@@ -166,12 +171,11 @@ Each step is a separate change with a `1986` and VICE smoke pass:
    proceed to step 5 and revisit. Verify the `HCAP` record and the boot
    console are byte-identical once relocated.
 5. Reserve `$1C00-$1FFF` and install a scheduler segment through stage 1;
-   verify the D71 and D64 boot paths. The first delivery increment stops at
-   the measured shortfall: the `$F700` installer has 50 bytes free and the
-   gather plus install routines measure 132 bytes, 82 over the `$F800`
-   boundary. See `docs/BOOT-STAGING-MAP.md` and
-   `bench/artifacts/2026-09-26-scheduler-delivery`; do not spill into `$F800`
-   or another live region.
+   verify the D71 and D64 boot paths. The first increment is implemented with
+   the resident boot-only `BOOTDELIVERY` gather (fixed `$2003` kernel entry
+   vector, no BSS) and the 35-byte `$F7D8` copier in FINAL; both cold boots
+   install a page byte-identical to the linked scheduler image
+   (`bench/results/2026-09-26-scheduler-delivery`).
 6. Replace the implementation behind the frozen `$FF10` reset, `$FF13` poll,
    and `$FF16` request trampolines, reuse the `$FF05-$FFC4` reservation for
    the switch tail, and retire the old special-case polling; verify task

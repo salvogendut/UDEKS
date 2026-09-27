@@ -1,8 +1,8 @@
 # VIC shadow clear and reclaimed-tail qualification
 
 The native D71 cold boot was probed in VICE 3.10 (Flatpak `net.sf.VICE`) on
-2026-09-26 with the sequential 8,000-byte `VICSHADOW` segment at `$AB2D-$CA6C`
-and the reclaimed tail at `$CA6D-$CEFF`. Two boot-only objects are no longer
+2026-09-26 with the sequential 8,000-byte `VICSHADOW` segment at `$AC1E-$CB5D`
+and the reclaimed tail at `$CB5E-$CEFF`. Two boot-only objects are no longer
 resident:
 
 - `crt0` is linked into the `$1C00-$1CFF` `BOOTCRT` page from the same linker
@@ -17,10 +17,12 @@ resident:
 `tools/shadow_boot_probe.py --vic-compare` copies the D71 and seeds the safe
 zero regions of the staged `$AB2D-$CEFF` image before boot:
 
-- the newly reclaimed shadow prefix below the live probe staging
-  (`$AB2D-$ACFF`) gets a nonzero pattern so a clear that starts late cannot
-  pass;
+- the newly reclaimed shadow ranges below the live probe staging and
+  around the scatter manifest get a nonzero pattern so a clear that starts
+  late cannot pass;
 - the free tail bytes `$CECB-$CEFF` get the `$5A`/`$A5` sentinels;
+- the scheduler scatter manifest at `$ACD9-$ACFF` and its chunks are live
+  staging and are not seeded;
 - the `$AD00-$ADFF` probe staging, the `$AE00-$AEFF` crt0 staging, and the
   task-loader (`$C800-$CDEF`) and bank-1 task-gate (`$CE00-$CECA`) staging
   bytes are left untouched because stage 1 still reads them.
@@ -31,7 +33,7 @@ root-terminal readiness bytes and then:
 
 - saves `$AB2D-$CEFF` with the kernel MMU profile and requires all 8,000
   shadow bytes to be zero, including both staging sources;
-- compares all 1,171 tail bytes against the preserved preimage and requires
+- compares all 930 tail bytes against the preserved preimage and requires
   an exact match, so a clear that overruns the shadow cannot pass;
 - injects `xinit` and `xclock`, saves the drawn shadow with the kernel
   profile, switches to the worker profile to save the bank-1 `$6000-$7F3F`
@@ -52,7 +54,7 @@ root-terminal readiness bytes and then:
 | `raw/D71.sha256` | 76 | hash of the built D71 the probe consumed |
 
 The probed D71 is
-`587d708086b67bcb9cd6548f3c0b46eaf31a881b5ab3adb7be23e381c70f749f udeks.d71`
+`ad0974ba5a514ef1e45e5e026d745ecbf695cd3d710fbc55ec765be6e04c8564 udeks.d71`
 (`raw/D71.sha256`); the disk image itself is a build artifact and is not
 committed.
 
@@ -89,7 +91,9 @@ python3 tools/capability_decode.py /tmp/udeks-hcap.bin
 
 ## 1986 qualification
 
-The same D71 was run in the `1986` C128DCR emulator at revision
+The `1986` captures were taken from the 587d7080 D71 build; the HCAP
+record and boot chain are layout-independent and still match the committed
+VICE record. The D71 was run in the `1986` C128DCR emulator at revision
 `f9c6a24590c697c2978a0988616d8e683f6d2d69` for 3,000 frames and a VSF
 snapshot was extracted. The `HCAP` record is byte-identical to the VICE
 record, and the boot chain reports `stage 0 -> stage 1 -> 8502 kernel

@@ -8,7 +8,6 @@
         .include "mmu.inc"
 
         .export _start
-        .import _kernel_main
         .import __BSS_RUN__, __BSS_SIZE__
         .import __VICSHADOW_RUN__, __VICSHADOW_SIZE__
         .importzp sp
@@ -144,6 +143,7 @@ shadow_tail_loop:
         bne shadow_tail_loop
 
 shadow_done:
-        ; Enter the resident core without a return address: the $1C00 page is
-        ; reclaimable and must not hold a live frame.
-        jmp _kernel_main
+        ; Return to the protected scheduler copier at $F7D8.  It installs the
+        ; gathered scheduler image over this dead page and enters the
+        ; scheduler entry, which continues through the kernel entry vector.
+        jmp $f7d8

@@ -23,6 +23,8 @@ from build_d71 import (
     CRT0_STAGING_ADDRESS,
     PROBE_SIZE,
     PROBE_STAGING_ADDRESS,
+    SCATTER_MANIFEST_ADDRESS,
+    SCATTER_MANIFEST_MAX,
 )
 
 
@@ -36,6 +38,8 @@ BOOTCRT_BASE = 0x1C00
 BOOTCRT_SIZE = 0x0100
 BOOTPROBE_BASE = 0x0B00
 BOOTPROBE_SIZE = 0x0100
+KERNELENTRY_BASE = 0x2000
+KERNELENTRY_SIZE = 0x0006
 BOOTSTRAP_BASE = 0x1C00
 BOOTSTRAP_SIZE = 0x0400
 
@@ -64,16 +68,18 @@ GATEWAY_SIZE_SUFFIXES = ("vic", "sprite", "page", "outline")
 BOOT_ONLY_OBJECTS = (
     "boot_console.o",
     "hardware_capability.o",
+    "boot_delivery.o",
 )
 
 CODE_SEGMENTS = (
     "STARTUP", "PROBECODE", "LOWCODE", "ONCE", "CODE", "RODATA", "DATA",
-    "MODULECODE", "MODULERODATA", "BOOTFSCODE", "SYSCALLS",
+    "BOOTDELIVERY", "MODULECODE", "MODULERODATA", "BOOTFSCODE", "SYSCALLS",
     "TASKREQUEST", "TASKGATE",
 )
 
 DATA_SEGMENTS = (
     "STARTUP", "LOWCODE", "ONCE", "CODE", "RODATA", "DATA", "BSS",
+    "BOOTDELIVERY",
 )
 
 
@@ -261,6 +267,14 @@ def audit(
             if "PROBECODE" in by_name
             else None
         ),
+        "kernel_entry": (
+            {
+                "start": by_name["KERNELENTRY"][0],
+                "end": by_name["KERNELENTRY"][1],
+            }
+            if "KERNELENTRY" in by_name
+            else None
+        ),
         "code_start": by_name["CODE"][0] if "CODE" in by_name else None,
         "gateway_sizes": sizes,
         "gateway_total": gateway_total,
@@ -344,11 +358,21 @@ def verify(result: dict[str, object]) -> list[str]:
         failures.append(
             "STARTUP is not confined to the $1C00-$1CFF boot crt0 page"
         )
-    if result["code_start"] != KERNEL_BASE:
+    entry = result["kernel_entry"]
+    if entry is None or (
+        entry["start"] != KERNELENTRY_BASE
+        or entry["end"] != KERNELENTRY_BASE + KERNELENTRY_SIZE - 1
+    ):
+        failures.append(
+            f"kernel entry vectors are not at "
+            f"${KERNELENTRY_BASE:04X}-"
+            f"${KERNELENTRY_BASE + KERNELENTRY_SIZE - 1:04X}"
+        )
+    if result["code_start"] != KERNELENTRY_BASE + KERNELENTRY_SIZE:
         code_start = result["code_start"] or 0
         failures.append(
             f"resident CODE starts at ${code_start:04X}; "
-            f"expected ${KERNEL_BASE:04X}"
+            f"expected ${KERNELENTRY_BASE + KERNELENTRY_SIZE:04X}"
         )
     staging = result["crt0_staging"]
     if not (
@@ -377,6 +401,14 @@ def verify(result: dict[str, object]) -> list[str]:
         failures.append(
             "probe staging is outside the VIC shadow prefix or overlaps "
             "crt0 staging"
+        )
+    if not (
+        result["vic_shadow_start"] <= SCATTER_MANIFEST_ADDRESS
+        and SCATTER_MANIFEST_ADDRESS + SCATTER_MANIFEST_MAX
+        <= PROBE_STAGING_ADDRESS
+    ):
+        failures.append(
+            "scatter manifest is outside the first free payload hole"
         )
     if result["uncontested_boot_page_bytes"] != 0:
         failures.append(
