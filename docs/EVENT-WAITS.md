@@ -5,8 +5,9 @@ merged as `00060f4` on 2026-09-27. Tracking issue:
 [#4](https://github.com/salvogendut/UDEKS/issues/4). The pure policy below is
 implemented as a compile-only reference. Bounded assembly installs `POLL` and
 native ush now blocks while idle. [Task Request ABI 0.4](../abi/task-request.md)
-is the published contract. Independent 1986/physical-C128 and manual input
-qualification remain open; this does not complete Tasking 0.1.
+is the published contract. Independent 1986 machine-input qualification passes
+on D71/D64; manual SDL/host input, performance and physical-C128 qualification
+remain open. This does not complete Tasking 0.1.
 
 ## Resident increment (2026-09-27)
 
@@ -41,6 +42,14 @@ native ush, and checks graphics/utility command processing.
 The final suite passes 626 host tests and placement-check; the clean parallel
 build is deterministic. Exact probe disks, linker maps and raw records are in
 [the event-wait qualification report](../bench/results/2026-09-27-event-waits/README.md).
+
+The independent [1986 input smoke](../bench/results/2026-09-27-event-waits-1986/README.md)
+passes native keyboard/backspace/history, mouse outline dragging, foreground
+Ctrl+C and background-clock survival on both disk formats without injecting
+submitted lines. It found and fixed an inherited `$D02F` selector that made
+extended cursor keys look like joystick activity. Resident placement is unchanged.
+Initial xwave painting still delays a release scan (689 frames); this functional
+pass must not be presented as a responsiveness or manual-host-input qualification.
 
 ## First increment: pure policy (2026-09-27)
 
@@ -115,8 +124,8 @@ The initial operation handles one descriptor, not an array:
   unsupported masks, and unsupported timeout values return `EINVAL`. Apply
   the existing current/RUNNING-caller validation before changing state.
 
-These byte choices remain a proposal until policy tests, wrapper design, and
-the placement audit agree. Multi-descriptor polling, other readiness bits,
+These byte choices are published in ABI 0.4 after policy, wrapper, resident and
+placement qualification. Multi-descriptor polling, other readiness bits,
 and files/device-handle semantics are separate extensions.
 
 ## Ownership and wake rules

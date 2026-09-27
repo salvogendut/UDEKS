@@ -88,7 +88,8 @@ See [LICENSE](LICENSE).
   Task Request ABI 0.4 adds non-consuming stdin `POLL`: idle `ush` sleeps
   until a submitted line is readable. A compiled-C probe qualifies finite and
   infinite waits, wake/response ownership and stack preservation on both disk
-  formats in VICE; independent emulator/hardware gates remain open.
+  formats in VICE. Independent 1986 machine-input typing/history, dragging and
+  foreground Ctrl+C also pass; manual input/performance and hardware gates remain open.
 
 ## Hardware model
 

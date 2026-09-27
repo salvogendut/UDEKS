@@ -338,8 +338,15 @@ checks stable idle suspensions and xinit/xclock/xwave plus console utilities.
 Native ownership suppresses the resident compatibility shell's competing
 input read, while preserving deferred EXEC and foreground job handling.
 
-Next complete independent 1986/physical-C128 and manual typing/history,
-pointer/dragging and foreground Ctrl+C gates for issue #4. Then generalize
+Independent 1986 machine-input smoke now passes on D71/D64: exact submitted
+text, backspace/history, 1351 outline dragging, foreground Ctrl+C, background
+clock survival and subsequent console input. The tracked emulator sources are
+unchanged. The smoke exposed an inherited `$D02F` selector/arbitration bug;
+the scanner now leaves extended columns idle with the resident layout unchanged.
+See [the input report](bench/results/2026-09-27-event-waits-1986/README.md).
+Initial xwave painting delayed a release scan by 689 frames, so no responsiveness
+qualification is claimed. Complete physical-C128 and manual SDL/host input and
+performance gates for issue #4. Then generalize
 task allocation and migrate shell jobs/graphical applications to ordinary
 lifecycle tasks. Do not claim Tasking 0.1 complete or discharge the older
 ADR 0010/0012 and integrated-context hardware gates from these VICE results.

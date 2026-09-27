@@ -1,0 +1,10 @@
+command: echo smoke -> accepted
+history: count=1 recalls=0 -> 1 scan=83
+command: xinit -> accepted
+command: xclock & -> accepted
+drag: starts=1 moves=3 finishes=1
+command: echo pointer released -> accepted
+command: xwave -> accepted
+command: echo console alive -> accepted
+sampling: maximum press=3 release=689 frames (functional, not a latency benchmark)
+PASS: native boot, stable idle, typing/backspace/history, 1351 drag, foreground Ctrl+C, background clock and console recovery (6239 frames)

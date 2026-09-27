@@ -172,7 +172,8 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   timeout policy without linking or advertising the ABI extension.
 - [x] Implement resident ABI 0.4 `POLL` and migrate idle shell input waiting.
   The compiled-C probe and graphics/utility smoke pass on D71/D64 in VICE;
-  independent 1986/physical-C128 and manual input/foreground gates remain
+  independent 1986 machine-input typing/history, dragging and foreground Ctrl+C
+  pass on both formats; physical-C128, manual host input and performance gates remain
   in [EVENT-WAITS.md](EVENT-WAITS.md) and issue #4.
 - [x] Save and restore the selected compiler runtime and CPU context behind
   the production scheduler gate. Physical-hardware qualification of the

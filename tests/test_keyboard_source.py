@@ -31,6 +31,12 @@ class KeyboardSourceTests(unittest.TestCase):
         self.assertIn("_udeks_keyboard_service_descriptor", table)
         self.assertIn("udeks_service_poll_all()", kernel)
 
+    def test_scanner_leaves_extended_columns_idle_for_control_port_arbitration(self):
+        source = (ROOT / "src/8502/keyboard_scan.s").read_text(encoding="utf-8")
+        tail = source.split("; Deselect all columns", 1)[1]
+        self.assertNotIn("lda saved_vic_select", tail)
+        self.assertIn("lda #$ff\n        sta VIC_KEYBOARD_SELECT\n        nop", tail)
+
     def test_driver_queues_press_and_release_events(self):
         source = (ROOT / "src/services/input/keyboard.c").read_text(
             encoding="utf-8"

@@ -72,3 +72,9 @@ python3 tools/shadow_boot_probe.py --vic-compare
 Independent 1986, physical C128, manual typing/history, pointer/dragging and
 foreground Ctrl+C checks remain open. No Tasking 0.1 acceptance or discharge
 of older hardware gates is implied. Every probe terminates its own VICE process.
+
+Follow-up: [the subsequent 1986 native-input smoke](../2026-09-27-event-waits-1986/README.md)
+passes on both formats after a layout-preserving keyboard-selector fix. Its
+new production disks are separately preserved; the artifacts and hashes in
+this original compiled-POLL report have not been replaced. Physical/manual
+input and responsiveness gates remain open.

@@ -2103,6 +2103,7 @@ check:
 		tools/capability_relocation_probe.py \
 		tools/scheduler_delivery_probe.py \
 		tools/snapshot_extract.py \
+		tools/1986_input_smoke_build.py \
 		tools/join_boot_crt0.py \
 		tools/placement_audit.py \
 		tools/gen_capability_imports.py \

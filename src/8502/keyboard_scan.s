@@ -119,7 +119,13 @@ store_display:
         sta CIA1_DDRA
         lda saved_ddrb
         sta CIA1_DDRB
-        lda saved_vic_select
+        ; The ROM can leave C128-only columns selected. Restoring that latch
+        ; makes a held extended cursor key look like a grounded control-port
+        ; switch, so arbitration suppresses the very scan that could read it.
+        ; This driver owns $D02F: leave all columns idle outside atomic scans.
+        ; Keep the six-byte footprint (and scratch reservation) unchanged.
+        lda #$ff
         sta VIC_KEYBOARD_SELECT
+        nop
         plp
         rts
