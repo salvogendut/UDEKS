@@ -65,7 +65,9 @@ the task model, validate it, and only then remove the replaced special case.
   and diagnostic/validation seam. The installed scheduler now resets the
   resident task table, registers persistent `/bin/ush` as running task 1, and
   publishes the resulting `UTSK` record before entering the retained poll
-  path.
+  path. A bounded C round-robin selector is linked into the scheduler page and
+  host-tested across empty, sparse, wrapped, and yielded run queues; it is not
+  called until the context-save/resume tail lands.
 - Step 2 is qualified in `1986`, VICE, and physical C128 hardware; ADR 0008
   freezes relocated page-zero/page-one ownership and the bounded copy
   fallback.

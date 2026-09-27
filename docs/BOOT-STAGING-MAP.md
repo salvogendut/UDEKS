@@ -144,7 +144,7 @@ write past `$15FF`.
 
 The old `USCT` scatter builder and frozen `$2003` entry remain available for
 compatibility and historical tests, but production boot no longer consumes
-the fragmented holes. The active page is 955 bytes padded to 1 KiB, and the
+the fragmented holes. The active page is 1,018 bytes padded to 1 KiB, and the
 tail is 3,164 emitted bytes plus 71 bytes of BSS. D71/D64 cold boots install
 both byte-exactly without touching the `$FFC5` IRQ trampoline. After the
 installer clears BSS, the lifecycle bootstrap leaves the exact expected task-1

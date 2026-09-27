@@ -177,7 +177,8 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
 	boot panic-probe framebuffer-assets user-sources user-programs \
-	task-state task-policy scheduler-overlay placement-check placement-check-guard \
+	task-state task-policy task-scheduler scheduler-overlay placement-check \
+	placement-check-guard \
 	shadow-probe capability-probe boot-console-probe check doctor clean help
 
 all: 8502 z80 z80-asm
@@ -200,8 +201,9 @@ user-programs: $(USER_BOOTFS)
 task-state: $(BUILD_8502)/task_state.o
 task-policy: $(BUILD_8502)/task_policy.o
 
-# Link-only proof for lifecycle/policy placement and resident-runtime binding.
-# The production boot image continues to carry the qualified scheduler stub.
+task-scheduler: $(BUILD_8502)/task_scheduler.o
+
+# Build the active lifecycle/policy overlay and its resident-runtime binding.
 scheduler-overlay: $(SCHEDULER_OVERLAY_PAGE_BIN) \
 		$(SCHEDULER_OVERLAY_TAIL_BIN) $(SCHEDULER_OVERLAY_MAP) \
 		$(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS)
@@ -486,6 +488,10 @@ $(BUILD_8502)/task_policy.s: src/kernel/task_policy.c \
 		include/udeks/task_state.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/task_scheduler.s: src/kernel/task_scheduler.c \
+		include/udeks/task_scheduler.h include/udeks/task_state.h | $(BUILD_8502)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/hardware_capability.s: src/services/capability/hardware.c \
 		include/udeks/capability.h include/udeks/vdc.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
@@ -659,6 +665,9 @@ $(BUILD_8502)/task_state.o: $(BUILD_8502)/task_state.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/task_policy.o: $(BUILD_8502)/task_policy.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/task_scheduler.o: $(BUILD_8502)/task_scheduler.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/hardware_capability.o: $(BUILD_8502)/hardware_capability.s | $(BUILD_8502)
@@ -914,11 +923,13 @@ $(SCHEDULER_RUNTIME_AND_OBJ) $(SCHEDULER_RUNTIME_ASLAX2_OBJ) &: \
 		and.o aslax2.o
 
 $(SCHEDULER_OVERLAY_BRIDGE_ASM): $(BUILD_8502)/task_state.o \
-		$(BUILD_8502)/task_policy.o $(SCHEDULER_RUNTIME_AND_OBJ) \
+		$(BUILD_8502)/task_policy.o $(BUILD_8502)/task_scheduler.o \
+		$(SCHEDULER_RUNTIME_AND_OBJ) \
 		$(SCHEDULER_RUNTIME_ASLAX2_OBJ) $(KERNEL_MAP) $(PANIC_PROBE_MAP) \
 		tools/gen_scheduler_overlay_imports.py
 	$(PYTHON) tools/gen_scheduler_overlay_imports.py bridge \
 		$(BUILD_8502)/task_state.o $(BUILD_8502)/task_policy.o \
+		$(BUILD_8502)/task_scheduler.o \
 		$(SCHEDULER_RUNTIME_AND_OBJ) $(SCHEDULER_RUNTIME_ASLAX2_OBJ) \
 		--maps $(KERNEL_MAP) $(PANIC_PROBE_MAP) $@
 
@@ -928,12 +939,14 @@ $(SCHEDULER_OVERLAY_BRIDGE_OBJ): $(SCHEDULER_OVERLAY_BRIDGE_ASM)
 $(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 		$(SCHEDULER_OVERLAY_MAP) &: $(BUILD_8502)/scheduler.o \
 		$(BUILD_8502)/task_state.o $(BUILD_8502)/task_policy.o \
+		$(BUILD_8502)/task_scheduler.o \
 		$(SCHEDULER_RUNTIME_AND_OBJ) $(SCHEDULER_RUNTIME_ASLAX2_OBJ) \
 		$(SCHEDULER_OVERLAY_BRIDGE_OBJ) cfg/8502-scheduler-overlay.cfg
 	$(LD65) -C cfg/8502-scheduler-overlay.cfg \
 		-m $(SCHEDULER_OVERLAY_MAP) -o $(SCHEDULER_OVERLAY_PAGE_BIN) \
 		$(BUILD_8502)/scheduler.o $(BUILD_8502)/task_state.o \
-		$(BUILD_8502)/task_policy.o $(SCHEDULER_RUNTIME_AND_OBJ) \
+		$(BUILD_8502)/task_policy.o $(BUILD_8502)/task_scheduler.o \
+		$(SCHEDULER_RUNTIME_AND_OBJ) \
 		$(SCHEDULER_RUNTIME_ASLAX2_OBJ) $(SCHEDULER_OVERLAY_BRIDGE_OBJ)
 
 $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS) &: \

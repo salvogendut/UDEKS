@@ -132,6 +132,9 @@ the [Tasking 0.1 handover](../HANDOVER.md).
 - [x] Register persistent `/bin/ush` as running lifecycle task 1 at startup,
   publish its `UTSK` state, and retain the proven `$FF13` poll path while the
   cooperative resume mechanism is introduced.
+- [x] Add the bounded round-robin runnable-task selector and host-test empty,
+  sparse, wrapped, and post-yield selection without exposing a premature
+  synchronous `YIELD` syscall.
 - [ ] Implement task creation, exit, yield, sleep, and event wait.
 - [ ] Save and restore the selected compiler runtime and CPU context. A
   compiled C task using the real cc65 software stack is the integration test

@@ -108,7 +108,8 @@ Total bank-0 reclaim: 3,552 + 1,024 = **4,576 bytes**. Of that, 1,024 is now
 occupied by the scheduler segment itself, leaving the complete 3,552-byte
 tail for scheduler policy, lifecycle state, and handlers.
 
-The first lifecycle integration increment is a link-only overlay proof. The
+The lifecycle overlay began as a link-only placement proof and is now active
+in the production boot. The
 607-byte `udeks_lifecycle_apply()` transition engine is assigned to the
 `$1C00-$1FFF` scheduler page beside the delivery stub; the remainder of
 `task_state.o`, all of `task_policy.o`, their constants, and their 71-byte BSS
@@ -117,13 +118,11 @@ their external cc65 runtime imports and requires normal/panic map address and
 type parity. The only helpers absent from the resident kernel, `shlax2` and
 `tosanda0`, come from exactly two extracted `none.lib` modules inside the
 overlay rather than growing the resident runtime. `make scheduler-overlay`
-builds this proof without installing it,
-so the qualified boot image continues to use the scheduler identity stub until
-the tail delivery and request handlers are ready together.
+builds the exact page and tail subsequently packaged into `SCHEDOVR`.
 
-The active link occupies 955 bytes at `$1C00-$1FBA` (zero-padded to a 1 KiB
+The active link occupies 1,018 bytes at `$1C00-$1FF9` (zero-padded to a 1 KiB
 delivery page) and 3,235 runtime bytes at `$C120-$CDC2` (3,164 emitted plus 71
-BSS), leaving 69 bytes in the page and 317 bytes in the tail. The bridge
+BSS), leaving 6 bytes in the page and 317 bytes in the tail. The bridge
 contract is 26 resident providers: 23
 absolute and three zero-page symbols. Any provider-count, address-class,
 normal/panic parity, or placement drift fails the build.
@@ -141,6 +140,12 @@ The scheduler bootstrap gate at `$1C1E` now creates and dispatches persistent
 probe verifies the exact post-bootstrap 71-byte BSS image: task 1 is running,
 the other seven slots remain clear, and only the expected lifecycle counters
 are set.
+
+The page also contains a 63-byte C round-robin selector. It scans the bounded
+eight-slot lifecycle table exactly once, considers only `RUNNABLE` entries,
+and wraps after the caller's task id. It deliberately remains disconnected
+from `$FF16` until the common-RAM context-save/resume path can honor the ABI
+rule that `YIELD` returns only after the caller is selected again.
 
 ## Proposed bank-0 scheduler region
 
