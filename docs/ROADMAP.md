@@ -135,10 +135,15 @@ the [Tasking 0.1 handover](../HANDOVER.md).
 - [x] Add the bounded round-robin runnable-task selector and host-test empty,
   sparse, wrapped, and post-yield selection without exposing a premature
   synchronous `YIELD` syscall.
+- [x] Qualify relocated page-zero/page-one switching with two compiled cc65
+  tasks retaining live C frames, private software stacks, and stack canaries
+  for 64 switches in `1986` and VICE at 1/2 MHz. Physical hardware and
+  production `$FF16` integration remain pending.
 - [ ] Implement task creation, exit, yield, sleep, and event wait.
 - [ ] Save and restore the selected compiler runtime and CPU context. A
-  compiled C task using the real cc65 software stack is the integration test
-  once the scheduler lands.
+  compiled C task using the real cc65 software stack now passes as a
+  standalone integration spike; this item closes when the same mechanism is
+  active behind the production scheduler gate.
 - [ ] Add cooperative scheduling, then timer-driven preemption.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the

@@ -17,6 +17,7 @@ BUILD_IRQ_SERVICE_Z80 := $(BUILD_DIR)/bench/irq-service/z80
 BUILD_CONTEXT_8502 := $(BUILD_DIR)/bench/context/8502
 BUILD_CONTEXT_Z80 := $(BUILD_DIR)/bench/context/z80
 BUILD_CONTEXT_SWITCH := $(BUILD_DIR)/bench/context-switch
+BUILD_CONTEXT_SWITCH_C := $(BUILD_DIR)/bench/context-switch-c
 BUILD_KERNEL_8502 := $(BUILD_DIR)/bench/kernel/8502
 BUILD_KERNEL_Z80 := $(BUILD_DIR)/bench/kernel/z80
 BUILD_HANDOFF_8502 := $(BUILD_DIR)/bench/handoff/8502
@@ -101,6 +102,9 @@ CONTEXT_Z80_PRG := $(BUILD_CONTEXT_Z80)/context-z80.prg
 CONTEXT_SWITCH_GATEWAY_BIN := $(BUILD_CONTEXT_SWITCH)/gateway.bin
 CONTEXT_SWITCH_LAUNCH_BIN := $(BUILD_CONTEXT_SWITCH)/context-switch.bin
 CONTEXT_SWITCH_PRG := $(BUILD_CONTEXT_SWITCH)/context-switch.prg
+CONTEXT_SWITCH_C_GATEWAY_BIN := $(BUILD_CONTEXT_SWITCH_C)/gateway.bin
+CONTEXT_SWITCH_C_BIN := $(BUILD_CONTEXT_SWITCH_C)/context-switch-c.bin
+CONTEXT_SWITCH_C_PRG := $(BUILD_CONTEXT_SWITCH_C)/context-switch-c.prg
 KERNEL_8502_BIN := $(BUILD_KERNEL_8502)/kernel-8502.bin
 KERNEL_8502_PRG := $(BUILD_KERNEL_8502)/kernel-8502.prg
 KERNEL_Z80_IHX := $(BUILD_KERNEL_Z80)/kernel-z80.ihx
@@ -174,6 +178,7 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	bench-irq-8502 bench-irq-z80 bench-irq-service \
 	bench-irq-service-8502 bench-irq-service-z80 bench-context \
 	bench-context-8502 bench-context-z80 bench-context-switch \
+	bench-context-switch-c \
 	bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
 	boot panic-probe framebuffer-assets user-sources user-programs \
@@ -294,6 +299,8 @@ bench-context-z80: $(CONTEXT_Z80_BIN) $(CONTEXT_Z80_PRG)
 
 bench-context-switch: $(CONTEXT_SWITCH_PRG)
 
+bench-context-switch-c: $(CONTEXT_SWITCH_C_PRG)
+
 bench-kernel: bench-kernel-8502 bench-kernel-z80
 
 bench-kernel-8502: $(KERNEL_8502_BIN) $(KERNEL_8502_PRG)
@@ -309,7 +316,7 @@ bench-memory-map: $(MEMORY_MAP_PRG)
 $(BUILD_8502) $(BUILD_Z80) $(BUILD_BENCH_8502) $(BUILD_BENCH_Z80) \
 		$(BUILD_IRQ_8502) $(BUILD_IRQ_Z80) $(BUILD_IRQ_SERVICE_8502) \
 		$(BUILD_IRQ_SERVICE_Z80) $(BUILD_CONTEXT_8502) $(BUILD_CONTEXT_Z80) \
-		$(BUILD_CONTEXT_SWITCH) \
+		$(BUILD_CONTEXT_SWITCH) $(BUILD_CONTEXT_SWITCH_C) \
 		$(BUILD_KERNEL_8502) $(BUILD_KERNEL_Z80) $(BUILD_HANDOFF_8502) \
 		$(BUILD_HANDOFF_Z80) $(BUILD_OFFLOAD_8502) $(BUILD_OFFLOAD_Z80) \
 		$(BUILD_MEMORY_MAP) $(BUILD_BOOT) $(BUILD_ASSETS) $(BUILD_USER):
@@ -1217,6 +1224,40 @@ $(CONTEXT_SWITCH_LAUNCH_BIN): $(BUILD_CONTEXT_SWITCH)/launcher.o \
 $(CONTEXT_SWITCH_PRG): $(CONTEXT_SWITCH_LAUNCH_BIN) tools/bin_to_prg.py
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
 
+$(BUILD_CONTEXT_SWITCH_C)/tasks.s: bench/context-switch-c/tasks.c \
+		| $(BUILD_CONTEXT_SWITCH_C)
+	$(CC65) $(CFLAGS_8502) -o $@ $<
+
+$(BUILD_CONTEXT_SWITCH_C)/tasks.o: $(BUILD_CONTEXT_SWITCH_C)/tasks.s \
+		| $(BUILD_CONTEXT_SWITCH_C)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_CONTEXT_SWITCH_C)/api.o: bench/context-switch-c/api.s \
+		| $(BUILD_CONTEXT_SWITCH_C)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_CONTEXT_SWITCH_C)/gateway.o: bench/context-switch-c/gateway.s \
+		| $(BUILD_CONTEXT_SWITCH_C)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(CONTEXT_SWITCH_C_GATEWAY_BIN): $(BUILD_CONTEXT_SWITCH_C)/gateway.o \
+		cfg/8502-context-switch-gateway.cfg
+	$(LD65) -C cfg/8502-context-switch-gateway.cfg -o $@ $<
+
+$(BUILD_CONTEXT_SWITCH_C)/launcher.o: bench/context-switch-c/launcher.s \
+		$(CONTEXT_SWITCH_C_GATEWAY_BIN) | $(BUILD_CONTEXT_SWITCH_C)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(CONTEXT_SWITCH_C_BIN): $(BUILD_CONTEXT_SWITCH_C)/launcher.o \
+		$(BUILD_CONTEXT_SWITCH_C)/api.o $(BUILD_CONTEXT_SWITCH_C)/tasks.o \
+		cfg/8502-context-switch-c.cfg
+	$(CL65) -t none --cpu 6502 -C cfg/8502-context-switch-c.cfg \
+		-m $(BUILD_CONTEXT_SWITCH_C)/context-switch-c.map -o $@ \
+		$(filter %.o,$^)
+
+$(CONTEXT_SWITCH_C_PRG): $(CONTEXT_SWITCH_C_BIN) tools/bin_to_prg.py
+	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
+
 $(BUILD_KERNEL_8502)/main.s: bench/kernel/8502/main.c \
 		bench/kernel/include/udeks/kernel_bench.h | $(BUILD_KERNEL_8502)
 	$(CC65) $(CFLAGS_8502) -I bench/kernel/include -o $@ $<
@@ -1462,6 +1503,7 @@ check:
 		tools/bench_decode.py tools/irq_probe_decode.py \
 		tools/irq_service_decode.py tools/context_decode.py \
 		tools/context_switch_decode.py \
+		tools/compiled_context_decode.py \
 		tools/kernel_decode.py tools/handoff_decode.py \
 		tools/offload_decode.py tools/boot_status_decode.py \
 		tools/memory_map_decode.py tools/boot_chain_decode.py \
@@ -1513,6 +1555,8 @@ check:
 	cd bench/artifacts/2026-09-26-context-switch-r4 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-26-context-switch-r5 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-26-context-switch/raw && sha256sum -c SHA256SUMS
+	cd bench/artifacts/2026-09-27-context-switch-c-r1 && sha256sum -c SHA256SUMS
+	cd bench/results/2026-09-27-context-switch-c/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-memory-map-r1 && sha256sum -c SHA256SUMS
 	cd bench/results/2026-09-24-memory-map-profiles/raw && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-native-boot-r1 && sha256sum -c SHA256SUMS

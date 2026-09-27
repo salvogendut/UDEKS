@@ -66,3 +66,20 @@ until the scheduler links; the semantic fields above are frozen.
   explicit placement constraint on the scheduler revision.
 - This ADR freezes the placement strategy only. A compiled C task using the
   real cc65 software stack is the integration test for the scheduler revision.
+
+## Compiled-runtime qualification
+
+The 2026-09-27 `UCCS` integration spike applies the accepted relocation
+strategy to two real cc65 tasks. Each task retains a live volatile local array,
+a 16-bit accumulator, the cc65 software-stack pointer, and its hardware-stack
+return frame across 32 yields. `1986` revision `4867cf2` and VICE 3.10 at both
+1 MHz and 2 MHz produced the same complete 32-byte record: 64 switches,
+steps 32/32, sums `$1444/$4741`, software stacks `$70F0/$71F0`, and no canary
+or context failure. The exact image and results are preserved under
+[`bench/artifacts/2026-09-27-context-switch-c-r1`](../../bench/artifacts/2026-09-27-context-switch-c-r1/README.md)
+and
+[`bench/results/2026-09-27-context-switch-c`](../../bench/results/2026-09-27-context-switch-c/README.md).
+
+This qualifies the compiler runtime and resume mechanism in emulation; it does
+not by itself activate scheduling behind `$FF16`. A physical-C128 run of this
+compiled integration image remains the final portability gate.

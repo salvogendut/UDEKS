@@ -70,7 +70,9 @@ the task model, validate it, and only then remove the replaced special case.
   called until the context-save/resume tail lands.
 - Step 2 is qualified in `1986`, VICE, and physical C128 hardware; ADR 0008
   freezes relocated page-zero/page-one ownership and the bounded copy
-  fallback.
+  fallback. The follow-on `UCCS` spike now also switches two real cc65 tasks
+  64 times with live C frames and distinct software stacks, byte-identically
+  in `1986` and VICE at 1/2 MHz. Its physical-C128 run remains outstanding.
 - Step 3 has Task Request ABI 0.3 operations for `YIELD`, `EXIT`, `WAITPID`,
   `SLEEP`, `CANCEL`, and `SPAWN`, plus a pure host-tested policy layer. The
   resident handlers are not implemented yet, so the new operations still
@@ -85,8 +87,7 @@ the task model, validate it, and only then remove the replaced special case.
   safely overwritten by `xwave`; ADR 0010 remains proposed until the
   independent `1986` pass. The final boot-only gather is also split and runs
   in place at `$A1E0`, leaving the complete `$C120-$CEFF` tail available for
-  lifecycle/scheduler integration. The scheduler stub is only an
-  installation/identity probe; it does not schedule tasks.
+  lifecycle/scheduler integration.
 - Lifecycle placement is active: `SCHEDOVR` carries the zero-padded 1 KiB
   scheduler page and the lifecycle/policy tail at `$C120-$CDC2`. Stage 0 loads
   it into bank 1 with KERNAL `SETBNK`/`LOAD`; a 192-byte one-shot common-RAM
@@ -94,10 +95,14 @@ the task model, validate it, and only then remove the replaced special case.
   replaces that installer with the permanent task gate. D71/D64 cold boot,
   exact page/tail installation, VIC repaint, and application-slot reuse pass
   in VICE. ADR 0012 remains proposed pending `1986` and physical C128 runs.
-- The next implementation increment is the Task Request ABI 0.3 resident
-  lifecycle handler and cooperative-resume seam behind `$CF30/$FF16`.
-  `YIELD` must return only after task 1 is selected again, and `EXIT` must
-  never return; keep the 0.2 compatibility path until those invariants pass.
+- The next implementation increment is to extract the qualified compiled-C
+  switch mechanism into the 192-byte permanent `$FF05-$FFC4` tail and connect
+  it to the resident selector. The standalone core is 756 bytes because it
+  includes two-task initialization and exhaustive result checks; only the
+  save/select/restore path belongs in common RAM. After that, route Task
+  Request ABI 0.3 `YIELD` through `$CF30/$FF16`. `YIELD` must return only
+  after task 1 is selected again, and `EXIT` must never return; keep the 0.2
+  compatibility path until those invariants pass.
 
 ## Implementation plan
 
