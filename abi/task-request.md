@@ -116,9 +116,9 @@ ids are rejected with `ESRCH` (or `ECHILD` for `WAITPID`, as noted below).
   is outside the table: `ECHILD`.
 - Reserved flag bits: `EINVAL`.
 
-The initial production increment implements immediate zombie reap and
-`NOHANG`. A matching live child without `NOHANG` currently returns `ENOSYS`;
-the blocking response-ownership path remains the next WAITPID increment.
+The production path implements immediate zombie reap, `NOHANG`, and blocking
+waits. A blocking request is privately snapshotted, the shared record is
+released, and child exit publishes the response only when the parent resumes.
 
 ### SLEEP (13)
 

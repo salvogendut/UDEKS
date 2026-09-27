@@ -211,7 +211,7 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	task-state task-policy task-scheduler task-switch-tail task-switch-activation scheduler-overlay placement-check \
 	placement-check-guard \
 	shadow-probe capability-probe boot-console-probe task-yield-probe \
-	task-exit-probe task-waitpid-probe \
+	task-exit-probe task-waitpid-probe task-spawn-loader-probe \
 	check doctor clean help
 
 all: 8502 z80 z80-asm
@@ -333,6 +333,16 @@ task-waitpid-probe: $(TASK_WAITPID_PROBE_D71) $(TASK_WAITPID_PROBE_D64)
 	}
 	$(PYTHON) tools/task_waitpid_probe.py
 	$(PYTHON) tools/task_waitpid_probe.py --disk $(TASK_WAITPID_PROBE_D64)
+
+# The scheduler-private $F919 seam validates and copies an ordinary UDEX into
+# bank-1 APP1 without entering it. Task allocation remains the next increment.
+task-spawn-loader-probe: $(BOOT_D71) $(BOOT_D64) $(USER_COWSAY_UDEX)
+	@command -v flatpak >/dev/null 2>&1 || { \
+		echo "task-spawn-loader-probe requires Flatpak VICE (net.sf.VICE)" >&2; \
+		exit 1; \
+	}
+	$(PYTHON) tools/task_spawn_loader_probe.py
+	$(PYTHON) tools/task_spawn_loader_probe.py --disk $(BOOT_D64)
 
 8502: $(KERNEL_BIN) $(KERNEL_PRG) $(SCHEDULER_BIN) $(CAPABILITY_BIN) \
 	$(BOOT_DELIVERY_BIN)
@@ -1815,6 +1825,7 @@ check:
 		tools/shadow_clear_decode.py \
 		tools/task_state_decode.py tools/task_yield_probe.py \
 		tools/task_exit_probe.py tools/task_waitpid_probe.py \
+		tools/task_spawn_loader_probe.py \
 		tools/vice_capture.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-r2 && sha256sum -c SHA256SUMS
@@ -1901,6 +1912,7 @@ help:
 		'make task-policy Compile the request policy module for cc65 (no link)' \
 		'make placement-check  Verify the linker-map budget (reference container)' \
 		'make shadow-probe  Qualify the VIC shadow clear in VICE (host flatpak)' \
+		'make task-spawn-loader-probe  Qualify load-only SPAWN delivery in VICE' \
 		'make capability-probe  Qualify relocated capability startup and slot reuse' \
 		'make bench      Build comparable 8502 and Z80 benchmark images' \
 		'make bench-8502 Build only the 8502 benchmark image' \

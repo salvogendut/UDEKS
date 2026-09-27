@@ -533,11 +533,26 @@ task_loader_entry:
 task_managed_loader_entry:
         .assert task_managed_loader_entry = $f916, error, "managed loader entry moved"
         jmp task_load_managed
+task_spawn_loader_entry:
+        .assert task_spawn_loader_entry = $f919, error, "spawn loader entry moved"
+        ; The lifecycle handler passes a zero-padded name in common RAM.
+        ; Copy an ordinary UDEX into bank-1 APP1 but do not enter it.
+        pha
+        ldy #$80
+        lda #>TASK_SLOT
+task_load_named_destination:
+        sta task_copy_store_persistent+2
+        lda #<TASK_SLOT
+        sta task_copy_store_persistent+1
+        pla
+        jmp task_load_named
 
 task_load_persistent:
         ; init passes a direct bank-0 pointer to the bootfs program name in AX.
+        pha
         ldy #$01
-        bne task_load_named
+        lda #>PERSISTENT_SLOT
+        bne task_load_named_destination
 task_load_managed:
         ; The resident application manager supplies a direct name pointer.
         ldy #$02
@@ -900,8 +915,9 @@ task_header_load:
         beq :+
         jmp task_bad_cpu
 :
-        lda TASK_HEADER+7
-        cmp task_load_mode
+        lda task_load_mode
+        and #$7f
+        cmp TASK_HEADER+7
         beq :+
         jmp task_bad_flags
 :
@@ -912,6 +928,7 @@ task_header_load:
         lda TASK_HEADER+9
         ldx task_load_mode
         beq task_check_foreground_load
+        bmi task_check_foreground_load
         cpx #$01
         bne task_check_managed_load
         cmp #$90
@@ -1004,22 +1021,15 @@ task_check_entry:
 task_valid:
         lda task_load_mode
         beq task_save_foreground
+        bmi task_copy_persistent
         cmp #$02
         beq task_copy_managed
-        lda #<PERSISTENT_SLOT
-        sta task_copy_store_persistent+1
-        lda #>PERSISTENT_SLOT
-        sta task_copy_store_persistent+2
+task_copy_persistent:
         lda TASK_IMAGE_LO
         sta task_remaining_lo
         lda TASK_IMAGE_HI
         sta task_remaining_hi
 task_copy_persistent_byte:
-        lda task_remaining_lo
-        ora task_remaining_hi
-        bne :+
-        jmp task_clear_bss
-:
 task_copy_load_persistent:
         ; Both source and destination are in bank 1 while this map is active.
         lda $ffff
@@ -1038,7 +1048,10 @@ task_copy_store_persistent:
         dec task_remaining_hi
 :
         dec task_remaining_lo
-        jmp task_copy_persistent_byte
+        lda task_remaining_lo
+        ora task_remaining_hi
+        bne task_copy_persistent_byte
+        jmp task_clear_bss
 
 task_copy_managed:
         lda #$00
@@ -1119,8 +1132,8 @@ task_copy_decrement_low:
 task_clear_bss:
         lda task_load_mode
         beq task_clear_bss_pointer_ready
-        cmp #$01
-        bne task_clear_bss_pointer_ready
+        cmp #$02
+        beq task_clear_bss_pointer_ready
         lda task_copy_store_persistent+1
         sta task_bss_store+1
         lda task_copy_store_persistent+2

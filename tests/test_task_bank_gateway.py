@@ -67,6 +67,7 @@ class TaskBankGatewayTests(unittest.TestCase):
 
     def test_stage1_relocates_bootfs_and_installs_runtime_loader(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
+        task_header = (ROOT / "include/udeks/task.h").read_text().lower()
 
         self.assertIn("lda $2300,y", stage1)
         self.assertIn("bootfs_destination:\n        sta $0300,y", stage1)
@@ -89,6 +90,18 @@ class TaskBankGatewayTests(unittest.TestCase):
         self.assertIn("sta $4000,y\n        iny\n        bne backup_service_page", stage1)
         self.assertIn("bootfs_base             = $a000", stage1)
         self.assertIn("task_managed_loader_entry:", stage1)
+        self.assertIn("task_spawn_loader_entry:", stage1)
+        self.assertIn("task_spawn_loader_entry = $f919", stage1)
+        self.assertIn("udeks_spawn_loader_entry        0xf919u", task_header)
+        self.assertIn("ldy #$80", stage1)
+        self.assertIn("bmi task_copy_persistent", stage1)
+
+        clear_bss = stage1.split("task_clear_bss:", 1)[1].split(
+            "task_clear_bss_pointer_ready:", 1
+        )[0]
+        self.assertIn("cmp #$02", clear_bss)
+        self.assertIn("beq task_clear_bss_pointer_ready", clear_bss)
+        self.assertIn("lda task_copy_store_persistent+1", clear_bss)
 
     def test_runtime_loader_is_installed_from_protected_final_page(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()

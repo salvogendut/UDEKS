@@ -154,6 +154,10 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   reap and Linux-compatible `ECHILD` behavior.
 - [x] Implement blocking `WAITPID` with private per-task request ownership;
   qualify child `EXIT(37)` waking and resuming its parent on D71 and D64.
+- [x] Add the bounded `$F919` SPAWN loader seam: validate a flag-zero UDEX and
+  copy its image/BSS into bank-1 APP1 without entering it; qualify byte-exact
+  loading and a pre-seeded nonzero BSS on D71 and D64 before task-table
+  mutation is introduced.
 - [ ] Implement task creation, sleep, and event wait.
 - [x] Save and restore the selected compiler runtime and CPU context behind
   the production scheduler gate. Physical-hardware qualification of the

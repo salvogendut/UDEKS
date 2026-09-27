@@ -266,8 +266,8 @@ task_validate_signature:
         lda TREQ_STATE
         cmp #TREQ_REQUEST
         bne task_protocol_trampoline
-        ; ABI 0.3 lifecycle operations are reserved and unimplemented; they
-        ; share the fallback that answers unknown operations with ENOSYS.
+        ; ABI 0.3 lifecycle operations are owned by the installed fallback
+        ; service; this compatibility gate deliberately does not decode them.
         lda TREQ_OPERATION
         cmp #$0a
         bcs task_request_fallback

@@ -125,6 +125,13 @@ the task model, validate it, and only then remove the replaced special case.
   the child can issue `EXIT(37)`, and the parent resumes with result one and
   its original sequence `$44`. `SPAWN` is the next lifecycle increment so
   that the kernel, rather than a qualification monitor, can create task 2.
+- The first `SPAWN` increment is qualified: the common loader exposes a
+  scheduler-private `$F919` load-only entry, validates a flag-zero bootfs UDEX,
+  and copies its image/BSS into bank-1 APP1 without entering it. The loader is
+  exactly 1,520 bytes in its frozen `$F910-$FEFF` reservation. D71 and D64
+  probes load `/bin/cowsay` byte-exactly and clear a pre-seeded 32-byte BSS;
+  lifecycle allocation and context admission intentionally remain the next
+  atomic increment.
 
 ## Implementation plan
 
@@ -295,8 +302,9 @@ and bank ownership.
 
 ## First concrete change for the next session
 
-Implement `SPAWN` so a validated UDEX image creates the second general task
-without monitor assistance. Reuse the frozen lifecycle policy, allocation
-preflight, relocated page-zero/page-one context record, and blocking
-`WAITPID` wake path; keep rejection atomic and qualify slot reuse on D71 and
-D64 before migrating the graphical applications.
+Complete `SPAWN` behind the qualified `$F919` loader seam: validate the request
+and find a free slot before copying, seed task 2's `$D3/$D4` relocated pages
+and bank-1 software stack, publish a `RUNNABLE` lifecycle/context record only
+after the load succeeds, and return its task id. Keep rejection atomic and
+qualify spawn/exit/blocking-wait/slot reuse on D71 and D64 before migrating
+the graphical applications.
