@@ -21,6 +21,9 @@ class SchedulerDeliveryEvidenceTests(unittest.TestCase):
         scheduler = (RAW / "udeks-scheduler.bin").read_bytes()
         d71 = (RAW / "d71-installed.bin").read_bytes()
         self.assertEqual(d71, scheduler.ljust(SCHEDULER_PAGE_SIZE, b"\x00"))
+        self.assertEqual(
+            (RAW / "1986-f9c6a24-installed.bin").read_bytes(), d71
+        )
 
     def test_scheduler_entry_continues_through_the_kernel_vector(self):
         scheduler = (RAW / "udeks-scheduler.bin").read_bytes()

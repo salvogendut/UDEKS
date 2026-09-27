@@ -698,7 +698,7 @@ $(BUILD_8502)/z80_handoff.o: src/8502/z80_handoff.s | $(BUILD_8502)
 $(BUILD_8502)/vic_graphics_transport.o: src/8502/vic_graphics.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) &: \
+$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &: \
 		$(BUILD_8502)/kernel_entry.o $(BUILD_8502)/boot_delivery.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
@@ -744,7 +744,8 @@ $(SCHEDULER_BIN): src/scheduler/scheduler.s cfg/8502-scheduler.cfg \
 	$(CA65) $(ASFLAGS_8502) -o $(BUILD_8502)/scheduler.o $<
 	$(LD65) -C cfg/8502-scheduler.cfg -o $@ $(BUILD_8502)/scheduler.o
 
-$(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) &: \
+$(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
+		$(PANIC_PROBE_PROBE_BIN) $(PANIC_PROBE_MAP) &: \
 		$(BOOT_D71) \
 		$(BUILD_8502)/kernel_entry.o $(BUILD_8502)/boot_delivery.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
@@ -787,9 +788,10 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) &: \
 		-o $(PANIC_PROBE_KERNEL_BIN) \
 		$(filter %.o,$^)
 
-$(KERNEL_DIRECT_BIN): $(PROBE_BIN) $(CRT0_BIN) $(KERNEL_BIN) \
-		tools/join_boot_crt0.py
-	$(PYTHON) tools/join_boot_crt0.py $(PROBE_BIN) $(CRT0_BIN) $(KERNEL_BIN) $@
+$(KERNEL_DIRECT_BIN): $(PROBE_BIN) $(SCHEDULER_BIN) $(CRT0_BIN) $(KERNEL_BIN) \
+		$(STAGE1_GATEWAY_BIN) tools/join_boot_crt0.py
+	$(PYTHON) tools/join_boot_crt0.py $(PROBE_BIN) $(SCHEDULER_BIN) \
+		$(CRT0_BIN) $(KERNEL_BIN) $(STAGE1_GATEWAY_BIN) $@
 
 $(KERNEL_PRG): $(KERNEL_DIRECT_BIN) tools/bin_to_prg.py
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x0B00 $< $@

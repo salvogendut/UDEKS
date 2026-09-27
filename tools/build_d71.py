@@ -242,8 +242,8 @@ def scheduler_holes(
 
 def scheduler_layout(
     shadow_start: int, stage0_end: int, scheduler_size: int
-) -> tuple[tuple[int, int], list[tuple[int, int]]]:
-    """Manifest and chunk regions for a scheduler image of the given size."""
+) -> tuple[tuple[int, int], list[tuple[int, int]], int]:
+    """Manifest, chunk regions, and delivery ceiling for the given size."""
     holes = scheduler_holes(shadow_start, stage0_end)
     manifest_start = SCATTER_MANIFEST_ADDRESS
     manifest_end = manifest_start + SCATTER_MANIFEST_MAX - 1
@@ -254,7 +254,14 @@ def scheduler_layout(
             break
     if manifest_hole is None:
         raise ValueError("scatter manifest is outside the free payload holes")
-    holes[manifest_hole] = [manifest_end + 1, holes[manifest_hole][1]]
+    hole_start, hole_end = holes[manifest_hole]
+    replacement: list[list[int]] = []
+    if hole_start <= manifest_start - 1:
+        replacement.append([hole_start, manifest_start - 1])
+    if manifest_end + 1 <= hole_end:
+        replacement.append([manifest_end + 1, hole_end])
+    holes[manifest_hole : manifest_hole + 1] = replacement
+    ceiling = sum(end - start + 1 for start, end in holes)
     chunks: list[tuple[int, int]] = []
     offset = 0
     for start, end in holes:
@@ -266,10 +273,13 @@ def scheduler_layout(
         chunks.append((start, take))
         offset += take
     if offset < scheduler_size:
-        raise ValueError("scheduler does not fit the scatter holes")
+        raise ValueError(
+            f"scheduler needs {scheduler_size} bytes; the scatter holes "
+            f"deliver at most {ceiling}"
+        )
     if len(chunks) > 8:
         raise ValueError("scatter manifest entry limit exceeded")
-    return (manifest_start, manifest_end), chunks
+    return (manifest_start, manifest_end), chunks, ceiling
 
 
 def install_scheduler(
@@ -291,7 +301,7 @@ def install_scheduler(
         )
         + BOOT_SECTOR_BASE
     )
-    (manifest_start, manifest_end), chunk_regions = scheduler_layout(
+    (manifest_start, manifest_end), chunk_regions, _ = scheduler_layout(
         shadow_start, stage0_end, len(scheduler)
     )
     chunks: list[tuple[int, int, int]] = []

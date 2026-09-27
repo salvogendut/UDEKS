@@ -3,9 +3,9 @@
 ; Boot-only scatter gather for the scheduler delivery. Stage 1 calls the fixed
 ; $2003 vector before crt0; the routine gathers the scheduler chunks listed in
 ; the manifest into the temporary application slot at $1200-$15FF, validates
-; the manifest magic and the 16-bit image checksum, and returns A=0 on
-; success. It uses no BSS or cc65 runtime state; $F8-$FD are stage 1's retired
-; copy scratch.
+; the manifest magic, entry count, source ranges, destination bound, and the
+; 16-bit image checksum, and returns A=0 on success. It uses no BSS or cc65
+; runtime state; $F8-$FD are stage 1's retired copy scratch.
 
         .setcpu "6502"
         .export _boot_delivery_gather
@@ -15,6 +15,7 @@ COPY_DESTINATION = $fa
 COPY_LENGTH      = $fc
 SCATTER_MANIFEST = $acd9
 SCATTER_TEMP     = $1200
+SCATTER_LIMIT    = $1600
 BOOT_CHAIN       = $f050
 BOOT_CHAIN_STATE = BOOT_CHAIN + 12
 BOOT_CHAIN_FAILURE = BOOT_CHAIN + 13
@@ -63,9 +64,16 @@ delivery_zero_byte:
         sta COPY_DESTINATION
         lda #>SCATTER_TEMP
         sta COPY_DESTINATION+1
-        ldx SCATTER_MANIFEST+4
-        bne delivery_entry
-        jmp delivery_verify
+        lda SCATTER_MANIFEST+4
+        beq delivery_bad_count
+        cmp #$09
+        bcc delivery_count_ok
+delivery_bad_count:
+        lda #$03
+        jmp delivery_fail
+delivery_count_ok:
+        tax
+        jmp delivery_entry
 
 delivery_entry:
         ldy #$00
@@ -74,6 +82,15 @@ delivery_entry:
         iny
         lda (COPY_SOURCE),y
         sta delivery_load+2
+        lda delivery_load+2
+        cmp #$0b
+        bcc delivery_bad_range
+        cmp #$cf
+        bcc delivery_range_ok
+delivery_bad_range:
+        lda #$04
+        jmp delivery_fail
+delivery_range_ok:
         iny
         lda (COPY_SOURCE),y
         sta COPY_LENGTH
@@ -92,6 +109,9 @@ delivery_byte:
         lda COPY_LENGTH
         ora COPY_LENGTH+1
         beq delivery_next
+        lda COPY_DESTINATION+1
+        cmp #>SCATTER_LIMIT
+        bcs delivery_bad_range
 delivery_load:
         lda $ffff,y
         sta (COPY_DESTINATION),y

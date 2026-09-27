@@ -29,5 +29,12 @@ _udeks_scheduler_tick:
         lda #$00
         rts
 
+; Deterministic pattern that spans multiple scatter chunks so cold-boot
+; verification exercises multi-chunk gathering.
+scheduler_pattern:
+        .repeat 280, index
+        .byte (index * 7 + 3) & $FF
+        .endrepeat
+
 scheduler_end:
         .assert scheduler_end <= $2000, error, "scheduler exceeds its page"

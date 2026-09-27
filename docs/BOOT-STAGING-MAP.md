@@ -51,13 +51,13 @@ shadow spans `$AB2D-$CA6C`; the tail runs to the fixed `SYSCALLS` page at
 
 | Hole | Range | Size | Free |
 |---|---:|---:|---|
-| shadow prefix | `$AB2D-$ACFF` | 467 | after crt0 |
+| shadow prefix | `$AC3E-$ACFF` | 194 | after crt0 |
 | shadow mid | `$C409-$C4EE` | 230 | after crt0 |
 | bootfs-request container tail | `$C78A-$C7FF` | 118 | after stage 1 |
 | loader tail | `$CDF0-$CDFF` | 16 | after stage 1 |
 | gate tail | `$CECB-$CEFF` | 53 | after stage 1 |
 | boot-sector tail | `$0B3E-$0BFF` | 194 | after stage 0 |
-| **total** | | **1,078** | largest contiguous **467** |
+| **total** | | **805** | largest contiguous **230** |
 
 ## Boot-only objects
 
@@ -92,10 +92,8 @@ Runtime homes free during `boot` and outside the step-4 exclusions
 exist: application slot 1 `$0200-$0AFF` (2,304 bytes) and application slot 2
 `$1200-$1BFF` (2,560 bytes).
 
-- `hardware_capability.o` fits the aggregate free payload (967 <= 1,078, 111
-  bytes spare) but no single hole is large enough, so it needs a scatter copy
-  across at least four chunks, for example 467 + 230 + 118 + 152 from the
-  boot-sector hole.
+- `hardware_capability.o` (967) no longer fits the aggregate free payload
+  (805), so it remains blocked along with `boot_console.o`.
 - `boot_console.o` (1,450) exceeds the aggregate and remains blocked; it also
   needs a contiguous runtime home, which only the application slots provide.
 
@@ -127,7 +125,7 @@ The step-5 handoff delivers the scheduler segment at `$1C00-$1FFF`:
    `$ACD9` (`tools/build_d71.py --scheduler --map`);
 3. gather it into the temporary application slot `$1200-$15FF` before crt0
    through the fixed `$2003` kernel entry vector; the boot-only `BOOTDELIVERY`
-   routine (235 resident bytes, no BSS or cc65 state, counted as boot-only
+   routine (267 resident bytes, no BSS or cc65 state, counted as boot-only
    reclaim) validates the manifest magic and the 16-bit image checksum and
    records failures in the boot-chain record;
 4. crt0 clears BSS and the VIC shadow and returns to the fixed `$F7D8` copier;
@@ -139,7 +137,14 @@ The step-5 handoff delivers the scheduler segment at `$1C00-$1FFF`:
 measurement that motivated the resident gather: the self-contained gather plus
 install measured 132 bytes against 50 free bytes in FINAL, an 82-byte
 shortfall. Moving the gather into the resident image leaves only the 35-byte
-copier in FINAL, with 15 bytes of headroom.
+copier in FINAL, with 15 bytes of headroom. The hardened gather bounds the
+entry count, source ranges, and destination, so a malformed manifest cannot
+write past `$15FF`.
+
+The measured scatter ceiling after the manifest carve is **766 bytes**; a
+larger scheduler image is rejected by `tools/build_d71.py` until more staging
+is freed. The 297-byte linked scheduler spans two chunks and both cold boots
+install it byte-exactly.
 
 `bench/results/2026-09-26-scheduler-delivery` preserves the D71 and D64 cold
 boot captures; both equal the linked scheduler image zero-filled to the

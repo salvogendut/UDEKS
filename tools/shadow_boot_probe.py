@@ -45,9 +45,9 @@ from build_d71 import (
     PROBE_SIZE,
     PROBE_STAGING_ADDRESS,
     SCATTER_MANIFEST_ADDRESS,
+    SCATTER_MANIFEST_MAX,
     boot_locations,
     scheduler_holes,
-    scheduler_layout,
     sector_offset,
 )
 from placement_audit import VIC_SHADOW_SEGMENT, parse_map, vic_bitmap_size
@@ -127,30 +127,28 @@ def payload_disk_offset(address: int, locations: list[tuple[int, int]]) -> int:
     return sector_offset(track, sector) + byte_offset
 
 
-def boot_sector_stage0_end(image: bytes, locations: list[tuple[int, int]]) -> int:
-    track, sector = locations[0]
-    start = sector_offset(track, sector)
-    boot = image[start : start + BOOT_SECTOR_SIZE]
-    last = max((offset for offset, byte in enumerate(boot) if byte), default=0)
-    return BOOT_SECTOR_BASE + last
+def manifest_chunks(image: bytes, locations: list[tuple[int, int]]) -> list[tuple[int, int]]:
+    offset = payload_disk_offset(SCATTER_MANIFEST_ADDRESS, locations)
+    manifest = image[offset : offset + SCATTER_MANIFEST_MAX]
+    if manifest[:4] != b"USCT":
+        return []
+    chunks: list[tuple[int, int]] = []
+    for index in range(manifest[4]):
+        entry = manifest[7 + 4 * index : 7 + 4 * index + 4]
+        source = int.from_bytes(entry[:2], "little")
+        length = int.from_bytes(entry[2:], "little")
+        chunks.append((source, source + length - 1))
+    return chunks
 
 
 def seed_ranges(
     shadow_start: int,
     shadow_end: int,
-    stage0_end: int,
-    scheduler_size: int,
+    occupied: list[tuple[int, int]],
 ) -> list[tuple[int, int]]:
     """Free shadow byte ranges that are not live staging."""
-    occupied: list[tuple[int, int]] = []
-    if scheduler_size:
-        (manifest_start, manifest_end), chunks = scheduler_layout(
-            shadow_start, stage0_end, scheduler_size
-        )
-        occupied = [(manifest_start, manifest_end)]
-        occupied += [(start, start + take - 1) for start, take in chunks]
     ranges: list[tuple[int, int]] = []
-    for start, end in scheduler_holes(shadow_start, stage0_end):
+    for start, end in scheduler_holes(shadow_start, BOOT_SECTOR_BASE):
         start = max(start, shadow_start)
         end = min(end, shadow_end)
         if start > end:
@@ -183,10 +181,14 @@ def patch_payload(
     if PROBE_STAGING_ADDRESS + PROBE_SIZE > CRT0_STAGING_ADDRESS:
         raise ValueError("probe staging is not below crt0 staging")
     shadow_end = shadow_start + shadow_size - 1
-    stage0_end = boot_sector_stage0_end(image, locations)
-    for start, end in seed_ranges(
-        shadow_start, shadow_end, stage0_end, scheduler_size
-    ):
+    occupied = [
+        (
+            SCATTER_MANIFEST_ADDRESS,
+            SCATTER_MANIFEST_ADDRESS + SCATTER_MANIFEST_MAX - 1,
+        )
+    ]
+    occupied.extend(manifest_chunks(image, locations))
+    for start, end in seed_ranges(shadow_start, shadow_end, occupied):
         for offset, address in enumerate(range(start, end + 1)):
             disk_offset = payload_disk_offset(address, locations)
             if image[disk_offset] != 0:

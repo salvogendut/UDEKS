@@ -23,18 +23,23 @@ boot-only reclaim.
 
 | File | Bytes | Meaning |
 |---|---:|---|
-| `raw/udeks-scheduler.bin` | 17 | linked scheduler image (entry, identity, stubs) |
+| `raw/udeks-scheduler.bin` | 297 | linked scheduler image (entry, identity, stubs, multi-chunk pattern) |
 | `raw/d71-installed.bin` | 1,024 | `$1C00-$1FFF` captured after a D71 cold boot |
 | `raw/d64-installed.bin` | 1,024 | `$1C00-$1FFF` captured after a D64 cold boot |
+| `raw/1986-f9c6a24-installed.bin` | 1,024 | `$1C00-$1FFF` extracted from a 1986 f9c6a24 snapshot |
 
-Both captures equal `udeks-scheduler.bin` zero-filled to the 1,024-byte
-reservation, and the D71 and D64 captures are byte-identical.
+The 297-byte image spans two scatter chunks (the boot-sector hole and the
+shadow prefix), so the cold boots exercise multi-chunk gathering. Both
+captures equal `udeks-scheduler.bin` zero-filled to the 1,024-byte
+reservation, and the D71 and D64 captures are byte-identical. The measured
+delivery ceiling is 766 bytes; a larger scheduler is rejected by
+`tools/build_d71.py` until more staging is freed.
 
 Probed disks:
 
 ```text
-ad0974ba5a514ef1e45e5e026d745ecbf695cd3d710fbc55ec765be6e04c8564  udeks.d71
-bff8d92c65b38959af61d05ef45be0373ad9ca534c33d0450cc4b499c0e07d49  udeks.d64
+6fb9ccd046296faf1cbbd137105f63148bc9a3ab3951762bd2ae1f601df8794b  udeks.d71
+88b765026db9305ea039d08705e88ee395a64435466726e9f94b7577d364a0b7  udeks.d64
 ```
 
 ## Reproduction
@@ -47,6 +52,11 @@ python3 tools/scheduler_delivery_probe.py --disk build/boot/udeks.d71 \
 python3 tools/scheduler_delivery_probe.py --disk build/boot/udeks.d64 \
   --output bench/results/2026-09-26-scheduler-delivery/raw/d64-installed.bin
 ```
+
+The `1986` C128DCR emulator at revision
+`f9c6a24590c697c2978a0988616d8e683f6d2d69` was run for 3,000 frames with
+`--save-snapshot`, and `tools/snapshot_extract.py` extracted `$1C00-$1FFF`;
+it is byte-identical to the linked image and to the VICE captures.
 
 `make check` verifies the preserved checksums and runs
 `tests/test_scheduler_delivery.py`, which requires both captures to equal the

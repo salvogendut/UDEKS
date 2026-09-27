@@ -1,8 +1,8 @@
 # VIC shadow clear and reclaimed-tail qualification
 
 The native D71 cold boot was probed in VICE 3.10 (Flatpak `net.sf.VICE`) on
-2026-09-26 with the sequential 8,000-byte `VICSHADOW` segment at `$AC1E-$CB5D`
-and the reclaimed tail at `$CB5E-$CEFF`. Two boot-only objects are no longer
+2026-09-26 with the sequential 8,000-byte `VICSHADOW` segment at `$AC3E-$CB7D`
+and the reclaimed tail at `$CB7E-$CEFF`. Two boot-only objects are no longer
 resident:
 
 - `crt0` is linked into the `$1C00-$1CFF` `BOOTCRT` page from the same linker
@@ -33,7 +33,7 @@ root-terminal readiness bytes and then:
 
 - saves `$AB2D-$CEFF` with the kernel MMU profile and requires all 8,000
   shadow bytes to be zero, including both staging sources;
-- compares all 930 tail bytes against the preserved preimage and requires
+- compares all 898 tail bytes against the preserved preimage and requires
   an exact match, so a clear that overruns the shadow cannot pass;
 - injects `xinit` and `xclock`, saves the drawn shadow with the kernel
   profile, switches to the worker profile to save the bank-1 `$6000-$7F3F`
@@ -54,7 +54,7 @@ root-terminal readiness bytes and then:
 | `raw/D71.sha256` | 76 | hash of the built D71 the probe consumed |
 
 The probed D71 is
-`ad0974ba5a514ef1e45e5e026d745ecbf695cd3d710fbc55ec765be6e04c8564 udeks.d71`
+`6fb9ccd046296faf1cbbd137105f63148bc9a3ab3951762bd2ae1f601df8794b udeks.d71`
 (`raw/D71.sha256`); the disk image itself is a build artifact and is not
 committed.
 

@@ -166,9 +166,12 @@ The native disk path uses two small stages before the resident kernel:
    bank-0 pages zero/one, then copies the staged crt0 page over its own dead
    `$1C00` page and enters it there.
 5. The crt0 entry repeats the safe MMU/profile initialization idempotently,
-   clears BSS and the VIC shadow, and jumps to `_kernel_main` in the resident
-   code at `$2000`, which initializes the mailbox and enters C. No BASIC or
-   KERNAL service is part of the resident-kernel ABI after that point.
+   clears BSS and the VIC shadow, and returns to the protected `$F7D8`
+   scheduler copier, which installs the gathered scheduler segment over the
+   dead `$1C00-$1FFF` page; the scheduler entry continues through the fixed
+   `$2000` kernel entry vector into `_kernel_main`, which initializes the
+   mailbox and enters C. No BASIC or KERNAL service is part of the
+   resident-kernel ABI after that point.
 6. Service startup discovers video timing and remains at the inherited 1 MHz
    rate, allowing the VDC text console and VIC-IIe to stay active together.
    The qualified VDC-only 2 MHz transition is an optional later policy.
