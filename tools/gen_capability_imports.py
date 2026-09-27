@@ -171,12 +171,17 @@ def write_bridge(
 
 
 def write_constants(
-    image_path: str, normal_map: str, panic_map: str, output_path: str,
-    config_path: str,
+    image_path: str, boot_delivery_path: str, normal_map: str, panic_map: str,
+    output_path: str, config_path: str,
 ) -> None:
     image = Path(image_path).read_bytes()
+    boot_delivery = Path(boot_delivery_path).read_bytes()
     if len(image) != 0x03C7:
         raise ValueError(f"capability image is {len(image)} bytes, expected 967")
+    if len(boot_delivery) != 0x010B:
+        raise ValueError(
+            f"boot delivery image is {len(boot_delivery)} bytes, expected 267"
+        )
     normal = map_exports(Path(normal_map).read_text(encoding="utf-8"))
     panic = map_exports(Path(panic_map).read_text(encoding="utf-8"))
     name = "__VICSHADOW_RUN__"
@@ -184,9 +189,10 @@ def write_constants(
         raise ValueError("VICSHADOW start is missing from a resident map")
     if normal[name] != panic[name]:
         raise ValueError("normal/panic VICSHADOW starts differ")
-    source, kind = normal[name]
+    shadow_start, kind = normal[name]
     if kind != "RLA":
         raise ValueError("VICSHADOW start is not an absolute label")
+    source = shadow_start + len(boot_delivery)
     end = source + len(image) - 1
     if end >= 0xACD9:
         raise ValueError(
@@ -239,10 +245,11 @@ def main() -> int:
             print(error, file=sys.stderr)
             return 1
         return 0
-    if len(sys.argv) == 7 and sys.argv[1] == "constants":
+    if len(sys.argv) == 8 and sys.argv[1] == "constants":
         try:
             write_constants(
-                sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6]
+                sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5],
+                sys.argv[6], sys.argv[7]
             )
         except ValueError as error:
             print(error, file=sys.stderr)
@@ -254,8 +261,8 @@ def main() -> int:
             "  gen_capability_imports.py flags <object> <out.txt>\n"
             "  gen_capability_imports.py bridge <object> <normal.map> "
             "<panic.map> <out.s>\n"
-            "  gen_capability_imports.py constants <image> <normal.map> "
-            "<panic.map> <out.inc> <out.cfg>",
+            "  gen_capability_imports.py constants <image> <boot-delivery> "
+            "<normal.map> <panic.map> <out.inc> <out.cfg>",
             file=sys.stderr,
         )
         return 2

@@ -172,6 +172,7 @@ def patch_payload(
     shadow_size: int,
     tail_end: int,
     scheduler_size: int,
+    boot_delivery: bytes,
     capability: bytes,
     capability_installer: bytes,
     boot_console: bytes,
@@ -187,7 +188,8 @@ def patch_payload(
     occupied = [
         (
             shadow_start,
-            shadow_start + len(capability) + len(capability_installer)
+            shadow_start + len(boot_delivery) + len(capability)
+            + len(capability_installer)
             + len(boot_console) - 1,
         ),
         (
@@ -197,15 +199,17 @@ def patch_payload(
     ]
     occupied.extend(manifest_chunks(image, locations))
     for name, address, expected in (
-        ("capability", shadow_start, capability),
+        ("boot delivery", shadow_start, boot_delivery),
+        ("capability", shadow_start + len(boot_delivery), capability),
         (
             "capability installer",
-            shadow_start + len(capability),
+            shadow_start + len(boot_delivery) + len(capability),
             capability_installer,
         ),
         (
             "boot console",
-            shadow_start + len(capability) + len(capability_installer),
+            shadow_start + len(boot_delivery) + len(capability)
+            + len(capability_installer),
             boot_console,
         ),
     ):
@@ -419,6 +423,7 @@ def probe(args: argparse.Namespace) -> None:
     scheduler_size = (
         args.scheduler.stat().st_size if args.scheduler.is_file() else 0
     )
+    boot_delivery = args.boot_delivery.read_bytes()
     capability = args.capability.read_bytes()
     capability_installer = args.capability_installer.read_bytes()
     boot_console = args.boot_console.read_bytes()
@@ -429,6 +434,7 @@ def probe(args: argparse.Namespace) -> None:
         shadow_size,
         tail_end,
         scheduler_size,
+        boot_delivery,
         capability,
         capability_installer,
         boot_console,
@@ -591,6 +597,10 @@ def main() -> None:
     parser.add_argument(
         "--scheduler", type=Path,
         default=ROOT / "build/8502/udeks-scheduler.bin",
+    )
+    parser.add_argument(
+        "--boot-delivery", type=Path,
+        default=ROOT / "build/boot/8502-boot-delivery.bin",
     )
     parser.add_argument(
         "--capability", type=Path,

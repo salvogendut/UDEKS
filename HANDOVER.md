@@ -79,8 +79,9 @@ the task model, validate it, and only then remove the replaced special case.
   infrastructure, not a working scheduler.
 - `boot_console.o` is now a split boot image at `$1600`, and VICE proves it is
   safely overwritten by `xwave`; ADR 0010 remains proposed until the
-  independent `1986` pass. Only the resident scheduler gather remains a
-  boot-only reclaim candidate. The scheduler stub is only an
+  independent `1986` pass. The final boot-only gather is also split and runs
+  in place at `$A1E0`, leaving the complete `$C120-$CEFF` tail available for
+  lifecycle/scheduler integration. The scheduler stub is only an
   installation/identity probe; it does not schedule tasks.
 
 ## Implementation plan
@@ -252,9 +253,8 @@ and bank ownership.
 
 ## First concrete change for the next session
 
-Freeze the final bank-0 overlay layout for the resident lifecycle modules,
-including the remaining boot-delivery reclaim. Then link
-the task state and request-policy modules into that layout and migrate one
+Link the task state and request-policy modules into the now-final
+`$1C00-$1FFF` plus `$C120-$CEFF` scheduler layout and migrate one
 operation at a time behind the existing `$CF30` record and frozen `$FF16`
 entry. Start with `YIELD` and nonblocking `WAITPID`, preserving the old poll
 path until a compiled cc65 task has crossed the qualified context-switch path.

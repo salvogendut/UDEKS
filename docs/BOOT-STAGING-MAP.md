@@ -29,6 +29,7 @@ The audit distinguishes three sizes per staged region:
 
 | Region | Start | Emitted | Copied | Container | Live |
 |---|---:|---:|---:|---:|---|
+| boot-delivery gather | `$A1E0` | 267 | 267 | 267 | `load..crt0` |
 | capability staging | `$A2EB` | 967 | 967 | 967 | `load..crt0` |
 | capability installer staging | `$A6B2` | 102 | 102 | 102 | `load..crt0` |
 | boot-console staging | `$A718` | 1,450 | 1,450 | 1,450 | `load..crt0` |
@@ -46,7 +47,7 @@ The bootfs request container is `$0311` bytes, but the final installer copies
 two pages plus `$9B` bytes (`$029B`, the linked reservation), so
 `$C78A-$C7FF` is free. The bootfs tail copy covers its full container,
 including the module staging bytes, so that overlap yields no hole. The VIC
-shadow spans `$A2EB-$C22A`; the tail runs to the fixed `SYSCALLS` page at
+shadow spans `$A1E0-$C11F`; the tail runs to the fixed `SYSCALLS` page at
 `$CF00`. The boot sector is `$0B00-$0BFF`, of which stage 0 occupies
 `$0B00-$0B3D`; the boot-console installer reserves `$0B40-$0BA2` even when
 its linked tail bytes are zero.
@@ -104,6 +105,9 @@ exist: application slot 1 `$0200-$0AFF` (2,304 bytes) and application slot 2
 - `boot_console.o` is realized reclaim. Extraction supplies the contiguous
   `$A718-$ACC1` source; its 99-byte installer runs from `$0B40-$0BA2`, and the
   composer runs once from the upper part of application slot 2.
+- `boot_delivery.o` is realized reclaim. It executes in place from
+  `$A1E0-$A2EA` through the fixed `$2003` vector, gathers the scheduler, and is
+  then erased by crt0. It needs neither a runtime copy nor resident storage.
 
 The boot-console relocation deliberately does not consume the scheduler's
 `$1200-$15FF` gather buffer. Stage 1 installs the composer first, gathers the
@@ -118,8 +122,8 @@ The step-5 handoff delivers the scheduler segment at `$1C00-$1FFF`:
    `$ACD9` (`tools/build_d71.py --scheduler --map`);
 3. gather it into the temporary application slot `$1200-$15FF` before crt0
    through the fixed `$2003` kernel entry vector; the boot-only `BOOTDELIVERY`
-   routine (267 resident bytes, no BSS or cc65 state, counted as boot-only
-   reclaim) validates the manifest magic and the 16-bit image checksum and
+   routine (267 staged bytes at `$A1E0`, no BSS or cc65 state) validates the
+   manifest magic and the 16-bit image checksum and
    records failures in the boot-chain record;
 4. crt0 clears BSS and the VIC shadow and returns to the fixed `$F7D8` copier;
 5. the 35-byte copier in FINAL copies the gathered page into `$1C00-$1FFF`

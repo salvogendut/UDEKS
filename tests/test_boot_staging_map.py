@@ -93,32 +93,39 @@ class BootStagingMapTests(unittest.TestCase):
     def test_realized_capability_staging_occupies_the_shadow_prefix(self):
         emitted = {
             **EMITTED,
+            "boot_delivery": 267,
             "capability": 967,
             "capability_installer": 102,
         }
         regions = staged_regions(
-            {**emitted, "probe": 209, "crt0": 207}, 0xA895
+            {**emitted, "probe": 209, "crt0": 207}, 0xA1E0
         )
         by_name = {region.name: region for region in regions}
         self.assertEqual(
-            (by_name["capability staging"].start,
-             by_name["capability staging"].copied_end),
-            (0xA895, 0xAC5B),
+            (by_name["boot delivery staging"].start,
+             by_name["boot delivery staging"].copied_end),
+            (0xA1E0, 0xA2EA),
         )
         self.assertEqual(
-            by_name["capability installer staging"].start, 0xAC5C
+            (by_name["capability staging"].start,
+             by_name["capability staging"].copied_end),
+            (0xA2EB, 0xA6B1),
+        )
+        self.assertEqual(
+            by_name["capability installer staging"].start, 0xA6B2
         )
 
     def test_realized_boot_console_uses_slot_two_and_boot_sector_installer(self):
         emitted = {
             **EMITTED,
+            "boot_delivery": 267,
             "capability": 967,
             "capability_installer": 102,
             "boot_console": 1450,
             "boot_console_installer": 99,
         }
         regions = staged_regions(
-            {**emitted, "probe": 209, "crt0": 207}, 0xA2EB
+            {**emitted, "probe": 209, "crt0": 207}, 0xA1E0
         )
         by_name = {region.name: region for region in regions}
         self.assertEqual(
@@ -131,7 +138,7 @@ class BootStagingMapTests(unittest.TestCase):
              by_name["boot console installer staging"].copied_end),
             (0x0B40, 0x0BA2),
         )
-        holes = free_holes(0xA2EB, 0x0B3D, regions)
+        holes = free_holes(0xA1E0, 0x0B3D, regions)
         self.assertIn(("boot-sector hole", 0x0B3E, 0x0B3F), holes)
         self.assertIn(("boot-sector hole", 0x0BA3, 0x0BFF), holes)
         self.assertEqual(

@@ -31,6 +31,7 @@ from build_d71 import (
 ROOT = Path(__file__).resolve().parents[1]
 
 KERNEL_BASE = 0x2000
+BOOT_DELIVERY_ADDRESS = 0xA1E0
 KERNEL_LIMIT = 0xD000
 SYSCALL_PAGE = 0xCF00
 VIC_SHADOW_SEGMENT = "VICSHADOW"
@@ -61,13 +62,10 @@ GATEWAY_SIZE_BASELINE = (254, 46, 68, 358)
 
 GATEWAY_SIZE_SUFFIXES = ("vic", "sprite", "page", "outline")
 
-# Objects whose code runs only during boot or hardware discovery and is dead
-# afterwards. Relocating them is the first reclaim step.  crt0 and probe are
-# not listed: both are staged in the VIC shadow and executed from reclaimed
-# pages, so their bytes are already accounted for by the free tail.
-BOOT_ONLY_OBJECTS = (
-    "boot_delivery.o",
-)
+# No one-shot object remains in the resident link. crt0, probe, capability,
+# boot console, and boot delivery are split outputs whose reclaimed bytes are
+# already represented by the sequential shadow and its free tail.
+BOOT_ONLY_OBJECTS: tuple[str, ...] = ()
 
 CODE_SEGMENTS = (
     "STARTUP", "PROBECODE", "LOWCODE", "ONCE", "CODE", "RODATA", "DATA",
@@ -347,6 +345,11 @@ def verify(result: dict[str, object]) -> list[str]:
         failures.append(
             f"VICSHADOW starts {result['kernel_gap']} bytes after BSS; "
             "link it sequentially"
+        )
+    if result["vic_shadow_start"] != BOOT_DELIVERY_ADDRESS:
+        failures.append(
+            "VICSHADOW start changed from the frozen boot-delivery address "
+            f"${BOOT_DELIVERY_ADDRESS:04X}"
         )
     startup = result["startup"]
     if startup is None or not (

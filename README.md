@@ -199,6 +199,7 @@ physical-hardware gates pass.
 - [Context-switch placement decision](docs/decisions/0008-context-switch-placement.md)
 - [Boot-only capability relocation decision](docs/decisions/0009-boot-only-capability-relocation.md)
 - [Boot-console relocation decision](docs/decisions/0010-boot-console-relocation.md)
+- [Boot-delivery shadow-execution decision](docs/decisions/0011-boot-delivery-shadow-execution.md)
 - [Mailbox ABI](abi/mailbox.md)
 - [Task lifecycle ABI](abi/tasks.md)
 - [UDEX executable format](abi/executable.md)

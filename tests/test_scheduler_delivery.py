@@ -99,6 +99,7 @@ class SchedulerDeliveryContractTests(unittest.TestCase):
         )
         self.assertIn("_kernel_main_entry = $2000", entry)
         self.assertIn("_boot_delivery_entry = $2003", entry)
+        self.assertIn("_boot_delivery_gather = $a1e0", entry)
 
     def test_boot_delivery_uses_no_bss_or_cc65_state(self):
         delivery = (ROOT / "src/8502/boot_delivery.s").read_text(
@@ -108,6 +109,11 @@ class SchedulerDeliveryContractTests(unittest.TestCase):
         self.assertIn('.segment "BOOTDELIVERY"', delivery)
         self.assertIn("SCATTER_MANIFEST = $acd9", delivery)
         self.assertIn("sta BOOT_CHAIN_FAILURE", delivery)
+        self.assertIn("_boot_delivery_gather = $a1e0", delivery)
+        config = (ROOT / "cfg/8502-boot-delivery.cfg").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("DELIVERY: start = $A1E0, size = $010B", config)
 
 
 if __name__ == "__main__":

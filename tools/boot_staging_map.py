@@ -63,6 +63,7 @@ Z80_STAGING_LIMIT = 0xF000
 BOOT_ONLY_OBJECTS: tuple[str, ...] = ()
 
 ARTIFACT_FILES = {
+    "boot_delivery": "build/boot/8502-boot-delivery.bin",
     "capability": "build/boot/8502-capability.bin",
     "capability_installer": "build/boot/capability-installer.bin",
     "boot_console": "build/boot/8502-boot-console.bin",
@@ -179,6 +180,20 @@ def staged_regions(
             "load..stage1",
         ),
     ]
+    delivery_size = emitted.get("boot_delivery", 0)
+    if delivery_size:
+        if shadow_start is None:
+            raise ValueError("boot delivery staging requires the shadow start")
+        regions.append(
+            StagedRegion(
+                "boot delivery staging",
+                shadow_start,
+                delivery_size,
+                delivery_size,
+                delivery_size,
+                "load..crt0",
+            )
+        )
     if "capability" in emitted or "capability_installer" in emitted:
         if shadow_start is None:
             raise ValueError("capability staging requires the shadow start")
@@ -190,7 +205,7 @@ def staged_regions(
             (
                 StagedRegion(
                     "capability staging",
-                    shadow_start,
+                    shadow_start + delivery_size,
                     capability_size,
                     capability_size,
                     capability_size,
@@ -198,7 +213,7 @@ def staged_regions(
                 ),
                 StagedRegion(
                     "capability installer staging",
-                    shadow_start + capability_size,
+                    shadow_start + delivery_size + capability_size,
                     installer_size,
                     installer_size,
                     installer_size,
@@ -211,10 +226,11 @@ def staged_regions(
             raise ValueError("boot console staging requires the shadow start")
         console_size = emitted.get("boot_console", 0)
         console_installer_size = emitted.get("boot_console_installer", 0)
+        delivery_size = emitted.get("boot_delivery", 0)
         capability_size = emitted.get("capability", 0)
         capability_installer_size = emitted.get("capability_installer", 0)
         if not all(
-            (console_size, console_installer_size, capability_size,
+            (console_size, console_installer_size, delivery_size, capability_size,
              capability_installer_size)
         ):
             raise ValueError(
@@ -225,7 +241,8 @@ def staged_regions(
             (
                 StagedRegion(
                     "boot console staging",
-                    shadow_start + capability_size + capability_installer_size,
+                    shadow_start + delivery_size + capability_size
+                    + capability_installer_size,
                     console_size,
                     console_size,
                     console_size,

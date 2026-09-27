@@ -6,9 +6,13 @@
 
         .setcpu "6502"
         .import _kernel_main
-        .import _boot_delivery_gather
         .export _kernel_main_entry
         .export _boot_delivery_entry
+        .export _boot_delivery_gather
+
+; The gather is a split boot image executed in place at the bottom of the VIC
+; shadow before crt0 clears it. This address is frozen by the placement audit.
+_boot_delivery_gather = $a1e0
 
         .segment "KERNELENTRY"
 _kernel_main_entry:

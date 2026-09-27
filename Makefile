@@ -29,6 +29,8 @@ BUILD_ASSETS := $(BUILD_DIR)/assets
 BUILD_USER := $(BUILD_DIR)/user
 
 KERNEL_BIN := $(BUILD_8502)/udeks-8502.bin
+BOOT_DELIVERY_BIN := $(BUILD_BOOT)/8502-boot-delivery.bin
+BOOT_DELIVERY_MAP := $(BUILD_8502)/8502-boot-delivery.map
 CRT0_BIN := $(BUILD_BOOT)/8502-crt0.bin
 PROBE_BIN := $(BUILD_BOOT)/8502-probe.bin
 SCHEDULER_BIN := $(BUILD_8502)/udeks-scheduler.bin
@@ -188,7 +190,7 @@ task-policy: $(BUILD_8502)/task_policy.o
 
 # Reference-container qualification: measures the real gateway copies and
 # fails if the placement expectations no longer hold.
-placement-check: placement-check-guard $(KERNEL_BIN) \
+placement-check: placement-check-guard $(KERNEL_BIN) $(BOOT_DELIVERY_BIN) \
 		$(BUILD_8502)/vic_graphics_transport.o
 	$(PYTHON) tools/placement_audit.py --verify
 
@@ -239,7 +241,8 @@ boot-console-probe:
 	}
 	$(PYTHON) tools/boot_console_relocation_probe.py
 
-8502: $(KERNEL_BIN) $(KERNEL_PRG) $(SCHEDULER_BIN) $(CAPABILITY_BIN)
+8502: $(KERNEL_BIN) $(KERNEL_PRG) $(SCHEDULER_BIN) $(CAPABILITY_BIN) \
+	$(BOOT_DELIVERY_BIN)
 
 z80: $(Z80_BIN)
 
@@ -663,9 +666,10 @@ $(CAPABILITY_BIN) $(CAPABILITY_MAP) &: \
 		$(CAPABILITY_BRIDGE_OBJ)
 
 $(CAPABILITY_CONSTANTS) $(CAPABILITY_INSTALLER_CFG) &: \
-		$(CAPABILITY_BIN) $(KERNEL_MAP) \
+		$(CAPABILITY_BIN) $(BOOT_DELIVERY_BIN) $(KERNEL_MAP) \
 		$(PANIC_PROBE_MAP) tools/gen_capability_imports.py
 	$(PYTHON) tools/gen_capability_imports.py constants $(CAPABILITY_BIN) \
+		$(BOOT_DELIVERY_BIN) \
 		$(KERNEL_MAP) $(PANIC_PROBE_MAP) $(CAPABILITY_CONSTANTS) \
 		$(CAPABILITY_INSTALLER_CFG)
 
@@ -697,11 +701,12 @@ $(BOOT_CONSOLE_BIN) $(BOOT_CONSOLE_MAP) &: \
 		-o $(BOOT_CONSOLE_BIN) $(BUILD_8502)/boot_console.o \
 		$(BOOT_CONSOLE_BRIDGE_OBJ)
 
-$(BOOT_CONSOLE_CONSTANTS): $(BOOT_CONSOLE_BIN) $(CAPABILITY_BIN) \
+$(BOOT_CONSOLE_CONSTANTS): $(BOOT_CONSOLE_BIN) $(BOOT_DELIVERY_BIN) $(CAPABILITY_BIN) \
 		$(CAPABILITY_INSTALLER_BIN) $(KERNEL_MAP) $(PANIC_PROBE_MAP) \
 		tools/gen_boot_console_imports.py
 	$(PYTHON) tools/gen_boot_console_imports.py constants \
-		$(BOOT_CONSOLE_BIN) $(CAPABILITY_BIN) $(CAPABILITY_INSTALLER_BIN) \
+		$(BOOT_CONSOLE_BIN) $(BOOT_DELIVERY_BIN) \
+		$(CAPABILITY_BIN) $(CAPABILITY_INSTALLER_BIN) \
 		$(KERNEL_MAP) $(PANIC_PROBE_MAP) $@
 
 $(BOOT_CONSOLE_INSTALLER_OBJ): src/boot/boot-console-installer.s \
@@ -798,6 +803,11 @@ $(BUILD_8502)/kernel_entry.o: src/8502/kernel_entry.s | $(BUILD_8502)
 $(BUILD_8502)/boot_delivery.o: src/8502/boot_delivery.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BOOT_DELIVERY_BIN) $(BOOT_DELIVERY_MAP) &: \
+		$(BUILD_8502)/boot_delivery.o cfg/8502-boot-delivery.cfg | $(BUILD_BOOT)
+	$(LD65) -C cfg/8502-boot-delivery.cfg -m $(BOOT_DELIVERY_MAP) \
+		-o $(BOOT_DELIVERY_BIN) $(BUILD_8502)/boot_delivery.o
+
 $(BUILD_8502)/probe.o: src/8502/probe.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -817,7 +827,7 @@ $(BUILD_8502)/vic_graphics_transport.o: src/8502/vic_graphics.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &: \
-		$(BUILD_8502)/kernel_entry.o $(BUILD_8502)/boot_delivery.o \
+		$(BUILD_8502)/kernel_entry.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
 		$(BUILD_8502)/line_editor_read.o \
@@ -869,7 +879,7 @@ $(SCHEDULER_BIN): src/scheduler/scheduler.s cfg/8502-scheduler.cfg \
 
 $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(PANIC_PROBE_PROBE_BIN) $(PANIC_PROBE_MAP) &: \
-		$(BUILD_8502)/kernel_entry.o $(BUILD_8502)/boot_delivery.o \
+		$(BUILD_8502)/kernel_entry.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
 		$(BUILD_8502)/line_editor_read.o \
@@ -1297,6 +1307,7 @@ $(STAGE1_BIN): $(BUILD_BOOT)/stage1.o cfg/8502-stage1.cfg
 	$(LD65) -C cfg/8502-stage1.cfg -o $@ $<
 
 $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
+		$(BOOT_DELIVERY_BIN) \
 		$(CRT0_BIN) $(PROBE_BIN) $(SCHEDULER_BIN) $(CAPABILITY_BIN) \
 		$(CAPABILITY_INSTALLER_BIN) $(BOOT_CONSOLE_BIN) \
 		$(BOOT_CONSOLE_INSTALLER_BIN) \
@@ -1309,6 +1320,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
+		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(CRT0_BIN) --probe $(PROBE_BIN) \
 		--scheduler $(SCHEDULER_BIN) --map $(KERNEL_MAP) \
 		--capability $(CAPABILITY_BIN) \
@@ -1325,6 +1337,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--d64-output $(BOOT_D64) $(BOOT_D71)
 
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
+		$(BOOT_DELIVERY_BIN) \
 		$(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) \
 		$(SCHEDULER_BIN) $(CAPABILITY_BIN) $(CAPABILITY_INSTALLER_BIN) \
 		$(BOOT_CONSOLE_BIN) $(BOOT_CONSOLE_INSTALLER_BIN) \
@@ -1336,6 +1349,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(PANIC_PROBE_KERNEL_BIN) \
+		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(PANIC_PROBE_CRT0_BIN) \
 		--probe $(PANIC_PROBE_PROBE_BIN) \
 		--scheduler $(SCHEDULER_BIN) --map $(PANIC_PROBE_MAP) \

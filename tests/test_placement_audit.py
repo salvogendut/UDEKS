@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
 from placement_audit import (
+    BOOT_DELIVERY_ADDRESS,
     COMMON_GATEWAY,
     SYSCALL_PAGE,
     TASK_GATE_BASE,
@@ -46,9 +47,8 @@ PROBECODE             000B00  000BD0  0000D1  00001
 STARTUP               001C00  001CCE  0000CF  00001
 KERNELENTRY           002000  002005  000006  00001
 CODE                  002006  002351  00034C  00001
-BSS                   002352  00AB14  0087C3  00001
-BOOTDELIVERY          00AB15  00ABFF  0000EB  00001
-VICSHADOW             00AC00  00CB3F  001F40  00001
+BSS                   002352  00A1DF  007E8E  00001
+VICSHADOW             00A1E0  00C11F  001F40  00001
 SYSCALLS              00CF00  00CFF8  0000F9  00001
 TASKGATE              00FF05  00FFC4  0000C0  00001
 
@@ -77,21 +77,21 @@ class PlacementAuditTests(unittest.TestCase):
 
     def test_audit_uses_inclusive_segment_ends(self):
         result = audit(FIXTURE, OBJECT_DUMP)
-        self.assertEqual(result["data_end"], 0xABFF)
-        self.assertEqual(result["kernel_used"], 0xABFF - 0x2000 + 1)
+        self.assertEqual(result["data_end"], 0xA1DF)
+        self.assertEqual(result["kernel_used"], 0xA1DF - 0x2000 + 1)
         self.assertEqual(result["kernel_gap"], 0)
-        self.assertEqual(result["vic_shadow_start"], 0xAC00)
+        self.assertEqual(result["vic_shadow_start"], BOOT_DELIVERY_ADDRESS)
         self.assertEqual(result["vic_shadow_size"], 0x1F40)
         self.assertEqual(result["vic_shadow_padding"], 0)
         self.assertEqual(
             result["free_after_shadow"],
-            SYSCALL_PAGE - (0xAC00 + 0x1F40),
+            SYSCALL_PAGE - (BOOT_DELIVERY_ADDRESS + 0x1F40),
         )
         self.assertNotIn("crt0.o", result["boot_only"])
         self.assertNotIn("probe.o", result["boot_only"])
         self.assertNotIn("hardware_capability.o", result["boot_only"])
         self.assertNotIn("boot_console.o", result["boot_only"])
-        self.assertEqual(result["boot_only"]["boot_delivery.o"], 0xEB)
+        self.assertNotIn("boot_delivery.o", result["boot_only"])
         self.assertEqual(result["probe_segment"]["start"], 0x0B00)
         self.assertEqual(result["probe_segment"]["end"], 0x0BD0)
         self.assertEqual(result["kernel_entry"]["start"], 0x2000)
@@ -99,8 +99,7 @@ class PlacementAuditTests(unittest.TestCase):
         self.assertEqual(result["code_start"], 0x2006)
         self.assertEqual(
             result["reclaim_total"],
-            0xEB
-            + 0 + 0 + (SYSCALL_PAGE - (0xAC00 + 0x1F40)) + 0x400,
+            0 + 0 + (SYSCALL_PAGE - (BOOT_DELIVERY_ADDRESS + 0x1F40)) + 0x400,
         )
 
     def test_gateway_sizes_come_from_the_assembled_object(self):
@@ -131,13 +130,13 @@ class PlacementAuditTests(unittest.TestCase):
     def test_fixture_is_missing_a_shadow_segment(self):
         with self.assertRaisesRegex(ValueError, "VICSHADOW"):
             audit(
-                FIXTURE.replace("VICSHADOW             00AC00  00CB3F  001F40", "")
+                FIXTURE.replace("VICSHADOW             00A1E0  00C11F  001F40", "")
             )
 
     def test_reserved_shadow_padding_fails_verification(self):
         map_text = FIXTURE.replace(
-            "VICSHADOW             00AC00  00CB3F  001F40  00001",
-            "VICSHADOW             00AC00  00CBFF  002000  00001",
+            "VICSHADOW             00A1E0  00C11F  001F40  00001",
+            "VICSHADOW             00A1E0  00C1DF  002000  00001",
         )
         result = audit(map_text, OBJECT_DUMP)
         self.assertEqual(result["vic_shadow_padding"], 0x2000 - 8000)
@@ -148,8 +147,8 @@ class PlacementAuditTests(unittest.TestCase):
 
     def test_gap_before_shadow_fails_verification(self):
         map_text = FIXTURE.replace(
-            "VICSHADOW             00AC00  00CB3F  001F40  00001",
-            "VICSHADOW             00AD00  00CC3F  001F40  00001",
+            "VICSHADOW             00A1E0  00C11F  001F40  00001",
+            "VICSHADOW             00A2E0  00C21F  001F40  00001",
         )
         result = audit(map_text, OBJECT_DUMP)
         self.assertEqual(result["kernel_gap"], 0x100)
@@ -190,8 +189,8 @@ class PlacementAuditTests(unittest.TestCase):
 
     def test_crt0_staging_outside_shadow_fails_verification(self):
         map_text = FIXTURE.replace(
-            "VICSHADOW             00AC00  00CB3F  001F40  00001",
-            "VICSHADOW             00AC00  00AD3F  000140  00001",
+            "VICSHADOW             00A1E0  00C11F  001F40  00001",
+            "VICSHADOW             00A1E0  00A31F  000140  00001",
         )
         failures = verify(audit(map_text, OBJECT_DUMP))
         self.assertTrue(
@@ -210,8 +209,8 @@ class PlacementAuditTests(unittest.TestCase):
 
     def test_probe_staging_outside_shadow_fails_verification(self):
         map_text = FIXTURE.replace(
-            "VICSHADOW             00AC00  00CB3F  001F40  00001",
-            "VICSHADOW             00AC00  00ACFF  000100  00001",
+            "VICSHADOW             00A1E0  00C11F  001F40  00001",
+            "VICSHADOW             00A1E0  00A2DF  000100  00001",
         )
         failures = verify(audit(map_text, OBJECT_DUMP))
         self.assertTrue(

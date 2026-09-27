@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 from build_d71 import (
     BOOT_CONSOLE_INSTALLER_ADDRESS,
     BOOT_CONSOLE_SIZE,
+    BOOT_DELIVERY_SIZE,
     BOOTFS_SIZE,
     BOOTFS_TAIL_STAGING_ADDRESS,
     BOOTFS_Z80_OFFSET,
@@ -253,7 +254,10 @@ class BuildD71Tests(unittest.TestCase):
             )
 
     def test_scheduler_does_not_reuse_zero_tail_of_boot_console_installer(self):
-        shadow_start = 0xA2EB
+        shadow_start = 0xA1E0
+        boot_delivery = bytes(
+            (index % 239) + 1 for index in range(BOOT_DELIVERY_SIZE)
+        )
         capability = bytes((index % 251) + 1 for index in range(CAPABILITY_SIZE))
         capability_installer = bytes((index % 253) + 1 for index in range(102))
         boot_console = bytes((index % 249) + 1 for index in range(BOOT_CONSOLE_SIZE))
@@ -267,6 +271,7 @@ class BuildD71Tests(unittest.TestCase):
             capability_installer=capability_installer,
             boot_console=boot_console,
             boot_console_installer=boot_console_installer,
+            boot_delivery=boot_delivery,
         )
 
         boot_sector = image[:SECTOR_SIZE]
@@ -297,6 +302,17 @@ class BuildD71Tests(unittest.TestCase):
             self.assertTrue(last < installer_first or start > installer_last)
         boot_chunks = [chunk for chunk in chunks if chunk[0] < 0x0C00]
         self.assertEqual(boot_chunks[0][0], installer_last + 1)
+
+        delivery_offset = shadow_start - 0x1C00
+        self.assertEqual(
+            payload[delivery_offset : delivery_offset + len(boot_delivery)],
+            boot_delivery,
+        )
+        capability_offset = delivery_offset + len(boot_delivery)
+        self.assertEqual(
+            payload[capability_offset : capability_offset + len(capability)],
+            capability,
+        )
 
     def test_rejects_oversize_probe(self):
         with self.assertRaisesRegex(ValueError, "256-byte"):

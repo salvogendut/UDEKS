@@ -163,8 +163,9 @@ The native disk path uses two small stages before the resident kernel:
    two 64 KiB RAM banks, loads/copies the 8502 image to bank-0 `$2000`, installs
    the Z80 image at bank-1 `$2000`, and installs common gateways and vectors.
 4. Stage 1 selects the kernel-I/O profile, 4 KiB top common RAM, and physical
-   bank-0 pages zero/one, then copies the staged crt0 page over its own dead
-   `$1C00` page and enters it there.
+   bank-0 pages zero/one. Through the fixed `$2003` vector it runs the staged
+   scheduler gather in place at `$A1E0`, then copies the staged crt0 page over
+   its own dead `$1C00` page and enters it there.
 5. The crt0 entry repeats the safe MMU/profile initialization idempotently,
    clears BSS and the VIC shadow, and returns to the protected `$F7D8`
    scheduler copier, which installs the gathered scheduler segment over the

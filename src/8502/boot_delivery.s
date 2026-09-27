@@ -177,3 +177,7 @@ delivery_fail:
 
 delivery_sum:
         .byte $00, $00
+
+boot_delivery_end:
+        .assert _boot_delivery_gather = $a1e0, error, "boot delivery moved"
+        .assert boot_delivery_end - _boot_delivery_gather = $010b, error, "boot delivery size drift"

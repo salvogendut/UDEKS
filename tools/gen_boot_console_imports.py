@@ -109,6 +109,7 @@ def write_bridge(
 
 def write_constants(
     image_path: str,
+    boot_delivery_path: str,
     capability_path: str,
     capability_installer_path: str,
     normal_map: str,
@@ -116,11 +117,16 @@ def write_constants(
     output_path: str,
 ) -> None:
     image = Path(image_path).read_bytes()
+    boot_delivery = Path(boot_delivery_path).read_bytes()
     capability = Path(capability_path).read_bytes()
     capability_installer = Path(capability_installer_path).read_bytes()
     if len(image) != IMAGE_SIZE:
         raise ValueError(
             f"boot console image is {len(image)} bytes, expected {IMAGE_SIZE}"
+        )
+    if len(boot_delivery) != 0x010B:
+        raise ValueError(
+            f"boot delivery image is {len(boot_delivery)} bytes; expected 267"
         )
     if len(capability) != CAPABILITY_SIZE:
         raise ValueError(
@@ -135,7 +141,10 @@ def write_constants(
     shadow_start, kind = normal[name]
     if kind != "RLA":
         raise ValueError("VICSHADOW start is not an absolute label")
-    source = shadow_start + len(capability) + len(capability_installer)
+    source = (
+        shadow_start + len(boot_delivery) + len(capability)
+        + len(capability_installer)
+    )
     end = source + len(image) - 1
     if end >= MANIFEST_ADDRESS:
         raise ValueError(
@@ -166,10 +175,10 @@ def main() -> int:
         if len(sys.argv) == 6 and sys.argv[1] == "bridge":
             write_bridge(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
             return 0
-        if len(sys.argv) == 8 and sys.argv[1] == "constants":
+        if len(sys.argv) == 9 and sys.argv[1] == "constants":
             write_constants(
                 sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5],
-                sys.argv[6], sys.argv[7]
+                sys.argv[6], sys.argv[7], sys.argv[8]
             )
             return 0
     except (OSError, subprocess.CalledProcessError, ValueError) as error:
@@ -180,8 +189,8 @@ def main() -> int:
         "  gen_boot_console_imports.py flags <object> <out.txt>\n"
         "  gen_boot_console_imports.py bridge <object> <normal.map> "
         "<panic.map> <out.s>\n"
-        "  gen_boot_console_imports.py constants <image> <capability> "
-        "<cap-installer> <normal.map> <panic.map> <out.inc>",
+        "  gen_boot_console_imports.py constants <image> <boot-delivery> "
+        "<capability> <cap-installer> <normal.map> <panic.map> <out.inc>",
         file=sys.stderr,
     )
     return 2

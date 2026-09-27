@@ -35,6 +35,7 @@ PROBE_STAGING_ADDRESS = 0xAD00
 PROBE_SIZE = 0x0100
 BOOTFS_TAIL_STAGING_ADDRESS = 0xAF00
 SCHEDULER_SIZE = 0x0400
+BOOT_DELIVERY_SIZE = 0x010B
 CAPABILITY_SIZE = 0x03C7
 BOOT_CONSOLE_SIZE = 0x05AA
 BOOT_CONSOLE_DESTINATION = 0x1600
@@ -362,6 +363,21 @@ def install_capability(
     kernel[offset : offset + len(capability)] = capability
 
 
+def install_boot_delivery(
+    kernel: bytearray, boot_delivery: bytes, shadow_start: int
+) -> None:
+    if len(boot_delivery) != BOOT_DELIVERY_SIZE:
+        raise ValueError(
+            f"boot delivery image is {len(boot_delivery)} bytes; expected "
+            f"{BOOT_DELIVERY_SIZE}"
+        )
+    offset = shadow_start - KERNEL_ADDRESS
+    region = kernel[offset : offset + len(boot_delivery)]
+    if len(region) != len(boot_delivery) or any(region):
+        raise ValueError("boot delivery staging overlaps resident kernel data")
+    kernel[offset : offset + len(boot_delivery)] = boot_delivery
+
+
 def install_capability_installer(
     kernel: bytearray, installer: bytes, shadow_start: int
 ) -> None:
@@ -539,6 +555,7 @@ def build_image(
     capability_installer: bytes = b"",
     boot_console: bytes = b"",
     boot_console_installer: bytes = b"",
+    boot_delivery: bytes = b"",
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -567,12 +584,18 @@ def build_image(
     install_task_loader(staged_kernel, task_loader)
     install_task_bank_gateway(staged_kernel, task_bank_gateway)
     stage0_sector = bytearray(stage0.ljust(SECTOR_SIZE, b"\x00"))
+    delivery_size = len(boot_delivery)
+    delivery_end = None if shadow_start is None else shadow_start + delivery_size
+    if boot_delivery:
+        if shadow_start is None:
+            raise ValueError("boot delivery staging requires the shadow start")
+        install_boot_delivery(staged_kernel, boot_delivery, shadow_start)
     if capability:
         if shadow_start is None:
             raise ValueError("capability staging requires the shadow start")
-        install_capability(staged_kernel, capability, shadow_start)
+        install_capability(staged_kernel, capability, delivery_end)
         install_capability_installer(
-            staged_kernel, capability_installer, shadow_start
+            staged_kernel, capability_installer, delivery_end
         )
     if boot_console:
         if shadow_start is None:
@@ -580,7 +603,7 @@ def build_image(
         install_boot_console(
             staged_kernel,
             boot_console,
-            shadow_start,
+            delivery_end,
             len(capability),
             len(capability_installer),
         )
@@ -592,7 +615,8 @@ def build_image(
             raise ValueError("scheduler staging requires the shadow start")
         install_scheduler(
             staged_kernel, stage0_sector, scheduler, shadow_start,
-            len(capability) + len(capability_installer) + len(boot_console),
+            delivery_size + len(capability) + len(capability_installer)
+            + len(boot_console),
             (
                 BOOT_CONSOLE_INSTALLER_ADDRESS
                 + len(boot_console_installer) - 1
@@ -628,6 +652,7 @@ def main() -> None:
     parser.add_argument("--stage0", type=Path, required=True)
     parser.add_argument("--stage1", type=Path, required=True)
     parser.add_argument("--kernel", type=Path, required=True)
+    parser.add_argument("--boot-delivery", type=Path, required=True)
     parser.add_argument("--crt0", type=Path, required=True)
     parser.add_argument("--probe", type=Path, required=True)
     parser.add_argument("--scheduler", type=Path, required=True)
@@ -675,6 +700,7 @@ def main() -> None:
             args.capability_installer.read_bytes(),
             args.boot_console.read_bytes(),
             args.boot_console_installer.read_bytes(),
+            args.boot_delivery.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

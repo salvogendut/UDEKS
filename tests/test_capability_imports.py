@@ -87,9 +87,11 @@ class CanonicalizeTests(unittest.TestCase):
         with TemporaryDirectory() as directory:
             root = Path(directory)
             image = root / "capability.bin"
+            delivery = root / "boot-delivery.bin"
             normal = root / "normal.map"
             panic = root / "panic.map"
             image.write_bytes(bytes(0x03C7))
+            delivery.write_bytes(bytes(0x010B))
             normal.write_text(
                 map_template.format(address=0xA89E), encoding="utf-8"
             )
@@ -98,7 +100,7 @@ class CanonicalizeTests(unittest.TestCase):
             )
             with self.assertRaisesRegex(ValueError, "starts differ"):
                 gen.write_constants(
-                    str(image), str(normal), str(panic),
+                    str(image), str(delivery), str(normal), str(panic),
                     str(root / "out.inc"), str(root / "out.cfg"),
                 )
 

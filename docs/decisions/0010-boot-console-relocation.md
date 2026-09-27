@@ -41,11 +41,12 @@ the scheduler gather buffer.
 
 ## Consequences
 
-- The free post-shadow tail grows from 1,835 bytes at `$C7D5-$CEFF` to 3,285
-  bytes at `$C22B-$CEFF`.
-- The only remaining measured resident boot-only object is the 267-byte
-  scheduler gather (`boot_delivery.o`). Total reclaim remains 4,576 bytes,
-  with 1,024 already assigned to the installed scheduler page.
+- The initial extraction grows the free post-shadow tail from 1,835 bytes at
+  `$C7D5-$CEFF` to 3,285 bytes at `$C22B-$CEFF`. The following boot-delivery
+  extraction grows it again to 3,552 bytes at `$C120-$CEFF` without changing
+  this ADR's console placement.
+- No measured boot-only object remains resident. Total reclaim remains 4,576
+  bytes, with 1,024 assigned to the installed scheduler page.
 - Stage-1 COMMON now uses all 512 bytes. FINAL remains 214 bytes and the fixed
   scheduler copier remains 35 bytes at `$F7D8`.
 - Free boot-payload holes total 574 bytes. After the fixed manifest carve and
@@ -63,7 +64,7 @@ The following gates pass in VICE 3.10:
   startup;
 - `xinit` followed by `xwave &` overwrites slot 2 and reaches the running state;
 - capability relocation and its post-xclock re-entry gate remain valid;
-- all 8,000 shadow bytes clear, the 3,285-byte tail preimage survives, and the
+- all 8,000 shadow bytes clear, the current 3,552-byte tail preimage survives, and the
   bank-0 shadow equals the bank-1 VIC bitmap after repaint.
 
 `1986` cold boot plus slot-reuse qualification remains the acceptance gate.
