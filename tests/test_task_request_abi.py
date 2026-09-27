@@ -82,7 +82,7 @@ class TaskRequestAbiTests(unittest.TestCase):
         ):
             self.assertEqual(values[f"UDEKS_TREQ_{name}"], value)
 
-    def test_dispatcher_accepts_03_and_routes_yield(self):
+    def test_dispatcher_accepts_03_and_routes_lifecycle_operations(self):
         dispatcher = (ROOT / "src/8502/syscall_gate.s").read_text().lower()
         bootfs = (
             ROOT / "src/services/filesystem/bootfs_request.s"
@@ -95,8 +95,8 @@ class TaskRequestAbiTests(unittest.TestCase):
         self.assertIn("cmp #op_yield", bootfs)
         self.assertIn("request_lifecycle:", bootfs)
         self.assertIn("cmp #op_yield", bootfs)
-        self.assertIn("cmp #op_waitpid+1", bootfs)
-        self.assertIn("jmp $cb00", bootfs)
+        self.assertIn("cmp #op_spawn+1", bootfs)
+        self.assertIn("jmp $c900", bootfs)
         # The bootfs fallback answers unknown operations with ENOSYS.
         self.assertIn("lda #err_enosys", bootfs)
         self.assertIn("jmp finish_error", bootfs)

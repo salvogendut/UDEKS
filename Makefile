@@ -151,6 +151,8 @@ TASK_EXIT_PROBE_D71 := $(BUILD_BOOT)/udeks-task-exit-probe.d71
 TASK_EXIT_PROBE_D64 := $(BUILD_BOOT)/udeks-task-exit-probe.d64
 TASK_WAITPID_PROBE_D71 := $(BUILD_BOOT)/udeks-task-waitpid-probe.d71
 TASK_WAITPID_PROBE_D64 := $(BUILD_BOOT)/udeks-task-waitpid-probe.d64
+TASK_SPAWN_PROBE_D71 := $(BUILD_BOOT)/udeks-task-spawn-probe.d71
+TASK_SPAWN_PROBE_D64 := $(BUILD_BOOT)/udeks-task-spawn-probe.d64
 PANIC_PROBE_D71 := $(BUILD_BOOT)/udeks-panic-probe.d71
 VDC_SPLASH_BIN := $(BUILD_ASSETS)/udekspipe-64.vdc
 VDC_WORDMARK_BIN := $(BUILD_ASSETS)/udekusu-64.vdc
@@ -187,6 +189,15 @@ USER_WAITPID_PROBE_OBJ := $(BUILD_USER)/task-waitpid-probe.o
 USER_WAITPID_PROBE_BIN := $(BUILD_USER)/task-waitpid-probe.bin
 USER_WAITPID_PROBE_UDEX := $(BUILD_USER)/task-waitpid-probe.udx
 USER_WAITPID_PROBE_BOOTFS := $(BUILD_USER)/task-waitpid-probe-bootfs.img
+USER_SPAWN_PARENT_OBJ := $(BUILD_USER)/task-spawn-parent.o
+USER_SPAWN_PARENT_BIN := $(BUILD_USER)/task-spawn-parent.bin
+USER_SPAWN_PARENT_UDEX := $(BUILD_USER)/task-spawn-parent.udx
+USER_SPAWN_CHILD_ASM := $(BUILD_USER)/task-spawn-child.s
+USER_SPAWN_CHILD_ENTRY_OBJ := $(BUILD_USER)/task-spawn-child-entry.o
+USER_SPAWN_CHILD_OBJ := $(BUILD_USER)/task-spawn-child.o
+USER_SPAWN_CHILD_BIN := $(BUILD_USER)/task-spawn-child.bin
+USER_SPAWN_CHILD_UDEX := $(BUILD_USER)/task-spawn-child.udx
+USER_SPAWN_PROBE_BOOTFS := $(BUILD_USER)/task-spawn-probe-bootfs.img
 USER_APP_IMPORTS_OBJ := $(BUILD_USER)/app_imports.o
 USER_XCLOCK_ASM := $(BUILD_USER)/xclock.s
 USER_XCLOCK_OBJ := $(BUILD_USER)/xclock.o
@@ -211,7 +222,7 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	task-state task-policy task-scheduler task-switch-tail task-switch-activation scheduler-overlay placement-check \
 	placement-check-guard \
 	shadow-probe capability-probe boot-console-probe task-yield-probe \
-	task-exit-probe task-waitpid-probe task-spawn-loader-probe \
+	task-exit-probe task-waitpid-probe task-spawn-loader-probe task-spawn-probe \
 	check doctor clean help
 
 all: 8502 z80 z80-asm
@@ -343,6 +354,16 @@ task-spawn-loader-probe: $(BOOT_D71) $(BOOT_D64) $(USER_COWSAY_UDEX)
 	}
 	$(PYTHON) tools/task_spawn_loader_probe.py
 	$(PYTHON) tools/task_spawn_loader_probe.py --disk $(BOOT_D64)
+
+# A persistent parent creates an ordinary APP1 child through SPAWN, blocks in
+# WAITPID, and observes status 37 when the child's normal RTS becomes EXIT.
+task-spawn-probe: $(TASK_SPAWN_PROBE_D71) $(TASK_SPAWN_PROBE_D64)
+	@command -v flatpak >/dev/null 2>&1 || { \
+		echo "task-spawn-probe requires Flatpak VICE (net.sf.VICE)" >&2; \
+		exit 1; \
+	}
+	$(PYTHON) tools/task_spawn_probe.py
+	$(PYTHON) tools/task_spawn_probe.py --disk $(TASK_SPAWN_PROBE_D64)
 
 8502: $(KERNEL_BIN) $(KERNEL_PRG) $(SCHEDULER_BIN) $(CAPABILITY_BIN) \
 	$(BOOT_DELIVERY_BIN)
@@ -527,6 +548,41 @@ $(USER_WAITPID_PROBE_BOOTFS): $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) \
 		--entry ush=$(USER_WAITPID_PROBE_UDEX) \
 		--entry xclock=$(USER_XCLOCK_UDEX) \
 		--entry xwave=$(USER_XWAVE_UDEX) $@
+
+$(USER_SPAWN_PARENT_OBJ): user/probes/task_spawn_parent.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(USER_SPAWN_PARENT_BIN): $(USER_SPAWN_PARENT_OBJ) cfg/8502-user-bank1.cfg
+	$(LD65) -C cfg/8502-user-bank1.cfg -o $@ $<
+
+$(USER_SPAWN_PARENT_UDEX): $(USER_SPAWN_PARENT_BIN) tools/build_udex.py
+	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x9000 \
+		--entry-address 0x9000 --flags 0x01 $< $@
+
+$(USER_SPAWN_CHILD_ASM): user/probes/task_spawn_child.c | $(BUILD_USER)
+	$(CC65) -t none --cpu 6502 --standard c99 -Oirs -I include -I user/include \
+		-o $@ $<
+
+$(USER_SPAWN_CHILD_OBJ): $(USER_SPAWN_CHILD_ASM) | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(USER_SPAWN_CHILD_ENTRY_OBJ): user/probes/task_spawn_child_entry.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(USER_SPAWN_CHILD_BIN): $(USER_SPAWN_CHILD_ENTRY_OBJ) $(USER_SPAWN_CHILD_OBJ) \
+		cfg/8502-user-app1.cfg
+	$(CL65) -t none --cpu 6502 -C cfg/8502-user-app1.cfg \
+		-m $(BUILD_USER)/task-spawn-child.map -o $@ $(filter %.o,$^)
+
+$(USER_SPAWN_CHILD_UDEX): $(USER_SPAWN_CHILD_BIN) tools/build_udex.py
+	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 \
+		--entry-address 0x0200 $< $@
+
+$(USER_SPAWN_PROBE_BOOTFS): $(USER_SPAWN_PARENT_UDEX) \
+		$(USER_SPAWN_CHILD_UDEX) tools/build_bootfs.py
+	$(PYTHON) tools/build_bootfs.py --max-size 0x2DBC \
+		--entry child=$(USER_SPAWN_CHILD_UDEX) \
+		--entry ush=$(USER_SPAWN_PARENT_UDEX) $@
 
 $(USER_APP_IMPORTS_OBJ): user/lib/app_imports.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
@@ -1747,6 +1803,38 @@ $(TASK_WAITPID_PROBE_D71) $(TASK_WAITPID_PROBE_D64) &: $(STAGE0_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) \
 		--d64-output $(TASK_WAITPID_PROBE_D64) $(TASK_WAITPID_PROBE_D71)
 
+$(TASK_SPAWN_PROBE_D71) $(TASK_SPAWN_PROBE_D64) &: $(STAGE0_BIN) \
+		$(STAGE1_BIN) $(KERNEL_BIN) $(BOOT_DELIVERY_BIN) $(CRT0_BIN) \
+		$(PROBE_BIN) $(SCHEDULER_BIN) $(CAPABILITY_BIN) \
+		$(CAPABILITY_INSTALLER_BIN) $(BOOT_CONSOLE_BIN) \
+		$(TASK_SWITCH_ACTIVATION_BIN) $(BOOT_CONSOLE_INSTALLER_BIN) \
+		$(SCHEDULER_TAIL_INSTALLER_BIN) $(VIC_BUSY_SPRITE_BIN) \
+		$(SCHEDULER_OVERLAY_PAYLOAD) $(KERNEL_MAP) $(MODULE_BIN) \
+		$(Z80_BIN) $(USER_SPAWN_PROBE_BOOTFS) $(USER_SPAWN_PARENT_UDEX) \
+		$(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
+		$(BOOTFS_REQUEST_SERVICE_BIN) $(TASK_BANK_GATE_BIN) \
+		tools/build_d71.py
+	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
+		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
+		--boot-delivery $(BOOT_DELIVERY_BIN) \
+		--crt0 $(CRT0_BIN) --probe $(PROBE_BIN) \
+		--map $(KERNEL_MAP) \
+		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) \
+		--scheduler-tail-installer $(SCHEDULER_TAIL_INSTALLER_BIN) \
+		--busy-sprite $(VIC_BUSY_SPRITE_BIN) \
+		--capability $(CAPABILITY_BIN) \
+		--capability-installer $(CAPABILITY_INSTALLER_BIN) \
+		--boot-console $(BOOT_CONSOLE_BIN) \
+		--task-switch-activation $(TASK_SWITCH_ACTIVATION_BIN) \
+		--boot-console-installer $(BOOT_CONSOLE_INSTALLER_BIN) \
+		--bootfs $(USER_SPAWN_PROBE_BOOTFS) \
+		--module $(MODULE_BIN) --ush $(USER_SPAWN_PARENT_UDEX) \
+		--task-loader $(TASK_LOADER_BIN) \
+		--task-request-gateway $(TASK_REQUEST_GATE_BIN) \
+		--bootfs-request-service $(BOOTFS_REQUEST_SERVICE_BIN) \
+		--task-bank-gateway $(TASK_BANK_GATE_BIN) \
+		--d64-output $(TASK_SPAWN_PROBE_D64) $(TASK_SPAWN_PROBE_D71)
+
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		$(BOOT_DELIVERY_BIN) \
 		$(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) \
@@ -1825,7 +1913,7 @@ check:
 		tools/shadow_clear_decode.py \
 		tools/task_state_decode.py tools/task_yield_probe.py \
 		tools/task_exit_probe.py tools/task_waitpid_probe.py \
-		tools/task_spawn_loader_probe.py \
+		tools/task_spawn_loader_probe.py tools/task_spawn_probe.py \
 		tools/vice_capture.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-r2 && sha256sum -c SHA256SUMS
@@ -1913,6 +2001,7 @@ help:
 		'make placement-check  Verify the linker-map budget (reference container)' \
 		'make shadow-probe  Qualify the VIC shadow clear in VICE (host flatpak)' \
 		'make task-spawn-loader-probe  Qualify load-only SPAWN delivery in VICE' \
+		'make task-spawn-probe  Qualify SPAWN/EXIT/WAITPID lifecycle in VICE' \
 		'make capability-probe  Qualify relocated capability startup and slot reuse' \
 		'make bench      Build comparable 8502 and Z80 benchmark images' \
 		'make bench-8502 Build only the 8502 benchmark image' \

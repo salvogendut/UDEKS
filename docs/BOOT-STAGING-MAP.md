@@ -130,7 +130,7 @@ sprite with `probe.o`.
 
 The original step-5 scatter handoff remains preserved as historical evidence.
 The production path now delivers the scheduler at `$1C00-$1FFF` and its
-installed tail at `$C120-$CD36`:
+installed tail at `$C120-$CD04`:
 
 1. link the zero-padded scheduler page and lifecycle core tail; the pure
    request-policy C module remains host-tested and compile-qualified rather
@@ -138,7 +138,7 @@ installed tail at `$C120-$CD36`:
 2. package both in the versioned `SCHEDOVR` side-one PRG;
 3. load it at `$5000` in bank 1 through stage-0 KERNAL `SETBNK`/`LOAD`;
 4. copy it through the exact 192-byte temporary task-gate installer into
-   `$1200-$15FF` and `$C120-$CD36`, validating its magic/checksum and clearing
+   `$1200-$15FF` and `$C120-$CD04`, validating its magic/checksum and clearing
    the 151-byte BSS;
 5. crt0 clears BSS and the VIC shadow and returns to the fixed `$F7D8` copier;
 6. the 35-byte copier in FINAL copies the page into `$1C00-$1FFF`; the
@@ -154,12 +154,12 @@ entry count, source ranges, and destination, so a malformed manifest cannot
 write past `$15FF`.
 
 The linked core occupies `$C120-$C5C9` including BSS. The packaged tail pads
-to the permanent 567-byte lifecycle handler at `$CB00-$CD36`; the context
+to the permanent 1,029-byte lifecycle handler at `$C900-$CD04`; the context
 binding remains at `$CDBD-$CEFF`, separated by the preserved
-`$CD37-$CDBC` gap. The old `USCT` scatter builder and frozen
+`$CD05-$CDBC` gap. The old `USCT` scatter builder and frozen
 `$2003` entry remain available for compatibility and historical tests, but
 production boot no longer consumes the fragmented holes. The active page is
-1,018 bytes padded to 1 KiB, and the copied tail is 3,095 bytes including the
+1,018 bytes padded to 1 KiB, and the copied tail is 3,045 bytes including the
 zero gap and handler; its 151-byte core BSS is cleared in place. D71/D64 cold boots install
 both byte-exactly without touching the `$FFC5` IRQ trampoline. After the
 installer clears BSS, the lifecycle bootstrap leaves the exact expected task-1

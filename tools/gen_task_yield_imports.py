@@ -20,6 +20,7 @@ EXPECTED = {
     "_udeks_lifecycle_rejected_private": "02",
     "_udeks_lifecycle_slots_private": "02",
     "_udeks_task_context_save_current": "02",
+    "_udeks_task_contexts_private": "02",
     "_udeks_task_wait_child_private": "02",
     "_udeks_task_wait_count_private": "02",
     "_udeks_task_wait_descriptor_private": "02",
@@ -86,7 +87,10 @@ def render(
     ]
     for name in sorted(imports):
         size = imports[name]
-        if name == "_udeks_task_context_save_current":
+        if name in {
+            "_udeks_task_context_save_current",
+            "_udeks_task_contexts_private",
+        }:
             providers = context
         elif name in {"_udeks_bootfs_finish_error", "_udeks_bootfs_finish_ok"}:
             if normal.get(name) != panic.get(name):

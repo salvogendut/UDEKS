@@ -74,7 +74,7 @@ def render(imports: dict[str, str], map_text: str) -> str:
     scheduler = segments.get("SCHEDULER", (0, 0, 0))
     if scheduler[0] != 0x1C00 or scheduler[1] >= 0x1FFA:
         raise ValueError("active scheduler page no longer leaves $1FFA-$1FFF")
-    if segments.get("BSS", (0, 0, 0))[1] >= 0xCB00:
+    if segments.get("BSS", (0, 0, 0))[1] >= 0xC900:
         raise ValueError("active scheduler core reaches the lifecycle handler")
     exports = overlay_exports(map_text)
     lines = [

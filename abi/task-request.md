@@ -6,10 +6,10 @@ That gate swaps cc65 zero-page contexts, selects bank 0, dispatches through the
 fixed `$CF30` vector, and restores bank 1 before returning.
 
 ABI 0.3 keeps every 0.2 operation number and behavior unchanged and adds
-lifecycle operations `10`-`15`. `YIELD`, `EXIT`, and immediate/nonblocking
-`WAITPID` are implemented; the operation sections below identify the remaining
-`ENOSYS` paths. Rebuilt 0.3 clients may keep using the 0.2 operations unchanged,
-and the resident version check accepts minor `0`, `1`, `2`, and `3`.
+lifecycle operations `10`-`15`. `YIELD`, `EXIT`, immediate/nonblocking and
+blocking `WAITPID`, and `SPAWN` are implemented; `SLEEP` and `CANCEL` remain
+`ENOSYS`. Rebuilt 0.3 clients may keep using the 0.2 operations unchanged, and
+the resident version check accepts minor `0`, `1`, `2`, and `3`.
 
 ## Record
 
@@ -161,6 +161,16 @@ released, and child exit publishes the response only when the parent resumes.
   flags are `0`, persistent `$01`, and managed `$02`; unknown bits and the
   combined `$03` value are rejected. Ranges may end exactly at the top of the
   address space.
+- Tasking 0.1 has one ordinary allocation: task id 2 owns bank-1 APP1 at
+  `$0200-$0BFF`, with relocated page zero/page one in physical pages
+  `$D3/$D4`. A second child is rejected with `ENOMEM` until the first exits and
+  is reaped. Publication is the final commit step: the image and BSS are
+  installed, private context and stack pages are initialized, and only then is
+  the lifecycle slot made `RUNNABLE`.
+- The task begins through a common-RAM launcher at `$F280`. It calls the
+  validated UDEX entry with zeroed A/X/Y; a normal `RTS` uses A as the exit
+  status and issues `EXIT` through `$FF16`. The next successful load restores
+  the overwritten loader status/header area before installing a fresh launcher.
 
 ## Errors
 
@@ -228,7 +238,7 @@ The fixed `$F800` request gateway uses 262 of its 265 reserved bytes as of ABI
 0.3, and the host-testable policy compiles to 2,245 bytes (about 2.2 KiB) of
 cc65 code without long-arithmetic helpers. The active scheduler core occupies
 1,043 emitted bytes plus 151 bytes of BSS at `$C120-$C5C9`; the permanent
-567-byte lifecycle request handler occupies `$CB00-$CD36` outside both
+1,029-byte lifecycle request handler occupies `$C900-$CD04` outside both
 application slots. Its per-task wait snapshots preserve blocking requests
 while the shared record is released. The policy module remains
 compile-qualified but nonresident.

@@ -40,6 +40,7 @@ OP_CLOSE                = $09
 OP_YIELD                = $0a
 OP_EXIT                 = $0b
 OP_WAITPID              = $0c
+OP_SPAWN                = $0f
 ERR_ENOENT              = $02
 ERR_EBADF               = $09
 ERR_EMFILE              = $18
@@ -60,14 +61,14 @@ _udeks_bootfs_request:
         jeq request_close
         cmp #OP_YIELD
         bcc request_unsupported
-        cmp #OP_WAITPID+1
+        cmp #OP_SPAWN+1
         bcc request_lifecycle
 request_unsupported:
         lda #ERR_ENOSYS
         jmp finish_error
 
 request_lifecycle:
-        jmp $cb00
+        jmp $c900
 
 request_open:
         lda DIRECTORY_KIND

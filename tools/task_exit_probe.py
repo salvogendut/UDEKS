@@ -24,7 +24,7 @@ TASK_ZOMBIE = 6
 EXIT_STATUS = 37
 TREQ_IDLE = 0
 OP_EXIT = 11
-HANDLER_ADDRESS = 0xCB00
+HANDLER_ADDRESS = 0xC900
 
 
 def scheduler_symbols(path: Path) -> dict[str, int]:

@@ -142,7 +142,7 @@ def render_bridge(resolved: list[tuple[str, str, int]]) -> str:
             '        .assert __SCHEDULER_RUN__ = $1c00, lderror, "scheduler page moved"',
             '        .assert __SCHEDULER_SIZE__ <= $0400, lderror, "scheduler page overflow"',
             '        .assert __CODE_RUN__ = $c120, lderror, "scheduler tail moved"',
-            '        .assert __BSS_RUN__ + __BSS_SIZE__ <= $cb00, lderror, "scheduler core reaches lifecycle handler"',
+            '        .assert __BSS_RUN__ + __BSS_SIZE__ <= $c900, lderror, "scheduler core reaches lifecycle handler"',
             "",
         ]
     )

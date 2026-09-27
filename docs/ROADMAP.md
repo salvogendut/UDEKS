@@ -145,7 +145,7 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   and callbacks in all 323 post-overlay bytes, plus six fixed page
   vectors. Their bounded post-startup delivery is active: the page
   vectors and 42-byte activator staged at `$1BAA` and installed at `$F68A` are
-  checksum covered. The installed context/gate images and 567-byte handler now
+  checksum covered. The installed context/gate images and 1,029-byte handler now
   implement the `$CF30` carry contract; persistent `/bin/ush` repeatedly
   yields, resumes, and accepts commands in VICE from both D71 and D64.
 - [x] Implement production cooperative `YIELD` for persistent `/bin/ush`.
@@ -158,7 +158,12 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   copy its image/BSS into bank-1 APP1 without entering it; qualify byte-exact
   loading and a pre-seeded nonzero BSS on D71 and D64 before task-table
   mutation is introduced.
-- [ ] Implement task creation, sleep, and event wait.
+- [x] Implement atomic `SPAWN` task creation for the initial task-2/APP1
+  allocation, including relocated `$D3/$D4` context pages, normal-return
+  conversion to `EXIT(status)`, blocking parent `WAITPID`, and slot reuse.
+  A compiled cc65 child completes two spawn/exit/reap cycles from both D71
+  and D64.
+- [ ] Implement bounded sleep and event wait.
 - [x] Save and restore the selected compiler runtime and CPU context behind
   the production scheduler gate. Physical-hardware qualification of the
   integrated path remains part of the milestone acceptance gate.

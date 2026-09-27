@@ -128,14 +128,14 @@ builds the exact page and tail subsequently packaged into `SCHEDOVR`.
 
 The active core occupies 1,018 bytes at `$1C00-$1FF9` (zero-padded to a 1 KiB
 delivery page) and 1,194 runtime bytes at `$C120-$C5C9` (1,043 emitted plus
-151 BSS). The packaged tail pads to the 567-byte handler at `$CB00-$CD36`,
-leaving a 134-byte preserved gap before the fixed 323-byte context binding at
+151 BSS). The packaged tail pads to the 1,029-byte handler at `$C900-$CD04`,
+leaving a 184-byte preserved gap before the fixed 323-byte context binding at
 `$CDBD-$CEFF`. The bridge contract is 20
 resident providers: 17 absolute and three zero-page symbols. Any
 provider-count, address-class,
 normal/panic parity, or placement drift fails the build.
 
-`SCHEDOVR` now packages the page and 3,095 copied tail bytes in one versioned
+`SCHEDOVR` now packages the page and 3,045 copied tail bytes in one versioned
 PRG on side one of both D71 and D64 images. Stage 0 loads it into bank 1 and a
 192-byte one-shot `$FF05-$FFC4` installer copies it only after conflicting boot
 staging has moved. The scheduler entry restores the permanent task gate before
@@ -164,7 +164,7 @@ page's exact `$1FFA-$1FFF` remainder and provides fixed reset/select vectors;
 its generated bridge rejects any drift in the active overlay end, symbol
 types, or seven-symbol callback contract.
 
-`SCHEDOVR` installs the 567-byte lifecycle handler in its checksummed bank-0
+`SCHEDOVR` installs the 1,029-byte lifecycle handler in its checksummed bank-0
 tail and carries the 234 emitted context bytes plus the 192-byte common tail
 as its activation extension. After the boot-console service has finished, the
 42-byte activator copies the extension images into their final homes,
@@ -172,7 +172,7 @@ calls the fixed reset vector, and returns to init. Task 1 owns bank-1 physical
 pages `$D1/$D2`; the former `$80/$81` choice is forbidden because the native
 loader uses `$8000-$8A00` as its application backup. VICE qualifies repeated
 D71/D64 yields, resumes, command dispatch, and non-returning `EXIT` through
-this installed path. The lifecycle handler occupies `$CB00-$CD36`, outside
+this installed path. The lifecycle handler occupies `$C900-$CD04`, outside
 both application slots; `xclock` can therefore use its complete allocation.
 
 ## Proposed bank-0 scheduler region
@@ -238,14 +238,14 @@ returns to the kernel poll frame and leaves the task suspended. `YIELD` uses
 the latter path and resumes only after the scheduler selects task 1 again.
 
 The post-startup delivery path is link-qualified. `SCHEDOVR` ABI 0.3 includes
-the permanent 567-byte handler in its bank-0 tail and appends the exact,
+the permanent 1,029-byte handler in its bank-0 tail and appends the exact,
 build-locked 234 emitted context bytes and 192-byte common tail. The
 six `$1FFA-$1FFF` callback vectors are installed as part of the scheduler
 page and covered by its existing checksum. A 42-byte body fits the
 post-console staging window and is copied directly to the disposable `$F68A`
 VIC gateway workspace. It copies the context image to
 `$CDBD`, lets the reset callback clear its 89-byte BSS through `$CEFF`,
-replaces `$FF05-$FFC4`; the request handler is already live at `$CB00`.
+replaces `$FF05-$FFC4`; the request handler is already live at `$C900`.
 Persistent `/bin/ush` now yields and resumes through that path;
 successful `EXIT` leaves a status-bearing zombie and never restores its task
 context. The same handler implements immediate/nonblocking `WAITPID`: a live
@@ -255,6 +255,12 @@ waits snapshot their normalized request into private per-task storage, release
 the shared `$F359` record, and publish the response only when the awakened
 parent is selected. A two-task D71/D64 probe proves that child `EXIT(37)`
 reaps the child and resumes the parent with its original sequence `$44`.
+The same handler now implements `SPAWN` for the initial task-2/APP1 allocation:
+it loads through the private `$F919` seam, initializes relocated `$D3/$D4`
+pages and context, publishes the slot atomically, and uses a common `$F280`
+launcher to convert normal return into `EXIT(A)`. Two complete D71/D64
+spawn/reap cycles with a compiled cc65 child qualify its software stack and
+slot reuse.
 
 ## Reclaim order and validation
 

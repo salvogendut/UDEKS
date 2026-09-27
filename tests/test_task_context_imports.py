@@ -51,7 +51,7 @@ class TaskContextImportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "lifecycle handler"):
             gen.render(
                 dict(gen.EXPECTED),
-                qualified_map().replace("00C58B 00006F", "00CB00 0005E4"),
+                qualified_map().replace("00C58B 00006F", "00C900 0003E4"),
             )
 
     def test_missing_or_wrong_typed_provider_is_rejected(self):

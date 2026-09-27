@@ -121,7 +121,7 @@ The common area is partitioned conservatively:
 | `$F150-$F16F` | Root-terminal line-editor diagnostics |
 | `$F170-$F18F` | Shell diagnostics and foreground-job state |
 | `$F190-$F27F` | Worker, graphics, pointer, time, window, and application diagnostics |
-| `$F280-$F2A5` | Reserved diagnostic space |
+| `$F280-$F2A5` | Task-loader status/header; task-2 normal-return launcher while APP1 runs |
 | `$F2A6` | Bootstrap root-session working-directory token |
 | `$F2A7-$F2AF` | Reserved diagnostic space |
 | `$F2B0-$F2FF` | Resident Z80 stack (80 bytes, SP starts at `$F300`) |

@@ -77,8 +77,8 @@ the task model, validate it, and only then remove the replaced special case.
 - Step 3 has Task Request ABI 0.3 operations for `YIELD`, `EXIT`, `WAITPID`,
   `SLEEP`, `CANCEL`, and `SPAWN`, plus a pure host-tested policy layer.
   Production `YIELD`, non-returning `EXIT`, and immediate, nonblocking, and
-  blocking `WAITPID` are implemented; `SLEEP`, `CANCEL`, and `SPAWN` still
-  report `ENOSYS` through the compatibility fallback.
+  blocking `WAITPID`, plus task-2 `SPAWN`, are implemented; `SLEEP` and
+  `CANCEL` still report `ENOSYS` through the compatibility fallback.
 - The placement prerequisite for steps 3 and 4 is qualified. Stage 1 can
   deliver a scheduler image to `$1C00-$1FFF`; crt0 and probe are split boot
   outputs; the boot-only capability service is linked at `$0200`, installed
@@ -91,7 +91,7 @@ the task model, validate it, and only then remove the replaced special case.
   in place at `$A1E0`, leaving the complete `$C120-$CEFF` tail available for
   lifecycle/scheduler integration.
 - Lifecycle placement is active: `SCHEDOVR` carries the zero-padded 1 KiB
-  scheduler page and the installed lifecycle tail at `$C120-$CD36`. Stage 0
+  scheduler page and the installed lifecycle tail at `$C120-$CD04`. Stage 0
   loads it into bank 1 with KERNAL `SETBNK`/`LOAD`; a 192-byte one-shot
   common-RAM installer validates and copies it, clears its BSS, and the
   scheduler entry replaces that installer with the permanent task gate.
@@ -107,8 +107,8 @@ the task model, validate it, and only then remove the replaced special case.
   callbacks occupy the exact `$CDBD-$CEFF` 323-byte window, while fixed
   callback vectors consume the page's final six bytes at `$1FFA-$1FFF`.
   `SCHEDOVR` ABI 0.3 appends the exact, build-locked 234-byte context image and
-  192-byte gate; its checksummed bank-0 tail also installs the 567-byte
-  lifecycle handler at `$CB00-$CD36`, outside both application slots. The
+  192-byte gate; its checksummed bank-0 tail also installs the 1,029-byte
+  lifecycle handler at `$C900-$CD04`, outside both application slots. The
   normal checksum covers the
   six fixed page vectors, and the boot-console installer checksums and installs a
   42-byte post-startup activator at `$1BAA` and copies it directly to its
@@ -123,15 +123,20 @@ the task model, validate it, and only then remove the replaced special case.
   cleared, and a repeated wait returns `ECHILD`. The two-task D71/D64 probe
   additionally proves that blocking `WAITPID` releases the shared request,
   the child can issue `EXIT(37)`, and the parent resumes with result one and
-  its original sequence `$44`. `SPAWN` is the next lifecycle increment so
-  that the kernel, rather than a qualification monitor, can create task 2.
+  its original sequence `$44`.
 - The first `SPAWN` increment is qualified: the common loader exposes a
   scheduler-private `$F919` load-only entry, validates a flag-zero bootfs UDEX,
   and copies its image/BSS into bank-1 APP1 without entering it. The loader is
   exactly 1,520 bytes in its frozen `$F910-$FEFF` reservation. D71 and D64
   probes load `/bin/cowsay` byte-exactly and clear a pre-seeded 32-byte BSS;
-  lifecycle allocation and context admission intentionally remain the next
-  atomic increment.
+  lifecycle allocation and context admission are now layered on this seam.
+- Full `SPAWN` is qualified on D71 and D64. The handler validates the request
+  before loading, initializes task 2's `$D3/$D4` relocated pages and private
+  context, and publishes its `RUNNABLE` slot last. A common `$F280` launcher
+  converts the child's normal return into `EXIT(A)`. A persistent parent runs
+  a compiled cc65 child through two spawn, blocking-wait, status-37 reap
+  cycles with original sequences `$44/$66`, proving the real compiler stack,
+  task-slot, and APP1 reuse.
 
 ## Implementation plan
 
@@ -302,9 +307,7 @@ and bank ownership.
 
 ## First concrete change for the next session
 
-Complete `SPAWN` behind the qualified `$F919` loader seam: validate the request
-and find a free slot before copying, seed task 2's `$D3/$D4` relocated pages
-and bank-1 software stack, publish a `RUNNABLE` lifecycle/context record only
-after the load succeeds, and return its task id. Keep rejection atomic and
-qualify spawn/exit/blocking-wait/slot reuse on D71 and D64 before migrating
-the graphical applications.
+Implement bounded `SLEEP` against the monotonic 1/60-second kernel tick. Keep
+the shared request record released while the caller sleeps, wake it through
+the same private-response path used by blocking `WAITPID`, and qualify zero,
+maximum, wrap-adjacent, and multi-task deadlines before implementing `CANCEL`.

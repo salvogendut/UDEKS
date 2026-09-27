@@ -49,16 +49,16 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertEqual(body[:0x3FA], bytes(0x3FA))
         self.assertEqual(body[0x3FA:0x400], vectors)
         self.assertEqual(body[0x400:0x407], tail)
-        self.assertEqual(body[0x407:0xDE0], bytes(0x9D9))
-        self.assertEqual(body[0xDE0:0xDED], yield_handler)
-        self.assertEqual(body[0xDED:0xED7], context)
-        self.assertEqual(body[0xED7:0xF97], switch_tail)
-        self.assertEqual(len(body), 0xF97)
-        self.assertIn("SCHEDULER_OVERLAY_TAIL_SIZE = $09ed", constants)
-        self.assertIn("TASK_ACTIVATION_CONTEXT_SOURCE = $5e01", constants)
+        self.assertEqual(body[0x407:0xBE0], bytes(0x7D9))
+        self.assertEqual(body[0xBE0:0xBED], yield_handler)
+        self.assertEqual(body[0xBED:0xCD7], context)
+        self.assertEqual(body[0xCD7:0xD97], switch_tail)
+        self.assertEqual(len(body), 0xD97)
+        self.assertIn("SCHEDULER_OVERLAY_TAIL_SIZE = $07ed", constants)
+        self.assertIn("TASK_ACTIVATION_CONTEXT_SOURCE = $5c01", constants)
         self.assertIn("TASK_ACTIVATION_CONTEXT_IMAGE_SIZE = $ea", constants)
         self.assertIn("TASK_ACTIVATION_CONTEXT_BSS_SIZE = $59", constants)
-        self.assertIn("TASK_ACTIVATION_TAIL_SOURCE = $5eeb", constants)
+        self.assertIn("TASK_ACTIVATION_TAIL_SOURCE = $5ceb", constants)
         self.assertIn("TASK_ACTIVATION_TAIL_SIZE = $c0", constants)
         self.assertNotIn("TASK_ACTIVATION_YIELD", constants)
 
@@ -102,7 +102,7 @@ class TaskSwitchActivationTests(unittest.TestCase):
         )
         self.assertIn("scheduler_overlay_bss_size <= $ff", source)
 
-    def test_lifecycle_handler_yields_exits_and_reaps_nonblocking(self):
+    def test_lifecycle_handler_yields_exits_waits_and_spawns(self):
         source = (ROOT / "src/scheduler/task_yield_handler.s").read_text(
             encoding="utf-8"
         ).lower()
@@ -123,8 +123,30 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertIn("wait_blocking:", source)
         self.assertIn("sta _udeks_task_wait_sequence_private,y", source)
         self.assertIn("sta _udeks_task_wait_state_private,y", source)
-        self.assertIn("_udeks_task_yield_handler = $cb00", source)
+        self.assertIn("request_spawn:", source)
+        self.assertIn("jsr spawn_loader", source)
+        self.assertIn("task2_launcher          = task_status", source)
+        self.assertIn("sta treq_descriptor", source)
+        self.assertIn("sta treq_flags", source)
+        capture = source.index("lda task2_context+task_ctx_pc_lo")
+        copy = source.index("spawn_copy_return_trampoline:")
+        self.assertGreater(capture, copy)
+        self.assertIn("_udeks_task_yield_handler = $c900", source)
         self.assertIn("yield_handler_end <= $cdbd", source)
+
+    def test_spawn_probe_child_uses_the_real_cc65_runtime(self):
+        makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
+        child = (ROOT / "user/probes/task_spawn_child.c").read_text(
+            encoding="utf-8"
+        )
+        entry = (ROOT / "user/probes/task_spawn_child_entry.s").read_text(
+            encoding="utf-8"
+        ).lower()
+        self.assertIn("$(CC65) -t none", makefile)
+        self.assertIn("$(USER_SPAWN_CHILD_ENTRY_OBJ)", makefile)
+        self.assertIn("unsigned char udeks_program_main", child)
+        self.assertIn("jsr pusha", entry)
+        self.assertIn("jmp _udeks_program_main", entry)
 
 
 if __name__ == "__main__":
