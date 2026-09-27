@@ -137,6 +137,9 @@ unsigned char udeks_lifecycle_create(
     return UDEKS_LIFECYCLE_OK;
 }
 
+#ifdef __CC65__
+#pragma code-name(push, "SCHEDULER")
+#endif
 unsigned char udeks_lifecycle_apply(
     unsigned char id, unsigned char event, unsigned char argument)
 {
@@ -233,6 +236,9 @@ unsigned char udeks_lifecycle_apply(
     last_event = event;
     return UDEKS_LIFECYCLE_OK;
 }
+#ifdef __CC65__
+#pragma code-name(pop)
+#endif
 
 unsigned char udeks_lifecycle_get(unsigned char id)
 {

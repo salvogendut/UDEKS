@@ -108,6 +108,25 @@ Total bank-0 reclaim: 3,552 + 1,024 = **4,576 bytes**. Of that, 1,024 is now
 occupied by the scheduler segment itself, leaving the complete 3,552-byte
 tail for scheduler policy, lifecycle state, and handlers.
 
+The first lifecycle integration increment is a link-only overlay proof. The
+607-byte `udeks_lifecycle_apply()` transition engine is assigned to the
+`$1C00-$1FFF` scheduler page beside the delivery stub; the remainder of
+`task_state.o`, all of `task_policy.o`, their constants, and their 71-byte BSS
+are linked into `$C120-$CEFF`. A generated, zero-byte private bridge binds only
+their external cc65 runtime imports and requires normal/panic map address and
+type parity. The only helpers absent from the resident kernel, `shlax2` and
+`tosanda0`, come from exactly two extracted `none.lib` modules inside the
+overlay rather than growing the resident runtime. `make scheduler-overlay`
+builds this proof without installing it,
+so the qualified boot image continues to use the scheduler identity stub until
+the tail delivery and request handlers are ready together.
+
+The qualified link occupies 904 bytes at `$1C00-$1F87` and 3,430 runtime bytes
+at `$C120-$CE85` (3,359 emitted plus 71 BSS), leaving 120 bytes in the page and
+122 bytes in the tail. The bridge contract is 26 resident providers: 23
+absolute and three zero-page symbols. Any provider-count, address-class,
+normal/panic parity, or placement drift fails the build.
+
 ## Proposed bank-0 scheduler region
 
 | Use | Budget |

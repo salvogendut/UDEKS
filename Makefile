@@ -34,6 +34,14 @@ BOOT_DELIVERY_MAP := $(BUILD_8502)/8502-boot-delivery.map
 CRT0_BIN := $(BUILD_BOOT)/8502-crt0.bin
 PROBE_BIN := $(BUILD_BOOT)/8502-probe.bin
 SCHEDULER_BIN := $(BUILD_8502)/udeks-scheduler.bin
+SCHEDULER_OVERLAY_PAGE_BIN := $(BUILD_8502)/udeks-scheduler-overlay-page.bin
+SCHEDULER_OVERLAY_TAIL_BIN := $(BUILD_8502)/udeks-scheduler-overlay-tail.bin
+SCHEDULER_OVERLAY_MAP := $(BUILD_8502)/udeks-scheduler-overlay.map
+SCHEDULER_OVERLAY_BRIDGE_ASM := $(BUILD_8502)/scheduler-overlay-bridge.s
+SCHEDULER_OVERLAY_BRIDGE_OBJ := $(BUILD_8502)/scheduler-overlay-bridge.o
+SCHEDULER_RUNTIME_DIR := $(BUILD_8502)/scheduler-runtime
+SCHEDULER_RUNTIME_AND_OBJ := $(SCHEDULER_RUNTIME_DIR)/and.o
+SCHEDULER_RUNTIME_ASLAX2_OBJ := $(SCHEDULER_RUNTIME_DIR)/aslax2.o
 KERNEL_MAP := $(BUILD_8502)/udeks-8502.map
 PANIC_PROBE_MAP := $(BUILD_8502)/udeks-8502-panic-probe.map
 CAPABILITY_FORCE_IMPORTS := $(BUILD_8502)/capability-force-imports.txt
@@ -165,7 +173,7 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
 	boot panic-probe framebuffer-assets user-sources user-programs \
-	task-state task-policy placement-check placement-check-guard \
+	task-state task-policy scheduler-overlay placement-check placement-check-guard \
 	shadow-probe capability-probe boot-console-probe check doctor clean help
 
 all: 8502 z80 z80-asm
@@ -188,9 +196,14 @@ user-programs: $(USER_BOOTFS)
 task-state: $(BUILD_8502)/task_state.o
 task-policy: $(BUILD_8502)/task_policy.o
 
+# Link-only proof for lifecycle/policy placement and resident-runtime binding.
+# The production boot image continues to carry the qualified scheduler stub.
+scheduler-overlay: $(SCHEDULER_OVERLAY_PAGE_BIN) \
+		$(SCHEDULER_OVERLAY_TAIL_BIN) $(SCHEDULER_OVERLAY_MAP)
+
 # Reference-container qualification: measures the real gateway copies and
 # fails if the placement expectations no longer hold.
-placement-check: placement-check-guard $(KERNEL_BIN) $(BOOT_DELIVERY_BIN) \
+placement-check: placement-check-guard scheduler-overlay $(KERNEL_BIN) $(BOOT_DELIVERY_BIN) \
 		$(BUILD_8502)/vic_graphics_transport.o
 	$(PYTHON) tools/placement_audit.py --verify
 
@@ -872,10 +885,43 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &: \
 		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) -o $(KERNEL_BIN) \
 		$(filter %.o,$^)
 
-$(SCHEDULER_BIN): src/scheduler/scheduler.s cfg/8502-scheduler.cfg \
-		| $(BUILD_8502)
-	$(CA65) $(ASFLAGS_8502) -o $(BUILD_8502)/scheduler.o $<
+$(BUILD_8502)/scheduler.o: src/scheduler/scheduler.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(SCHEDULER_BIN): $(BUILD_8502)/scheduler.o cfg/8502-scheduler.cfg
 	$(LD65) -C cfg/8502-scheduler.cfg -o $@ $(BUILD_8502)/scheduler.o
+
+# The resident kernel already supplies every cc65 helper used by the overlay
+# except these two modules. Extract precisely those providers; never link a
+# second complete runtime into the scheduler.
+$(SCHEDULER_RUNTIME_AND_OBJ) $(SCHEDULER_RUNTIME_ASLAX2_OBJ) &: \
+		$(CC65_NONE_LIB) | $(BUILD_8502)
+	mkdir -p $(SCHEDULER_RUNTIME_DIR)
+	cd $(SCHEDULER_RUNTIME_DIR) && $(AR65) x $(abspath $(CC65_NONE_LIB)) \
+		and.o aslax2.o
+
+$(SCHEDULER_OVERLAY_BRIDGE_ASM): $(BUILD_8502)/task_state.o \
+		$(BUILD_8502)/task_policy.o $(SCHEDULER_RUNTIME_AND_OBJ) \
+		$(SCHEDULER_RUNTIME_ASLAX2_OBJ) $(KERNEL_MAP) $(PANIC_PROBE_MAP) \
+		tools/gen_scheduler_overlay_imports.py
+	$(PYTHON) tools/gen_scheduler_overlay_imports.py bridge \
+		$(BUILD_8502)/task_state.o $(BUILD_8502)/task_policy.o \
+		$(SCHEDULER_RUNTIME_AND_OBJ) $(SCHEDULER_RUNTIME_ASLAX2_OBJ) \
+		--maps $(KERNEL_MAP) $(PANIC_PROBE_MAP) $@
+
+$(SCHEDULER_OVERLAY_BRIDGE_OBJ): $(SCHEDULER_OVERLAY_BRIDGE_ASM)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
+		$(SCHEDULER_OVERLAY_MAP) &: $(BUILD_8502)/scheduler.o \
+		$(BUILD_8502)/task_state.o $(BUILD_8502)/task_policy.o \
+		$(SCHEDULER_RUNTIME_AND_OBJ) $(SCHEDULER_RUNTIME_ASLAX2_OBJ) \
+		$(SCHEDULER_OVERLAY_BRIDGE_OBJ) cfg/8502-scheduler-overlay.cfg
+	$(LD65) -C cfg/8502-scheduler-overlay.cfg \
+		-m $(SCHEDULER_OVERLAY_MAP) -o $(SCHEDULER_OVERLAY_PAGE_BIN) \
+		$(BUILD_8502)/scheduler.o $(BUILD_8502)/task_state.o \
+		$(BUILD_8502)/task_policy.o $(SCHEDULER_RUNTIME_AND_OBJ) \
+		$(SCHEDULER_RUNTIME_ASLAX2_OBJ) $(SCHEDULER_OVERLAY_BRIDGE_OBJ)
 
 $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(PANIC_PROBE_PROBE_BIN) $(PANIC_PROBE_MAP) &: \
@@ -1398,6 +1444,7 @@ check:
 		tools/placement_audit.py \
 		tools/gen_capability_imports.py \
 		tools/gen_boot_console_imports.py \
+		tools/gen_scheduler_overlay_imports.py \
 		tools/shadow_boot_probe.py \
 		tools/shadow_clear_decode.py \
 		tools/task_state_decode.py \

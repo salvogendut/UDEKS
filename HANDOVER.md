@@ -83,6 +83,11 @@ the task model, validate it, and only then remove the replaced special case.
   in place at `$A1E0`, leaving the complete `$C120-$CEFF` tail available for
   lifecycle/scheduler integration. The scheduler stub is only an
   installation/identity probe; it does not schedule tasks.
+- Lifecycle placement has entered integration: `make scheduler-overlay` links
+  the transition engine into the 1 KiB scheduler page and the remaining state,
+  policy, constants, and BSS into `$C120-$CEFF`, using a generated bridge that
+  requires normal/panic resident-runtime parity. This is deliberately a
+  link-only proof; stage 1 still installs the known-good identity stub.
 
 ## Implementation plan
 
