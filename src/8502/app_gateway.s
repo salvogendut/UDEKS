@@ -19,6 +19,7 @@
         .import _udeks_window_is_focused
         .import _udeks_window_repaint
         .import _udeks_z80_submit
+        .import _udeks_window_begin_paint, _udeks_window_end_paint
 
         .import addeqysp, addysp, aslax2
         .import decsp1, decsp2, decsp3, decsp4, decsp5, decsp6, decsp7, decsp8
@@ -51,8 +52,8 @@
 _udeks_app_gateway:
         .assert _udeks_app_gateway = $cf50, error, "app gateway moved"
         .byte 'U', 'A', 'P', 'P'
-        .byte $00, $01
-        .byte $33, $03
+        .byte $00, $02
+        .byte $35, $03
         .res 8, $00
 
         jmp _udeks_time_now
@@ -106,5 +107,7 @@ _udeks_app_gateway:
         jmp tosumula0
         jmp tosumulax
         jmp addeqysp
+        jmp _udeks_window_begin_paint
+        jmp _udeks_window_end_paint
 
         .assert * <= $d000, error, "app gateway overlaps I/O aperture"

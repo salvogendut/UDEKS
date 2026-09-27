@@ -147,6 +147,10 @@ def probe_disk(
             sp.wait_for_byte(port, 0xF3D8, (before + 1) & 0xFF, deadline)
             sp.wait_for_byte(port, slots + 1, 4, deadline)
         third = wait_for_switches(port, second + 1, deadline)
+        sp.wait_for_byte(port, 0xF27A, 21, deadline)
+        if word(port, 0xF26C) != 21 or word(port, 0xF26E) != 0:
+            raise RuntimeError("xwave did not complete 21 successful row leases")
+        print(f"{disk.name}: xwave complete, 21 cached rows", flush=True)
         print(
             f"{disk.name}: {first}->{second}->{third} cooperative suspensions, "
             "xinit/xclock/xwave and utility commands accepted; input waits restored",

@@ -103,12 +103,15 @@ class ZeroPageAbiTests(unittest.TestCase):
                 f"{name} is not at ${address}",
             )
 
-    def test_app_gateway_still_advertises_uapp_01(self):
+    def test_app_gateway_advertises_append_only_uapp_02(self):
         gateway = (ROOT / "src/8502/app_gateway.s").read_text(
             encoding="utf-8"
         )
         self.assertIn(".byte 'U', 'A', 'P', 'P'", gateway)
-        self.assertIn(".byte $00, $01", gateway)
+        self.assertIn(".byte $00, $02", gateway)
+        self.assertIn(".byte $35, $03", gateway)
+        self.assertIn("jmp _udeks_window_begin_paint", gateway)
+        self.assertIn("jmp _udeks_window_end_paint", gateway)
 
     def test_app_gateway_pins_the_published_runtime_addresses(self):
         gateway = (ROOT / "src/8502/app_gateway.s").read_text(

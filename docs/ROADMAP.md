@@ -182,6 +182,9 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   the persistent shell task.
 - [ ] Generalize task allocation beyond the initial two-task configuration,
   then add timer-driven preemption.
+- [ ] Qualify responsive graphics under input pressure (issue #6): xwave initial
+  drawing now advances in four-vertex polls; synchronous compositor replay and
+  exposed-window redraw still need work before performance acceptance.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

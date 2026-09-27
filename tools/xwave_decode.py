@@ -23,7 +23,7 @@ def parse_result(data: bytes) -> dict[str, int]:
     if len(data) < RESULT_SIZE:
         raise ValueError("xwave record is truncated")
     block = data[:RESULT_SIZE]
-    if block[:4] != b"XWAV" or block[4] not in (1, 2, 3):
+    if block[:4] != b"XWAV" or block[4] not in (1, 2, 3, 4):
         raise ValueError("xwave record magic or format is invalid")
     if block[5] not in (2, 3) or block[6] != 0:
         raise ValueError("xwave state is invalid")
@@ -40,10 +40,15 @@ def parse_result(data: bytes) -> dict[str, int]:
             block[9:12] != bytes((21, 25, 1)) or word(block, 18) != 525
         ):
             raise ValueError("running xwave surface geometry is invalid")
-        if block[4] == 3 and (
+        if block[4] >= 3 and (
             block[9:12] != bytes((21, 25, 2)) or word(block, 18) != 525
         ):
             raise ValueError("running xwave mesh geometry is invalid")
+    if block[4] >= 4 and (
+        block[26] > 21 or block[27] >= 25 or
+        (block[26] == 21 and block[27] != 0) or any(block[28:32])
+    ):
+        raise ValueError("xwave progress cursor is invalid")
     return {
         "format": block[4],
         "state": block[5],
@@ -62,6 +67,8 @@ def parse_result(data: bytes) -> dict[str, int]:
         "height": block[23],
         "dragging": block[24],
         "focused": block[25],
+        "completed_rows": block[26] if block[4] >= 4 else 0,
+        "row_vertices": block[27] if block[4] >= 4 else 0,
     }
 
 

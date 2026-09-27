@@ -717,7 +717,7 @@ $(USER_XWAVE_BIN): $(USER_XWAVE_ENTRY_OBJ) $(USER_XWAVE_OBJ) \
 
 $(USER_XWAVE_UDEX): $(USER_XWAVE_BIN) tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x1200 \
-		--entry-address 0x1200 --bss-size 0x0218 --flags 0x02 $< $@
+		--entry-address 0x1200 --bss-size 0x0225 --flags 0x02 $< $@
 
 $(USER_BOOTFS): $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_LS_UDEX) \
 		$(USER_USH_UDEX) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) \
