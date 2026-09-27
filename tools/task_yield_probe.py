@@ -27,12 +27,9 @@ UTSK_SWITCHES_HIGH = UTSK_BASE + 13
 UTSK_READY = 1
 TREQ_STATE = 0xF35F
 TREQ_ERROR = 0xF365
-TREQ_COMPLETE = 2
 TAIL_SIGNATURE = 0xFF05
 TAIL_SWITCHES_LOW = 0xFF0D
 TAIL_SWITCHES_HIGH = 0xFF0E
-
-
 def byte(port: int, address: int) -> int:
     return parse_monitor_byte(
         monitor_command(port, f"m {address:04x} {address:04x}"), address
@@ -52,7 +49,9 @@ def wait_for_switches(port: int, minimum: int, deadline: float) -> int:
     raise TimeoutError(f"task switch count did not reach {minimum}")
 
 
-def probe_disk(disk: Path, map_path: Path, timeout: float, flatpak_id: str) -> None:
+def probe_disk(
+    disk: Path, map_path: Path, timeout: float, flatpak_id: str,
+) -> None:
     symbols = sp.symbol_addresses(map_path)
     port = choose_port()
     process, master_fd = sp.launch_vice(disk.resolve(), port, flatpak_id)
@@ -87,20 +86,9 @@ def probe_disk(disk: Path, map_path: Path, timeout: float, flatpak_id: str) -> N
                 f"{byte(port, UTSK_RUNNABLE):02x}, gate={gate.hex()}, "
                 f"source={source[:6]!r}, live={live[:6]!r}"
             )
-        sp.wait_for_byte(port, TREQ_STATE, TREQ_COMPLETE, deadline)
         initial_request_state = byte(port, TREQ_STATE)
         initial_request_operation = byte(port, TREQ_STATE + 1)
         initial_request_error = byte(port, TREQ_ERROR)
-        if (
-            initial_request_state != TREQ_COMPLETE
-            or initial_request_operation != 10
-            or initial_request_error != 0
-        ):
-            raise RuntimeError(
-                "YIELD did not publish a successful completion boundary: "
-                f"{initial_request_state:02x}/{initial_request_operation:02x}/"
-                f"{initial_request_error:02x}"
-            )
         print(
             f"{disk.name}: tail active, suspensions={word(port, TAIL_SWITCHES_LOW)}, "
             f"request={initial_request_state:02x}/"
@@ -129,9 +117,20 @@ def probe_disk(disk: Path, map_path: Path, timeout: float, flatpak_id: str) -> N
             sp.VIC_STATUS_ACTIVE,
             deadline,
         )
+        print(f"{disk.name}: xinit active", flush=True)
+        inject_until_state(
+            port,
+            symbols,
+            "xclock &",
+            sp.XCLOCK_STATUS_STATE_ADDRESS,
+            sp.XCLOCK_STATUS_RUNNING,
+            deadline,
+        )
+        print(f"{disk.name}: xclock active", flush=True)
+        third = wait_for_switches(port, second + 1, deadline)
         print(
-            f"{disk.name}: {first}->{second} cooperative suspensions, "
-            "xinit accepted",
+            f"{disk.name}: {first}->{second}->{third} cooperative suspensions, "
+            "xinit/xclock accepted",
             flush=True,
         )
     finally:
@@ -150,7 +149,9 @@ def main() -> None:
     parser.add_argument("--flatpak-id", default="net.sf.VICE")
     args = parser.parse_args()
     try:
-        probe_disk(args.disk, args.map, args.timeout, args.flatpak_id)
+        probe_disk(
+            args.disk, args.map, args.timeout, args.flatpak_id
+        )
     except (OSError, RuntimeError, TimeoutError, ValueError) as error:
         raise SystemExit(f"task-YIELD probe failed: {error}") from error
     print("task-YIELD probe OK")

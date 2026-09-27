@@ -94,8 +94,9 @@ class TaskRequestAbiTests(unittest.TestCase):
         self.assertIn("jmp _udeks_bootfs_request", dispatcher)
         self.assertIn("cmp #op_yield", bootfs)
         self.assertIn("request_lifecycle:", bootfs)
-        self.assertIn("cmp #op_exit", bootfs)
-        self.assertIn("jmp $0b00", bootfs)
+        self.assertIn("cmp #op_yield", bootfs)
+        self.assertIn("cmp #op_waitpid+1", bootfs)
+        self.assertIn("jmp $cc00", bootfs)
         # The bootfs fallback answers unknown operations with ENOSYS.
         self.assertIn("lda #err_enosys", bootfs)
         self.assertIn("jmp finish_error", bootfs)

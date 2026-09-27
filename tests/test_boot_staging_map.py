@@ -152,7 +152,7 @@ class BootStagingMapTests(unittest.TestCase):
             "capability": 967,
             "capability_installer": 102,
             "boot_console": 1450,
-            "task_activation": 61,
+            "task_activation": 42,
             "boot_console_installer": 99,
         }
         regions = staged_regions(
@@ -161,9 +161,9 @@ class BootStagingMapTests(unittest.TestCase):
         console = next(
             region for region in regions if region.name == "boot console staging"
         )
-        self.assertEqual((console.start, console.copied_end), (0xA718, 0xACFE))
+        self.assertEqual((console.start, console.copied_end), (0xA718, 0xACEB))
         self.assertIn(
-            ("staging hole", 0xACFF, 0xACFF),
+            ("staging hole", 0xACEC, 0xACFF),
             free_holes(0xA1E0, 0x0B3D, regions),
         )
 

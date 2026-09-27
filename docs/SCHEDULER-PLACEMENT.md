@@ -86,8 +86,8 @@ map above.
 `boot_console.o` is also realized reclaim: its exact 1,450-byte image is
 linked separately at `$1600-$1BA9`, staged at `$A718-$ACC1`, and installed by
 a 99-byte checksum gate at `$0B50-$0BB2`. The same copy/checksum now covers a
-61-byte task-switch activator staged at `$ACC2-$ACFE`, copied through
-`$1BAA-$1BE6`, and installed at its `$F68A-$F6C6` common-RAM run address. The
+42-byte task-switch activator staged at `$ACC2-$ACEB`, copied through
+`$1BAA-$1BD3`, and installed at its `$F68A-$F6B3` common-RAM run address. The
 installer runs before the
 scheduler gather and is then overwritten by the relocated probe. The
 scheduler allocator reserves the installer's complete linked extent, including
@@ -115,22 +115,25 @@ The lifecycle overlay began as a link-only placement proof and is now active
 in the production boot. The
 607-byte `udeks_lifecycle_apply()` transition engine is assigned to the
 `$1C00-$1FFF` scheduler page beside the delivery stub; the remainder of
-`task_state.o`, all of `task_policy.o`, their constants, and their 71-byte BSS
-are linked into `$C120-$CEFF`. A generated, zero-byte private bridge binds only
+`task_state.o`, `task_scheduler.o`, their constants, and their 71-byte BSS are
+linked into `$C120-$C4FD`. `task_policy.o` remains the host-tested,
+cc65-compile-qualified specification and is not resident. A generated,
+zero-byte private bridge binds only
 their external cc65 runtime imports and requires normal/panic map address and
 type parity. The only helpers absent from the resident kernel, `shlax2` and
 `tosanda0`, come from exactly two extracted `none.lib` modules inside the
 overlay rather than growing the resident runtime. `make scheduler-overlay`
 builds the exact page and tail subsequently packaged into `SCHEDOVR`.
 
-The active link occupies 1,018 bytes at `$1C00-$1FF9` (zero-padded to a 1 KiB
-delivery page) and 3,235 runtime bytes at `$C120-$CDC2` (3,164 emitted plus 71
-BSS), leaving 6 bytes in the page and 317 bytes in the tail. The bridge
-contract is 26 resident providers: 23
-absolute and three zero-page symbols. Any provider-count, address-class,
+The active core occupies 1,018 bytes at `$1C00-$1FF9` (zero-padded to a 1 KiB
+delivery page) and 990 runtime bytes at `$C120-$C4FD` (919 emitted plus 71
+BSS). The packaged tail pads to the 360-byte handler at `$CC00-$CD67`, leaving
+the fixed 317-byte context binding at `$CDC3-$CEFF`. The bridge contract is 20
+resident providers: 17 absolute and three zero-page symbols. Any
+provider-count, address-class,
 normal/panic parity, or placement drift fails the build.
 
-`SCHEDOVR` now packages the page and 3,164 emitted tail bytes in one versioned
+`SCHEDOVR` now packages the page and 3,144 copied tail bytes in one versioned
 PRG on side one of both D71 and D64 images. Stage 0 loads it into bank 1 and a
 192-byte one-shot `$FF05-$FFC4` installer copies it only after conflicting boot
 staging has moved. The scheduler entry restores the permanent task gate before
@@ -159,15 +162,16 @@ page's exact `$1FFA-$1FFF` remainder and provides fixed reset/select vectors;
 its generated bridge rejects any drift in the active overlay end, symbol
 types, or five-symbol callback contract.
 
-`SCHEDOVR` carries the 228 emitted context bytes, the 192-byte common tail, and
-the 142-byte lifecycle handler in bank 1. After the boot-console service has
-finished, the 61-byte activator copies those images into their final homes,
+`SCHEDOVR` installs the 360-byte lifecycle handler in its checksummed bank-0
+tail and carries the 228 emitted context bytes plus the 192-byte common tail
+as its activation extension. After the boot-console service has finished, the
+42-byte activator copies the extension images into their final homes,
 calls the fixed reset vector, and returns to init. Task 1 owns bank-1 physical
 pages `$D1/$D2`; the former `$80/$81` choice is forbidden because the native
 loader uses `$8000-$8A00` as its application backup. VICE qualifies repeated
 D71/D64 yields, resumes, command dispatch, and non-returning `EXIT` through
-this installed path. The lifecycle handler occupies `$0B00-$0B8D`, replacing
-the boot-only probe after hardware discovery.
+this installed path. The lifecycle handler occupies `$CC00-$CD67`, outside
+both application slots; `xclock` can therefore use its complete allocation.
 
 ## Proposed bank-0 scheduler region
 
@@ -231,18 +235,21 @@ contract is active: carry clear resumes a synchronous request, while carry set
 returns to the kernel poll frame and leaves the task suspended. `YIELD` uses
 the latter path and resumes only after the scheduler selects task 1 again.
 
-The post-startup delivery path is link-qualified. `SCHEDOVR` ABI 0.3 appends
-the exact, build-locked 228 emitted context bytes, 192-byte tail, and 142-byte
-lifecycle handler in bank 1. The
+The post-startup delivery path is link-qualified. `SCHEDOVR` ABI 0.3 includes
+the permanent 360-byte handler in its bank-0 tail and appends the exact,
+build-locked 228 emitted context bytes and 192-byte common tail. The
 six `$1FFA-$1FFF` callback vectors are installed as part of the scheduler
-page and covered by its existing checksum. A 61-byte body fits the
+page and covered by its existing checksum. A 42-byte body fits the
 post-console staging window and is copied directly to the disposable `$F68A`
 VIC gateway workspace. It copies the context image to
 `$CDC3`, lets the reset callback clear its 89-byte BSS through `$CEFF`,
-replaces `$FF05-$FFC4`, and installs the request handler over the dead probe at
-`$0B00`. Persistent `/bin/ush` now yields and resumes through that path;
+replaces `$FF05-$FFC4`; the request handler is already live at `$CC00`.
+Persistent `/bin/ush` now yields and resumes through that path;
 successful `EXIT` leaves a status-bearing zombie and never restores its task
-context.
+context. The same handler implements immediate/nonblocking `WAITPID`: a live
+child with `NOHANG` returns zero, a zombie is reaped with its status and its
+entire slot cleared, and absent/non-child targets return `ECHILD`. Blocking
+waits remain deferred until per-task request snapshots own their responses.
 
 ## Reclaim order and validation
 

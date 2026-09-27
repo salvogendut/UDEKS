@@ -16,8 +16,8 @@ from pathlib import Path
 
 ZEROPAGE = "01"
 ABSOLUTE = "02"
-EXPECTED_EXTERNALS = 26
-EXPECTED_ABSOLUTE = 23
+EXPECTED_EXTERNALS = 20
+EXPECTED_ABSOLUTE = 17
 EXPECTED_ZEROPAGE = 3
 SYMBOL_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 MAP_SYMBOL = re.compile(
@@ -142,7 +142,7 @@ def render_bridge(resolved: list[tuple[str, str, int]]) -> str:
             '        .assert __SCHEDULER_RUN__ = $1c00, lderror, "scheduler page moved"',
             '        .assert __SCHEDULER_SIZE__ <= $0400, lderror, "scheduler page overflow"',
             '        .assert __CODE_RUN__ = $c120, lderror, "scheduler tail moved"',
-            '        .assert __BSS_RUN__ + __BSS_SIZE__ <= $cf00, lderror, "scheduler tail overflow"',
+            '        .assert __BSS_RUN__ + __BSS_SIZE__ <= $cc00, lderror, "scheduler core reaches lifecycle handler"',
             "",
         ]
     )

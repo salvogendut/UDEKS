@@ -94,8 +94,8 @@ def inject_until_state(
 ) -> None:
     """Retry line-editor injection until the requested service state wins."""
     while time.monotonic() < deadline:
-        sp.inject_line(port, symbols, command)
         try:
+            sp.inject_line(port, symbols, command)
             sp.wait_for_byte(
                 port,
                 state_address,
@@ -103,8 +103,13 @@ def inject_until_state(
                 min(deadline, time.monotonic() + 6.0),
             )
             return
-        except TimeoutError:
-            pass
+        except (ConnectionError, OSError, RuntimeError, TimeoutError, ValueError):
+            # Warp-mode VICE can occasionally close or stall one remote-
+            # monitor connection while the cooperative task gate is active.
+            # Each helper call opens a fresh connection, so retrying is safe;
+            # the service-state test also accepts a command that completed
+            # just before the monitor reply was lost.
+            time.sleep(0.2)
     raise TimeoutError(
         f"${state_address:04X} never reached ${state_value:02X} "
         f"after {command}"

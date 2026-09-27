@@ -86,7 +86,7 @@ class SchedulerOverlayImportTests(unittest.TestCase):
         self.assertIn("__SCHEDULER_RUN__ = $1c00", source)
         self.assertIn("__SCHEDULER_SIZE__ <= $0400", source)
         self.assertIn("__CODE_RUN__ = $c120", source)
-        self.assertIn("__BSS_RUN__ + __BSS_SIZE__ <= $cf00", source)
+        self.assertIn("__BSS_RUN__ + __BSS_SIZE__ <= $cc00", source)
 
 
 class SchedulerOverlaySourceTests(unittest.TestCase):

@@ -144,12 +144,14 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   reservation. Its separate resident binding also fits eight context records
   and callbacks in all 317 post-overlay bytes, plus six fixed page
   vectors. Their bounded post-startup delivery is active: the page
-  vectors and 61-byte activator staged at `$1BAA` and installed at `$F68A` are
-  checksum covered. The installed context/gate images and 142-byte handler now
+  vectors and 42-byte activator staged at `$1BAA` and installed at `$F68A` are
+  checksum covered. The installed context/gate images and 360-byte handler now
   implement the `$CF30` carry contract; persistent `/bin/ush` repeatedly
   yields, resumes, and accepts commands in VICE from both D71 and D64.
 - [x] Implement production cooperative `YIELD` for persistent `/bin/ush`.
 - [x] Implement non-returning `EXIT`, preserving zombie status for `WAITPID`.
+- [x] Implement immediate and `NOHANG` `WAITPID`, including atomic zombie
+  reap and Linux-compatible `ECHILD` behavior.
 - [ ] Implement task creation, sleep, and event wait.
 - [x] Save and restore the selected compiler runtime and CPU context behind
   the production scheduler gate. Physical-hardware qualification of the

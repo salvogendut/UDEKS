@@ -6,10 +6,10 @@ That gate swaps cc65 zero-page contexts, selects bank 0, dispatches through the
 fixed `$CF30` vector, and restores bank 1 before returning.
 
 ABI 0.3 keeps every 0.2 operation number and behavior unchanged and adds
-lifecycle operations `10`-`15`. The new operations are frozen here but not yet
-implemented; the resident dispatcher returns `ENOSYS` for them until their
-implementations land. Rebuilt 0.3 clients may keep using the 0.2 operations
-unchanged, and the resident version check accepts minor `0`, `1`, `2`, and `3`.
+lifecycle operations `10`-`15`. `YIELD`, `EXIT`, and immediate/nonblocking
+`WAITPID` are implemented; the operation sections below identify the remaining
+`ENOSYS` paths. Rebuilt 0.3 clients may keep using the 0.2 operations unchanged,
+and the resident version check accepts minor `0`, `1`, `2`, and `3`.
 
 ## Record
 
@@ -116,6 +116,10 @@ ids are rejected with `ESRCH` (or `ECHILD` for `WAITPID`, as noted below).
   is outside the table: `ECHILD`.
 - Reserved flag bits: `EINVAL`.
 
+The initial production increment implements immediate zombie reap and
+`NOHANG`. A matching live child without `NOHANG` currently returns `ENOSYS`;
+the blocking response-ownership path remains the next WAITPID increment.
+
 ### SLEEP (13)
 
 - Request: `count = 2`; payload bytes `0-1` are the requested ticks in 1/60 s
@@ -221,12 +225,11 @@ retain their existing return convention until they migrate to lifecycle tasks.
 ## Placement note
 
 The fixed `$F800` request gateway uses 262 of its 265 reserved bytes as of ABI
-0.3, the host-testable policy compiles to 2,245 bytes (about 2.2 KiB) of cc65
-code without long-arithmetic helpers, and the lifecycle module is about 1.6 KiB
-of code plus 31 bytes of
-read-only data and 71 bytes of BSS. The bank-0 gap below the VIC shadow is about 596 bytes and
-common RAM has no equivalent unallocated region, so neither module fits its
-current home unchanged.
+0.3, and the host-testable policy compiles to 2,245 bytes (about 2.2 KiB) of
+cc65 code without long-arithmetic helpers. The active scheduler core occupies
+919 emitted bytes plus 71 bytes of BSS at `$C120-$C4FD`; the permanent
+lifecycle request handler occupies `$CC00-$CD67` outside both application
+slots. The policy module remains compile-qualified but nonresident.
 
 The preferred direction is to keep validation, lifecycle policy, and
 scheduling in bank 0 and retain only a small MMU/context-switch tail in

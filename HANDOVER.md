@@ -90,7 +90,7 @@ the task model, validate it, and only then remove the replaced special case.
   in place at `$A1E0`, leaving the complete `$C120-$CEFF` tail available for
   lifecycle/scheduler integration.
 - Lifecycle placement is active: `SCHEDOVR` carries the zero-padded 1 KiB
-  scheduler page and the lifecycle/policy tail at `$C120-$CDC2`. Stage 0 loads
+  scheduler page and the installed lifecycle tail at `$C120-$CD67`. Stage 0 loads
   it into bank 1 with KERNAL `SETBNK`/`LOAD`; a 192-byte one-shot common-RAM
   installer validates and copies it, clears its BSS, and the scheduler entry
   replaces that installer with the permanent task gate. D71/D64 cold boot,
@@ -104,18 +104,22 @@ the task model, validate it, and only then remove the replaced special case.
   installs it after startup. Eight 11-byte records plus reset/save/select
   callbacks occupy the exact `$CDC3-$CEFF` 317-byte window, while fixed
   callback vectors consume the page's final six bytes at `$1FFA-$1FFF`.
-  `SCHEDOVR` ABI 0.3 appends the exact, build-locked 228-byte context image,
-  192-byte gate, and 142-byte lifecycle handler; its normal checksum covers the
+  `SCHEDOVR` ABI 0.3 appends the exact, build-locked 228-byte context image and
+  192-byte gate; its checksummed bank-0 tail also installs the 360-byte
+  lifecycle handler at `$CC00-$CD67`, outside both application slots. The
+  normal checksum covers the
   six fixed page vectors, and the boot-console installer checksums and installs a
-  61-byte post-startup activator at `$1BAA` and copies it directly to its
-  `$F68A` common-RAM run address. The lifecycle handler is installed over the
-  dead boot/probe page at `$0B00-$0B8D`. Persistent `/bin/ush` now polls, yields, and
+  42-byte post-startup activator at `$1BAA` and copies it directly to its
+  `$F68A` common-RAM run address. Persistent `/bin/ush` now polls, yields, and
   resumes through the `$CF30` carry contract. D71 and D64 VICE probes observe
   repeated context switches and accept `xinit`; the xwave slot-reuse probe
   also remains green. Task 1 owns bank-1 pages `$D1/$D2`, above bootfs and
   outside the loader's `$8000-$8A00` backup. Dedicated D71/D64 tasks also
   prove that `EXIT(37)` becomes a zombie, releases the request record, and
-  cannot resume. The next lifecycle operation is nonblocking `WAITPID`.
+  cannot resume. D71/D64 probes also prove live-child `WAITPID|NOHANG` returns
+  zero, zombie status 37 is reaped with result one, the complete child slot is
+  cleared, and a repeated wait returns `ECHILD`. Blocking `WAITPID` remains
+  the next lifecycle increment.
 
 ## Implementation plan
 
@@ -286,6 +290,6 @@ and bank ownership.
 
 ## First concrete change for the next session
 
-Implement nonblocking `WAITPID` so a parent can observe and reap the zombie
-created by the qualified `EXIT` path. Preserve the shared-record ownership
-rules before adding blocking waits or a second general task.
+Implement blocking `WAITPID` with per-task request snapshots so the shared
+`$F359` record is released while the parent sleeps and restored only when that
+parent resumes. Then add a second general task through `SPAWN`.

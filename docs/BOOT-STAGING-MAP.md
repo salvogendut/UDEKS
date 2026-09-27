@@ -33,7 +33,7 @@ The audit distinguishes three sizes per staged region:
 | capability staging | `$A2EB` | 967 | 967 | 967 | `load..crt0` |
 | capability installer staging | `$A6B2` | 102 | 102 | 102 | `load..crt0` |
 | boot-console staging | `$A718` | 1,450 | 1,450 | 1,450 | `load..crt0` |
-| task-switch activator | `$ACC2` | 61 | 61 | 61 | `load..crt0` |
+| task-switch activator | `$ACC2` | 42 | 42 | 42 | `load..crt0` |
 | boot-console installer | `$0B50` | 99 | 99 | 99 | `load..probe-copy` |
 | busy sprite | `$0BC0` | 63 | 63 | 63 | `load..stage1` |
 | probe staging | `$AD00` | 209 | 256 | 256 | `load..crt0` |
@@ -59,7 +59,7 @@ busy sprite occupies `$0BC0-$0BFE` until stage 1 copies it to bank 1.
 
 | Hole | Range | Size | Free |
 |---|---:|---:|---|
-| shadow prefix remainder | `$ACFF` | 1 | after crt0 |
+| shadow prefix remainder | `$ACEC-$ACFF` | 20 | after crt0 |
 | shadow mid | `$C4C9-$C4EE` | 38 | after crt0 |
 | bootfs-request container tail | `$C78A-$C7FF` | 118 | after stage 1 |
 | loader tail | `$CDF0-$CDFF` | 16 | after stage 1 |
@@ -67,13 +67,13 @@ busy sprite occupies `$0BC0-$0BFE` until stage 1 copies it to bank 1.
 | boot-sector gap | `$0B4E-$0B4F` | 2 | after stage 0 |
 | installer/sprite gap | `$0BBE-$0BBF` | 2 | after stage 1 |
 | boot-sector tail | `$0BFF` | 1 | after stage 1 |
-| **total** | | **242** | largest contiguous **118** |
+| **total** | | **261** | largest contiguous **118** |
 
-The boot-console checksum/copy covers one contiguous 1,511-byte delivery:
-the 1,450-byte composer followed by the 61-byte task-switch activator.
-The latter lands at `$1BAA-$1BE6`, after the composer, and the installer also
-copies it to its `$F68A-$F6C6` common-RAM run address. The scheduler bootstrap
-calls it after service startup to install the ABI 0.3 `YIELD` path.
+The boot-console checksum/copy covers one contiguous 1,492-byte delivery:
+the 1,450-byte composer followed by the 42-byte task-switch activator.
+The latter lands at `$1BAA-$1BD3`, after the composer, and the installer also
+copies it to its `$F68A-$F6B3` common-RAM run address. The scheduler bootstrap
+calls it after service startup to install the ABI 0.3 context-switch path.
 The former `$ACD9` scatter-manifest reservation belongs to the superseded
 inline scheduler-delivery path; a build that requests that compatibility path
 must reject this overlapping placement rather than silently combining them.
@@ -129,17 +129,19 @@ sprite with `probe.o`.
 ## Scheduler delivery (activated 2026-09-27)
 
 The original step-5 scatter handoff remains preserved as historical evidence.
-The production path now delivers the scheduler at `$1C00-$1FFF` and its tail
-at `$C120-$CDC2`:
+The production path now delivers the scheduler at `$1C00-$1FFF` and its
+installed tail at `$C120-$CD67`:
 
-1. link the zero-padded scheduler page and lifecycle/policy tail;
+1. link the zero-padded scheduler page and lifecycle core tail; the pure
+   request-policy C module remains host-tested and compile-qualified rather
+   than occupying production RAM;
 2. package both in the versioned `SCHEDOVR` side-one PRG;
 3. load it at `$5000` in bank 1 through stage-0 KERNAL `SETBNK`/`LOAD`;
 4. copy it through the exact 192-byte temporary task-gate installer into
-   `$1200-$15FF` and `$C120-$CDC2`, validating its magic/checksum and clearing
+   `$1200-$15FF` and `$C120-$CD67`, validating its magic/checksum and clearing
    the 71-byte BSS;
-4. crt0 clears BSS and the VIC shadow and returns to the fixed `$F7D8` copier;
-5. the 35-byte copier in FINAL copies the page into `$1C00-$1FFF`; the
+5. crt0 clears BSS and the VIC shadow and returns to the fixed `$F7D8` copier;
+6. the 35-byte copier in FINAL copies the page into `$1C00-$1FFF`; the
    scheduler entry restores the permanent `$FF05-$FFC4` task gate and
    continues through the fixed `$2000` kernel-main vector.
 
@@ -151,10 +153,13 @@ copier in FINAL, with 15 bytes of headroom. The hardened gather bounds the
 entry count, source ranges, and destination, so a malformed manifest cannot
 write past `$15FF`.
 
-The old `USCT` scatter builder and frozen `$2003` entry remain available for
-compatibility and historical tests, but production boot no longer consumes
-the fragmented holes. The active page is 1,018 bytes padded to 1 KiB, and the
-tail is 3,164 emitted bytes plus 71 bytes of BSS. D71/D64 cold boots install
+The linked core occupies `$C120-$C4FD` including BSS. The packaged tail pads
+to the permanent 360-byte lifecycle handler at `$CC00-$CD67`; the context
+binding remains at `$CDC3-$CEFF`. The old `USCT` scatter builder and frozen
+`$2003` entry remain available for compatibility and historical tests, but
+production boot no longer consumes the fragmented holes. The active page is
+1,018 bytes padded to 1 KiB, and the copied tail is 3,144 bytes including the
+zero gap and handler; its 71-byte core BSS is cleared in place. D71/D64 cold boots install
 both byte-exactly without touching the `$FFC5` IRQ trampoline. After the
 installer clears BSS, the lifecycle bootstrap leaves the exact expected task-1
 state while all unused task slots remain zero.

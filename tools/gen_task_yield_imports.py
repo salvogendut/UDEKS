@@ -14,6 +14,7 @@ from gen_scheduler_overlay_imports import MAP_SYMBOL
 
 EXPECTED = {
     "_udeks_bootfs_finish_error": "02",
+    "_udeks_bootfs_finish_ok": "02",
     "_udeks_lifecycle_current_private": "02",
     "_udeks_lifecycle_last_event_private": "02",
     "_udeks_lifecycle_rejected_private": "02",
@@ -77,7 +78,7 @@ def render(
         size = imports[name]
         if name == "_udeks_task_context_save_current":
             providers = context
-        elif name == "_udeks_bootfs_finish_error":
+        elif name in {"_udeks_bootfs_finish_error", "_udeks_bootfs_finish_ok"}:
             if normal.get(name) != panic.get(name):
                 raise ValueError(f"{name}: normal/panic kernel maps differ")
             providers = normal

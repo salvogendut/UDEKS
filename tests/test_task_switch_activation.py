@@ -49,17 +49,18 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertEqual(body[:0x3FA], bytes(0x3FA))
         self.assertEqual(body[0x3FA:0x400], vectors)
         self.assertEqual(body[0x400:0x407], tail)
-        self.assertEqual(body[0x407:0x4EB], context)
-        self.assertEqual(body[0x4EB:0x5AB], switch_tail)
-        self.assertEqual(body[0x5AB:], yield_handler)
-        self.assertIn("TASK_ACTIVATION_CONTEXT_SOURCE = $541b", constants)
+        self.assertEqual(body[0x407:0xEE0], bytes(0xAD9))
+        self.assertEqual(body[0xEE0:0xEED], yield_handler)
+        self.assertEqual(body[0xEED:0xFD1], context)
+        self.assertEqual(body[0xFD1:0x1091], switch_tail)
+        self.assertEqual(len(body), 0x1091)
+        self.assertIn("SCHEDULER_OVERLAY_TAIL_SIZE = $0aed", constants)
+        self.assertIn("TASK_ACTIVATION_CONTEXT_SOURCE = $5f01", constants)
         self.assertIn("TASK_ACTIVATION_CONTEXT_IMAGE_SIZE = $e4", constants)
         self.assertIn("TASK_ACTIVATION_CONTEXT_BSS_SIZE = $59", constants)
-        self.assertIn("TASK_ACTIVATION_TAIL_SOURCE = $54ff", constants)
+        self.assertIn("TASK_ACTIVATION_TAIL_SOURCE = $5fe5", constants)
         self.assertIn("TASK_ACTIVATION_TAIL_SIZE = $c0", constants)
-        self.assertIn("TASK_ACTIVATION_YIELD_SOURCE = $55bf", constants)
-        self.assertIn("TASK_ACTIVATION_YIELD_DESTINATION = $0b00", constants)
-        self.assertIn("TASK_ACTIVATION_YIELD_SIZE = $0d", constants)
+        self.assertNotIn("TASK_ACTIVATION_YIELD", constants)
 
     def test_activation_fits_the_only_contiguous_post_console_window(self):
         config = (ROOT / "cfg/8502-task-switch-activation.cfg").read_text(
@@ -74,8 +75,7 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertIn("sta mmu_lcr_worker_flat", source)
         self.assertIn("sta mmu_lcr_kernel_io", source)
         self.assertIn("sta task_activation_tail_destination,y", source)
-        self.assertIn("sta task_activation_yield_destination,y", source)
-        self.assertIn("cpy #task_activation_yield_size", source)
+        self.assertNotIn("task_activation_yield", source)
         self.assertIn("jsr $ff10", source)
         installer = (ROOT / "src/boot/boot-console-installer.s").read_text(
             encoding="utf-8"
@@ -89,7 +89,7 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertIn("jsr _udeks_lifecycle_bootstrap", scheduler)
         self.assertIn("jmp $f68a", scheduler)
 
-    def test_lifecycle_handler_yields_and_never_resumes_successful_exit(self):
+    def test_lifecycle_handler_yields_exits_and_reaps_nonblocking(self):
         source = (ROOT / "src/scheduler/task_yield_handler.s").read_text(
             encoding="utf-8"
         ).lower()
@@ -97,12 +97,18 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertIn("jsr current_slot", source)
         self.assertIn("sta _udeks_lifecycle_slots_private+task_slot_state,x", source)
         self.assertIn("sta _udeks_lifecycle_slots_private+task_slot_exit,x", source)
+        self.assertIn("request_waitpid:", source)
+        self.assertIn("wait_any_child:", source)
+        self.assertIn("wait_reap:", source)
+        self.assertIn("jmp _udeks_bootfs_finish_ok", source)
+        self.assertIn("lda #err_echild", source)
         self.assertIn("sta _udeks_lifecycle_last_event_private", source)
         self.assertIn("sta treq_state", source)
         self.assertIn("sec", source)
         self.assertIn("yield_invalid:", source)
         self.assertIn("jmp _udeks_bootfs_finish_error", source)
-        self.assertIn("_udeks_task_yield_handler = $0b00", source)
+        self.assertIn("_udeks_task_yield_handler = $cc00", source)
+        self.assertIn("yield_handler_end <= $cdc3", source)
 
 
 if __name__ == "__main__":
