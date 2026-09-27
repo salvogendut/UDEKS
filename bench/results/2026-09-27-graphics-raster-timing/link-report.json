@@ -1,0 +1,178 @@
+{
+  "qualification": "link-budget only; experimental images must not be booted",
+  "baseline": {
+    "ZEROPAGE": {
+      "start": 4,
+      "end": 31,
+      "size": 28
+    },
+    "PROBECODE": {
+      "start": 2816,
+      "end": 3024,
+      "size": 209
+    },
+    "LOWBSS": {
+      "start": 3072,
+      "end": 4604,
+      "size": 1533
+    },
+    "STARTUP": {
+      "start": 7168,
+      "end": 7374,
+      "size": 207
+    },
+    "KERNELENTRY": {
+      "start": 8192,
+      "end": 8197,
+      "size": 6
+    },
+    "CODE": {
+      "start": 8198,
+      "end": 37706,
+      "size": 29509
+    },
+    "RODATA": {
+      "start": 37707,
+      "end": 40766,
+      "size": 3060
+    },
+    "DATA": {
+      "start": 40767,
+      "end": 40769,
+      "size": 3
+    },
+    "BSS": {
+      "start": 40770,
+      "end": 41439,
+      "size": 670
+    },
+    "VICSHADOW": {
+      "start": 41440,
+      "end": 49439,
+      "size": 8000
+    },
+    "SYSCALLS": {
+      "start": 52992,
+      "end": 53246,
+      "size": 255
+    },
+    "HIGHBSS": {
+      "start": 57784,
+      "end": 58081,
+      "size": 298
+    },
+    "MODULECODE": {
+      "start": 58112,
+      "end": 58874,
+      "size": 763
+    },
+    "MODULERODATA": {
+      "start": 58875,
+      "end": 58947,
+      "size": 73
+    },
+    "BOOTFSCODE": {
+      "start": 62447,
+      "end": 63112,
+      "size": 666
+    },
+    "TASKREQUEST": {
+      "start": 63488,
+      "end": 63748,
+      "size": 261
+    },
+    "TASKGATE": {
+      "start": 65285,
+      "end": 65476,
+      "size": 192
+    }
+  },
+  "static-scratch": {
+    "ZEROPAGE": {
+      "start": 4,
+      "end": 31,
+      "size": 28
+    },
+    "PROBECODE": {
+      "start": 2816,
+      "end": 3024,
+      "size": 209
+    },
+    "LOWBSS": {
+      "start": 3072,
+      "end": 4604,
+      "size": 1533
+    },
+    "STARTUP": {
+      "start": 7168,
+      "end": 7374,
+      "size": 207
+    },
+    "KERNELENTRY": {
+      "start": 8192,
+      "end": 8197,
+      "size": 6
+    },
+    "CODE": {
+      "start": 8198,
+      "end": 37625,
+      "size": 29428
+    },
+    "RODATA": {
+      "start": 37626,
+      "end": 40685,
+      "size": 3060
+    },
+    "DATA": {
+      "start": 40686,
+      "end": 40688,
+      "size": 3
+    },
+    "BSS": {
+      "start": 40689,
+      "end": 41390,
+      "size": 702
+    },
+    "VICSHADOW": {
+      "start": 41391,
+      "end": 49390,
+      "size": 8000
+    },
+    "SYSCALLS": {
+      "start": 52992,
+      "end": 53246,
+      "size": 255
+    },
+    "HIGHBSS": {
+      "start": 57784,
+      "end": 58081,
+      "size": 298
+    },
+    "MODULECODE": {
+      "start": 58112,
+      "end": 58874,
+      "size": 763
+    },
+    "MODULERODATA": {
+      "start": 58875,
+      "end": 58947,
+      "size": 73
+    },
+    "BOOTFSCODE": {
+      "start": 62447,
+      "end": 63112,
+      "size": 666
+    },
+    "TASKREQUEST": {
+      "start": 63488,
+      "end": 63748,
+      "size": 261
+    },
+    "TASKGATE": {
+      "start": 65285,
+      "end": 65476,
+      "size": 192
+    }
+  },
+  "linked_end_reduction": 49
+}
