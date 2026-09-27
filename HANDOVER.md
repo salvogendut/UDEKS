@@ -366,6 +366,9 @@ eight saved CODE bytes are reserved to preserve the frozen `$A1E0` shadow
 placement. No 1986 source changes are required. D71/D64 partial/cached drag
 stress, Ctrl+C and subsequent console input pass; VICE boot/scheduler/shadow
 smokes pass. See the [regression report](bench/results/2026-09-27-xwave-drag-freeze/README.md).
-Manual SDL and physical-hardware confirmation remain outstanding. Rebase and
+PR #9 is merged as `5d089a4`. The user subsequently reported the real-hardware
+checklist passed: "all good on real hardware" (2026-09-27). This closes the
+drag-freeze functional hardware gate, not unrelated tasking gates or timing
+qualification. Manual SDL confirmation remains outstanding. Rebase and
 requalify `graphics-raster-audit` on this fix before integrating its scratch
 optimization; its earlier checkpoint is not a qualification of this revision.
