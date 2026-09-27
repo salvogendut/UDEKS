@@ -25,6 +25,12 @@ static void require(int condition, const char *message) {
         fprintf(stderr, "FAIL: %s (frame %d, PC $%04X, request %02X/%02X/%02X)\n",
                 message, c128_frame_count, machine->cpu.pc,
                 byte(0xF35F), byte(0xF360), byte(0xF365));
+        for (unsigned i = 0; i < 12; ++i) {
+            frames(1);
+            fprintf(stderr, "trace PC=$%04X drag=%u buttons=%u moves=%u finishes=%u\n",
+                    machine->cpu.pc, byte(0xF248), byte(0xF1DC),
+                    word(0xF256), word(0xF25A));
+        }
         exit(1);
     }
 }
@@ -105,6 +111,57 @@ static void pointer_to(unsigned x, unsigned y) {
     }
     require(0, "1351 pointer did not reach its target");
 }
+/* Optional regression stress: move a foreground wave while its first paint is
+ * incomplete, then replay it repeatedly at screen edges. Native input only. */
+static void drag_stress(unsigned count) {
+    unsigned x = 144, y = 88;
+    command("xwave");
+    require(byte(0xF265) == 3, "stress wave did not start");
+    require(byte(0xF27A) < 21, "stress must start during partial painting");
+    for (unsigned i = 0; i < count; ++i) {
+        if (i == count / 2) {
+            wait_byte(0xF27A, 21, "stress wave did not finish rendering");
+            require(word(0xF26C) == 21 && word(0xF26E) == 0,
+                    "stress wave worker rows failed");
+        }
+        unsigned starts = word(0xF258), finishes = word(0xF25A);
+        pointer_to(x + 22, y + 46);
+        joyports_mouse_button(&machine->joyports, 0, false, true);
+        for (unsigned n = 0; n < 10000 &&
+             (word(0xF258) == starts || !byte(0xF248)); ++n) frames(1);
+        require(word(0xF258) == ((starts + 1) & 65535) && byte(0xF248),
+                "stress drag did not start");
+        require(byte(0xF415) == 0x4C && word(0xF416) == 0xC900,
+                "outline preparation corrupted lifecycle dispatcher");
+        unsigned next_x = (i * 37 + 3) % 153;
+        unsigned next_y = (i * 23 + 1) % 97;
+        pointer_to(next_x + 22, next_y + 46);
+        joyports_mouse_button(&machine->joyports, 0, false, false);
+        for (unsigned n = 0; n < 10000 &&
+             (word(0xF25A) == finishes || byte(0xF248)); ++n) frames(1);
+        require(word(0xF25A) == ((finishes + 1) & 65535) && !byte(0xF248),
+                "stress drag did not finish");
+        /* Pointer quantization permits a one-pixel endpoint difference. */
+        x = byte(0xF274); y = byte(0xF275);
+        require(byte(0xF415) == 0x4C && word(0xF416) == 0xC900,
+                "drag release corrupted lifecycle dispatcher");
+        if (i >= count / 2)
+            require(word(0xF26C) == 21, "cached drag reacquired Z80");
+        printf("stress %u: x=%u y=%u row=%u column=%u PC=$%04X\n",
+               i, x, y, byte(0xF27A), byte(0xF27B), machine->cpu.pc);
+        fflush(stdout);
+    }
+    c128_key_event(machine, SDL_SCANCODE_LCTRL, true);
+    key(SDL_SCANCODE_C);
+    c128_key_event(machine, SDL_SCANCODE_LCTRL, false);
+    wait_byte(0xF265, 2, "stress Ctrl+C did not stop wave"); idle();
+    if (getenv("UDEKS_DRAG_CLOCK"))
+        require(byte(0xF225) == 3, "stress cancellation stopped background clock");
+    require(byte(0xF11B) == 0, "stress lifecycle canary failures");
+    command("echo console alive"); idle();
+    require(snapshot_save(machine, snapshot_path) == SNAPSHOT_OK, "save stress evidence");
+    puts("PASS: repeated native wave drags and console cancellation");
+}
 int main(int argc, char **argv) {
     require(argc == 5, "usage: smoke ROMDIR DISK SLOTADDR SNAPSHOT");
     Config config;
@@ -146,6 +203,13 @@ int main(int argc, char **argv) {
     require(word(0xF165) == previous_sum && byte(0xF164) == previous_length,
             "history submitted different text");
     command("xinit"); require(byte(0xF1B5) == 3, "VIC graphics did not initialize"); idle();
+    if (getenv("UDEKS_DRAG_STRESS")) {
+        if (getenv("UDEKS_DRAG_CLOCK")) { command("xclock &"); idle(); }
+        drag_stress(strtoul(getenv("UDEKS_DRAG_STRESS"), NULL, 0));
+        require(drive_attach_disk(&machine->drive, NULL) == 0, "detach stress disk");
+        free(machine);
+        return 0;
+    }
     command("xclock &"); require(byte(0xF225) == 3, "clock did not start"); idle();
     /* Clock's initial title bar is x=124,y=61; pointer includes VIC borders. */
     pointer_to(150, 106);

@@ -1,0 +1,14 @@
+python3 tools/task_yield_probe.py --timeout 90
+udeks.d71: booting
+udeks.d71: tail active, suspensions=2, request=00/10/00, service=02/00/00/00, panic=00/ff
+udeks.d71: xinit active
+udeks.d71: xclock active
+udeks.d71: xwave active
+udeks.d71: xwave complete, 21 cached rows
+udeks.d71: 2->2->23 cooperative suspensions, xinit/xclock/xwave and utility commands accepted; input waits restored
+task-YIELD probe OK
+
+python3 tools/shadow_boot_probe.py --vic-compare --work build/vice/drag-fix-shadow
+shadow $A1E0-$C11F cleared (8000 bytes); reclaimed tail $C120-$CEFF contains the 3179-byte installed scheduler tail; $CD8B-$CDBC matches its 50-byte preimage
+bank-0 shadow matches bank-1 $6000-$7F3F (8000 bytes)
+shadow probe OK

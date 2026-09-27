@@ -6,6 +6,7 @@ from pathlib import Path
 import shlex
 import subprocess
 import re
+import os
 
 
 def emulator_sources(emulator: Path) -> list[Path]:
@@ -30,7 +31,15 @@ def main() -> None:
     parser.add_argument("--map", type=Path, default=Path("build/8502/udeks-scheduler-overlay.map"))
     parser.add_argument("--snapshot", type=Path, default=Path("build/1986-input-smoke.vsf"))
     parser.add_argument("--log", type=Path, help="save stdout/stderr, including failures")
+    parser.add_argument("--drag-stress", type=int,
+                        help="repeat wave drags (minimum 16), half partial/half cached")
+    parser.add_argument("--drag-clock", action="store_true",
+                        help="run a background clock during --drag-stress")
     args = parser.parse_args()
+    if args.drag_stress is not None and args.drag_stress < 16:
+        parser.error("--drag-stress must be at least 16 to cover every byte alignment")
+    if args.drag_clock and args.drag_stress is None:
+        parser.error("--drag-clock requires --drag-stress")
     emulator = args.emulator.resolve()
     flags = shlex.split(subprocess.check_output(["pkg-config", "--cflags", "--libs", "sdl3"], text=True))
     args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -39,10 +48,16 @@ def main() -> None:
                     *flags, "-lm", "-o", str(args.output)], check=True)
     if args.roms:
         args.snapshot.parent.mkdir(parents=True, exist_ok=True)
+        environment = os.environ.copy()
+        if args.drag_stress is not None:
+            environment["UDEKS_DRAG_STRESS"] = str(args.drag_stress)
+        if args.drag_clock:
+            environment["UDEKS_DRAG_CLOCK"] = "1"
         result = subprocess.run([str(args.output.resolve()), str(args.roms.resolve()),
                                  str(args.disk.resolve()), slot_address(args.map),
                                  str(args.snapshot.resolve())], text=True,
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                env=environment)
         print(result.stdout, end="")
         if args.log:
             args.log.parent.mkdir(parents=True, exist_ok=True)

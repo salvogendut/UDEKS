@@ -589,5 +589,12 @@ _udeks_vic_gateway_size_vic = vic_gateway_end-vic_gateway
 _udeks_vic_gateway_size_sprite = sprite_swap_gateway_end-sprite_swap_gateway
 _udeks_vic_gateway_size_page = page_gateway_end-page_gateway
 _udeks_vic_gateway_size_outline = outline_gateway_end-outline_gateway
+
+; The safe C outline-mask expression saves eight CODE bytes with the
+; qualified cc65 flags. Keep that saving reserved until a separately qualified
+; placement change: boot delivery currently freezes VICSHADOW at $A1E0.
+; This is resident padding, not part of any copied common-RAM gateway.
+outline_mask_placement_reserve:
+        .res 8, $ea
         .export _udeks_vic_gateway_size_vic, _udeks_vic_gateway_size_sprite
         .export _udeks_vic_gateway_size_page, _udeks_vic_gateway_size_outline

@@ -355,3 +355,17 @@ performance gates for issue #4. Then generalize
 task allocation and migrate shell jobs/graphical applications to ordinary
 lifecycle tasks. Do not claim Tasking 0.1 complete or discharge the older
 ADR 0010/0012 and integrated-context hardware gates from these VICE results.
+
+## xwave drag-freeze correction (issue #8)
+
+On `fix/xwave-drag-freeze`, repeated native dragging reproduces the reported
+freeze on the PR #7 disk. The reference cc65 outline-mask expression stores
+outside its record and overwrites the lifecycle dispatcher at `$F415`.
+An equivalent complement/right-shift expression fixes the generated store;
+eight saved CODE bytes are reserved to preserve the frozen `$A1E0` shadow
+placement. No 1986 source changes are required. D71/D64 partial/cached drag
+stress, Ctrl+C and subsequent console input pass; VICE boot/scheduler/shadow
+smokes pass. See the [regression report](bench/results/2026-09-27-xwave-drag-freeze/README.md).
+Manual SDL and physical-hardware confirmation remain outstanding. Rebase and
+requalify `graphics-raster-audit` on this fix before integrating its scratch
+optimization; its earlier checkpoint is not a qualification of this revision.
