@@ -105,11 +105,16 @@ the task model, validate it, and only then remove the replaced special case.
   records plus reset/save/select callbacks occupy `$CDC3-$CEFC` (314 of the
   active overlay's 317 free bytes), while fixed callback vectors consume the
   page's final six bytes at `$1FFA-$1FFF`. It is not in `SCHEDOVR` because the
-  active boot still reads the old gate source at `$CE00-$CEBF`; `$1600` cannot
-  hold it because the boot-console composer remains live there through
-  service startup. The next increment is therefore the post-startup delivery
-  transition for the new gate/context binding, then the `$CF30` carry contract
-  and a real ABI 0.3 `YIELD`.
+  active boot still reads the old gate source at `$CE00-$CEBF`. The delivery
+  half of that transition is now built: `SCHEDOVR` ABI 0.3 appends the exact,
+  build-locked 225-byte context image and 192-byte gate, its normal checksum
+  covers the six fixed page vectors, and the boot-console installer checksums and installs a
+  59-byte post-startup activator at `$1BAA`. The activator remains deliberately
+  dormant because the appended images still need an activation-time integrity
+  gate and the current `/bin/ush` entry returns after each poll and
+  cannot resume from a persistent task stack. The next increment is the
+  `$CF30` carry contract and a real ABI 0.3 `YIELD`; only then should init call
+  the activator and retire the 0.2 gate.
   `YIELD` must return only after task 1 is selected again, and `EXIT` must
   never return; keep the 0.2 compatibility path until those invariants pass.
 

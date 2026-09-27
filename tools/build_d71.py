@@ -39,6 +39,7 @@ BOOT_DELIVERY_SIZE = 0x010B
 CAPABILITY_SIZE = 0x03C7
 BOOT_CONSOLE_SIZE = 0x05AA
 BOOT_CONSOLE_DESTINATION = 0x1600
+TASK_SWITCH_ACTIVATION_SIZE = 59
 BOOT_CONSOLE_INSTALLER_ADDRESS = 0x0B50
 BUSY_SPRITE_ADDRESS = 0x0BC0
 BUSY_SPRITE_SIZE = 63
@@ -466,6 +467,7 @@ def install_capability_installer(
 def install_boot_console(
     kernel: bytearray,
     boot_console: bytes,
+    task_activation: bytes,
     shadow_start: int,
     capability_size: int,
     capability_installer_size: int,
@@ -475,15 +477,21 @@ def install_boot_console(
             f"boot console image is {len(boot_console)} bytes; expected "
             f"{BOOT_CONSOLE_SIZE}"
         )
+    if task_activation and len(task_activation) != TASK_SWITCH_ACTIVATION_SIZE:
+        raise ValueError(
+            f"task-switch activation is {len(task_activation)} bytes; expected "
+            f"{TASK_SWITCH_ACTIVATION_SIZE}"
+        )
+    installed_image = boot_console + task_activation
     start = shadow_start + capability_size + capability_installer_size
-    end = start + len(boot_console)
-    if end > SCATTER_MANIFEST_ADDRESS:
-        raise ValueError("boot console staging reaches the scheduler manifest")
+    end = start + len(installed_image)
+    if end > PROBE_STAGING_ADDRESS:
+        raise ValueError("boot console staging reaches the probe staging page")
     offset = start - KERNEL_ADDRESS
-    region = kernel[offset : offset + len(boot_console)]
-    if len(region) != len(boot_console) or any(region):
+    region = kernel[offset : offset + len(installed_image)]
+    if len(region) != len(installed_image) or any(region):
         raise ValueError("boot console staging overlaps resident kernel data")
-    kernel[offset : offset + len(boot_console)] = boot_console
+    kernel[offset : offset + len(installed_image)] = installed_image
 
 
 def install_boot_console_installer(
@@ -651,6 +659,7 @@ def build_image(
     capability: bytes = b"",
     capability_installer: bytes = b"",
     boot_console: bytes = b"",
+    task_activation: bytes = b"",
     boot_console_installer: bytes = b"",
     boot_delivery: bytes = b"",
     scheduler_overlay: bytes = b"",
@@ -707,6 +716,7 @@ def build_image(
         install_boot_console(
             staged_kernel,
             boot_console,
+            task_activation,
             delivery_end,
             len(capability),
             len(capability_installer),
@@ -720,7 +730,7 @@ def build_image(
         install_scheduler(
             staged_kernel, stage0_sector, scheduler, shadow_start,
             delivery_size + len(capability) + len(capability_installer)
-            + len(boot_console),
+            + len(boot_console) + len(task_activation),
             (
                 BOOT_CONSOLE_INSTALLER_ADDRESS
                 + len(boot_console_installer) - 1
@@ -770,6 +780,7 @@ def main() -> None:
     parser.add_argument("--capability", type=Path, required=True)
     parser.add_argument("--capability-installer", type=Path, required=True)
     parser.add_argument("--boot-console", type=Path, required=True)
+    parser.add_argument("--task-switch-activation", type=Path, required=True)
     parser.add_argument(
         "--boot-console-installer", type=Path, required=True
     )
@@ -810,6 +821,7 @@ def main() -> None:
             args.capability.read_bytes(),
             args.capability_installer.read_bytes(),
             args.boot_console.read_bytes(),
+            args.task_switch_activation.read_bytes(),
             args.boot_console_installer.read_bytes(),
             args.boot_delivery.read_bytes(),
             args.scheduler_overlay.read_bytes(),

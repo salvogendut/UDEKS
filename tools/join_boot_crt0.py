@@ -25,6 +25,7 @@ SCHEDULER_ADDRESS = 0x1200
 SCHEDULER_SIZE = 0x0400
 BOOT_CONSOLE_ADDRESS = 0x1600
 BOOT_CONSOLE_SIZE = 0x05AA
+TASK_SWITCH_ACTIVATION_SIZE = 59
 CRT0_ADDRESS = 0x1C00
 CRT0_SIZE = 0x0100
 KERNEL_ADDRESS = 0x2000
@@ -43,6 +44,7 @@ def join(
     kernel: bytes,
     gateway: bytes,
     destination: Path,
+    task_activation: bytes = b"",
 ) -> None:
     if len(capability) != CAPABILITY_SIZE:
         raise ValueError(
@@ -55,6 +57,11 @@ def join(
         raise ValueError(
             f"boot console image is {len(boot_console)} bytes; expected "
             f"{BOOT_CONSOLE_SIZE}"
+        )
+    if task_activation and len(task_activation) != TASK_SWITCH_ACTIVATION_SIZE:
+        raise ValueError(
+            f"task-switch activation is {len(task_activation)} bytes; expected "
+            f"{TASK_SWITCH_ACTIVATION_SIZE}"
         )
     if not scheduler or len(scheduler) > SCHEDULER_SIZE:
         raise ValueError(f"scheduler exceeds its {SCHEDULER_SIZE}-byte slot")
@@ -74,9 +81,8 @@ def join(
     if CAPABILITY_ADDRESS + len(image) != BOOT_CONSOLE_ADDRESS:
         raise ValueError("scheduler slot does not end at the boot console")
     image.extend(boot_console)
-    image.extend(
-        bytes(CRT0_ADDRESS - (BOOT_CONSOLE_ADDRESS + len(boot_console)))
-    )
+    image.extend(task_activation)
+    image.extend(bytes(CRT0_ADDRESS - (CAPABILITY_ADDRESS + len(image))))
     image.extend(crt0.ljust(CRT0_SIZE, b"\x00"))
     image.extend(bytes(KERNEL_ADDRESS - (CRT0_ADDRESS + CRT0_SIZE)))
     image.extend(kernel)
@@ -97,6 +103,7 @@ def main() -> None:
     parser.add_argument("crt0", type=Path)
     parser.add_argument("kernel", type=Path)
     parser.add_argument("gateway", type=Path)
+    parser.add_argument("--task-switch-activation", type=Path)
     parser.add_argument("destination", type=Path)
     args = parser.parse_args()
     try:
@@ -109,6 +116,7 @@ def main() -> None:
             args.kernel.read_bytes(),
             args.gateway.read_bytes(),
             args.destination,
+            b"" if args.task_switch_activation is None else args.task_switch_activation.read_bytes(),
         )
     except (OSError, ValueError) as error:
         raise SystemExit(f"cannot join direct boot image: {error}") from error

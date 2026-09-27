@@ -42,6 +42,8 @@ TASK_CONTEXT_VECTORS_BIN := $(BUILD_8502)/task-context-vectors.bin
 TASK_CONTEXT_MAP := $(BUILD_8502)/task-context-binding.map
 TASK_CONTEXT_BRIDGE_ASM := $(BUILD_8502)/task-context-bridge.s
 TASK_CONTEXT_BRIDGE_OBJ := $(BUILD_8502)/task-context-bridge.o
+TASK_SWITCH_ACTIVATION_OBJ := $(BUILD_BOOT)/task-switch-activation.o
+TASK_SWITCH_ACTIVATION_BIN := $(BUILD_BOOT)/task-switch-activation.bin
 SCHEDULER_OVERLAY_PAGE_BIN := $(BUILD_8502)/udeks-scheduler-overlay-page.bin
 SCHEDULER_OVERLAY_TAIL_BIN := $(BUILD_8502)/udeks-scheduler-overlay-tail.bin
 SCHEDULER_OVERLAY_MAP := $(BUILD_8502)/udeks-scheduler-overlay.map
@@ -189,7 +191,7 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
 	boot panic-probe framebuffer-assets user-sources user-programs \
-	task-state task-policy task-scheduler task-switch-tail scheduler-overlay placement-check \
+	task-state task-policy task-scheduler task-switch-tail task-switch-activation scheduler-overlay placement-check \
 	placement-check-guard \
 	shadow-probe capability-probe boot-console-probe check doctor clean help
 
@@ -217,6 +219,8 @@ task-scheduler: $(BUILD_8502)/task_scheduler.o
 
 task-switch-tail: $(TASK_SWITCH_TAIL_BIN) $(TASK_CONTEXT_BIN) \
 		$(TASK_CONTEXT_VECTORS_BIN) $(TASK_CONTEXT_MAP)
+
+task-switch-activation: $(TASK_SWITCH_ACTIVATION_BIN)
 
 # Build the active lifecycle/policy overlay and its resident-runtime binding.
 scheduler-overlay: $(SCHEDULER_OVERLAY_PAGE_BIN) \
@@ -747,11 +751,13 @@ $(BOOT_CONSOLE_BIN) $(BOOT_CONSOLE_MAP) &: \
 		$(BOOT_CONSOLE_BRIDGE_OBJ)
 
 $(BOOT_CONSOLE_CONSTANTS): $(BOOT_CONSOLE_BIN) $(BOOT_DELIVERY_BIN) $(CAPABILITY_BIN) \
-		$(CAPABILITY_INSTALLER_BIN) $(KERNEL_MAP) $(PANIC_PROBE_MAP) \
+		$(CAPABILITY_INSTALLER_BIN) $(TASK_SWITCH_ACTIVATION_BIN) \
+		$(KERNEL_MAP) $(PANIC_PROBE_MAP) \
 		tools/gen_boot_console_imports.py
 	$(PYTHON) tools/gen_boot_console_imports.py constants \
 		$(BOOT_CONSOLE_BIN) $(BOOT_DELIVERY_BIN) \
 		$(CAPABILITY_BIN) $(CAPABILITY_INSTALLER_BIN) \
+		$(TASK_SWITCH_ACTIVATION_BIN) \
 		$(KERNEL_MAP) $(PANIC_PROBE_MAP) $@
 
 $(BOOT_CONSOLE_INSTALLER_OBJ): src/boot/boot-console-installer.s \
@@ -1004,11 +1010,25 @@ $(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 
 $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS) &: \
 		$(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
-		$(SCHEDULER_OVERLAY_MAP) tools/build_scheduler_overlay.py | $(BUILD_BOOT)
+		$(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_BIN) $(TASK_CONTEXT_MAP) \
+		$(TASK_CONTEXT_VECTORS_BIN) $(TASK_SWITCH_TAIL_BIN) \
+		tools/build_scheduler_overlay.py | $(BUILD_BOOT)
 	$(PYTHON) tools/build_scheduler_overlay.py \
 		$(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 		$(SCHEDULER_OVERLAY_MAP) $(SCHEDULER_OVERLAY_PAYLOAD) \
-		$(SCHEDULER_OVERLAY_CONSTANTS)
+		$(SCHEDULER_OVERLAY_CONSTANTS) \
+		--activation-context $(TASK_CONTEXT_BIN) \
+		--activation-context-map $(TASK_CONTEXT_MAP) \
+		--activation-tail $(TASK_SWITCH_TAIL_BIN) \
+		--activation-vectors $(TASK_CONTEXT_VECTORS_BIN)
+
+$(TASK_SWITCH_ACTIVATION_OBJ): src/boot/task-switch-activation.s \
+		$(SCHEDULER_OVERLAY_CONSTANTS) | $(BUILD_BOOT)
+	$(CA65) --cpu 6502 -I $(BUILD_8502) -o $@ $<
+
+$(TASK_SWITCH_ACTIVATION_BIN): $(TASK_SWITCH_ACTIVATION_OBJ) \
+		cfg/8502-task-switch-activation.cfg
+	$(LD65) -C cfg/8502-task-switch-activation.cfg -o $@ $<
 
 $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(PANIC_PROBE_PROBE_BIN) $(PANIC_PROBE_MAP) &: \
@@ -1059,12 +1079,14 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(filter %.o,$^)
 
 $(KERNEL_DIRECT_BIN): $(CAPABILITY_BIN) $(BOOT_CONSOLE_BIN) \
+		$(TASK_SWITCH_ACTIVATION_BIN) \
 		$(PROBE_BIN) $(SCHEDULER_BIN) \
 		$(CRT0_BIN) $(KERNEL_BIN) \
 		$(STAGE1_GATEWAY_BIN) tools/join_boot_crt0.py
 	$(PYTHON) tools/join_boot_crt0.py $(CAPABILITY_BIN) \
 		$(BOOT_CONSOLE_BIN) $(PROBE_BIN) $(SCHEDULER_BIN) \
-		$(CRT0_BIN) $(KERNEL_BIN) $(STAGE1_GATEWAY_BIN) $@
+		$(CRT0_BIN) $(KERNEL_BIN) $(STAGE1_GATEWAY_BIN) $@ \
+		--task-switch-activation $(TASK_SWITCH_ACTIVATION_BIN)
 
 $(KERNEL_PRG): $(KERNEL_DIRECT_BIN) tools/bin_to_prg.py
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x0200 $< $@
@@ -1477,6 +1499,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(BOOT_DELIVERY_BIN) \
 		$(CRT0_BIN) $(PROBE_BIN) $(SCHEDULER_BIN) $(CAPABILITY_BIN) \
 		$(CAPABILITY_INSTALLER_BIN) $(BOOT_CONSOLE_BIN) \
+		$(TASK_SWITCH_ACTIVATION_BIN) \
 		$(BOOT_CONSOLE_INSTALLER_BIN) \
 		$(SCHEDULER_TAIL_INSTALLER_BIN) $(VIC_BUSY_SPRITE_BIN) \
 		$(SCHEDULER_OVERLAY_PAYLOAD) \
@@ -1498,6 +1521,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--capability $(CAPABILITY_BIN) \
 		--capability-installer $(CAPABILITY_INSTALLER_BIN) \
 		--boot-console $(BOOT_CONSOLE_BIN) \
+		--task-switch-activation $(TASK_SWITCH_ACTIVATION_BIN) \
 		--boot-console-installer $(BOOT_CONSOLE_INSTALLER_BIN) \
 		--bootfs $(USER_BOOTFS) \
 		--module $(MODULE_BIN) \
@@ -1513,6 +1537,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		$(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) \
 		$(SCHEDULER_BIN) $(CAPABILITY_BIN) $(CAPABILITY_INSTALLER_BIN) \
 		$(BOOT_CONSOLE_BIN) $(BOOT_CONSOLE_INSTALLER_BIN) \
+		$(TASK_SWITCH_ACTIVATION_BIN) \
 		$(SCHEDULER_TAIL_INSTALLER_BIN) $(VIC_BUSY_SPRITE_BIN) \
 		$(SCHEDULER_OVERLAY_PAYLOAD) \
 		$(PANIC_PROBE_MAP) $(MODULE_BIN) \
@@ -1533,6 +1558,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--capability $(CAPABILITY_BIN) \
 		--capability-installer $(CAPABILITY_INSTALLER_BIN) \
 		--boot-console $(BOOT_CONSOLE_BIN) \
+		--task-switch-activation $(TASK_SWITCH_ACTIVATION_BIN) \
 		--boot-console-installer $(BOOT_CONSOLE_INSTALLER_BIN) \
 		--z80 $(Z80_BIN) \
 		--bootfs $(USER_BOOTFS) \

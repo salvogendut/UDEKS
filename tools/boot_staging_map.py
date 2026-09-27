@@ -71,6 +71,7 @@ ARTIFACT_FILES = {
     "capability": "build/boot/8502-capability.bin",
     "capability_installer": "build/boot/capability-installer.bin",
     "boot_console": "build/boot/8502-boot-console.bin",
+    "task_activation": "build/boot/task-switch-activation.bin",
     "boot_console_installer": "build/boot/boot-console-installer.bin",
     "scheduler_tail_installer": "build/boot/scheduler-tail-installer.bin",
     "busy_sprite": "build/assets/24x21-pipe-sprite.vic",
@@ -231,6 +232,7 @@ def staged_regions(
         if shadow_start is None:
             raise ValueError("boot console staging requires the shadow start")
         console_size = emitted.get("boot_console", 0)
+        activation_size = emitted.get("task_activation", 0)
         console_installer_size = emitted.get("boot_console_installer", 0)
         delivery_size = emitted.get("boot_delivery", 0)
         capability_size = emitted.get("capability", 0)
@@ -249,9 +251,9 @@ def staged_regions(
                     "boot console staging",
                     shadow_start + delivery_size + capability_size
                     + capability_installer_size,
-                    console_size,
-                    console_size,
-                    console_size,
+                    console_size + activation_size,
+                    console_size + activation_size,
+                    console_size + activation_size,
                     "load..crt0",
                 ),
                 StagedRegion(

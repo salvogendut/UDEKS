@@ -85,7 +85,9 @@ map above.
 
 `boot_console.o` is also realized reclaim: its exact 1,450-byte image is
 linked separately at `$1600-$1BA9`, staged at `$A718-$ACC1`, and installed by
-a 99-byte checksum gate at `$0B50-$0BB2`. The installer runs before the
+a 99-byte checksum gate at `$0B50-$0BB2`. The same copy/checksum now covers a
+59-byte dormant task-switch activator staged at `$ACC2-$ACFC` and installed at
+`$1BAA-$1BE4`, after the composer. The installer runs before the
 scheduler gather and is then overwritten by the relocated probe. The
 scheduler allocator reserves the installer's complete linked extent, including
 zero-valued tail bytes. The console image is dead after service startup and
@@ -231,6 +233,18 @@ kernel poll frame and leaves the task suspended. The prototype remains a
 separate build artifact until the resident callbacks snapshot per-task state
 and implement that contract; the boot image still installs the qualified 0.2
 gateway.
+
+The post-startup delivery path is also link-qualified. `SCHEDOVR` ABI 0.3
+appends the exact, build-locked 225 emitted context bytes and the 192-byte tail
+in bank 1; an activation-time integrity gate remains required before use. The
+six `$1FFA-$1FFF` callback vectors are installed as part of the scheduler
+page and covered by its existing checksum. A 59-byte launcher/body fits the
+only post-console window at `$1BAA-$1BE4`: it runs the bank-switching copy from
+the disposable `$F68A` VIC gateway workspace, copies the context image to
+`$CDC3`, clears its 89-byte BSS through `$CEFC`, and replaces `$FF05-$FFC4`.
+The image is delivered but intentionally not invoked while `/bin/ush` still
+uses the returning 0.2 poll convention. The activation call is coupled to the
+real ABI 0.3 `YIELD`/resume contract.
 
 ## Reclaim order and validation
 

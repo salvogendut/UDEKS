@@ -38,6 +38,7 @@ from build_d71 import (
     TASK_BANK_GATE_STAGING_SIZE,
     TASK_REQUEST_STAGING_ADDRESS,
     TASK_REQUEST_STAGING_SIZE,
+    TASK_SWITCH_ACTIVATION_SIZE,
     USH_ALLOCATION_SIZE,
     blank_d71,
     boot_locations,
@@ -328,6 +329,7 @@ class BuildD71Tests(unittest.TestCase):
             start = int.from_bytes(manifest[offset : offset + 2], "little")
             length = int.from_bytes(manifest[offset + 2 : offset + 4], "little")
             chunks.append((start, length))
+
         installer_first = BOOT_CONSOLE_INSTALLER_ADDRESS
         installer_last = installer_first + len(boot_console_installer) - 1
         for start, length in chunks:
@@ -345,6 +347,26 @@ class BuildD71Tests(unittest.TestCase):
         self.assertEqual(
             payload[capability_offset : capability_offset + len(capability)],
             capability,
+        )
+
+    def test_activation_is_staged_immediately_after_the_console(self):
+        shadow_start = 0xA1E0
+        console = bytes([0x66]) * BOOT_CONSOLE_SIZE
+        activation = bytes([0x77]) * TASK_SWITCH_ACTIVATION_SIZE
+        image = build_image(
+            stage0(), b"", b"", b"", shadow_start=shadow_start,
+            boot_console=console, task_activation=activation,
+            boot_console_installer=b"I",
+        )
+        payload = b"".join(
+            image[sector_offset(track, sector):sector_offset(track, sector) + SECTOR_SIZE]
+            for track, sector in list(boot_locations(1 + PAYLOAD_BLOCKS))[1:]
+        )
+        offset = shadow_start - 0x1C00
+        self.assertEqual(payload[offset:offset + len(console)], console)
+        self.assertEqual(
+            payload[offset + len(console):offset + len(console) + len(activation)],
+            activation,
         )
 
     def test_rejects_oversize_probe(self):

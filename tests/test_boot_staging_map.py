@@ -145,6 +145,28 @@ class BootStagingMapTests(unittest.TestCase):
             sum(end - start + 1 for _, start, end in holes), 585
         )
 
+    def test_dormant_activation_consumes_the_post_console_prefix(self):
+        emitted = {
+            **EMITTED,
+            "boot_delivery": 267,
+            "capability": 967,
+            "capability_installer": 102,
+            "boot_console": 1450,
+            "task_activation": 59,
+            "boot_console_installer": 99,
+        }
+        regions = staged_regions(
+            {**emitted, "probe": 209, "crt0": 207}, 0xA1E0
+        )
+        console = next(
+            region for region in regions if region.name == "boot console staging"
+        )
+        self.assertEqual((console.start, console.copied_end), (0xA718, 0xACFC))
+        self.assertIn(
+            ("staging hole", 0xACFD, 0xACFF),
+            free_holes(0xA1E0, 0x0B3D, regions),
+        )
+
     def test_dead_padding_is_reported_separately(self):
         result = analyze(FIXTURE, STAGE0, EMITTED)
         padding = {item["name"]: item for item in result["padding"]}

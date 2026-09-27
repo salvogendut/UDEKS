@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Qualify the relocated boot-only console composer under VICE.
+"""Qualify the relocated boot console and dormant switch activator under VICE.
 
 Both native disk formats must retain an exact copy of the linked composer at
 $1600 after startup.  The D71 run then starts xwave in application slot 2 and
@@ -31,6 +31,7 @@ XWAVE_STATUS_RUNNING = 3
 def probe_disk(
     disk: Path,
     boot_console: bytes,
+    task_activation: bytes,
     map_path: Path,
     work: Path,
     exercise_reuse: bool,
@@ -51,23 +52,24 @@ def probe_disk(
             deadline,
         )
         before_path = work / f"{disk.suffix[1:]}-slot2-at-start.bin"
+        installed_image = boot_console + task_activation
         before = sp.capture_blocks(
             port,
             [
                 (
                     before_path,
                     BOOT_CONSOLE_ADDRESS,
-                    BOOT_CONSOLE_ADDRESS + len(boot_console) - 1,
+                    BOOT_CONSOLE_ADDRESS + len(installed_image) - 1,
                     "kernel",
                 )
             ],
         )[0]
         before_path.write_bytes(before)
-        if before != boot_console:
+        if before != installed_image:
             raise RuntimeError(
-                f"{disk.name}: slot 2 is not the linked boot-console image"
+                f"{disk.name}: slot 2 lacks the console/activation image"
             )
-        print(f"{disk.name}: slot 2 image matches", flush=True)
+        print(f"{disk.name}: console and dormant activation match", flush=True)
 
         if exercise_reuse:
             inject_until_state(
@@ -93,7 +95,7 @@ def probe_disk(
                     (
                         after_path,
                         BOOT_CONSOLE_ADDRESS,
-                        BOOT_CONSOLE_ADDRESS + len(boot_console) - 1,
+                        BOOT_CONSOLE_ADDRESS + len(installed_image) - 1,
                         "kernel",
                     )
                 ],
@@ -120,6 +122,11 @@ def main() -> None:
         type=Path,
         default=ROOT / "build/boot/8502-boot-console.bin",
     )
+    parser.add_argument(
+        "--task-switch-activation",
+        type=Path,
+        default=ROOT / "build/boot/task-switch-activation.bin",
+    )
     parser.add_argument("--map", type=Path, default=ROOT / "build/8502/udeks-8502.map")
     parser.add_argument("--work", type=Path, default=ROOT / "build/vice/boot-console")
     parser.add_argument("--timeout", type=float, default=90.0)
@@ -127,10 +134,12 @@ def main() -> None:
     args = parser.parse_args()
     args.work.mkdir(parents=True, exist_ok=True)
     boot_console = args.boot_console.read_bytes()
+    task_activation = args.task_switch_activation.read_bytes()
     try:
         d71 = probe_disk(
             args.d71,
             boot_console,
+            task_activation,
             args.map,
             args.work,
             True,
@@ -140,6 +149,7 @@ def main() -> None:
         d64 = probe_disk(
             args.d64,
             boot_console,
+            task_activation,
             args.map,
             args.work,
             False,
@@ -150,7 +160,10 @@ def main() -> None:
             raise RuntimeError("D71 and D64 initial slot-2 images differ")
     except (OSError, RuntimeError, TimeoutError, ValueError) as error:
         raise SystemExit(f"boot-console relocation probe failed: {error}") from error
-    print("boot-console relocation probe OK: D71/D64 match; xwave reused slot 2")
+    print(
+        "boot-console relocation probe OK: D71/D64 console+activation "
+        "match; xwave reused slot 2"
+    )
 
 
 if __name__ == "__main__":

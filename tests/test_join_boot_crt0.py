@@ -12,6 +12,7 @@ from join_boot_crt0 import (  # noqa: E402
     CAPABILITY_SIZE,
     BOOT_CONSOLE_ADDRESS,
     BOOT_CONSOLE_SIZE,
+    TASK_SWITCH_ACTIVATION_SIZE,
     CRT0_ADDRESS,
     CRT0_SIZE,
     INSTALLER_ADDRESS,
@@ -100,6 +101,30 @@ class JoinBootCrt0Tests(unittest.TestCase):
                     gateway_image(),
                     root / "direct.bin",
                 )
+
+    def test_places_activation_after_console_without_moving_crt0(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            activation = bytes([0x77]) * TASK_SWITCH_ACTIVATION_SIZE
+            destination = root / "direct.bin"
+            join(
+                bytes(CAPABILITY_SIZE), bytes(BOOT_CONSOLE_SIZE),
+                bytes(PROBE_SIZE), bytes(8), bytes([0x33]) * CRT0_SIZE, b"\x44",
+                gateway_image(), destination, activation,
+            )
+            image = destination.read_bytes()
+            activation_offset = (
+                BOOT_CONSOLE_ADDRESS + BOOT_CONSOLE_SIZE - CAPABILITY_ADDRESS
+            )
+            self.assertEqual(
+                image[activation_offset:activation_offset + len(activation)],
+                activation,
+            )
+            crt0_offset = CRT0_ADDRESS - CAPABILITY_ADDRESS
+            self.assertEqual(
+                image[crt0_offset:crt0_offset + CRT0_SIZE],
+                bytes([0x33]) * CRT0_SIZE,
+            )
 
     def test_rejects_empty_kernel(self):
         with TemporaryDirectory() as directory:
