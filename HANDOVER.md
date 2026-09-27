@@ -45,9 +45,10 @@ qualified.
 - `/bin/ush` is a persistent bank-1 program entered through the returning
   `$FF13` common-RAM gate. Its cc65 zero-page context is saved at
   `$E2E2-$E2FF`, and its software stack begins at `$EFF0`.
-- Bank-1 task requests use the synchronous record at `$F359-$F37E` and the
-  `$FF16` request gate. The record currently supports `READ`, `WRITE`, `EXEC`,
-  `WAIT`, and `PROMPT`.
+- Bank-1 task requests use the shared record at `$F359-$F37E` and the `$FF16`
+  request gate. ABI 0.3 adds lifecycle operations to the original synchronous
+  console/filesystem operations; blocking `WAITPID` now snapshots ownership
+  privately while the shared record is released.
 - Transient UDEX commands run synchronously in a saved loader slot.
 - `xclock` and `xwave` are standalone UDEX images, but flag bit 1 still selects
   a six-vector managed-application lifecycle and two fixed retained slots.
@@ -75,9 +76,9 @@ the task model, validate it, and only then remove the replaced special case.
   in `1986` and VICE at 1/2 MHz. Its physical-C128 run remains outstanding.
 - Step 3 has Task Request ABI 0.3 operations for `YIELD`, `EXIT`, `WAITPID`,
   `SLEEP`, `CANCEL`, and `SPAWN`, plus a pure host-tested policy layer.
-  Production `YIELD` and non-returning `EXIT` are implemented; the other
-  lifecycle operations still report `ENOSYS` through the compatibility
-  fallback.
+  Production `YIELD`, non-returning `EXIT`, and immediate, nonblocking, and
+  blocking `WAITPID` are implemented; `SLEEP`, `CANCEL`, and `SPAWN` still
+  report `ENOSYS` through the compatibility fallback.
 - The placement prerequisite for steps 3 and 4 is qualified. Stage 1 can
   deliver a scheduler image to `$1C00-$1FFF`; crt0 and probe are split boot
   outputs; the boot-only capability service is linked at `$0200`, installed
@@ -90,10 +91,11 @@ the task model, validate it, and only then remove the replaced special case.
   in place at `$A1E0`, leaving the complete `$C120-$CEFF` tail available for
   lifecycle/scheduler integration.
 - Lifecycle placement is active: `SCHEDOVR` carries the zero-padded 1 KiB
-  scheduler page and the installed lifecycle tail at `$C120-$CD67`. Stage 0 loads
-  it into bank 1 with KERNAL `SETBNK`/`LOAD`; a 192-byte one-shot common-RAM
-  installer validates and copies it, clears its BSS, and the scheduler entry
-  replaces that installer with the permanent task gate. D71/D64 cold boot,
+  scheduler page and the installed lifecycle tail at `$C120-$CD36`. Stage 0
+  loads it into bank 1 with KERNAL `SETBNK`/`LOAD`; a 192-byte one-shot
+  common-RAM installer validates and copies it, clears its BSS, and the
+  scheduler entry replaces that installer with the permanent task gate.
+  D71/D64 cold boot,
   exact page/tail installation, VIC repaint, and application-slot reuse pass
   in VICE. ADR 0012 remains proposed pending `1986` and physical C128 runs.
 - The production-shaped save/select/restore tail now fits behind the frozen
@@ -102,11 +104,11 @@ the task model, validate it, and only then remove the replaced special case.
   before remapping, preserves the resident kernel stack, and restores the
   selected task's relocated page zero/page one and CPU context. The boot image
   installs it after startup. Eight 11-byte records plus reset/save/select
-  callbacks occupy the exact `$CDC3-$CEFF` 317-byte window, while fixed
+  callbacks occupy the exact `$CDBD-$CEFF` 323-byte window, while fixed
   callback vectors consume the page's final six bytes at `$1FFA-$1FFF`.
-  `SCHEDOVR` ABI 0.3 appends the exact, build-locked 228-byte context image and
-  192-byte gate; its checksummed bank-0 tail also installs the 360-byte
-  lifecycle handler at `$CC00-$CD67`, outside both application slots. The
+  `SCHEDOVR` ABI 0.3 appends the exact, build-locked 234-byte context image and
+  192-byte gate; its checksummed bank-0 tail also installs the 567-byte
+  lifecycle handler at `$CB00-$CD36`, outside both application slots. The
   normal checksum covers the
   six fixed page vectors, and the boot-console installer checksums and installs a
   42-byte post-startup activator at `$1BAA` and copies it directly to its
@@ -118,8 +120,11 @@ the task model, validate it, and only then remove the replaced special case.
   prove that `EXIT(37)` becomes a zombie, releases the request record, and
   cannot resume. D71/D64 probes also prove live-child `WAITPID|NOHANG` returns
   zero, zombie status 37 is reaped with result one, the complete child slot is
-  cleared, and a repeated wait returns `ECHILD`. Blocking `WAITPID` remains
-  the next lifecycle increment.
+  cleared, and a repeated wait returns `ECHILD`. The two-task D71/D64 probe
+  additionally proves that blocking `WAITPID` releases the shared request,
+  the child can issue `EXIT(37)`, and the parent resumes with result one and
+  its original sequence `$44`. `SPAWN` is the next lifecycle increment so
+  that the kernel, rather than a qualification monitor, can create task 2.
 
 ## Implementation plan
 
@@ -290,6 +295,8 @@ and bank ownership.
 
 ## First concrete change for the next session
 
-Implement blocking `WAITPID` with per-task request snapshots so the shared
-`$F359` record is released while the parent sleeps and restored only when that
-parent resumes. Then add a second general task through `SPAWN`.
+Implement `SPAWN` so a validated UDEX image creates the second general task
+without monitor assistance. Reuse the frozen lifecycle policy, allocation
+preflight, relocated page-zero/page-one context record, and blocking
+`WAITPID` wake path; keep rejection atomic and qualify slot reuse on D71 and
+D64 before migrating the graphical applications.

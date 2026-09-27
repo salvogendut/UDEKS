@@ -43,6 +43,7 @@ TASK_CONTEXT_MAP := $(BUILD_8502)/task-context-binding.map
 TASK_CONTEXT_BRIDGE_ASM := $(BUILD_8502)/task-context-bridge.s
 TASK_CONTEXT_BRIDGE_OBJ := $(BUILD_8502)/task-context-bridge.o
 TASK_YIELD_HANDLER_OBJ := $(BUILD_8502)/task-yield-handler.o
+TASK_WAIT_STATE_OBJ := $(BUILD_8502)/task-wait-state.o
 TASK_YIELD_BRIDGE_ASM := $(BUILD_8502)/task-yield-bridge.s
 TASK_YIELD_BRIDGE_OBJ := $(BUILD_8502)/task-yield-bridge.o
 TASK_YIELD_HANDLER_BIN := $(BUILD_8502)/task-yield-handler.bin
@@ -1051,6 +1052,9 @@ $(BUILD_8502)/task_context_vectors.o: src/scheduler/task_context_vectors.s \
 		| $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(TASK_WAIT_STATE_OBJ): src/scheduler/task_wait_state.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(TASK_CONTEXT_BRIDGE_ASM): $(BUILD_8502)/task_context.o \
 		$(SCHEDULER_OVERLAY_MAP) tools/gen_task_context_imports.py
 	$(PYTHON) tools/gen_task_context_imports.py \
@@ -1065,6 +1069,8 @@ $(TASK_CONTEXT_BIN) $(TASK_CONTEXT_VECTORS_BIN) $(TASK_CONTEXT_MAP) &: \
 		cfg/8502-task-context.cfg
 	$(LD65) -C cfg/8502-task-context.cfg -m $(TASK_CONTEXT_MAP) \
 		-u _udeks_task_context_save_current \
+		-u _udeks_task_contexts_private \
+		-u _udeks_task_context_current_private \
 		-o $(TASK_CONTEXT_BIN) $(BUILD_8502)/task_context.o \
 		$(TASK_CONTEXT_BRIDGE_OBJ) $(BUILD_8502)/task_context_vectors.o
 
@@ -1097,13 +1103,13 @@ $(SCHEDULER_RUNTIME_AND_OBJ) $(SCHEDULER_RUNTIME_ASLAX2_OBJ) &: \
 		and.o aslax2.o
 
 $(SCHEDULER_OVERLAY_BRIDGE_ASM): $(BUILD_8502)/task_state.o \
-		$(BUILD_8502)/task_scheduler.o \
+		$(BUILD_8502)/task_scheduler.o $(TASK_WAIT_STATE_OBJ) \
 		$(SCHEDULER_RUNTIME_AND_OBJ) \
 		$(SCHEDULER_RUNTIME_ASLAX2_OBJ) $(KERNEL_MAP) $(PANIC_PROBE_MAP) \
 		tools/gen_scheduler_overlay_imports.py
 	$(PYTHON) tools/gen_scheduler_overlay_imports.py bridge \
 		$(BUILD_8502)/task_state.o \
-		$(BUILD_8502)/task_scheduler.o \
+		$(BUILD_8502)/task_scheduler.o $(TASK_WAIT_STATE_OBJ) \
 		$(SCHEDULER_RUNTIME_AND_OBJ) $(SCHEDULER_RUNTIME_ASLAX2_OBJ) \
 		--maps $(KERNEL_MAP) $(PANIC_PROBE_MAP) $@
 
@@ -1113,7 +1119,7 @@ $(SCHEDULER_OVERLAY_BRIDGE_OBJ): $(SCHEDULER_OVERLAY_BRIDGE_ASM)
 $(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 		$(SCHEDULER_OVERLAY_MAP) &: $(BUILD_8502)/scheduler.o \
 		$(BUILD_8502)/task_state.o \
-		$(BUILD_8502)/task_scheduler.o \
+		$(BUILD_8502)/task_scheduler.o $(TASK_WAIT_STATE_OBJ) \
 		$(SCHEDULER_RUNTIME_AND_OBJ) $(SCHEDULER_RUNTIME_ASLAX2_OBJ) \
 		$(SCHEDULER_OVERLAY_BRIDGE_OBJ) cfg/8502-scheduler-overlay.cfg
 	$(LD65) -C cfg/8502-scheduler-overlay.cfg \
@@ -1123,8 +1129,20 @@ $(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 		-u _udeks_lifecycle_current_private \
 		-u _udeks_lifecycle_last_event_private \
 		-u _udeks_lifecycle_rejected_private \
+		-u _udeks_task_wait_reset \
+		-u _udeks_task_wait_publish_current \
+		-u _udeks_task_wait_state_private \
+		-u _udeks_task_wait_operation_private \
+		-u _udeks_task_wait_sequence_private \
+		-u _udeks_task_wait_descriptor_private \
+		-u _udeks_task_wait_count_private \
+		-u _udeks_task_wait_flags_private \
+		-u _udeks_task_wait_selector_private \
+		-u _udeks_task_wait_selector_high_private \
+		-u _udeks_task_wait_child_private \
+		-u _udeks_task_wait_status_private \
 		$(BUILD_8502)/scheduler.o $(BUILD_8502)/task_state.o \
-		$(BUILD_8502)/task_scheduler.o \
+		$(BUILD_8502)/task_scheduler.o $(TASK_WAIT_STATE_OBJ) \
 		$(SCHEDULER_RUNTIME_AND_OBJ) \
 		$(SCHEDULER_RUNTIME_ASLAX2_OBJ) $(SCHEDULER_OVERLAY_BRIDGE_OBJ)
 

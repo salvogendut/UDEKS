@@ -13,6 +13,8 @@ from gen_scheduler_overlay_imports import MAP_SYMBOL
 EXPECTED = {
     "_udeks_lifecycle_apply": "02",
     "_udeks_scheduler_select_next": "02",
+    "_udeks_task_wait_publish_current": "02",
+    "_udeks_task_wait_reset": "02",
     "decsp2": "02",
     "ptr1": "01",
     "sp": "01",
@@ -72,7 +74,7 @@ def render(imports: dict[str, str], map_text: str) -> str:
     scheduler = segments.get("SCHEDULER", (0, 0, 0))
     if scheduler[0] != 0x1C00 or scheduler[1] >= 0x1FFA:
         raise ValueError("active scheduler page no longer leaves $1FFA-$1FFF")
-    if segments.get("BSS", (0, 0, 0))[1] >= 0xCC00:
+    if segments.get("BSS", (0, 0, 0))[1] >= 0xCB00:
         raise ValueError("active scheduler core reaches the lifecycle handler")
     exports = overlay_exports(map_text)
     lines = [
@@ -98,7 +100,7 @@ def render(imports: dict[str, str], map_text: str) -> str:
     lines.extend([
         "",
         "        .import __CODE_RUN__, __BSS_RUN__, __BSS_SIZE__",
-        '        .assert __CODE_RUN__ = $cdc3, lderror, "task-context code moved"',
+        '        .assert __CODE_RUN__ = $cdbd, lderror, "task-context code moved"',
         '        .assert __BSS_RUN__ + __BSS_SIZE__ <= $cf00, lderror, "task-context binding overflow"',
         "",
     ])

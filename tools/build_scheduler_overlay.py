@@ -12,8 +12,8 @@ LOAD_ADDRESS = 0x5000
 PAGE_ADDRESS = 0x1C00
 TAIL_ADDRESS = 0xC120
 TAIL_LIMIT = 0xCE00
-HANDLER_ADDRESS = 0xCC00
-CONTEXT_ADDRESS = 0xCDC3
+HANDLER_ADDRESS = 0xCB00
+CONTEXT_ADDRESS = 0xCDBD
 MAGIC = b"USOV"
 ABI_MAJOR = 0
 ABI_MINOR = 3
@@ -107,8 +107,8 @@ def build_overlay(
             raise ValueError("task-context map lacks CODE or BSS")
         context_start = context_segments["CODE"][0]
         context_bss, context_bss_end, context_bss_size = context_segments["BSS"]
-        if context_start != 0xCDC3 or context_bss_end != 0xCEFF:
-            raise ValueError("task-context placement is not $CDC3-$CEFF")
+        if context_start != CONTEXT_ADDRESS or context_bss_end != 0xCEFF:
+            raise ValueError("task-context placement is not $CDBD-$CEFF")
         if len(context) != context_bss - context_start:
             raise ValueError("task-context emitted image does not reach its BSS")
         if len(context) > 0xFF or context_bss_size > 0x80:

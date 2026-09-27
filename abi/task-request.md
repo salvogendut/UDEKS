@@ -227,9 +227,11 @@ retain their existing return convention until they migrate to lifecycle tasks.
 The fixed `$F800` request gateway uses 262 of its 265 reserved bytes as of ABI
 0.3, and the host-testable policy compiles to 2,245 bytes (about 2.2 KiB) of
 cc65 code without long-arithmetic helpers. The active scheduler core occupies
-919 emitted bytes plus 71 bytes of BSS at `$C120-$C4FD`; the permanent
-lifecycle request handler occupies `$CC00-$CD67` outside both application
-slots. The policy module remains compile-qualified but nonresident.
+1,043 emitted bytes plus 151 bytes of BSS at `$C120-$C5C9`; the permanent
+567-byte lifecycle request handler occupies `$CB00-$CD36` outside both
+application slots. Its per-task wait snapshots preserve blocking requests
+while the shared record is released. The policy module remains
+compile-qualified but nonresident.
 
 The preferred direction is to keep validation, lifecycle policy, and
 scheduling in bank 0 and retain only a small MMU/context-switch tail in

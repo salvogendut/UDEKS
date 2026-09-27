@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import re
 import unittest
 from pathlib import Path
 
@@ -55,9 +56,31 @@ class TaskContextBindingTests(unittest.TestCase):
             ROOT / "src/scheduler/task_context.s"
         ).read_text().lower()
         self.assertIn(
-            "load_selected:\n        lda current_task\n"
+            "load_selected:\n        jsr _udeks_task_wait_publish_current\n"
+            "        lda current_task\n"
             "        jsr context_pointer",
             source,
+        )
+
+    def test_wait_state_is_reset_and_published_at_context_boundaries(self):
+        context = (ROOT / "src/scheduler/task_context.s").read_text().lower()
+        wait_state = (
+            ROOT / "src/scheduler/task_wait_state.s"
+        ).read_text().lower()
+        self.assertIn("jsr _udeks_task_wait_reset", context)
+        self.assertIn("jsr _udeks_task_wait_publish_current", context)
+        for field in (
+            "state", "operation", "sequence", "descriptor", "count",
+            "flags", "selector", "selector_high", "child", "status",
+        ):
+            self.assertRegex(
+                wait_state,
+                re.escape(f"_udeks_task_wait_{field}_private:")
+                + r"\s+\.res task_count",
+            )
+        self.assertLess(
+            wait_state.rfind("sta _udeks_task_wait_state_private,x"),
+            wait_state.rfind("sta treq_state"),
         )
 
 

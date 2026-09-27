@@ -124,6 +124,40 @@ wait_zombie_seed:
         lda TREQ_ERROR
         sta PROBE+19
 
+        ; A real second task is installed by the monitor after this parent
+        ; enters WAITING.  The response must retain this sequence and may be
+        ; published only when the parent is selected again.
+        lda #$05
+        sta PROBE_PHASE
+wait_blocking_child:
+        lda PROBE_PHASE
+        cmp #$06
+        bne wait_blocking_child
+        lda #$02
+        sta TREQ_PAYLOAD
+        lda #$00
+        sta TREQ_PAYLOAD+1
+        sta TREQ_FLAGS
+        lda #$44
+        sta TREQ_SEQUENCE
+        jsr submit_waitpid
+        lda TREQ_STATE
+        sta PROBE+20
+        lda TREQ_RESULT
+        sta PROBE+21
+        lda TREQ_ERROR
+        sta PROBE+22
+        lda TREQ_SEQUENCE
+        sta PROBE+23
+        lda TREQ_PAYLOAD
+        sta PROBE+24
+        lda TREQ_PAYLOAD+1
+        sta PROBE+25
+        lda TREQ_PAYLOAD+2
+        sta PROBE+26
+        lda TREQ_PAYLOAD+3
+        sta PROBE+27
+
         lda #$a5
         sta PROBE_PHASE
 probe_complete:
@@ -137,5 +171,28 @@ submit_waitpid:
         sta TREQ_STATE
         jsr TASK_REQUEST_GATE
         rts
+
+        .assert *-_task_waitpid_probe_entry <= $0200, error, "WAITPID parent probe exceeds two pages"
+        .res $0200-(*-_task_waitpid_probe_entry), $ea
+task_waitpid_child_entry:
+        .assert task_waitpid_child_entry = $9200, error, "WAITPID child entry moved"
+        lda #$0b                       ; EXIT
+        sta TREQ_OPERATION
+        lda #$00
+        sta TREQ_DESCRIPTOR
+        sta TREQ_FLAGS
+        lda #$01
+        sta TREQ_COUNT
+        lda #$ee
+        sta TREQ_SEQUENCE
+        lda #$25                       ; status 37
+        sta TREQ_PAYLOAD
+        lda #$01
+        sta TREQ_STATE
+        jsr TASK_REQUEST_GATE
+        lda #$ff                       ; successful EXIT must never return
+        sta PROBE_PHASE
+child_returned:
+        jmp child_returned
 
         .assert _task_waitpid_probe_entry = $9000, error, "WAITPID probe entry moved"

@@ -67,11 +67,11 @@ header_load:
         bne install_failed_kernel
 
         lda #$00
-        ldy #SCHEDULER_OVERLAY_BSS_SIZE-1
+        ldy #SCHEDULER_OVERLAY_BSS_SIZE
 clear_bss:
-        sta SCHEDULER_OVERLAY_BSS,y
         dey
-        bpl clear_bss
+        sta SCHEDULER_OVERLAY_BSS,y
+        bne clear_bss
         rts
 
 ; X is the full-page count and A is the tail count. Operands are patched by
@@ -138,5 +138,5 @@ installer_end:
         .assert scheduler_tail_install = $ff05, error, "tail installer moved"
         .assert SCHEDULER_OVERLAY_PAGE_SIZE >= $0100, error, "page copy needs one full page"
         .assert SCHEDULER_OVERLAY_TAIL_SIZE >= $0100, error, "tail copy needs one full page"
-        .assert SCHEDULER_OVERLAY_BSS_SIZE <= $80, error, "descending BSS clear exceeds branch range"
+        .assert SCHEDULER_OVERLAY_BSS_SIZE <= $ff, error, "BSS clear needs a wider counter"
         .assert installer_end <= $ffc5, error, "tail installer exceeds task-gate reservation"

@@ -20,6 +20,16 @@ EXPECTED = {
     "_udeks_lifecycle_rejected_private": "02",
     "_udeks_lifecycle_slots_private": "02",
     "_udeks_task_context_save_current": "02",
+    "_udeks_task_wait_child_private": "02",
+    "_udeks_task_wait_count_private": "02",
+    "_udeks_task_wait_descriptor_private": "02",
+    "_udeks_task_wait_flags_private": "02",
+    "_udeks_task_wait_operation_private": "02",
+    "_udeks_task_wait_selector_private": "02",
+    "_udeks_task_wait_selector_high_private": "02",
+    "_udeks_task_wait_sequence_private": "02",
+    "_udeks_task_wait_state_private": "02",
+    "_udeks_task_wait_status_private": "02",
 }
 
 

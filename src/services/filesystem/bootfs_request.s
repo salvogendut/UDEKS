@@ -67,7 +67,7 @@ request_unsupported:
         jmp finish_error
 
 request_lifecycle:
-        jmp $cc00
+        jmp $cb00
 
 request_open:
         lda DIRECTORY_KIND

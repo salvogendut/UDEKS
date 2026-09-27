@@ -27,7 +27,7 @@ def context_map() -> str:
 Segment list:
 -------------
 Name Start End Size Align
-CODE 00CDC3 00CE9E 0000DC 00001
+CODE 00CDBD 00CE9E 0000E2 00001
 RODATA 00CE9F 00CEA6 000008 00001
 BSS 00CEA7 00CEFF 000059 00001
 """
@@ -37,7 +37,7 @@ class TaskSwitchActivationTests(unittest.TestCase):
     def test_overlay_carries_vectors_context_and_tail(self):
         page = bytes(0x400)
         tail = b"tail123"
-        context = bytes((index % 251) + 1 for index in range(0xE4))
+        context = bytes((index % 251) + 1 for index in range(0xEA))
         switch_tail = bytes((index % 249) + 1 for index in range(0xC0))
         yield_handler = b"yield-handler"
         vectors = b"ABCDEF"
@@ -49,16 +49,16 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertEqual(body[:0x3FA], bytes(0x3FA))
         self.assertEqual(body[0x3FA:0x400], vectors)
         self.assertEqual(body[0x400:0x407], tail)
-        self.assertEqual(body[0x407:0xEE0], bytes(0xAD9))
-        self.assertEqual(body[0xEE0:0xEED], yield_handler)
-        self.assertEqual(body[0xEED:0xFD1], context)
-        self.assertEqual(body[0xFD1:0x1091], switch_tail)
-        self.assertEqual(len(body), 0x1091)
-        self.assertIn("SCHEDULER_OVERLAY_TAIL_SIZE = $0aed", constants)
-        self.assertIn("TASK_ACTIVATION_CONTEXT_SOURCE = $5f01", constants)
-        self.assertIn("TASK_ACTIVATION_CONTEXT_IMAGE_SIZE = $e4", constants)
+        self.assertEqual(body[0x407:0xDE0], bytes(0x9D9))
+        self.assertEqual(body[0xDE0:0xDED], yield_handler)
+        self.assertEqual(body[0xDED:0xED7], context)
+        self.assertEqual(body[0xED7:0xF97], switch_tail)
+        self.assertEqual(len(body), 0xF97)
+        self.assertIn("SCHEDULER_OVERLAY_TAIL_SIZE = $09ed", constants)
+        self.assertIn("TASK_ACTIVATION_CONTEXT_SOURCE = $5e01", constants)
+        self.assertIn("TASK_ACTIVATION_CONTEXT_IMAGE_SIZE = $ea", constants)
         self.assertIn("TASK_ACTIVATION_CONTEXT_BSS_SIZE = $59", constants)
-        self.assertIn("TASK_ACTIVATION_TAIL_SOURCE = $5fe5", constants)
+        self.assertIn("TASK_ACTIVATION_TAIL_SOURCE = $5eeb", constants)
         self.assertIn("TASK_ACTIVATION_TAIL_SIZE = $c0", constants)
         self.assertNotIn("TASK_ACTIVATION_YIELD", constants)
 
@@ -89,6 +89,19 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertIn("jsr _udeks_lifecycle_bootstrap", scheduler)
         self.assertIn("jmp $f68a", scheduler)
 
+    def test_installer_clears_the_expanded_bss_with_unsigned_countdown(self):
+        source = (
+            ROOT / "src/boot/scheduler-tail-installer.s"
+        ).read_text().lower()
+        self.assertIn("ldy #scheduler_overlay_bss_size", source)
+        self.assertIn(
+            "clear_bss:\n        dey\n"
+            "        sta scheduler_overlay_bss,y\n"
+            "        bne clear_bss",
+            source,
+        )
+        self.assertIn("scheduler_overlay_bss_size <= $ff", source)
+
     def test_lifecycle_handler_yields_exits_and_reaps_nonblocking(self):
         source = (ROOT / "src/scheduler/task_yield_handler.s").read_text(
             encoding="utf-8"
@@ -107,8 +120,11 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertIn("sec", source)
         self.assertIn("yield_invalid:", source)
         self.assertIn("jmp _udeks_bootfs_finish_error", source)
-        self.assertIn("_udeks_task_yield_handler = $cc00", source)
-        self.assertIn("yield_handler_end <= $cdc3", source)
+        self.assertIn("wait_blocking:", source)
+        self.assertIn("sta _udeks_task_wait_sequence_private,y", source)
+        self.assertIn("sta _udeks_task_wait_state_private,y", source)
+        self.assertIn("_udeks_task_yield_handler = $cb00", source)
+        self.assertIn("yield_handler_end <= $cdbd", source)
 
 
 if __name__ == "__main__":

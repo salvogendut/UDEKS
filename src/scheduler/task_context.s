@@ -10,8 +10,12 @@
         .export _udeks_task_context_reset
         .export _udeks_task_context_select
         .export _udeks_task_context_save_current
+        .export _udeks_task_contexts_private
+        .export _udeks_task_context_current_private
         .import _udeks_lifecycle_apply
         .import _udeks_scheduler_select_next
+        .import _udeks_task_wait_publish_current
+        .import _udeks_task_wait_reset
         .import decsp2
         .importzp ptr1, sp
 
@@ -38,6 +42,7 @@ LIFECYCLE_DISPATCH      = $03
 ; Initialize task 1 and its relocated page zero/page one. Interrupts are
 ; already masked by the common tail; restore the kernel mapping before RTS.
 _udeks_task_context_reset:
+        jsr _udeks_task_wait_reset
         lda #$00
         ldx #(TASK_COUNT * TASK_CONTEXT_SIZE)-1
 clear_contexts:
@@ -118,6 +123,7 @@ select_runnable:
         jsr _udeks_lifecycle_apply
         bne no_selected_task
 load_selected:
+        jsr _udeks_task_wait_publish_current
         lda current_task
         jsr context_pointer
         ldy #TASK_CONTEXT_SIZE-1
@@ -166,5 +172,7 @@ context_offsets:
         .byte $00, $0b, $16, $21, $2c, $37, $42, $4d
 
         .segment "BSS"
+_udeks_task_contexts_private:
 task_contexts:          .res TASK_COUNT * TASK_CONTEXT_SIZE
+_udeks_task_context_current_private:
 current_task:           .res 1

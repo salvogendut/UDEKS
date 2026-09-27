@@ -7,9 +7,9 @@ shadow prefix, and boots the copy.  Because the seed travels with the payload,
 both stage 1 and crt0 run after it is planted.  Live staging ranges are kept
 intact.  After boot the probe checks that crt0 cleared every VICSHADOW byte,
 that the linked scheduler core and lifecycle handler were installed correctly,
-and that the remaining unassigned $CD68-$CDC2 gap retains its boot-payload
-preimage byte for byte.  The context-binding area beginning at $CDC3 is owned
-runtime state and is deliberately excluded from the preimage comparison.
+and that the remaining unassigned gap before the context binding retains its
+boot-payload preimage byte for byte.  The context-binding area is owned runtime
+state and is deliberately excluded from the preimage comparison.
 
 With --vic-compare it injects xinit and xclock, saves the drawn bank-0 shadow
 and the bank-1 $6000-$7F3F bitmap through a worker-bank MMU switch, and
@@ -66,12 +66,6 @@ XCLOCK_STATUS_STATE_ADDRESS = 0xF225
 XCLOCK_STATUS_RUNNING = 3
 SYSCALL_PAGE = 0xCF00
 
-# The production scheduler owns $C120-$CD67 and the context binding owns
-# $CDC3-$CEFF.  The intervening bytes still carry live task-loader staging
-# during boot, so the probe must preserve and compare them without seeding.
-PRESERVED_GAP_START = 0xCD68
-CONTEXT_BINDING_START = 0xCDC3
-
 LINE_EDITOR_TEXT_SYMBOL = "_udeks_line_editor_submitted_text"
 LINE_EDITOR_LENGTH_SYMBOL = "_udeks_line_editor_submitted_length_value"
 LINE_EDITOR_READY_SYMBOL = "_udeks_line_editor_submitted_ready_value"
@@ -96,6 +90,14 @@ def scheduler_tail_bounds(map_path: Path) -> tuple[int, int, int]:
     code_start = by_name["CODE"][0]
     bss_start, bss_end = by_name["BSS"]
     return code_start, bss_start, bss_end
+
+
+def context_binding_start(map_path: Path) -> int:
+    _, segments = parse_map(map_path.read_text(encoding="utf-8"))
+    for name, start, _ in segments:
+        if name == "CODE":
+            return start
+    raise ValueError("task context map lacks CODE")
 
 
 def scheduler_installed_tail(path: Path) -> bytes:
@@ -202,6 +204,8 @@ def patch_payload(
     capability_installer: bytes,
     boot_console: bytes,
     task_activation: bytes,
+    preserved_gap_start: int,
+    context_start: int,
 ) -> bytes:
     """Seed safe zero bytes and return the staged $shadow_start-$tail_end image."""
     image = bytearray(d71.read_bytes())
@@ -277,8 +281,7 @@ def patch_payload(
         if not any(staged):
             raise ValueError(f"{name} staging is empty in the boot payload")
     preserved_gap = preimage[
-        PRESERVED_GAP_START - shadow_start :
-        CONTEXT_BINDING_START - shadow_start
+        preserved_gap_start - shadow_start : context_start - shadow_start
     ]
     if not any(preserved_gap):
         raise ValueError("preserved scheduler/context gap has no test data")
@@ -438,17 +441,19 @@ def probe(args: argparse.Namespace) -> None:
             f"VICSHADOW is {shadow_size} bytes, expected {vic_bitmap_size()}"
         )
     tail_end = SYSCALL_PAGE - 1
-    if not (
-        shadow_start + shadow_size <= PRESERVED_GAP_START
-        < CONTEXT_BINDING_START <= tail_end + 1
-    ):
-        raise SystemExit("preserved scheduler/context gap is outside the tail")
     symbols = symbol_addresses(args.map.resolve())
     overlay_start, overlay_bss, overlay_end = scheduler_tail_bounds(
         args.scheduler_map.resolve()
     )
     overlay_image = args.scheduler_tail.read_bytes()
     installed_tail = scheduler_installed_tail(args.scheduler_payload.resolve())
+    context_start = context_binding_start(args.task_context_map.resolve())
+    preserved_gap_start = overlay_start + len(installed_tail)
+    if not (
+        shadow_start + shadow_size <= preserved_gap_start
+        < context_start <= tail_end + 1
+    ):
+        raise SystemExit("preserved scheduler/context gap is outside the tail")
     if overlay_start != shadow_start + shadow_size:
         raise SystemExit("scheduler tail does not begin after VICSHADOW")
     if len(overlay_image) != overlay_bss - overlay_start:
@@ -476,6 +481,8 @@ def probe(args: argparse.Namespace) -> None:
         capability_installer,
         boot_console,
         task_activation,
+        preserved_gap_start,
+        context_start,
     )
 
     port = choose_port()
@@ -548,13 +555,11 @@ def probe(args: argparse.Namespace) -> None:
             != installed_tail[overlay_runtime_size :]
         ):
             raise SystemExit("installed scheduler gap/handler image is invalid")
-        if overlay_start + len(installed_tail) != PRESERVED_GAP_START:
-            raise SystemExit("installed scheduler tail does not end at the gap")
         preserved_tail = tail[
-            len(installed_tail) : CONTEXT_BINDING_START - overlay_start
+            len(installed_tail) : context_start - overlay_start
         ]
         preserved_preimage = preimage_tail[
-            len(installed_tail) : CONTEXT_BINDING_START - overlay_start
+            len(installed_tail) : context_start - overlay_start
         ]
         if preserved_tail != preserved_preimage:
             first = next(
@@ -576,7 +581,7 @@ def probe(args: argparse.Namespace) -> None:
             f"({shadow_size} bytes); reclaimed tail "
             f"${shadow_start + shadow_size:04X}-${tail_end:04X} "
             f"contains the {len(installed_tail)}-byte installed scheduler tail; "
-            f"${PRESERVED_GAP_START:04X}-${CONTEXT_BINDING_START - 1:04X} matches its "
+            f"${preserved_gap_start:04X}-${context_start - 1:04X} matches its "
             f"{len(preserved_tail)}-byte preimage"
         )
         for path, data in (
@@ -688,6 +693,10 @@ def main() -> None:
     parser.add_argument(
         "--scheduler-map", type=Path,
         default=ROOT / "build/8502/udeks-scheduler-overlay.map",
+    )
+    parser.add_argument(
+        "--task-context-map", type=Path,
+        default=ROOT / "build/8502/task-context-binding.map",
     )
     parser.add_argument(
         "--scheduler-tail", type=Path,
