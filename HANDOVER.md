@@ -77,8 +77,8 @@ the task model, validate it, and only then remove the replaced special case.
 - Step 3 has Task Request ABI 0.3 operations for `YIELD`, `EXIT`, `WAITPID`,
   `SLEEP`, `CANCEL`, and `SPAWN`, plus a pure host-tested policy layer.
   Production `YIELD`, non-returning `EXIT`, and immediate, nonblocking, and
-  blocking `WAITPID`, bounded `SLEEP`, plus task-2 `SPAWN`, are implemented;
-  `CANCEL` still reports `ENOSYS` through the compatibility fallback.
+  blocking `WAITPID`, bounded `SLEEP`, child-only `CANCEL`, plus task-2
+  `SPAWN`, are implemented.
 - The placement prerequisite for steps 3 and 4 is qualified. Stage 1 can
   deliver a scheduler image to `$1C00-$1FFF`; crt0 and probe are split boot
   outputs; the boot-only capability service is linked at `$0200`, installed
@@ -91,7 +91,7 @@ the task model, validate it, and only then remove the replaced special case.
   in place at `$A1E0`, leaving the complete `$C120-$CEFF` tail available for
   lifecycle/scheduler integration.
 - Lifecycle placement is active: `SCHEDOVR` carries the zero-padded 1 KiB
-  scheduler page and the installed lifecycle tail at `$C120-$CDB5`. Stage 0
+  scheduler page and the installed lifecycle tail at `$C120-$CDBC`. Stage 0
   loads it into bank 1 with KERNAL `SETBNK`/`LOAD`; a 192-byte one-shot
   common-RAM installer validates and copies it, clears its BSS, and the
   scheduler entry replaces that installer with the permanent task gate.
@@ -107,8 +107,8 @@ the task model, validate it, and only then remove the replaced special case.
   callbacks occupy the exact `$CDBD-$CEFF` 323-byte window, while fixed
   callback vectors consume the page's final six bytes at `$1FFA-$1FFF`.
   `SCHEDOVR` ABI 0.3 appends the exact, build-locked 234-byte context image and
-  192-byte gate; its checksummed bank-0 tail also installs the 1,206-byte
-  lifecycle handler at `$C900-$CDB5`, outside both application slots. The
+  192-byte gate; its checksummed bank-0 tail also installs the 1,213-byte
+  lifecycle handler at `$C900-$CDBC`, outside both application slots. The
   normal checksum covers the
   six fixed page vectors, and the boot-console installer checksums and installs a
   42-byte post-startup activator at `$1BAA` and copies it directly to its
@@ -142,6 +142,10 @@ the task model, validate it, and only then remove the replaced special case.
   resident service pass wakes expired TIMER waiters. Zero and 601 ticks are
   rejected, while the maximum 600-tick request blocks and resumes with its
   original sequence after at least 600 logical ticks.
+- Child-only `CANCEL` is qualified on D71 and D64. Zero, self, free,
+  unrelated, and already-zombie targets are rejected atomically. Cancelling a
+  blocked child clears its private wait snapshot, preserves status 130 in a
+  zombie, and lets the parent reap that status through `WAITPID`.
 
 ## Implementation plan
 
@@ -312,7 +316,7 @@ and bank ownership.
 
 ## First concrete change for the next session
 
-Implement `CANCEL` for live child tasks, using status 130 for the first
-`Ctrl+C` path. Preserve zombie status for `WAITPID`, wake a blocked parent
-through its private response snapshot, and prove rejection of self, unrelated,
-free, and already-zombie targets without mutation.
+Define the first scheduler event-wait operation and its wake-source ownership.
+Reuse the private request snapshot used by `WAITPID` and `SLEEP`; keep event
+publication bounded and ensure a cancelled waiter cannot consume a later
+event.

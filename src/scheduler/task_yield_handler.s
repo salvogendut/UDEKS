@@ -10,6 +10,7 @@
         .export _udeks_task_yield_handler
         .import _udeks_task_sleep_poll
         .import _udeks_task_tick_advance
+        .import _udeks_task_cancel_request
         .import _udeks_task_context_save_current
         .import _udeks_task_contexts_private
         .import _udeks_lifecycle_slots_private
@@ -65,6 +66,7 @@ OP_YIELD                = $0a
 OP_EXIT                 = $0b
 OP_WAITPID              = $0c
 OP_SLEEP                = $0d
+OP_CANCEL               = $0e
 OP_SPAWN                = $0f
 WAITPID_NOHANG          = $01
 TASK_SLOT_STRIDE        = $08
@@ -145,6 +147,10 @@ lifecycle_request:
         cmp #OP_SLEEP
         bne :+
         jmp request_sleep
+:
+        cmp #OP_CANCEL
+        bne :+
+        jmp _udeks_task_cancel_request
 :
         cmp #OP_SPAWN
         bne :+

@@ -173,6 +173,25 @@ class TaskSwitchActivationTests(unittest.TestCase):
         self.assertIn("ldy #>$0258", probe)
         self.assertIn("lda #<$0259", probe)
 
+    def test_cancel_is_child_only_and_clears_blocked_request(self):
+        handler = (ROOT / "src/scheduler/task_yield_handler.s").read_text(
+            encoding="utf-8"
+        ).lower()
+        wait_state = (ROOT / "src/scheduler/task_wait_state.s").read_text(
+            encoding="utf-8"
+        ).lower()
+        probe = (ROOT / "user/probes/task_cancel.s").read_text(
+            encoding="utf-8"
+        ).lower()
+        self.assertIn("cmp #op_cancel", handler)
+        self.assertIn("jmp _udeks_task_cancel_request", handler)
+        self.assertIn("_udeks_task_cancel_request:", wait_state)
+        self.assertIn("task_slot_parent", wait_state)
+        self.assertIn("sta _udeks_task_wait_state_private,y", wait_state)
+        self.assertIn("lda #lifecycle_cancel", wait_state)
+        self.assertIn("ldx #$82", probe)
+        self.assertIn("lda #$0e", probe)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -8,7 +8,7 @@
 The lifecycle state and scheduler modules link within the frozen
 `$1C00-$1FFF` scheduler page and the bank-0 tail. The host-tested policy module
 was subsequently removed from the resident image; the production payload now
-copies 3,222 tail bytes through `$CDB5`, including the permanent request
+copies 3,229 tail bytes through `$CDBC`, including the permanent request
 handler, and clears 154 bytes of core BSS. The original native autoboot payload has
 only 533 bytes of scatter capacity after all live staging is protected, so it
 cannot deliver this tail without corrupting the bootfs, task loader, common

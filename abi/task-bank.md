@@ -56,8 +56,8 @@ yield remain later operations.
 
 Request ABI 0.3 keeps those operations unchanged and defines lifecycle
 operations `10`-`15` (`yield`, `exit`, `waitpid`, `sleep`, `cancel`, and
-`spawn`). `YIELD`, `EXIT`, immediate and blocking `WAITPID`, `SLEEP`, and
-`SPAWN` are active; `CANCEL` returns `ENOSYS` until its implementation lands.
+`spawn`). `YIELD`, `EXIT`, immediate and blocking `WAITPID`, `SLEEP`,
+child-only `CANCEL`, and `SPAWN` are active.
 Tasking 0.1 admits one ordinary child as task 2 in APP1. Its relocated page
 zero/page one use bank-1 physical pages `$D3/$D4`; a common-RAM launcher calls
 the validated UDEX entry and converts a normal return into `EXIT(status)`.

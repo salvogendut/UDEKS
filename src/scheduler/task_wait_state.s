@@ -1,9 +1,9 @@
 ; SPDX-License-Identifier: GPL-3.0-or-later
 ;
 ; Per-task ownership for lifecycle requests that outlive the shared $F359
-; record.  The request handler snapshots a blocking WAITPID here, EXIT turns
-; the matching snapshot into a ready response, and task-context selection
-; publishes that response immediately before restoring the parent.
+; record. The request handler snapshots blocking WAITPID/SLEEP here, EXIT
+; turns a matching child wait into a ready response, CANCEL discards a dead
+; task's snapshot, and context selection publishes before restoring a task.
 
         .setcpu "6502"
 
@@ -21,23 +21,36 @@
         .export _udeks_task_wait_status_private
         .export _udeks_task_sleep_poll
         .export _udeks_task_tick_advance
+        .export _udeks_task_cancel_request
         .export _udeks_monotonic_ticks_low
         .export _udeks_monotonic_ticks_high
         .import _udeks_lifecycle_current_private
         .import _udeks_lifecycle_last_event_private
+        .import _udeks_lifecycle_rejected_private
         .import _udeks_lifecycle_slots_private
+        .import _udeks_bootfs_finish_error
+        .import _udeks_bootfs_finish_ok
 
 TASK_COUNT              = $08
 WAIT_READY              = $02
 OP_SLEEP                = $0d
+OP_CANCEL               = $0e
 WAIT_BLOCKED            = $01
 WAIT_TIMER              = $03
 TASK_SLOT_STRIDE        = $08
+TASK_SLOT_PARENT        = $00
 TASK_SLOT_STATE         = $01
 TASK_SLOT_WAIT          = $02
+TASK_SLOT_EXIT          = $04
 TASK_SLOT_RESUME        = $06
+TASK_STATE_FREE         = $00
 TASK_STATE_RUNNABLE     = $02
+TASK_STATE_RUNNING      = $03
 TASK_STATE_WAITING      = $04
+TASK_STATE_ZOMBIE       = $06
+LIFECYCLE_CANCEL        = $0b
+ERR_ESRCH               = $03
+ERR_EINVAL              = $16
 
 TREQ_BASE               = $f359
 TREQ_STATE              = TREQ_BASE+$06
@@ -122,6 +135,85 @@ publish_commit:
         sta TREQ_STATE
 publish_done:
         rts
+
+; Validate and terminate one live child without ever dispatching it again.
+; All rejection checks precede mutation. A blocked child's private request is
+; cleared so cancellation cannot later publish a stale response.
+_udeks_task_cancel_request:
+        lda TREQ_FLAGS
+        beq :+
+        jmp cancel_invalid
+:
+        lda TREQ_COUNT
+        cmp #$03
+        beq :+
+        jmp cancel_invalid
+:
+        lda _udeks_lifecycle_current_private
+        beq cancel_missing
+        cmp TREQ_PAYLOAD
+        beq cancel_invalid
+        sec
+        sbc #$01
+        asl a
+        asl a
+        asl a
+        tax
+        lda _udeks_lifecycle_slots_private+TASK_SLOT_STATE,x
+        cmp #TASK_STATE_RUNNING
+        bne cancel_invalid
+        lda TREQ_PAYLOAD
+        beq cancel_invalid
+        lda TREQ_PAYLOAD+1
+        bne cancel_missing
+        lda TREQ_PAYLOAD
+        cmp #TASK_COUNT+1
+        bcs cancel_missing
+        sec
+        sbc #$01
+        tay
+        asl a
+        asl a
+        asl a
+        tax
+        lda _udeks_lifecycle_slots_private+TASK_SLOT_STATE,x
+        beq cancel_missing
+        cmp #TASK_STATE_ZOMBIE
+        beq cancel_missing
+        lda _udeks_lifecycle_slots_private+TASK_SLOT_PARENT,x
+        cmp _udeks_lifecycle_current_private
+        bne cancel_missing
+
+        lda TREQ_PAYLOAD+2
+        sta _udeks_lifecycle_slots_private+TASK_SLOT_EXIT,x
+        lda #$00
+        sta _udeks_lifecycle_slots_private+TASK_SLOT_WAIT,x
+        sta _udeks_lifecycle_slots_private+TASK_SLOT_RESUME,x
+        sta _udeks_task_wait_state_private,y
+        sta _udeks_task_wait_operation_private,y
+        sta _udeks_task_wait_sequence_private,y
+        sta _udeks_task_wait_descriptor_private,y
+        sta _udeks_task_wait_count_private,y
+        sta _udeks_task_wait_flags_private,y
+        sta _udeks_task_wait_selector_private,y
+        sta _udeks_task_wait_selector_high_private,y
+        sta _udeks_task_wait_child_private,y
+        sta _udeks_task_wait_status_private,y
+        lda #TASK_STATE_ZOMBIE
+        sta _udeks_lifecycle_slots_private+TASK_SLOT_STATE,x
+        lda #LIFECYCLE_CANCEL
+        sta _udeks_lifecycle_last_event_private
+        lda #$00
+        jmp _udeks_bootfs_finish_ok
+
+cancel_missing:
+        inc _udeks_lifecycle_rejected_private
+        lda #ERR_ESRCH
+        jmp _udeks_bootfs_finish_error
+cancel_invalid:
+        inc _udeks_lifecycle_rejected_private
+        lda #ERR_EINVAL
+        jmp _udeks_bootfs_finish_error
 
 ; Called once per resident service pass before task selection. Deadlines are
 ; 16-bit modulo values; the ABI's 600-tick bound keeps signed subtraction
