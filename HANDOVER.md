@@ -428,3 +428,18 @@ real-hardware qualification remain open. See
 [the bounded-replay note](docs/BOUNDED-REPLAY.md). The next design decision is
 an occlusion-aware, cancellable compositor that bounds damage/chrome/obscured
 client work too; do not treat this focused optimization as that compositor.
+
+## Pixel-preserving move-cache spike (issue #6)
+
+`graphics-window-cache-spike` records the next implementation seam in
+[WINDOW-MOVE-CACHE.md](docs/WINDOW-MOVE-CACHE.md). A 6,656-byte candidate
+bank-1 VIC-window lease at `$4200-$5BFF` can hold xwave's default packed
+168×104 image (2,184 bytes) and a tested 220×160 resize (4,480 bytes).
+The host-only capture/paste model checks all
+source/destination bit alignments, edge masks, VIC row interleave, background
+preservation and oversize refusal. This is **not** wired into production;
+current boot images still use bounded vertex replay. A full 320×200 surface
+does not fit, and the always-mapped transfer gateway/resident CODE budget is
+unproven. Next implement and qualify bank ownership and the transfer/commit
+path before claiming that unchanged-size moves avoid redraw. Do not change
+the frozen shadow or worker/task allocations to fit it implicitly.

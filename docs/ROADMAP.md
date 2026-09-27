@@ -190,6 +190,9 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   takes seconds. Focused xwave replay now uses four-vertex poll chunks after
   damage/chrome composition; the obscured-window path and damage/chrome/clock
   redraw remain synchronous. Full compositor and physical qualification remain.
+  A host-only packed move-cache spike fits the default xwave image in a
+  candidate VIC-bank lease, but its transfer gateway and ownership are not
+  qualified; production still replays pixels on moves.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.
