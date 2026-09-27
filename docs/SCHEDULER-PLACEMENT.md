@@ -199,6 +199,19 @@ switch-out entry that saves A/X/Y/P/SP, selects the kernel-visible profile,
 and returns to the bank-0 scheduler, plus a switch-in entry that restores the
 selected context after the scheduler writes the page registers and profile.
 
+The first production-shaped tail prototype now links at `$FF05-$FFC3`: 191
+bytes of the exact 192-byte reservation, with one byte of headroom. It keeps
+the frozen `$FF10`, `$FF13`, and `$FF16` entries, captures a task's live
+A/X/Y/P/SP and resume PC before changing the MMU mapping, restores the kernel
+hardware stack for resident dispatch, and restores the selected task's page
+zero, page one, CPU registers, and continuation. The `$CF30` dispatcher carry
+contract used by this prototype is deliberately not active yet: carry clear
+means that the caller resumes synchronously, while carry set returns to the
+kernel poll frame and leaves the task suspended. The prototype remains a
+separate build artifact until the resident callbacks snapshot per-task state
+and implement that contract; the boot image still installs the qualified 0.2
+gateway.
+
 ## Reclaim order and validation
 
 Each step is a separate change with a `1986` and VICE smoke pass:

@@ -35,6 +35,8 @@ BOOT_DELIVERY_MAP := $(BUILD_8502)/8502-boot-delivery.map
 CRT0_BIN := $(BUILD_BOOT)/8502-crt0.bin
 PROBE_BIN := $(BUILD_BOOT)/8502-probe.bin
 SCHEDULER_BIN := $(BUILD_8502)/udeks-scheduler.bin
+TASK_SWITCH_TAIL_BIN := $(BUILD_8502)/task-switch-tail.bin
+TASK_SWITCH_TAIL_MAP := $(BUILD_8502)/task-switch-tail.map
 SCHEDULER_OVERLAY_PAGE_BIN := $(BUILD_8502)/udeks-scheduler-overlay-page.bin
 SCHEDULER_OVERLAY_TAIL_BIN := $(BUILD_8502)/udeks-scheduler-overlay-tail.bin
 SCHEDULER_OVERLAY_MAP := $(BUILD_8502)/udeks-scheduler-overlay.map
@@ -182,7 +184,7 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
 	boot panic-probe framebuffer-assets user-sources user-programs \
-	task-state task-policy task-scheduler scheduler-overlay placement-check \
+	task-state task-policy task-scheduler task-switch-tail scheduler-overlay placement-check \
 	placement-check-guard \
 	shadow-probe capability-probe boot-console-probe check doctor clean help
 
@@ -207,6 +209,8 @@ task-state: $(BUILD_8502)/task_state.o
 task-policy: $(BUILD_8502)/task_policy.o
 
 task-scheduler: $(BUILD_8502)/task_scheduler.o
+
+task-switch-tail: $(TASK_SWITCH_TAIL_BIN)
 
 # Build the active lifecycle/policy overlay and its resident-runtime binding.
 scheduler-overlay: $(SCHEDULER_OVERLAY_PAGE_BIN) \
@@ -916,6 +920,15 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &: \
 
 $(BUILD_8502)/scheduler.o: src/scheduler/scheduler.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/task_switch_tail.o: src/8502/task_switch_tail.s \
+		| $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(TASK_SWITCH_TAIL_BIN) $(TASK_SWITCH_TAIL_MAP) &: $(BUILD_8502)/task_switch_tail.o \
+		cfg/8502-task-switch-tail.cfg
+	$(LD65) -C cfg/8502-task-switch-tail.cfg \
+		-m $(TASK_SWITCH_TAIL_MAP) -o $(TASK_SWITCH_TAIL_BIN) $<
 
 $(SCHEDULER_BIN): $(BUILD_8502)/scheduler.o cfg/8502-scheduler.cfg
 	$(LD65) -C cfg/8502-scheduler.cfg -o $@ $(BUILD_8502)/scheduler.o

@@ -139,6 +139,10 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   tasks retaining live C frames, private software stacks, and stack canaries
   for 64 switches in `1986` and VICE at 1/2 MHz. Physical hardware and
   production `$FF16` integration remain pending.
+- [x] Fit a production-shaped save/restore tail behind the frozen
+  `$FF10/$FF13/$FF16` entries: 191 bytes in the exact 192-byte common-RAM
+  reservation. It remains a non-installed artifact until the resident
+  scheduler callbacks and `$CF30` suspend/resume contract are connected.
 - [ ] Implement task creation, exit, yield, sleep, and event wait.
 - [ ] Save and restore the selected compiler runtime and CPU context. A
   compiled C task using the real cc65 software stack now passes as a

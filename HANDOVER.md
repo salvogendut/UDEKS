@@ -95,14 +95,16 @@ the task model, validate it, and only then remove the replaced special case.
   replaces that installer with the permanent task gate. D71/D64 cold boot,
   exact page/tail installation, VIC repaint, and application-slot reuse pass
   in VICE. ADR 0012 remains proposed pending `1986` and physical C128 runs.
-- The next implementation increment is to extract the qualified compiled-C
-  switch mechanism into the 192-byte permanent `$FF05-$FFC4` tail and connect
-  it to the resident selector. The standalone core is 756 bytes because it
-  includes two-task initialization and exhaustive result checks; only the
-  save/select/restore path belongs in common RAM. After that, route Task
-  Request ABI 0.3 `YIELD` through `$CF30/$FF16`. `YIELD` must return only
-  after task 1 is selected again, and `EXIT` must never return; keep the 0.2
-  compatibility path until those invariants pass.
+- The production-shaped save/select/restore tail now fits behind the frozen
+  `$FF10/$FF13/$FF16` entries: its separate link occupies `$FF05-$FFC3`, 191
+  of the exact 192 reserved bytes. It captures A/X/Y/P/SP and the continuation
+  before remapping, preserves the resident kernel stack, and restores the
+  selected task's relocated page zero/page one and CPU context. It is not yet
+  installed: the boot image deliberately retains the qualified 0.2 gateway.
+  The next implementation increment is the resident callback/context-table
+  binding plus the `$CF30` carry contract, followed by a real ABI 0.3 `YIELD`.
+  `YIELD` must return only after task 1 is selected again, and `EXIT` must
+  never return; keep the 0.2 compatibility path until those invariants pass.
 
 ## Implementation plan
 
