@@ -2104,6 +2104,9 @@ check:
 		tools/scheduler_delivery_probe.py \
 		tools/snapshot_extract.py \
 		tools/1986_input_smoke_build.py \
+		tools/graphics_raster_audit.py tools/graphics_raster_link_audit.py \
+		tools/graphics_raster_bench_build.py tools/graphics_raster_bench_run.py \
+		tools/graphics_raster_bench_decode.py \
 		tools/join_boot_crt0.py \
 		tools/placement_audit.py \
 		tools/gen_capability_imports.py \

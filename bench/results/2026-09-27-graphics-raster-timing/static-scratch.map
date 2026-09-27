@@ -1,0 +1,1767 @@
+Modules list:
+-------------
+kernel_entry.o:
+    KERNELENTRY       Offs=000000  Size=000006  Align=00001  Fill=0000
+crt0.o:
+    STARTUP           Offs=000000  Size=0000CF  Align=00001  Fill=0000
+vdc.o:
+    CODE              Offs=000000  Size=0000E9  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000008  Align=00001  Fill=0000
+    ZEROPAGE          Offs=000000  Size=000002  Align=00001  Fill=0000
+keyboard_scan.o:
+    CODE              Offs=0000E9  Size=00009A  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000008  Align=00001  Fill=0000
+    BSS               Offs=000008  Size=000011  Align=00001  Fill=0000
+control_ports.o:
+    CODE              Offs=000183  Size=0000EF  Align=00001  Fill=0000
+    BSS               Offs=000019  Size=000009  Align=00001  Fill=0000
+line_editor_read.o:
+    CODE              Offs=000272  Size=00003D  Align=00001  Fill=0000
+z80_handoff.o:
+    CODE              Offs=0002AF  Size=000037  Align=00001  Fill=0000
+vic_graphics_transport.o:
+    CODE              Offs=0002E6  Size=0003F5  Align=00001  Fill=0000
+    BSS               Offs=000022  Size=000002  Align=00001  Fill=0000
+panic.o:
+    CODE              Offs=0006DB  Size=0000FF  Align=00001  Fill=0000
+    RODATA            Offs=000008  Size=00000C  Align=00001  Fill=0000
+probe.o:
+    PROBECODE         Offs=000000  Size=0000D1  Align=00001  Fill=0000
+clock.o:
+    CODE              Offs=0007DA  Size=000095  Align=00001  Fill=0000
+syscall_gate.o:
+    CODE              Offs=00086F  Size=0000F8  Align=00001  Fill=0000
+    SYSCALLS          Offs=000000  Size=0000FF  Align=00001  Fill=0000
+    TASKREQUEST       Offs=000000  Size=000105  Align=00001  Fill=0000
+task_bank_gateway.o:
+    TASKGATE          Offs=000000  Size=0000C0  Align=00001  Fill=0000
+kernel.o:
+    CODE              Offs=000967  Size=000072  Align=00001  Fill=0000
+service_start.o:
+    CODE              Offs=0009D9  Size=00001B  Align=00001  Fill=0000
+    RODATA            Offs=000014  Size=000004  Align=00001  Fill=0000
+boot_console_entry.o:
+service_registry.o:
+    CODE              Offs=0009F4  Size=0002E5  Align=00001  Fill=0000
+    BSS               Offs=000024  Size=000008  Align=00001  Fill=0000
+service_table.o:
+    RODATA            Offs=000018  Size=000017  Align=00001  Fill=0000
+capability_descriptor.o:
+    RODATA            Offs=00002F  Size=000010  Align=00001  Fill=0000
+time_descriptor.o:
+    RODATA            Offs=00003F  Size=000010  Align=00001  Fill=0000
+clock_descriptor.o:
+    RODATA            Offs=00004F  Size=000010  Align=00001  Fill=0000
+console_descriptor.o:
+    RODATA            Offs=00005F  Size=000010  Align=00001  Fill=0000
+pointer_descriptor.o:
+    RODATA            Offs=00006F  Size=000010  Align=00001  Fill=0000
+keyboard_descriptor.o:
+    RODATA            Offs=00007F  Size=000010  Align=00001  Fill=0000
+root_terminal_descriptor.o:
+    RODATA            Offs=00008F  Size=000010  Align=00001  Fill=0000
+init_descriptor.o:
+    CODE              Offs=000CD9  Size=000027  Align=00001  Fill=0000
+    RODATA            Offs=00009F  Size=000010  Align=00001  Fill=0000
+z80_worker_descriptor.o:
+    RODATA            Offs=0000AF  Size=000010  Align=00001  Fill=0000
+vic_graphics_descriptor.o:
+    RODATA            Offs=0000BF  Size=000010  Align=00001  Fill=0000
+window_descriptor.o:
+    RODATA            Offs=0000CF  Size=000010  Align=00001  Fill=0000
+managed_apps_descriptor.o:
+    RODATA            Offs=0000DF  Size=000010  Align=00001  Fill=0000
+bootfs_request.o:
+    BOOTFSCODE        Offs=000000  Size=00029A  Align=00001  Fill=0000
+time.o:
+    CODE              Offs=000D00  Size=000213  Align=00001  Fill=0000
+vdc_console.o:
+    CODE              Offs=000F13  Size=0008CD  Align=00001  Fill=0000
+    BSS               Offs=00002C  Size=000045  Align=00001  Fill=0000
+    HIGHBSS           Offs=000000  Size=000080  Align=00001  Fill=0000
+app_panel.o:
+    BSS               Offs=000071  Size=00000E  Align=00001  Fill=0000
+    MODULERODATA      Offs=000000  Size=00003C  Align=00001  Fill=0000
+    MODULECODE        Offs=000000  Size=00017B  Align=00001  Fill=0000
+root_console.o:
+    CODE              Offs=0017E0  Size=00058D  Align=00001  Fill=0000
+    LOWBSS            Offs=000000  Size=000597  Align=00001  Fill=0000
+window_manager.o:
+    CODE              Offs=001D6D  Size=001E3E  Align=00001  Fill=0000
+    RODATA            Offs=0000EF  Size=000082  Align=00001  Fill=0000
+    HIGHBSS           Offs=000080  Size=000058  Align=00001  Fill=0000
+keyboard.o:
+    CODE              Offs=003BAB  Size=0004F8  Align=00001  Fill=0000
+    RODATA            Offs=000171  Size=0000B0  Align=00001  Fill=0000
+    BSS               Offs=00007F  Size=000047  Align=00001  Fill=0000
+    LOWBSS            Offs=000597  Size=000021  Align=00001  Fill=0000
+pointer.o:
+    CODE              Offs=0040A3  Size=0003E5  Align=00001  Fill=0000
+    BSS               Offs=0000C6  Size=000012  Align=00001  Fill=0000
+line_editor.o:
+    CODE              Offs=004488  Size=0005B8  Align=00001  Fill=0000
+    BSS               Offs=0000D8  Size=0001B8  Align=00001  Fill=0000
+    LOWBSS            Offs=0005B8  Size=000045  Align=00001  Fill=0000
+root_terminal.o:
+    CODE              Offs=004A40  Size=000403  Align=00001  Fill=0000
+    RODATA            Offs=000221  Size=00000A  Align=00001  Fill=0000
+    BSS               Offs=000290  Size=000008  Align=00001  Fill=0000
+terminal_stream.o:
+    CODE              Offs=004E43  Size=000047  Align=00001  Fill=0000
+shell_parser.o:
+    MODULECODE        Offs=00017B  Size=0000ED  Align=00001  Fill=0000
+shell.o:
+    CODE              Offs=004E8A  Size=000C8A  Align=00001  Fill=0000
+    RODATA            Offs=00022B  Size=000571  Align=00001  Fill=0000
+    BSS               Offs=000298  Size=000002  Align=00001  Fill=0000
+    HIGHBSS           Offs=0000D8  Size=000052  Align=00001  Fill=0000
+z80_worker.o:
+    CODE              Offs=005B14  Size=0002FA  Align=00001  Fill=0000
+    BSS               Offs=00029A  Size=000002  Align=00001  Fill=0000
+static-scratch.o:
+    CODE              Offs=005E0E  Size=0010AA  Align=00001  Fill=0000
+    BSS               Offs=00029C  Size=000020  Align=00001  Fill=0000
+    VICSHADOW         Offs=000000  Size=001F40  Align=00001  Fill=0000
+managed_apps.o:
+    BSS               Offs=0002BC  Size=000002  Align=00001  Fill=0000
+    MODULERODATA      Offs=00003C  Size=00000D  Align=00001  Fill=0000
+    MODULECODE        Offs=000268  Size=000093  Align=00001  Fill=0000
+vdc_text_assets.o:
+    RODATA            Offs=00079C  Size=000458  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=006EB8  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=006ED4  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=006EE5  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(and.o):
+    CODE              Offs=006EF3  Size=000010  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax2.o):
+    CODE              Offs=006F03  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax3.o):
+    CODE              Offs=006F0E  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax4.o):
+    CODE              Offs=006F1C  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(call.o):
+    CODE              Offs=006F2D  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=006F34  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=006F3D  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=006F4A  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp4.o):
+    CODE              Offs=006F57  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp5.o):
+    CODE              Offs=006F64  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp6.o):
+    CODE              Offs=006F71  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp7.o):
+    CODE              Offs=006F7E  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp8.o):
+    CODE              Offs=006F8B  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(eq.o):
+    CODE              Offs=006F98  Size=00000A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=006FA2  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=006FD0  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=006FD7  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=006FED  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=006FF2  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=006FF7  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=006FFC  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=007001  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp8.o):
+    CODE              Offs=007006  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(jmpvec.o):
+    DATA              Offs=000000  Size=000003  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldai.o):
+    CODE              Offs=00700B  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldeaxi.o):
+    CODE              Offs=007017  Size=000017  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=00702E  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul.o):
+    CODE              Offs=00705A  Size=000045  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=00709F  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax10.o):
+    CODE              Offs=0070D9  Size=000019  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax5.o):
+    CODE              Offs=0070F2  Size=000014  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax6.o):
+    CODE              Offs=007106  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(negabs.o):
+    CODE              Offs=00711C  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(or.o):
+    CODE              Offs=00712E  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=007140  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=00714E  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=007164  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=00717E  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shl.o):
+    CODE              Offs=00719A  Size=000033  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax1.o):
+    CODE              Offs=0071CD  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax2.o):
+    CODE              Offs=0071D5  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax3.o):
+    CODE              Offs=0071E0  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax4.o):
+    CODE              Offs=0071EE  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=0071FF  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=007215  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxspi.o):
+    CODE              Offs=007220  Size=00001B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(steaxspi.o):
+    CODE              Offs=00723B  Size=000022  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(sub.o):
+    CODE              Offs=00725D  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subeqsp.o):
+    CODE              Offs=007272  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=007287  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(udiv.o):
+    CODE              Offs=007294  Size=00004F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(umod.o):
+    CODE              Offs=0072E3  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000002  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000004  00001F  00001C  00001
+PROBECODE             000B00  000BD0  0000D1  00001
+LOWBSS                000C00  0011FC  0005FD  00001
+STARTUP               001C00  001CCE  0000CF  00001
+KERNELENTRY           002000  002005  000006  00001
+CODE                  002006  0092F9  0072F4  00001
+RODATA                0092FA  009EED  000BF4  00001
+DATA                  009EEE  009EF0  000003  00001
+BSS                   009EF1  00A1AE  0002BE  00001
+VICSHADOW             00A1AF  00C0EE  001F40  00001
+SYSCALLS              00CF00  00CFFE  0000FF  00001
+HIGHBSS               00E1B8  00E2E1  00012A  00001
+MODULECODE            00E300  00E5FA  0002FB  00001
+MODULERODATA          00E5FB  00E643  000049  00001
+BOOTFSCODE            00F3EF  00F688  00029A  00001
+TASKREQUEST           00F800  00F904  000105  00001
+TASKGATE              00FF05  00FFC4  0000C0  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               009EF1 RLA    __BSS_SIZE__              0002BE REA    
+__VICSHADOW_RUN__         00A1AF RLA    __VICSHADOW_SIZE__        001F40 REA    
+_kernel_main              0029B9 RLA    _udeks_boot_console_build 001600 REA    
+_udeks_bootfs_finish_error 00F65B RLA    _udeks_bootfs_finish_ok   00F667 RLA    
+_udeks_bootfs_request     00F3EF RLA    _udeks_capability_service_descriptor 009329 RLA    
+_udeks_clock_start        0027E0 RLA    _udeks_console_app_panel_initialize 00E300 RLA    
+_udeks_console_poll       00E308 RLA    _udeks_console_refresh_root 0030A0 RLA    
+_udeks_console_service_descriptor 009359 RLA    _udeks_console_start      002F19 RLA    
+_udeks_control_ports_active 0021E8 RLA    _udeks_init_service_descriptor 009399 RLA    
+_udeks_keyboard_caps      009F04 RLA    _udeks_keyboard_display_80 009F05 RLA    
+_udeks_keyboard_event_get 005DF4 RLA    _udeks_keyboard_matrix    009EF9 RLA    
+_udeks_keyboard_poll      005C6B RLA    _udeks_keyboard_scan      0020EF RLA    
+_udeks_keyboard_service_descriptor 009379 RLA    _udeks_keyboard_start     005BB1 RLA    
+_udeks_line_editor_cursor 006646 RLA    _udeks_line_editor_get_line 0065D1 RLA    
+_udeks_line_editor_handle 0064BD RLA    _udeks_line_editor_history_count 006658 RLA    
+_udeks_line_editor_history_position 00665E RLA    _udeks_line_editor_initialize 00648E RLA    
+_udeks_line_editor_length 006640 RLA    _udeks_line_editor_read   002278 RLA    
+_udeks_line_editor_submit 00657D RLA    _udeks_line_editor_submitted_cursor 0011F9 RLA    
+_udeks_line_editor_submitted_length_value 0011F7 RLA    _udeks_line_editor_submitted_ready_value 0011F8 RLA    
+_udeks_line_editor_submitted_text 0011B8 RLA    _udeks_line_editor_text   00663B RLA    
+_udeks_managed_apps_poll  00E571 RLA    _udeks_managed_apps_service_descriptor 0093D9 RLA    
+_udeks_managed_apps_start 00E568 RLA    _udeks_panic              0026E1 RLA    
+_udeks_pointer_buttons    006173 RLA    _udeks_pointer_keyboard_allowed 006151 RLA    
+_udeks_pointer_resynchronize 006150 RLA    _udeks_pointer_service_descriptor 009369 RLA    
+_udeks_pointer_start      0060A9 RLA    _udeks_pointer_x          006165 RLA    
+_udeks_pointer_y          00616F RLA    _udeks_probe_georam       000B88 RLA    
+_udeks_probe_reu          000B5C RLA    _udeks_probe_vdc_revision 000B47 RLA    
+_udeks_probe_video_standard 000B04 RLA    _udeks_root_console_cursor_column 003B1B RLA    
+_udeks_root_console_cursor_row 003B21 RLA    _udeks_root_console_cursor_visible 003B27 RLA    
+_udeks_root_console_dirty_span 003A83 RLA    _udeks_root_console_mark_row_clean 003AC3 RLA    
+_udeks_root_console_put   0038CE RLA    _udeks_root_console_reset 0037E6 RLA    
+_udeks_root_console_row   003A43 RLA    _udeks_root_console_set_cursor 003A08 RLA    
+_udeks_root_console_write 00394F RLA    _udeks_root_console_write_at 003808 RLA    
+_udeks_root_console_write_string 0039D9 RLA    _udeks_root_terminal_poll 006AC9 RLA    
+_udeks_root_terminal_prompt 006C10 RLA    _udeks_root_terminal_service_descriptor 009389 RLA    
+_udeks_root_terminal_start 006A46 RLA    _udeks_service_count      009328 RLA    
+_udeks_service_poll_all   0029FA RLA    _udeks_service_start_all  0029DF RLA    
+_udeks_service_start_all_once 002BEE RLA    _udeks_service_table      009312 RLA    
+_udeks_shell_command_line 00E290 RLA    _udeks_shell_foreground_job 00E2DF RLA    
+_udeks_shell_interrupt_foreground 006FCF RLA    _udeks_shell_poll         006EFA RLA    
+_udeks_shell_read_line    00C90F REA    _udeks_shell_start        006E90 RLA    
+_udeks_shell_tokenize     00E47B RLA    _udeks_stream_write       006E6A RLA    
+_udeks_stream_write_byte  006E49 RLA    _udeks_time_now           002DB6 RLA    
+_udeks_time_poll          002DA2 RLA    _udeks_time_service_descriptor 009339 RLA    
+_udeks_time_start         002D06 RLA    _udeks_time_sync_ti       0028F1 RLA    
+_udeks_vdc_block_address  009EF5 RLA    _udeks_vdc_block_length   009EF7 RLA    
+_udeks_vdc_block_source   009EF3 RLA    _udeks_vdc_read_selected  00204D RLA    
+_udeks_vdc_select         002019 RLA    _udeks_vdc_status         009EF1 RLA    
+_udeks_vdc_text_assets    009A96 RLA    _udeks_vdc_write_block    002063 RLA    
+_udeks_vdc_write_selected 002033 RLA    _udeks_vic_bitmap_commit  008A68 RLA    
+_udeks_vic_bitmap_commit_page 0023C8 RLA    _udeks_vic_bitmap_fill    0084F9 RLA    
+_udeks_vic_bitmap_line    00811B RLA    _udeks_vic_bitmap_outline_blit 0023E3 RLA    
+_udeks_vic_bitmap_outline_move 00896A RLA    _udeks_vic_bitmap_outline_toggle 0088E2 RLA    
+_udeks_vic_bitmap_pixel   008006 RLA    _udeks_vic_bitmap_rectangle 00835F RLA    
+_udeks_vic_bitmap_reset_clip 0088C0 RLA    _udeks_vic_bitmap_set_clip 008780 RLA    
+_udeks_vic_bitmap_shadow  00A1AF RLA    _udeks_vic_buffer_restore 00F678 RLA    
+_udeks_vic_graphics_disable 00231C RLA    _udeks_vic_graphics_enable 0022EC RLA    
+_udeks_vic_graphics_initialize 007EEC RLA    _udeks_vic_graphics_is_active 007F89 RLA    
+_udeks_vic_graphics_poll  007ED9 RLA    _udeks_vic_graphics_service_descriptor 0093B9 RLA    
+_udeks_vic_graphics_shutdown 007F48 RLA    _udeks_vic_graphics_start 007E14 RLA    
+_udeks_vic_pointer_busy_begin 002365 RLA    _udeks_vic_pointer_busy_end 002383 RLA    
+_udeks_vic_pointer_busy_tick 002398 RLA    _udeks_vic_pointer_set_x  00234B RLA    
+_udeks_vic_pointer_set_y  002361 RLA    _udeks_window_begin_paint 004379 RLA    
+_udeks_window_create      004009 RLA    _udeks_window_destroy     0041EA RLA    
+_udeks_window_end_paint   00443C RLA    _udeks_window_get_geometry 004442 RLA    
+_udeks_window_is_dragging 004531 RLA    _udeks_window_is_focused  00454B RLA    
+_udeks_window_manager_poll 003DF9 RLA    _udeks_window_manager_reset 003FC6 RLA    
+_udeks_window_manager_start 003D73 RLA    _udeks_window_manager_stop 003FBF RLA    
+_udeks_window_repaint     004341 RLA    _udeks_window_service_descriptor 0093C9 RLA    
+_udeks_xclock_is_running  00E5D8 RLA    _udeks_xclock_start       00E58F RLA    
+_udeks_xclock_stop        00E5C5 RLA    _udeks_xwave_is_running   00E5E0 RLA    
+_udeks_xwave_start        00E5AA RLA    _udeks_xwave_stop         00E5CD RLA    
+_udeks_z80_handoff        0022CC RLA    _udeks_z80_prepare        0022B5 RLA    
+_udeks_z80_submit         007BEC RLA    _udeks_z80_worker_service_descriptor 0093A9 RLA    
+_udeks_z80_worker_start   007B1A RLA    addeq0sp                  008EDA RLA    
+addeqysp                  008EDC RLA    addysp                    008EEC RLA    
+addysp1                   008EEB RLA    aslax2                    008F09 RLA    
+booleq                    00903A RLA    boolne                    009034 RLA    
+callax                    008F33 RLA    decsp1                    008F3A RLA    
+decsp2                    008F43 RLA    decsp3                    008F50 RLA    
+decsp4                    008F5D RLA    decsp5                    008F6A RLA    
+decsp6                    008F77 RLA    decsp7                    008F84 RLA    
+decsp8                    008F91 RLA    incsp1                    008FD6 RLA    
+incsp2                    008FE5 RLA    incsp3                    008FF3 RLA    
+incsp4                    008FF8 RLA    incsp5                    008FFD RLA    
+incsp6                    009002 RLA    incsp7                    009007 RLA    
+incsp8                    00900C RLA    jmpvec                    009EEE RLA    
+ldaidx                    009011 RLA    ldeaxi                    00901D RLA    
+mul8x16                   0090A7 RLA    mul8x16a                  0090B1 RLA    
+mulax10                   0090DF RLA    mulax5                    0090F8 RLA    
+mulax6                    00910C RLA    negax                     009126 RLA    
+popax                     008FDD RLA    popptr1                   009146 RLA    
+ptr1                      00000E RLZ    ptr2                      000010 RLZ    
+ptr3                      000012 RLZ    ptr4                      000014 RLZ    
+push0                     00916A RLA    pusha                     009158 RLA    
+pusha0                    00916C RLA    pushax                    00916E RLA    
+pushw0sp                  009184 RLA    pushwysp                  009186 RLA    
+regbank                   00001A RLZ    regsave                   00000A RLZ    
+shlax3                    008F14 RLA    shlax4                    008F22 RLA    
+shlaxy                    0091A7 RLA    shrax1                    0091D3 RLA    
+shrax2                    0091DB RLA    shrax3                    0091E6 RLA    
+shrax4                    0091F4 RLA    sp                        000006 RLZ    
+sreg                      000008 RLZ    staspidx                  009205 RLA    
+stax0sp                   00921B RLA    staxspidx                 009226 RLA    
+staxysp                   00921D RLA    steaxspidx                009241 RLA    
+subeqysp                  00927A RLA    subysp                    00928D RLA    
+tmp1                      000016 RLZ    tmp2                      000017 RLZ    
+tmp3                      000018 RLZ    tmp4                      000019 RLZ    
+tosadda0                  008EBE RLA    tosaddax                  008EC0 RLA    
+tosandax                  008EFB RLA    toseqa0                   008FA0 RLA    
+tosicmp                   008FAA RLA    tosicmp0                  008FA8 RLA    
+tosmula0                  0090A5 RLA    tosorax                   009136 RLA    
+tosshlax                  0091A0 RLA    tossuba0                  009263 RLA    
+tossubax                  009265 RLA    tosudiva0                 00929A RLA    
+tosumoda0                 0092E9 RLA    tosumula0                 0090A5 RLA    
+tosumulax                 009060 RLA    udiv16                    0092AB RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000006 RLZ    sreg                      000008 RLZ    
+regsave                   00000A RLZ    ptr1                      00000E RLZ    
+ptr2                      000010 RLZ    ptr3                      000012 RLZ    
+ptr4                      000014 RLZ    tmp1                      000016 RLZ    
+tmp2                      000017 RLZ    tmp3                      000018 RLZ    
+tmp4                      000019 RLZ    regbank                   00001A RLZ    
+__BSS_SIZE__              0002BE REA    _udeks_probe_video_standard 000B04 RLA    
+_udeks_probe_vdc_revision 000B47 RLA    _udeks_probe_reu          000B5C RLA    
+_udeks_probe_georam       000B88 RLA    _udeks_line_editor_submitted_text 0011B8 RLA    
+_udeks_line_editor_submitted_length_value 0011F7 RLA    _udeks_line_editor_submitted_ready_value 0011F8 RLA    
+_udeks_line_editor_submitted_cursor 0011F9 RLA    _udeks_boot_console_build 001600 REA    
+__VICSHADOW_SIZE__        001F40 REA    _udeks_vdc_select         002019 RLA    
+_udeks_vdc_write_selected 002033 RLA    _udeks_vdc_read_selected  00204D RLA    
+_udeks_vdc_write_block    002063 RLA    _udeks_keyboard_scan      0020EF RLA    
+_udeks_control_ports_active 0021E8 RLA    _udeks_line_editor_read   002278 RLA    
+_udeks_z80_prepare        0022B5 RLA    _udeks_z80_handoff        0022CC RLA    
+_udeks_vic_graphics_enable 0022EC RLA    _udeks_vic_graphics_disable 00231C RLA    
+_udeks_vic_pointer_set_x  00234B RLA    _udeks_vic_pointer_set_y  002361 RLA    
+_udeks_vic_pointer_busy_begin 002365 RLA    _udeks_vic_pointer_busy_end 002383 RLA    
+_udeks_vic_pointer_busy_tick 002398 RLA    _udeks_vic_bitmap_commit_page 0023C8 RLA    
+_udeks_vic_bitmap_outline_blit 0023E3 RLA    _udeks_panic              0026E1 RLA    
+_udeks_clock_start        0027E0 RLA    _udeks_time_sync_ti       0028F1 RLA    
+_kernel_main              0029B9 RLA    _udeks_service_start_all  0029DF RLA    
+_udeks_service_poll_all   0029FA RLA    _udeks_service_start_all_once 002BEE RLA    
+_udeks_time_start         002D06 RLA    _udeks_time_poll          002DA2 RLA    
+_udeks_time_now           002DB6 RLA    _udeks_console_start      002F19 RLA    
+_udeks_console_refresh_root 0030A0 RLA    _udeks_root_console_reset 0037E6 RLA    
+_udeks_root_console_write_at 003808 RLA    _udeks_root_console_put   0038CE RLA    
+_udeks_root_console_write 00394F RLA    _udeks_root_console_write_string 0039D9 RLA    
+_udeks_root_console_set_cursor 003A08 RLA    _udeks_root_console_row   003A43 RLA    
+_udeks_root_console_dirty_span 003A83 RLA    _udeks_root_console_mark_row_clean 003AC3 RLA    
+_udeks_root_console_cursor_column 003B1B RLA    _udeks_root_console_cursor_row 003B21 RLA    
+_udeks_root_console_cursor_visible 003B27 RLA    _udeks_window_manager_start 003D73 RLA    
+_udeks_window_manager_poll 003DF9 RLA    _udeks_window_manager_stop 003FBF RLA    
+_udeks_window_manager_reset 003FC6 RLA    _udeks_window_create      004009 RLA    
+_udeks_window_destroy     0041EA RLA    _udeks_window_repaint     004341 RLA    
+_udeks_window_begin_paint 004379 RLA    _udeks_window_end_paint   00443C RLA    
+_udeks_window_get_geometry 004442 RLA    _udeks_window_is_dragging 004531 RLA    
+_udeks_window_is_focused  00454B RLA    _udeks_keyboard_start     005BB1 RLA    
+_udeks_keyboard_poll      005C6B RLA    _udeks_keyboard_event_get 005DF4 RLA    
+_udeks_pointer_start      0060A9 RLA    _udeks_pointer_resynchronize 006150 RLA    
+_udeks_pointer_keyboard_allowed 006151 RLA    _udeks_pointer_x          006165 RLA    
+_udeks_pointer_y          00616F RLA    _udeks_pointer_buttons    006173 RLA    
+_udeks_line_editor_initialize 00648E RLA    _udeks_line_editor_handle 0064BD RLA    
+_udeks_line_editor_submit 00657D RLA    _udeks_line_editor_get_line 0065D1 RLA    
+_udeks_line_editor_text   00663B RLA    _udeks_line_editor_length 006640 RLA    
+_udeks_line_editor_cursor 006646 RLA    _udeks_line_editor_history_count 006658 RLA    
+_udeks_line_editor_history_position 00665E RLA    _udeks_root_terminal_start 006A46 RLA    
+_udeks_root_terminal_poll 006AC9 RLA    _udeks_root_terminal_prompt 006C10 RLA    
+_udeks_stream_write_byte  006E49 RLA    _udeks_stream_write       006E6A RLA    
+_udeks_shell_start        006E90 RLA    _udeks_shell_poll         006EFA RLA    
+_udeks_shell_interrupt_foreground 006FCF RLA    _udeks_z80_worker_start   007B1A RLA    
+_udeks_z80_submit         007BEC RLA    _udeks_vic_graphics_start 007E14 RLA    
+_udeks_vic_graphics_poll  007ED9 RLA    _udeks_vic_graphics_initialize 007EEC RLA    
+_udeks_vic_graphics_shutdown 007F48 RLA    _udeks_vic_graphics_is_active 007F89 RLA    
+_udeks_vic_bitmap_pixel   008006 RLA    _udeks_vic_bitmap_line    00811B RLA    
+_udeks_vic_bitmap_rectangle 00835F RLA    _udeks_vic_bitmap_fill    0084F9 RLA    
+_udeks_vic_bitmap_set_clip 008780 RLA    _udeks_vic_bitmap_reset_clip 0088C0 RLA    
+_udeks_vic_bitmap_outline_toggle 0088E2 RLA    _udeks_vic_bitmap_outline_move 00896A RLA    
+_udeks_vic_bitmap_commit  008A68 RLA    tosadda0                  008EBE RLA    
+tosaddax                  008EC0 RLA    addeq0sp                  008EDA RLA    
+addeqysp                  008EDC RLA    addysp1                   008EEB RLA    
+addysp                    008EEC RLA    tosandax                  008EFB RLA    
+aslax2                    008F09 RLA    shlax3                    008F14 RLA    
+shlax4                    008F22 RLA    callax                    008F33 RLA    
+decsp1                    008F3A RLA    decsp2                    008F43 RLA    
+decsp3                    008F50 RLA    decsp4                    008F5D RLA    
+decsp5                    008F6A RLA    decsp6                    008F77 RLA    
+decsp7                    008F84 RLA    decsp8                    008F91 RLA    
+toseqa0                   008FA0 RLA    tosicmp0                  008FA8 RLA    
+tosicmp                   008FAA RLA    incsp1                    008FD6 RLA    
+popax                     008FDD RLA    incsp2                    008FE5 RLA    
+incsp3                    008FF3 RLA    incsp4                    008FF8 RLA    
+incsp5                    008FFD RLA    incsp6                    009002 RLA    
+incsp7                    009007 RLA    incsp8                    00900C RLA    
+ldaidx                    009011 RLA    ldeaxi                    00901D RLA    
+boolne                    009034 RLA    booleq                    00903A RLA    
+tosumulax                 009060 RLA    tosmula0                  0090A5 RLA    
+tosumula0                 0090A5 RLA    mul8x16                   0090A7 RLA    
+mul8x16a                  0090B1 RLA    mulax10                   0090DF RLA    
+mulax5                    0090F8 RLA    mulax6                    00910C RLA    
+negax                     009126 RLA    tosorax                   009136 RLA    
+popptr1                   009146 RLA    pusha                     009158 RLA    
+push0                     00916A RLA    pusha0                    00916C RLA    
+pushax                    00916E RLA    pushw0sp                  009184 RLA    
+pushwysp                  009186 RLA    tosshlax                  0091A0 RLA    
+shlaxy                    0091A7 RLA    shrax1                    0091D3 RLA    
+shrax2                    0091DB RLA    shrax3                    0091E6 RLA    
+shrax4                    0091F4 RLA    staspidx                  009205 RLA    
+stax0sp                   00921B RLA    staxysp                   00921D RLA    
+staxspidx                 009226 RLA    steaxspidx                009241 RLA    
+tossuba0                  009263 RLA    tossubax                  009265 RLA    
+subeqysp                  00927A RLA    subysp                    00928D RLA    
+tosudiva0                 00929A RLA    udiv16                    0092AB RLA    
+tosumoda0                 0092E9 RLA    _udeks_service_table      009312 RLA    
+_udeks_service_count      009328 RLA    _udeks_capability_service_descriptor 009329 RLA    
+_udeks_time_service_descriptor 009339 RLA    _udeks_console_service_descriptor 009359 RLA    
+_udeks_pointer_service_descriptor 009369 RLA    _udeks_keyboard_service_descriptor 009379 RLA    
+_udeks_root_terminal_service_descriptor 009389 RLA    _udeks_init_service_descriptor 009399 RLA    
+_udeks_z80_worker_service_descriptor 0093A9 RLA    _udeks_vic_graphics_service_descriptor 0093B9 RLA    
+_udeks_window_service_descriptor 0093C9 RLA    _udeks_managed_apps_service_descriptor 0093D9 RLA    
+_udeks_vdc_text_assets    009A96 RLA    jmpvec                    009EEE RLA    
+__BSS_RUN__               009EF1 RLA    _udeks_vdc_status         009EF1 RLA    
+_udeks_vdc_block_source   009EF3 RLA    _udeks_vdc_block_address  009EF5 RLA    
+_udeks_vdc_block_length   009EF7 RLA    _udeks_keyboard_matrix    009EF9 RLA    
+_udeks_keyboard_caps      009F04 RLA    _udeks_keyboard_display_80 009F05 RLA    
+__VICSHADOW_RUN__         00A1AF RLA    _udeks_vic_bitmap_shadow  00A1AF RLA    
+_udeks_shell_read_line    00C90F REA    _udeks_shell_command_line 00E290 RLA    
+_udeks_shell_foreground_job 00E2DF RLA    _udeks_console_app_panel_initialize 00E300 RLA    
+_udeks_console_poll       00E308 RLA    _udeks_shell_tokenize     00E47B RLA    
+_udeks_managed_apps_start 00E568 RLA    _udeks_managed_apps_poll  00E571 RLA    
+_udeks_xclock_start       00E58F RLA    _udeks_xwave_start        00E5AA RLA    
+_udeks_xclock_stop        00E5C5 RLA    _udeks_xwave_stop         00E5CD RLA    
+_udeks_xclock_is_running  00E5D8 RLA    _udeks_xwave_is_running   00E5E0 RLA    
+_udeks_bootfs_request     00F3EF RLA    _udeks_bootfs_finish_error 00F65B RLA    
+_udeks_bootfs_finish_ok   00F667 RLA    _udeks_vic_buffer_restore 00F678 RLA    
+
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    crt0.o                    src/8502/crt0.s(11)
+__BSS_SIZE__ ([linker generated]):
+    crt0.o                    src/8502/crt0.s(11)
+__VICSHADOW_RUN__ ([linker generated]):
+    crt0.o                    src/8502/crt0.s(12)
+__VICSHADOW_SIZE__ ([linker generated]):
+    crt0.o                    src/8502/crt0.s(12)
+_kernel_main (kernel.o):
+    kernel_entry.o            src/8502/kernel_entry.s(8)
+_udeks_boot_console_build (boot_console_entry.o):
+    vdc_console.o             build/8502/vdc_console.s(13)
+_udeks_bootfs_finish_error (bootfs_request.o):
+    [linker generated]       
+_udeks_bootfs_finish_ok (bootfs_request.o):
+    [linker generated]       
+_udeks_bootfs_request (bootfs_request.o):
+    syscall_gate.o            src/8502/syscall_gate.s(21)
+_udeks_capability_service_descriptor (capability_descriptor.o):
+    service_table.o           src/services/table.s(7)
+_udeks_clock_start (clock.o):
+    clock_descriptor.o        src/services/clock/descriptor.s(4)
+_udeks_console_app_panel_initialize (app_panel.o):
+    vdc_console.o             build/8502/vdc_console.s(31)
+_udeks_console_poll (app_panel.o):
+    console_descriptor.o      src/services/console/descriptor.s(8)
+_udeks_console_refresh_root (vdc_console.o):
+    root_terminal.o           build/8502/root_terminal.s(13)
+_udeks_console_service_descriptor (console_descriptor.o):
+    service_table.o           src/services/table.s(10)
+_udeks_console_start (vdc_console.o):
+    console_descriptor.o      src/services/console/descriptor.s(7)
+_udeks_control_ports_active (control_ports.o):
+    pointer.o                 src/8502/pointer_irq.s(16)
+_udeks_init_service_descriptor (init_descriptor.o):
+    service_table.o           src/services/table.s(17)
+_udeks_keyboard_caps (keyboard_scan.o):
+    keyboard.o                build/8502/keyboard.s(14)
+_udeks_keyboard_display_80 (keyboard_scan.o):
+    keyboard.o                build/8502/keyboard.s(15)
+_udeks_keyboard_event_get (keyboard.o):
+    root_terminal.o           build/8502/root_terminal.s(14)
+_udeks_keyboard_matrix (keyboard_scan.o):
+    keyboard.o                build/8502/keyboard.s(13)
+_udeks_keyboard_poll (keyboard.o):
+    keyboard_descriptor.o     src/services/input/descriptor.s(5)
+_udeks_keyboard_scan (keyboard_scan.o):
+    keyboard.o                build/8502/keyboard.s(16)
+_udeks_keyboard_service_descriptor (keyboard_descriptor.o):
+    service_table.o           src/services/table.s(15)
+_udeks_keyboard_start (keyboard.o):
+    keyboard_descriptor.o     src/services/input/descriptor.s(4)
+_udeks_line_editor_cursor (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(20)
+_udeks_line_editor_get_line (line_editor.o):
+    [linker generated]       
+_udeks_line_editor_handle (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(16)
+_udeks_line_editor_history_count (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(21)
+_udeks_line_editor_history_position (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(22)
+_udeks_line_editor_initialize (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(15)
+_udeks_line_editor_length (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(19)
+_udeks_line_editor_read (line_editor_read.o):
+    syscall_gate.o            src/8502/syscall_gate.s(16)
+_udeks_line_editor_submit (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(17)
+_udeks_line_editor_submitted_cursor (line_editor.o):
+    line_editor_read.o        src/8502/line_editor_read.s(13)
+_udeks_line_editor_submitted_length_value (line_editor.o):
+    line_editor_read.o        src/8502/line_editor_read.s(11)
+_udeks_line_editor_submitted_ready_value (line_editor.o):
+    line_editor_read.o        src/8502/line_editor_read.s(12)
+_udeks_line_editor_submitted_text (line_editor.o):
+    line_editor_read.o        src/8502/line_editor_read.s(10)
+_udeks_line_editor_text (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(18)
+_udeks_managed_apps_poll (managed_apps.o):
+    managed_apps_descriptor.o src/services/app/descriptor.s(5)
+_udeks_managed_apps_service_descriptor (managed_apps_descriptor.o):
+    service_table.o           src/services/table.s(14)
+_udeks_managed_apps_start (managed_apps.o):
+    managed_apps_descriptor.o src/services/app/descriptor.s(4)
+_udeks_panic (panic.o):
+    kernel.o                  build/8502/kernel.s(13)
+_udeks_pointer_buttons (pointer.o):
+    window_manager.o          build/8502/window_manager.s(16)
+_udeks_pointer_keyboard_allowed (pointer.o):
+    keyboard.o                build/8502/keyboard.s(21)
+_udeks_pointer_resynchronize (pointer.o):
+    window_manager.o          build/8502/window_manager.s(13)
+_udeks_pointer_service_descriptor (pointer_descriptor.o):
+    service_table.o           src/services/table.s(11)
+_udeks_pointer_start (pointer.o):
+    pointer_descriptor.o      src/services/input/pointer_descriptor.s(4)
+_udeks_pointer_x (pointer.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(28)
+    window_manager.o          build/8502/window_manager.s(14)
+_udeks_pointer_y (pointer.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(29)
+    window_manager.o          build/8502/window_manager.s(15)
+_udeks_probe_georam (probe.o):
+    [linker generated]       
+_udeks_probe_reu (probe.o):
+    [linker generated]       
+_udeks_probe_vdc_revision (probe.o):
+    [linker generated]       
+_udeks_probe_video_standard (probe.o):
+    [linker generated]       
+_udeks_root_console_cursor_column (root_console.o):
+    root_terminal.o           build/8502/root_terminal.s(27)
+    vdc_console.o             build/8502/vdc_console.s(19)
+_udeks_root_console_cursor_row (root_console.o):
+    root_terminal.o           build/8502/root_terminal.s(28)
+    vdc_console.o             build/8502/vdc_console.s(20)
+_udeks_root_console_cursor_visible (root_console.o):
+    vdc_console.o             build/8502/vdc_console.s(21)
+_udeks_root_console_dirty_span (root_console.o):
+    vdc_console.o             build/8502/vdc_console.s(17)
+_udeks_root_console_mark_row_clean (root_console.o):
+    vdc_console.o             build/8502/vdc_console.s(18)
+_udeks_root_console_put (root_console.o):
+    root_terminal.o           build/8502/root_terminal.s(23)
+_udeks_root_console_reset (root_console.o):
+    [linker generated]       
+_udeks_root_console_row (root_console.o):
+    vdc_console.o             build/8502/vdc_console.s(16)
+_udeks_root_console_set_cursor (root_console.o):
+    root_terminal.o           build/8502/root_terminal.s(26)
+    [linker generated]       
+_udeks_root_console_write (root_console.o):
+    terminal_stream.o         build/8502/terminal_stream.s(13)
+    root_terminal.o           build/8502/root_terminal.s(24)
+    syscall_gate.o            src/8502/syscall_gate.s(17)
+_udeks_root_console_write_at (root_console.o):
+    [linker generated]       
+_udeks_root_console_write_string (root_console.o):
+    terminal_stream.o         build/8502/terminal_stream.s(14)
+    root_terminal.o           build/8502/root_terminal.s(25)
+_udeks_root_terminal_poll (root_terminal.o):
+    root_terminal_descriptor.o src/services/terminal/descriptor.s(5)
+_udeks_root_terminal_prompt (root_terminal.o):
+    shell.o                   build/8502/shell.s(13)
+    syscall_gate.o            src/8502/syscall_gate.s(18)
+_udeks_root_terminal_service_descriptor (root_terminal_descriptor.o):
+    service_table.o           src/services/table.s(16)
+_udeks_root_terminal_start (root_terminal.o):
+    root_terminal_descriptor.o src/services/terminal/descriptor.s(4)
+_udeks_service_count (service_table.o):
+    service_registry.o        build/8502/service_registry.s(15)
+_udeks_service_poll_all (service_registry.o):
+    kernel.o                  build/8502/kernel.s(15)
+_udeks_service_start_all (service_start.o):
+    kernel.o                  build/8502/kernel.s(14)
+_udeks_service_start_all_once (service_registry.o):
+    service_start.o           src/8502/service_start.s(9)
+_udeks_service_table (service_table.o):
+    service_registry.o        build/8502/service_registry.s(14)
+_udeks_shell_command_line (shell.o):
+    syscall_gate.o            src/8502/syscall_gate.s(19)
+_udeks_shell_foreground_job (shell.o):
+    syscall_gate.o            src/8502/syscall_gate.s(20)
+_udeks_shell_interrupt_foreground (shell.o):
+    root_terminal.o           build/8502/root_terminal.s(32)
+_udeks_shell_poll (shell.o):
+    init_descriptor.o         src/services/init/descriptor.s(9)
+_udeks_shell_read_line (init_descriptor.o):
+    shell.o                   build/8502/shell.s(31)
+_udeks_shell_start (shell.o):
+    init_descriptor.o         src/services/init/descriptor.s(8)
+_udeks_shell_tokenize (shell_parser.o):
+    shell.o                   build/8502/shell.s(14)
+_udeks_stream_write (terminal_stream.o):
+    shell.o                   build/8502/shell.s(19)
+    syscall_gate.o            src/8502/syscall_gate.s(15)
+_udeks_stream_write_byte (terminal_stream.o):
+    shell.o                   build/8502/shell.s(18)
+    syscall_gate.o            src/8502/syscall_gate.s(14)
+_udeks_time_now (time.o):
+    syscall_gate.o            src/8502/app_gateway.s(10)
+_udeks_time_poll (time.o):
+    time_descriptor.o         src/services/time/descriptor.s(5)
+_udeks_time_service_descriptor (time_descriptor.o):
+    service_table.o           src/services/table.s(8)
+_udeks_time_start (time.o):
+    time_descriptor.o         src/services/time/descriptor.s(4)
+_udeks_time_sync_ti (syscall_gate.o):
+    time.o                    build/8502/time.s(16)
+_udeks_vdc_block_address (vdc.o):
+    app_panel.o               src/services/console/app_panel.s(10)
+    vdc_console.o             build/8502/vdc_console.s(24)
+_udeks_vdc_block_length (vdc.o):
+    app_panel.o               src/services/console/app_panel.s(11)
+    vdc_console.o             build/8502/vdc_console.s(25)
+_udeks_vdc_block_source (vdc.o):
+    app_panel.o               src/services/console/app_panel.s(9)
+    vdc_console.o             build/8502/vdc_console.s(23)
+_udeks_vdc_read_selected (vdc.o):
+    vdc_console.o             build/8502/vdc_console.s(28)
+    [linker generated]       
+_udeks_vdc_select (vdc.o):
+    vdc_console.o             build/8502/vdc_console.s(26)
+    [linker generated]       
+_udeks_vdc_status (vdc.o):
+    vdc_console.o             build/8502/vdc_console.s(22)
+    [linker generated]       
+_udeks_vdc_text_assets (vdc_text_assets.o):
+    app_panel.o               src/services/console/app_panel.s(12)
+    vdc_console.o             build/8502/vdc_console.s(30)
+_udeks_vdc_write_block (vdc.o):
+    app_panel.o               src/services/console/app_panel.s(8)
+    vdc_console.o             build/8502/vdc_console.s(29)
+_udeks_vdc_write_selected (vdc.o):
+    vdc_console.o             build/8502/vdc_console.s(27)
+    [linker generated]       
+_udeks_vic_bitmap_commit (static-scratch.o):
+    window_manager.o          build/8502/window_manager.s(28)
+_udeks_vic_bitmap_commit_page (vic_graphics_transport.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(35)
+_udeks_vic_bitmap_fill (static-scratch.o):
+    window_manager.o          build/8502/window_manager.s(23)
+    syscall_gate.o            src/8502/app_gateway.s(11)
+_udeks_vic_bitmap_line (static-scratch.o):
+    window_manager.o          build/8502/window_manager.s(21)
+    syscall_gate.o            src/8502/app_gateway.s(12)
+_udeks_vic_bitmap_outline_blit (vic_graphics_transport.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(36)
+_udeks_vic_bitmap_outline_move (static-scratch.o):
+    window_manager.o          build/8502/window_manager.s(27)
+_udeks_vic_bitmap_outline_toggle (static-scratch.o):
+    window_manager.o          build/8502/window_manager.s(26)
+_udeks_vic_bitmap_pixel (static-scratch.o):
+    window_manager.o          build/8502/window_manager.s(20)
+    syscall_gate.o            src/8502/app_gateway.s(13)
+_udeks_vic_bitmap_rectangle (static-scratch.o):
+    window_manager.o          build/8502/window_manager.s(22)
+_udeks_vic_bitmap_reset_clip (static-scratch.o):
+    window_manager.o          build/8502/window_manager.s(25)
+_udeks_vic_bitmap_set_clip (static-scratch.o):
+    window_manager.o          build/8502/window_manager.s(24)
+_udeks_vic_bitmap_shadow (static-scratch.o):
+    vic_graphics_transport.o  src/8502/vic_graphics.s(18)
+_udeks_vic_buffer_restore (bootfs_request.o):
+    vic_graphics_transport.o  src/8502/vic_graphics.s(19)
+_udeks_vic_graphics_disable (vic_graphics_transport.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(31)
+_udeks_vic_graphics_enable (vic_graphics_transport.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(30)
+_udeks_vic_graphics_initialize (static-scratch.o):
+    shell.o                   build/8502/shell.s(21)
+_udeks_vic_graphics_is_active (static-scratch.o):
+    shell.o                   build/8502/shell.s(23)
+    window_manager.o          build/8502/window_manager.s(17)
+    syscall_gate.o            src/8502/app_gateway.s(14)
+_udeks_vic_graphics_poll (static-scratch.o):
+    vic_graphics_descriptor.o src/services/display/descriptor.s(5)
+_udeks_vic_graphics_service_descriptor (vic_graphics_descriptor.o):
+    service_table.o           src/services/table.s(12)
+_udeks_vic_graphics_shutdown (static-scratch.o):
+    shell.o                   build/8502/shell.s(22)
+_udeks_vic_graphics_start (static-scratch.o):
+    vic_graphics_descriptor.o src/services/display/descriptor.s(4)
+_udeks_vic_pointer_busy_begin (vic_graphics_transport.o):
+    z80_worker.o              build/8502/z80_worker.s(13)
+    window_manager.o          build/8502/window_manager.s(18)
+_udeks_vic_pointer_busy_end (vic_graphics_transport.o):
+    z80_worker.o              build/8502/z80_worker.s(14)
+    window_manager.o          build/8502/window_manager.s(19)
+_udeks_vic_pointer_busy_tick (vic_graphics_transport.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(34)
+_udeks_vic_pointer_set_x (vic_graphics_transport.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(32)
+_udeks_vic_pointer_set_y (vic_graphics_transport.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(33)
+_udeks_window_begin_paint (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(22)
+_udeks_window_create (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(15)
+_udeks_window_destroy (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(16)
+_udeks_window_end_paint (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(22)
+_udeks_window_get_geometry (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(17)
+_udeks_window_is_dragging (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(18)
+_udeks_window_is_focused (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(19)
+_udeks_window_manager_poll (window_manager.o):
+    window_descriptor.o       src/services/window/descriptor.s(5)
+_udeks_window_manager_reset (window_manager.o):
+    shell.o                   build/8502/shell.s(24)
+_udeks_window_manager_start (window_manager.o):
+    window_descriptor.o       src/services/window/descriptor.s(4)
+_udeks_window_manager_stop (window_manager.o):
+    window_descriptor.o       src/services/window/descriptor.s(6)
+_udeks_window_repaint (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(20)
+_udeks_window_service_descriptor (window_descriptor.o):
+    service_table.o           src/services/table.s(13)
+_udeks_xclock_is_running (managed_apps.o):
+    shell.o                   build/8502/shell.s(27)
+_udeks_xclock_start (managed_apps.o):
+    shell.o                   build/8502/shell.s(25)
+_udeks_xclock_stop (managed_apps.o):
+    shell.o                   build/8502/shell.s(26)
+_udeks_xwave_is_running (managed_apps.o):
+    shell.o                   build/8502/shell.s(30)
+_udeks_xwave_start (managed_apps.o):
+    shell.o                   build/8502/shell.s(28)
+_udeks_xwave_stop (managed_apps.o):
+    shell.o                   build/8502/shell.s(29)
+_udeks_z80_handoff (z80_handoff.o):
+    z80_worker.o              build/8502/z80_worker.s(18)
+_udeks_z80_prepare (z80_handoff.o):
+    z80_worker.o              build/8502/z80_worker.s(17)
+_udeks_z80_submit (z80_worker.o):
+    shell.o                   build/8502/shell.s(20)
+    syscall_gate.o            src/8502/app_gateway.s(21)
+_udeks_z80_worker_service_descriptor (z80_worker_descriptor.o):
+    service_table.o           src/services/table.s(9)
+_udeks_z80_worker_start (z80_worker.o):
+    z80_worker_descriptor.o   src/services/engine/descriptor.s(4)
+addeq0sp (addeqsp.o):
+    shell.o                   build/8502/shell.s(2071)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+addeqysp (addeqsp.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    shell.o                   build/8502/shell.s(2071)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    window_manager.o          build/8502/window_manager.s(4628)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(24)
+addysp (addysp.o):
+    incsp8.o                  runtime/incsp8.s(8)
+    incsp7.o                  runtime/incsp7.s(8)
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    syscall_gate.o            src/8502/app_gateway.s(24)
+    [linker generated]       
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+    or.o                      runtime/or.s(9)
+    and.o                     runtime/and.s(8)
+aslax2 (aslax2.o):
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    syscall_gate.o            src/8502/app_gateway.s(24)
+booleq (makebool.o):
+    eq.o                      runtime/eq.s(8)
+    shell.o                   build/8502/shell.s(2071)
+boolne (makebool.o):
+    root_console.o            build/8502/root_console.s(1013)
+callax (call.o):
+    shell.o                   build/8502/shell.s(2071)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+decsp1 (decsp1.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+    kernel.o                  build/8502/kernel.s(93)
+    kernel.o                  build/8502/kernel.s(93)
+    syscall_gate.o            src/8502/app_gateway.s(25)
+decsp2 (decsp2.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell_parser.o            build/8502/shell_parser.s(165)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(25)
+    [linker generated]       
+    [linker generated]       
+decsp3 (decsp3.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    syscall_gate.o            src/8502/app_gateway.s(25)
+    [linker generated]       
+decsp4 (decsp4.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(25)
+decsp5 (decsp5.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(25)
+decsp6 (decsp6.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    shell.o                   build/8502/shell.s(2071)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    syscall_gate.o            src/8502/app_gateway.s(25)
+    [linker generated]       
+    [linker generated]       
+decsp7 (decsp7.o):
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    window_manager.o          build/8502/window_manager.s(4628)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    syscall_gate.o            src/8502/app_gateway.s(25)
+decsp8 (decsp8.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    syscall_gate.o            src/8502/app_gateway.s(25)
+incsp1 (incsp1.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell_parser.o            build/8502/shell_parser.s(165)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    time.o                    build/8502/time.s(351)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+    kernel.o                  build/8502/kernel.s(93)
+    syscall_gate.o            src/8502/app_gateway.s(26)
+    [linker generated]       
+incsp2 (incsp2.o):
+    staxspi.o                 runtime/staxspi.s(9)
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    terminal_stream.o         build/8502/terminal_stream.s(78)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(26)
+    [linker generated]       
+incsp3 (incsp3.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    terminal_stream.o         build/8502/terminal_stream.s(78)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    syscall_gate.o            src/8502/app_gateway.s(26)
+    [linker generated]       
+    [linker generated]       
+incsp4 (incsp4.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    root_console.o            build/8502/root_console.s(1013)
+    syscall_gate.o            src/8502/app_gateway.s(26)
+    [linker generated]       
+incsp5 (incsp5.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(26)
+    [linker generated]       
+incsp6 (incsp6.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    syscall_gate.o            src/8502/app_gateway.s(26)
+    [linker generated]       
+    [linker generated]       
+incsp7 (incsp7.o):
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell_parser.o            build/8502/shell_parser.s(165)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    syscall_gate.o            src/8502/app_gateway.s(26)
+incsp8 (incsp8.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+jmpvec (jmpvec.o):
+    shell.o                   build/8502/shell.s(2071)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+ldaidx (ldai.o):
+    syscall_gate.o            src/8502/app_gateway.s(27)
+ldeaxi (ldeaxi.o):
+    keyboard.o                build/8502/keyboard.s(935)
+mul8x16 (mul8.o):
+    mul.o                     runtime/mul.s(8)
+mul8x16a (mul8.o):
+    mul.o                     runtime/mul.s(8)
+mulax10 (mulax10.o):
+    time.o                    build/8502/time.s(351)
+mulax5 (mulax5.o):
+    window_manager.o          build/8502/window_manager.s(4628)
+    syscall_gate.o            src/8502/app_gateway.s(27)
+mulax6 (mulax6.o):
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+negax (negabs.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+popax (incsp2.o):
+    shl.o                     runtime/shl.s(15)
+    line_editor_read.o        src/8502/line_editor_read.s(14)
+popptr1 (popptr1.o):
+    umod.o                    runtime/umod.s(8)
+    udiv.o                    runtime/udiv.s(9)
+    steaxspi.o                runtime/steaxspi.s(9)
+    mul8.o                    runtime/mul8.s(9)
+    mul.o                     runtime/mul.s(9)
+ptr1 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    steaxspi.o                runtime/steaxspi.s(10)
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mulax6.o                  runtime/mulax6.s(9)
+    mulax5.o                  runtime/mulax5.s(9)
+    mulax10.o                 runtime/mulax10.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+    ldeaxi.o                  runtime/ldeaxi.s(8)
+    ldai.o                    runtime/ldai.s(8)
+    call.o                    runtime/call.s(8)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(11)
+    z80_worker.o              build/8502/z80_worker.s(11)
+    shell.o                   build/8502/shell.s(11)
+    shell_parser.o            build/8502/shell_parser.s(11)
+    root_terminal.o           build/8502/root_terminal.s(11)
+    line_editor.o             build/8502/line_editor.s(11)
+    keyboard.o                build/8502/keyboard.s(11)
+    window_manager.o          build/8502/window_manager.s(11)
+    root_console.o            build/8502/root_console.s(11)
+    vdc_console.o             build/8502/vdc_console.s(11)
+    time.o                    build/8502/time.s(11)
+    service_registry.o        build/8502/service_registry.s(11)
+    kernel.o                  build/8502/kernel.s(11)
+    syscall_gate.o            src/8502/syscall_gate.s(25)
+    line_editor_read.o        src/8502/line_editor_read.s(15)
+ptr2 (zeropage.o):
+    syscall_gate.o            src/8502/app_gateway.s(37)
+ptr3 (zeropage.o):
+    syscall_gate.o            src/8502/app_gateway.s(37)
+ptr4 (zeropage.o):
+    umod.o                    runtime/umod.s(9)
+    udiv.o                    runtime/udiv.s(10)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(37)
+push0 (pushax.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+pusha (pusha.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell_parser.o            build/8502/shell_parser.s(165)
+    shell_parser.o            build/8502/shell_parser.s(165)
+    terminal_stream.o         build/8502/terminal_stream.s(78)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    time.o                    build/8502/time.s(351)
+    service_registry.o        build/8502/service_registry.s(408)
+    syscall_gate.o            src/8502/syscall_gate.s(23)
+    [linker generated]       
+    [linker generated]       
+pusha0 (pushax.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(27)
+pushax (pushax.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    terminal_stream.o         build/8502/terminal_stream.s(78)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    syscall_gate.o            src/8502/syscall_gate.s(24)
+    [linker generated]       
+    [linker generated]       
+pushw0sp (pushwsp.o):
+    shell.o                   build/8502/shell.s(2071)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    root_console.o            build/8502/root_console.s(1013)
+    [linker generated]       
+pushwysp (pushwsp.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    shell.o                   build/8502/shell.s(2071)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(27)
+regbank (zeropage.o):
+    syscall_gate.o            src/8502/app_gateway.s(36)
+regsave (zeropage.o):
+    window_manager.o          build/8502/window_manager.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(36)
+shlax3 (aslax3.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+shlax4 (aslax4.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+shlaxy (shl.o):
+    keyboard.o                build/8502/keyboard.s(935)
+shrax1 (shrax1.o):
+    syscall_gate.o            src/8502/app_gateway.s(28)
+shrax2 (shrax2.o):
+    syscall_gate.o            src/8502/app_gateway.s(28)
+shrax3 (shrax3.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+shrax4 (shrax4.o):
+    syscall_gate.o            src/8502/app_gateway.s(28)
+sp (zeropage.o):
+    subysp.o                  runtime/subysp.s(9)
+    subeqsp.o                 runtime/subeqsp.s(8)
+    sub.o                     runtime/sub.s(9)
+    staxspi.o                 runtime/staxspi.s(10)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    or.o                      runtime/or.s(10)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp8.o                  runtime/decsp8.s(8)
+    decsp7.o                  runtime/decsp7.s(8)
+    decsp6.o                  runtime/decsp6.s(8)
+    decsp5.o                  runtime/decsp5.s(8)
+    decsp4.o                  runtime/decsp4.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    and.o                     runtime/and.s(9)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    add.o                     runtime/add.s(12)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(10)
+    z80_worker.o              build/8502/z80_worker.s(10)
+    shell.o                   build/8502/shell.s(10)
+    shell_parser.o            build/8502/shell_parser.s(10)
+    terminal_stream.o         build/8502/terminal_stream.s(10)
+    root_terminal.o           build/8502/root_terminal.s(10)
+    line_editor.o             build/8502/line_editor.s(10)
+    keyboard.o                build/8502/keyboard.s(10)
+    window_manager.o          build/8502/window_manager.s(10)
+    root_console.o            build/8502/root_console.s(10)
+    vdc_console.o             build/8502/vdc_console.s(10)
+    time.o                    build/8502/time.s(10)
+    service_registry.o        build/8502/service_registry.s(10)
+    kernel.o                  build/8502/kernel.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(36)
+    crt0.o                    src/8502/crt0.s(13)
+sreg (zeropage.o):
+    umod.o                    runtime/umod.s(9)
+    udiv.o                    runtime/udiv.s(10)
+    steaxspi.o                runtime/steaxspi.s(10)
+    ldeaxi.o                  runtime/ldeaxi.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    shell.o                   build/8502/shell.s(10)
+    line_editor.o             build/8502/line_editor.s(10)
+    keyboard.o                build/8502/keyboard.s(10)
+    window_manager.o          build/8502/window_manager.s(10)
+    vdc_console.o             build/8502/vdc_console.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(36)
+staspidx (staspidx.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    shell.o                   build/8502/shell.s(2071)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(29)
+    [linker generated]       
+stax0sp (staxsp.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(29)
+    [linker generated]       
+staxspidx (staxspi.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+staxysp (staxsp.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    shell.o                   build/8502/shell.s(2071)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(29)
+steaxspidx (steaxspi.o):
+    keyboard.o                build/8502/keyboard.s(935)
+subeqysp (subeqsp.o):
+    vdc_console.o             build/8502/vdc_console.s(1363)
+subysp (subysp.o):
+    shell.o                   build/8502/shell.s(2071)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    syscall_gate.o            src/8502/app_gateway.s(29)
+    [linker generated]       
+tmp1 (zeropage.o):
+    steaxspi.o                runtime/steaxspi.s(10)
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    shrax4.o                  runtime/shrax4.s(8)
+    shrax3.o                  runtime/shrax3.s(8)
+    shrax2.o                  runtime/shrax2.s(8)
+    shrax1.o                  runtime/shrax1.s(8)
+    shl.o                     runtime/shl.s(16)
+    or.o                      runtime/or.s(10)
+    mul.o                     runtime/mul.s(10)
+    aslax4.o                  runtime/aslax4.s(8)
+    aslax3.o                  runtime/aslax3.s(8)
+    aslax2.o                  runtime/aslax2.s(8)
+    add.o                     runtime/add.s(12)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(11)
+    shell.o                   build/8502/shell.s(11)
+    line_editor.o             build/8502/line_editor.s(11)
+    window_manager.o          build/8502/window_manager.s(11)
+    syscall_gate.o            src/8502/syscall_gate.s(25)
+    line_editor_read.o        src/8502/line_editor_read.s(15)
+tmp2 (zeropage.o):
+    steaxspi.o                runtime/steaxspi.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(38)
+tmp3 (zeropage.o):
+    steaxspi.o                runtime/steaxspi.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(38)
+tmp4 (zeropage.o):
+    syscall_gate.o            src/8502/app_gateway.s(38)
+tosadda0 (add.o):
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+tosaddax (add.o):
+    root_terminal.o           build/8502/root_terminal.s(648)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(30)
+tosandax (and.o):
+    keyboard.o                build/8502/keyboard.s(935)
+toseqa0 (eq.o):
+    shell.o                   build/8502/shell.s(2071)
+tosicmp (icmp.o):
+    eq.o                      runtime/eq.s(8)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    syscall_gate.o            src/8502/app_gateway.s(30)
+tosicmp0 (icmp.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    line_editor.o             build/8502/line_editor.s(1072)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+tosmula0 (mul8.o):
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+tosorax (or.o):
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+tosshlax (shl.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+tossuba0 (sub.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    root_console.o            build/8502/root_console.s(1013)
+    syscall_gate.o            src/8502/app_gateway.s(30)
+tossubax (sub.o):
+    static-scratch.o          /var/home/salvogendut/Dev/UDEKS/build/graphics-raster-audit/static-scratch.s(2553)
+    window_manager.o          build/8502/window_manager.s(4628)
+    window_manager.o          build/8502/window_manager.s(4628)
+    syscall_gate.o            src/8502/app_gateway.s(30)
+tosudiva0 (udiv.o):
+    shell.o                   build/8502/shell.s(2071)
+    syscall_gate.o            src/8502/app_gateway.s(31)
+tosumoda0 (umod.o):
+    shell.o                   build/8502/shell.s(2071)
+    syscall_gate.o            src/8502/app_gateway.s(31)
+tosumula0 (mul8.o):
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(31)
+tosumulax (mul.o):
+    syscall_gate.o            src/8502/app_gateway.s(31)
+udiv16 (udiv.o):
+    umod.o                    runtime/umod.s(8)
+

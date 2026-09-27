@@ -35,18 +35,35 @@ variant against an independent clipped pixel/line/fill reference over 500
 deterministic cases per variant, including off-screen coordinates, empty clips,
 nonpositive rectangles, both colors, and exact dirty-page flags.
 
-## Required next gates
+## Qualification follow-up
 
-1. Audit all callers and IRQ paths before permitting non-reentrant storage.
-   Confirm that neither yielding nor nested rendering can occur while scratch
-   is live; document how future preemption will serialize the display service.
-2. Measure line/fill CPU cycles or machine frames on 1986 and VICE. Use identical
-   initial bitmaps, geometry, clipping and dirty-page output. Do not infer speed
-   from code size or count a host-time run as C128 timing.
-3. Link an experimental image, measure complete CODE/BSS/runtime-helper changes,
-   and account for the `$A1E0` boundary and boot-delivery bindings before any
-   production substitution. The 49 bytes are not currently free resident RAM.
-4. Only then decide whether this pays for an occlusion/deferred-compositor
+The standalone timing suite now passes on both 1986 and VICE with complete
+independent-reference pixel/dirty-map equality. Timer-count reductions are
+11.709–12.481% for tested lines and 23.589–23.859% for tested fills. These are
+interrupt-masked, display-off primitive workloads, not end-to-end GUI timings.
+The two engines differ in raw CIA cascade counts; that is preserved, not hidden.
+The caller/IRQ audit confirms current cooperative scratch ownership, not future
+preemptive safety.
+
+An isolated whole-kernel link confirms 49 bytes of net savings, but it moves the
+shadow start to `$A1AF` and private providers. That image has not been packaged
+or booted with old import bridges. See the detailed
+[timing/link evidence](../bench/results/2026-09-27-graphics-raster-timing/README.md)
+and [repeatable suite](../bench/graphics-raster/README.md).
+
+## Remaining integration gates
+
+1. Preserve the `$A1E0` shadow/staging contract explicitly. One candidate is a
+   named 49-byte code reservation, subsequently consumed by measured compositor
+   work. Regenerate private provider/import bindings; do not boot the isolated
+   candidate with production bindings or reuse legacy row scratch.
+2. Keep the audited no-yield/no-nested-drawing contract explicit. Future
+   preemption needs display-service serialization; static scratch is not
+   automatically reentrant.
+3. Re-run normal/panic placement, clean builds and complete application/window
+   input and bitmap gates on the integrated candidate. Then measure launch,
+   close and repaint latency with interrupts and display active.
+4. Only then decide whether the recovered space pays for an occlusion/deferred-compositor
    increment or whether a service-placement change is required. Preserve the
    legacy xwave row reservation: old UAPP 0.1 images may still use `$F340-$F358`.
 5. Re-run input, foreground cancellation, dragging/resizing/stacking and bank

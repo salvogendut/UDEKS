@@ -352,10 +352,15 @@ The [bounded-rendering increment](docs/XWAVE-RESPONSIVENESS.md) now permits
 Ctrl+C during row 0 and completes with 21 cached row leases. Cached compositor
 replay and closing-window redraw remain synchronous; issue #6 stays open.
 The user reported the manual 1986 interaction check looked good. The next
-[compile-only raster audit](docs/GRAPHICS-RASTER-AUDIT.md) measures a 49-byte
-net object saving for static temporaries; it has not changed production or
-qualified runtime timing/placement/non-reentrancy. Follow its gates before
-integrating it or treating those bytes as available space.
+[raster audit](docs/GRAPHICS-RASTER-AUDIT.md) confirms 49-byte whole-link savings
+and approximately 12% lower line/24% lower fill timer counts in isolated 1986
+and VICE probes. All pixels/dirty flags match an independent reference. Current
+cooperative/IRQ paths do not reenter scratch, but future preemption needs
+serialization. The candidate link moves the shadow to `$A1AF`; production is
+unchanged. Preserve the `$A1E0` staging contract explicitly, regenerate import
+bridges and qualify the integrated image before consuming the savings. Raw
+CIA counts differ by about one per 65,536 events across the emulators; the
+evidence retains that discrepancy and makes no physical-cycle claim.
 Complete physical-C128 and manual SDL/host input and
 performance gates for issue #4. Then generalize
 task allocation and migrate shell jobs/graphical applications to ordinary
