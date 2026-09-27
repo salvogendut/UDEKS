@@ -29,6 +29,7 @@ from build_d71 import (
     BOOTFS_TAIL_STAGING_ADDRESS,
     BOOTFS_TAIL_SIZE,
     BOOTFS_Z80_SIZE,
+    BOOT_CONSOLE_INSTALLER_ADDRESS,
     CRT0_SIZE,
     CRT0_STAGING_ADDRESS,
     MODULE_STAGING_ADDRESS,
@@ -59,11 +60,13 @@ STAGE1_SPRITE_START = 0x1FC0
 Z80_CODE_END = 0xD296
 Z80_STAGING_BASE = 0xD000
 Z80_STAGING_LIMIT = 0xF000
-BOOT_ONLY_OBJECTS = ("boot_console.o",)
+BOOT_ONLY_OBJECTS: tuple[str, ...] = ()
 
 ARTIFACT_FILES = {
     "capability": "build/boot/8502-capability.bin",
     "capability_installer": "build/boot/capability-installer.bin",
+    "boot_console": "build/boot/8502-boot-console.bin",
+    "boot_console_installer": "build/boot/boot-console-installer.bin",
     "bootfs": "build/user/bootfs.img",
     "module": "build/8502/udeks-module.bin",
     "task_request": "build/boot/task-request-gateway.bin",
@@ -203,6 +206,41 @@ def staged_regions(
                 ),
             )
         )
+    if "boot_console" in emitted or "boot_console_installer" in emitted:
+        if shadow_start is None:
+            raise ValueError("boot console staging requires the shadow start")
+        console_size = emitted.get("boot_console", 0)
+        console_installer_size = emitted.get("boot_console_installer", 0)
+        capability_size = emitted.get("capability", 0)
+        capability_installer_size = emitted.get("capability_installer", 0)
+        if not all(
+            (console_size, console_installer_size, capability_size,
+             capability_installer_size)
+        ):
+            raise ValueError(
+                "boot console staging requires both console and capability "
+                "artifacts"
+            )
+        regions.extend(
+            (
+                StagedRegion(
+                    "boot console staging",
+                    shadow_start + capability_size + capability_installer_size,
+                    console_size,
+                    console_size,
+                    console_size,
+                    "load..crt0",
+                ),
+                StagedRegion(
+                    "boot console installer staging",
+                    BOOT_CONSOLE_INSTALLER_ADDRESS,
+                    console_installer_size,
+                    console_installer_size,
+                    console_installer_size,
+                    "load..probe-copy",
+                ),
+            )
+        )
     return regions
 
 
@@ -247,14 +285,16 @@ def free_holes(
         cursor = max(cursor, region.copied_end + 1)
     if cursor <= window_end:
         holes.append(("staging hole", cursor, window_end))
-    if stage0_last < BOOT_SECTOR_BASE + BOOT_SECTOR_SIZE - 1:
-        holes.append(
-            (
-                "boot-sector hole",
-                stage0_last + 1,
-                BOOT_SECTOR_BASE + BOOT_SECTOR_SIZE - 1,
-            )
-        )
+    boot_cursor = stage0_last + 1
+    boot_end = BOOT_SECTOR_BASE + BOOT_SECTOR_SIZE - 1
+    for region in sorted(regions, key=lambda item: item.start):
+        if region.copied_end < BOOT_SECTOR_BASE or region.start > boot_end:
+            continue
+        if region.start > boot_cursor:
+            holes.append(("boot-sector hole", boot_cursor, region.start - 1))
+        boot_cursor = max(boot_cursor, region.copied_end + 1)
+    if boot_cursor <= boot_end:
+        holes.append(("boot-sector hole", boot_cursor, boot_end))
     return holes
 
 

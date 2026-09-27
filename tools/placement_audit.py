@@ -66,7 +66,6 @@ GATEWAY_SIZE_SUFFIXES = ("vic", "sprite", "page", "outline")
 # not listed: both are staged in the VIC shadow and executed from reclaimed
 # pages, so their bytes are already accounted for by the free tail.
 BOOT_ONLY_OBJECTS = (
-    "boot_console.o",
     "boot_delivery.o",
 )
 

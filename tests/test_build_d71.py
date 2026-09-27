@@ -8,6 +8,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
 from build_d71 import (
+    BOOT_CONSOLE_INSTALLER_ADDRESS,
+    BOOT_CONSOLE_SIZE,
     BOOTFS_SIZE,
     BOOTFS_TAIL_STAGING_ADDRESS,
     BOOTFS_Z80_OFFSET,
@@ -249,6 +251,52 @@ class BuildD71Tests(unittest.TestCase):
                 capability_installer=bytes(installer_size),
                 shadow_start=0xA895,
             )
+
+    def test_scheduler_does_not_reuse_zero_tail_of_boot_console_installer(self):
+        shadow_start = 0xA2EB
+        capability = bytes((index % 251) + 1 for index in range(CAPABILITY_SIZE))
+        capability_installer = bytes((index % 253) + 1 for index in range(102))
+        boot_console = bytes((index % 249) + 1 for index in range(BOOT_CONSOLE_SIZE))
+        # The real installer ends in a two-byte checksum that may legitimately
+        # be zero.  Its complete linked extent must remain reserved anyway.
+        boot_console_installer = b"I" * 97 + b"\x00\x00"
+        scheduler = bytes((index % 247) + 1 for index in range(297))
+        image = build_image(
+            stage0(), b"", b"", b"", scheduler=scheduler,
+            shadow_start=shadow_start, capability=capability,
+            capability_installer=capability_installer,
+            boot_console=boot_console,
+            boot_console_installer=boot_console_installer,
+        )
+
+        boot_sector = image[:SECTOR_SIZE]
+        installer_offset = BOOT_CONSOLE_INSTALLER_ADDRESS - 0x0B00
+        installer_end = installer_offset + len(boot_console_installer)
+        self.assertEqual(
+            boot_sector[installer_offset:installer_end],
+            boot_console_installer,
+        )
+
+        payload = b"".join(
+            image[sector_offset(track, sector) : sector_offset(track, sector) + SECTOR_SIZE]
+            for track, sector in list(boot_locations(1 + PAYLOAD_BLOCKS))[1:]
+        )
+        manifest_offset = SCATTER_MANIFEST_ADDRESS - 0x1C00
+        manifest = payload[manifest_offset : manifest_offset + 39]
+        self.assertEqual(manifest[:4], b"USCT")
+        chunks = []
+        for index in range(manifest[4]):
+            offset = 7 + index * 4
+            start = int.from_bytes(manifest[offset : offset + 2], "little")
+            length = int.from_bytes(manifest[offset + 2 : offset + 4], "little")
+            chunks.append((start, length))
+        installer_first = BOOT_CONSOLE_INSTALLER_ADDRESS
+        installer_last = installer_first + len(boot_console_installer) - 1
+        for start, length in chunks:
+            last = start + length - 1
+            self.assertTrue(last < installer_first or start > installer_last)
+        boot_chunks = [chunk for chunk in chunks if chunk[0] < 0x0C00]
+        self.assertEqual(boot_chunks[0][0], installer_last + 1)
 
     def test_rejects_oversize_probe(self):
         with self.assertRaisesRegex(ValueError, "256-byte"):

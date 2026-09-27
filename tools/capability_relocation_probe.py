@@ -37,8 +37,8 @@ TRAMPOLINE_DONE = 0x0B21
 TRAMPOLINE_MARKER = 0xA5
 
 
-def resume_at(port: int, address: int) -> None:
-    """Resume the paused CPU at an address without waiting for a prompt."""
+def install_and_resume(port: int, address: int, payload: bytes) -> None:
+    """Install a bank-0 trampoline and enter it in one paused session."""
     with socket.create_connection(("127.0.0.1", port), timeout=3.0) as connection:
         connection.settimeout(3.0)
         # A monitor connection does not reliably emit its initial prompt until
@@ -48,6 +48,15 @@ def resume_at(port: int, address: int) -> None:
         reply = receive_prompts(connection, 2)
         if b":ff00" not in reply.lower():
             raise RuntimeError("VICE monitor did not synchronize before goto")
+        # Select the kernel-flat profile and write the trampoline without
+        # resuming between commands.  The old two-session sequence raced the
+        # running managed app: it could switch banks after the monitor write
+        # and before goto, leaving $0B00 absent from the active bank.
+        connection.sendall(b"> ff01 00\n")
+        receive_prompts(connection, 1)
+        values = " ".join(f"{byte:02x}" for byte in payload)
+        connection.sendall(f"> {address:04x} {values}\n".encode("ascii"))
+        receive_prompts(connection, 1)
         connection.sendall(f"goto {address:04x}\n".encode("ascii"))
 
 
@@ -70,9 +79,7 @@ def call_start_again(port: int, entry: int, deadline: float) -> None:
     )
     payload = code.ljust(TRAMPOLINE_RESULT - TRAMPOLINE_ADDRESS, b"\x00")
     payload += b"\xff\x00"
-    values = " ".join(f"{byte:02x}" for byte in payload)
-    monitor_command(port, f"> {TRAMPOLINE_ADDRESS:04x} {values}")
-    resume_at(port, TRAMPOLINE_ADDRESS)
+    install_and_resume(port, TRAMPOLINE_ADDRESS, payload)
     sp.wait_for_byte(port, TRAMPOLINE_DONE, TRAMPOLINE_MARKER, deadline)
     sp.wait_for_byte(port, TRAMPOLINE_RESULT, 0, deadline)
 

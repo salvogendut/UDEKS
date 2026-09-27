@@ -29,16 +29,16 @@ audit reports them as unavailable if the object or `od65` is missing.
 
 ## Current measurements
 
-From `build/8502/udeks-8502.map` (2026-09-26, ABI 0.3 branch):
+From `build/8502/udeks-8502.map` (2026-09-27, ABI 0.3 branch):
 
 | Region | Address | Size | Notes |
 |---|---:|---:|---|
 | `BOOTPROBE` (`PROBECODE`) | `$0B00-$0BFF` | 256 | staged probe, executed from the dead boot-sector page |
 | `BOOTCRT` (`STARTUP`) | `$1C00-$1CFF` | 256 | staged crt0, executed from the dead stage-1 page |
 | `KERNELENTRY` vectors | `$2000-$2005` | 6 | fixed kernel-main and boot-delivery entries |
-| resident `CODE`-`BOOTDELIVERY` | `$2006-$A894` | 34,959 | code, rodata, data, BSS, boot-only gather |
-| `VICSHADOW` | `$A895-$C7D4` | 8,000 | bitmap shadow; its boot preimage begins with capability delivery |
-| free gap | `$C7D5-$CEFF` | 1,835 | between the shadow and `SYSCALLS` |
+| resident `CODE`-`BOOTDELIVERY` | `$2006-$A2EA` | 33,509 | code, rodata, data, BSS, boot-only gather |
+| `VICSHADOW` | `$A2EB-$C22A` | 8,000 | bitmap shadow; its boot preimage begins with boot-only delivery images |
+| free gap | `$C22B-$CEFF` | 3,285 | between the shadow and `SYSCALLS` |
 | `SYSCALLS` | `$CF00-$CFF8` | 249 | fixed page |
 | `HIGHBSS` | `$E1B8-$E2E1` | 298 | VIC tables, overflow canary |
 | `MODULECODE`/`RODATA` | `$E300-$E643` | 836 | module-private code and data |
@@ -67,34 +67,41 @@ These objects run once during boot or discovery and are dead afterwards:
 
 | Object | Bytes | Role |
 |---|---:|---|
-| `boot_console.o` | 1,450 | bordered boot-console composition |
 | `boot_delivery.o` | 267 | resident scatter gather for the scheduler delivery |
-| total | 1,717 | |
+| total | 267 | |
 
 `crt0.o` and `probe.o` are no longer resident. `crt0` is linked into the
 `$1C00-$1CFF` `BOOTCRT` page, staged at `$AE00-$AEFF`, and copied over the
 dead stage-1 page by the `$F700` final installer. `probe.o` is linked into the
 `$0B00-$0BFF` `BOOTPROBE` page, staged at `$AD00-$ADFF`, and copied over the
-dead boot-sector page by the same installer. Their 211 and 209 bytes now show
+dead boot-sector page by the same installer. Their 207 and 209 bytes now show
 up as free tail instead of boot-only resident code.
 
 `hardware_capability.o` is now realized reclaim: its 967-byte image is linked
-separately at `$0200`, staged at `$A895-$AC5B`, installed and checksummed by a
-102-byte boot-only routine at `$AC5C-$ACC1`, then erased from the shadow by
+separately at `$0200`, staged at `$A2EB-$A6B1`, installed and checksummed by a
+102-byte boot-only routine at `$A6B2-$A717`, then erased from the shadow by
 crt0. Its stack-independent idempotence guard has a net 31-byte resident cost
 and is included in the
 map above.
+
+`boot_console.o` is also realized reclaim: its exact 1,450-byte image is
+linked separately at `$1600-$1BA9`, staged at `$A718-$ACC1`, and installed by
+a 99-byte checksum gate at `$0B40-$0BA2`. The installer runs before the
+scheduler gather and is then overwritten by the relocated probe. The
+scheduler allocator reserves the installer's complete linked extent, including
+zero-valued tail bytes. The console image is dead after service startup and
+application slot 2 may be reused by `xwave`.
 
 Structural slack:
 
 | Item | Bytes | Condition |
 |---|---|---|
-| shadow tail gap `$C7D5-$CEFF` | 1,835 | post-bootstrap reclaim; during boot it still carries task-loader staging (`$C800-$CDEF`) and task-gate staging (`$CE00-$CECA`), so a scheduler segment placed here must be installed or overlaid after those payloads are relocated |
+| shadow tail gap `$C22B-$CEFF` | 3,285 | post-bootstrap reclaim; during boot it still carries module, request, task-loader, and task-gate staging, so a scheduler segment placed here must be installed or overlaid after those payloads are relocated |
 | `$1C00-$1FFF` bootstrap staging | 1,024 | **consumed by the scheduler delivery**: stage 1 gathers the linked scheduler image and the `$F7D8` copier installs it there after crt0 |
 
-Total bank-0 reclaim: 1,717 + 1,835 + 1,024 = **4,576 bytes**. Of that,
-1,024 is now occupied by the scheduler segment itself, leaving 3,552 bytes for
-the remaining boot-only objects and scheduler growth.
+Total bank-0 reclaim: 267 + 3,285 + 1,024 = **4,576 bytes**. Of that, 1,024
+is now occupied by the scheduler segment itself, leaving 3,552 bytes for the
+remaining boot-delivery replacement and scheduler growth.
 
 ## Proposed bank-0 scheduler region
 
@@ -109,7 +116,7 @@ The reclaim budget covers 4,576 bytes, of which the scheduler delivery now
 occupies the `$1C00-$1FFF` reservation, leaving 3,552 bytes to be found either
 by trimming the handler budget or by the later shell-extraction milestone. The
 VIC shadow placement is settled, so the reclaimed KERNEL bytes form one
-contiguous `$C7D5-$CEFF` window; the scheduler segment is installed in the
+contiguous `$C22B-$CEFF` window; the scheduler segment is installed in the
 separate `$1C00-$1FFF` area. The tail is not ordinary free RAM at reset: boot
 staging occupies it until stage 1 relocates the task loader and bank-1 task
 gate, so the scheduler segment must be installed after those payloads move or
@@ -179,12 +186,17 @@ Each step is a separate change with a `1986` and VICE smoke pass:
    install a page byte-identical to the linked scheduler image
    (`bench/results/2026-09-26-scheduler-delivery`).
 6. Link `hardware_capability.o` separately at `$0200`, stage its exact image
-   plus one-shot installer in `$A895-$ACC1`, and protect application-slot reuse
+   plus one-shot installer in the lower VIC shadow, and protect application-slot reuse
    with an idempotent service-start guard. The D71 and D64 `HCAP` records,
    linked slot image, xclock overwrite, and inert re-entry call are covered by
    `make capability-probe`; VICE and `1986` qualification is preserved in
    `bench/results/2026-09-27-capability-relocation`. ADR 0009 is accepted.
-7. Replace the implementation behind the frozen `$FF10` reset, `$FF13` poll,
+7. Link `boot_console.o` separately at `$1600`, stage its exact image at
+   `$A718-$ACC1`, install it through the one-shot `$0B40` checksum gate, and
+   reserve the installer's full extent from scheduler scatter allocation.
+   `make boot-console-probe` verifies exact D71/D64 slot images and safe xwave
+   reuse; the independent `1986` pass remains before ADR 0010 acceptance.
+8. Replace the implementation behind the frozen `$FF10` reset, `$FF13` poll,
    and `$FF16` request trampolines, reuse the `$FF05-$FFC4` reservation for
    the switch tail, and retire the old special-case polling; verify task
    switching, the VDC console, VIC windows, pointer input, and the Z80 worker.

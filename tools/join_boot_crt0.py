@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Join the capability service, boot pages, scheduler, installer, and kernel.
+"""Join boot-only services, boot pages, scheduler, installer, and kernel.
 
 The development PRG loads from $0200 and carries the post-stage-1 memory
 image: the boot-only capability service in application slot 1, the probe page,
-the gathered scheduler in the temporary application slot, crt0, the resident
-kernel, and the protected $F7D8 copier sliced from the stage1-gateway image.
+the gathered scheduler and boot-console composer in application slot 2, crt0,
+the resident kernel, and the protected $F7D8 copier sliced from the
+stage1-gateway image.
 Enter the result at $1C00 with SYS 7168.
 """
 
@@ -22,6 +23,8 @@ PROBE_ADDRESS = 0x0B00
 PROBE_SIZE = 0x0100
 SCHEDULER_ADDRESS = 0x1200
 SCHEDULER_SIZE = 0x0400
+BOOT_CONSOLE_ADDRESS = 0x1600
+BOOT_CONSOLE_SIZE = 0x05AA
 CRT0_ADDRESS = 0x1C00
 CRT0_SIZE = 0x0100
 KERNEL_ADDRESS = 0x2000
@@ -33,6 +36,7 @@ INSTALLER_SIZE = 35
 
 def join(
     capability: bytes,
+    boot_console: bytes,
     probe: bytes,
     scheduler: bytes,
     crt0: bytes,
@@ -47,6 +51,11 @@ def join(
         )
     if len(probe) > PROBE_SIZE:
         raise ValueError(f"probe exceeds its {PROBE_SIZE}-byte page")
+    if len(boot_console) != BOOT_CONSOLE_SIZE:
+        raise ValueError(
+            f"boot console image is {len(boot_console)} bytes; expected "
+            f"{BOOT_CONSOLE_SIZE}"
+        )
     if not scheduler or len(scheduler) > SCHEDULER_SIZE:
         raise ValueError(f"scheduler exceeds its {SCHEDULER_SIZE}-byte slot")
     if len(crt0) > CRT0_SIZE:
@@ -61,8 +70,13 @@ def join(
     image.extend(bytes(PROBE_ADDRESS - (CAPABILITY_ADDRESS + len(image))))
     image.extend(probe.ljust(PROBE_SIZE, b"\x00"))
     image.extend(bytes(SCHEDULER_ADDRESS - (PROBE_ADDRESS + PROBE_SIZE)))
-    image.extend(scheduler)
-    image.extend(bytes(CRT0_ADDRESS - (SCHEDULER_ADDRESS + len(scheduler))))
+    image.extend(scheduler.ljust(SCHEDULER_SIZE, b"\x00"))
+    if CAPABILITY_ADDRESS + len(image) != BOOT_CONSOLE_ADDRESS:
+        raise ValueError("scheduler slot does not end at the boot console")
+    image.extend(boot_console)
+    image.extend(
+        bytes(CRT0_ADDRESS - (BOOT_CONSOLE_ADDRESS + len(boot_console)))
+    )
     image.extend(crt0.ljust(CRT0_SIZE, b"\x00"))
     image.extend(bytes(KERNEL_ADDRESS - (CRT0_ADDRESS + CRT0_SIZE)))
     image.extend(kernel)
@@ -77,6 +91,7 @@ def join(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("capability", type=Path)
+    parser.add_argument("boot_console", type=Path)
     parser.add_argument("probe", type=Path)
     parser.add_argument("scheduler", type=Path)
     parser.add_argument("crt0", type=Path)
@@ -87,6 +102,7 @@ def main() -> None:
     try:
         join(
             args.capability.read_bytes(),
+            args.boot_console.read_bytes(),
             args.probe.read_bytes(),
             args.scheduler.read_bytes(),
             args.crt0.read_bytes(),

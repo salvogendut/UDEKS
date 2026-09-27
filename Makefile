@@ -43,6 +43,14 @@ CAPABILITY_CONSTANTS := $(BUILD_8502)/capability-delivery.inc
 CAPABILITY_INSTALLER_CFG := $(BUILD_8502)/capability-installer.cfg
 CAPABILITY_INSTALLER_OBJ := $(BUILD_BOOT)/capability-installer.o
 CAPABILITY_INSTALLER_BIN := $(BUILD_BOOT)/capability-installer.bin
+BOOT_CONSOLE_FORCE_IMPORTS := $(BUILD_8502)/boot-console-force-imports.txt
+BOOT_CONSOLE_BRIDGE_ASM := $(BUILD_8502)/boot-console-bridge.s
+BOOT_CONSOLE_BRIDGE_OBJ := $(BUILD_8502)/boot-console-bridge.o
+BOOT_CONSOLE_BIN := $(BUILD_BOOT)/8502-boot-console.bin
+BOOT_CONSOLE_MAP := $(BUILD_8502)/8502-boot-console.map
+BOOT_CONSOLE_CONSTANTS := $(BUILD_8502)/boot-console-delivery.inc
+BOOT_CONSOLE_INSTALLER_OBJ := $(BUILD_BOOT)/boot-console-installer.o
+BOOT_CONSOLE_INSTALLER_BIN := $(BUILD_BOOT)/boot-console-installer.bin
 PANIC_PROBE_CRT0_BIN := $(BUILD_BOOT)/8502-crt0-panic-probe.bin
 PANIC_PROBE_PROBE_BIN := $(BUILD_BOOT)/8502-probe-panic-probe.bin
 KERNEL_DIRECT_BIN := $(BUILD_8502)/udeks-8502-direct.bin
@@ -156,7 +164,7 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
 	boot panic-probe framebuffer-assets user-sources user-programs \
 	task-state task-policy placement-check placement-check-guard \
-	shadow-probe capability-probe check doctor clean help
+	shadow-probe capability-probe boot-console-probe check doctor clean help
 
 all: 8502 z80 z80-asm
 
@@ -217,6 +225,19 @@ capability-probe:
 		exit 1; \
 	}
 	$(PYTHON) tools/capability_relocation_probe.py
+
+# Host-side VICE qualification of the relocated boot-console composer and
+# subsequent application-slot-2 reuse by xwave.
+boot-console-probe:
+	@test -f $(BOOT_D71) -a -f $(BOOT_D64) || { \
+		echo "boot-console-probe needs both boot disks; run 'make boot' in the reference container first" >&2; \
+		exit 1; \
+	}
+	@command -v flatpak >/dev/null 2>&1 || { \
+		echo "boot-console-probe requires Flatpak VICE (net.sf.VICE)" >&2; \
+		exit 1; \
+	}
+	$(PYTHON) tools/boot_console_relocation_probe.py
 
 8502: $(KERNEL_BIN) $(KERNEL_PRG) $(SCHEDULER_BIN) $(CAPABILITY_BIN)
 
@@ -610,6 +631,9 @@ $(BUILD_8502)/service_registry.o: $(BUILD_8502)/service_registry.s | $(BUILD_850
 $(BUILD_8502)/service_start.o: src/8502/service_start.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/boot_console_entry.o: src/8502/boot_console_entry.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/task_state.o: $(BUILD_8502)/task_state.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -652,6 +676,41 @@ $(CAPABILITY_INSTALLER_OBJ): src/boot/capability-installer.s \
 $(CAPABILITY_INSTALLER_BIN): $(CAPABILITY_INSTALLER_OBJ) \
 		$(CAPABILITY_INSTALLER_CFG)
 	$(LD65) -C $(CAPABILITY_INSTALLER_CFG) -o $@ $<
+
+$(BOOT_CONSOLE_FORCE_IMPORTS): $(BUILD_8502)/boot_console.o \
+		tools/gen_boot_console_imports.py tools/gen_capability_imports.py
+	$(PYTHON) tools/gen_boot_console_imports.py flags $< $@
+
+$(BOOT_CONSOLE_BRIDGE_ASM): $(BUILD_8502)/boot_console.o \
+		$(KERNEL_MAP) $(PANIC_PROBE_MAP) \
+		tools/gen_boot_console_imports.py tools/gen_capability_imports.py
+	$(PYTHON) tools/gen_boot_console_imports.py bridge $< \
+		$(KERNEL_MAP) $(PANIC_PROBE_MAP) $@
+
+$(BOOT_CONSOLE_BRIDGE_OBJ): $(BOOT_CONSOLE_BRIDGE_ASM) | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BOOT_CONSOLE_BIN) $(BOOT_CONSOLE_MAP) &: \
+		$(BUILD_8502)/boot_console.o $(BOOT_CONSOLE_BRIDGE_OBJ) \
+		cfg/8502-boot-console.cfg | $(BUILD_BOOT)
+	$(LD65) -C cfg/8502-boot-console.cfg -m $(BOOT_CONSOLE_MAP) \
+		-o $(BOOT_CONSOLE_BIN) $(BUILD_8502)/boot_console.o \
+		$(BOOT_CONSOLE_BRIDGE_OBJ)
+
+$(BOOT_CONSOLE_CONSTANTS): $(BOOT_CONSOLE_BIN) $(CAPABILITY_BIN) \
+		$(CAPABILITY_INSTALLER_BIN) $(KERNEL_MAP) $(PANIC_PROBE_MAP) \
+		tools/gen_boot_console_imports.py
+	$(PYTHON) tools/gen_boot_console_imports.py constants \
+		$(BOOT_CONSOLE_BIN) $(CAPABILITY_BIN) $(CAPABILITY_INSTALLER_BIN) \
+		$(KERNEL_MAP) $(PANIC_PROBE_MAP) $@
+
+$(BOOT_CONSOLE_INSTALLER_OBJ): src/boot/boot-console-installer.s \
+		$(BOOT_CONSOLE_CONSTANTS) | $(BUILD_BOOT)
+	$(CA65) --cpu 6502 -I $(BUILD_8502) -o $@ $<
+
+$(BOOT_CONSOLE_INSTALLER_BIN): $(BOOT_CONSOLE_INSTALLER_OBJ) \
+		cfg/8502-boot-console-installer.cfg
+	$(LD65) -C cfg/8502-boot-console-installer.cfg -o $@ $<
 
 $(BUILD_8502)/time.o: $(BUILD_8502)/time.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
@@ -768,6 +827,7 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &: \
 		$(BUILD_8502)/syscall_gate.o \
 		$(BUILD_8502)/task_bank_gateway.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_start.o \
+		$(BUILD_8502)/boot_console_entry.o \
 		$(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o \
 		$(BUILD_8502)/capability_descriptor.o \
@@ -786,7 +846,7 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &: \
 		$(BUILD_8502)/time.o \
 		$(BUILD_8502)/vdc_console.o $(BUILD_8502)/app_panel.o \
 		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o \
-		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
+		$(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/pointer.o \
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
 		$(BUILD_8502)/terminal_stream.o \
@@ -795,9 +855,11 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &: \
 		$(BUILD_8502)/vic_graphics.o \
 		$(BUILD_8502)/managed_apps.o \
 		$(BUILD_8502)/vdc_text_assets.o \
-		$(CAPABILITY_FORCE_IMPORTS) \
+		$(CAPABILITY_FORCE_IMPORTS) $(BOOT_CONSOLE_FORCE_IMPORTS) \
 		cfg/8502-bootstrap.cfg | $(BUILD_8502) $(BUILD_BOOT)
-	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) $$(cat $(CAPABILITY_FORCE_IMPORTS)) -o $(KERNEL_BIN) \
+	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) \
+		$$(cat $(CAPABILITY_FORCE_IMPORTS)) \
+		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) -o $(KERNEL_BIN) \
 		$(filter %.o,$^)
 
 $(SCHEDULER_BIN): src/scheduler/scheduler.s cfg/8502-scheduler.cfg \
@@ -817,6 +879,7 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(BUILD_8502)/syscall_gate.o \
 		$(BUILD_8502)/task_bank_gateway.o \
 		$(BUILD_8502)/kernel.o $(BUILD_8502)/service_start.o \
+		$(BUILD_8502)/boot_console_entry.o \
 		$(BUILD_8502)/service_registry.o \
 		$(BUILD_8502)/service_table.o $(BUILD_8502)/capability_descriptor.o \
 		$(BUILD_8502)/time_descriptor.o \
@@ -834,7 +897,7 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(BUILD_8502)/time.o \
 		$(BUILD_8502)/vdc_console.o $(BUILD_8502)/app_panel.o \
 		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o \
-		$(BUILD_8502)/boot_console.o $(BUILD_8502)/keyboard.o \
+		$(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/pointer.o \
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
 		$(BUILD_8502)/terminal_stream.o \
@@ -843,18 +906,21 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(BUILD_8502)/vic_graphics.o \
 		$(BUILD_8502)/managed_apps.o \
 		$(BUILD_8502)/vdc_text_assets.o \
-		$(CAPABILITY_FORCE_IMPORTS) \
+		$(CAPABILITY_FORCE_IMPORTS) $(BOOT_CONSOLE_FORCE_IMPORTS) \
 		cfg/8502-panic-probe.cfg | $(BUILD_8502) $(BUILD_BOOT)
-	$(CL65) -t none --cpu 6502 -C cfg/8502-panic-probe.cfg $$(cat $(CAPABILITY_FORCE_IMPORTS)) \
+	$(CL65) -t none --cpu 6502 -C cfg/8502-panic-probe.cfg \
+		$$(cat $(CAPABILITY_FORCE_IMPORTS)) \
+		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) \
 		-m $(BUILD_8502)/udeks-8502-panic-probe.map \
 		-o $(PANIC_PROBE_KERNEL_BIN) \
 		$(filter %.o,$^)
 
-$(KERNEL_DIRECT_BIN): $(CAPABILITY_BIN) $(PROBE_BIN) $(SCHEDULER_BIN) \
+$(KERNEL_DIRECT_BIN): $(CAPABILITY_BIN) $(BOOT_CONSOLE_BIN) \
+		$(PROBE_BIN) $(SCHEDULER_BIN) \
 		$(CRT0_BIN) $(KERNEL_BIN) \
 		$(STAGE1_GATEWAY_BIN) tools/join_boot_crt0.py
-	$(PYTHON) tools/join_boot_crt0.py $(CAPABILITY_BIN) $(PROBE_BIN) \
-		$(SCHEDULER_BIN) \
+	$(PYTHON) tools/join_boot_crt0.py $(CAPABILITY_BIN) \
+		$(BOOT_CONSOLE_BIN) $(PROBE_BIN) $(SCHEDULER_BIN) \
 		$(CRT0_BIN) $(KERNEL_BIN) $(STAGE1_GATEWAY_BIN) $@
 
 $(KERNEL_PRG): $(KERNEL_DIRECT_BIN) tools/bin_to_prg.py
@@ -1232,7 +1298,8 @@ $(STAGE1_BIN): $(BUILD_BOOT)/stage1.o cfg/8502-stage1.cfg
 
 $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(CRT0_BIN) $(PROBE_BIN) $(SCHEDULER_BIN) $(CAPABILITY_BIN) \
-		$(CAPABILITY_INSTALLER_BIN) \
+		$(CAPABILITY_INSTALLER_BIN) $(BOOT_CONSOLE_BIN) \
+		$(BOOT_CONSOLE_INSTALLER_BIN) \
 		$(KERNEL_MAP) \
 		$(MODULE_BIN) \
 		$(Z80_BIN) $(USER_BOOTFS) \
@@ -1246,6 +1313,8 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--scheduler $(SCHEDULER_BIN) --map $(KERNEL_MAP) \
 		--capability $(CAPABILITY_BIN) \
 		--capability-installer $(CAPABILITY_INSTALLER_BIN) \
+		--boot-console $(BOOT_CONSOLE_BIN) \
+		--boot-console-installer $(BOOT_CONSOLE_INSTALLER_BIN) \
 		--bootfs $(USER_BOOTFS) \
 		--module $(MODULE_BIN) \
 		--ush $(USER_USH_UDEX) \
@@ -1258,6 +1327,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		$(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) \
 		$(SCHEDULER_BIN) $(CAPABILITY_BIN) $(CAPABILITY_INSTALLER_BIN) \
+		$(BOOT_CONSOLE_BIN) $(BOOT_CONSOLE_INSTALLER_BIN) \
 		$(PANIC_PROBE_MAP) $(MODULE_BIN) \
 		$(Z80_BIN) $(USER_BOOTFS) \
 		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
@@ -1271,6 +1341,8 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--scheduler $(SCHEDULER_BIN) --map $(PANIC_PROBE_MAP) \
 		--capability $(CAPABILITY_BIN) \
 		--capability-installer $(CAPABILITY_INSTALLER_BIN) \
+		--boot-console $(BOOT_CONSOLE_BIN) \
+		--boot-console-installer $(BOOT_CONSOLE_INSTALLER_BIN) \
 		--z80 $(Z80_BIN) \
 		--bootfs $(USER_BOOTFS) \
 		--module $(MODULE_BIN) \
@@ -1304,12 +1376,14 @@ check:
 		tools/build_bootfs.py \
 		tools/build_d71.py \
 		tools/boot_staging_map.py \
+		tools/boot_console_relocation_probe.py \
 		tools/capability_relocation_probe.py \
 		tools/scheduler_delivery_probe.py \
 		tools/snapshot_extract.py \
 		tools/join_boot_crt0.py \
 		tools/placement_audit.py \
 		tools/gen_capability_imports.py \
+		tools/gen_boot_console_imports.py \
 		tools/shadow_boot_probe.py \
 		tools/shadow_clear_decode.py \
 		tools/task_state_decode.py \

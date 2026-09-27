@@ -174,6 +174,7 @@ def patch_payload(
     scheduler_size: int,
     capability: bytes,
     capability_installer: bytes,
+    boot_console: bytes,
 ) -> bytes:
     """Seed safe zero bytes and return the staged $shadow_start-$tail_end image."""
     image = bytearray(d71.read_bytes())
@@ -186,7 +187,8 @@ def patch_payload(
     occupied = [
         (
             shadow_start,
-            shadow_start + len(capability) + len(capability_installer) - 1,
+            shadow_start + len(capability) + len(capability_installer)
+            + len(boot_console) - 1,
         ),
         (
             SCATTER_MANIFEST_ADDRESS,
@@ -200,6 +202,11 @@ def patch_payload(
             "capability installer",
             shadow_start + len(capability),
             capability_installer,
+        ),
+        (
+            "boot console",
+            shadow_start + len(capability) + len(capability_installer),
+            boot_console,
         ),
     ):
         actual = bytes(
@@ -414,6 +421,7 @@ def probe(args: argparse.Namespace) -> None:
     )
     capability = args.capability.read_bytes()
     capability_installer = args.capability_installer.read_bytes()
+    boot_console = args.boot_console.read_bytes()
     preimage = patch_payload(
         d71,
         probe_disk,
@@ -423,6 +431,7 @@ def probe(args: argparse.Namespace) -> None:
         scheduler_size,
         capability,
         capability_installer,
+        boot_console,
     )
 
     port = choose_port()
@@ -590,6 +599,10 @@ def main() -> None:
     parser.add_argument(
         "--capability-installer", type=Path,
         default=ROOT / "build/boot/capability-installer.bin",
+    )
+    parser.add_argument(
+        "--boot-console", type=Path,
+        default=ROOT / "build/boot/8502-boot-console.bin",
     )
     parser.add_argument("--work", type=Path, default=ROOT / "build/vice")
     parser.add_argument(

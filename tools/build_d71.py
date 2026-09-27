@@ -36,6 +36,9 @@ PROBE_SIZE = 0x0100
 BOOTFS_TAIL_STAGING_ADDRESS = 0xAF00
 SCHEDULER_SIZE = 0x0400
 CAPABILITY_SIZE = 0x03C7
+BOOT_CONSOLE_SIZE = 0x05AA
+BOOT_CONSOLE_DESTINATION = 0x1600
+BOOT_CONSOLE_INSTALLER_ADDRESS = 0x0B40
 SCATTER_MANIFEST_MAX = 7 + 4 * 8
 SCATTER_MANIFEST_ADDRESS = PROBE_STAGING_ADDRESS - SCATTER_MANIFEST_MAX
 SCATTER_TEMP_ADDRESS = 0x1200
@@ -291,6 +294,7 @@ def install_scheduler(
     scheduler: bytes,
     shadow_start: int,
     capability_size: int = 0,
+    boot_sector_reserved_end: int | None = None,
 ) -> None:
     if len(scheduler) > SCHEDULER_SIZE:
         raise ValueError(
@@ -305,6 +309,8 @@ def install_scheduler(
         )
         + BOOT_SECTOR_BASE
     )
+    if boot_sector_reserved_end is not None:
+        stage0_end = max(stage0_end, boot_sector_reserved_end)
     (manifest_start, manifest_end), chunk_regions, _ = scheduler_layout(
         shadow_start, stage0_end, len(scheduler), capability_size
     )
@@ -370,6 +376,44 @@ def install_capability_installer(
     if len(region) != len(installer) or any(region):
         raise ValueError("capability installer overlaps staged data")
     kernel[offset : offset + len(installer)] = installer
+
+
+def install_boot_console(
+    kernel: bytearray,
+    boot_console: bytes,
+    shadow_start: int,
+    capability_size: int,
+    capability_installer_size: int,
+) -> None:
+    if len(boot_console) != BOOT_CONSOLE_SIZE:
+        raise ValueError(
+            f"boot console image is {len(boot_console)} bytes; expected "
+            f"{BOOT_CONSOLE_SIZE}"
+        )
+    start = shadow_start + capability_size + capability_installer_size
+    end = start + len(boot_console)
+    if end > SCATTER_MANIFEST_ADDRESS:
+        raise ValueError("boot console staging reaches the scheduler manifest")
+    offset = start - KERNEL_ADDRESS
+    region = kernel[offset : offset + len(boot_console)]
+    if len(region) != len(boot_console) or any(region):
+        raise ValueError("boot console staging overlaps resident kernel data")
+    kernel[offset : offset + len(boot_console)] = boot_console
+
+
+def install_boot_console_installer(
+    boot_sector: bytearray, installer: bytes
+) -> None:
+    if not installer:
+        raise ValueError("boot console installer is empty")
+    offset = BOOT_CONSOLE_INSTALLER_ADDRESS - BOOT_SECTOR_BASE
+    end = offset + len(installer)
+    if end > BOOT_SECTOR_SIZE:
+        raise ValueError("boot console installer exceeds the boot-sector page")
+    region = boot_sector[offset:end]
+    if len(region) != len(installer) or any(region):
+        raise ValueError("boot console installer overlaps stage 0")
+    boot_sector[offset:end] = installer
 
 
 def install_module(kernel: bytearray, module: bytes) -> None:
@@ -493,6 +537,8 @@ def build_image(
     scheduler: bytes = b"", shadow_start: int | None = None,
     capability: bytes = b"",
     capability_installer: bytes = b"",
+    boot_console: bytes = b"",
+    boot_console_installer: bytes = b"",
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -528,12 +574,30 @@ def build_image(
         install_capability_installer(
             staged_kernel, capability_installer, shadow_start
         )
+    if boot_console:
+        if shadow_start is None:
+            raise ValueError("boot console staging requires the shadow start")
+        install_boot_console(
+            staged_kernel,
+            boot_console,
+            shadow_start,
+            len(capability),
+            len(capability_installer),
+        )
+        install_boot_console_installer(
+            stage0_sector, boot_console_installer
+        )
     if scheduler:
         if shadow_start is None:
             raise ValueError("scheduler staging requires the shadow start")
         install_scheduler(
             staged_kernel, stage0_sector, scheduler, shadow_start,
-            len(capability) + len(capability_installer),
+            len(capability) + len(capability_installer) + len(boot_console),
+            (
+                BOOT_CONSOLE_INSTALLER_ADDRESS
+                + len(boot_console_installer) - 1
+                if boot_console_installer else None
+            ),
         )
 
     payload = (
@@ -569,6 +633,10 @@ def main() -> None:
     parser.add_argument("--scheduler", type=Path, required=True)
     parser.add_argument("--capability", type=Path, required=True)
     parser.add_argument("--capability-installer", type=Path, required=True)
+    parser.add_argument("--boot-console", type=Path, required=True)
+    parser.add_argument(
+        "--boot-console-installer", type=Path, required=True
+    )
     parser.add_argument("--map", type=Path, required=True)
     parser.add_argument("--z80", type=Path, required=True)
     parser.add_argument("--bootfs", type=Path)
@@ -605,6 +673,8 @@ def main() -> None:
             shadow_start_from_map(args.map.read_text(encoding="utf-8")),
             args.capability.read_bytes(),
             args.capability_installer.read_bytes(),
+            args.boot_console.read_bytes(),
+            args.boot_console_installer.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

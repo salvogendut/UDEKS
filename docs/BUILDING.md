@@ -74,8 +74,9 @@ emulators and on hardware remains required before this milestone is closed.
 
 The 8502 artifacts are a raw resident image and a development PRG that loads
 from `$0200` (boot-only capability service in application slot 1, probe page
-at `$0B00`, scheduler at `$1200`, crt0 at `$1C00`, and the resident kernel at
-`$2000`) and is entered at `$1C00` with `SYS 7168`; `--raw-load` in
+at `$0B00`, scheduler at `$1200`, boot-only console composer at `$1600`, crt0
+at `$1C00`, and the resident kernel at `$2000`) and is entered at `$1C00` with
+`SYS 7168`; `--raw-load` in
 `tools/vice_capture.py` loads it through the
 monitor because the payload starts below the BASIC launcher. Its linker region
 ends before the `$D000` I/O aperture. The SDCC

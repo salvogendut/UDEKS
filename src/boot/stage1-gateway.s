@@ -444,6 +444,13 @@ capability_install_failed:
         jmp capability_install_failed
 capability_installed:
 
+        ; The boot-only console composer is staged after the capability
+        ; installer. Its one-shot copier occupies the dead boot-sector tail;
+        ; it halts after publishing a boot-chain failure if validation fails.
+        ; The later scheduler gather clears only $1200-$15FF, below its
+        ; $1600-$1BA9 runtime home.
+        jsr $0b40
+
         ; The protected $F700 installer can now replace this executing
         ; $F800-$F9FF boot code without stack-page relocation.
         jmp final_install

@@ -77,9 +77,11 @@ the task model, validate it, and only then remove the replaced special case.
   before crt0, and safely overwritten by applications after startup. ADR 0009
   records the accepted capability relocation. This is delivery and reclaim
   infrastructure, not a working scheduler.
-- `boot_console.o` and the resident scheduler gather remain boot-only reclaim
-  candidates. The scheduler stub is only an installation/identity probe; it
-  does not schedule tasks.
+- `boot_console.o` is now a split boot image at `$1600`, and VICE proves it is
+  safely overwritten by `xwave`; ADR 0010 remains proposed until the
+  independent `1986` pass. Only the resident scheduler gather remains a
+  boot-only reclaim candidate. The scheduler stub is only an
+  installation/identity probe; it does not schedule tasks.
 
 ## Implementation plan
 
@@ -251,7 +253,7 @@ and bank ownership.
 ## First concrete change for the next session
 
 Freeze the final bank-0 overlay layout for the resident lifecycle modules,
-including the remaining `boot_console.o` and boot-delivery reclaim. Then link
+including the remaining boot-delivery reclaim. Then link
 the task state and request-policy modules into that layout and migrate one
 operation at a time behind the existing `$CF30` record and frozen `$FF16`
 entry. Start with `YIELD` and nonblocking `WAITPID`, preserving the old poll

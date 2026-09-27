@@ -1,12 +1,11 @@
 # Bank-0 boot staging and lifetime map
 
-This byte-accurate map records the realized `hardware_capability.o`
-relocation and the remaining constraints on `boot_console.o` (1,450 bytes).
+This byte-accurate map records the realized `hardware_capability.o` and
+`boot_console.o` relocations.
 The map is derived from `tools/boot_staging_map.py`, the linker
 map, the emitted staging artifacts, the installer copy lengths, and the
 payload staging containers in `tools/build_d71.py`; the numbers are locked by
-`tests/test_boot_staging_map.py` and `--check` fails if a contiguous hole ever
-becomes large enough for the remaining staged object.
+`tests/test_boot_staging_map.py`.
 
 The audit distinguishes three sizes per staged region:
 
@@ -30,8 +29,10 @@ The audit distinguishes three sizes per staged region:
 
 | Region | Start | Emitted | Copied | Container | Live |
 |---|---:|---:|---:|---:|---|
-| capability staging | `$A895` | 967 | 967 | 967 | `load..crt0` |
-| capability installer staging | `$AC5C` | 102 | 102 | 102 | `load..crt0` |
+| capability staging | `$A2EB` | 967 | 967 | 967 | `load..crt0` |
+| capability installer staging | `$A6B2` | 102 | 102 | 102 | `load..crt0` |
+| boot-console staging | `$A718` | 1,450 | 1,450 | 1,450 | `load..crt0` |
+| boot-console installer | `$0B40` | 99 | 99 | 99 | `load..probe-copy` |
 | probe staging | `$AD00` | 209 | 256 | 256 | `load..crt0` |
 | crt0 staging | `$AE00` | 207 | 256 | 256 | `load..crt0` |
 | bootfs tail staging | `$AF00` | 4,283 | 5,120 | 5,120 | `load..stage1` |
@@ -45,9 +46,10 @@ The bootfs request container is `$0311` bytes, but the final installer copies
 two pages plus `$9B` bytes (`$029B`, the linked reservation), so
 `$C78A-$C7FF` is free. The bootfs tail copy covers its full container,
 including the module staging bytes, so that overlap yields no hole. The VIC
-shadow spans `$A895-$C7D4`; the tail runs to the fixed `SYSCALLS` page at
+shadow spans `$A2EB-$C22A`; the tail runs to the fixed `SYSCALLS` page at
 `$CF00`. The boot sector is `$0B00-$0BFF`, of which stage 0 occupies
-`$0B00-$0B3D`.
+`$0B00-$0B3D`; the boot-console installer reserves `$0B40-$0BA2` even when
+its linked tail bytes are zero.
 
 ## Free payload holes
 
@@ -58,8 +60,9 @@ shadow spans `$A895-$C7D4`; the tail runs to the fixed `SYSCALLS` page at
 | bootfs-request container tail | `$C78A-$C7FF` | 118 | after stage 1 |
 | loader tail | `$CDF0-$CDFF` | 16 | after stage 1 |
 | gate tail | `$CECB-$CEFF` | 53 | after stage 1 |
-| boot-sector tail | `$0B3E-$0BFF` | 194 | after stage 0 |
-| **total** | | **673** | largest contiguous **230** |
+| boot-sector gap | `$0B3E-$0B3F` | 2 | after stage 0 |
+| boot-sector tail | `$0BA3-$0BFF` | 93 | after the console installer |
+| **total** | | **574** | largest contiguous **230** |
 
 ## Boot-only objects
 
@@ -70,7 +73,8 @@ shadow spans `$A895-$C7D4`; the tail runs to the fixed `SYSCALLS` page at
 
 Only initialized bytes need staging; the capability installer's exact copy
 clears the service's one-byte BSS at `$05C7`. Both objects call resident kernel
-functions, so they cannot run under the worker profile.
+functions, so they cannot run under the worker profile. The console has no
+BSS and occupies `$1600-$1BA9`, above the scheduler gather at `$1200-$15FF`.
 
 ## Copied but dead padding (not available)
 
@@ -94,25 +98,16 @@ Runtime homes free during `boot` and outside the step-4 exclusions
 exist: application slot 1 `$0200-$0AFF` (2,304 bytes) and application slot 2
 `$1200-$1BFF` (2,560 bytes).
 
-- `hardware_capability.o` is realized reclaim. Extraction moved the shadow to
-  `$A895`; the image and its 102-byte installer occupy `$A895-$ACC1`, and the
-  service runs once from application slot 1.
-- `boot_console.o` (1,450) exceeds the remaining 673-byte aggregate and remains
-  blocked; it also
-  needs a contiguous runtime home, which only the application slots provide.
+- `hardware_capability.o` is realized reclaim. Its image and 102-byte
+  installer occupy `$A2EB-$A717`, and the service runs once from application
+  slot 1.
+- `boot_console.o` is realized reclaim. Extraction supplies the contiguous
+  `$A718-$ACC1` source; its 99-byte installer runs from `$0B40-$0BA2`, and the
+  composer runs once from the upper part of application slot 2.
 
-## Options
-
-1. **Use the installed scheduler/late-boot delivery mechanism.** Define a
-   contiguous runtime home and a source lifetime for `boot_console.o`, then
-   install it after the payload containers it would otherwise overlap are
-   consumed.
-2. **Extract more presentation code first.** Shrinking or moving adjacent
-   boot presentation can create a contiguous source without weakening the
-   staging ownership rules.
-
-Until one of these lands, `boot_console.o` stays resident and its bytes remain
-budgeted reclaim, not realized reclaim.
+The boot-console relocation deliberately does not consume the scheduler's
+`$1200-$15FF` gather buffer. Stage 1 installs the composer first, gathers the
+scheduler second, then overwrites the console installer with `probe.o`.
 
 ## Scheduler delivery (implemented 2026-09-26)
 
@@ -140,11 +135,12 @@ entry count, source ranges, and destination, so a malformed manifest cannot
 write past `$15FF`.
 
 The measured scatter ceiling was **766 bytes** before capability relocation.
-Registering `$A895-$ACC1` as occupied reduces the current ceiling to **634
-bytes**; a
-larger scheduler image is rejected by `tools/build_d71.py` until more staging
-is freed. The 297-byte linked scheduler spans three chunks and both cold boots
-install it byte-exactly.
+Registering `$A2EB-$ACC1` and the complete `$0B40-$0BA2` installer extent as
+occupied reduces the current ceiling to **533 bytes**. The two-byte
+`$0B3E-$0B3F` gap is below the later installer and is intentionally not used
+by the monotonic scatter allocator. A larger scheduler image is rejected by
+`tools/build_d71.py` until more staging is freed. The 297-byte linked scheduler
+spans three chunks and both cold boots install it byte-exactly.
 
 `bench/results/2026-09-26-scheduler-delivery` preserves the D71 and D64 cold
 boot captures; both equal the linked scheduler image zero-filled to the

@@ -115,6 +115,9 @@ the [Tasking 0.1 handover](../HANDOVER.md).
 - [x] Qualify the scheduler delivery path and reclaim the VIC shadow, crt0,
   probe, and boot-only capability placements without breaking D71/D64 boot or
   application-slot reuse ([ADR 0009](decisions/0009-boot-only-capability-relocation.md)).
+- [ ] Accept the boot-console relocation after its VICE-qualified D71/D64 and
+  slot-2 reuse path also passes in `1986`
+  ([ADR 0010](decisions/0010-boot-console-relocation.md)).
 - [ ] Implement task creation, exit, yield, sleep, and event wait.
 - [ ] Save and restore the selected compiler runtime and CPU context. A
   compiled C task using the real cc65 software stack is the integration test

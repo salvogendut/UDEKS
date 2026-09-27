@@ -179,7 +179,8 @@ The native disk path uses two small stages before the resident kernel:
 For development, `udeks-8502.prg` may be loaded directly from `$0200` and
 entered at `$1C00` with `SYS 7168`: it carries the boot-only capability
 service in application slot 1, the probe page at `$0B00`, the gathered
-scheduler at `$1200`, crt0 at `$1C00`, and the resident kernel at `$2000`.
+scheduler at `$1200`, the boot-only console composer at `$1600`, crt0 at
+`$1C00`, and the resident kernel at `$2000`.
 This bypasses disk stages 0 and 1 but must satisfy the same bank-0 placement
 contract.
 

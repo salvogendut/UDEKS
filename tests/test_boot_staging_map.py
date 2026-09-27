@@ -83,16 +83,12 @@ class BootStagingMapTests(unittest.TestCase):
         self.assertEqual(total, 1078)
         self.assertEqual(largest, 467)
 
-    def test_objects_are_measured_as_staged_and_runtime(self):
+    def test_no_realized_boot_only_object_remains_budgeted(self):
         result = analyze(FIXTURE, STAGE0, EMITTED)
-        self.assertEqual(
-            result["objects"]["boot_console.o"],
-            {"staged": 1450, "runtime": 1450},
-        )
+        self.assertEqual(result["objects"], {})
+        self.assertEqual(result["fits"], {})
         self.assertEqual(result["hole_total"], 1078)
         self.assertEqual(result["largest_hole"], 467)
-        self.assertFalse(result["fits"]["boot_console.o"]["single_hole"])
-        self.assertFalse(result["fits"]["boot_console.o"]["aggregate"])
 
     def test_realized_capability_staging_occupies_the_shadow_prefix(self):
         emitted = {
@@ -111,6 +107,35 @@ class BootStagingMapTests(unittest.TestCase):
         )
         self.assertEqual(
             by_name["capability installer staging"].start, 0xAC5C
+        )
+
+    def test_realized_boot_console_uses_slot_two_and_boot_sector_installer(self):
+        emitted = {
+            **EMITTED,
+            "capability": 967,
+            "capability_installer": 102,
+            "boot_console": 1450,
+            "boot_console_installer": 99,
+        }
+        regions = staged_regions(
+            {**emitted, "probe": 209, "crt0": 207}, 0xA2EB
+        )
+        by_name = {region.name: region for region in regions}
+        self.assertEqual(
+            (by_name["boot console staging"].start,
+             by_name["boot console staging"].copied_end),
+            (0xA718, 0xACC1),
+        )
+        self.assertEqual(
+            (by_name["boot console installer staging"].start,
+             by_name["boot console installer staging"].copied_end),
+            (0x0B40, 0x0BA2),
+        )
+        holes = free_holes(0xA2EB, 0x0B3D, regions)
+        self.assertIn(("boot-sector hole", 0x0B3E, 0x0B3F), holes)
+        self.assertIn(("boot-sector hole", 0x0BA3, 0x0BFF), holes)
+        self.assertEqual(
+            sum(end - start + 1 for _, start, end in holes), 574
         )
 
     def test_dead_padding_is_reported_separately(self):
