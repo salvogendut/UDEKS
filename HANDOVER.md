@@ -439,7 +439,18 @@ The host-only capture/paste model checks all
 source/destination bit alignments, edge masks, VIC row interleave, background
 preservation and oversize refusal. This is **not** wired into production;
 current boot images still use bounded vertex replay. A full 320×200 surface
-does not fit, and the always-mapped transfer gateway/resident CODE budget is
-unproven. Next implement and qualify bank ownership and the transfer/commit
-path before claiming that unchanged-size moves avoid redraw. Do not change
-the frozen shadow or worker/task allocations to fit it implicitly.
+does not fit. The standalone machine transfer prototype now passes eleven
+cases in each of 1986 and VICE, comparing every pixel, dirty flag, cache guard,
+service-page restore and MMU mapping. IRQs are masked and display disabled;
+bank ownership under tasks/worker activity and compositor integration remain
+unqualified. Its 99-byte common gateway fits the existing workspace, but
+the C implementation + gateway source + state need 1,273 bytes against a
+49-byte resident reserve, before manager/ABI bindings. Default paste takes
+roughly 2–3 seconds at nominal 1 MHz, so do not ship it as a speed fix.
+Evidence: `bench/{artifacts,results}/2026-09-28-window-cache-transfer/`.
+Next: a measured assembly byte blitter using this C/pixel oracle, then an
+explicit service-placement decision and active-IRQ/input/compositor gates.
+Production disks remain unchanged; no new physical test is needed for this
+standalone-only increment. Do not change the frozen shadow or worker/task
+allocations, remove compatibility paths, or claim unchanged-size moves avoid
+redraw until the resident implementation is qualified.

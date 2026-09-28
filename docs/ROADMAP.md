@@ -190,9 +190,12 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   takes seconds. Focused xwave replay now uses four-vertex poll chunks after
   damage/chrome composition; the obscured-window path and damage/chrome/clock
   redraw remain synchronous. Full compositor and physical qualification remain.
-  A host-only packed move-cache spike fits the default xwave image in a
-  candidate VIC-bank lease, but its transfer gateway and ownership are not
-  qualified; production still replays pixels on moves.
+  A packed move-cache format and standalone bank-crossing prototype now pass
+  pixel/guard checks in 1986 and VICE with IRQs masked. The C paste still takes
+  seconds and needs 1,273 bytes against a 49-byte resident reserve. Next is a
+  measured assembly byte blitter and explicit service placement; active-IRQ,
+  ownership, compositor and physical gates remain. Production still replays
+  pixels on moves.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.
