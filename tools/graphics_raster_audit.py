@@ -13,6 +13,9 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+# Immutable pre-ASM C reference: historical probes must not quietly benchmark
+# the installed replacement against itself after integration.
+REFERENCE_SOURCE = ROOT / 'bench/artifacts/2026-09-28-graphics-span/sources/src/services/display/vic_graphics.c'
 FUNCTIONS = ('udeks_vic_bitmap_line', 'udeks_vic_bitmap_fill')
 
 
@@ -79,7 +82,7 @@ def main():
     parser.add_argument('--work', type=Path, default=ROOT / 'build/graphics-raster-audit')
     args = parser.parse_args()
     args.work.mkdir(parents=True, exist_ok=True)
-    original = (ROOT / 'src/services/display/vic_graphics.c').read_text()
+    original = REFERENCE_SOURCE.read_text()
     report = {'source_sha256': hashlib.sha256(original.encode()).hexdigest(),
               'cc65': subprocess.check_output(['cc65', '--version'], stderr=subprocess.STDOUT,
                                                text=True).strip(),

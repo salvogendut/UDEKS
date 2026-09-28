@@ -173,8 +173,11 @@ calls the fixed reset vector, and returns to init. Task 1 owns bank-1 physical
 pages `$D1/$D2`; the former `$80/$81` choice is forbidden because the native
 loader uses `$8000-$8A00` as its application backup. VICE qualifies repeated
 D71/D64 yields, resumes, command dispatch, and non-returning `EXIT` through
-this installed path. The lifecycle handler occupies `$C900-$CDBC`, outside
-both application slots; `xclock` can therefore use its complete allocation.
+this installed path. The lifecycle handler's reservation is `$C900-$CDBC`;
+its 1,163 emitted bytes occupy `$C900-$CD8A`, leaving 50 reserved bytes through
+`$CDBC`. Both ranges are outside the application slots; `xclock` can therefore
+use its complete allocation. The graphics placement audit distinguishes this
+reserved slack from installed code and from unowned memory.
 
 ## Proposed bank-0 scheduler region
 

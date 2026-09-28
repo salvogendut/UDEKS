@@ -112,7 +112,10 @@ class VicGraphicsSourceTests(unittest.TestCase):
         fill = source.split("void udeks_vic_bitmap_fill", 1)[1].split(
             "void udeks_vic_bitmap_set_clip", 1
         )[0]
-        self.assertIn("offset += 8u", fill)
+        self.assertIn("udeks_span_fill_row();", fill)
+        span = (ROOT / "src/services/display/vic_span.s").read_text()
+        self.assertIn("adc #$08", span)
+        self.assertIn("ldy _udeks_span_offset+1", span)
         self.assertNotIn("for (column", fill)
         self.assertIn("VICSHADOW:", config)
         shadow = config.split("VICSHADOW:", 1)[1].split(";", 1)[0]

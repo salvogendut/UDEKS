@@ -58,8 +58,8 @@ use the existing computed redraw path (or a later larger allocation).
 4. The 8502 cannot execute ordinary bank-0 C while the worker-flat profile
    exposes bank-1 RAM. A small always-mapped transfer gateway must stage
    the packed image through common RAM, without crossing the frozen gateway,
-   task-gate, UAPP or `$A1E0` VICSHADOW reservations. The current 49-byte
-   resident raster reserve is insufficient for the measured C prototype. Measure linked
+   task-gate, UAPP or `$A1E0` VICSHADOW reservations. The current 222-byte
+   named resident raster reserves are insufficient for the measured prototype. Measure linked
    CODE, gateway-copy extent, and placement before enabling the path. If it
    cannot fit, make a service-placement decision; do not silently move the
    shadow or overwrite worker/task memory.
@@ -198,8 +198,12 @@ linked into production to manufacture a fit. The post-shadow region is not
 free merely because the primary kernel map labels it as a gap: scheduler,
 lifecycle handler and context overlays occupy it at runtime.
 
-Next: a graphics-service placement decision backed by an audit of live and
-post-boot regions, then integrate a bounded, serialized cache lease. Keep the
+The [runtime placement audit](GRAPHICS-CACHE-PLACEMENT.md) now reconstructs
+the real scheduler payload and accounts for every post-shadow byte. There is
+no qualified drop-in home. Next: measure in-place assembly replacements of
+selected display-service raster routines (2,023 live C CODE bytes, **not**
+reclaimed space), then integrate a bounded, serialized cache lease only after
+whole-link savings cover its code, bindings and continuation state. Keep the
 shadow, UAPP/task gates and stack reservations fixed unless a separately
 qualified architectural change is explicitly accepted. Do not silently delete
 the retained compatibility shell or shrink stacks to recover the missing KiB.
@@ -208,5 +212,9 @@ worker-flat MMU interval and restore the kernel I/O map before delivering IRQs;
 bank-flat access with I/O hidden is not a safe interrupt-service profile.
 
 Reproduce with `--variant asm` on all four commands above; compare preserved
-results with `python3 tools/window_cache_compare.py`. Production boot disks
-are unchanged and there is no new OS image to test from this increment.
+results with `python3 tools/window_cache_compare.py`. The standalone cache
+increment above did not change boot disks. Subsequent
+[display-service span/pixel integration](GRAPHICS-PRIMITIVES.md) now provides
+a testable image: it holds 173 additional bytes as padding, making 222 total
+and leaving at least 801 still needed before cache bindings/bounded state.
+The cache itself remains uninstalled; unchanged-size moves still replay pixels.

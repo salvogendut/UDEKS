@@ -1,0 +1,57 @@
+{
+  "qualification": "IRQs masked, display off, 1 MHz; no compositor/commit/input claim",
+  "cases": [
+    {
+      "case": 2,
+      "1986": {
+        "c_ticks": 10427312,
+        "asm_ticks": 2917093,
+        "speedup": 3.5746
+      },
+      "vice": {
+        "c_ticks": 10427152,
+        "asm_ticks": 2917048,
+        "speedup": 3.5746
+      }
+    },
+    {
+      "case": 3,
+      "1986": {
+        "c_ticks": 10648557,
+        "asm_ticks": 3000089,
+        "speedup": 3.5494
+      },
+      "vice": {
+        "c_ticks": 10648394,
+        "asm_ticks": 3000043,
+        "speedup": 3.5494
+      }
+    },
+    {
+      "case": 4,
+      "1986": {
+        "c_ticks": 547911,
+        "asm_ticks": 424729,
+        "speedup": 1.29
+      },
+      "vice": {
+        "c_ticks": 547902,
+        "asm_ticks": 424722,
+        "speedup": 1.29
+      }
+    },
+    {
+      "case": 5,
+      "1986": {
+        "c_ticks": 11621,
+        "asm_ticks": 4110,
+        "speedup": 2.8275
+      },
+      "vice": {
+        "c_ticks": 11620,
+        "asm_ticks": 4109,
+        "speedup": 2.8279
+      }
+    }
+  ]
+}

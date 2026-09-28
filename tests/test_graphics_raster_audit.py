@@ -26,7 +26,7 @@ class GraphicsRasterAuditTests(unittest.TestCase):
         self.assertIn('compile-only', report['qualification'])
 
     def test_only_two_local_declaration_blocks_change(self):
-        original = (ROOT / 'src/services/display/vic_graphics.c').read_text()
+        original = (ROOT / 'bench/artifacts/2026-09-28-graphics-span/sources/src/services/display/vic_graphics.c').read_text()
         variant = static_scratch_variant(original)
         self.assertEqual(automatic_locals_variant(variant), automatic_locals_variant(original))
         self.assertEqual(variant.count('    static '), 18)
@@ -46,7 +46,7 @@ class GraphicsRasterAuditTests(unittest.TestCase):
             segment_sizes('')
 
     def test_baseline_and_static_variant_against_pixel_reference(self):
-        original = (ROOT / 'src/services/display/vic_graphics.c').read_text()
+        original = (ROOT / 'bench/artifacts/2026-09-28-graphics-span/sources/src/services/display/vic_graphics.c').read_text()
         for source in (automatic_locals_variant(original), static_scratch_variant(original), static_arguments_variant(original)):
             # Keep the real clear/pixel/line/fill implementation. Discard unused
             # hardware-facing sections at link time, and replace only MMIO state.

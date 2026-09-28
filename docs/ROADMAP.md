@@ -195,9 +195,20 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   seconds and needs 1,273 bytes against a 49-byte resident reserve. The measured
   ASM byte blitter now passes both emulators plus all 64 alignment pairs;
   default paste is 4.56–6.87× faster but wrapper/ASM/state still needs 1,023
-  bytes, and its complete-operation lease does not yield. Next is explicit
-  service placement and bounded lease integration; active-IRQ, ownership,
+  bytes, and its complete-operation lease does not yield. The runtime placement
+  audit finds no drop-in home: scheduler overlays own the entire primary-map
+  gap. Next is measuring in-place ASM raster replacements without changing
+  stacks/shadow/APIs, then bounded lease integration; active-IRQ, ownership,
   compositor and physical gates remain. Production still replays pixels on moves.
+  C-clipping/ASM-span fill and the public ASM pixel entry now pass independent
+  pixel/dirty/stack gates and are installed in the display service. Their 173
+  net bytes remain named padding; frozen placements and ABIs are unchanged.
+  D71/D64 native drag/input/background-clock and VICE app/bitmap gates pass.
+  Measured release delays improve, but full deferred repaint still takes
+  seconds; physical validation and responsive-compositor acceptance remain.
+  Cache reserves total 222 bytes, still at least 801 short before bindings and
+  bounded state. Next: compact remaining raster mechanisms and remeasure.
+  See [GRAPHICS-PRIMITIVES.md](GRAPHICS-PRIMITIVES.md).
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

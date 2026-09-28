@@ -5,7 +5,7 @@ import argparse
 import re
 import subprocess
 from pathlib import Path
-from graphics_raster_audit import ROOT, automatic_locals_variant, static_scratch_variant
+from graphics_raster_audit import ROOT, REFERENCE_SOURCE, automatic_locals_variant, static_scratch_variant
 
 
 def function(source, name):
@@ -35,7 +35,7 @@ def main():
     parser.add_argument('--work', type=Path, default=ROOT / 'build/graphics-raster-bench')
     args = parser.parse_args()
     args.work.mkdir(parents=True, exist_ok=True)
-    source = (ROOT / 'src/services/display/vic_graphics.c').read_text()
+    source = REFERENCE_SOURCE.read_text()
     launcher = args.work / 'launcher.o'
     subprocess.run(['ca65', '--cpu', '6502', '-o', str(launcher),
                     str(ROOT / 'bench/graphics-raster/launcher.s')], check=True)

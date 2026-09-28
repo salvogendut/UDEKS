@@ -1,0 +1,277 @@
+Modules list:
+-------------
+launcher.o:
+    CODE              Offs=000000  Size=00004C  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000076  Align=00001  Fill=0000
+c-reference-4.o:
+    CODE              Offs=00004C  Size=00064A  Align=00001  Fill=0000
+c-reference.o:
+    CODE              Offs=000696  Size=000287  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000011  Align=00001  Fill=0000
+    VICSHADOW         Offs=000000  Size=001F40  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=00091D  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=000939  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=00094A  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax1.o):
+    CODE              Offs=000958  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax2.o):
+    CODE              Offs=000960  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax3.o):
+    CODE              Offs=00096B  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax4.o):
+    CODE              Offs=000979  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decax1.o):
+    CODE              Offs=00098A  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp6.o):
+    CODE              Offs=000991  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=00099E  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax7.o):
+    CODE              Offs=0009CC  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=0009D1  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=0009DC  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=0009F2  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaui.o):
+    CODE              Offs=0009F7  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=000A00  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=000A09  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul.o):
+    CODE              Offs=000A35  Size=000045  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=000A7A  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000AB4  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000AC2  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000AD8  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shl.o):
+    CODE              Offs=000AF2  Size=000033  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000B25  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=000B3B  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxspi.o):
+    CODE              Offs=000B46  Size=00001B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(sub.o):
+    CODE              Offs=000B61  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ule.o):
+    CODE              Offs=000B76  Size=00000A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               002000  002075  000076  00001
+CODE                  002076  002BF5  000B80  00001
+BSS                   002BF6  002C06  000011  00001
+VICSHADOW             00A1E0  00C11F  001F40  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               002BF6 RLA    __BSS_SIZE__              000011 REA    
+__STARTUP__               000001 REA    _main                     0020C2 RLA    
+_raster_timer_start       002076 RLA    _raster_timer_stop        002097 RLA    
+_udeks_vic_bitmap_fill    00270C RLA    _udeks_vic_bitmap_shadow  00A1E0 RLA    
+addeqysp                  0029B1 RLA    addysp                    0029C1 RLA    
+addysp1                   0029C0 RLA    aslax1                    0029CE RLA    
+boolule                   002A9C RLA    boolult                   002A9E RLA    
+decax1                    002A00 RLA    decsp6                    002A07 RLA    
+incax7                    002A42 RLA    incaxy                    002A49 RLA    
+incsp2                    002A5A RLA    incsp6                    002A68 RLA    
+ldauidx                   002A6D RLA    ldaxysp                   002A78 RLA    
+mul8x16                   002AF2 RLA    mul8x16a                  002AFC RLA    
+popax                     002A52 RLA    popptr1                   002B2A RLA    
+ptr1                      00000A RLZ    ptr4                      000010 RLZ    
+pusha                     002B3C RLA    pusha0                    002B50 RLA    
+pushax                    002B52 RLA    shlax2                    0029D6 RLA    
+shlax3                    0029E1 RLA    shlax4                    0029EF RLA    
+sp                        000002 RLZ    sreg                      000004 RLZ    
+staspidx                  002B9B RLA    staxspidx                 002BBC RLA    
+staxysp                   002BB3 RLA    tmp1                      000012 RLZ    
+tosaddax                  002995 RLA    tosicmp                   002A16 RLA    
+tosshlax                  002B68 RLA    tossuba0                  002BD7 RLA    
+tossubax                  002BD9 RLA    tosuleax                  002BF0 RLA    
+tosumulax                 002AAB RLA    
+
+
+Exports list by value:
+----------------------
+__STARTUP__               000001 REA    sp                        000002 RLZ    
+sreg                      000004 RLZ    ptr1                      00000A RLZ    
+ptr4                      000010 RLZ    __BSS_SIZE__              000011 REA    
+tmp1                      000012 RLZ    _raster_timer_start       002076 RLA    
+_raster_timer_stop        002097 RLA    _main                     0020C2 RLA    
+_udeks_vic_bitmap_fill    00270C RLA    tosaddax                  002995 RLA    
+addeqysp                  0029B1 RLA    addysp1                   0029C0 RLA    
+addysp                    0029C1 RLA    aslax1                    0029CE RLA    
+shlax2                    0029D6 RLA    shlax3                    0029E1 RLA    
+shlax4                    0029EF RLA    decax1                    002A00 RLA    
+decsp6                    002A07 RLA    tosicmp                   002A16 RLA    
+incax7                    002A42 RLA    incaxy                    002A49 RLA    
+popax                     002A52 RLA    incsp2                    002A5A RLA    
+incsp6                    002A68 RLA    ldauidx                   002A6D RLA    
+ldaxysp                   002A78 RLA    boolule                   002A9C RLA    
+boolult                   002A9E RLA    tosumulax                 002AAB RLA    
+mul8x16                   002AF2 RLA    mul8x16a                  002AFC RLA    
+popptr1                   002B2A RLA    pusha                     002B3C RLA    
+pusha0                    002B50 RLA    pushax                    002B52 RLA    
+tosshlax                  002B68 RLA    staspidx                  002B9B RLA    
+staxysp                   002BB3 RLA    staxspidx                 002BBC RLA    
+tossuba0                  002BD7 RLA    tossubax                  002BD9 RLA    
+tosuleax                  002BF0 RLA    __BSS_RUN__               002BF6 RLA    
+_udeks_vic_bitmap_shadow  00A1E0 RLA    
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/bench/graphics-raster/launcher.s(3)
+__BSS_SIZE__ ([linker generated]):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/bench/graphics-raster/launcher.s(3)
+__STARTUP__ (launcher.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(13)
+_main (c-reference-4.o):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/bench/graphics-raster/launcher.s(3)
+_raster_timer_start (launcher.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(16)
+_raster_timer_stop (launcher.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(17)
+_udeks_vic_bitmap_fill (c-reference.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(14)
+_udeks_vic_bitmap_shadow (c-reference.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(15)
+addeqysp (addeqsp.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+addysp (addysp.o):
+    incsp6.o                  runtime/incsp6.s(8)
+    c-reference.o             /var/home/salvogendut/Dev/UDEKS/build/graphics-span/c-reference.s(349)
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+aslax1 (aslax1.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+boolule (makebool.o):
+    ule.o                     runtime/ule.s(8)
+boolult (makebool.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+decax1 (decax1.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+decsp6 (decsp6.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+incax7 (incax7.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+incaxy (incaxy.o):
+    incax7.o                  runtime/incax7.s(8)
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+incsp2 (incsp2.o):
+    staxspi.o                 runtime/staxspi.s(9)
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+incsp6 (incsp6.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+ldauidx (ldaui.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+ldaxysp (ldaxsp.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+mul8x16 (mul8.o):
+    mul.o                     runtime/mul.s(8)
+mul8x16a (mul8.o):
+    mul.o                     runtime/mul.s(8)
+popax (incsp2.o):
+    shl.o                     runtime/shl.s(15)
+popptr1 (popptr1.o):
+    mul8.o                    runtime/mul8.s(9)
+    mul.o                     runtime/mul.s(9)
+ptr1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+    ldaui.o                   runtime/ldaui.s(8)
+    c-reference.o             /var/home/salvogendut/Dev/UDEKS/build/graphics-span/c-reference.s(11)
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/bench/graphics-raster/launcher.s(4)
+ptr4 (zeropage.o):
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+pusha (pusha.o):
+    c-reference.o             /var/home/salvogendut/Dev/UDEKS/build/graphics-span/c-reference.s(349)
+pusha0 (pushax.o):
+    c-reference.o             /var/home/salvogendut/Dev/UDEKS/build/graphics-span/c-reference.s(349)
+pushax (pushax.o):
+    c-reference.o             /var/home/salvogendut/Dev/UDEKS/build/graphics-span/c-reference.s(349)
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+shlax2 (aslax2.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+shlax3 (aslax3.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+shlax4 (aslax4.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+sp (zeropage.o):
+    incsp2.o                  runtime/incsp2.s(8)
+    sub.o                     runtime/sub.s(9)
+    staxspi.o                 runtime/staxspi.s(10)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp6.o                  runtime/decsp6.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    add.o                     runtime/add.s(12)
+    c-reference.o             /var/home/salvogendut/Dev/UDEKS/build/graphics-span/c-reference.s(10)
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(10)
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/bench/graphics-raster/launcher.s(4)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+staspidx (staspidx.o):
+    c-reference.o             /var/home/salvogendut/Dev/UDEKS/build/graphics-span/c-reference.s(349)
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+staxspidx (staxspi.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+staxysp (staxsp.o):
+    c-reference.o             /var/home/salvogendut/Dev/UDEKS/build/graphics-span/c-reference.s(349)
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+tmp1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    shl.o                     runtime/shl.s(16)
+    mul.o                     runtime/mul.s(10)
+    incaxy.o                  runtime/incaxy.s(8)
+    aslax4.o                  runtime/aslax4.s(8)
+    aslax3.o                  runtime/aslax3.s(8)
+    aslax2.o                  runtime/aslax2.s(8)
+    aslax1.o                  runtime/aslax1.s(8)
+    add.o                     runtime/add.s(12)
+tosaddax (add.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+tosicmp (icmp.o):
+    ule.o                     runtime/ule.s(8)
+    c-reference.o             /var/home/salvogendut/Dev/UDEKS/build/graphics-span/c-reference.s(349)
+tosshlax (shl.o):
+    c-reference.o             /var/home/salvogendut/Dev/UDEKS/build/graphics-span/c-reference.s(349)
+tossuba0 (sub.o):
+    c-reference.o             /var/home/salvogendut/Dev/UDEKS/build/graphics-span/c-reference.s(349)
+tossubax (sub.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+tosuleax (ule.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+tosumulax (mul.o):
+    c-reference-4.o           /var/home/salvogendut/Dev/UDEKS/bench/graphics-span/matrix.s(728)
+

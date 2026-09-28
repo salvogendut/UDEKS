@@ -15,7 +15,7 @@ from graphics_raster_link_audit import segments
 
 class GraphicsRasterBenchTests(unittest.TestCase):
     def test_extracts_only_real_raster_implementation(self):
-        source = (ROOT / 'src/services/display/vic_graphics.c').read_text()
+        source = (ROOT / 'bench/artifacts/2026-09-28-graphics-span/sources/src/services/display/vic_graphics.c').read_text()
         unit = raster_unit(source)
         self.assertIn(function(source, 'udeks_vic_bitmap_line'), unit)
         self.assertIn(function(source, 'udeks_vic_bitmap_fill'), unit)

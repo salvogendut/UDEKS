@@ -456,10 +456,49 @@ is 1,023 bytes, down 250 but still 974 beyond the resident reserve before
 bindings. Its gateway/staging lease spans the complete operation and does not
 yield; IRQs remain masked, so this is not a live-input acceptance result.
 Evidence: `bench/{artifacts,results}/2026-09-28-window-cache-asm/`.
-Next: an explicit graphics-service placement audit/decision, then bounded
-lease integration and active-IRQ/input/compositor gates. The scheduler overlays
-occupy the apparent post-shadow gap; do not count it as free graphics RAM.
-Production disks remain unchanged; no new physical test is needed for this
-standalone-only increment. Do not change the frozen shadow or worker/task
-allocations, remove compatibility paths, or claim unchanged-size moves avoid
-redraw until the resident implementation is qualified.
+The runtime placement audit is complete: `make graphics-cache-placement` in
+the reference container reconstructs the scheduler payload and measures real
+listings/objects. All 3,552 post-shadow bytes have an owner, including 141
+packaged padding bytes and 50 unfilled handler-reservation bytes. MODULE is
+full; its extra contract byte, guard and stacks are not free. The probe page
+overlaps APP1. Evidence: `bench/artifacts/2026-09-28-graphics-cache-placement`.
+Next: measure compact in-place ASM display-service raster replacements while
+retaining public C entry points and exact semantics. Five routines use 2,023
+live CODE bytes; no savings are claimed until replacement/state/helper costs
+are measured. Keep savings padded to freeze the shadow/private bindings until
+cache + bindings + bounded continuation fit. See
+[GRAPHICS-CACHE-PLACEMENT.md](docs/GRAPHICS-CACHE-PLACEMENT.md). Then bounded
+lease integration and active-IRQ/input/compositor gates follow.
+The first compact fill candidate is now standalone-qualified in 1986/VICE:
+clipping stays C; a 102-byte ASM span merges edge masks and marks logical dirty
+pages. Full experimental link saves 86 bytes (83 CODE + 3 BSS), with unchanged
+helper membership. Bulk fills improve 3.55–3.57×, small-fill matrix 1.29×;
+display is off and IRQs masked. Eight PRGs/16 positive records include a fresh
+dirty-map crossing, and two deliberate missing-flag records are rejected even
+with correct pixels. Evidence: `bench/{artifacts,results}/2026-09-28-graphics-span`.
+The unpadded experimental shadow at `$A18A` must never be booted.
+The follow-on public pixel entry is also standalone-qualified: 190 ASM CODE,
+zero BSS, signed clipping and exact cc65 stack cleanup, saving 87 linked bytes.
+Its SP diagnostic was corrected to read into variables before comparisons;
+the inline comparison itself pushed a cc65 temporary and falsely failed the
+C reference. Sixteen full pixel/dirty/guard/stack records pass both emulators.
+Evidence: `bench/{artifacts,results}/2026-09-28-graphics-pixel`.
+
+Both mechanisms are now **installed in the display service**. All 173 net
+saved bytes remain named resident padding; the shadow, UAPP, common gateways,
+module/stack and scheduler allocations are unchanged. Private bridges regenerate
+normally. Cache reserve now totals 222 bytes, leaving at least 801 more before
+binding/continuation costs. No pixel move-cache is installed.
+Clean parallel build is deterministic. Native D71/D64 pass 32 wave drags each
+with a background clock and console cancellation; normal input and VICE
+D71/D64 app/scheduler smokes plus complete shadow/VIC equality pass.
+The same harness on the saved no-replacement D71 measures maximum partial
+release 279→171 frames, complete release 266→167, cancellation 174→140;
+remaining replay after the last release is 674→970, not an overall repaint
+improvement. Physical C128 and visual resize/overlap tests are pending.
+Exact testable disks and evidence:
+`bench/{artifacts,results}/2026-09-28-graphics-primitives-integration`.
+See [GRAPHICS-PRIMITIVES.md](docs/GRAPHICS-PRIMITIVES.md) for the user test.
+Next: compact line/rectangle/clear/shared plumbing and remeasure; do not promise
+the remaining deficit can be eliminated. Do not shrink stacks, move the shadow,
+remove compatibility paths, or claim moves avoid redraw before cache integration.

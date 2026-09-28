@@ -38,6 +38,39 @@ def segments(text):
                 r'^(\w+)\s+([0-9A-F]{6})\s+([0-9A-F]{6})\s+([0-9A-F]{6})\s+', block, re.M)}
 
 
+def reference_link_command(work):
+    """Replay the pre-ASM link only in isolation; never edit installed outputs.
+
+    Its baseline is the preserved C image, not the now-optimized OS. Remove
+    only the two replacement objects and their measured placement padding.
+    All split outputs still must be retargeted by the caller before linking.
+    """
+    command = link_command(subprocess.check_output(
+        ['make', '-Bn', 'build/8502/udeks-8502.bin'], cwd=ROOT, text=True))
+    extras = ['build/8502/vic_span.o', 'build/8502/vic_pixel.o']
+    present = [item in command for item in extras]
+    if any(present) and not all(present):
+        raise ValueError('partial raster integration in production link')
+    if all(present):
+        for item in extras:
+            command.remove(item)
+        source = (ROOT / 'src/8502/vic_graphics.s').read_text()
+        source, count = re.subn(r'raster_primitives_placement_reserve:\n\s*\.res 173, \$ea',
+                               'raster_primitives_placement_reserve:', source)
+        if count != 1:
+            raise ValueError('replacement padding changed; review reference reconstruction')
+        path = work / 'reference-transport.s'
+        path.write_text(source)
+        subprocess.run(['ca65', '--cpu', '6502', '-I', str(ROOT / 'src/8502'),
+                        '-o', str(path.with_suffix('.o')), str(path)], check=True)
+        command[command.index('build/8502/vic_graphics_transport.o')] = str(path.with_suffix('.o'))
+    return command
+
+
+def reference_segments():
+    return segments((ROOT / 'bench/artifacts/2026-09-28-graphics-span/sources/build/8502/udeks-8502.map').read_text())
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--work', type=Path, default=ROOT / 'build/graphics-raster-link')
@@ -46,8 +79,7 @@ def main():
                         help='automatic-local reference object, even after scratch integration')
     args = parser.parse_args()
     args.work.mkdir(parents=True, exist_ok=True)
-    output = subprocess.check_output(['make', '-Bn', 'build/8502/udeks-8502.bin'], cwd=ROOT, text=True)
-    base_command = link_command(output)
+    base_command = reference_link_command(args.work)
     config = (ROOT / 'cfg/8502-bootstrap.cfg').read_text()
     # Retarget every split output, including task/common-RAM services. No
     # generated production provider is overwritten by this experimental link.

@@ -1,0 +1,22 @@
+{
+  "program_sha256": {
+    "c-reference-0.prg": "218cd01a0d2af8b07736c3450657eb01d574e6333b996c4c0e535eb49e96d7d3",
+    "c-reference-1.prg": "5bd48e8cadf3310bfd72ddf070fe0c711334faede42e975cb41c78c128ea5b1d",
+    "c-reference-2.prg": "57029caf962275e5dd090a744293a64904b8a84608afe813ee1a9251b31c4830",
+    "c-reference-3.prg": "77184a3252c138e70464408e92b6b53402db249fdb6e833288008ef25f4a9a79",
+    "asm-pixel-0.prg": "509f90e66017c12d042b2491787efd2a3d5cae8467559e4a579d8982a40d4f64",
+    "asm-pixel-1.prg": "6a3e867dd91d907bd9455a3514e6fcba199aa344d1362886b6bac062198af9a7",
+    "asm-pixel-2.prg": "df4c151bdfe7cc09c9dde556b9091d565e2f07a1ffe00e2e67ee9429236a7535",
+    "asm-pixel-3.prg": "54e94dbb0fb4602e0bbf9de2c201a5ff2e124472bfd30bb6f27be9d0a416bd2d"
+  },
+  "raw_sha256": {
+    "1986-c-reference-0.bin": "6cdc61897812bccfa4313fe5c8058f417ba50877858340674aace21db92e5b26",
+    "1986-c-reference-1.bin": "3234fba55234869df1e4da3b6b6a692a7629a1790427dbc37a0ece3e9cfc1a4f",
+    "1986-c-reference-2.bin": "f30adaef16d8894e73d95719cdb603d8bc1048a079173f2288c5c5e4c2761361",
+    "1986-c-reference-3.bin": "f6a9798890b4a87c11b2323f981c671ab7282048ed5eee7c135cb30163b396c3",
+    "1986-asm-pixel-0.bin": "e0c58be2aa82d84b3ffbf6ce5a1bd2d9ae16304a8971d6c6c5a56d8c24600715",
+    "1986-asm-pixel-1.bin": "2d10f992a35250c1dbdce4b19e48bf3901dd5deb9d48e5a774e77020961dac98",
+    "1986-asm-pixel-2.bin": "4da288547042e4c2f9aa259af42344d7badc35e675d6b0afb7678b4c9847901a",
+    "1986-asm-pixel-3.bin": "1c478d21e492ca15d77185b007d3f693b377864464f3a7c7f0d87f4b92c3f08c"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "program_sha256": {
+    "c-reference-0.prg": "218cd01a0d2af8b07736c3450657eb01d574e6333b996c4c0e535eb49e96d7d3",
+    "c-reference-1.prg": "5bd48e8cadf3310bfd72ddf070fe0c711334faede42e975cb41c78c128ea5b1d",
+    "c-reference-2.prg": "57029caf962275e5dd090a744293a64904b8a84608afe813ee1a9251b31c4830",
+    "c-reference-3.prg": "77184a3252c138e70464408e92b6b53402db249fdb6e833288008ef25f4a9a79",
+    "asm-pixel-0.prg": "509f90e66017c12d042b2491787efd2a3d5cae8467559e4a579d8982a40d4f64",
+    "asm-pixel-1.prg": "6a3e867dd91d907bd9455a3514e6fcba199aa344d1362886b6bac062198af9a7",
+    "asm-pixel-2.prg": "df4c151bdfe7cc09c9dde556b9091d565e2f07a1ffe00e2e67ee9429236a7535",
+    "asm-pixel-3.prg": "54e94dbb0fb4602e0bbf9de2c201a5ff2e124472bfd30bb6f27be9d0a416bd2d"
+  },
+  "raw_sha256": {
+    "vice-c-reference-0.bin": "e2e8ba2f05a2fc868e082aded2e99b193fd5441b5251296e8f4253a91dabc1b0",
+    "vice-c-reference-1.bin": "702a727d9ff7513954fc940b328c3c3745b4cc405865e4e65f576465383a5a31",
+    "vice-c-reference-2.bin": "6c73aef15a872d68c9e112bd9ba749932f12ff9ee394424cd7198d03a18f8d2d",
+    "vice-c-reference-3.bin": "ac431dc08ae1bb5e54c6244ceba1af854340cf5db2efb9d1cd04701d6d020df5",
+    "vice-asm-pixel-0.bin": "9f72a9eec2e7b1a41d52ebf8e029949e129a6e87449e57899bc037d8d1245088",
+    "vice-asm-pixel-1.bin": "7a112b9dbb5c9ecb7fc825d75f72bc76126d88dc5e6d48297a02ddab61c6b081",
+    "vice-asm-pixel-2.bin": "61e62761323ccd48e8524f3526b4839242ab6592ff1e61d4d813f743055881a7",
+    "vice-asm-pixel-3.bin": "917d1d453fc6d9c86cc69db973fbe7d222886a8683f1fa95d2ac9427d3244c4d"
+  }
+}
