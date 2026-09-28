@@ -448,8 +448,17 @@ the C implementation + gateway source + state need 1,273 bytes against a
 49-byte resident reserve, before manager/ABI bindings. Default paste takes
 roughly 2–3 seconds at nominal 1 MHz, so do not ship it as a speed fix.
 Evidence: `bench/{artifacts,results}/2026-09-28-window-cache-transfer/`.
-Next: a measured assembly byte blitter using this C/pixel oracle, then an
-explicit service-placement decision and active-IRQ/input/compositor gates.
+The measured assembly increment now passes the same eleven bank-transfer
+cases plus all 64 alignment pairs/full-width/right-edge row checks in both
+emulators. Default paste changes 1.94–2.76 M → 0.325–0.593 M CIA ticks
+(4.56–6.87× by paired case), before screen commits. Wrapper + ASM + state
+is 1,023 bytes, down 250 but still 974 beyond the resident reserve before
+bindings. Its gateway/staging lease spans the complete operation and does not
+yield; IRQs remain masked, so this is not a live-input acceptance result.
+Evidence: `bench/{artifacts,results}/2026-09-28-window-cache-asm/`.
+Next: an explicit graphics-service placement audit/decision, then bounded
+lease integration and active-IRQ/input/compositor gates. The scheduler overlays
+occupy the apparent post-shadow gap; do not count it as free graphics RAM.
 Production disks remain unchanged; no new physical test is needed for this
 standalone-only increment. Do not change the frozen shadow or worker/task
 allocations, remove compatibility paths, or claim unchanged-size moves avoid

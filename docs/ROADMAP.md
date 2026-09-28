@@ -192,10 +192,12 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   redraw remain synchronous. Full compositor and physical qualification remain.
   A packed move-cache format and standalone bank-crossing prototype now pass
   pixel/guard checks in 1986 and VICE with IRQs masked. The C paste still takes
-  seconds and needs 1,273 bytes against a 49-byte resident reserve. Next is a
-  measured assembly byte blitter and explicit service placement; active-IRQ,
-  ownership, compositor and physical gates remain. Production still replays
-  pixels on moves.
+  seconds and needs 1,273 bytes against a 49-byte resident reserve. The measured
+  ASM byte blitter now passes both emulators plus all 64 alignment pairs;
+  default paste is 4.56–6.87× faster but wrapper/ASM/state still needs 1,023
+  bytes, and its complete-operation lease does not yield. Next is explicit
+  service placement and bounded lease integration; active-IRQ, ownership,
+  compositor and physical gates remain. Production still replays pixels on moves.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

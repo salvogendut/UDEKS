@@ -119,13 +119,11 @@ window-manager bindings or ABI entries. The copied gateway fits common RAM,
 but that does not make its resident source code fit. Existing module/app
 spaces and published gates must not be silently repurposed.
 
-Next: retain this C implementation and its exact machine records as the
-correctness/timing baseline; build and measure a dedicated assembly byte
-capture/paste path, reducing gateway installation and service-page restore
-overhead under an explicit non-reentrant lease. Then make a measured graphics
-service-placement decision before integrating it. The active-IRQ, compositor,
-input/cancellation and hardware gates above remain mandatory. Current boot
-images remain byte-identical and use bounded replay, not this prototype.
+The C implementation and its exact machine records remain the immutable
+correctness/timing baseline for the assembly increment below. The active-IRQ,
+compositor, input/cancellation and hardware gates above remain mandatory.
+Current boot images remain byte-identical and use bounded replay, not either
+prototype.
 
 Reproduce from the repository root:
 
@@ -139,3 +137,76 @@ python3 tools/window_cache_bench.py decode
 These raw PRGs require monitor loading at `$2000` followed by entry at
 `$2000`; they are not BASIC launchers or replacement boot disks. The tools
 perform that setup and terminate their own VICE sessions.
+
+## Assembly byte blitter qualification (2026-09-28)
+
+The `--variant asm` build keeps range/capacity validation and row ownership
+in `cache-fast.c`, uses `rows.s` for byte packing and masked paste, and uses
+`transfer-lease.s` to install the same 99-byte common gateway once per complete
+operation. Mask shifts are prepared per row rather than repeated for every
+byte; the live pixel shift uses the accumulator. Dirty flags cover the exact
+logical shadow pages touched, accounting for the unaligned `$A1E0` base.
+
+Unlike the reference C path, this variant restores the synthetic service
+page **once at the end of the complete capture or paste**, not after every
+row. Its non-reentrant lease covers both the gateway and `$F400`/parameters;
+no yielding, callbacks, service calls or nested drawing are permitted while
+borrowed. It is not a bounded-input compositor yet. Do not enable the full
+operation as a production poll without the live-IRQ, ownership and input
+gates or a qualified bounded continuation that releases the lease between
+slices.
+
+Both 1986 and VICE pass the eleven full-image bank-transfer cases plus a
+separate row-matrix PRG. The latter exercises all 64 source/destination bit
+alignment pairs with a nonbyte 17-pixel width, every VIC row phase, a full
+320-pixel row and the bottom-right pixel: 66 row checks per engine. The
+decoder independently compares every resulting shadow byte and dirty flag;
+matrix staging/shadow guards, counts, failure state and reserved bytes are
+also checked, including zero padding in captured tail bytes. A negative-control
+PRG replaces only the capture tail-mask instruction with three NOPs: displayed
+pixels and dirty flags still match, but both emulators report failure 3 and
+the decoder rejects the record. Masked final paste alone cannot qualify the
+captured format. A host harness executes the real C wrapper with mocked row
+primitives to verify geometry rejection, old-cache invalidation, lease release
+and all 64 alignment pairs for six sizes. It is not used to claim that ASM
+instructions ran on the host.
+
+The unchanged probe driver, compiler flags, exact PRGs, raw records, run-to-PRG
+hash manifests and source snapshots are in
+`bench/{artifacts,results}/2026-09-28-window-cache-asm/`. The comparison uses
+the same 1986 input fingerprints and VICE Flatpak build as the C reference.
+Program hashes are verified before each run and again after the batch;
+preservation rejects records tied to a different build.
+
+| VICE primitive | C reference ticks | ASM ticks |
+| --- | ---: | ---: |
+| 168×104 capture, eight alignments | 1,154,116–1,623,844 | 280,801–523,225 |
+| 168×104 paste, eight alignments | 1,939,409–2,758,923 | 325,486–593,322 |
+| 220×160 paste | 5,186,369 | 968,935 |
+
+Default paste is **4.56–6.87× faster** by paired case, roughly 0.33–0.59
+seconds at nominal 1 MHz. Those counts exclude screen commits, old-background
+restoration, chrome, input servicing and other windows. They are not a promise
+of subsecond GUI release or real-hardware performance; both capture and paste
+still block this standalone caller.
+
+The wrapper is 607 CODE + 13 BSS, rows are 267 CODE + 5 BSS, and installer plus
+gateway image are 131 CODE. Total is **1,023 bytes**, 250 fewer than C but
+still **974 beyond the 49-byte resident raster reserve**, before whole-link
+helper changes, manager/ABI bindings and continuation state. Nothing has been
+linked into production to manufacture a fit. The post-shadow region is not
+free merely because the primary kernel map labels it as a gap: scheduler,
+lifecycle handler and context overlays occupy it at runtime.
+
+Next: a graphics-service placement decision backed by an audit of live and
+post-boot regions, then integrate a bounded, serialized cache lease. Keep the
+shadow, UAPP/task gates and stack reservations fixed unless a separately
+qualified architectural change is explicitly accepted. Do not silently delete
+the retained compatibility shell or shrink stacks to recover the missing KiB.
+The prototype gateway assumes masked IRQs. A live path must protect the
+worker-flat MMU interval and restore the kernel I/O map before delivering IRQs;
+bank-flat access with I/O hidden is not a safe interrupt-service profile.
+
+Reproduce with `--variant asm` on all four commands above; compare preserved
+results with `python3 tools/window_cache_compare.py`. Production boot disks
+are unchanged and there is no new OS image to test from this increment.

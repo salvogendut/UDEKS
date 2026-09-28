@@ -1,0 +1,349 @@
+Modules list:
+-------------
+launcher.o:
+    CODE              Offs=000000  Size=00004C  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000076  Align=00001  Fill=0000
+cache-matrix.o:
+    CODE              Offs=00004C  Size=000528  Align=00001  Fill=0000
+    VICSHADOW         Offs=000000  Size=001F40  Align=00001  Fill=0000
+cache.o:
+    CODE              Offs=000574  Size=00025F  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=00000D  Align=00001  Fill=0000
+transfer.o:
+    CODE              Offs=0007D3  Size=000083  Align=00001  Fill=0000
+rows.o:
+    CODE              Offs=000856  Size=00010B  Align=00001  Fill=0000
+    BSS               Offs=00000D  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=000961  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=00097D  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=00098E  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(and.o):
+    CODE              Offs=00099C  Size=000010  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax3.o):
+    CODE              Offs=0009AC  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(compl.o):
+    CODE              Offs=0009BA  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decax1.o):
+    CODE              Offs=0009C3  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=0009CA  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp4.o):
+    CODE              Offs=0009D7  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=0009E4  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax7.o):
+    CODE              Offs=000A12  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=000A17  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000A22  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000A29  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=000A3F  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000A44  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=000A49  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaui.o):
+    CODE              Offs=000A4E  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=000A57  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=000A60  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul.o):
+    CODE              Offs=000A8C  Size=000045  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=000AD1  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000B0B  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000B19  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000B2F  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=000B49  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shr.o):
+    CODE              Offs=000B65  Size=000034  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax3.o):
+    CODE              Offs=000B99  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000BA7  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=000BBD  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(sub.o):
+    CODE              Offs=000BC8  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               002000  002075  000076  00001
+CODE                  002076  002C52  000BDD  00001
+BSS                   002C53  002C64  000012  00001
+VICSHADOW             00A1E0  00C11F  001F40  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               002C53 RLA    __BSS_SIZE__              000012 REA    
+__STARTUP__               000001 REA    _cache_capture_row        0028EA RLA    
+_cache_paste_row          002932 RLA    _cache_row_last_mask      002C57 RLA    
+_cache_row_next_count     002C56 RLA    _cache_row_offset         002C53 RLA    
+_cache_row_shift          002C55 RLA    _cache_transfer_begin     002856 RLA    
+_cache_transfer_fast      002850 RLA    _main                     002291 RLA    
+addeqysp                  0029F5 RLA    addysp                    002A05 RLA    
+addysp1                   002A04 RLA    boolne                    002AD6 RLA    
+boolult                   002AF5 RLA    complax                   002A30 RLA    
+decax1                    002A39 RLA    decsp2                    002A40 RLA    
+decsp4                    002A4D RLA    incax7                    002A88 RLA    
+incaxy                    002A8F RLA    incsp1                    002A98 RLA    
+incsp2                    002AA7 RLA    incsp3                    002AB5 RLA    
+incsp4                    002ABA RLA    incsp6                    002ABF RLA    
+ldauidx                   002AC4 RLA    ldaxysp                   002ACF RLA    
+mul8x16                   002B49 RLA    mul8x16a                  002B53 RLA    
+popax                     002A9F RLA    popptr1                   002B81 RLA    
+ptr1                      00000A RLZ    ptr4                      000010 RLZ    
+pusha                     002B93 RLA    pusha0                    002BA7 RLA    
+pushax                    002BA9 RLA    pushwysp                  002BC1 RLA    
+shlax3                    002A22 RLA    shrax3                    002C0F RLA    
+sp                        000002 RLZ    sreg                      000004 RLZ    
+staspidx                  002C1D RLA    staxysp                   002C35 RLA    
+tmp1                      000012 RLZ    tosaddax                  0029D9 RLA    
+tosandax                  002A14 RLA    tosicmp                   002A5C RLA    
+tosicmp0                  002A5A RLA    tosshrax                  002BDB RLA    
+tossubax                  002C40 RLA    tosumula0                 002B47 RLA    
+tosumulax                 002B02 RLA    
+
+
+Exports list by value:
+----------------------
+__STARTUP__               000001 REA    sp                        000002 RLZ    
+sreg                      000004 RLZ    ptr1                      00000A RLZ    
+ptr4                      000010 RLZ    __BSS_SIZE__              000012 REA    
+tmp1                      000012 RLZ    _main                     002291 RLA    
+_cache_transfer_fast      002850 RLA    _cache_transfer_begin     002856 RLA    
+_cache_capture_row        0028EA RLA    _cache_paste_row          002932 RLA    
+tosaddax                  0029D9 RLA    addeqysp                  0029F5 RLA    
+addysp1                   002A04 RLA    addysp                    002A05 RLA    
+tosandax                  002A14 RLA    shlax3                    002A22 RLA    
+complax                   002A30 RLA    decax1                    002A39 RLA    
+decsp2                    002A40 RLA    decsp4                    002A4D RLA    
+tosicmp0                  002A5A RLA    tosicmp                   002A5C RLA    
+incax7                    002A88 RLA    incaxy                    002A8F RLA    
+incsp1                    002A98 RLA    popax                     002A9F RLA    
+incsp2                    002AA7 RLA    incsp3                    002AB5 RLA    
+incsp4                    002ABA RLA    incsp6                    002ABF RLA    
+ldauidx                   002AC4 RLA    ldaxysp                   002ACF RLA    
+boolne                    002AD6 RLA    boolult                   002AF5 RLA    
+tosumulax                 002B02 RLA    tosumula0                 002B47 RLA    
+mul8x16                   002B49 RLA    mul8x16a                  002B53 RLA    
+popptr1                   002B81 RLA    pusha                     002B93 RLA    
+pusha0                    002BA7 RLA    pushax                    002BA9 RLA    
+pushwysp                  002BC1 RLA    tosshrax                  002BDB RLA    
+shrax3                    002C0F RLA    staspidx                  002C1D RLA    
+staxysp                   002C35 RLA    tossubax                  002C40 RLA    
+__BSS_RUN__               002C53 RLA    _cache_row_offset         002C53 RLA    
+_cache_row_shift          002C55 RLA    _cache_row_next_count     002C56 RLA    
+_cache_row_last_mask      002C57 RLA    
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/bench/graphics-raster/launcher.s(3)
+__BSS_SIZE__ ([linker generated]):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/bench/graphics-raster/launcher.s(3)
+__STARTUP__ (launcher.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(13)
+_cache_capture_row (rows.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(21)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(18)
+_cache_paste_row (rows.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(22)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(19)
+_cache_row_last_mask (cache.o):
+    rows.o                    /var/home/salvogendut/Dev/UDEKS/bench/window-cache/rows.s(6)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(17)
+_cache_row_next_count (cache.o):
+    rows.o                    /var/home/salvogendut/Dev/UDEKS/bench/window-cache/rows.s(6)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(16)
+_cache_row_offset (cache.o):
+    rows.o                    /var/home/salvogendut/Dev/UDEKS/bench/window-cache/rows.s(5)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(14)
+_cache_row_shift (cache.o):
+    rows.o                    /var/home/salvogendut/Dev/UDEKS/bench/window-cache/rows.s(5)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(15)
+_cache_transfer_begin (transfer.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(19)
+_cache_transfer_fast (transfer.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(20)
+_main (cache-matrix.o):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/bench/graphics-raster/launcher.s(3)
+addeqysp (addeqsp.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+addysp (addysp.o):
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+    and.o                     runtime/and.s(8)
+boolne (makebool.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+boolult (makebool.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+complax (compl.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+decax1 (decax1.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+decsp2 (decsp2.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+decsp4 (decsp4.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+incax7 (incax7.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+incaxy (incaxy.o):
+    incax7.o                  runtime/incax7.s(8)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+incsp1 (incsp1.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+incsp3 (incsp3.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+incsp4 (incsp4.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+incsp6 (incsp6.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+ldauidx (ldaui.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+ldaxysp (ldaxsp.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+mul8x16 (mul8.o):
+    mul.o                     runtime/mul.s(8)
+mul8x16a (mul8.o):
+    mul.o                     runtime/mul.s(8)
+popax (incsp2.o):
+    shr.o                     runtime/shr.s(15)
+popptr1 (popptr1.o):
+    mul8.o                    runtime/mul8.s(9)
+    mul.o                     runtime/mul.s(9)
+ptr1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+    ldaui.o                   runtime/ldaui.s(8)
+    rows.o                    /var/home/salvogendut/Dev/UDEKS/bench/window-cache/rows.s(7)
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(11)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(11)
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/bench/graphics-raster/launcher.s(4)
+ptr4 (zeropage.o):
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+pusha (pusha.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+pusha0 (pushax.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+pushax (pushax.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+pushwysp (pushwsp.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+shlax3 (aslax3.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+shrax3 (shrax3.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+sp (zeropage.o):
+    incsp2.o                  runtime/incsp2.s(8)
+    sub.o                     runtime/sub.s(9)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp4.o                  runtime/decsp4.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    and.o                     runtime/and.s(9)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    add.o                     runtime/add.s(12)
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(10)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(10)
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/bench/graphics-raster/launcher.s(4)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+staspidx (staspidx.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+staxysp (staxsp.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    shrax3.o                  runtime/shrax3.s(8)
+    shr.o                     runtime/shr.s(16)
+    mul.o                     runtime/mul.s(10)
+    incaxy.o                  runtime/incaxy.s(8)
+    aslax3.o                  runtime/aslax3.s(8)
+    add.o                     runtime/add.s(12)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(11)
+tosaddax (add.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+tosandax (and.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+tosicmp (icmp.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+tosicmp0 (icmp.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+tosshrax (shr.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+tossubax (sub.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+tosumula0 (mul8.o):
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+    cache.o                   /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache.s(377)
+tosumulax (mul.o):
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+    cache-matrix.o            /var/home/salvogendut/Dev/UDEKS/build/window-cache-asm/cache-matrix.s(641)
+

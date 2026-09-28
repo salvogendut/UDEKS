@@ -2107,7 +2107,8 @@ check:
 		tools/graphics_raster_audit.py tools/graphics_raster_link_audit.py \
 		tools/graphics_raster_bench_build.py tools/graphics_raster_bench_run.py \
 		tools/graphics_raster_bench_decode.py \
-		tools/window_move_cache_spike.py tools/window_cache_bench.py \
+		tools/window_move_cache_spike.py tools/window_cache_bench.py tools/window_cache_compare.py \
+		tools/window_cache_padding_fault.py \
 		tools/join_boot_crt0.py \
 		tools/placement_audit.py \
 		tools/gen_capability_imports.py \

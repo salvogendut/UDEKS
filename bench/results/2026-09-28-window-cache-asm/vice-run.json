@@ -1,0 +1,31 @@
+{
+  "variant": "asm",
+  "program_sha256": {
+    "cache-0.prg": "873d88cc2e9b524c9da9bf8a7d1dca19f81db42ff0adc07e46f68fd3ddbce299",
+    "cache-1.prg": "2f2a646c90f19e345093a01e307782cbc292550c79fb01c6edc736807fa18690",
+    "cache-2.prg": "78abfddd00a5f5665ebc56690448d7bb45993191b8ee1db33d3397e81bafd750",
+    "cache-3.prg": "1aa3640fcc1051c495a733fb96666152072f201db55f9a2d8aed6ea4a82a422d",
+    "cache-4.prg": "4668be1cc0cf6bf55a2bad50453b8267c2bdc823115cf8346acce3bb37dd1c1a",
+    "cache-5.prg": "3e01b4021329bf2422407557bfe1471fd9d509a472b80cfa5fb34c16de7ef894",
+    "cache-6.prg": "fff249af9dfdf95a14ad56866d377a78885fe08ecf7b817bd7a7f5eaa0cee8af",
+    "cache-7.prg": "fe3667f1c8d3647678802dac361141e8c486566ff0e26e14cc6b6e59cd4cf346",
+    "cache-8.prg": "35bbf0a8c2548c1101ccb2081439ab480a466d8eec3d327e2ecc41e36db7f7a4",
+    "cache-9.prg": "d2549052089122060db15bc7e166ad67a1f969c3b8234d0e66bb1fd41767ca09",
+    "cache-10.prg": "0a07778354819aa23855cef2c019b66ef9d9900f3ff61ec312077432c71f2685",
+    "cache-matrix.prg": "b2f042a7b0ff62fead2a8af2413691c8cee3f718e721e9e770ce446352af7176"
+  },
+  "raw_sha256": {
+    "vice-0.bin": "3ffc9012b2592f77e6b973069928822e8c99efdb3f9c63e7ebb956a328fd71d7",
+    "vice-1.bin": "c72c932cb77b59efb46e9cbd555e4128a0ece549bb22847d217507bad2f07ddd",
+    "vice-2.bin": "d4bd3740ea7baaba952fbb6c79954c1413dfeea6194fd973ece9a7ad7e0d5414",
+    "vice-3.bin": "eacddcccbfd1ad62764f642e32bb6f1f91cff45517856bf3b35695c5615b268b",
+    "vice-4.bin": "38e4c56caddeb9031efe6c3036de4b246f5a6ddd6d60cccac06fa66050c7eaad",
+    "vice-5.bin": "a2b726a020e148696e1a7d7095e14045d75f11588f656dcecf16f4fffe365f61",
+    "vice-6.bin": "f82bd5d73b567b2ee1bc6c289e1449e86c725883c34515add6edb95f6f57f307",
+    "vice-7.bin": "8c47fd1bc8184b4d0183103cb9edf478e3dc96def4fdcee7a04d32f35c1628b0",
+    "vice-8.bin": "bd1c23865a4ebf9401c7b0566194fcf3ea711412027770058342244b1e2c78ab",
+    "vice-9.bin": "c889a5f2d25d89c73e1b95d8606be4a07be0d90472338b36bfa9c73a44b2222a",
+    "vice-10.bin": "8b2a3d55085dad79ae5c66812d24e90869ac456838bc2c4b3fb43a4e017067ca",
+    "vice-matrix.bin": "ac076702153971bbb2f9c1c9e71926198a64b8176b773f5686f1a9b14f8f80b6"
+  }
+}
