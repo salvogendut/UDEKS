@@ -230,6 +230,8 @@ USER_XWAVE_BIN := $(BUILD_USER)/xwave.bin
 USER_XWAVE_UDEX := $(BUILD_USER)/xwave.udx
 USER_BOOTFS := $(BUILD_USER)/bootfs.img
 
+include mk/window-cache.mk
+
 .PHONY: all 8502 z80 z80-asm bench bench-8502 bench-z80 bench-irq \
 	bench-irq-8502 bench-irq-z80 bench-irq-service \
 	bench-irq-service-8502 bench-irq-service-z80 bench-context \
@@ -809,10 +811,10 @@ $(BUILD_8502)/root_console.s: src/services/window/root_console.c \
 		include/udeks/root_console.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
-$(BUILD_8502)/window_manager.s: src/services/window/window_manager.c \
+$(BUILD_8502)/window_manager.s: $(WINDOW_MANAGER_SOURCE) \
 		include/udeks/pointer.h include/udeks/vic_graphics.h \
 		include/udeks/window.h | $(BUILD_8502)
-	$(CC65) $(CFLAGS_8502) -o $@ $<
+	$(CC65) $(CFLAGS_8502) -o $@ $(WINDOW_MANAGER_SOURCE)
 
 $(BUILD_8502)/boot_console.s: src/services/window/boot_console.c \
 		include/udeks/boot_console.h include/udeks/capability.h \
@@ -1156,7 +1158,7 @@ $(BUILD_8502)/z80_handoff.o: src/8502/z80_handoff.s src/8502/nmi-common.inc | $(
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/vic_graphics_transport.o: src/8502/vic_graphics.s | $(BUILD_8502)
-	$(CA65) $(ASFLAGS_8502) -o $@ $<
+	$(CA65) $(ASFLAGS_8502) $(WINDOW_CACHE_ASFLAGS) -o $@ src/8502/vic_graphics.s
 
 $(BUILD_8502)/vic_span.o: src/services/display/vic_span.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
@@ -1196,7 +1198,7 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &: \
 		$(BUILD_8502)/bootfs_request.o \
 		$(BUILD_8502)/time.o \
 		$(BUILD_8502)/vdc_console.o $(BUILD_8502)/app_panel.o \
-		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o \
+		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o $(WINDOW_CACHE_TRANSPORT) \
 		$(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/pointer.o $(BUILD_8502)/nmi.o \
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
@@ -1347,7 +1349,7 @@ $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS) &: \
 		$(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_BIN) $(TASK_CONTEXT_MAP) \
 		$(TASK_CONTEXT_VECTORS_BIN) $(TASK_SWITCH_TAIL_BIN) \
 		$(TASK_YIELD_HANDLER_BIN) \
-		tools/build_scheduler_overlay.py | $(BUILD_BOOT)
+		tools/build_scheduler_overlay.py tools/build_window_cache.py | $(BUILD_BOOT)
 	$(PYTHON) tools/build_scheduler_overlay.py \
 		$(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 		$(SCHEDULER_OVERLAY_MAP) $(SCHEDULER_OVERLAY_PAYLOAD) \
@@ -1356,7 +1358,7 @@ $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS) &: \
 		--activation-context-map $(TASK_CONTEXT_MAP) \
 		--activation-tail $(TASK_SWITCH_TAIL_BIN) \
 		--activation-yield-handler $(TASK_YIELD_HANDLER_BIN) \
-		--activation-vectors $(TASK_CONTEXT_VECTORS_BIN)
+		--activation-vectors $(TASK_CONTEXT_VECTORS_BIN) $(WINDOW_CACHE_OVERLAY_FLAGS)
 
 $(TASK_SWITCH_ACTIVATION_OBJ): src/boot/task-switch-activation.s \
 		$(SCHEDULER_OVERLAY_CONSTANTS) | $(BUILD_BOOT)
@@ -1395,7 +1397,7 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(BUILD_8502)/bootfs_request.o \
 		$(BUILD_8502)/time.o \
 		$(BUILD_8502)/vdc_console.o $(BUILD_8502)/app_panel.o \
-		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o \
+		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o $(WINDOW_CACHE_TRANSPORT) \
 		$(BUILD_8502)/keyboard.o \
 		$(BUILD_8502)/pointer.o $(BUILD_8502)/nmi.o \
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
@@ -1830,7 +1832,7 @@ $(STAGE1_GATEWAY_BIN) $(TASK_LOADER_BIN) &: $(BUILD_BOOT)/stage1-gateway.o \
 
 $(BUILD_BOOT)/stage1.o: src/boot/stage1.s $(STAGE1_GATEWAY_BIN) \
 		$(SCHEDULER_OVERLAY_CONSTANTS) | $(BUILD_BOOT)
-	$(CA65) --cpu 6502 -I $(BUILD_8502) -o $@ $<
+	$(CA65) --cpu 6502 $(WINDOW_CACHE_ASFLAGS) -I $(BUILD_8502) -o $@ $<
 
 $(STAGE1_BIN): $(BUILD_BOOT)/stage1.o cfg/8502-stage1.cfg
 	$(LD65) -C cfg/8502-stage1.cfg -o $@ $<
@@ -2145,6 +2147,7 @@ check:
 		tools/window_cache_repaint.py tools/window_cache_occlusion.py \
 		tools/window_cache_partial.py tools/window_cache_partial_manager.py \
 		tools/window_drag_start.py tools/window_drag_latency.py \
+		tools/build_window_cache.py tools/window_cache_integration_probe.py tools/window_cache_runtime_probe.py \
 		tools/graphics_cache_delivery.py \
 		tools/graphics_cache_placement.py \
 		tools/graphics_span_bench.py \

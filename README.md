@@ -157,6 +157,11 @@ address spaces, disk-backed filesystems, and loader-managed graphical programs
 remain future work. The memory map remains provisional until its
 physical-hardware gates pass.
 
+The generic retained-window cache is enabled by default in `make boot`, following
+emulator qualification and real-hardware input/RESTORE acceptance. The prior
+compositor remains available with `make WINDOW_CACHE=0 boot`. Release repaint
+can still take seconds. See the [integration and testing guide](docs/WINDOW-CACHE-INTEGRATION.md).
+
 ## Documents
 
 - [Architecture and implementation plan](docs/PLAN.md)

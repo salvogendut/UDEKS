@@ -1,0 +1,20 @@
+{
+  "scope": "fresh isolated source-only parallel boot/all/panic/placement build; then 1->0->1 without cleaning",
+  "selected": {
+    "d64": "c00d8936725746013f6da762a0bb9360c060ac9d2f9ceb23edc1dea236b8db76",
+    "d71": "00ab0c99092699e3f8820a5561f779eb56107380fe29226f8a7af38fe32ce04a"
+  },
+  "default": {
+    "d64": "65a37c265a0a9d4e355fdf4738b764ffa42c64565d4fea305ff152ac323b0483",
+    "d71": "d99463d6f84c0b54cd9178056013368f85e9fea16b2800ed75470909b5a2a2d6"
+  },
+  "selected_again": {
+    "d64": "c00d8936725746013f6da762a0bb9360c060ac9d2f9ceb23edc1dea236b8db76",
+    "d71": "00ab0c99092699e3f8820a5561f779eb56107380fe29226f8a7af38fe32ce04a"
+  },
+  "log_sha256": {
+    "clean-selected.log": "2a492bebccf753617874e015aee6d6d82abd19cad2f0b12c874145866af19b07",
+    "switch-off.log": "f8158cdb9823b4143b8174c9d48c39a1021d4d62b8f158ff05fec37adfa4a2c0",
+    "switch-on.log": "d6d9a93ee26a8a88534e47f43d7568ef77759f25c3c88b904a0ae017e11b906f"
+  }
+}

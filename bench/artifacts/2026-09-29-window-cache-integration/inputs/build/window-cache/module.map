@@ -1,0 +1,395 @@
+Modules list:
+-------------
+core.o:
+    OVERLAY           Offs=000000  Size=0000D5  Align=00001  Fill=0000
+module.o:
+    CODE              Offs=000000  Size=000003  Align=00001  Fill=0000
+    DISPATCH          Offs=000000  Size=000003  Align=00001  Fill=0000
+    PRIVATESTATE      Offs=000000  Size=00001A  Align=00001  Fill=0000
+policy.o:
+    CODE              Offs=000003  Size=0004DA  Align=00001  Fill=0000
+command.o:
+    CODE              Offs=0004DD  Size=0002FB  Align=00001  Fill=0000
+    DATA              Offs=000000  Size=000003  Align=00001  Fill=0000
+flow.o:
+    CODE              Offs=0007D8  Size=00023A  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000004  Align=00001  Fill=0000
+controller.o:
+    CODE              Offs=000A12  Size=00018A  Align=00001  Fill=0000
+gateway_image.o:
+    GATEIMAGE         Offs=000000  Size=0000C4  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000B9C  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=000BAA  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=000BB3  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=000BC0  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp4.o):
+    CODE              Offs=000BCD  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp5.o):
+    CODE              Offs=000BDA  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp7.o):
+    CODE              Offs=000BE7  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=000BF4  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000C22  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=000C38  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000C3D  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=000C42  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=000C47  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=000C4C  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp8.o):
+    CODE              Offs=000C51  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=000C56  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(memcpy.o):
+    CODE              Offs=000C82  Size=00003C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=000CBE  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(or.o):
+    CODE              Offs=000CF8  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000D0A  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000D18  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000D2E  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=000D48  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shl.o):
+    CODE              Offs=000D64  Size=000033  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax3.o):
+    CODE              Offs=000D97  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=000DA5  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxspi.o):
+    CODE              Offs=000DB0  Size=00001B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(sub.o):
+    CODE              Offs=000DCB  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000006  00001F  00001A  00001
+OVERLAY               004200  0042D4  0000D5  00001
+DISPATCH              0042D5  0042D7  000003  00001
+CODE                  0042D8  0050B7  000DE0  00001
+RODATA                0050B8  0050BB  000004  00001
+DATA                  0050BC  0050BE  000003  00001
+GATEIMAGE             0050BF  005182  0000C4  00001
+PRIVATESTATE          005220  005239  00001A  00001
+
+
+Exports list by name:
+---------------------
+_cache_partial_end        0050BC RLA    _cache_partial_width      0050BD RLA    
+_memcpy                   004F5A RLA    _udeks_cache_capture_begin 004350 RLA    
+_udeks_cache_commit_row   0045ED RLA    _udeks_cache_controller   004CEA RLA    
+_udeks_cache_flow_capture 004B25 RLA    _udeks_cache_flow_init    004AB0 RLA    
+_udeks_cache_flow_invalidate 004ADD RLA    _udeks_cache_flow_paste   004BC3 RLA    
+_udeks_cache_flow_step    004C23 RLA    _udeks_cache_init         0042DB RLA    
+_udeks_cache_invalidate   004320 RLA    _udeks_cache_overlay_command 0047B5 RLA    
+_udeks_cache_overlay_row  0042D8 RLA    _udeks_cache_paste_begin  0043DD RLA    
+_udeks_cache_prepare_row  00448C RLA    addysp                    004E75 RLA    
+addysp1                   004E74 RLA    boolule                   004F4B RLA    
+core_start                004200 RLA    decsp1                    004E82 RLA    
+decsp2                    004E8B RLA    decsp3                    004E98 RLA    
+decsp4                    004EA5 RLA    decsp5                    004EB2 RLA    
+decsp7                    004EBF RLA    incsp2                    004F02 RLA    
+incsp3                    004F10 RLA    incsp4                    004F15 RLA    
+incsp5                    004F1A RLA    incsp6                    004F1F RLA    
+incsp7                    004F24 RLA    incsp8                    004F29 RLA    
+popax                     004EFA RLA    popptr1                   004FE2 RLA    
+ptr1                      00000E RLZ    ptr2                      000010 RLZ    
+ptr3                      000012 RLZ    ptr4                      000014 RLZ    
+pusha                     004FF4 RLA    pusha0                    005008 RLA    
+pushax                    00500A RLA    pushw0sp                  005020 RLA    
+pushwysp                  005022 RLA    regbank                   00001A RLZ    
+regsave                   00000A RLZ    shrax3                    00506F RLA    
+sp                        000006 RLZ    sreg                      000008 RLZ    
+stax0sp                   00507D RLA    staxspidx                 005088 RLA    
+tmp1                      000016 RLZ    tmp2                      000017 RLZ    
+tmp3                      000018 RLZ    tmp4                      000019 RLZ    
+tosicmp                   004ECE RLA    tosicmp0                  004ECC RLA    
+tosorax                   004FD2 RLA    tosshlax                  00503C RLA    
+tossuba0                  0050A3 RLA    tossubax                  0050A5 RLA    
+tosumula0                 004F96 RLA    
+
+
+Exports list by value:
+----------------------
+sp                        000006 RLZ    sreg                      000008 RLZ    
+regsave                   00000A RLZ    ptr1                      00000E RLZ    
+ptr2                      000010 RLZ    ptr3                      000012 RLZ    
+ptr4                      000014 RLZ    tmp1                      000016 RLZ    
+tmp2                      000017 RLZ    tmp3                      000018 RLZ    
+tmp4                      000019 RLZ    regbank                   00001A RLZ    
+core_start                004200 RLA    _udeks_cache_overlay_row  0042D8 RLA    
+_udeks_cache_init         0042DB RLA    _udeks_cache_invalidate   004320 RLA    
+_udeks_cache_capture_begin 004350 RLA    _udeks_cache_paste_begin  0043DD RLA    
+_udeks_cache_prepare_row  00448C RLA    _udeks_cache_commit_row   0045ED RLA    
+_udeks_cache_overlay_command 0047B5 RLA    _udeks_cache_flow_init    004AB0 RLA    
+_udeks_cache_flow_invalidate 004ADD RLA    _udeks_cache_flow_capture 004B25 RLA    
+_udeks_cache_flow_paste   004BC3 RLA    _udeks_cache_flow_step    004C23 RLA    
+_udeks_cache_controller   004CEA RLA    addysp1                   004E74 RLA    
+addysp                    004E75 RLA    decsp1                    004E82 RLA    
+decsp2                    004E8B RLA    decsp3                    004E98 RLA    
+decsp4                    004EA5 RLA    decsp5                    004EB2 RLA    
+decsp7                    004EBF RLA    tosicmp0                  004ECC RLA    
+tosicmp                   004ECE RLA    popax                     004EFA RLA    
+incsp2                    004F02 RLA    incsp3                    004F10 RLA    
+incsp4                    004F15 RLA    incsp5                    004F1A RLA    
+incsp6                    004F1F RLA    incsp7                    004F24 RLA    
+incsp8                    004F29 RLA    boolule                   004F4B RLA    
+_memcpy                   004F5A RLA    tosumula0                 004F96 RLA    
+tosorax                   004FD2 RLA    popptr1                   004FE2 RLA    
+pusha                     004FF4 RLA    pusha0                    005008 RLA    
+pushax                    00500A RLA    pushw0sp                  005020 RLA    
+pushwysp                  005022 RLA    tosshlax                  00503C RLA    
+shrax3                    00506F RLA    stax0sp                   00507D RLA    
+staxspidx                 005088 RLA    tossuba0                  0050A3 RLA    
+tossubax                  0050A5 RLA    _cache_partial_end        0050BC RLA    
+_cache_partial_width      0050BD RLA    
+
+
+Imports list:
+-------------
+_cache_partial_end (command.o):
+    controller.o              src/services/window/cache/controller.s(18)
+_cache_partial_width (command.o):
+    controller.o              src/services/window/cache/controller.s(19)
+_memcpy (memcpy.o):
+    policy.o                  src/services/window/cache/policy.s(735)
+_udeks_cache_capture_begin (policy.o):
+    command.o                 src/services/window/cache/command.s(15)
+_udeks_cache_commit_row (policy.o):
+    command.o                 src/services/window/cache/command.s(18)
+_udeks_cache_controller (controller.o):
+    module.o                  src/services/window/cache/module.s(18)
+_udeks_cache_flow_capture (flow.o):
+    controller.o              src/services/window/cache/controller.s(15)
+_udeks_cache_flow_init (flow.o):
+    controller.o              src/services/window/cache/controller.s(13)
+_udeks_cache_flow_invalidate (flow.o):
+    controller.o              src/services/window/cache/controller.s(14)
+_udeks_cache_flow_paste (flow.o):
+    controller.o              src/services/window/cache/controller.s(16)
+_udeks_cache_flow_step (flow.o):
+    controller.o              src/services/window/cache/controller.s(17)
+_udeks_cache_init (policy.o):
+    command.o                 src/services/window/cache/command.s(13)
+_udeks_cache_invalidate (policy.o):
+    command.o                 src/services/window/cache/command.s(14)
+_udeks_cache_overlay_command (command.o):
+    flow.o                    src/services/window/cache/flow.s(18)
+_udeks_cache_overlay_row (module.o):
+    command.o                 src/services/window/cache/command.s(20)
+_udeks_cache_paste_begin (policy.o):
+    command.o                 src/services/window/cache/command.s(16)
+_udeks_cache_prepare_row (policy.o):
+    command.o                 src/services/window/cache/command.s(17)
+addysp (addysp.o):
+    incsp8.o                  runtime/incsp8.s(8)
+    incsp7.o                  runtime/incsp7.s(8)
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    policy.o                  src/services/window/cache/policy.s(735)
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+    or.o                      runtime/or.s(9)
+boolule (makebool.o):
+    policy.o                  src/services/window/cache/policy.s(735)
+core_start (core.o):
+    module.o                  src/services/window/cache/module.s(18)
+decsp1 (decsp1.o):
+    flow.o                    src/services/window/cache/flow.s(374)
+decsp2 (decsp2.o):
+    flow.o                    src/services/window/cache/flow.s(374)
+    flow.o                    src/services/window/cache/flow.s(374)
+    policy.o                  src/services/window/cache/policy.s(735)
+decsp3 (decsp3.o):
+    controller.o              src/services/window/cache/controller.s(214)
+    policy.o                  src/services/window/cache/policy.s(735)
+    policy.o                  src/services/window/cache/policy.s(735)
+decsp4 (decsp4.o):
+    command.o                 src/services/window/cache/command.s(372)
+decsp5 (decsp5.o):
+    controller.o              src/services/window/cache/controller.s(214)
+    command.o                 src/services/window/cache/command.s(372)
+decsp7 (decsp7.o):
+    command.o                 src/services/window/cache/command.s(372)
+    policy.o                  src/services/window/cache/policy.s(735)
+incsp2 (incsp2.o):
+    staxspi.o                 runtime/staxspi.s(9)
+    popptr1.o                 runtime/popptr1.s(8)
+    flow.o                    src/services/window/cache/flow.s(374)
+    flow.o                    src/services/window/cache/flow.s(374)
+incsp3 (incsp3.o):
+    flow.o                    src/services/window/cache/flow.s(374)
+    policy.o                  src/services/window/cache/policy.s(735)
+incsp4 (incsp4.o):
+    controller.o              src/services/window/cache/controller.s(214)
+    flow.o                    src/services/window/cache/flow.s(374)
+    policy.o                  src/services/window/cache/policy.s(735)
+incsp5 (incsp5.o):
+    flow.o                    src/services/window/cache/flow.s(374)
+    command.o                 src/services/window/cache/command.s(372)
+    policy.o                  src/services/window/cache/policy.s(735)
+incsp6 (incsp6.o):
+    flow.o                    src/services/window/cache/flow.s(374)
+    policy.o                  src/services/window/cache/policy.s(735)
+    policy.o                  src/services/window/cache/policy.s(735)
+incsp7 (incsp7.o):
+    policy.o                  src/services/window/cache/policy.s(735)
+incsp8 (incsp8.o):
+    flow.o                    src/services/window/cache/flow.s(374)
+    policy.o                  src/services/window/cache/policy.s(735)
+popax (incsp2.o):
+    shl.o                     runtime/shl.s(15)
+    memcpy.o                  common/memcpy.s(14)
+popptr1 (popptr1.o):
+    mul8.o                    runtime/mul8.s(9)
+    memcpy.o                  common/memcpy.s(14)
+ptr1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    popptr1.o                 runtime/popptr1.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    memcpy.o                  common/memcpy.s(15)
+    controller.o              src/services/window/cache/controller.s(11)
+    command.o                 src/services/window/cache/command.s(11)
+    policy.o                  src/services/window/cache/policy.s(11)
+    module.o                  src/services/window/cache/module.s(4)
+ptr2 (zeropage.o):
+    memcpy.o                  common/memcpy.s(15)
+    module.o                  src/services/window/cache/module.s(4)
+ptr3 (zeropage.o):
+    memcpy.o                  common/memcpy.s(15)
+    module.o                  src/services/window/cache/module.s(4)
+ptr4 (zeropage.o):
+    mul8.o                    runtime/mul8.s(10)
+    module.o                  src/services/window/cache/module.s(4)
+pusha (pusha.o):
+    controller.o              src/services/window/cache/controller.s(214)
+    flow.o                    src/services/window/cache/flow.s(374)
+    flow.o                    src/services/window/cache/flow.s(374)
+    command.o                 src/services/window/cache/command.s(372)
+    policy.o                  src/services/window/cache/policy.s(735)
+    policy.o                  src/services/window/cache/policy.s(735)
+    policy.o                  src/services/window/cache/policy.s(735)
+pusha0 (pushax.o):
+    controller.o              src/services/window/cache/controller.s(214)
+    command.o                 src/services/window/cache/command.s(372)
+    policy.o                  src/services/window/cache/policy.s(735)
+    policy.o                  src/services/window/cache/policy.s(735)
+pushax (pushax.o):
+    flow.o                    src/services/window/cache/flow.s(374)
+    flow.o                    src/services/window/cache/flow.s(374)
+    flow.o                    src/services/window/cache/flow.s(374)
+    flow.o                    src/services/window/cache/flow.s(374)
+    flow.o                    src/services/window/cache/flow.s(374)
+    command.o                 src/services/window/cache/command.s(372)
+    policy.o                  src/services/window/cache/policy.s(735)
+    policy.o                  src/services/window/cache/policy.s(735)
+    policy.o                  src/services/window/cache/policy.s(735)
+    policy.o                  src/services/window/cache/policy.s(735)
+    policy.o                  src/services/window/cache/policy.s(735)
+    policy.o                  src/services/window/cache/policy.s(735)
+pushw0sp (pushwsp.o):
+    flow.o                    src/services/window/cache/flow.s(374)
+    policy.o                  src/services/window/cache/policy.s(735)
+pushwysp (pushwsp.o):
+    flow.o                    src/services/window/cache/flow.s(374)
+    flow.o                    src/services/window/cache/flow.s(374)
+    flow.o                    src/services/window/cache/flow.s(374)
+    flow.o                    src/services/window/cache/flow.s(374)
+    policy.o                  src/services/window/cache/policy.s(735)
+    policy.o                  src/services/window/cache/policy.s(735)
+    policy.o                  src/services/window/cache/policy.s(735)
+regbank (zeropage.o):
+    module.o                  src/services/window/cache/module.s(4)
+regsave (zeropage.o):
+    module.o                  src/services/window/cache/module.s(4)
+shrax3 (shrax3.o):
+    command.o                 src/services/window/cache/command.s(372)
+    policy.o                  src/services/window/cache/policy.s(735)
+    policy.o                  src/services/window/cache/policy.s(735)
+sp (zeropage.o):
+    sub.o                     runtime/sub.s(9)
+    staxspi.o                 runtime/staxspi.s(10)
+    staxsp.o                  runtime/staxsp.s(8)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    or.o                      runtime/or.s(10)
+    memcpy.o                  common/memcpy.s(15)
+    incsp2.o                  runtime/incsp2.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp7.o                  runtime/decsp7.s(8)
+    decsp5.o                  runtime/decsp5.s(8)
+    decsp4.o                  runtime/decsp4.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    controller.o              src/services/window/cache/controller.s(10)
+    flow.o                    src/services/window/cache/flow.s(10)
+    command.o                 src/services/window/cache/command.s(10)
+    policy.o                  src/services/window/cache/policy.s(10)
+    module.o                  src/services/window/cache/module.s(4)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+    module.o                  src/services/window/cache/module.s(4)
+stax0sp (staxsp.o):
+    controller.o              src/services/window/cache/controller.s(214)
+    flow.o                    src/services/window/cache/flow.s(374)
+    command.o                 src/services/window/cache/command.s(372)
+    policy.o                  src/services/window/cache/policy.s(735)
+staxspidx (staxspi.o):
+    policy.o                  src/services/window/cache/policy.s(735)
+tmp1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    shrax3.o                  runtime/shrax3.s(8)
+    shl.o                     runtime/shl.s(16)
+    or.o                      runtime/or.s(10)
+    controller.o              src/services/window/cache/controller.s(11)
+    command.o                 src/services/window/cache/command.s(11)
+    policy.o                  src/services/window/cache/policy.s(11)
+    module.o                  src/services/window/cache/module.s(5)
+tmp2 (zeropage.o):
+    module.o                  src/services/window/cache/module.s(5)
+tmp3 (zeropage.o):
+    module.o                  src/services/window/cache/module.s(5)
+tmp4 (zeropage.o):
+    module.o                  src/services/window/cache/module.s(5)
+tosicmp (icmp.o):
+    policy.o                  src/services/window/cache/policy.s(735)
+tosicmp0 (icmp.o):
+    controller.o              src/services/window/cache/controller.s(214)
+tosorax (or.o):
+    controller.o              src/services/window/cache/controller.s(214)
+tosshlax (shl.o):
+    command.o                 src/services/window/cache/command.s(372)
+tossuba0 (sub.o):
+    command.o                 src/services/window/cache/command.s(372)
+    policy.o                  src/services/window/cache/policy.s(735)
+tossubax (sub.o):
+    policy.o                  src/services/window/cache/policy.s(735)
+tosumula0 (mul8.o):
+    policy.o                  src/services/window/cache/policy.s(735)
+    policy.o                  src/services/window/cache/policy.s(735)
+
