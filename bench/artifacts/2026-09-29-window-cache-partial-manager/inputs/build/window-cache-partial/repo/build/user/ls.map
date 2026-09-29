@@ -1,0 +1,257 @@
+Modules list:
+-------------
+entry.o:
+    STARTUP           Offs=000000  Size=000012  Align=00001  Fill=0000
+syscall.o:
+    CODE              Offs=000000  Size=000026  Align=00001  Fill=0000
+filesystem.o:
+    CODE              Offs=000026  Size=000246  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000002  Align=00001  Fill=0000
+ls.o:
+    CODE              Offs=00026C  Size=0003A9  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000040  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=000615  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000631  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(call.o):
+    CODE              Offs=00063F  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=000646  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=00064F  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=00065C  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp5.o):
+    CODE              Offs=000669  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000676  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=00067D  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=000693  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000698  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=00069D  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=0006A2  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=0006A7  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(or.o):
+    CODE              Offs=0006AC  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popa.o):
+    CODE              Offs=0006BE  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=0006CA  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=0006E0  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=0006FA  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000716  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=00072C  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subeqsp.o):
+    CODE              Offs=000737  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=00074C  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               000200  000211  000012  00001
+CODE                  000212  00096A  000759  00001
+RODATA                00096B  0009AA  000040  00001
+BSS                   0009AB  0009AC  000002  00001
+
+
+Exports list by name:
+---------------------
+_udeks_close              00036A RLA    _udeks_getdents           000272 RLA    
+_udeks_open               000238 RLA    _udeks_program_main       00047E RLA    
+_udeks_stat               0002E9 RLA    _udeks_write              00021C RLA    
+_udeks_write_byte         000212 RLA    addysp                    000844 RLA    
+addysp1                   000843 RLA    callax                    000851 RLA    
+decsp1                    000858 RLA    decsp2                    000861 RLA    
+decsp3                    00086E RLA    decsp5                    00087B RLA    
+incsp1                    000888 RLA    incsp2                    000897 RLA    
+incsp3                    0008A5 RLA    incsp4                    0008AA RLA    
+incsp5                    0008AF RLA    incsp6                    0008B4 RLA    
+incsp7                    0008B9 RLA    popa                      0008D0 RLA    
+ptr1                      00000A RLZ    pusha                     0008E0 RLA    
+pusha0                    0008F4 RLA    pushax                    0008F6 RLA    
+pushwysp                  00090E RLA    sp                        000002 RLZ    
+sreg                      000004 RLZ    staspidx                  000928 RLA    
+stax0sp                   00093E RLA    staxysp                   000940 RLA    
+subeqysp                  00094B RLA    subysp                    00095E RLA    
+tmp1                      000012 RLZ    tosadda0                  000827 RLA    
+tosaddax                  000829 RLA    tosorax                   0008C0 RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+ptr1                      00000A RLZ    tmp1                      000012 RLZ    
+_udeks_write_byte         000212 RLA    _udeks_write              00021C RLA    
+_udeks_open               000238 RLA    _udeks_getdents           000272 RLA    
+_udeks_stat               0002E9 RLA    _udeks_close              00036A RLA    
+_udeks_program_main       00047E RLA    tosadda0                  000827 RLA    
+tosaddax                  000829 RLA    addysp1                   000843 RLA    
+addysp                    000844 RLA    callax                    000851 RLA    
+decsp1                    000858 RLA    decsp2                    000861 RLA    
+decsp3                    00086E RLA    decsp5                    00087B RLA    
+incsp1                    000888 RLA    incsp2                    000897 RLA    
+incsp3                    0008A5 RLA    incsp4                    0008AA RLA    
+incsp5                    0008AF RLA    incsp6                    0008B4 RLA    
+incsp7                    0008B9 RLA    tosorax                   0008C0 RLA    
+popa                      0008D0 RLA    pusha                     0008E0 RLA    
+pusha0                    0008F4 RLA    pushax                    0008F6 RLA    
+pushwysp                  00090E RLA    staspidx                  000928 RLA    
+stax0sp                   00093E RLA    staxysp                   000940 RLA    
+subeqysp                  00094B RLA    subysp                    00095E RLA    
+
+
+
+Imports list:
+-------------
+_udeks_close (filesystem.o):
+    ls.o                      build/user/ls.s(18)
+_udeks_getdents (filesystem.o):
+    ls.o                      build/user/ls.s(16)
+_udeks_open (filesystem.o):
+    ls.o                      build/user/ls.s(15)
+_udeks_program_main (ls.o):
+    entry.o                   user/lib/entry.s(7)
+_udeks_stat (filesystem.o):
+    ls.o                      build/user/ls.s(17)
+_udeks_write (syscall.o):
+    ls.o                      build/user/ls.s(14)
+_udeks_write_byte (syscall.o):
+    ls.o                      build/user/ls.s(13)
+addysp (addysp.o):
+    incsp7.o                  runtime/incsp7.s(8)
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    ls.o                      build/user/ls.s(581)
+    ls.o                      build/user/ls.s(581)
+addysp1 (addysp.o):
+    or.o                      runtime/or.s(9)
+callax (call.o):
+    filesystem.o              build/user/filesystem.s(392)
+decsp1 (decsp1.o):
+    filesystem.o              build/user/filesystem.s(392)
+    filesystem.o              build/user/filesystem.s(392)
+decsp2 (decsp2.o):
+    filesystem.o              build/user/filesystem.s(392)
+    filesystem.o              build/user/filesystem.s(392)
+    filesystem.o              build/user/filesystem.s(392)
+    filesystem.o              build/user/filesystem.s(392)
+    filesystem.o              build/user/filesystem.s(392)
+decsp3 (decsp3.o):
+    ls.o                      build/user/ls.s(581)
+    filesystem.o              build/user/filesystem.s(392)
+decsp5 (decsp5.o):
+    ls.o                      build/user/ls.s(581)
+incsp1 (incsp1.o):
+    filesystem.o              build/user/filesystem.s(392)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    ls.o                      build/user/ls.s(581)
+incsp3 (incsp3.o):
+    filesystem.o              build/user/filesystem.s(392)
+incsp4 (incsp4.o):
+    filesystem.o              build/user/filesystem.s(392)
+incsp5 (incsp5.o):
+    filesystem.o              build/user/filesystem.s(392)
+incsp6 (incsp6.o):
+    filesystem.o              build/user/filesystem.s(392)
+incsp7 (incsp7.o):
+    ls.o                      build/user/ls.s(581)
+    filesystem.o              build/user/filesystem.s(392)
+popa (popa.o):
+    syscall.o                 user/lib/syscall.s(12)
+ptr1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    call.o                    runtime/call.s(8)
+    ls.o                      build/user/ls.s(11)
+    filesystem.o              build/user/filesystem.s(11)
+    syscall.o                 user/lib/syscall.s(13)
+    entry.o                   user/lib/entry.s(9)
+pusha (pusha.o):
+    ls.o                      build/user/ls.s(581)
+    ls.o                      build/user/ls.s(581)
+    ls.o                      build/user/ls.s(581)
+    filesystem.o              build/user/filesystem.s(392)
+    filesystem.o              build/user/filesystem.s(392)
+    filesystem.o              build/user/filesystem.s(392)
+    filesystem.o              build/user/filesystem.s(392)
+    entry.o                   user/lib/entry.s(8)
+pusha0 (pushax.o):
+    ls.o                      build/user/ls.s(581)
+pushax (pushax.o):
+    ls.o                      build/user/ls.s(581)
+    ls.o                      build/user/ls.s(581)
+    ls.o                      build/user/ls.s(581)
+    ls.o                      build/user/ls.s(581)
+    filesystem.o              build/user/filesystem.s(392)
+    filesystem.o              build/user/filesystem.s(392)
+pushwysp (pushwsp.o):
+    ls.o                      build/user/ls.s(581)
+    ls.o                      build/user/ls.s(581)
+sp (zeropage.o):
+    subysp.o                  runtime/subysp.s(9)
+    subeqsp.o                 runtime/subeqsp.s(8)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popa.o                    runtime/popa.s(8)
+    or.o                      runtime/or.s(10)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    decsp5.o                  runtime/decsp5.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    add.o                     runtime/add.s(12)
+    ls.o                      build/user/ls.s(10)
+    filesystem.o              build/user/filesystem.s(10)
+sreg (zeropage.o):
+    filesystem.o              build/user/filesystem.s(10)
+staspidx (staspidx.o):
+    ls.o                      build/user/ls.s(581)
+    filesystem.o              build/user/filesystem.s(392)
+stax0sp (staxsp.o):
+    filesystem.o              build/user/filesystem.s(392)
+staxysp (staxsp.o):
+    ls.o                      build/user/ls.s(581)
+    ls.o                      build/user/ls.s(581)
+subeqysp (subeqsp.o):
+    ls.o                      build/user/ls.s(581)
+subysp (subysp.o):
+    ls.o                      build/user/ls.s(581)
+    ls.o                      build/user/ls.s(581)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    or.o                      runtime/or.s(10)
+    add.o                     runtime/add.s(12)
+    syscall.o                 user/lib/syscall.s(13)
+    entry.o                   user/lib/entry.s(9)
+tosadda0 (add.o):
+    ls.o                      build/user/ls.s(581)
+tosaddax (add.o):
+    ls.o                      build/user/ls.s(581)
+tosorax (or.o):
+    ls.o                      build/user/ls.s(581)
+

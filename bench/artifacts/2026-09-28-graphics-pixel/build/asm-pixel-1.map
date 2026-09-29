@@ -1,0 +1,254 @@
+Modules list:
+-------------
+launcher.o:
+    CODE              Offs=000000  Size=00004C  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000076  Align=00001  Fill=0000
+stack.o:
+    CODE              Offs=00004C  Size=000005  Align=00001  Fill=0000
+asm-pixel-1.o:
+    CODE              Offs=000051  Size=000630  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000005  Align=00001  Fill=0000
+asm-pixel.o:
+    VICSHADOW         Offs=000000  Size=001F40  Align=00001  Fill=0000
+pixel.o:
+    CODE              Offs=000681  Size=0000BE  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=00073F  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=00075B  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=00076C  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax1.o):
+    CODE              Offs=00077A  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp4.o):
+    CODE              Offs=000782  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp6.o):
+    CODE              Offs=00078F  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=00079C  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax7.o):
+    CODE              Offs=0007CA  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=0007CF  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=0007DA  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=0007F0  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=0007F5  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaui.o):
+    CODE              Offs=0007FA  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=000803  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=00080C  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul.o):
+    CODE              Offs=000838  Size=000045  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=00087D  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ne.o):
+    CODE              Offs=0008B7  Size=00000A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=0008C1  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=0008CF  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=0008E5  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=0008FF  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=000915  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxspi.o):
+    CODE              Offs=000920  Size=00001B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               002000  002075  000076  00001
+CODE                  002076  0029B0  00093B  00001
+BSS                   0029B1  0029B5  000005  00001
+VICSHADOW             00A1E0  00C11F  001F40  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               0029B1 RLA    __BSS_SIZE__              000005 REA    
+__STARTUP__               000001 REA    _main                     002116 RLA    
+_pixel_probe_sp           0020C2 RLA    _raster_timer_start       002076 RLA    
+_raster_timer_stop        002097 RLA    _udeks_vic_bitmap_pixel   0026F7 RLA    
+_udeks_vic_bitmap_shadow  00A1E0 RLA    addeqysp                  0027D3 RLA    
+addysp                    0027E3 RLA    aslax1                    0027F0 RLA    
+boolne                    002882 RLA    boolult                   0028A1 RLA    
+decsp4                    0027F8 RLA    decsp6                    002805 RLA    
+incax7                    002840 RLA    incaxy                    002847 RLA    
+incsp2                    002858 RLA    incsp4                    002866 RLA    
+incsp6                    00286B RLA    ldauidx                   002870 RLA    
+ldaxysp                   00287B RLA    mul8x16                   0028F5 RLA    
+mul8x16a                  0028FF RLA    popptr1                   002937 RLA    
+ptr1                      00000A RLZ    ptr4                      000010 RLZ    
+pusha                     002949 RLA    pushax                    00295F RLA    
+sp                        000002 RLZ    sreg                      000004 RLZ    
+staspidx                  002975 RLA    staxspidx                 002996 RLA    
+staxysp                   00298D RLA    tmp1                      000012 RLZ    
+tmp2                      000013 RLZ    tosaddax                  0027B7 RLA    
+tosicmp                   002814 RLA    tosneax                   002931 RLA    
+tosumulax                 0028AE RLA    
+
+
+Exports list by value:
+----------------------
+__STARTUP__               000001 REA    sp                        000002 RLZ    
+sreg                      000004 RLZ    __BSS_SIZE__              000005 REA    
+ptr1                      00000A RLZ    ptr4                      000010 RLZ    
+tmp1                      000012 RLZ    tmp2                      000013 RLZ    
+_raster_timer_start       002076 RLA    _raster_timer_stop        002097 RLA    
+_pixel_probe_sp           0020C2 RLA    _main                     002116 RLA    
+_udeks_vic_bitmap_pixel   0026F7 RLA    tosaddax                  0027B7 RLA    
+addeqysp                  0027D3 RLA    addysp                    0027E3 RLA    
+aslax1                    0027F0 RLA    decsp4                    0027F8 RLA    
+decsp6                    002805 RLA    tosicmp                   002814 RLA    
+incax7                    002840 RLA    incaxy                    002847 RLA    
+incsp2                    002858 RLA    incsp4                    002866 RLA    
+incsp6                    00286B RLA    ldauidx                   002870 RLA    
+ldaxysp                   00287B RLA    boolne                    002882 RLA    
+boolult                   0028A1 RLA    tosumulax                 0028AE RLA    
+mul8x16                   0028F5 RLA    mul8x16a                  0028FF RLA    
+tosneax                   002931 RLA    popptr1                   002937 RLA    
+pusha                     002949 RLA    pushax                    00295F RLA    
+staspidx                  002975 RLA    staxysp                   00298D RLA    
+staxspidx                 002996 RLA    __BSS_RUN__               0029B1 RLA    
+_udeks_vic_bitmap_shadow  00A1E0 RLA    
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/bench/graphics-raster/launcher.s(3)
+__BSS_SIZE__ ([linker generated]):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/bench/graphics-raster/launcher.s(3)
+__STARTUP__ (launcher.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(13)
+_main (asm-pixel-1.o):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/bench/graphics-raster/launcher.s(3)
+_pixel_probe_sp (stack.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(18)
+_raster_timer_start (launcher.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(16)
+_raster_timer_stop (launcher.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(17)
+_udeks_vic_bitmap_pixel (pixel.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(14)
+_udeks_vic_bitmap_shadow (asm-pixel.o):
+    pixel.o                   /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/pixel.s(7)
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(15)
+addeqysp (addeqsp.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+addysp (addysp.o):
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+aslax1 (aslax1.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+boolne (makebool.o):
+    ne.o                      runtime/ne.s(8)
+boolult (makebool.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+decsp4 (decsp4.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+decsp6 (decsp6.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+incax7 (incax7.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+incaxy (incaxy.o):
+    incax7.o                  runtime/incax7.s(8)
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+incsp2 (incsp2.o):
+    staxspi.o                 runtime/staxspi.s(9)
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+incsp4 (incsp4.o):
+    pixel.o                   /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/pixel.s(7)
+incsp6 (incsp6.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+ldauidx (ldaui.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+ldaxysp (ldaxsp.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+mul8x16 (mul8.o):
+    mul.o                     runtime/mul.s(8)
+mul8x16a (mul8.o):
+    mul.o                     runtime/mul.s(8)
+popptr1 (popptr1.o):
+    mul8.o                    runtime/mul8.s(9)
+    mul.o                     runtime/mul.s(9)
+ptr1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+    ldaui.o                   runtime/ldaui.s(8)
+    pixel.o                   /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/pixel.s(6)
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/bench/graphics-raster/launcher.s(4)
+ptr4 (zeropage.o):
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+pusha (pusha.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+pushax (pushax.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+sp (zeropage.o):
+    incsp2.o                  runtime/incsp2.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    staxspi.o                 runtime/staxspi.s(10)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    decsp6.o                  runtime/decsp6.s(8)
+    decsp4.o                  runtime/decsp4.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    add.o                     runtime/add.s(12)
+    pixel.o                   /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/pixel.s(6)
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(10)
+    stack.o                   /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/stack.s(4)
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/bench/graphics-raster/launcher.s(4)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+staspidx (staspidx.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+staxspidx (staxspi.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+staxysp (staxsp.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+tmp1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    mul.o                     runtime/mul.s(10)
+    incaxy.o                  runtime/incaxy.s(8)
+    aslax1.o                  runtime/aslax1.s(8)
+    add.o                     runtime/add.s(12)
+    pixel.o                   /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/pixel.s(6)
+tmp2 (zeropage.o):
+    pixel.o                   /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/pixel.s(6)
+tosaddax (add.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+tosicmp (icmp.o):
+    ne.o                      runtime/ne.s(8)
+tosneax (ne.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+tosumulax (mul.o):
+    asm-pixel-1.o             /var/home/salvogendut/Dev/UDEKS/bench/graphics-pixel/probe.s(730)
+

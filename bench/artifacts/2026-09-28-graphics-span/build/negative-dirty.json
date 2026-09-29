@@ -1,0 +1,7 @@
+{
+  "base_sha256": "68732a9f0037a97af9c039d95359aa3c1177dc8fe5f1bb9ae52468d056e97baa",
+  "fault_sha256": "33299d806a5ee98053dc24d14114e1c542162ac02d254de3f5a058473a6f2236",
+  "file_offset": 1536,
+  "before": "9990e1",
+  "after": "eaeaea"
+}

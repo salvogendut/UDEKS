@@ -1,0 +1,136 @@
+{
+  "qualification": "standalone combined command lease; not installed or NMI-qualified",
+  "module_bytes": 3116,
+  "module_segments": {
+    "ZEROPAGE": [
+      6,
+      31
+    ],
+    "OVERLAY": [
+      16896,
+      17108
+    ],
+    "DISPATCH": [
+      17109,
+      17111
+    ],
+    "CODE": [
+      17112,
+      20011
+    ],
+    "PRIVATESTATE": [
+      20192,
+      20213
+    ]
+  },
+  "command_object": {
+    "CODE": 517,
+    "RODATA": 0,
+    "BSS": 0,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "binding_object": {
+    "CODE": 241,
+    "RODATA": 0,
+    "BSS": 0,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "gateway_bytes": 217,
+  "private_stack": [
+    20224,
+    20463
+  ],
+  "image": [
+    20480,
+    23551
+  ],
+  "remaining_resident_padding": 275,
+  "negative_controls": {
+    "irq-leak": {
+      "offset": 3181,
+      "before": 120,
+      "after": 234
+    },
+    "zp-leak": {
+      "offset": 3232,
+      "before": 6,
+      "after": 7
+    },
+    "shell-stack": {
+      "offset": 3201,
+      "before": 79,
+      "after": 239
+    }
+  },
+  "helpers": [
+    "/usr/share/cc65/lib/none.lib(add.o)",
+    "/usr/share/cc65/lib/none.lib(addysp.o)",
+    "/usr/share/cc65/lib/none.lib(decsp2.o)",
+    "/usr/share/cc65/lib/none.lib(decsp3.o)",
+    "/usr/share/cc65/lib/none.lib(decsp4.o)",
+    "/usr/share/cc65/lib/none.lib(decsp5.o)",
+    "/usr/share/cc65/lib/none.lib(decsp7.o)",
+    "/usr/share/cc65/lib/none.lib(icmp.o)",
+    "/usr/share/cc65/lib/none.lib(incsp2.o)",
+    "/usr/share/cc65/lib/none.lib(incsp3.o)",
+    "/usr/share/cc65/lib/none.lib(incsp4.o)",
+    "/usr/share/cc65/lib/none.lib(incsp5.o)",
+    "/usr/share/cc65/lib/none.lib(incsp6.o)",
+    "/usr/share/cc65/lib/none.lib(incsp7.o)",
+    "/usr/share/cc65/lib/none.lib(incsp8.o)",
+    "/usr/share/cc65/lib/none.lib(makebool.o)",
+    "/usr/share/cc65/lib/none.lib(memcpy.o)",
+    "/usr/share/cc65/lib/none.lib(mul8.o)",
+    "/usr/share/cc65/lib/none.lib(popptr1.o)",
+    "/usr/share/cc65/lib/none.lib(pusha.o)",
+    "/usr/share/cc65/lib/none.lib(pushax.o)",
+    "/usr/share/cc65/lib/none.lib(pushwsp.o)",
+    "/usr/share/cc65/lib/none.lib(shrax3.o)",
+    "/usr/share/cc65/lib/none.lib(staspidx.o)",
+    "/usr/share/cc65/lib/none.lib(staxsp.o)",
+    "/usr/share/cc65/lib/none.lib(staxspi.o)",
+    "/usr/share/cc65/lib/none.lib(sub.o)",
+    "/usr/share/cc65/lib/none.lib(zeropage.o)"
+  ],
+  "source_sha256": {
+    "bench/window-cache-command/layout.inc": "bcd837183037a72a79a854b4355033ae2ffee6246db99060847c1bf006d6e7a9",
+    "bench/window-cache-command/module.s": "9b4f038f0a965aca99f2571c50dab62609f043c85f770fb54edab14a58bf695a",
+    "bench/window-cache-command/module.cfg": "2848a81f4662b5627b2682cbb948e6689d4ec8baa4c10c6b457c3b2ed54c5445",
+    "bench/window-cache-command/gateway.s": "fda3dc545ba987deef8c6332a060e82b470923025dd0f3677364cce573ca4b12",
+    "bench/window-cache-command/binding.s": "44a09bf82612519f7cec649eec5ce3cd758c93545f8c33922646daa4b02fcd7f",
+    "bench/window-cache-command/probe.c": "31809f6eefb2524aad6dc567d8fba2d96ddaee1d9c9db130d73225f78e1da9a4",
+    "tools/window_cache_command.py": "1a490cadc37761c1cf15024e8a26195d5b52d18b1dd2c155b82896247533329b",
+    "bench/window-cache-c-runtime/driver.s": "d42b480d6be769d60eba16d0dafecd0c46e429ad9a1f2bb086fe4413bb34b033",
+    "bench/window-cache-c-runtime/probe.cfg": "c3ee54ed22961b56264f498f36108160f615f15e8bd58ba3fc374756194d2ab7",
+    "bench/window-cache-c-runtime/gateway.cfg": "5db7e1f71ffaf765e71424cfcf62a36742d1821f5b2256dcdc2ef5985741d19c",
+    "bench/window-cache-overlay/core.s": "1a6933dc929aa4049a0208d9f9e15680a3eab4de733355d1e531d9b9fe2d83eb",
+    "bench/graphics-raster/launcher.s": "d6acecc7fd8126fcd248465243608c5d8958e5b43ff0a25c765d8ea112209c6d",
+    "include/udeks/window_cache_command.h": "a3d5184fd8650ae85fc0acdebf5069f1a8a685a6157e5599c3bbd2ad42108f46",
+    "include/udeks/window_cache_state.h": "c5dab7fb33976298c2c18e3327c74664c8b41b675543412045585d855c901243",
+    "src/services/window/cache_overlay.c": "7dd4b2fc4d276845dd1425816e3f44b3f8c1dc3d175da46854f7f647a6ef67e4",
+    "src/services/window/move_cache_state.c": "64944eda2cf7e396ecfb4742b67ec6ef7f19e9f0d967913ed11969dcaade0c97"
+  },
+  "linked_sha256": {
+    "module.bin": "9ad6c798d1e6b261666dbd6bad84e3aae9f8ba7d5738f838b74fb464b4366c89",
+    "module-envelope.bin": "eb7f1979297a146c2257d2d857208374671a277dd0ff50838a7123d3dac651de",
+    "module.map": "437a0423f663a97aefb65b61f845d7a31a3ff98c782921a8af7db1acc539f089",
+    "gateway.bin": "da652f565c6cde0d184b2ea14289b75dba7839f438f11d9fd3a3da49412d1d2f",
+    "driver.s": "45839f029ea176ca4d9d45138d186267e495cde56bd63364e70f42338eeeeb05",
+    "launcher.s": "2f5386379407121c499ce1178b0b78323774aa7ba2aaf8008b09f314a689f664",
+    "probe-0.bin": "62c84be4b6eca4b5e3d9039bfb5b44ccd29937897f5bce406c4ab49f5a695b7d",
+    "probe-0.map": "be5f872bde0c9368395b5288b9d351a7d1b97bd6f16080e52e4997bf33ac3c4e",
+    "probe-1.bin": "27007d44dcc9a51f522c5ca4c4f72d78937fa6a3d80ced6881de47bc70e6e556",
+    "probe-1.map": "27c7c1f04ea7e84ad41b0adad91cb6270fceb2275ffff1f898f18be2096ff732"
+  },
+  "program_sha256": {
+    "probe-0.prg": "7331ff2ede4393e50b9b39bb4024ca457b46629aa245f27b40a30551a54aa5ef",
+    "probe-1.prg": "0a58f60a9c59058597fb85db5263f37dd3de96da097686aa32fb17ca6c8d6026",
+    "probe-irq-leak.prg": "bdb8acb7367c1e916abcfde692f559310a09b58dcf764c4e31e9ac837f4edd9a",
+    "probe-shell-stack.prg": "52a2e4af236069fa5ca286a32ef6750782fd8bdbd018c84a7a3d44deb371ab83",
+    "probe-zp-leak.prg": "781d90fed4d3a8ec010b4412de452ca21865addcbccfa95ca52bd72a8b74dc35"
+  }
+}

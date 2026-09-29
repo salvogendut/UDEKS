@@ -1,0 +1,81 @@
+{
+  "qualification": "host-tested C policy and unexecuted bank-1 link; no private-stack/dispatcher qualification",
+  "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44",
+  "policy_object": {
+    "CODE": 1828,
+    "RODATA": 0,
+    "BSS": 0,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "linked_bytes": 2567,
+  "core_bytes": 213,
+  "cc65_record_bytes": {
+    "lease": 13,
+    "row": 9
+  },
+  "helper_bytes": 526,
+  "segments": {
+    "ZEROPAGE": [
+      6,
+      31
+    ],
+    "OVERLAY": [
+      16896,
+      17108
+    ],
+    "CODE": [
+      17109,
+      19462
+    ]
+  },
+  "helpers": [
+    "/usr/share/cc65/lib/none.lib(add.o)",
+    "/usr/share/cc65/lib/none.lib(addysp.o)",
+    "/usr/share/cc65/lib/none.lib(decsp2.o)",
+    "/usr/share/cc65/lib/none.lib(decsp3.o)",
+    "/usr/share/cc65/lib/none.lib(decsp7.o)",
+    "/usr/share/cc65/lib/none.lib(icmp.o)",
+    "/usr/share/cc65/lib/none.lib(incsp2.o)",
+    "/usr/share/cc65/lib/none.lib(incsp3.o)",
+    "/usr/share/cc65/lib/none.lib(incsp4.o)",
+    "/usr/share/cc65/lib/none.lib(incsp5.o)",
+    "/usr/share/cc65/lib/none.lib(incsp6.o)",
+    "/usr/share/cc65/lib/none.lib(incsp7.o)",
+    "/usr/share/cc65/lib/none.lib(incsp8.o)",
+    "/usr/share/cc65/lib/none.lib(makebool.o)",
+    "/usr/share/cc65/lib/none.lib(memcpy.o)",
+    "/usr/share/cc65/lib/none.lib(mul8.o)",
+    "/usr/share/cc65/lib/none.lib(popptr1.o)",
+    "/usr/share/cc65/lib/none.lib(pusha.o)",
+    "/usr/share/cc65/lib/none.lib(pushax.o)",
+    "/usr/share/cc65/lib/none.lib(pushwsp.o)",
+    "/usr/share/cc65/lib/none.lib(shrax3.o)",
+    "/usr/share/cc65/lib/none.lib(staspidx.o)",
+    "/usr/share/cc65/lib/none.lib(staxsp.o)",
+    "/usr/share/cc65/lib/none.lib(staxspi.o)",
+    "/usr/share/cc65/lib/none.lib(sub.o)",
+    "/usr/share/cc65/lib/none.lib(zeropage.o)"
+  ],
+  "binary_sha256": "ec9c6b95a33e8d39ff1f75010c54b6c19d36757916c6de83205e1c8b3f61efe3",
+  "map_sha256": "080f119adad0ecc47f9d4e94a70a2fa86207e8e700524a566f5ee6cffb3236fc",
+  "source_sha256": {
+    "src/services/window/move_cache_state.c": "64944eda2cf7e396ecfb4742b67ec6ef7f19e9f0d967913ed11969dcaade0c97",
+    "include/udeks/window_cache_state.h": "c5dab7fb33976298c2c18e3327c74664c8b41b675543412045585d855c901243",
+    "bench/window-cache-overlay/policy-link.cfg": "a5acba81c2042e0581ae7ab92d8a477ad8d51ab4040a4782908e9739332b5d3a"
+  },
+  "candidate_private_stack": [
+    19712,
+    19951
+  ],
+  "candidate_identity": [
+    19952,
+    19967
+  ],
+  "candidate_image": [
+    19968,
+    23551
+  ],
+  "warning": "candidate is not delivered or executed; current delivery disk still contains only the 213-byte row core"
+}

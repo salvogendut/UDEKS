@@ -1,0 +1,71 @@
+{
+  "variant": "asm",
+  "qualification": "standalone prototype; no resident placement or active IRQ qualification",
+  "flags": {
+    "cache": "-Oirs",
+    "driver": "unoptimized (avoids const-pointer store optimizer defect)"
+  },
+  "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44",
+  "cache_object": {
+    "CODE": 607,
+    "RODATA": 0,
+    "BSS": 13,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "transfer_object": {
+    "CODE": 131,
+    "RODATA": 0,
+    "BSS": 0,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "sources_sha256": {
+    "bench/graphics-raster/launcher.s": "d6acecc7fd8126fcd248465243608c5d8958e5b43ff0a25c765d8ea112209c6d",
+    "bench/window-cache/cache-fast.c": "b148492cca316c5be96ed50b6a67dd96ad60ab9aa97b580e7345117e7dff39cc",
+    "bench/window-cache/cache.c": "eb6a899f0bbebe94fff72894913e8c612db7d100554af9a45a404bd69fc78066",
+    "bench/window-cache/cache.h": "e8397c32ab102e6d3a0f70b12d0bd5fe82b87e1d8f07ee55feacbd146bc91bd5",
+    "bench/window-cache/probe.c": "59b796eaca988782bb84d4c0190e5be35c752c5464e2b481aad3d66d961d00a2",
+    "bench/window-cache/row-probe.c": "04b90261b60409e7d72bbbcb2218eacd0df6c2fef5a4a4a0b728a5cd7844dcbd",
+    "bench/window-cache/rows.s": "8dcbd6ebb5e5cdb69569c8b1a3f0dcd60a570589a4c275254e90559e1007f719",
+    "bench/window-cache/transfer-lease.s": "afbc480651ade659eb093bf5ff00e9f2be65054e5fd5d15842387c824ffda7d2",
+    "bench/window-cache/transfer.s": "edac08d781929ff6de230f1dadfc6d8fdc917aa6d5050f6c5f09e0ef823e73c8",
+    "cfg/8502-raster-bench.cfg": "c51ee0b7a2ac5c0c091e9ee1f71bbacc9e603f8c5ca5fd2bcfa1253bf9651f9f",
+    "tools/1986_input_smoke_build.py": "5dbf7e6b2d8a0f3eda15c4796bb81ee3931e5d05b032e74e6a538daf5984256f",
+    "tools/1986_raster_bench.c": "e1d772fc3155d259f84eeff8c8f943e88c85c7cd8d2520a697d92887eb944b68",
+    "tools/bin_to_prg.py": "bc5ea4de3fbd862c1832e0d91114cfe5c6ac5b3cac0a033d7c2d949733b72962",
+    "tools/graphics_raster_bench_run.py": "f15cb59bf9ee40131e62dddeb2dd05f4f4c3d40bfe5a570aebdcb93989e0ad5b",
+    "tools/snapshot_extract.py": "508125b3ca90de50c36825ec8299151ce0fb4cd74bc1891f57ea616dfd4b5d85",
+    "tools/vice_capture.py": "8e086e0cd28d620e028d997e38ec66595d02bf3f2af8c04cf966fbeda0670967",
+    "tools/window_cache_bench.py": "e7752bb64254a08a39173838abc3b725ba71b83868ea74e7bb6e06f137dca99f"
+  },
+  "program_sha256": {
+    "cache-0.prg": "873d88cc2e9b524c9da9bf8a7d1dca19f81db42ff0adc07e46f68fd3ddbce299",
+    "cache-1.prg": "2f2a646c90f19e345093a01e307782cbc292550c79fb01c6edc736807fa18690",
+    "cache-2.prg": "78abfddd00a5f5665ebc56690448d7bb45993191b8ee1db33d3397e81bafd750",
+    "cache-3.prg": "1aa3640fcc1051c495a733fb96666152072f201db55f9a2d8aed6ea4a82a422d",
+    "cache-4.prg": "4668be1cc0cf6bf55a2bad50453b8267c2bdc823115cf8346acce3bb37dd1c1a",
+    "cache-5.prg": "3e01b4021329bf2422407557bfe1471fd9d509a472b80cfa5fb34c16de7ef894",
+    "cache-6.prg": "fff249af9dfdf95a14ad56866d377a78885fe08ecf7b817bd7a7f5eaa0cee8af",
+    "cache-7.prg": "fe3667f1c8d3647678802dac361141e8c486566ff0e26e14cc6b6e59cd4cf346",
+    "cache-8.prg": "35bbf0a8c2548c1101ccb2081439ab480a466d8eec3d327e2ecc41e36db7f7a4",
+    "cache-9.prg": "d2549052089122060db15bc7e166ad67a1f969c3b8234d0e66bb1fd41767ca09",
+    "cache-10.prg": "0a07778354819aa23855cef2c019b66ef9d9900f3ff61ec312077432c71f2685",
+    "cache-matrix.prg": "b2f042a7b0ff62fead2a8af2413691c8cee3f718e721e9e770ce446352af7176"
+  },
+  "gateway": {
+    "size": 99,
+    "run": 63114,
+    "end_inclusive": 63212
+  },
+  "rows_object": {
+    "CODE": 267,
+    "RODATA": 0,
+    "BSS": 5,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  }
+}

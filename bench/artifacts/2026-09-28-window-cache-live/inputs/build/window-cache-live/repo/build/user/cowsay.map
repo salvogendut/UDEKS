@@ -1,0 +1,184 @@
+Modules list:
+-------------
+entry.o:
+    STARTUP           Offs=000000  Size=000012  Align=00001  Fill=0000
+syscall.o:
+    CODE              Offs=000000  Size=000026  Align=00001  Fill=0000
+cowsay.o:
+    CODE              Offs=000026  Size=00056A  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=0000F2  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=000590  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=0005A1  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=0005AF  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=0005B8  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp4.o):
+    CODE              Offs=0005C5  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(eq.o):
+    CODE              Offs=0005D2  Size=00000A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=0005DC  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=00060A  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=000620  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000625  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=00062A  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=00062F  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=000634  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popa.o):
+    CODE              Offs=000660  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=00066C  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000682  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               000200  000211  000012  00001
+CODE                  000212  0008AD  00069C  00001
+RODATA                0008AE  00099F  0000F2  00001
+
+
+Exports list by name:
+---------------------
+_udeks_program_main       000238 RLA    _udeks_write              00021C RLA    
+_udeks_write_byte         000212 RLA    addeq0sp                  0007A2 RLA    
+addeqysp                  0007A4 RLA    addysp                    0007B4 RLA    
+booleq                    00084C RLA    decsp1                    0007C1 RLA    
+decsp3                    0007CA RLA    decsp4                    0007D7 RLA    
+incsp2                    000824 RLA    incsp3                    000832 RLA    
+incsp4                    000837 RLA    incsp5                    00083C RLA    
+incsp7                    000841 RLA    popa                      000872 RLA    
+ptr1                      00000A RLZ    pusha                     000882 RLA    
+pusha0                    000896 RLA    pushax                    000898 RLA    
+sp                        000002 RLZ    sreg                      000004 RLZ    
+tmp1                      000012 RLZ    toseqa0                   0007E6 RLA    
+tosicmp                   0007F0 RLA    tosicmp0                  0007EE RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+ptr1                      00000A RLZ    tmp1                      000012 RLZ    
+_udeks_write_byte         000212 RLA    _udeks_write              00021C RLA    
+_udeks_program_main       000238 RLA    addeq0sp                  0007A2 RLA    
+addeqysp                  0007A4 RLA    addysp                    0007B4 RLA    
+decsp1                    0007C1 RLA    decsp3                    0007CA RLA    
+decsp4                    0007D7 RLA    toseqa0                   0007E6 RLA    
+tosicmp0                  0007EE RLA    tosicmp                   0007F0 RLA    
+incsp2                    000824 RLA    incsp3                    000832 RLA    
+incsp4                    000837 RLA    incsp5                    00083C RLA    
+incsp7                    000841 RLA    booleq                    00084C RLA    
+popa                      000872 RLA    pusha                     000882 RLA    
+pusha0                    000896 RLA    pushax                    000898 RLA    
+
+
+
+Imports list:
+-------------
+_udeks_program_main (cowsay.o):
+    entry.o                   user/lib/entry.s(7)
+_udeks_write (syscall.o):
+    cowsay.o                  build/user/cowsay.s(14)
+_udeks_write_byte (syscall.o):
+    cowsay.o                  build/user/cowsay.s(13)
+addeq0sp (addeqsp.o):
+    cowsay.o                  build/user/cowsay.s(888)
+addeqysp (addeqsp.o):
+    cowsay.o                  build/user/cowsay.s(888)
+addysp (addysp.o):
+    incsp7.o                  runtime/incsp7.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+booleq (makebool.o):
+    eq.o                      runtime/eq.s(8)
+decsp1 (decsp1.o):
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+decsp3 (decsp3.o):
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+decsp4 (decsp4.o):
+    cowsay.o                  build/user/cowsay.s(888)
+incsp2 (incsp2.o):
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+incsp3 (incsp3.o):
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+incsp4 (incsp4.o):
+    cowsay.o                  build/user/cowsay.s(888)
+incsp5 (incsp5.o):
+    cowsay.o                  build/user/cowsay.s(888)
+incsp7 (incsp7.o):
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+popa (popa.o):
+    syscall.o                 user/lib/syscall.s(12)
+ptr1 (zeropage.o):
+    cowsay.o                  build/user/cowsay.s(11)
+    syscall.o                 user/lib/syscall.s(13)
+    entry.o                   user/lib/entry.s(9)
+pusha (pusha.o):
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+    entry.o                   user/lib/entry.s(8)
+pusha0 (pushax.o):
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+pushax (pushax.o):
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+sp (zeropage.o):
+    addysp.o                  runtime/addysp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popa.o                    runtime/popa.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp4.o                  runtime/decsp4.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    cowsay.o                  build/user/cowsay.s(10)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+tmp1 (zeropage.o):
+    syscall.o                 user/lib/syscall.s(13)
+    entry.o                   user/lib/entry.s(9)
+toseqa0 (eq.o):
+    cowsay.o                  build/user/cowsay.s(888)
+tosicmp (icmp.o):
+    eq.o                      runtime/eq.s(8)
+tosicmp0 (icmp.o):
+    cowsay.o                  build/user/cowsay.s(888)
+    cowsay.o                  build/user/cowsay.s(888)
+

@@ -1,0 +1,253 @@
+Modules list:
+-------------
+policy-core.o:
+    OVERLAY           Offs=000000  Size=0000D5  Align=00001  Fill=0000
+move-cache-state.o:
+    CODE              Offs=000000  Size=000724  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=000724  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000740  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=00074E  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=00075B  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp7.o):
+    CODE              Offs=000768  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=000775  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=0007A3  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=0007B9  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=0007BE  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=0007C3  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=0007C8  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=0007CD  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp8.o):
+    CODE              Offs=0007D2  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=0007D7  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(memcpy.o):
+    CODE              Offs=000803  Size=00003C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=00083F  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000879  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000887  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=00089D  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=0008B7  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax3.o):
+    CODE              Offs=0008D3  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=0008E1  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=0008F7  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxspi.o):
+    CODE              Offs=000902  Size=00001B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(sub.o):
+    CODE              Offs=00091D  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000006  00001F  00001A  00001
+OVERLAY               004200  0042D4  0000D5  00001
+CODE                  0042D5  004C06  000932  00001
+
+
+Exports list by name:
+---------------------
+_memcpy                   004AD8 RLA    addysp                    004A16 RLA    
+addysp1                   004A15 RLA    boolule                   004AC9 RLA    
+decsp2                    004A23 RLA    decsp3                    004A30 RLA    
+decsp7                    004A3D RLA    incsp2                    004A80 RLA    
+incsp3                    004A8E RLA    incsp4                    004A93 RLA    
+incsp5                    004A98 RLA    incsp6                    004A9D RLA    
+incsp7                    004AA2 RLA    incsp8                    004AA7 RLA    
+popax                     004A78 RLA    popptr1                   004B4E RLA    
+ptr1                      00000E RLZ    ptr2                      000010 RLZ    
+ptr3                      000012 RLZ    ptr4                      000014 RLZ    
+pusha                     004B60 RLA    pusha0                    004B74 RLA    
+pushax                    004B76 RLA    pushw0sp                  004B8C RLA    
+pushwysp                  004B8E RLA    shrax3                    004BA8 RLA    
+sp                        000006 RLZ    sreg                      000008 RLZ    
+staspidx                  004BB6 RLA    stax0sp                   004BCC RLA    
+staxspidx                 004BD7 RLA    tmp1                      000016 RLZ    
+tosadda0                  0049F9 RLA    tosaddax                  0049FB RLA    
+tosicmp                   004A4C RLA    tosicmp0                  004A4A RLA    
+tossuba0                  004BF2 RLA    tossubax                  004BF4 RLA    
+tosumula0                 004B14 RLA    
+
+
+Exports list by value:
+----------------------
+sp                        000006 RLZ    sreg                      000008 RLZ    
+ptr1                      00000E RLZ    ptr2                      000010 RLZ    
+ptr3                      000012 RLZ    ptr4                      000014 RLZ    
+tmp1                      000016 RLZ    tosadda0                  0049F9 RLA    
+tosaddax                  0049FB RLA    addysp1                   004A15 RLA    
+addysp                    004A16 RLA    decsp2                    004A23 RLA    
+decsp3                    004A30 RLA    decsp7                    004A3D RLA    
+tosicmp0                  004A4A RLA    tosicmp                   004A4C RLA    
+popax                     004A78 RLA    incsp2                    004A80 RLA    
+incsp3                    004A8E RLA    incsp4                    004A93 RLA    
+incsp5                    004A98 RLA    incsp6                    004A9D RLA    
+incsp7                    004AA2 RLA    incsp8                    004AA7 RLA    
+boolule                   004AC9 RLA    _memcpy                   004AD8 RLA    
+tosumula0                 004B14 RLA    popptr1                   004B4E RLA    
+pusha                     004B60 RLA    pusha0                    004B74 RLA    
+pushax                    004B76 RLA    pushw0sp                  004B8C RLA    
+pushwysp                  004B8E RLA    shrax3                    004BA8 RLA    
+staspidx                  004BB6 RLA    stax0sp                   004BCC RLA    
+staxspidx                 004BD7 RLA    tossuba0                  004BF2 RLA    
+tossubax                  004BF4 RLA    
+
+
+Imports list:
+-------------
+_memcpy (memcpy.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+addysp (addysp.o):
+    incsp8.o                  runtime/incsp8.s(8)
+    incsp7.o                  runtime/incsp7.s(8)
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+boolule (makebool.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+decsp2 (decsp2.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+decsp3 (decsp3.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+decsp7 (decsp7.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp2 (incsp2.o):
+    staxspi.o                 runtime/staxspi.s(9)
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+incsp3 (incsp3.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp4 (incsp4.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp5 (incsp5.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp6 (incsp6.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp7 (incsp7.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp8 (incsp8.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+popax (incsp2.o):
+    memcpy.o                  common/memcpy.s(14)
+popptr1 (popptr1.o):
+    mul8.o                    runtime/mul8.s(9)
+    memcpy.o                  common/memcpy.s(14)
+ptr1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    memcpy.o                  common/memcpy.s(15)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(11)
+ptr2 (zeropage.o):
+    memcpy.o                  common/memcpy.s(15)
+ptr3 (zeropage.o):
+    memcpy.o                  common/memcpy.s(15)
+ptr4 (zeropage.o):
+    mul8.o                    runtime/mul8.s(10)
+pusha (pusha.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+pusha0 (pushax.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+pushax (pushax.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+pushw0sp (pushwsp.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+pushwysp (pushwsp.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+shrax3 (shrax3.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+sp (zeropage.o):
+    incsp2.o                  runtime/incsp2.s(8)
+    sub.o                     runtime/sub.s(9)
+    staxspi.o                 runtime/staxspi.s(10)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    memcpy.o                  common/memcpy.s(15)
+    icmp.o                    runtime/icmp.s(9)
+    decsp7.o                  runtime/decsp7.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    add.o                     runtime/add.s(12)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(10)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(10)
+staspidx (staspidx.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+stax0sp (staxsp.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+staxspidx (staxspi.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tmp1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    shrax3.o                  runtime/shrax3.s(8)
+    add.o                     runtime/add.s(12)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(11)
+tosadda0 (add.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tosaddax (add.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tosicmp (icmp.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tosicmp0 (icmp.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tossuba0 (sub.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tossubax (sub.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tosumula0 (mul8.o):
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    move-cache-state.o        /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+

@@ -1,0 +1,20 @@
+
+VICE - Versatile Commodore Emulator
+
+            ID: net.sf.VICE
+           Ref: app/net.sf.VICE/x86_64/stable
+          Arch: x86_64
+        Branch: stable
+       Version: 3.10
+       License: GPL-2.0+
+        Origin: flathub
+    Collection: org.flathub.Stable
+  Installation: system
+Installed Size: 45.8 MB
+       Runtime: org.freedesktop.Platform/x86_64/25.08
+           Sdk: org.freedesktop.Sdk/x86_64/25.08
+
+        Commit: bbd997ea8cbf7e6ba06ff82136fd71069ce2011f93c006412bcda7bbde17e448
+        Parent: 68a5281bbbfb691d105e1006686691713eb0cab353a7d869f4b72c066eca18c7
+       Subject: Add desktop files for vsid, x64dtv, xcbm5x0, xscpu64 (c39f8386949f)
+          Date: 2026-01-18 14:54:47 +0000

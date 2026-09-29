@@ -1,0 +1,161 @@
+Modules list:
+-------------
+entry.o:
+    STARTUP           Offs=000000  Size=000012  Align=00001  Fill=0000
+syscall.o:
+    CODE              Offs=000000  Size=000026  Align=00001  Fill=0000
+date.o:
+    CODE              Offs=000026  Size=00034B  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=00003C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000371  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=00037F  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=000388  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp5.o):
+    CODE              Offs=000395  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp6.o):
+    CODE              Offs=0003A2  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp8.o):
+    CODE              Offs=0003AF  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=0003BC  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=0003D2  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp8.o):
+    CODE              Offs=0003D7  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popa.o):
+    CODE              Offs=0003DC  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=0003E8  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=0003FE  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=000418  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000434  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=00044A  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               000200  000211  000012  00001
+CODE                  000212  000666  000455  00001
+RODATA                000667  0006A2  00003C  00001
+
+
+Exports list by name:
+---------------------
+_udeks_clock_set          00022A RLA    _udeks_program_main       000238 RLA    
+_udeks_write              00021C RLA    _udeks_write_byte         000212 RLA    
+addysp                    000584 RLA    decsp1                    000591 RLA    
+decsp2                    00059A RLA    decsp5                    0005A7 RLA    
+decsp6                    0005B4 RLA    decsp8                    0005C1 RLA    
+incsp2                    0005D6 RLA    incsp3                    0005E4 RLA    
+incsp8                    0005E9 RLA    popa                      0005EE RLA    
+ptr1                      00000A RLZ    pusha                     0005FE RLA    
+pushax                    000614 RLA    pushwysp                  00062C RLA    
+sp                        000002 RLZ    staspidx                  000646 RLA    
+staxysp                   00065E RLA    tmp1                      000012 RLZ    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    ptr1                      00000A RLZ    
+tmp1                      000012 RLZ    _udeks_write_byte         000212 RLA    
+_udeks_write              00021C RLA    _udeks_clock_set          00022A RLA    
+_udeks_program_main       000238 RLA    addysp                    000584 RLA    
+decsp1                    000591 RLA    decsp2                    00059A RLA    
+decsp5                    0005A7 RLA    decsp6                    0005B4 RLA    
+decsp8                    0005C1 RLA    incsp2                    0005D6 RLA    
+incsp3                    0005E4 RLA    incsp8                    0005E9 RLA    
+popa                      0005EE RLA    pusha                     0005FE RLA    
+pushax                    000614 RLA    pushwysp                  00062C RLA    
+staspidx                  000646 RLA    staxysp                   00065E RLA    
+
+
+
+Imports list:
+-------------
+_udeks_clock_set (syscall.o):
+    date.o                    build/user/date.s(15)
+_udeks_program_main (date.o):
+    entry.o                   user/lib/entry.s(7)
+_udeks_write (syscall.o):
+    date.o                    build/user/date.s(14)
+_udeks_write_byte (syscall.o):
+    date.o                    build/user/date.s(13)
+addysp (addysp.o):
+    incsp8.o                  runtime/incsp8.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    date.o                    build/user/date.s(527)
+decsp1 (decsp1.o):
+    date.o                    build/user/date.s(527)
+decsp2 (decsp2.o):
+    date.o                    build/user/date.s(527)
+decsp5 (decsp5.o):
+    date.o                    build/user/date.s(527)
+decsp6 (decsp6.o):
+    date.o                    build/user/date.s(527)
+decsp8 (decsp8.o):
+    date.o                    build/user/date.s(527)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    date.o                    build/user/date.s(527)
+    date.o                    build/user/date.s(527)
+incsp3 (incsp3.o):
+    date.o                    build/user/date.s(527)
+incsp8 (incsp8.o):
+    date.o                    build/user/date.s(527)
+popa (popa.o):
+    syscall.o                 user/lib/syscall.s(12)
+ptr1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    date.o                    build/user/date.s(11)
+    syscall.o                 user/lib/syscall.s(13)
+    entry.o                   user/lib/entry.s(9)
+pusha (pusha.o):
+    date.o                    build/user/date.s(527)
+    date.o                    build/user/date.s(527)
+    date.o                    build/user/date.s(527)
+    date.o                    build/user/date.s(527)
+    date.o                    build/user/date.s(527)
+    entry.o                   user/lib/entry.s(8)
+pushax (pushax.o):
+    date.o                    build/user/date.s(527)
+    date.o                    build/user/date.s(527)
+    date.o                    build/user/date.s(527)
+pushwysp (pushwsp.o):
+    date.o                    build/user/date.s(527)
+sp (zeropage.o):
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popa.o                    runtime/popa.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    decsp8.o                  runtime/decsp8.s(8)
+    decsp6.o                  runtime/decsp6.s(8)
+    decsp5.o                  runtime/decsp5.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    date.o                    build/user/date.s(10)
+staspidx (staspidx.o):
+    date.o                    build/user/date.s(527)
+staxysp (staxsp.o):
+    date.o                    build/user/date.s(527)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    syscall.o                 user/lib/syscall.s(13)
+    entry.o                   user/lib/entry.s(9)
+

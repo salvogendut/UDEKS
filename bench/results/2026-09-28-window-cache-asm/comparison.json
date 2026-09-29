@@ -1,0 +1,490 @@
+{
+  "qualification": "isolated 1 MHz, display-off, IRQ-masked primitive counts; not GUI latency",
+  "cases": [
+    {
+      "case": 0,
+      "1986": {
+        "capture": {
+          "baseline_ticks": 1154134,
+          "assembly_ticks": 280806,
+          "speedup": 4.1101,
+          "reduction_percent": 75.6695
+        },
+        "paste": {
+          "baseline_ticks": 2706567,
+          "assembly_ticks": 593332,
+          "speedup": 4.5616,
+          "reduction_percent": 78.0781
+        },
+        "total": {
+          "baseline_ticks": 3860701,
+          "assembly_ticks": 874138,
+          "speedup": 4.4166,
+          "reduction_percent": 77.358
+        }
+      },
+      "vice": {
+        "capture": {
+          "baseline_ticks": 1154116,
+          "assembly_ticks": 280801,
+          "speedup": 4.1101,
+          "reduction_percent": 75.6696
+        },
+        "paste": {
+          "baseline_ticks": 2706525,
+          "assembly_ticks": 593322,
+          "speedup": 4.5616,
+          "reduction_percent": 78.0781
+        },
+        "total": {
+          "baseline_ticks": 3860641,
+          "assembly_ticks": 874123,
+          "speedup": 4.4166,
+          "reduction_percent": 77.3581
+        }
+      }
+    },
+    {
+      "case": 1,
+      "1986": {
+        "capture": {
+          "baseline_ticks": 1623869,
+          "assembly_ticks": 352879,
+          "speedup": 4.6018,
+          "reduction_percent": 78.2692
+        },
+        "paste": {
+          "baseline_ticks": 2715300,
+          "assembly_ticks": 561383,
+          "speedup": 4.8368,
+          "reduction_percent": 79.3252
+        },
+        "total": {
+          "baseline_ticks": 4339169,
+          "assembly_ticks": 914262,
+          "speedup": 4.7461,
+          "reduction_percent": 78.93
+        }
+      },
+      "vice": {
+        "capture": {
+          "baseline_ticks": 1623844,
+          "assembly_ticks": 352873,
+          "speedup": 4.6018,
+          "reduction_percent": 78.2693
+        },
+        "paste": {
+          "baseline_ticks": 2715258,
+          "assembly_ticks": 561374,
+          "speedup": 4.8368,
+          "reduction_percent": 79.3252
+        },
+        "total": {
+          "baseline_ticks": 4339102,
+          "assembly_ticks": 914247,
+          "speedup": 4.7461,
+          "reduction_percent": 78.93
+        }
+      }
+    },
+    {
+      "case": 2,
+      "1986": {
+        "capture": {
+          "baseline_ticks": 1623869,
+          "assembly_ticks": 381271,
+          "speedup": 4.2591,
+          "reduction_percent": 76.5208
+        },
+        "paste": {
+          "baseline_ticks": 2724033,
+          "assembly_ticks": 529435,
+          "speedup": 5.1452,
+          "reduction_percent": 80.5643
+        },
+        "total": {
+          "baseline_ticks": 4347902,
+          "assembly_ticks": 910706,
+          "speedup": 4.7742,
+          "reduction_percent": 79.0541
+        }
+      },
+      "vice": {
+        "capture": {
+          "baseline_ticks": 1623844,
+          "assembly_ticks": 381265,
+          "speedup": 4.2591,
+          "reduction_percent": 76.5208
+        },
+        "paste": {
+          "baseline_ticks": 2723991,
+          "assembly_ticks": 529426,
+          "speedup": 5.1452,
+          "reduction_percent": 80.5643
+        },
+        "total": {
+          "baseline_ticks": 4347835,
+          "assembly_ticks": 910691,
+          "speedup": 4.7742,
+          "reduction_percent": 79.0541
+        }
+      }
+    },
+    {
+      "case": 3,
+      "1986": {
+        "capture": {
+          "baseline_ticks": 1623869,
+          "assembly_ticks": 409664,
+          "speedup": 3.9639,
+          "reduction_percent": 74.7723
+        },
+        "paste": {
+          "baseline_ticks": 2732766,
+          "assembly_ticks": 497486,
+          "speedup": 5.4932,
+          "reduction_percent": 81.7955
+        },
+        "total": {
+          "baseline_ticks": 4356635,
+          "assembly_ticks": 907150,
+          "speedup": 4.8026,
+          "reduction_percent": 79.1777
+        }
+      },
+      "vice": {
+        "capture": {
+          "baseline_ticks": 1623844,
+          "assembly_ticks": 409657,
+          "speedup": 3.9639,
+          "reduction_percent": 74.7724
+        },
+        "paste": {
+          "baseline_ticks": 2732724,
+          "assembly_ticks": 497478,
+          "speedup": 5.4932,
+          "reduction_percent": 81.7955
+        },
+        "total": {
+          "baseline_ticks": 4356568,
+          "assembly_ticks": 907135,
+          "speedup": 4.8026,
+          "reduction_percent": 79.1778
+        }
+      }
+    },
+    {
+      "case": 4,
+      "1986": {
+        "capture": {
+          "baseline_ticks": 1623869,
+          "assembly_ticks": 438056,
+          "speedup": 3.707,
+          "reduction_percent": 73.0239
+        },
+        "paste": {
+          "baseline_ticks": 2741499,
+          "assembly_ticks": 465538,
+          "speedup": 5.8889,
+          "reduction_percent": 83.0189
+        },
+        "total": {
+          "baseline_ticks": 4365368,
+          "assembly_ticks": 903594,
+          "speedup": 4.8311,
+          "reduction_percent": 79.3009
+        }
+      },
+      "vice": {
+        "capture": {
+          "baseline_ticks": 1623844,
+          "assembly_ticks": 438049,
+          "speedup": 3.707,
+          "reduction_percent": 73.0239
+        },
+        "paste": {
+          "baseline_ticks": 2741457,
+          "assembly_ticks": 465530,
+          "speedup": 5.8889,
+          "reduction_percent": 83.0189
+        },
+        "total": {
+          "baseline_ticks": 4365301,
+          "assembly_ticks": 903579,
+          "speedup": 4.8311,
+          "reduction_percent": 79.3009
+        }
+      }
+    },
+    {
+      "case": 5,
+      "1986": {
+        "capture": {
+          "baseline_ticks": 1623869,
+          "assembly_ticks": 466449,
+          "speedup": 3.4813,
+          "reduction_percent": 71.2755
+        },
+        "paste": {
+          "baseline_ticks": 2750232,
+          "assembly_ticks": 433589,
+          "speedup": 6.3429,
+          "reduction_percent": 84.2345
+        },
+        "total": {
+          "baseline_ticks": 4374101,
+          "assembly_ticks": 900038,
+          "speedup": 4.8599,
+          "reduction_percent": 79.4235
+        }
+      },
+      "vice": {
+        "capture": {
+          "baseline_ticks": 1623844,
+          "assembly_ticks": 466441,
+          "speedup": 3.4813,
+          "reduction_percent": 71.2755
+        },
+        "paste": {
+          "baseline_ticks": 2750190,
+          "assembly_ticks": 433582,
+          "speedup": 6.343,
+          "reduction_percent": 84.2345
+        },
+        "total": {
+          "baseline_ticks": 4374034,
+          "assembly_ticks": 900023,
+          "speedup": 4.8599,
+          "reduction_percent": 79.4235
+        }
+      }
+    },
+    {
+      "case": 6,
+      "1986": {
+        "capture": {
+          "baseline_ticks": 1623869,
+          "assembly_ticks": 494841,
+          "speedup": 3.2816,
+          "reduction_percent": 69.527
+        },
+        "paste": {
+          "baseline_ticks": 2758966,
+          "assembly_ticks": 401641,
+          "speedup": 6.8692,
+          "reduction_percent": 85.4423
+        },
+        "total": {
+          "baseline_ticks": 4382835,
+          "assembly_ticks": 896482,
+          "speedup": 4.8889,
+          "reduction_percent": 79.5456
+        }
+      },
+      "vice": {
+        "capture": {
+          "baseline_ticks": 1623844,
+          "assembly_ticks": 494833,
+          "speedup": 3.2816,
+          "reduction_percent": 69.5271
+        },
+        "paste": {
+          "baseline_ticks": 2758923,
+          "assembly_ticks": 401634,
+          "speedup": 6.8692,
+          "reduction_percent": 85.4424
+        },
+        "total": {
+          "baseline_ticks": 4382767,
+          "assembly_ticks": 896467,
+          "speedup": 4.8889,
+          "reduction_percent": 79.5456
+        }
+      }
+    },
+    {
+      "case": 7,
+      "1986": {
+        "capture": {
+          "baseline_ticks": 1623869,
+          "assembly_ticks": 523233,
+          "speedup": 3.1035,
+          "reduction_percent": 67.7786
+        },
+        "paste": {
+          "baseline_ticks": 1939439,
+          "assembly_ticks": 325491,
+          "speedup": 5.9585,
+          "reduction_percent": 83.2173
+        },
+        "total": {
+          "baseline_ticks": 3563308,
+          "assembly_ticks": 848724,
+          "speedup": 4.1984,
+          "reduction_percent": 76.1816
+        }
+      },
+      "vice": {
+        "capture": {
+          "baseline_ticks": 1623844,
+          "assembly_ticks": 523225,
+          "speedup": 3.1035,
+          "reduction_percent": 67.7786
+        },
+        "paste": {
+          "baseline_ticks": 1939409,
+          "assembly_ticks": 325486,
+          "speedup": 5.9585,
+          "reduction_percent": 83.2173
+        },
+        "total": {
+          "baseline_ticks": 3563253,
+          "assembly_ticks": 848711,
+          "speedup": 4.1984,
+          "reduction_percent": 76.1816
+        }
+      }
+    },
+    {
+      "case": 8,
+      "1986": {
+        "capture": {
+          "baseline_ticks": 95326,
+          "assembly_ticks": 20001,
+          "speedup": 4.7661,
+          "reduction_percent": 79.0183
+        },
+        "paste": {
+          "baseline_ticks": 100143,
+          "assembly_ticks": 17384,
+          "speedup": 5.7606,
+          "reduction_percent": 82.6408
+        },
+        "total": {
+          "baseline_ticks": 195469,
+          "assembly_ticks": 37385,
+          "speedup": 5.2285,
+          "reduction_percent": 80.8742
+        }
+      },
+      "vice": {
+        "capture": {
+          "baseline_ticks": 95324,
+          "assembly_ticks": 20000,
+          "speedup": 4.7662,
+          "reduction_percent": 79.0189
+        },
+        "paste": {
+          "baseline_ticks": 100141,
+          "assembly_ticks": 17383,
+          "speedup": 5.7609,
+          "reduction_percent": 82.6415
+        },
+        "total": {
+          "baseline_ticks": 195465,
+          "assembly_ticks": 37383,
+          "speedup": 5.2287,
+          "reduction_percent": 80.8748
+        }
+      }
+    },
+    {
+      "case": 9,
+      "1986": {
+        "capture": {
+          "baseline_ticks": 8829,
+          "assembly_ticks": 7457,
+          "speedup": 1.184,
+          "reduction_percent": 15.5397
+        },
+        "paste": {
+          "baseline_ticks": 8679,
+          "assembly_ticks": 7247,
+          "speedup": 1.1976,
+          "reduction_percent": 16.4996
+        },
+        "total": {
+          "baseline_ticks": 17508,
+          "assembly_ticks": 14704,
+          "speedup": 1.1907,
+          "reduction_percent": 16.0155
+        }
+      },
+      "vice": {
+        "capture": {
+          "baseline_ticks": 8828,
+          "assembly_ticks": 7456,
+          "speedup": 1.184,
+          "reduction_percent": 15.5415
+        },
+        "paste": {
+          "baseline_ticks": 8678,
+          "assembly_ticks": 7246,
+          "speedup": 1.1976,
+          "reduction_percent": 16.5015
+        },
+        "total": {
+          "baseline_ticks": 17506,
+          "assembly_ticks": 14702,
+          "speedup": 1.1907,
+          "reduction_percent": 16.0174
+        }
+      }
+    },
+    {
+      "case": 10,
+      "1986": {
+        "capture": {
+          "baseline_ticks": 2943053,
+          "assembly_ticks": 1034550,
+          "speedup": 2.8448,
+          "reduction_percent": 64.8477
+        },
+        "paste": {
+          "baseline_ticks": 5186449,
+          "assembly_ticks": 968950,
+          "speedup": 5.3526,
+          "reduction_percent": 81.3177
+        },
+        "total": {
+          "baseline_ticks": 8129502,
+          "assembly_ticks": 2003500,
+          "speedup": 4.0577,
+          "reduction_percent": 75.3552
+        }
+      },
+      "vice": {
+        "capture": {
+          "baseline_ticks": 2943008,
+          "assembly_ticks": 1034534,
+          "speedup": 2.8448,
+          "reduction_percent": 64.8477
+        },
+        "paste": {
+          "baseline_ticks": 5186369,
+          "assembly_ticks": 968935,
+          "speedup": 5.3526,
+          "reduction_percent": 81.3177
+        },
+        "total": {
+          "baseline_ticks": 8129377,
+          "assembly_ticks": 2003469,
+          "speedup": 4.0577,
+          "reduction_percent": 75.3552
+        }
+      }
+    }
+  ],
+  "matrix": {
+    "1986": {
+      "checks": 66,
+      "pixels_dirty_sha256": "e928ae5083036895af16d235cc8e9767e8b6a21eae080a86943e949d59921851"
+    },
+    "vice": {
+      "checks": 66,
+      "pixels_dirty_sha256": "e928ae5083036895af16d235cc8e9767e8b6a21eae080a86943e949d59921851"
+    }
+  },
+  "1986_same_inputs": true,
+  "vice_same_flatpak": true
+}

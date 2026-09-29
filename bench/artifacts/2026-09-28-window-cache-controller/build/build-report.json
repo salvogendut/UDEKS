@@ -1,0 +1,213 @@
+{
+  "qualification": "standalone direct bank-1 controller; GUI moves disabled",
+  "module_bytes": 3977,
+  "module_segments": {
+    "ZEROPAGE": [
+      6,
+      31
+    ],
+    "OVERLAY": [
+      16896,
+      17108
+    ],
+    "DISPATCH": [
+      17109,
+      17111
+    ],
+    "CODE": [
+      17112,
+      20868
+    ],
+    "RODATA": [
+      20869,
+      20872
+    ],
+    "PRIVATESTATE": [
+      21024,
+      21049
+    ]
+  },
+  "objects": {
+    "policy": {
+      "CODE": 1828,
+      "RODATA": 0,
+      "BSS": 0,
+      "DATA": 0,
+      "ZEROPAGE": 0,
+      "NULL": 0
+    },
+    "command": {
+      "CODE": 519,
+      "RODATA": 0,
+      "BSS": 0,
+      "DATA": 0,
+      "ZEROPAGE": 0,
+      "NULL": 0
+    },
+    "flow": {
+      "CODE": 637,
+      "RODATA": 4,
+      "BSS": 0,
+      "DATA": 0,
+      "ZEROPAGE": 0,
+      "NULL": 0
+    },
+    "controller": {
+      "CODE": 209,
+      "RODATA": 0,
+      "BSS": 0,
+      "DATA": 0,
+      "ZEROPAGE": 0,
+      "NULL": 0
+    },
+    "binding": {
+      "CODE": 241,
+      "RODATA": 0,
+      "BSS": 0,
+      "DATA": 0,
+      "ZEROPAGE": 0,
+      "NULL": 0
+    }
+  },
+  "state": [
+    21024,
+    21049
+  ],
+  "private_stack": [
+    21072,
+    21311
+  ],
+  "stack_guard": [
+    21312,
+    21327
+  ],
+  "image": [
+    21328,
+    23551
+  ],
+  "image_bytes": 2224,
+  "default_image_bytes": 2184,
+  "image_spare": 40,
+  "gateway_bytes": 217,
+  "remaining_resident_padding_before_hooks_delivery": 261,
+  "defines": [
+    "UDEKS_CACHE_LEASE_ADDRESS=0x5220u",
+    "UDEKS_CACHE_ROW_ADDRESS=0x522Du",
+    "UDEKS_CACHE_FLOW_ADDRESS=0x5236u",
+    "UDEKS_CACHE_IMAGE_ADDRESS=0x5350u",
+    "UDEKS_CACHE_IMAGE_CAPACITY=2224u",
+    "UDEKS_CACHE_FLOW_IN_BANK"
+  ],
+  "negative_controls": {
+    "irq-leak": {
+      "offset": 3182,
+      "before": 120,
+      "after": 234
+    },
+    "zp-leak": {
+      "offset": 3233,
+      "before": 6,
+      "after": 7
+    },
+    "shell-stack": {
+      "offset": 3202,
+      "before": 83,
+      "after": 239
+    },
+    "no-pending": {
+      "offset": 3455,
+      "before": 141,
+      "after": 44
+    }
+  },
+  "helpers": [
+    "/usr/share/cc65/lib/none.lib(add.o)",
+    "/usr/share/cc65/lib/none.lib(addysp.o)",
+    "/usr/share/cc65/lib/none.lib(decsp1.o)",
+    "/usr/share/cc65/lib/none.lib(decsp2.o)",
+    "/usr/share/cc65/lib/none.lib(decsp3.o)",
+    "/usr/share/cc65/lib/none.lib(decsp4.o)",
+    "/usr/share/cc65/lib/none.lib(decsp5.o)",
+    "/usr/share/cc65/lib/none.lib(decsp7.o)",
+    "/usr/share/cc65/lib/none.lib(icmp.o)",
+    "/usr/share/cc65/lib/none.lib(incsp2.o)",
+    "/usr/share/cc65/lib/none.lib(incsp3.o)",
+    "/usr/share/cc65/lib/none.lib(incsp4.o)",
+    "/usr/share/cc65/lib/none.lib(incsp5.o)",
+    "/usr/share/cc65/lib/none.lib(incsp6.o)",
+    "/usr/share/cc65/lib/none.lib(incsp7.o)",
+    "/usr/share/cc65/lib/none.lib(incsp8.o)",
+    "/usr/share/cc65/lib/none.lib(makebool.o)",
+    "/usr/share/cc65/lib/none.lib(memcpy.o)",
+    "/usr/share/cc65/lib/none.lib(mul8.o)",
+    "/usr/share/cc65/lib/none.lib(popptr1.o)",
+    "/usr/share/cc65/lib/none.lib(pusha.o)",
+    "/usr/share/cc65/lib/none.lib(pushax.o)",
+    "/usr/share/cc65/lib/none.lib(pushwsp.o)",
+    "/usr/share/cc65/lib/none.lib(shrax3.o)",
+    "/usr/share/cc65/lib/none.lib(staspidx.o)",
+    "/usr/share/cc65/lib/none.lib(staxsp.o)",
+    "/usr/share/cc65/lib/none.lib(staxspi.o)",
+    "/usr/share/cc65/lib/none.lib(sub.o)",
+    "/usr/share/cc65/lib/none.lib(zeropage.o)"
+  ],
+  "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44",
+  "source_sha256": {
+    "bench/window-cache-controller/controller.c": "6a2ae7cb05fb512b0e765752cc765c7a369f35bffd6cfb5c5360104f5eacba02",
+    "bench/window-cache-controller/layout.inc": "fd879148b7d0ea6859fa1647a981e6b24c25fcd50fb03560a369efbe7403cf02",
+    "bench/window-cache-controller/module.cfg": "95973954b545d67f697dc9d6625b0cd4b36654f37ebf7984ce649d70d45102f4",
+    "bench/window-cache-controller/probe.c": "10ae89d100f0146e99dd26c37ddbbe838da74e76daef62eeb7133a987f8d0d10",
+    "bench/window-cache-command/layout.inc": "bcd837183037a72a79a854b4355033ae2ffee6246db99060847c1bf006d6e7a9",
+    "bench/window-cache-command/module.s": "9b4f038f0a965aca99f2571c50dab62609f043c85f770fb54edab14a58bf695a",
+    "bench/window-cache-command/module.cfg": "2848a81f4662b5627b2682cbb948e6689d4ec8baa4c10c6b457c3b2ed54c5445",
+    "bench/window-cache-command/gateway.s": "fda3dc545ba987deef8c6332a060e82b470923025dd0f3677364cce573ca4b12",
+    "bench/window-cache-command/binding.s": "44a09bf82612519f7cec649eec5ce3cd758c93545f8c33922646daa4b02fcd7f",
+    "bench/window-cache-command/probe.c": "31809f6eefb2524aad6dc567d8fba2d96ddaee1d9c9db130d73225f78e1da9a4",
+    "tools/window_cache_controller.py": "2317c3bcd856353c297c24b09784f6c614009778be82748b1656e3f4f4096dc9",
+    "bench/window-cache-c-runtime/driver.s": "d42b480d6be769d60eba16d0dafecd0c46e429ad9a1f2bb086fe4413bb34b033",
+    "bench/window-cache-c-runtime/probe.cfg": "c3ee54ed22961b56264f498f36108160f615f15e8bd58ba3fc374756194d2ab7",
+    "bench/window-cache-c-runtime/gateway.cfg": "5db7e1f71ffaf765e71424cfcf62a36742d1821f5b2256dcdc2ef5985741d19c",
+    "bench/window-cache-overlay/core.s": "1a6933dc929aa4049a0208d9f9e15680a3eab4de733355d1e531d9b9fe2d83eb",
+    "bench/graphics-raster/launcher.s": "d6acecc7fd8126fcd248465243608c5d8958e5b43ff0a25c765d8ea112209c6d",
+    "bench/window-cache-nmi/probe.s": "20a6ccd29d3ca3bf6cb02742ae3899791702bafb5fd9e1a68df1c0f720b447b7",
+    "src/8502/nmi.s": "0e8b1a88b4b32138df0ac4606f44dee2648e58d3967abee9e404d19e15068b82",
+    "src/8502/nmi-common.inc": "887c7ee02f0458fada7394848cfdc839adec985a40cbfc540419089625d0e9ad",
+    "tools/window_cache_command.py": "1a490cadc37761c1cf15024e8a26195d5b52d18b1dd2c155b82896247533329b",
+    "tools/vice_capture.py": "8e086e0cd28d620e028d997e38ec66595d02bf3f2af8c04cf966fbeda0670967",
+    "tools/1986_raster_bench.c": "e1d772fc3155d259f84eeff8c8f943e88c85c7cd8d2520a697d92887eb944b68",
+    "tools/1986_input_smoke_build.py": "5dbf7e6b2d8a0f3eda15c4796bb81ee3931e5d05b032e74e6a538daf5984256f",
+    "tools/graphics_raster_bench_run.py": "f15cb59bf9ee40131e62dddeb2dd05f4f4c3d40bfe5a570aebdcb93989e0ad5b",
+    "include/udeks/window_cache_flow.h": "15a3cea110608634adac8b97613900dda4972fea2c7fd8c93b0deaaaa8ca4ffd",
+    "include/udeks/window_cache_command.h": "38cfe6f79a330e68e791c66ee4e7fda1a06df03001f424c59594239b464bc42c",
+    "include/udeks/window_cache_state.h": "c5dab7fb33976298c2c18e3327c74664c8b41b675543412045585d855c901243",
+    "src/services/window/move_cache_flow.c": "a8fff045a2cb3d94b7c744f3f036cbab9b9b66423e301efb84a02224f57dce9c",
+    "src/services/window/cache_overlay.c": "698803c548baa4441d331f3e31e48590d1655227c5ae64a934147e80ceb3de70",
+    "src/services/window/move_cache_state.c": "64944eda2cf7e396ecfb4742b67ec6ef7f19e9f0d967913ed11969dcaade0c97",
+    "tests/test_window_cache_flow.py": "45e5316212844425f0deff112c30459d4bb7143b4281e932781542bbc559c157",
+    "tests/test_window_cache_controller.py": "8f634713a568bc9cea4dcd413d1db195e8a0c918147cee3197084f6e6c97fb61"
+  },
+  "linked_sha256": {
+    "module.bin": "7fa738e0ceaff3fedde43c1a6356e1d0ab56271f56fe284dc937af7976370016",
+    "module-envelope.bin": "49eb0337ae8dff10d9d851c45e0b63fdb57c15037d9e362d6a9f8dcd9558a0c1",
+    "module.map": "451e37acec06e6ebd1fe753960683d97b828709101a763484404ba16eecab4cb",
+    "module.s": "1c3ec95d884a6b5731a155bdd1cdb81ab8891e230d4259836509acd93178c496",
+    "core.s": "1a6933dc929aa4049a0208d9f9e15680a3eab4de733355d1e531d9b9fe2d83eb",
+    "gateway.s": "fda3dc545ba987deef8c6332a060e82b470923025dd0f3677364cce573ca4b12",
+    "gateway.bin": "4863ff209f6d01355fcaf6338e8fc2f116f6250a8f70d6dd9dd8b7e768db7a8c",
+    "driver.s": "7f891493a8cb3c81adbb363a4dc55780de92dfb3ebcfe93a7422fad5740cd957",
+    "launcher.s": "2f5386379407121c499ce1178b0b78323774aa7ba2aaf8008b09f314a689f664",
+    "binding.s": "b6086ea3b63bbd0691aaea051f6ba5c711923f8a119669ef03ac7389b3f7bbf0",
+    "probe-0.bin": "ea0d5450ca0419a16bb0af46309df16f8a27412d8ce0c1afec261b4cc886a4d0",
+    "probe-0.map": "e165b56b8b5317a6ad3a7b97537b6efdc0ff6f39c8f14bc9357b81b42feaf076",
+    "probe-1.bin": "a21994bc1299e06c6fcc7f749c54bfa77f25360d77e2b8c4011672426c8e83d7",
+    "probe-1.map": "e94243285c38890d47b1d54acd56e0a52af4420eef58661da267281e2fcad6d5"
+  },
+  "program_sha256": {
+    "probe-0.prg": "2ff9820bcdd45074d93be1d9f951d5647427db0901a6205b2be598e1e12add87",
+    "probe-1.prg": "bcaa3bd37008645427482efa9cdb8f9f20436e6593c6361b8965b8d7bea4dc39",
+    "probe-irq-leak.prg": "5e8f3cfe1bf7f789684b4d49222282fab74567e7f4b9487e5e6046470b8d6dde",
+    "probe-zp-leak.prg": "be6794471698d143cdc445c9f5653be8dc145cc3ee0666fc62ffafafd4c952ec",
+    "probe-shell-stack.prg": "5bbfaab3eb9c7b68ee75a395e5348b04c8d1aea82bc78ad7a23c63271ad9e6b1",
+    "probe-no-pending.prg": "19d9ccfeffb00ba94bdeacc249cf562faacb52b8a9e512a94a61bf32f91ed39a"
+  }
+}

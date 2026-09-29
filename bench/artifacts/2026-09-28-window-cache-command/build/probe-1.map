@@ -1,0 +1,282 @@
+Modules list:
+-------------
+launcher.o:
+    CODE              Offs=000000  Size=00004C  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000076  Align=00001  Fill=0000
+probe-1.o:
+    CODE              Offs=00004C  Size=000897  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000004  Align=00001  Fill=0000
+driver.o:
+    CODE              Offs=0008E3  Size=00029B  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000D00  Align=00001  Fill=0000
+    BSS               Offs=000004  Size=00002C  Align=00001  Fill=0000
+binding.o:
+    CODE              Offs=000B7E  Size=0000F1  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=000C6F  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000C80  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=000C8E  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=000C97  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=000CA4  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp5.o):
+    CODE              Offs=000CB1  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(eq.o):
+    CODE              Offs=000CBE  Size=00000A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=000CC8  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000CF6  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=000D0C  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000D11  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=000D16  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=000D1B  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=000D20  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=000D4C  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000D86  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000D94  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000DAA  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=000DC4  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000DE0  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=000DF6  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000006  00001F  00001A  00001
+STARTUP               002000  002075  000076  00001
+CODE                  002076  002E78  000E03  00001
+RODATA                002E79  003B78  000D00  00001
+BSS                   003B79  003BA8  000030  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               003B79 RLA    __BSS_SIZE__              000030 REA    
+__STARTUP__               000001 REA    _main                     002695 RLA    
+_private_cache_policy_call 002BF4 RLA    _runtime_call             002A16 RLA    
+_runtime_call_count       003B81 RLA    _runtime_check_memory     002AA7 RLA    
+_runtime_flags_bad        003B86 RLA    _runtime_guard_bad        003B88 RLA    
+_runtime_hw_bad           003B85 RLA    _runtime_install          002959 RLA    
+_runtime_irq_bad          003B83 RLA    _runtime_irq_count        003B7D RLA    
+_runtime_irq_start        002B7C RLA    _runtime_irq_stop         002BB0 RLA    
+_runtime_low_water        003B8A RLA    _runtime_seen_flags       003B8B RLA    
+_runtime_sw_bad           003B87 RLA    _runtime_ush_bad          003B89 RLA    
+_runtime_zp_bad           003B84 RLA    addeq0sp                  002CE5 RLA    
+addeqysp                  002CE7 RLA    addysp                    002CF7 RLA    
+booleq                    002D9C RLA    decsp1                    002D04 RLA    
+decsp2                    002D0D RLA    decsp3                    002D1A RLA    
+decsp5                    002D27 RLA    incsp2                    002D74 RLA    
+incsp3                    002D82 RLA    incsp4                    002D87 RLA    
+incsp5                    002D8C RLA    incsp6                    002D91 RLA    
+popptr1                   002DFC RLA    ptr1                      00000E RLZ    
+ptr2                      000010 RLZ    ptr4                      000014 RLZ    
+pusha                     002E0E RLA    pusha0                    002E22 RLA    
+pushax                    002E24 RLA    pushwysp                  002E3C RLA    
+sp                        000006 RLZ    sreg                      000008 RLZ    
+staspidx                  002E56 RLA    subysp                    002E6C RLA    
+tmp1                      000016 RLZ    toseqa0                   002D36 RLA    
+tosicmp                   002D40 RLA    tosumula0                 002DC2 RLA    
+
+
+
+Exports list by value:
+----------------------
+__STARTUP__               000001 REA    sp                        000006 RLZ    
+sreg                      000008 RLZ    ptr1                      00000E RLZ    
+ptr2                      000010 RLZ    ptr4                      000014 RLZ    
+tmp1                      000016 RLZ    __BSS_SIZE__              000030 REA    
+_main                     002695 RLA    _runtime_install          002959 RLA    
+_runtime_call             002A16 RLA    _runtime_check_memory     002AA7 RLA    
+_runtime_irq_start        002B7C RLA    _runtime_irq_stop         002BB0 RLA    
+_private_cache_policy_call 002BF4 RLA    addeq0sp                  002CE5 RLA    
+addeqysp                  002CE7 RLA    addysp                    002CF7 RLA    
+decsp1                    002D04 RLA    decsp2                    002D0D RLA    
+decsp3                    002D1A RLA    decsp5                    002D27 RLA    
+toseqa0                   002D36 RLA    tosicmp                   002D40 RLA    
+incsp2                    002D74 RLA    incsp3                    002D82 RLA    
+incsp4                    002D87 RLA    incsp5                    002D8C RLA    
+incsp6                    002D91 RLA    booleq                    002D9C RLA    
+tosumula0                 002DC2 RLA    popptr1                   002DFC RLA    
+pusha                     002E0E RLA    pusha0                    002E22 RLA    
+pushax                    002E24 RLA    pushwysp                  002E3C RLA    
+staspidx                  002E56 RLA    subysp                    002E6C RLA    
+__BSS_RUN__               003B79 RLA    _runtime_irq_count        003B7D RLA    
+_runtime_call_count       003B81 RLA    _runtime_irq_bad          003B83 RLA    
+_runtime_zp_bad           003B84 RLA    _runtime_hw_bad           003B85 RLA    
+_runtime_flags_bad        003B86 RLA    _runtime_sw_bad           003B87 RLA    
+_runtime_guard_bad        003B88 RLA    _runtime_ush_bad          003B89 RLA    
+_runtime_low_water        003B8A RLA    _runtime_seen_flags       003B8B RLA    
+
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-command/launcher.s(3)
+__BSS_SIZE__ ([linker generated]):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-command/launcher.s(3)
+__STARTUP__ (launcher.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(13)
+_main (probe-1.o):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-command/launcher.s(3)
+_private_cache_policy_call (binding.o):
+    driver.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-command/driver.s(7)
+_runtime_call (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(17)
+_runtime_call_count (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(20)
+_runtime_check_memory (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(18)
+_runtime_flags_bad (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(24)
+_runtime_guard_bad (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(26)
+_runtime_hw_bad (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(23)
+_runtime_install (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(14)
+_runtime_irq_bad (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(21)
+_runtime_irq_count (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(19)
+_runtime_irq_start (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(15)
+_runtime_irq_stop (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(16)
+_runtime_low_water (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(28)
+_runtime_seen_flags (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(29)
+_runtime_sw_bad (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(25)
+_runtime_ush_bad (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(27)
+_runtime_zp_bad (driver.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(22)
+addeq0sp (addeqsp.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+addeqysp (addeqsp.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+addysp (addysp.o):
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+booleq (makebool.o):
+    eq.o                      runtime/eq.s(8)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+decsp1 (decsp1.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+decsp2 (decsp2.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+decsp3 (decsp3.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+decsp5 (decsp5.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+incsp3 (incsp3.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+incsp4 (incsp4.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+incsp5 (incsp5.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+incsp6 (incsp6.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+popptr1 (popptr1.o):
+    mul8.o                    runtime/mul8.s(9)
+ptr1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    driver.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-command/driver.s(6)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(11)
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-command/launcher.s(4)
+ptr2 (zeropage.o):
+    driver.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-command/driver.s(6)
+ptr4 (zeropage.o):
+    mul8.o                    runtime/mul8.s(10)
+pusha (pusha.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+pusha0 (pushax.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+pushax (pushax.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+pushwysp (pushwsp.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+sp (zeropage.o):
+    subysp.o                  runtime/subysp.s(9)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    incsp2.o                  runtime/incsp2.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp5.o                  runtime/decsp5.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(10)
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-command/launcher.s(4)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(10)
+staspidx (staspidx.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+subysp (subysp.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+toseqa0 (eq.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+tosicmp (icmp.o):
+    eq.o                      runtime/eq.s(8)
+tosumula0 (mul8.o):
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+    probe-1.o                 /var/home/salvogendut/Dev/UDEKS/bench/window-cache-command/probe.s(1198)
+

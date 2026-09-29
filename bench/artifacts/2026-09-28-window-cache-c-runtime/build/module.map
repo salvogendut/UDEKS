@@ -1,0 +1,299 @@
+Modules list:
+-------------
+core.o:
+    OVERLAY           Offs=000000  Size=0000D5  Align=00001  Fill=0000
+module.o:
+    DISPATCH          Offs=000000  Size=000076  Align=00001  Fill=0000
+    PRIVATESTATE      Offs=000000  Size=00001C  Align=00001  Fill=0000
+policy.o:
+    CODE              Offs=000000  Size=000724  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=000724  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000740  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=00074E  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=00075B  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp7.o):
+    CODE              Offs=000768  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=000775  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=0007A3  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=0007B9  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=0007BE  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=0007C3  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=0007C8  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=0007CD  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp8.o):
+    CODE              Offs=0007D2  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=0007D7  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(memcpy.o):
+    CODE              Offs=000803  Size=00003C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=00083F  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000879  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000887  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=00089D  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=0008B7  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax3.o):
+    CODE              Offs=0008D3  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=0008E1  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=0008F7  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxspi.o):
+    CODE              Offs=000902  Size=00001B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(sub.o):
+    CODE              Offs=00091D  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000006  00001F  00001A  00001
+OVERLAY               004200  0042D4  0000D5  00001
+DISPATCH              0042D5  00434A  000076  00001
+CODE                  00434B  004C7C  000932  00001
+PRIVATESTATE          004CD0  004CEB  00001C  00001
+
+
+Exports list by name:
+---------------------
+_memcpy                   004B4E RLA    _udeks_cache_capture_begin 004435 RLA    
+_udeks_cache_commit_row   004824 RLA    _udeks_cache_init         00434B RLA    
+_udeks_cache_invalidate   0043F6 RLA    _udeks_cache_paste_begin  004506 RLA    
+_udeks_cache_prepare_row  004616 RLA    addysp                    004A8C RLA    
+addysp1                   004A8B RLA    boolule                   004B3F RLA    
+decsp2                    004A99 RLA    decsp3                    004AA6 RLA    
+decsp7                    004AB3 RLA    incsp2                    004AF6 RLA    
+incsp3                    004B04 RLA    incsp4                    004B09 RLA    
+incsp5                    004B0E RLA    incsp6                    004B13 RLA    
+incsp7                    004B18 RLA    incsp8                    004B1D RLA    
+popax                     004AEE RLA    popptr1                   004BC4 RLA    
+ptr1                      00000E RLZ    ptr2                      000010 RLZ    
+ptr3                      000012 RLZ    ptr4                      000014 RLZ    
+pusha                     004BD6 RLA    pusha0                    004BEA RLA    
+pushax                    004BEC RLA    pushw0sp                  004C02 RLA    
+pushwysp                  004C04 RLA    regbank                   00001A RLZ    
+regsave                   00000A RLZ    shrax3                    004C1E RLA    
+sp                        000006 RLZ    sreg                      000008 RLZ    
+staspidx                  004C2C RLA    stax0sp                   004C42 RLA    
+staxspidx                 004C4D RLA    tmp1                      000016 RLZ    
+tmp2                      000017 RLZ    tmp3                      000018 RLZ    
+tmp4                      000019 RLZ    tosadda0                  004A6F RLA    
+tosaddax                  004A71 RLA    tosicmp                   004AC2 RLA    
+tosicmp0                  004AC0 RLA    tossuba0                  004C68 RLA    
+tossubax                  004C6A RLA    tosumula0                 004B8A RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000006 RLZ    sreg                      000008 RLZ    
+regsave                   00000A RLZ    ptr1                      00000E RLZ    
+ptr2                      000010 RLZ    ptr3                      000012 RLZ    
+ptr4                      000014 RLZ    tmp1                      000016 RLZ    
+tmp2                      000017 RLZ    tmp3                      000018 RLZ    
+tmp4                      000019 RLZ    regbank                   00001A RLZ    
+_udeks_cache_init         00434B RLA    _udeks_cache_invalidate   0043F6 RLA    
+_udeks_cache_capture_begin 004435 RLA    _udeks_cache_paste_begin  004506 RLA    
+_udeks_cache_prepare_row  004616 RLA    _udeks_cache_commit_row   004824 RLA    
+tosadda0                  004A6F RLA    tosaddax                  004A71 RLA    
+addysp1                   004A8B RLA    addysp                    004A8C RLA    
+decsp2                    004A99 RLA    decsp3                    004AA6 RLA    
+decsp7                    004AB3 RLA    tosicmp0                  004AC0 RLA    
+tosicmp                   004AC2 RLA    popax                     004AEE RLA    
+incsp2                    004AF6 RLA    incsp3                    004B04 RLA    
+incsp4                    004B09 RLA    incsp5                    004B0E RLA    
+incsp6                    004B13 RLA    incsp7                    004B18 RLA    
+incsp8                    004B1D RLA    boolule                   004B3F RLA    
+_memcpy                   004B4E RLA    tosumula0                 004B8A RLA    
+popptr1                   004BC4 RLA    pusha                     004BD6 RLA    
+pusha0                    004BEA RLA    pushax                    004BEC RLA    
+pushw0sp                  004C02 RLA    pushwysp                  004C04 RLA    
+shrax3                    004C1E RLA    staspidx                  004C2C RLA    
+stax0sp                   004C42 RLA    staxspidx                 004C4D RLA    
+tossuba0                  004C68 RLA    tossubax                  004C6A RLA    
+
+
+
+Imports list:
+-------------
+_memcpy (memcpy.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+_udeks_cache_capture_begin (policy.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(20)
+_udeks_cache_commit_row (policy.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(21)
+_udeks_cache_init (policy.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(19)
+_udeks_cache_invalidate (policy.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(19)
+_udeks_cache_paste_begin (policy.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(20)
+_udeks_cache_prepare_row (policy.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(21)
+addysp (addysp.o):
+    incsp8.o                  runtime/incsp8.s(8)
+    incsp7.o                  runtime/incsp7.s(8)
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+boolule (makebool.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+decsp2 (decsp2.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+decsp3 (decsp3.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+decsp7 (decsp7.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp2 (incsp2.o):
+    staxspi.o                 runtime/staxspi.s(9)
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+incsp3 (incsp3.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp4 (incsp4.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp5 (incsp5.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp6 (incsp6.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp7 (incsp7.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp8 (incsp8.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+popax (incsp2.o):
+    memcpy.o                  common/memcpy.s(14)
+popptr1 (popptr1.o):
+    mul8.o                    runtime/mul8.s(9)
+    memcpy.o                  common/memcpy.s(14)
+ptr1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    memcpy.o                  common/memcpy.s(15)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(11)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(5)
+ptr2 (zeropage.o):
+    memcpy.o                  common/memcpy.s(15)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(5)
+ptr3 (zeropage.o):
+    memcpy.o                  common/memcpy.s(15)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(5)
+ptr4 (zeropage.o):
+    mul8.o                    runtime/mul8.s(10)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(5)
+pusha (pusha.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+pusha0 (pushax.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+pushax (pushax.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+pushw0sp (pushwsp.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+pushwysp (pushwsp.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+regbank (zeropage.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(5)
+regsave (zeropage.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(5)
+shrax3 (shrax3.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+sp (zeropage.o):
+    incsp2.o                  runtime/incsp2.s(8)
+    sub.o                     runtime/sub.s(9)
+    staxspi.o                 runtime/staxspi.s(10)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    memcpy.o                  common/memcpy.s(15)
+    icmp.o                    runtime/icmp.s(9)
+    decsp7.o                  runtime/decsp7.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    add.o                     runtime/add.s(12)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(10)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(5)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(10)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(5)
+staspidx (staspidx.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+stax0sp (staxsp.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+staxspidx (staxspi.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tmp1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    shrax3.o                  runtime/shrax3.s(8)
+    add.o                     runtime/add.s(12)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(11)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(6)
+tmp2 (zeropage.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(6)
+tmp3 (zeropage.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(6)
+tmp4 (zeropage.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/bench/window-cache-c-runtime/module.s(6)
+tosadda0 (add.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tosaddax (add.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tosicmp (icmp.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tosicmp0 (icmp.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tossuba0 (sub.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tossubax (sub.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tosumula0 (mul8.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+

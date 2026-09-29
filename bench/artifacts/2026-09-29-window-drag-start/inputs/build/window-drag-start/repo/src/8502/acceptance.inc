@@ -1,0 +1,6 @@
+CACHE_LAST_PAGE = $0f
+CACHE_LAST_BYTES = $83
+CACHE_CHECKSUM = $6068
+.macro CACHE_EXPECTED_HEADER
+.byte $56,$43,$43,$32,$00,$01,$00,$42,$83,$0f,$68,$60,$d5,$42,$b0,$08
+.endmacro

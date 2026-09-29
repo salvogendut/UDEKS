@@ -1,0 +1,8 @@
+udeks.d71: booting
+udeks.d71: tail active, suspensions=2, request=00/10/00, service=02/00/00/00, panic=00/ff
+udeks.d71: xinit active
+udeks.d71: xclock active
+udeks.d71: xwave active
+udeks.d71: xwave complete, 21 cached rows
+udeks.d71: 2->2->23 cooperative suspensions, xinit/xclock/xwave and utility commands accepted; input waits restored
+task-YIELD probe OK

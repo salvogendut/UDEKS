@@ -9,6 +9,16 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class VicGraphicsSourceTests(unittest.TestCase):
+    def test_shutdown_does_not_copy_live_raster_high_bit_into_irq_target(self):
+        source=(ROOT / 'src/8502/vic_graphics.s').read_text()
+        body=source.split('_udeks_vic_graphics_disable:',1)[1].split('_udeks_vic_pointer_set_x:',1)[0]
+        self.assertIn('and #$4f',body)
+        self.assertNotIn('and #$cf',body)
+        for live_raster_high in (0,0x80):
+            result=(0x3b|live_raster_high)&0x4f
+            self.assertEqual(result&0xb0,0)
+            self.assertEqual(result&15,11)
+
     def test_passive_service_starts_after_pointer_and_before_keyboard(self):
         table = (ROOT / "src/services/table.s").read_text(encoding="utf-8")
         console = table.index(".addr _udeks_console_service_descriptor")
@@ -97,7 +107,9 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn(
             "udeks_vic_bitmap_shadow[UDEKS_VIC_BITMAP_SIZE]", source
         )
-        self.assertIn("dirty_pages[pixel_offset >> 8] = 1", source)
+        pixel = (ROOT / "src/services/display/vic_pixel.s").read_text()
+        self.assertIn("ldy ptr1+1", pixel)
+        self.assertIn("sta $e190,y", pixel)
         self.assertIn("udeks_vic_bitmap_commit_page(page)", source)
         self.assertIn("udeks_vic_bitmap_outline_toggle", source)
         self.assertIn("udeks_vic_bitmap_outline_move", source)
@@ -108,11 +120,15 @@ class VicGraphicsSourceTests(unittest.TestCase):
         )[0]
         self.assertIn("last_x = x + width - 1", rectangle)
         self.assertIn("last_y = y + height - 1", rectangle)
-        self.assertIn("x, last_y, last_x, last_y", rectangle)
+        self.assertIn("x, last_y, width, 1, color", rectangle)
+        self.assertIn("last_x, y, 1, height, color", rectangle)
         fill = source.split("void udeks_vic_bitmap_fill", 1)[1].split(
             "void udeks_vic_bitmap_set_clip", 1
         )[0]
-        self.assertIn("offset += 8u", fill)
+        self.assertIn("udeks_span_fill_row();", fill)
+        span = (ROOT / "src/services/display/vic_span.s").read_text()
+        self.assertIn("adc #$08", span)
+        self.assertIn("ldy _udeks_span_offset+1", span)
         self.assertNotIn("for (column", fill)
         self.assertIn("VICSHADOW:", config)
         shadow = config.split("VICSHADOW:", 1)[1].split(";", 1)[0]
@@ -160,7 +176,7 @@ class VicGraphicsSourceTests(unittest.TestCase):
         shutdown = source.split("_udeks_vic_graphics_disable:", 1)[1]
         shutdown = shutdown.split("vic_gateway:", 1)[0]
         self.assertIn("and #$fe", shutdown)
-        self.assertIn("and #$cf", shutdown)
+        self.assertIn("and #$4f", shutdown)
         self.assertIn("and #$bf", shutdown)
         self.assertIn("and #$fb", shutdown)
         self.assertIn("sta CPU_PORT", shutdown)

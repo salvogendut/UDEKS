@@ -1,0 +1,78 @@
+Modules list:
+-------------
+task_context.o:
+    CODE              Offs=000000  Size=0000E2  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000008  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000059  Align=00001  Fill=0000
+task-context-bridge.o:
+task_context_vectors.o:
+    SCHEDULER         Offs=000000  Size=000006  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+SCHEDULER             001FFA  001FFF  000006  00001
+CODE                  00CDBD  00CE9E  0000E2  00001
+RODATA                00CE9F  00CEA6  000008  00001
+BSS                   00CEA7  00CEFF  000059  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               00CEA7 RLA    __BSS_SIZE__              000059 REA    
+__CODE_RUN__              00CDBD RLA    _udeks_lifecycle_apply    001C2E REA    
+_udeks_scheduler_select_next 001FBB REA    _udeks_task_context_current_private 00CEFF RLA    
+_udeks_task_context_reset 00CDBD RLA    _udeks_task_context_save_current 00CE79 RLA    
+_udeks_task_context_select 00CE33 RLA    _udeks_task_contexts_private 00CEA7 RLA    
+_udeks_task_wait_publish_current 00C4B4 REA    _udeks_task_wait_reset    00C47D REA    
+decsp2                    008F7A REA    ptr1                      00000E REZ    
+sp                        000006 REZ    
+
+
+Exports list by value:
+----------------------
+sp                        000006 REZ    ptr1                      00000E REZ    
+__BSS_SIZE__              000059 REA    _udeks_lifecycle_apply    001C2E REA    
+_udeks_scheduler_select_next 001FBB REA    decsp2                    008F7A REA    
+_udeks_task_wait_reset    00C47D REA    _udeks_task_wait_publish_current 00C4B4 REA    
+__CODE_RUN__              00CDBD RLA    _udeks_task_context_reset 00CDBD RLA    
+_udeks_task_context_select 00CE33 RLA    _udeks_task_context_save_current 00CE79 RLA    
+__BSS_RUN__               00CEA7 RLA    _udeks_task_contexts_private 00CEA7 RLA    
+_udeks_task_context_current_private 00CEFF RLA    
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    task-context-bridge.o     build/8502/task-context-bridge.s(21)
+__BSS_SIZE__ ([linker generated]):
+    task-context-bridge.o     build/8502/task-context-bridge.s(21)
+__CODE_RUN__ ([linker generated]):
+    task-context-bridge.o     build/8502/task-context-bridge.s(21)
+_udeks_lifecycle_apply (task-context-bridge.o):
+    task_context.o            src/scheduler/task_context.s(15)
+_udeks_scheduler_select_next (task-context-bridge.o):
+    task_context.o            src/scheduler/task_context.s(16)
+_udeks_task_context_current_private (task_context.o):
+    [linker generated]       
+_udeks_task_context_reset (task_context.o):
+    task_context_vectors.o    src/scheduler/task_context_vectors.s(9)
+_udeks_task_context_save_current (task_context.o):
+    [linker generated]       
+_udeks_task_context_select (task_context.o):
+    task_context_vectors.o    src/scheduler/task_context_vectors.s(10)
+_udeks_task_contexts_private (task_context.o):
+    [linker generated]       
+_udeks_task_wait_publish_current (task-context-bridge.o):
+    task_context.o            src/scheduler/task_context.s(17)
+_udeks_task_wait_reset (task-context-bridge.o):
+    task_context.o            src/scheduler/task_context.s(18)
+decsp2 (task-context-bridge.o):
+    task_context.o            src/scheduler/task_context.s(19)
+ptr1 (task-context-bridge.o):
+    task_context.o            src/scheduler/task_context.s(20)
+sp (task-context-bridge.o):
+    task_context.o            src/scheduler/task_context.s(20)
+

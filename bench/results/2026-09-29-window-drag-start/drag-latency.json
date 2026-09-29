@@ -1,0 +1,22 @@
+{
+  "partial": {
+    "d71": {
+      "clock drag start": 17,
+      "overlap clock drag start": 265
+    },
+    "d64": {
+      "clock drag start": 17,
+      "overlap clock drag start": 265
+    }
+  },
+  "deferred": {
+    "d71": {
+      "clock drag start": 17,
+      "overlap clock drag start": 16
+    },
+    "d64": {
+      "clock drag start": 17,
+      "overlap clock drag start": 16
+    }
+  }
+}

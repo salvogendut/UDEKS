@@ -1,0 +1,27 @@
+{
+  "build_report_sha256": "1041c1172850670201a7d55bc627ab19d5348394eb1c7b6c5f2d873f607c90e9",
+  "disk_sha256": {
+    "delivery.d71": "da12cf2caa0d270230b5f8f2e015c584e5d27919ccc6cffa54a6d0a957e112e4",
+    "delivery.d64": "00cbbe44338eac680f5b0c37f432b38697a177ea0154ec2673f0934b32034103"
+  },
+  "raw_sha256": {
+    "vice-d64-boot-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-d64-clock-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-d64-complete-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-d64-restart-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-d64-shutdown-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-d64-utilities-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-d64-wave-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-d64-xinit-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-d71-boot-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-d71-clock-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-d71-complete-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-d71-restart-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-d71-shutdown-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-d71-utilities-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-d71-wave-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-d71-xinit-core.bin": "3d4cec21dadba5b5e46cceb08e97189b57127c4b9ef78f76ea9db9008e4b21d8",
+    "vice-provenance.txt": "91475d49fff24c23d996b130d39c92d93e5d918854cb12cfab1bda7ff22e6535",
+    "vice-results.json": "287859bd914dc81f0746560b375978c50995976b2737137a258b8d7518d254c8"
+  }
+}

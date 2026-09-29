@@ -1,0 +1,9 @@
+{
+  "disk_sha256": "adfc9dbbfbcbb6085d57d2540f59d2ecd71540e1795791b9dece47a346cd53d8",
+  "shadow_clear_bytes": 8000,
+  "tail_preimage_bytes": 50,
+  "remaining_padding": 358,
+  "bitmap_sha256": "0f5f951c50c7a6c6a2f8eb59ab99f31c50b0eb7db7fd4c6fa50a1de6bd824878",
+  "owned_post_shadow_bytes": 3552,
+  "qualification": "same completion disk; clear/install/bitmap/layout, not cache or NMI"
+}

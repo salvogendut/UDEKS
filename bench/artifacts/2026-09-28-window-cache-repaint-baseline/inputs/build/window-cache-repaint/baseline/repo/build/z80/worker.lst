@@ -1,0 +1,541 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler
+                                      3 ; Version 4.6.2 #16671 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module worker
+                                      6 	
+                                      7 	.optsdcc -mz80 sdcccall(1)
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _z80_main
+                                     12 	.globl _udeks_z80_yield
+                                     13 ;--------------------------------------------------------
+                                     14 ; special function registers
+                                     15 ;--------------------------------------------------------
+                                     16 ;--------------------------------------------------------
+                                     17 ; ram data
+                                     18 ;--------------------------------------------------------
+                                     19 	.area _DATA
+                                     20 ;--------------------------------------------------------
+                                     21 ; ram data
+                                     22 ;--------------------------------------------------------
+                                     23 	.area _INITIALIZED
+                                     24 ;--------------------------------------------------------
+                                     25 ; absolute ram data
+                                     26 ;--------------------------------------------------------
+                                     27 	.area _DABS (ABS)
+                                     28 	.area _DABS (ABS)
+                                     29 ;--------------------------------------------------------
+                                     30 ; global & static initialisations
+                                     31 ;--------------------------------------------------------
+                                     32 	.area _HOME
+                                     33 	.area _GSINIT
+                                     34 	.area _GSFINAL
+                                     35 	.area _GSINIT
+                                     36 ;--------------------------------------------------------
+                                     37 ; Home
+                                     38 ;--------------------------------------------------------
+                                     39 	.area _HOME
+                                     40 	.area _HOME
+                                     41 ;--------------------------------------------------------
+                                     42 ; code
+                                     43 ;--------------------------------------------------------
+                                     44 	.area _CODE
+                                     45 ;src/z80/worker.c:25: static unsigned char surface_height(
+                                     46 ;	---------------------------------
+                                     47 ; Function surface_height
+                                     48 ; ---------------------------------
+    00000000                         49 _surface_height:
+    00000000 47               [ 4]   50 	ld	b, a
+                                     51 ;src/z80/worker.c:34: x = column > 12u ? column - 12u : 12u - column;
+    00000001 3E 0C            [ 7]   52 	ld	a, #0x0c
+    00000003 95               [ 4]   53 	sub	a, l
+    00000004 30 05            [12]   54 	jr	nc, 00108$
+    00000006 7D               [ 4]   55 	ld	a, l
+    00000007 C6 F4            [ 7]   56 	add	a, #0xf4
+    00000009 18 03            [12]   57 	jr	00109$
+    0000000B                         58 00108$:
+    0000000B 3E 0C            [ 7]   59 	ld	a, #0x0c
+    0000000D 95               [ 4]   60 	sub	a, l
+    0000000E                         61 00109$:
+    0000000E 4F               [ 4]   62 	ld	c, a
+                                     63 ;src/z80/worker.c:35: y = row > 10u ? row - 10u : 10u - row;
+    0000000F 3E 0A            [ 7]   64 	ld	a, #0x0a
+    00000011 90               [ 4]   65 	sub	a, b
+    00000012 30 05            [12]   66 	jr	nc, 00110$
+    00000014 78               [ 4]   67 	ld	a, b
+    00000015 C6 F6            [ 7]   68 	add	a, #0xf6
+    00000017 18 03            [12]   69 	jr	00111$
+    00000019                         70 00110$:
+    00000019 3E 0A            [ 7]   71 	ld	a, #0x0a
+    0000001B 90               [ 4]   72 	sub	a, b
+    0000001C                         73 00111$:
+    0000001C 5F               [ 4]   74 	ld	e, a
+                                     75 ;src/z80/worker.c:36: x *= 5u;
+    0000001D 79               [ 4]   76 	ld	a, c
+    0000001E 87               [ 4]   77 	add	a, a
+    0000001F 87               [ 4]   78 	add	a, a
+    00000020 81               [ 4]   79 	add	a, c
+    00000021 4F               [ 4]   80 	ld	c, a
+                                     81 ;src/z80/worker.c:37: y *= 6u;
+    00000022 6B               [ 4]   82 	ld	l, e
+    00000023 29               [11]   83 	add	hl, hl
+    00000024 19               [11]   84 	add	hl, de
+    00000025 29               [11]   85 	add	hl, hl
+                                     86 ;src/z80/worker.c:38: if (x > y) {
+    00000026 7D               [ 4]   87 	ld	a, l
+    00000027 91               [ 4]   88 	sub	a, c
+    00000028 30 04            [12]   89 	jr	nc, 00102$
+                                     90 ;src/z80/worker.c:39: greater = x;
+    0000002A 59               [ 4]   91 	ld	e, c
+                                     92 ;src/z80/worker.c:40: lesser = y;
+    0000002B 4D               [ 4]   93 	ld	c, l
+    0000002C 18 01            [12]   94 	jr	00103$
+    0000002E                         95 00102$:
+                                     96 ;src/z80/worker.c:42: greater = y;
+    0000002E 5D               [ 4]   97 	ld	e, l
+                                     98 ;src/z80/worker.c:43: lesser = x;
+    0000002F                         99 00103$:
+                                    100 ;src/z80/worker.c:45: radius = (unsigned char)(greater + (lesser >> 2) + (lesser >> 3));
+    0000002F 69               [ 4]  101 	ld	l, c
+    00000030 CB 3D            [ 8]  102 	srl	l
+    00000032 CB 3D            [ 8]  103 	srl	l
+    00000034 19               [11]  104 	add	hl, de
+    00000035 CB 39            [ 8]  105 	srl	c
+    00000037 CB 39            [ 8]  106 	srl	c
+    00000039 CB 39            [ 8]  107 	srl	c
+    0000003B 09               [11]  108 	add	hl, bc
+                                    109 ;src/z80/worker.c:46: radius = (unsigned char)((radius * 2u + 2u) / 5u);
+    0000003C 26 00            [ 7]  110 	ld	h, #0x00
+    0000003E 29               [11]  111 	add	hl, hl
+    0000003F 23               [ 6]  112 	inc	hl
+    00000040 23               [ 6]  113 	inc	hl
+    00000041 11 05 00         [10]  114 	ld	de, #0x0005
+    00000044 CDr00r00         [17]  115 	call	__divuint
+                                    116 ;src/z80/worker.c:47: if (radius > 34u) {
+    00000047 3E 22            [ 7]  117 	ld	a, #0x22
+    00000049 93               [ 4]  118 	sub	a, e
+    0000004A 30 02            [12]  119 	jr	nc, 00105$
+                                    120 ;src/z80/worker.c:48: radius = 34u;
+    0000004C 1E 22            [ 7]  121 	ld	e, #0x22
+    0000004E                        122 00105$:
+                                    123 ;src/z80/worker.c:50: return (unsigned char)sinc_height[radius];
+    0000004E 21r96r00         [10]  124 	ld	hl, #_sinc_height+0
+    00000051 16 00            [ 7]  125 	ld	d, #0x00
+    00000053 19               [11]  126 	add	hl, de
+    00000054 7E               [ 7]  127 	ld	a, (hl)
+                                    128 ;src/z80/worker.c:51: }
+    00000055 C9               [10]  129 	ret
+    00000056                        130 _sine64:
+    00000056 00                     131 	.db #0x00	;  0
+    00000057 03                     132 	.db #0x03	;  3
+    00000058 06                     133 	.db #0x06	;  6
+    00000059 09                     134 	.db #0x09	;  9
+    0000005A 0C                     135 	.db #0x0c	;  12
+    0000005B 0E                     136 	.db #0x0e	;  14
+    0000005C 11                     137 	.db #0x11	;  17
+    0000005D 13                     138 	.db #0x13	;  19
+    0000005E 15                     139 	.db #0x15	;  21
+    0000005F 17                     140 	.db #0x17	;  23
+    00000060 19                     141 	.db #0x19	;  25
+    00000061 1A                     142 	.db #0x1a	;  26
+    00000062 1C                     143 	.db #0x1c	;  28
+    00000063 1D                     144 	.db #0x1d	;  29
+    00000064 1D                     145 	.db #0x1d	;  29
+    00000065 1E                     146 	.db #0x1e	;  30
+    00000066 1E                     147 	.db #0x1e	;  30
+    00000067 1E                     148 	.db #0x1e	;  30
+    00000068 1D                     149 	.db #0x1d	;  29
+    00000069 1D                     150 	.db #0x1d	;  29
+    0000006A 1C                     151 	.db #0x1c	;  28
+    0000006B 1A                     152 	.db #0x1a	;  26
+    0000006C 19                     153 	.db #0x19	;  25
+    0000006D 17                     154 	.db #0x17	;  23
+    0000006E 15                     155 	.db #0x15	;  21
+    0000006F 13                     156 	.db #0x13	;  19
+    00000070 11                     157 	.db #0x11	;  17
+    00000071 0E                     158 	.db #0x0e	;  14
+    00000072 0C                     159 	.db #0x0c	;  12
+    00000073 09                     160 	.db #0x09	;  9
+    00000074 06                     161 	.db #0x06	;  6
+    00000075 03                     162 	.db #0x03	;  3
+    00000076 00                     163 	.db #0x00	;  0
+    00000077 FD                     164 	.db #0xfd	; -3
+    00000078 FA                     165 	.db #0xfa	; -6
+    00000079 F7                     166 	.db #0xf7	; -9
+    0000007A F4                     167 	.db #0xf4	; -12
+    0000007B F2                     168 	.db #0xf2	; -14
+    0000007C EF                     169 	.db #0xef	; -17
+    0000007D ED                     170 	.db #0xed	; -19
+    0000007E EB                     171 	.db #0xeb	; -21
+    0000007F E9                     172 	.db #0xe9	; -23
+    00000080 E7                     173 	.db #0xe7	; -25
+    00000081 E6                     174 	.db #0xe6	; -26
+    00000082 E4                     175 	.db #0xe4	; -28
+    00000083 E3                     176 	.db #0xe3	; -29
+    00000084 E3                     177 	.db #0xe3	; -29
+    00000085 E2                     178 	.db #0xe2	; -30
+    00000086 E2                     179 	.db #0xe2	; -30
+    00000087 E2                     180 	.db #0xe2	; -30
+    00000088 E3                     181 	.db #0xe3	; -29
+    00000089 E3                     182 	.db #0xe3	; -29
+    0000008A E4                     183 	.db #0xe4	; -28
+    0000008B E6                     184 	.db #0xe6	; -26
+    0000008C E7                     185 	.db #0xe7	; -25
+    0000008D E9                     186 	.db #0xe9	; -23
+    0000008E EB                     187 	.db #0xeb	; -21
+    0000008F ED                     188 	.db #0xed	; -19
+    00000090 EF                     189 	.db #0xef	; -17
+    00000091 F2                     190 	.db #0xf2	; -14
+    00000092 F4                     191 	.db #0xf4	; -12
+    00000093 F7                     192 	.db #0xf7	; -9
+    00000094 FA                     193 	.db #0xfa	; -6
+    00000095 FD                     194 	.db #0xfd	; -3
+    00000096                        195 _sinc_height:
+    00000096 28                     196 	.db #0x28	;  40
+    00000097 26                     197 	.db #0x26	;  38
+    00000098 22                     198 	.db #0x22	;  34
+    00000099 1B                     199 	.db #0x1b	;  27
+    0000009A 12                     200 	.db #0x12	;  18
+    0000009B 0A                     201 	.db #0x0a	;  10
+    0000009C 02                     202 	.db #0x02	;  2
+    0000009D FC                     203 	.db #0xfc	; -4
+    0000009E F8                     204 	.db #0xf8	; -8
+    0000009F F7                     205 	.db #0xf7	; -9
+    000000A0 F8                     206 	.db #0xf8	; -8
+    000000A1 FB                     207 	.db #0xfb	; -5
+    000000A2 FE                     208 	.db #0xfe	; -2
+    000000A3 01                     209 	.db #0x01	;  1
+    000000A4 04                     210 	.db #0x04	;  4
+    000000A5 05                     211 	.db #0x05	;  5
+    000000A6 05                     212 	.db #0x05	;  5
+    000000A7 04                     213 	.db #0x04	;  4
+    000000A8 02                     214 	.db #0x02	;  2
+    000000A9 00                     215 	.db #0x00	;  0
+    000000AA FE                     216 	.db #0xfe	; -2
+    000000AB FD                     217 	.db #0xfd	; -3
+    000000AC FC                     218 	.db #0xfc	; -4
+    000000AD FD                     219 	.db #0xfd	; -3
+    000000AE FE                     220 	.db #0xfe	; -2
+    000000AF 00                     221 	.db #0x00	;  0
+    000000B0 01                     222 	.db #0x01	;  1
+    000000B1 02                     223 	.db #0x02	;  2
+    000000B2 03                     224 	.db #0x03	;  3
+    000000B3 03                     225 	.db #0x03	;  3
+    000000B4 02                     226 	.db #0x02	;  2
+    000000B5 01                     227 	.db #0x01	;  1
+    000000B6 FF                     228 	.db #0xff	; -1
+    000000B7 FE                     229 	.db #0xfe	; -2
+    000000B8 FE                     230 	.db #0xfe	; -2
+                                    231 ;src/z80/worker.c:53: static unsigned char validate_request(void)
+                                    232 ;	---------------------------------
+                                    233 ; Function validate_request
+                                    234 ; ---------------------------------
+    000000B9                        235 _validate_request:
+                                    236 ;src/z80/worker.c:57: if (MAILBOX_BYTE(UDEKS_MB_MAGIC0) != 'U' ||
+    000000B9 3A 00 F0         [13]  237 	ld	a, (#0xf000)
+    000000BC FE 55            [ 7]  238 	cp	a, #0x55
+    000000BE 20 15            [12]  239 	jr	nz, 00101$
+                                    240 ;src/z80/worker.c:58: MAILBOX_BYTE(UDEKS_MB_MAGIC1) != 'D' ||
+    000000C0 3A 01 F0         [13]  241 	ld	a, (#0xf001)
+    000000C3 FE 44            [ 7]  242 	cp	a, #0x44
+    000000C5 20 0E            [12]  243 	jr	nz, 00101$
+                                    244 ;src/z80/worker.c:59: MAILBOX_BYTE(UDEKS_MB_MAGIC2) != 'E' ||
+    000000C7 3A 02 F0         [13]  245 	ld	a, (#0xf002)
+    000000CA FE 45            [ 7]  246 	cp	a, #0x45
+    000000CC 20 07            [12]  247 	jr	nz, 00101$
+                                    248 ;src/z80/worker.c:60: MAILBOX_BYTE(UDEKS_MB_MAGIC3) != 'K') {
+    000000CE 3A 03 F0         [13]  249 	ld	a, (#0xf003)
+    000000D1 FE 4B            [ 7]  250 	cp	a, #0x4b
+    000000D3 28 03            [12]  251 	jr	z, 00102$
+    000000D5                        252 00101$:
+                                    253 ;src/z80/worker.c:61: return UDEKS_MB_STATUS_MAGIC;
+    000000D5 3E 01            [ 7]  254 	ld	a, #0x01
+    000000D7 C9               [10]  255 	ret
+    000000D8                        256 00102$:
+                                    257 ;src/z80/worker.c:63: if (MAILBOX_BYTE(UDEKS_MB_ABI_MAJOR) != UDEKS_MAILBOX_ABI_MAJOR ||
+    000000D8 3A 04 F0         [13]  258 	ld	a, (#0xf004)
+    000000DB B7               [ 4]  259 	or	a, a
+    000000DC 20 07            [12]  260 	jr	nz, 00106$
+                                    261 ;src/z80/worker.c:64: MAILBOX_BYTE(UDEKS_MB_ABI_MINOR) > UDEKS_MAILBOX_ABI_MINOR) {
+    000000DE 3A 05 F0         [13]  262 	ld	a, (#0xf005)
+    000000E1 FE 04            [ 7]  263 	cp	a, #0x04
+    000000E3 38 03            [12]  264 	jr	c, 00107$
+    000000E5                        265 00106$:
+                                    266 ;src/z80/worker.c:65: return UDEKS_MB_STATUS_ABI;
+    000000E5 3E 02            [ 7]  267 	ld	a, #0x02
+    000000E7 C9               [10]  268 	ret
+    000000E8                        269 00107$:
+                                    270 ;src/z80/worker.c:67: if (MAILBOX_BYTE(UDEKS_MB_STATE) != UDEKS_MB_STATE_SUBMITTED) {
+    000000E8 21 06 F0         [10]  271 	ld	hl, #0xf006
+    000000EB 4E               [ 7]  272 	ld	c, (hl)
+    000000EC 0D               [ 4]  273 	dec	c
+    000000ED 28 03            [12]  274 	jr	z, 00110$
+                                    275 ;src/z80/worker.c:68: return UDEKS_MB_STATUS_STATE;
+    000000EF 3E 03            [ 7]  276 	ld	a, #0x03
+    000000F1 C9               [10]  277 	ret
+    000000F2                        278 00110$:
+                                    279 ;src/z80/worker.c:70: if (MAILBOX_BYTE(UDEKS_MB_OPCODE) != UDEKS_MB_OP_NOP &&
+    000000F2 3A 07 F0         [13]  280 	ld	a, (#0xf007)
+    000000F5 B7               [ 4]  281 	or	a, a
+    000000F6 28 11            [12]  282 	jr	z, 00112$
+                                    283 ;src/z80/worker.c:71: MAILBOX_BYTE(UDEKS_MB_OPCODE) != UDEKS_MB_OP_WAVE_SAMPLES &&
+    000000F8 3A 07 F0         [13]  284 	ld	a, (#0xf007)
+    000000FB FE 04            [ 7]  285 	cp	a, #0x04
+    000000FD 28 0A            [12]  286 	jr	z, 00112$
+                                    287 ;src/z80/worker.c:72: MAILBOX_BYTE(UDEKS_MB_OPCODE) != UDEKS_MB_OP_SURFACE_ROWS) {
+    000000FF 3A 07 F0         [13]  288 	ld	a, (#0xf007)
+    00000102 FE 05            [ 7]  289 	cp	a, #0x05
+    00000104 28 03            [12]  290 	jr	z, 00112$
+                                    291 ;src/z80/worker.c:73: return UDEKS_MB_STATUS_OPCODE;
+    00000106 3E 04            [ 7]  292 	ld	a, #0x04
+    00000108 C9               [10]  293 	ret
+    00000109                        294 00112$:
+                                    295 ;src/z80/worker.c:75: if (MAILBOX_BYTE(UDEKS_MB_OPCODE) == UDEKS_MB_OP_WAVE_SAMPLES &&
+    00000109 3A 07 F0         [13]  296 	ld	a, (#0xf007)
+    0000010C FE 04            [ 7]  297 	cp	a, #0x04
+    0000010E 20 16            [12]  298 	jr	nz, 00116$
+                                    299 ;src/z80/worker.c:76: (MAILBOX_BYTE(UDEKS_MB_LENGTH_HI) != 0 ||
+    00000110 3A 11 F0         [13]  300 	ld	a, (#0xf011)
+    00000113 B7               [ 4]  301 	or	a, a
+    00000114 20 0D            [12]  302 	jr	nz, 00115$
+                                    303 ;src/z80/worker.c:77: MAILBOX_BYTE(UDEKS_MB_LENGTH_LO) == 0 ||
+    00000116 3A 10 F0         [13]  304 	ld	a, (#0xf010)
+    00000119 B7               [ 4]  305 	or	a, a
+    0000011A 28 07            [12]  306 	jr	z, 00115$
+                                    307 ;src/z80/worker.c:78: MAILBOX_BYTE(UDEKS_MB_LENGTH_LO) > UDEKS_WAVE_BUFFER_SIZE)) {
+    0000011C 3A 10 F0         [13]  308 	ld	a, (#0xf010)
+    0000011F FE 41            [ 7]  309 	cp	a, #0x41
+    00000121 38 03            [12]  310 	jr	c, 00116$
+    00000123                        311 00115$:
+                                    312 ;src/z80/worker.c:79: return UDEKS_MB_STATUS_LENGTH;
+    00000123 3E 06            [ 7]  313 	ld	a, #0x06
+    00000125 C9               [10]  314 	ret
+    00000126                        315 00116$:
+                                    316 ;src/z80/worker.c:81: if (MAILBOX_BYTE(UDEKS_MB_OPCODE) == UDEKS_MB_OP_SURFACE_ROWS &&
+    00000126 3A 07 F0         [13]  317 	ld	a, (#0xf007)
+    00000129 FE 05            [ 7]  318 	cp	a, #0x05
+    0000012B 20 56            [12]  319 	jr	nz, 00179$
+                                    320 ;src/z80/worker.c:82: (MAILBOX_BYTE(UDEKS_MB_ARG0_HI) != 0 ||
+    0000012D 3A 0D F0         [13]  321 	ld	a, (#0xf00d)
+    00000130 B7               [ 4]  322 	or	a, a
+    00000131 20 4D            [12]  323 	jr	nz, 00120$
+                                    324 ;src/z80/worker.c:83: MAILBOX_BYTE(UDEKS_MB_ARG0_LO) > 20u ||
+    00000133 3A 0C F0         [13]  325 	ld	a, (#0xf00c)
+    00000136 FE 15            [ 7]  326 	cp	a, #0x15
+    00000138 30 46            [12]  327 	jr	nc, 00120$
+                                    328 ;src/z80/worker.c:84: MAILBOX_BYTE(UDEKS_MB_ARG1_HI) != 0 ||
+    0000013A 3A 0F F0         [13]  329 	ld	a, (#0xf00f)
+    0000013D B7               [ 4]  330 	or	a, a
+    0000013E 20 40            [12]  331 	jr	nz, 00120$
+                                    332 ;src/z80/worker.c:85: MAILBOX_BYTE(UDEKS_MB_ARG1_LO) == 0 ||
+    00000140 3A 0E F0         [13]  333 	ld	a, (#0xf00e)
+    00000143 B7               [ 4]  334 	or	a, a
+    00000144 28 3A            [12]  335 	jr	z, 00120$
+                                    336 ;src/z80/worker.c:86: MAILBOX_BYTE(UDEKS_MB_ARG1_LO) > 2u ||
+    00000146 3A 0E F0         [13]  337 	ld	a, (#0xf00e)
+    00000149 FE 03            [ 7]  338 	cp	a, #0x03
+    0000014B 30 33            [12]  339 	jr	nc, 00120$
+                                    340 ;src/z80/worker.c:87: MAILBOX_BYTE(UDEKS_MB_ARG0_LO) +
+    0000014D 21 0C F0         [10]  341 	ld	hl, #0xf00c
+    00000150 4E               [ 7]  342 	ld	c, (hl)
+    00000151 06 00            [ 7]  343 	ld	b, #0x00
+                                    344 ;src/z80/worker.c:88: MAILBOX_BYTE(UDEKS_MB_ARG1_LO) > 21u ||
+    00000153 21 0E F0         [10]  345 	ld	hl, #0xf00e
+    00000156 6E               [ 7]  346 	ld	l, (hl)
+    00000157 26 00            [ 7]  347 	ld	h, #0x00
+    00000159 09               [11]  348 	add	hl, bc
+    0000015A 3E 15            [ 7]  349 	ld	a, #0x15
+    0000015C BD               [ 4]  350 	cp	a, l
+    0000015D 3E 00            [ 7]  351 	ld	a, #0x00
+    0000015F 9C               [ 4]  352 	sbc	a, h
+    00000160 38 1E            [12]  353 	jr	c, 00120$
+                                    354 ;src/z80/worker.c:89: MAILBOX_BYTE(UDEKS_MB_LENGTH_HI) != 0 ||
+    00000162 3A 11 F0         [13]  355 	ld	a, (#0xf011)
+    00000165 B7               [ 4]  356 	or	a, a
+    00000166 20 18            [12]  357 	jr	nz, 00120$
+                                    358 ;src/z80/worker.c:90: MAILBOX_BYTE(UDEKS_MB_LENGTH_LO) !=
+    00000168 21 10 F0         [10]  359 	ld	hl, #0xf010
+    0000016B 4E               [ 7]  360 	ld	c, (hl)
+                                    361 ;src/z80/worker.c:91: MAILBOX_BYTE(UDEKS_MB_ARG1_LO) * 25u)) {
+    0000016C 21 0E F0         [10]  362 	ld	hl, #0xf00e
+    0000016F 5E               [ 7]  363 	ld	e, (hl)
+    00000170 16 00            [ 7]  364 	ld	d, #0x00
+    00000172 6B               [ 4]  365 	ld	l, e
+    00000173 62               [ 4]  366 	ld	h, d
+    00000174 29               [11]  367 	add	hl, hl
+    00000175 19               [11]  368 	add	hl, de
+    00000176 29               [11]  369 	add	hl, hl
+    00000177 29               [11]  370 	add	hl, hl
+    00000178 29               [11]  371 	add	hl, hl
+    00000179 19               [11]  372 	add	hl, de
+    0000017A AF               [ 4]  373 	xor	a, a
+    0000017B 47               [ 4]  374 	ld	b, a
+    0000017C ED 42            [15]  375 	sbc	hl, bc
+    0000017E 28 03            [12]  376 	jr	z, 00179$
+    00000180                        377 00120$:
+                                    378 ;src/z80/worker.c:92: return UDEKS_MB_STATUS_LENGTH;
+    00000180 3E 06            [ 7]  379 	ld	a, #0x06
+    00000182 C9               [10]  380 	ret
+                                    381 ;src/z80/worker.c:94: for (offset = 20u; offset < UDEKS_MAILBOX_SIZE; ++offset) {
+    00000183                        382 00179$:
+    00000183 2E 14            [ 7]  383 	ld	l, #0x14
+    00000185                        384 00133$:
+                                    385 ;src/z80/worker.c:95: if (MAILBOX_BYTE(offset) != 0) {
+    00000185 4D               [ 4]  386 	ld	c, l
+    00000186 06 F0            [ 7]  387 	ld	b, #0xf0
+    00000188 0A               [ 7]  388 	ld	a, (bc)
+    00000189 B7               [ 4]  389 	or	a, a
+    0000018A 28 03            [12]  390 	jr	z, 00134$
+                                    391 ;src/z80/worker.c:96: return UDEKS_MB_STATUS_RESERVED;
+    0000018C 3E 05            [ 7]  392 	ld	a, #0x05
+    0000018E C9               [10]  393 	ret
+    0000018F                        394 00134$:
+                                    395 ;src/z80/worker.c:94: for (offset = 20u; offset < UDEKS_MAILBOX_SIZE; ++offset) {
+    0000018F 2C               [ 4]  396 	inc	l
+    00000190 7D               [ 4]  397 	ld	a, l
+    00000191 D6 40            [ 7]  398 	sub	a, #0x40
+    00000193 38 F0            [12]  399 	jr	c, 00133$
+                                    400 ;src/z80/worker.c:99: return UDEKS_MB_STATUS_OK;
+    00000195 AF               [ 4]  401 	xor	a, a
+                                    402 ;src/z80/worker.c:100: }
+    00000196 C9               [10]  403 	ret
+                                    404 ;src/z80/worker.c:102: void z80_main(void)
+                                    405 ;	---------------------------------
+                                    406 ; Function z80_main
+                                    407 ; ---------------------------------
+    00000197                        408 _z80_main::
+    00000197 CDr00r00         [17]  409 	call	___sdcc_enter_ix
+    0000019A F5               [11]  410 	push	af
+    0000019B F5               [11]  411 	push	af
+    0000019C                        412 00121$:
+                                    413 ;src/z80/worker.c:113: status = validate_request();
+    0000019C CDrB9r00         [17]  414 	call	_validate_request
+    0000019F 4F               [ 4]  415 	ld	c, a
+                                    416 ;src/z80/worker.c:114: if (status == UDEKS_MB_STATUS_OK) {
+    000001A0 B7               [ 4]  417 	or	a, a
+    000001A1 C2r3Dr02         [10]  418 	jp	nz, 00113$
+                                    419 ;src/z80/worker.c:115: MAILBOX_BYTE(UDEKS_MB_STATE) = UDEKS_MB_STATE_RUNNING;
+    000001A4 21 06 F0         [10]  420 	ld	hl, #0xf006
+    000001A7 36 02            [10]  421 	ld	(hl), #0x02
+                                    422 ;src/z80/worker.c:116: phase = MAILBOX_BYTE(UDEKS_MB_ARG0_LO);
+    000001A9 2E 0C            [ 7]  423 	ld	l, #0x0c
+    000001AB 4E               [ 7]  424 	ld	c, (hl)
+                                    425 ;src/z80/worker.c:117: if (MAILBOX_BYTE(UDEKS_MB_OPCODE) ==
+    000001AC 3A 07 F0         [13]  426 	ld	a, (#0xf007)
+    000001AF FE 04            [ 7]  427 	cp	a, #0x04
+    000001B1 20 2A            [12]  428 	jr	nz, 00110$
+                                    429 ;src/z80/worker.c:119: step = MAILBOX_BYTE(UDEKS_MB_ARG1_LO);
+    000001B3 21 0E F0         [10]  430 	ld	hl, #0xf00e
+    000001B6 46               [ 7]  431 	ld	b, (hl)
+                                    432 ;src/z80/worker.c:120: for (index = 0;
+    000001B7 1E 00            [ 7]  433 	ld	e, #0x00
+    000001B9                        434 00117$:
+                                    435 ;src/z80/worker.c:121: index < MAILBOX_BYTE(UDEKS_MB_LENGTH_LO); ++index) {
+    000001B9 21 10 F0         [10]  436 	ld	hl, #0xf010
+    000001BC 7B               [ 4]  437 	ld	a, e
+    000001BD 96               [ 7]  438 	sub	a, (hl)
+    000001BE 30 6B            [12]  439 	jr	nc, 00111$
+                                    440 ;src/z80/worker.c:122: WAVE_BYTE(index) = (unsigned char)sine64[phase >> 2];
+    000001C0 6B               [ 4]  441 	ld	l, e
+    000001C1 26 F3            [ 7]  442 	ld	h, #0xf3
+    000001C3 79               [ 4]  443 	ld	a, c
+    000001C4 0F               [ 4]  444 	rrca
+    000001C5 0F               [ 4]  445 	rrca
+    000001C6 E6 3F            [ 7]  446 	and	a, #0x3f
+    000001C8 FD 21r56r00      [14]  447 	ld	iy, #_sine64
+    000001CC C5               [11]  448 	push	bc
+    000001CD 4F               [ 4]  449 	ld	c, a
+    000001CE 06 00            [ 7]  450 	ld	b, #0x00
+    000001D0 FD 09            [15]  451 	add	iy, bc
+    000001D2 C1               [10]  452 	pop	bc
+    000001D3 FD 7E 00         [19]  453 	ld	a, (iy)
+    000001D6 77               [ 7]  454 	ld	(hl), a
+                                    455 ;src/z80/worker.c:123: phase += step;
+    000001D7 79               [ 4]  456 	ld	a, c
+    000001D8 80               [ 4]  457 	add	a, b
+    000001D9 4F               [ 4]  458 	ld	c, a
+                                    459 ;src/z80/worker.c:121: index < MAILBOX_BYTE(UDEKS_MB_LENGTH_LO); ++index) {
+    000001DA 1C               [ 4]  460 	inc	e
+    000001DB 18 DC            [12]  461 	jr	00117$
+    000001DD                        462 00110$:
+                                    463 ;src/z80/worker.c:125: } else if (MAILBOX_BYTE(UDEKS_MB_OPCODE) ==
+    000001DD 3A 07 F0         [13]  464 	ld	a, (#0xf007)
+    000001E0 FE 05            [ 7]  465 	cp	a, #0x05
+    000001E2 20 45            [12]  466 	jr	nz, 00107$
+                                    467 ;src/z80/worker.c:127: row = MAILBOX_BYTE(UDEKS_MB_ARG0_LO);
+    000001E4 3A 0C F0         [13]  468 	ld	a, (#0xf00c)
+    000001E7 DD 77 FD         [19]  469 	ld	-3 (ix), a
+                                    470 ;src/z80/worker.c:128: rows = MAILBOX_BYTE(UDEKS_MB_ARG1_LO);
+    000001EA 21 0E F0         [10]  471 	ld	hl, #0xf00e
+    000001ED 7E               [ 7]  472 	ld	a, (hl)
+    000001EE DD 77 FE         [19]  473 	ld	-2 (ix), a
+                                    474 ;src/z80/worker.c:129: index = 0;
+    000001F1 DD 36 FF 00      [19]  475 	ld	-1 (ix), #0x00
+                                    476 ;src/z80/worker.c:130: while (rows-- != 0) {
+    000001F5                        477 00103$:
+    000001F5 DD 7E FE         [19]  478 	ld	a, -2 (ix)
+    000001F8 DD 77 FC         [19]  479 	ld	-4 (ix), a
+    000001FB DD 35 FE         [23]  480 	dec	-2 (ix)
+    000001FE DD 7E FC         [19]  481 	ld	a, -4 (ix)
+    00000201 B7               [ 4]  482 	or	a, a
+    00000202 28 20            [12]  483 	jr	z, 00105$
+                                    484 ;src/z80/worker.c:131: for (column = 0; column < 25u; ++column) {
+    00000204 2E 00            [ 7]  485 	ld	l, #0x00
+    00000206                        486 00119$:
+                                    487 ;src/z80/worker.c:132: WAVE_BYTE(index++) = surface_height(row, column);
+    00000206 DD 4E FF         [19]  488 	ld	c, -1 (ix)
+    00000209 DD 34 FF         [23]  489 	inc	-1 (ix)
+    0000020C 06 F3            [ 7]  490 	ld	b, #0xf3
+    0000020E E5               [11]  491 	push	hl
+    0000020F C5               [11]  492 	push	bc
+    00000210 DD 7E FD         [19]  493 	ld	a, -3 (ix)
+    00000213 CDr00r00         [17]  494 	call	_surface_height
+    00000216 C1               [10]  495 	pop	bc
+    00000217 E1               [10]  496 	pop	hl
+    00000218 02               [ 7]  497 	ld	(bc), a
+                                    498 ;src/z80/worker.c:131: for (column = 0; column < 25u; ++column) {
+    00000219 2C               [ 4]  499 	inc	l
+    0000021A 7D               [ 4]  500 	ld	a, l
+    0000021B D6 19            [ 7]  501 	sub	a, #0x19
+    0000021D 38 E7            [12]  502 	jr	c, 00119$
+                                    503 ;src/z80/worker.c:134: ++row;
+    0000021F DD 34 FD         [23]  504 	inc	-3 (ix)
+    00000222 18 D1            [12]  505 	jr	00103$
+    00000224                        506 00105$:
+                                    507 ;src/z80/worker.c:136: phase = row;
+    00000224 DD 4E FD         [19]  508 	ld	c, -3 (ix)
+    00000227 18 02            [12]  509 	jr	00111$
+    00000229                        510 00107$:
+                                    511 ;src/z80/worker.c:138: phase = 0;
+    00000229 0E 00            [ 7]  512 	ld	c, #0x00
+    0000022B                        513 00111$:
+                                    514 ;src/z80/worker.c:140: MAILBOX_BYTE(UDEKS_MB_RESULT_LO) = phase;
+    0000022B 21 12 F0         [10]  515 	ld	hl, #0xf012
+    0000022E 71               [ 7]  516 	ld	(hl), c
+                                    517 ;src/z80/worker.c:141: MAILBOX_BYTE(UDEKS_MB_RESULT_HI) = 0;
+    0000022F 2E 13            [ 7]  518 	ld	l, #0x13
+    00000231 36 00            [10]  519 	ld	(hl), #0x00
+                                    520 ;src/z80/worker.c:142: MAILBOX_BYTE(UDEKS_MB_STATUS) = UDEKS_MB_STATUS_OK;
+    00000233 2E 0A            [ 7]  521 	ld	l, #0x0a
+    00000235 36 00            [10]  522 	ld	(hl), #0x00
+                                    523 ;src/z80/worker.c:143: MAILBOX_BYTE(UDEKS_MB_STATE) = UDEKS_MB_STATE_COMPLETE;
+    00000237 2E 06            [ 7]  524 	ld	l, #0x06
+    00000239 36 03            [10]  525 	ld	(hl), #0x03
+    0000023B 18 08            [12]  526 	jr	00114$
+    0000023D                        527 00113$:
+                                    528 ;src/z80/worker.c:145: MAILBOX_BYTE(UDEKS_MB_STATUS) = status;
+    0000023D 21 0A F0         [10]  529 	ld	hl, #0xf00a
+    00000240 71               [ 7]  530 	ld	(hl), c
+                                    531 ;src/z80/worker.c:146: MAILBOX_BYTE(UDEKS_MB_STATE) = UDEKS_MB_STATE_ERROR;
+    00000241 2E 06            [ 7]  532 	ld	l, #0x06
+    00000243 36 80            [10]  533 	ld	(hl), #0x80
+    00000245                        534 00114$:
+                                    535 ;src/z80/worker.c:148: udeks_z80_yield();
+    00000245 CDr00r00         [17]  536 	call	_udeks_z80_yield
+                                    537 ;src/z80/worker.c:150: }
+    00000248 C3r9Cr01         [10]  538 	jp	00121$
+                                    539 	.area _CODE
+                                    540 	.area _INITIALIZER
+                                    541 	.area _CABS (ABS)

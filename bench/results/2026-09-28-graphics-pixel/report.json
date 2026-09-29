@@ -1,0 +1,42 @@
+{
+  "0": {
+    "1986": {
+      "c-reference": 517428,
+      "asm-pixel": 406738
+    },
+    "vice": {
+      "c-reference": 517420,
+      "asm-pixel": 406731
+    }
+  },
+  "1": {
+    "1986": {
+      "c-reference": 1663020,
+      "asm-pixel": 1381437
+    },
+    "vice": {
+      "c-reference": 1662994,
+      "asm-pixel": 1381415
+    }
+  },
+  "2": {
+    "1986": {
+      "c-reference": 2587,
+      "asm-pixel": 1960
+    },
+    "vice": {
+      "c-reference": 2586,
+      "asm-pixel": 1959
+    }
+  },
+  "3": {
+    "1986": {
+      "c-reference": 3177054,
+      "asm-pixel": 2830057
+    },
+    "vice": {
+      "c-reference": 3177005,
+      "asm-pixel": 2830013
+    }
+  }
+}

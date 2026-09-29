@@ -1,0 +1,131 @@
+{
+  "build_report_sha256": "88e9fd38879cda69fe517450d99886ad4d5c3e5c6fa8539c413c9b63aee87d10",
+  "program_sha256": {
+    "probe-0.prg": "b63b33328e9544dd4796fa351130395e0cb01cfab2d4d71ab695276f3cb13da0",
+    "probe-1.prg": "703cc967d38f0d9c761c2047e8d73b155acc4e8a2212035fd7e271cd1d2401bb",
+    "probe-bad-code.prg": "d2e6174d6601479c9166a3f5e3a77f28f8d6692669f6841f8eee0a87f21af3c5",
+    "probe-bad-header.prg": "644a86a43428f4a67dde776051b337a077c52c8d3b07d8978310337f7ecbec28",
+    "probe-irq-leak.prg": "e4b92ea8772b5887da9ec7cabcc3d88e5cf24853d2f0928783df0f9b498679ee",
+    "probe-zp-leak.prg": "b1f0ad217ebb4f9948d97c91e9f7a1e20a6c2c16f8924ecd0284b374c73123be",
+    "probe-shell-stack.prg": "5f79d3c6f47f117106d4bde4951f6e4059fba5d6bfb476e72b80bbc1cd0b6d01",
+    "probe-no-pending.prg": "d78f1f00c4ba7bfc4e28bc7090090a81f5ca2a5710070d20d255d88cbca60c5a"
+  },
+  "raw_sha256": {
+    "vice-0.bin": "9bcb3ffe3de41a4a67e8f39600c0dc2d6b23ecda7e1b2a4f2bbaa6ef7f38f9f1",
+    "vice-1.bin": "4dda0fbd4d6c64d2267f2ad37978e8960f1e537e3ca790780d171c9f517cc0e0",
+    "vice-bad-code.bin": "d3f738f8aa715ea39b41eed0ac9dd0187e1a4b758d38008fd15a0b50b1bc3ac3",
+    "vice-bad-header.bin": "6ceb6091e03e24a1178685d71e1c78e864100b4ef07f9743bdf371b9aea9f47a",
+    "vice-irq-leak.bin": "8f65e031c7e1edf80e474bea637d50e726f1591f642477b319c53fae770226f4",
+    "vice-zp-leak.bin": "598b10f4d19ce33982082bb94995435a6045dde78f465e7b7d9f166bcc02f075",
+    "vice-shell-stack.bin": "93dd28a1584a8af5684b3f5f7f51c3917dff1f081db539ed48a92ab531c32056",
+    "vice-no-pending.bin": "10be7a43aef6c8cfb7c5ee5437d8df294e8dffe80c89b9738a058adb56e9e17c"
+  },
+  "decoded": {
+    "0": {
+      "rows": 132,
+      "commands": 480,
+      "images": 66,
+      "interrupts": 17224,
+      "nmi_total": 11946,
+      "nmi_worker_flat": 477,
+      "nmi_drains": 11946,
+      "observed_stack_offset": 202,
+      "pixel_sha256": "5b26bf85df36d2692e5d375612057b73a7b2526e04c6644bcb41846a5701b5f0",
+      "acceptance_pages": 16
+    },
+    "1": {
+      "rows": 258,
+      "commands": 289,
+      "images": 2,
+      "interrupts": 30585,
+      "nmi_total": 20703,
+      "nmi_worker_flat": 298,
+      "nmi_drains": 20703,
+      "observed_stack_offset": 202,
+      "pixel_sha256": "81a9885bfa8c79d29919803fd552c25c708a6e5e2e35cc3ff4206a2e71eed1d7",
+      "acceptance_pages": 16
+    },
+    "bad-code": {
+      "rejected": "bad-code",
+      "acceptance_pages": 16,
+      "commands": 6,
+      "rows": 0,
+      "interrupts": 4030,
+      "nmi_total": 2710,
+      "nmi_worker_flat": 16,
+      "nmi_drains": 2710,
+      "private_state_unchanged": true
+    },
+    "bad-header": {
+      "rejected": "bad-header",
+      "acceptance_pages": 1,
+      "commands": 6,
+      "rows": 0,
+      "interrupts": 3968,
+      "nmi_total": 2648,
+      "nmi_worker_flat": 1,
+      "nmi_drains": 2648,
+      "private_state_unchanged": true
+    },
+    "irq-leak": {
+      "rows": 132,
+      "commands": 480,
+      "images": 66,
+      "interrupts": 17425,
+      "nmi_total": 12065,
+      "nmi_worker_flat": 569,
+      "nmi_drains": 12065,
+      "observed_stack_offset": 202,
+      "pixel_sha256": "5b26bf85df36d2692e5d375612057b73a7b2526e04c6644bcb41846a5701b5f0",
+      "detected_fields": [
+        15
+      ],
+      "acceptance_pages": 16
+    },
+    "zp-leak": {
+      "rows": 132,
+      "commands": 480,
+      "images": 66,
+      "interrupts": 17284,
+      "nmi_total": 11973,
+      "nmi_worker_flat": 481,
+      "nmi_drains": 11973,
+      "observed_stack_offset": 202,
+      "pixel_sha256": "5b26bf85df36d2692e5d375612057b73a7b2526e04c6644bcb41846a5701b5f0",
+      "detected_fields": [
+        16
+      ],
+      "acceptance_pages": 16
+    },
+    "shell-stack": {
+      "rows": 132,
+      "commands": 480,
+      "images": 66,
+      "interrupts": 17246,
+      "nmi_total": 11941,
+      "nmi_worker_flat": 476,
+      "nmi_drains": 11941,
+      "observed_stack_offset": 240,
+      "pixel_sha256": "5b26bf85df36d2692e5d375612057b73a7b2526e04c6644bcb41846a5701b5f0",
+      "detected_fields": [
+        19,
+        21
+      ],
+      "acceptance_pages": 16
+    },
+    "no-pending": {
+      "rows": 132,
+      "commands": 480,
+      "images": 66,
+      "interrupts": 15320,
+      "nmi_total": 1,
+      "nmi_worker_flat": 0,
+      "nmi_drains": 0,
+      "observed_stack_offset": 202,
+      "pixel_sha256": "5b26bf85df36d2692e5d375612057b73a7b2526e04c6644bcb41846a5701b5f0",
+      "detected_fields": [],
+      "acceptance_pages": 16
+    }
+  },
+  "provenance": "\nVICE - Versatile Commodore Emulator\n\n            ID: net.sf.VICE\n           Ref: app/net.sf.VICE/x86_64/stable\n          Arch: x86_64\n        Branch: stable\n       Version: 3.10\n       License: GPL-2.0+\n        Origin: flathub\n    Collection: org.flathub.Stable\n  Installation: system\nInstalled Size: 45.8\u00a0MB\n       Runtime: org.freedesktop.Platform/x86_64/25.08\n           Sdk: org.freedesktop.Sdk/x86_64/25.08\n\n        Commit: bbd997ea8cbf7e6ba06ff82136fd71069ce2011f93c006412bcda7bbde17e448\n        Parent: 68a5281bbbfb691d105e1006686691713eb0cab353a7d869f4b72c066eca18c7\n       Subject: Add desktop files for vsid, x64dtv, xcbm5x0, xscpu64 (c39f8386949f)\n          Date: 2026-01-18 14:54:47 +0000\n"
+}

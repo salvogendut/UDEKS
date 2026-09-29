@@ -1,0 +1,130 @@
+{
+  "qualification": "placement audit only; no resident cache or IRQ/input qualification",
+  "candidate": {
+    "code": 1005,
+    "bss": 18,
+    "total": 1023,
+    "qualified_reserve": 222,
+    "additional_bytes_before_bindings": 801
+  },
+  "post_shadow": {
+    "base": 49440,
+    "end": 52991,
+    "primary_map_gap": 3552,
+    "scheduler_code_state": 1875,
+    "scheduler_packaging_padding": 141,
+    "lifecycle_handler": 1163,
+    "handler_reserved_slack": 50,
+    "context_code_state": 323,
+    "unowned_bytes": 0
+  },
+  "other_regions": [
+    {
+      "name": "low state",
+      "base": 3072,
+      "end": 4607,
+      "linked_slack": 3,
+      "available_to_cache": false
+    },
+    {
+      "name": "high state",
+      "base": 57784,
+      "end": 58081,
+      "linked_slack": 0,
+      "available_to_cache": false
+    },
+    {
+      "name": "module linker area",
+      "base": 58112,
+      "end": 58947,
+      "linked_slack": 0,
+      "available_to_cache": false
+    },
+    {
+      "name": "module contract extra byte",
+      "base": 58948,
+      "end": 58948,
+      "available_to_cache": false
+    },
+    {
+      "name": "module/stack guard",
+      "base": 58949,
+      "end": 59135,
+      "available_to_cache": false
+    },
+    {
+      "name": "resident software stack",
+      "base": 59136,
+      "end": 61424,
+      "available_to_cache": false
+    },
+    {
+      "name": "probe/application slot overlap",
+      "base": 2816,
+      "end": 3071,
+      "available_to_cache": false
+    },
+    {
+      "name": "transient stack/shared gateway workspace",
+      "base": 63232,
+      "end": 63487,
+      "available_to_cache": false
+    }
+  ],
+  "raster_replacement_candidates": {
+    "clear": 109,
+    "pixel": 190,
+    "line": 580,
+    "rectangle": 410,
+    "fill": 564
+  },
+  "raster_code_before_replacements": 1853,
+  "integrated_primitives": {
+    "pixel": {
+      "CODE": 190
+    },
+    "span": {
+      "CODE": 102
+    }
+  },
+  "primitive_placement_padding": 173,
+  "retained_shell": {
+    "CODE": 3210,
+    "RODATA": 1393,
+    "BSS": 2,
+    "HIGHBSS": 82
+  },
+  "recommended_path": "measure in-place ASM raster replacements; retain all public APIs and reservations",
+  "inputs_sha256": {
+    "src/services/display/vic_graphics.c": "5da7461b81fd0b0e23f82da3dab8e3e279ab95da226fbd51776ded2260a143a3",
+    "src/8502/vic_graphics.s": "a9af14463dd3b35bfa5fabec2fa97347802ecfce0bb426b34dddb7b8c906af3b",
+    "include/udeks/memory.h": "9b99a8518c610b051b3b7a4e41af290eb292440cb4eeb73c3decdfea1c0adf65",
+    "cfg/8502-bootstrap.cfg": "b844513bdd2636411c60ce7fd895c9be5a5ee4e0320f2637c16913fc5a777343",
+    "cfg/8502-scheduler-overlay.cfg": "abd2ab634a1c495e7ac58942716437721c8eba3301e869d51c1533ed24e05673",
+    "cfg/8502-task-context.cfg": "6a421bc10a3f8d5fc92a7ee49b5872d09c3d3ed2e7abf503eba728c06120e71f",
+    "cfg/8502-task-yield-handler.cfg": "10a8bb0b3d1c61dbb3f818eb36e48d8db7312e98f6ed4245d919e06a8ef6852c",
+    "tools/build_scheduler_overlay.py": "a702ae6139b8f91553263a7dab6b5f4b1947a20dc94684741d5991109c4de6b7",
+    "include/udeks/task.h": "0843ba19baca30b9ef25eab4fe9879630f58bb2fe1cc3867c7f6c8f30520038c",
+    "build/8502/vic_graphics.s": "4092a4153261007538a58fc9b0385580308bad620b059fb45694672d5414fd1a",
+    "bench/window-cache/cache-fast.c": "b148492cca316c5be96ed50b6a67dd96ad60ab9aa97b580e7345117e7dff39cc",
+    "bench/window-cache/cache.h": "e8397c32ab102e6d3a0f70b12d0bd5fe82b87e1d8f07ee55feacbd146bc91bd5",
+    "bench/window-cache/rows.s": "8dcbd6ebb5e5cdb69569c8b1a3f0dcd60a570589a4c275254e90559e1007f719",
+    "bench/window-cache/transfer-lease.s": "afbc480651ade659eb093bf5ff00e9f2be65054e5fd5d15842387c824ffda7d2",
+    "src/services/display/vic_pixel.s": "1fa2b50748968165181a7c03f039c9178a58e734e09908a3fc979f585c3dff85",
+    "build/8502/vic_pixel.o": "b4bb72d0cd59f6f0a8f0777b597f08b0c9e3f62b62982710fd99b03e072e9d98",
+    "src/services/display/vic_span.s": "71a7345e96c41e7cd3a0259e48c1833acf125ad31e351206d536f32a3751d450",
+    "build/8502/vic_span.o": "da3ee417072ecf17ea3de2d89b46aea8ed383a38a171934d5920c5d032670cb5",
+    "build/8502/udeks-8502.map": "31c287f9a493d6f8374a8ac276e4dfcac63b2c34a07c3bb748c7a1569bcf882f",
+    "build/8502/udeks-scheduler-overlay.map": "3d108c8f75110a4f8d5563fbb4edf42a8e6526edbbfa018ee606566afa3c51aa",
+    "build/8502/task-context-binding.map": "81cb572a1f23f8d0d3c0553c020ca9f8cd0581382b404c8adff33994c4318f83",
+    "build/boot/scheduler-overlay.prg": "5be1f84c0808279025250ef2c9bdb0f851dba9576129b1063a2189ad3d67bfa5",
+    "build/8502/udeks-scheduler-overlay-page.bin": "ba9adf4eb12b8d2c59dcc753d13a0e1fdf9fda28a696dce0ae50815feabb043d",
+    "build/8502/udeks-scheduler-overlay-tail.bin": "aa4708f096d3e32305097bbaf9e23594842b64252172730f3d00eaa880e47db3",
+    "build/8502/task-context-binding.bin": "26437e80bce5b1300ea33635ddc162c5ba6c540effdede0eabd80aca1713b04f",
+    "build/8502/task-switch-tail.bin": "583a93384f1672b6dc830a79e9b81e7d20d7d98bae7654ed5ae442f31addcefc",
+    "build/8502/task-yield-handler.bin": "46198d496f82f27f933f7879dbd0a963d0990f7b28bbd19adc895148120c3ff6",
+    "build/8502/task-context-vectors.bin": "eaa3d2cfd6c7111f949e27a9d273bbb4a980776f92816c756ae1ee75ce4fc7b6"
+  },
+  "audit_sha256": "022b8e7079f880d4f20c905657033d4f6b15cda7c511343c2339c8fde1ae76b6",
+  "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44"
+}

@@ -67,6 +67,17 @@ python3 tools/1986_input_smoke_build.py --roms ../1986/roms \
 ```
 
 For the negative control use the preserved baseline disk with the same
-arguments. Manual SDL dragging and physical-C128 confirmation remain open.
+arguments. Manual SDL dragging remains open.
+
+## Physical C128 confirmation
+
+After PR #9 merged as `5d089a4`, the user tested the real-hardware checklist
+and reported "all good on real hardware" (2026-09-27). The checklist covers
+dragging during and after rendering, overlapping the background clock,
+foreground Ctrl+C, console recovery, and relaunching the wave. This closes
+the functional hardware gate for the drag-freeze fix. It is user-reported
+manual confirmation, not an instrumented timing or memory-dump result, and
+does not qualify unrelated tasking/context-switch milestones.
+
 The separate raster optimization checkpoint must be rebased and remeasured
 on this fix before integration.

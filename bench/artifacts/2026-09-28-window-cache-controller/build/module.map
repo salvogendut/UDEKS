@@ -1,0 +1,390 @@
+Modules list:
+-------------
+core.o:
+    OVERLAY           Offs=000000  Size=0000D5  Align=00001  Fill=0000
+module.o:
+    CODE              Offs=000000  Size=000003  Align=00001  Fill=0000
+    DISPATCH          Offs=000000  Size=000003  Align=00001  Fill=0000
+    PRIVATESTATE      Offs=000000  Size=00001A  Align=00001  Fill=0000
+policy.o:
+    CODE              Offs=000003  Size=000724  Align=00001  Fill=0000
+command.o:
+    CODE              Offs=000727  Size=000207  Align=00001  Fill=0000
+flow.o:
+    CODE              Offs=00092E  Size=00027D  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000004  Align=00001  Fill=0000
+controller.o:
+    CODE              Offs=000BAB  Size=0000D1  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=000C7C  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000C98  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=000CA6  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=000CAF  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=000CBC  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp4.o):
+    CODE              Offs=000CC9  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp5.o):
+    CODE              Offs=000CD6  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp7.o):
+    CODE              Offs=000CE3  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=000CF0  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000D1E  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=000D34  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000D39  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=000D3E  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=000D43  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=000D48  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp8.o):
+    CODE              Offs=000D4D  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=000D52  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(memcpy.o):
+    CODE              Offs=000D7E  Size=00003C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=000DBA  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000DF4  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000E02  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000E18  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=000E32  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax3.o):
+    CODE              Offs=000E4E  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000E5C  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=000E72  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxspi.o):
+    CODE              Offs=000E7D  Size=00001B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(sub.o):
+    CODE              Offs=000E98  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000006  00001F  00001A  00001
+OVERLAY               004200  0042D4  0000D5  00001
+DISPATCH              0042D5  0042D7  000003  00001
+CODE                  0042D8  005184  000EAD  00001
+RODATA                005185  005188  000004  00001
+PRIVATESTATE          005220  005239  00001A  00001
+
+
+Exports list by name:
+---------------------
+_memcpy                   005056 RLA    _udeks_cache_capture_begin 0043C5 RLA    
+_udeks_cache_commit_row   0047B4 RLA    _udeks_cache_controller   004E83 RLA    
+_udeks_cache_flow_capture 004C7B RLA    _udeks_cache_flow_init    004C06 RLA    
+_udeks_cache_flow_invalidate 004C33 RLA    _udeks_cache_flow_paste   004D11 RLA    
+_udeks_cache_flow_step    004D6B RLA    _udeks_cache_init         0042DB RLA    
+_udeks_cache_invalidate   004386 RLA    _udeks_cache_overlay_command 0049FF RLA    
+_udeks_cache_overlay_row  0042D8 RLA    _udeks_cache_paste_begin  004496 RLA    
+_udeks_cache_prepare_row  0045A6 RLA    addysp                    004F71 RLA    
+addysp1                   004F70 RLA    boolule                   005047 RLA    
+core_start                004200 RLA    decsp1                    004F7E RLA    
+decsp2                    004F87 RLA    decsp3                    004F94 RLA    
+decsp4                    004FA1 RLA    decsp5                    004FAE RLA    
+decsp7                    004FBB RLA    incsp2                    004FFE RLA    
+incsp3                    00500C RLA    incsp4                    005011 RLA    
+incsp5                    005016 RLA    incsp6                    00501B RLA    
+incsp7                    005020 RLA    incsp8                    005025 RLA    
+popax                     004FF6 RLA    popptr1                   0050CC RLA    
+ptr1                      00000E RLZ    ptr2                      000010 RLZ    
+ptr3                      000012 RLZ    ptr4                      000014 RLZ    
+pusha                     0050DE RLA    pusha0                    0050F2 RLA    
+pushax                    0050F4 RLA    pushw0sp                  00510A RLA    
+pushwysp                  00510C RLA    regbank                   00001A RLZ    
+regsave                   00000A RLZ    shrax3                    005126 RLA    
+sp                        000006 RLZ    sreg                      000008 RLZ    
+staspidx                  005134 RLA    stax0sp                   00514A RLA    
+staxspidx                 005155 RLA    tmp1                      000016 RLZ    
+tmp2                      000017 RLZ    tmp3                      000018 RLZ    
+tmp4                      000019 RLZ    tosadda0                  004F54 RLA    
+tosaddax                  004F56 RLA    tosicmp                   004FCA RLA    
+tosicmp0                  004FC8 RLA    tossuba0                  005170 RLA    
+tossubax                  005172 RLA    tosumula0                 005092 RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000006 RLZ    sreg                      000008 RLZ    
+regsave                   00000A RLZ    ptr1                      00000E RLZ    
+ptr2                      000010 RLZ    ptr3                      000012 RLZ    
+ptr4                      000014 RLZ    tmp1                      000016 RLZ    
+tmp2                      000017 RLZ    tmp3                      000018 RLZ    
+tmp4                      000019 RLZ    regbank                   00001A RLZ    
+core_start                004200 RLA    _udeks_cache_overlay_row  0042D8 RLA    
+_udeks_cache_init         0042DB RLA    _udeks_cache_invalidate   004386 RLA    
+_udeks_cache_capture_begin 0043C5 RLA    _udeks_cache_paste_begin  004496 RLA    
+_udeks_cache_prepare_row  0045A6 RLA    _udeks_cache_commit_row   0047B4 RLA    
+_udeks_cache_overlay_command 0049FF RLA    _udeks_cache_flow_init    004C06 RLA    
+_udeks_cache_flow_invalidate 004C33 RLA    _udeks_cache_flow_capture 004C7B RLA    
+_udeks_cache_flow_paste   004D11 RLA    _udeks_cache_flow_step    004D6B RLA    
+_udeks_cache_controller   004E83 RLA    tosadda0                  004F54 RLA    
+tosaddax                  004F56 RLA    addysp1                   004F70 RLA    
+addysp                    004F71 RLA    decsp1                    004F7E RLA    
+decsp2                    004F87 RLA    decsp3                    004F94 RLA    
+decsp4                    004FA1 RLA    decsp5                    004FAE RLA    
+decsp7                    004FBB RLA    tosicmp0                  004FC8 RLA    
+tosicmp                   004FCA RLA    popax                     004FF6 RLA    
+incsp2                    004FFE RLA    incsp3                    00500C RLA    
+incsp4                    005011 RLA    incsp5                    005016 RLA    
+incsp6                    00501B RLA    incsp7                    005020 RLA    
+incsp8                    005025 RLA    boolule                   005047 RLA    
+_memcpy                   005056 RLA    tosumula0                 005092 RLA    
+popptr1                   0050CC RLA    pusha                     0050DE RLA    
+pusha0                    0050F2 RLA    pushax                    0050F4 RLA    
+pushw0sp                  00510A RLA    pushwysp                  00510C RLA    
+shrax3                    005126 RLA    staspidx                  005134 RLA    
+stax0sp                   00514A RLA    staxspidx                 005155 RLA    
+tossuba0                  005170 RLA    tossubax                  005172 RLA    
+
+
+
+Imports list:
+-------------
+_memcpy (memcpy.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+_udeks_cache_capture_begin (policy.o):
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(15)
+_udeks_cache_commit_row (policy.o):
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(18)
+_udeks_cache_controller (controller.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-controller/module.s(18)
+_udeks_cache_flow_capture (flow.o):
+    controller.o              /var/home/salvogendut/Dev/UDEKS/bench/window-cache-controller/controller.s(15)
+_udeks_cache_flow_init (flow.o):
+    controller.o              /var/home/salvogendut/Dev/UDEKS/bench/window-cache-controller/controller.s(13)
+_udeks_cache_flow_invalidate (flow.o):
+    controller.o              /var/home/salvogendut/Dev/UDEKS/bench/window-cache-controller/controller.s(14)
+_udeks_cache_flow_paste (flow.o):
+    controller.o              /var/home/salvogendut/Dev/UDEKS/bench/window-cache-controller/controller.s(16)
+_udeks_cache_flow_step (flow.o):
+    controller.o              /var/home/salvogendut/Dev/UDEKS/bench/window-cache-controller/controller.s(17)
+_udeks_cache_init (policy.o):
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(13)
+_udeks_cache_invalidate (policy.o):
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(14)
+_udeks_cache_overlay_command (command.o):
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(18)
+_udeks_cache_overlay_row (module.o):
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(20)
+_udeks_cache_paste_begin (policy.o):
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(16)
+_udeks_cache_prepare_row (policy.o):
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(17)
+addysp (addysp.o):
+    incsp8.o                  runtime/incsp8.s(8)
+    incsp7.o                  runtime/incsp7.s(8)
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+boolule (makebool.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+core_start (core.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-controller/module.s(18)
+decsp1 (decsp1.o):
+    controller.o              /var/home/salvogendut/Dev/UDEKS/bench/window-cache-controller/controller.s(125)
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+decsp2 (decsp2.o):
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+decsp3 (decsp3.o):
+    controller.o              /var/home/salvogendut/Dev/UDEKS/bench/window-cache-controller/controller.s(125)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+decsp4 (decsp4.o):
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(265)
+decsp5 (decsp5.o):
+    controller.o              /var/home/salvogendut/Dev/UDEKS/bench/window-cache-controller/controller.s(125)
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(265)
+decsp7 (decsp7.o):
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(265)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp2 (incsp2.o):
+    staxspi.o                 runtime/staxspi.s(9)
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+    controller.o              /var/home/salvogendut/Dev/UDEKS/bench/window-cache-controller/controller.s(125)
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+incsp3 (incsp3.o):
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp4 (incsp4.o):
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp5 (incsp5.o):
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(265)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp6 (incsp6.o):
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp7 (incsp7.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+incsp8 (incsp8.o):
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+popax (incsp2.o):
+    memcpy.o                  common/memcpy.s(14)
+popptr1 (popptr1.o):
+    mul8.o                    runtime/mul8.s(9)
+    memcpy.o                  common/memcpy.s(14)
+ptr1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    memcpy.o                  common/memcpy.s(15)
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(11)
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(11)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(11)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-controller/module.s(4)
+ptr2 (zeropage.o):
+    memcpy.o                  common/memcpy.s(15)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-controller/module.s(4)
+ptr3 (zeropage.o):
+    memcpy.o                  common/memcpy.s(15)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-controller/module.s(4)
+ptr4 (zeropage.o):
+    mul8.o                    runtime/mul8.s(10)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-controller/module.s(4)
+pusha (pusha.o):
+    controller.o              /var/home/salvogendut/Dev/UDEKS/bench/window-cache-controller/controller.s(125)
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(265)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+pusha0 (pushax.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+pushax (pushax.o):
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(265)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+pushw0sp (pushwsp.o):
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+pushwysp (pushwsp.o):
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+regbank (zeropage.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-controller/module.s(4)
+regsave (zeropage.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-controller/module.s(4)
+shrax3 (shrax3.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+sp (zeropage.o):
+    sub.o                     runtime/sub.s(9)
+    staxspi.o                 runtime/staxspi.s(10)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    memcpy.o                  common/memcpy.s(15)
+    incsp2.o                  runtime/incsp2.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp7.o                  runtime/decsp7.s(8)
+    decsp5.o                  runtime/decsp5.s(8)
+    decsp4.o                  runtime/decsp4.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    add.o                     runtime/add.s(12)
+    controller.o              /var/home/salvogendut/Dev/UDEKS/bench/window-cache-controller/controller.s(10)
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(10)
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(10)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(10)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-controller/module.s(4)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(10)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-controller/module.s(4)
+staspidx (staspidx.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+stax0sp (staxsp.o):
+    flow.o                    /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_flow.s(408)
+    command.o                 /var/home/salvogendut/Dev/UDEKS/src/services/window/cache_overlay.s(265)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+staxspidx (staxspi.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tmp1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    shrax3.o                  runtime/shrax3.s(8)
+    add.o                     runtime/add.s(12)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(11)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-controller/module.s(5)
+tmp2 (zeropage.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-controller/module.s(5)
+tmp3 (zeropage.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-controller/module.s(5)
+tmp4 (zeropage.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/bench/window-cache-controller/module.s(5)
+tosadda0 (add.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tosaddax (add.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tosicmp (icmp.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tosicmp0 (icmp.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tossuba0 (sub.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tossubax (sub.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+tosumula0 (mul8.o):
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+    policy.o                  /var/home/salvogendut/Dev/UDEKS/src/services/window/move_cache_state.s(1080)
+

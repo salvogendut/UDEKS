@@ -1,0 +1,96 @@
+/var/home/salvogendut/Dev/UDEKS/build/window-manager-budget/flow.o:
+  Imports:
+    Count:                         31
+    Index:                          0
+      Address size:              0x02  (absolute)
+      Name:                  "incsp2"
+    Index:                          1
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                          2
+      Address size:              0x02  (absolute)
+      Name:                  "incsp3"
+    Index:                          3
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                          4
+      Address size:              0x02  (absolute)
+      Name:                  "incsp6"
+    Index:                          5
+      Address size:              0x02  (absolute)
+      Name:                 "tosicmp"
+    Index:                          6
+      Address size:              0x02  (absolute)
+      Name:                "pushwysp"
+    Index:                          7
+      Address size:              0x02  (absolute)
+      Name:                "tosicmp0"
+    Index:                          8
+      Address size:              0x02  (absolute)
+      Name:                  "pusha0"
+    Index:                          9
+      Address size:              0x02  (absolute)
+      Name:                  "decsp1"
+    Index:                         10
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         11
+      Address size:              0x02  (absolute)
+      Name:                "pushwysp"
+    Index:                         12
+      Address size:              0x02  (absolute)
+      Name:                  "incsp5"
+    Index:                         13
+      Address size:              0x02  (absolute)
+      Name:                "tosicmp0"
+    Index:                         14
+      Address size:              0x02  (absolute)
+      Name:                  "pusha0"
+    Index:                         15
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         16
+      Address size:              0x02  (absolute)
+      Name:                "pushwysp"
+    Index:                         17
+      Address size:              0x02  (absolute)
+      Name:                  "incsp8"
+    Index:                         18
+      Address size:              0x02  (absolute)
+      Name:                  "decsp2"
+    Index:                         19
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                         20
+      Address size:              0x02  (absolute)
+      Name:                  "incsp4"
+    Index:                         21
+      Address size:              0x02  (absolute)
+      Name:                 "stax0sp"
+    Index:                         22
+      Address size:              0x02  (absolute)
+      Name:                "pushwysp"
+    Index:                         23
+      Address size:              0x02  (absolute)
+      Name:                  "decsp2"
+    Index:                         24
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         25
+      Address size:              0x02  (absolute)
+      Name:                  "incsp2"
+    Index:                         26
+      Address size:              0x02  (absolute)
+      Name:                "pushw0sp"
+    Index:                         27
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         28
+      Address size:              0x02  (absolute)
+      Name:  "_private_cache_policy_call"
+    Index:                         29
+      Address size:              0x01  (zeropage)
+      Name:                    "ptr1"
+    Index:                         30
+      Address size:              0x01  (zeropage)
+      Name:                      "sp"

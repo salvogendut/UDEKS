@@ -1,0 +1,30 @@
+{
+  "program_sha256": {
+    "reference-0.prg": "295d824719139cdd3a562d2c4a9f099c6821200895cda235bbe67cae7fd6c42e",
+    "reference-1.prg": "0eb5f455dd65cf61639b86cc9fce2b7236589c0ef1f3bac83b083060c1f886e8",
+    "reference-2.prg": "b9d06d66f47ab9d0ce77a9945fe3857cd95baace2029be3e350986f4f5f9ac47",
+    "reference-3.prg": "4088914e9b099829ba96ef4bf225c03e00331187619583a05944f05f1d698f05",
+    "reference-4.prg": "783a9c49e8e3330a6fab7a3ee2b508d64cd789316b325347d69153da62431a78",
+    "reference-5.prg": "87ecdb15f6ec790d32b6985674e2c1d294cb014b923cccf1ca6f2998ff079c14",
+    "combined-0.prg": "436e4463b785259a9fce0167a189d3847d19115de1a65222de3b9ab45e8d518f",
+    "combined-1.prg": "2d4419bf2db1dc30597f7d210187066f15e053142b57e68ff4e5d8b4b281b457",
+    "combined-2.prg": "55acbf3694f3277384227fbbacd5acf793881806ee9f20bf1f06dc23e9702692",
+    "combined-3.prg": "b0a33929157adc03ef69deb34045159fdeb035d01495e1de4b7f89a3e4d96ba4",
+    "combined-4.prg": "c200bba3228c39858bb5baeaa9eeaac479fe1026a0e10d49cd0f87710819c599",
+    "combined-5.prg": "94045b725c32819f4c3cee3159fb41125179558af82f40ac16b31b439a111f3a"
+  },
+  "raw_sha256": {
+    "vice-reference-0.bin": "943c8396217eca6b8a9ea27a2533b7bd05f32bae5d74e6dad19865e8fb84ed78",
+    "vice-reference-1.bin": "09d17dd6108359b059a78500088b189c70b5384100282afd668c1c818af05ca9",
+    "vice-reference-2.bin": "56815f51607b7d8a58cd984c2d65b66b39ad9e0ad0f4cb26a128c16bbec97063",
+    "vice-reference-3.bin": "69e50b4f647efa4c246d53dd17bd23d20f9a713d41c558f574a8e457332603c1",
+    "vice-reference-4.bin": "39d1bcd7754c0a27a7ef1cd34c2ab20c099606cf858fa252804afb80b6c97ead",
+    "vice-reference-5.bin": "4edafaabf750a2dd477426aae9abcb812062898da2ec8f3ec8aab65830118f09",
+    "vice-combined-0.bin": "1d315aa009064e192cfc07df54202369c1b78c6613f1e47cba4a0e6005cc696e",
+    "vice-combined-1.bin": "7c16f1a92f43edf00fdd057b2991db2f70e15c8537a5197cb73de10dcd83a4b9",
+    "vice-combined-2.bin": "572d2a50df14bbd3edbbd9bdb402e5c586436631c671e6aba99d6a281894a18f",
+    "vice-combined-3.bin": "e961238126bf64fb1a001ce5f844b3be0779248d3478ccfccb0aacce3c2eb644",
+    "vice-combined-4.bin": "840c1055dc0861da61f4c702f455e30d5151e1d8461f11ec963612fad1a91a34",
+    "vice-combined-5.bin": "4766395a2bc29bc8a1d8037978fd9e4c6632dd8a0c3a165c9d5f4e9ee1dd73b1"
+  }
+}

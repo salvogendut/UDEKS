@@ -1,0 +1,41 @@
+{
+  "module_bytes": 3971,
+  "identity_slack": 141,
+  "gateway_source": 20671,
+  "gateway_bytes": 196,
+  "private_data_bytes": 3,
+  "objects": {
+    "policy": {
+      "CODE": 1242,
+      "RODATA": 0,
+      "BSS": 0,
+      "DATA": 0,
+      "ZEROPAGE": 0,
+      "NULL": 0
+    },
+    "command": {
+      "CODE": 763,
+      "RODATA": 0,
+      "BSS": 0,
+      "DATA": 3,
+      "ZEROPAGE": 0,
+      "NULL": 0
+    },
+    "flow": {
+      "CODE": 570,
+      "RODATA": 4,
+      "BSS": 0,
+      "DATA": 0,
+      "ZEROPAGE": 0,
+      "NULL": 0
+    },
+    "controller": {
+      "CODE": 394,
+      "RODATA": 0,
+      "BSS": 0,
+      "DATA": 0,
+      "ZEROPAGE": 0,
+      "NULL": 0
+    }
+  }
+}

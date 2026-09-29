@@ -1,0 +1,637 @@
+ca65 V2.18 - Fedora 2.19-15.fc44
+Main file   : /var/home/salvogendut/Dev/UDEKS/src/8502/vic_graphics.s
+Current file: /var/home/salvogendut/Dev/UDEKS/src/8502/vic_graphics.s
+
+000000r 1               ; SPDX-License-Identifier: GPL-3.0-or-later
+000000r 1               ;
+000000r 1               ; Establish the first VIC-IIe graphics surface in physical bank 1.  The copy
+000000r 1               ; gateway runs from top common RAM so it can change complete MMU profiles
+000000r 1               ; without fetching code from the bank being replaced.
+000000r 1               
+000000r 1                       .setcpu "6502"
+000000r 1                       .export _udeks_vic_graphics_enable
+000000r 1                       .export _udeks_vic_graphics_disable
+000000r 1                       .export _udeks_vic_pointer_set_x
+000000r 1                       .export _udeks_vic_pointer_set_y
+000000r 1                       .export _udeks_vic_pointer_select_shape
+000000r 1                       .export _udeks_vic_pointer_busy_begin
+000000r 1                       .export _udeks_vic_pointer_busy_end
+000000r 1                       .export _udeks_vic_pointer_busy_tick
+000000r 1                       .export _udeks_vic_bitmap_commit_page
+000000r 1                       .export _udeks_vic_bitmap_outline_blit
+000000r 1                       .import _udeks_vic_bitmap_shadow
+000000r 1                       .import _udeks_vic_buffer_restore
+000000r 1               
+000000r 1               MMU_LCR_KERNEL_IO       = $ff01
+000000r 1               MMU_LCR_WORKER_FLAT     = $ff04
+000000r 1               MMU_RCR                 = $d506
+000000r 1               CPU_PORT                = $0001
+000000r 1               CIA2_PRA                = $dd00
+000000r 1               CIA2_DDRA               = $dd02
+000000r 1               VIC_SPRITE0_X           = $d000
+000000r 1               VIC_SPRITE0_Y           = $d001
+000000r 1               VIC_SPRITE_X_MSB        = $d010
+000000r 1               VIC_CONTROL_1           = $d011
+000000r 1               VIC_SPRITE_ENABLE       = $d015
+000000r 1               VIC_CONTROL_2           = $d016
+000000r 1               VIC_SPRITE_Y_EXPAND     = $d017
+000000r 1               VIC_MEMORY              = $d018
+000000r 1               VIC_SPRITE_PRIORITY     = $d01b
+000000r 1               VIC_SPRITE_MULTICOLOR   = $d01c
+000000r 1               VIC_SPRITE_X_EXPAND     = $d01d
+000000r 1               VIC_BORDER_COLOR        = $d020
+000000r 1               VIC_BACKGROUND_COLOR    = $d021
+000000r 1               VIC_SPRITE0_COLOR       = $d027
+000000r 1               
+000000r 1               COMMON_GATEWAY          = $f68a
+000000r 1               COMMON_PAGE             = $f3ee
+000000r 1               OUTLINE_GATEWAY_TAG     = $f3ed
+000000r 1               OUTLINE_COUNT           = $f37f
+000000r 1               COMMON_BUFFER           = $f400
+000000r 1               OUTLINE_BUFFER          = $f380
+000000r 1               VIC_SCREEN              = $5c00
+000000r 1               VIC_BITMAP              = $6000
+000000r 1               VIC_SPRITE_NORMAL       = $4100
+000000r 1               VIC_SPRITE_BUSY         = $4140
+000000r 1               VIC_SPRITE              = $7fc0
+000000r 1               VIC_SPRITE_POINTER      = $5ff8
+000000r 1               VIC_STATUS_STATE        = $f1b5
+000000r 1               VIC_STATUS_POINTER_SHAPE = $f1c7
+000000r 1               POINTER_FRAME_LOW       = $f1e2
+000000r 1               VIC_STATE_ACTIVE        = $03
+000000r 1               BUSY_RELEASE_PENDING    = $03
+000000r 1               BUSY_HOLD_FRAMES        = $03
+000000r 1               
+000000r 1                       .segment "BSS"
+000000r 1               saved_chargen_overlay:
+000000r 1  xx                   .res 1
+000001r 1               busy_release_frame:
+000001r 1  xx                   .res 1
+000002r 1               
+000002r 1                       .segment "CODE"
+000000r 1               _udeks_vic_graphics_enable:
+000000r 1                       ; Hide the VIC canvas while the common-RAM gateway changes its bank
+000000r 1                       ; and prepares the new bitmap.  The gateway reveals bitmap mode only
+000000r 1                       ; after the screen, bitmap, and pointer are all coherent.
+000000r 1  AD 11 D0             lda VIC_CONTROL_1
+000003r 1  29 EF                and #$ef
+000005r 1  8D 11 D0             sta VIC_CONTROL_1
+000008r 1                       ; On the C128, CPU port bit 2 controls the character-ROM overlay seen
+000008r 1                       ; by the VIC-IIe in every 16 KiB VIC bank.  Our screen matrix is at
+000008r 1                       ; VIC-relative $1C00, inside that overlay window, so expose RAM before
+000008r 1                       ; the first bitmap badline and preserve the caller's prior setting.
+000008r 1  A5 01                lda CPU_PORT
+00000Ar 1  29 04                and #$04
+00000Cr 1  8D rr rr             sta saved_chargen_overlay
+00000Fr 1  A5 01                lda CPU_PORT
+000011r 1  09 04                ora #$04
+000013r 1  85 01                sta CPU_PORT
+000015r 1  A9 00                lda #$00
+000017r 1  8D C7 F1             sta VIC_STATUS_POINTER_SHAPE
+00001Ar 1  8D ED F3             sta OUTLINE_GATEWAY_TAG
+00001Dr 1  A2 00                ldx #$00
+00001Fr 1               copy_gateway:
+00001Fr 1  BD rr rr             lda vic_gateway,x
+000022r 1  9D 8A F6             sta COMMON_GATEWAY,x
+000025r 1  E8                   inx
+000026r 1  E0 FE                cpx #vic_gateway_end-vic_gateway
+000028r 1  D0 F5                bne copy_gateway
+00002Ar 1  20 8A F6             jsr COMMON_GATEWAY
+00002Dr 1  A9 00                lda #$00
+00002Fr 1  60                   rts
+000030r 1               
+000030r 1               _udeks_vic_graphics_disable:
+000030r 1  AD 15 D0             lda VIC_SPRITE_ENABLE
+000033r 1  29 FE                and #$fe
+000035r 1  8D 15 D0             sta VIC_SPRITE_ENABLE
+000038r 1  AD 11 D0             lda VIC_CONTROL_1
+00003Br 1  29 CF                and #$cf
+00003Dr 1  8D 11 D0             sta VIC_CONTROL_1
+000040r 1  AD 06 D5             lda MMU_RCR
+000043r 1  29 BF                and #$bf
+000045r 1  8D 06 D5             sta MMU_RCR
+000048r 1  AD rr rr             lda saved_chargen_overlay
+00004Br 1  F0 06                beq restore_chargen_overlay
+00004Dr 1  A5 01                lda CPU_PORT
+00004Fr 1  09 04                ora #$04
+000051r 1  D0 04                bne store_chargen_overlay
+000053r 1               restore_chargen_overlay:
+000053r 1  A5 01                lda CPU_PORT
+000055r 1  29 FB                and #$fb
+000057r 1               store_chargen_overlay:
+000057r 1  85 01                sta CPU_PORT
+000059r 1  A9 00                lda #$00
+00005Br 1  8D C7 F1             sta VIC_STATUS_POINTER_SHAPE
+00005Er 1  60                   rts
+00005Fr 1               
+00005Fr 1               _udeks_vic_pointer_set_x:
+00005Fr 1  8D 00 D0             sta VIC_SPRITE0_X
+000062r 1  48                   pha
+000063r 1  AD 10 D0             lda VIC_SPRITE_X_MSB
+000066r 1  E0 00                cpx #$00
+000068r 1  F0 04                beq pointer_x_low
+00006Ar 1  09 01                ora #$01
+00006Cr 1  D0 02                bne pointer_x_store
+00006Er 1               pointer_x_low:
+00006Er 1  29 FE                and #$fe
+000070r 1               pointer_x_store:
+000070r 1  8D 10 D0             sta VIC_SPRITE_X_MSB
+000073r 1  68                   pla
+000074r 1  60                   rts
+000075r 1               
+000075r 1               _udeks_vic_pointer_set_y:
+000075r 1  8D 01 D0             sta VIC_SPRITE0_Y
+000078r 1  60                   rts
+000079r 1               
+000079r 1               _udeks_vic_pointer_busy_begin:
+000079r 1  AA                   tax
+00007Ar 1  AD B5 F1             lda VIC_STATUS_STATE
+00007Dr 1  C9 03                cmp #VIC_STATE_ACTIVE
+00007Fr 1  D0 15                bne pointer_busy_done
+000081r 1  AD C7 F1             lda VIC_STATUS_POINTER_SHAPE
+000084r 1  F0 08                beq pointer_busy_install
+000086r 1  C9 03                cmp #BUSY_RELEASE_PENDING
+000088r 1  D0 0C                bne pointer_busy_done
+00008Ar 1  8E C7 F1             stx VIC_STATUS_POINTER_SHAPE
+00008Dr 1  60                   rts
+00008Er 1               pointer_busy_install:
+00008Er 1  8E C7 F1             stx VIC_STATUS_POINTER_SHAPE
+000091r 1  A9 01                lda #$01
+000093r 1  4C rr rr             jmp _udeks_vic_pointer_select_shape
+000096r 1               pointer_busy_done:
+000096r 1  60                   rts
+000097r 1               
+000097r 1               _udeks_vic_pointer_busy_end:
+000097r 1  AA                   tax
+000098r 1  EC C7 F1             cpx VIC_STATUS_POINTER_SHAPE
+00009Br 1  D0 F9                bne pointer_busy_done
+00009Dr 1  AD E2 F1             lda POINTER_FRAME_LOW
+0000A0r 1  18                   clc
+0000A1r 1  69 03                adc #BUSY_HOLD_FRAMES
+0000A3r 1  8D rr rr             sta busy_release_frame
+0000A6r 1  A9 03                lda #BUSY_RELEASE_PENDING
+0000A8r 1  8D C7 F1             sta VIC_STATUS_POINTER_SHAPE
+0000ABr 1  60                   rts
+0000ACr 1               
+0000ACr 1               _udeks_vic_pointer_busy_tick:
+0000ACr 1  AD C7 F1             lda VIC_STATUS_POINTER_SHAPE
+0000AFr 1  C9 03                cmp #BUSY_RELEASE_PENDING
+0000B1r 1  D0 E3                bne pointer_busy_done
+0000B3r 1  AD E2 F1             lda POINTER_FRAME_LOW
+0000B6r 1  CD rr rr             cmp busy_release_frame
+0000B9r 1  D0 DB                bne pointer_busy_done
+0000BBr 1  A9 00                lda #$00
+0000BDr 1  8D C7 F1             sta VIC_STATUS_POINTER_SHAPE
+0000C0r 1  4C rr rr             jmp _udeks_vic_pointer_select_shape
+0000C3r 1               
+0000C3r 1               _udeks_vic_pointer_select_shape:
+0000C3r 1  8D EE F3             sta COMMON_PAGE
+0000C6r 1  A9 00                lda #$00
+0000C8r 1  8D ED F3             sta OUTLINE_GATEWAY_TAG
+0000CBr 1  A2 00                ldx #$00
+0000CDr 1               copy_sprite_swap_gateway:
+0000CDr 1  BD rr rr             lda sprite_swap_gateway,x
+0000D0r 1  9D 8A F6             sta COMMON_GATEWAY,x
+0000D3r 1  E8                   inx
+0000D4r 1  E0 2E                cpx #sprite_swap_gateway_end-sprite_swap_gateway
+0000D6r 1  D0 F5                bne copy_sprite_swap_gateway
+0000D8r 1  20 8A F6             jsr COMMON_GATEWAY
+0000DBr 1  60                   rts
+0000DCr 1               
+0000DCr 1               _udeks_vic_bitmap_commit_page:
+0000DCr 1  48                   pha
+0000DDr 1  A9 00                lda #$00
+0000DFr 1  8D ED F3             sta OUTLINE_GATEWAY_TAG
+0000E2r 1  A2 00                ldx #$00
+0000E4r 1               copy_page_gateway:
+0000E4r 1  BD rr rr             lda page_gateway,x
+0000E7r 1  9D 8A F6             sta COMMON_GATEWAY,x
+0000EAr 1  E8                   inx
+0000EBr 1  E0 44                cpx #page_gateway_end-page_gateway
+0000EDr 1  D0 F5                bne copy_page_gateway
+0000EFr 1  68                   pla
+0000F0r 1  8D EE F3             sta COMMON_PAGE
+0000F3r 1  20 8A F6             jsr COMMON_GATEWAY
+0000F6r 1  60                   rts
+0000F7r 1               
+0000F7r 1               _udeks_vic_bitmap_outline_blit:
+0000F7r 1  AD ED F3             lda OUTLINE_GATEWAY_TAG
+0000FAr 1  C9 A5                cmp #$a5
+0000FCr 1  F0 1D                beq run_outline_gateway
+0000FEr 1  A2 00                ldx #$00
+000100r 1               copy_outline_gateway_0:
+000100r 1  BD rr rr             lda outline_gateway,x
+000103r 1  9D 8A F6             sta COMMON_GATEWAY,x
+000106r 1  E8                   inx
+000107r 1  D0 F7                bne copy_outline_gateway_0
+000109r 1  A2 00                ldx #$00
+00010Br 1               copy_outline_gateway_1:
+00010Br 1  BD rr rr             lda outline_gateway+$100,x
+00010Er 1  9D 8A F7             sta COMMON_GATEWAY+$100,x
+000111r 1  E8                   inx
+000112r 1  E0 66                cpx #outline_gateway_end-outline_gateway-$100
+000114r 1  D0 F5                bne copy_outline_gateway_1
+000116r 1  A9 A5                lda #$a5
+000118r 1  8D ED F3             sta OUTLINE_GATEWAY_TAG
+00011Br 1               run_outline_gateway:
+00011Br 1  20 8A F6             jsr COMMON_GATEWAY
+00011Er 1  60                   rts
+00011Fr 1               
+00011Fr 1               vic_gateway:
+00011Fr 1  A9 60                lda #>VIC_BITMAP
+000121r 1  8D 9C F6             sta COMMON_GATEWAY+(clear_bitmap-vic_gateway)+2
+000124r 1  A9 00                lda #$00
+000126r 1  8D 04 FF             sta MMU_LCR_WORKER_FLAT
+000129r 1  A2 20                ldx #$20
+00012Br 1  A0 00                ldy #$00
+00012Dr 1  A9 00                lda #$00
+00012Fr 1               clear_bitmap:
+00012Fr 1  99 00 60             sta VIC_BITMAP,y
+000132r 1  C8                   iny
+000133r 1  D0 FA                bne clear_bitmap
+000135r 1  EE 9C F6             inc COMMON_GATEWAY+(clear_bitmap-vic_gateway)+2
+000138r 1  CA                   dex
+000139r 1  D0 F4                bne clear_bitmap
+00013Br 1               
+00013Br 1  A9 5C                lda #>VIC_SCREEN
+00013Dr 1  8D B1 F6             sta COMMON_GATEWAY+(clear_screen-vic_gateway)+2
+000140r 1  A2 04                ldx #$04
+000142r 1  A9 07                lda #$07
+000144r 1               clear_screen:
+000144r 1  99 00 5C             sta VIC_SCREEN,y
+000147r 1  C8                   iny
+000148r 1  D0 FA                bne clear_screen
+00014Ar 1  EE B1 F6             inc COMMON_GATEWAY+(clear_screen-vic_gateway)+2
+00014Dr 1  CA                   dex
+00014Er 1  D0 F4                bne clear_screen
+000150r 1               
+000150r 1  A2 3E                ldx #$3e
+000152r 1               copy_sprite:
+000152r 1  BD 49 F7             lda COMMON_GATEWAY+(sprite_data-vic_gateway),x
+000155r 1  9D C0 7F             sta VIC_SPRITE,x
+000158r 1  CA                   dex
+000159r 1  10 F7                bpl copy_sprite
+00015Br 1  A9 FF                lda #$ff
+00015Dr 1  8D F8 5F             sta VIC_SPRITE_POINTER
+000160r 1               
+000160r 1  A9 00                lda #$00
+000162r 1  8D 01 FF             sta MMU_LCR_KERNEL_IO
+000165r 1               
+000165r 1  08                   php
+000166r 1  78                   sei
+000167r 1  AD 06 D5             lda MMU_RCR
+00016Ar 1                       ; Make the bank transition explicit and keep the complete VIC/MMU
+00016Ar 1                       ; setup atomic with respect to the console's periodic IRQ work.
+00016Ar 1  29 BF                and #$bf
+00016Cr 1  8D 06 D5             sta MMU_RCR
+00016Fr 1  09 40                ora #$40
+000171r 1  8D 06 D5             sta MMU_RCR
+000174r 1  AD 02 DD             lda CIA2_DDRA
+000177r 1  09 03                ora #$03
+000179r 1  8D 02 DD             sta CIA2_DDRA
+00017Cr 1  AD 00 DD             lda CIA2_PRA
+00017Fr 1  29 FC                and #$fc
+000181r 1  09 02                ora #$02
+000183r 1  8D 00 DD             sta CIA2_PRA
+000186r 1               
+000186r 1  A9 07                lda #$07
+000188r 1  8D 20 D0             sta VIC_BORDER_COLOR
+00018Br 1  8D 21 D0             sta VIC_BACKGROUND_COLOR
+00018Er 1  A9 78                lda #$78
+000190r 1  8D 18 D0             sta VIC_MEMORY
+000193r 1  A9 08                lda #$08
+000195r 1  8D 16 D0             sta VIC_CONTROL_2
+000198r 1               
+000198r 1  AD 10 D0             lda VIC_SPRITE_X_MSB
+00019Br 1  29 FE                and #$fe
+00019Dr 1  8D 10 D0             sta VIC_SPRITE_X_MSB
+0001A0r 1  AD 1C D0             lda VIC_SPRITE_MULTICOLOR
+0001A3r 1  29 FE                and #$fe
+0001A5r 1  8D 1C D0             sta VIC_SPRITE_MULTICOLOR
+0001A8r 1  AD 1B D0             lda VIC_SPRITE_PRIORITY
+0001ABr 1  29 FE                and #$fe
+0001ADr 1  8D 1B D0             sta VIC_SPRITE_PRIORITY
+0001B0r 1  AD 1D D0             lda VIC_SPRITE_X_EXPAND
+0001B3r 1  29 FE                and #$fe
+0001B5r 1  8D 1D D0             sta VIC_SPRITE_X_EXPAND
+0001B8r 1  AD 17 D0             lda VIC_SPRITE_Y_EXPAND
+0001BBr 1  29 FE                and #$fe
+0001BDr 1  8D 17 D0             sta VIC_SPRITE_Y_EXPAND
+0001C0r 1  A9 AC                lda #$ac
+0001C2r 1  8D 00 D0             sta VIC_SPRITE0_X
+0001C5r 1  A9 8C                lda #$8c
+0001C7r 1  8D 01 D0             sta VIC_SPRITE0_Y
+0001CAr 1  A9 00                lda #$00
+0001CCr 1  8D 27 D0             sta VIC_SPRITE0_COLOR
+0001CFr 1  AD 15 D0             lda VIC_SPRITE_ENABLE
+0001D2r 1  09 01                ora #$01
+0001D4r 1  8D 15 D0             sta VIC_SPRITE_ENABLE
+0001D7r 1  A9 3B                lda #$3b
+0001D9r 1  8D 11 D0             sta VIC_CONTROL_1
+0001DCr 1  28                   plp
+0001DDr 1  60                   rts
+0001DEr 1               
+0001DEr 1               sprite_data:
+0001DEr 1  00 00 00 00          .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+0001E2r 1  00 00 00 00  
+0001E6r 1  00 00 00 00  
+0001EAr 1  00 00 00 03          .byte $00, $00, $00, $03, $00, $c0, $03, $00, $c0, $00, $c3, $00
+0001EEr 1  00 C0 03 00  
+0001F2r 1  C0 00 C3 00  
+0001F6r 1  00 C3 00 00          .byte $00, $c3, $00, $00, $3c, $00, $00, $3c, $00, $00, $3c, $00
+0001FAr 1  3C 00 00 3C  
+0001FEr 1  00 00 3C 00  
+000202r 1  00 C3 00 00          .byte $00, $c3, $00, $00, $c3, $00, $03, $00, $c0, $03, $00, $c0
+000206r 1  C3 00 03 00  
+00020Ar 1  C0 03 00 C0  
+00020Er 1  00 00 00 00          .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+000212r 1  00 00 00 00  
+000216r 1  00 00 00 00  
+00021Ar 1  00 00 00             .byte $00, $00, $00
+00021Dr 1               sprite_data_end:
+00021Dr 1                       .assert sprite_data_end-sprite_data = 63, error, "VIC pointer sprite size drift"
+00021Dr 1               vic_gateway_end:
+00021Dr 1                       .assert vic_gateway_end-vic_gateway < $100, error, "VIC common gateway exceeds one-page installer"
+00021Dr 1               
+00021Dr 1               sprite_swap_gateway:
+00021Dr 1  A9 00                lda #$00
+00021Fr 1  8D 04 FF             sta MMU_LCR_WORKER_FLAT
+000222r 1  AD EE F3             lda COMMON_PAGE
+000225r 1  F0 13                beq sprite_restore_normal
+000227r 1  A2 3E                ldx #$3e
+000229r 1               sprite_save_normal:
+000229r 1  BD C0 7F             lda VIC_SPRITE,x
+00022Cr 1  9D 00 41             sta VIC_SPRITE_NORMAL,x
+00022Fr 1  BD 40 41             lda VIC_SPRITE_BUSY,x
+000232r 1  9D C0 7F             sta VIC_SPRITE,x
+000235r 1  CA                   dex
+000236r 1  10 F1                bpl sprite_save_normal
+000238r 1  30 0B                bmi sprite_swap_done
+00023Ar 1               sprite_restore_normal:
+00023Ar 1  A2 3E                ldx #$3e
+00023Cr 1               sprite_restore_copy:
+00023Cr 1  BD 00 41             lda VIC_SPRITE_NORMAL,x
+00023Fr 1  9D C0 7F             sta VIC_SPRITE,x
+000242r 1  CA                   dex
+000243r 1  10 F7                bpl sprite_restore_copy
+000245r 1               sprite_swap_done:
+000245r 1  A9 00                lda #$00
+000247r 1  8D 01 FF             sta MMU_LCR_KERNEL_IO
+00024Ar 1  60                   rts
+00024Br 1               sprite_swap_gateway_end:
+00024Br 1                       .assert sprite_swap_gateway_end-sprite_swap_gateway < $40, error, "VIC sprite swap gateway is too large"
+00024Br 1               
+00024Br 1               page_gateway:
+00024Br 1  AD EE F3             lda COMMON_PAGE
+00024Er 1  18                   clc
+00024Fr 1  69 rr                adc #>_udeks_vic_bitmap_shadow
+000251r 1  8D A0 F6             sta COMMON_GATEWAY+(page_load_shadow-page_gateway)+2
+000254r 1  AD EE F3             lda COMMON_PAGE
+000257r 1  18                   clc
+000258r 1  69 60                adc #>VIC_BITMAP
+00025Ar 1  8D BA F6             sta COMMON_GATEWAY+(page_store_bitmap-page_gateway)+2
+00025Dr 1  A0 00                ldy #$00
+00025Fr 1               page_stage:
+00025Fr 1               page_load_shadow:
+00025Fr 1  B9 rr rr             lda _udeks_vic_bitmap_shadow,y
+000262r 1  99 00 F4             sta COMMON_BUFFER,y
+000265r 1  C8                   iny
+000266r 1  D0 F7                bne page_stage
+000268r 1               
+000268r 1  A9 00                lda #$00
+00026Ar 1  8D 04 FF             sta MMU_LCR_WORKER_FLAT
+00026Dr 1  A0 00                ldy #$00
+00026Fr 1  AD EE F3             lda COMMON_PAGE
+000272r 1  C9 1F                cmp #$1f
+000274r 1  F0 0B                beq page_copy_last
+000276r 1               page_copy_full:
+000276r 1  B9 00 F4             lda COMMON_BUFFER,y
+000279r 1               page_store_bitmap:
+000279r 1  99 00 60             sta VIC_BITMAP,y
+00027Cr 1  C8                   iny
+00027Dr 1  D0 F7                bne page_copy_full
+00027Fr 1  F0 0B                beq page_copy_done
+000281r 1               page_copy_last:
+000281r 1  B9 00 F4             lda COMMON_BUFFER,y
+000284r 1  99 00 7F             sta VIC_BITMAP+$1f00,y
+000287r 1  C8                   iny
+000288r 1  C0 40                cpy #$40
+00028Ar 1  D0 F5                bne page_copy_last
+00028Cr 1               page_copy_done:
+00028Cr 1  4C rr rr             jmp _udeks_vic_buffer_restore
+00028Fr 1               page_gateway_end:
+00028Fr 1                       .assert page_gateway_end-page_gateway < $f0, error, "VIC page gateway overlaps parameters"
+00028Fr 1               
+00028Fr 1               ; Each 15-byte record in OUTLINE_BUFFER contains precomputed bitmap addresses:
+00028Fr 1               ; top, bottom, horizontal byte count/masks, left/right vertical start/mask,
+00028Fr 1               ; vertical pixel count, and the starting scanline within its character row.
+00028Fr 1               outline_gateway:
+00028Fr 1  A9 00                lda #$00
+000291r 1  8D 04 FF             sta MMU_LCR_WORKER_FLAT
+000294r 1  8D E7 F7             sta COMMON_GATEWAY+(outline_record-outline_gateway)
+000297r 1  AD 7F F3             lda OUTLINE_COUNT
+00029Ar 1  8D E8 F7             sta COMMON_GATEWAY+(outline_left-outline_gateway)
+00029Dr 1  D0 03                bne outline_next
+00029Fr 1  4C 3E F7             jmp COMMON_GATEWAY+(outline_done-outline_gateway)
+0002A2r 1               
+0002A2r 1               outline_next:
+0002A2r 1  AC E7 F7             ldy COMMON_GATEWAY+(outline_record-outline_gateway)
+0002A5r 1  B9 84 F3             lda OUTLINE_BUFFER+4,y
+0002A8r 1  8D E9 F7             sta COMMON_GATEWAY+(horizontal_count-outline_gateway)
+0002ABr 1  B9 85 F3             lda OUTLINE_BUFFER+5,y
+0002AEr 1  8D EA F7             sta COMMON_GATEWAY+(horizontal_first-outline_gateway)
+0002B1r 1  B9 86 F3             lda OUTLINE_BUFFER+6,y
+0002B4r 1  8D EB F7             sta COMMON_GATEWAY+(horizontal_last-outline_gateway)
+0002B7r 1               
+0002B7r 1  B9 80 F3             lda OUTLINE_BUFFER,y
+0002BAr 1  8D 7D F7             sta COMMON_GATEWAY+(horizontal_load-outline_gateway)+1
+0002BDr 1  8D 83 F7             sta COMMON_GATEWAY+(horizontal_store-outline_gateway)+1
+0002C0r 1  B9 81 F3             lda OUTLINE_BUFFER+1,y
+0002C3r 1  8D 7E F7             sta COMMON_GATEWAY+(horizontal_load-outline_gateway)+2
+0002C6r 1  8D 84 F7             sta COMMON_GATEWAY+(horizontal_store-outline_gateway)+2
+0002C9r 1  20 44 F7             jsr COMMON_GATEWAY+(draw_horizontal-outline_gateway)
+0002CCr 1               
+0002CCr 1  B9 82 F3             lda OUTLINE_BUFFER+2,y
+0002CFr 1  8D 7D F7             sta COMMON_GATEWAY+(horizontal_load-outline_gateway)+1
+0002D2r 1  8D 83 F7             sta COMMON_GATEWAY+(horizontal_store-outline_gateway)+1
+0002D5r 1  B9 83 F3             lda OUTLINE_BUFFER+3,y
+0002D8r 1  8D 7E F7             sta COMMON_GATEWAY+(horizontal_load-outline_gateway)+2
+0002DBr 1  8D 84 F7             sta COMMON_GATEWAY+(horizontal_store-outline_gateway)+2
+0002DEr 1  20 44 F7             jsr COMMON_GATEWAY+(draw_horizontal-outline_gateway)
+0002E1r 1               
+0002E1r 1  B9 8D F3             lda OUTLINE_BUFFER+13,y
+0002E4r 1  8D ED F7             sta COMMON_GATEWAY+(vertical_count-outline_gateway)
+0002E7r 1  B9 8E F3             lda OUTLINE_BUFFER+14,y
+0002EAr 1  8D EE F7             sta COMMON_GATEWAY+(vertical_row-outline_gateway)
+0002EDr 1  B9 87 F3             lda OUTLINE_BUFFER+7,y
+0002F0r 1  8D A1 F7             sta COMMON_GATEWAY+(vertical_load-outline_gateway)+1
+0002F3r 1  8D A7 F7             sta COMMON_GATEWAY+(vertical_store-outline_gateway)+1
+0002F6r 1  B9 88 F3             lda OUTLINE_BUFFER+8,y
+0002F9r 1  8D A2 F7             sta COMMON_GATEWAY+(vertical_load-outline_gateway)+2
+0002FCr 1  8D A8 F7             sta COMMON_GATEWAY+(vertical_store-outline_gateway)+2
+0002FFr 1  B9 89 F3             lda OUTLINE_BUFFER+9,y
+000302r 1  8D EF F7             sta COMMON_GATEWAY+(vertical_mask-outline_gateway)
+000305r 1  20 9B F7             jsr COMMON_GATEWAY+(draw_vertical-outline_gateway)
+000308r 1               
+000308r 1  AC E7 F7             ldy COMMON_GATEWAY+(outline_record-outline_gateway)
+00030Br 1  B9 8D F3             lda OUTLINE_BUFFER+13,y
+00030Er 1  8D ED F7             sta COMMON_GATEWAY+(vertical_count-outline_gateway)
+000311r 1  B9 8E F3             lda OUTLINE_BUFFER+14,y
+000314r 1  8D EE F7             sta COMMON_GATEWAY+(vertical_row-outline_gateway)
+000317r 1  B9 8A F3             lda OUTLINE_BUFFER+10,y
+00031Ar 1  8D A1 F7             sta COMMON_GATEWAY+(vertical_load-outline_gateway)+1
+00031Dr 1  8D A7 F7             sta COMMON_GATEWAY+(vertical_store-outline_gateway)+1
+000320r 1  B9 8B F3             lda OUTLINE_BUFFER+11,y
+000323r 1  8D A2 F7             sta COMMON_GATEWAY+(vertical_load-outline_gateway)+2
+000326r 1  8D A8 F7             sta COMMON_GATEWAY+(vertical_store-outline_gateway)+2
+000329r 1  B9 8C F3             lda OUTLINE_BUFFER+12,y
+00032Cr 1  8D EF F7             sta COMMON_GATEWAY+(vertical_mask-outline_gateway)
+00032Fr 1  20 9B F7             jsr COMMON_GATEWAY+(draw_vertical-outline_gateway)
+000332r 1               
+000332r 1  AD E7 F7             lda COMMON_GATEWAY+(outline_record-outline_gateway)
+000335r 1  18                   clc
+000336r 1  69 0F                adc #$0f
+000338r 1  8D E7 F7             sta COMMON_GATEWAY+(outline_record-outline_gateway)
+00033Br 1  CE E8 F7             dec COMMON_GATEWAY+(outline_left-outline_gateway)
+00033Er 1  F0 03                beq outline_done
+000340r 1  4C 9D F6             jmp COMMON_GATEWAY+(outline_next-outline_gateway)
+000343r 1               outline_done:
+000343r 1  A9 00                lda #$00
+000345r 1  8D 01 FF             sta MMU_LCR_KERNEL_IO
+000348r 1  60                   rts
+000349r 1               
+000349r 1               draw_horizontal:
+000349r 1  AE E9 F7             ldx COMMON_GATEWAY+(horizontal_count-outline_gateway)
+00034Cr 1  E0 01                cpx #$01
+00034Er 1  D0 0C                bne horizontal_multiple
+000350r 1  AD EA F7             lda COMMON_GATEWAY+(horizontal_first-outline_gateway)
+000353r 1  2D EB F7             and COMMON_GATEWAY+(horizontal_last-outline_gateway)
+000356r 1  8D EC F7             sta COMMON_GATEWAY+(horizontal_mask-outline_gateway)
+000359r 1  4C 7C F7             jmp COMMON_GATEWAY+(horizontal_toggle-outline_gateway)
+00035Cr 1               horizontal_multiple:
+00035Cr 1  AD EA F7             lda COMMON_GATEWAY+(horizontal_first-outline_gateway)
+00035Fr 1  8D EC F7             sta COMMON_GATEWAY+(horizontal_mask-outline_gateway)
+000362r 1  20 7C F7             jsr COMMON_GATEWAY+(horizontal_toggle-outline_gateway)
+000365r 1  20 86 F7             jsr COMMON_GATEWAY+(horizontal_advance-outline_gateway)
+000368r 1  CA                   dex
+000369r 1               horizontal_middle:
+000369r 1  E0 01                cpx #$01
+00036Br 1  F0 0E                beq horizontal_final
+00036Dr 1  A9 FF                lda #$ff
+00036Fr 1  8D EC F7             sta COMMON_GATEWAY+(horizontal_mask-outline_gateway)
+000372r 1  20 7C F7             jsr COMMON_GATEWAY+(horizontal_toggle-outline_gateway)
+000375r 1  20 86 F7             jsr COMMON_GATEWAY+(horizontal_advance-outline_gateway)
+000378r 1  CA                   dex
+000379r 1  D0 EE                bne horizontal_middle
+00037Br 1               horizontal_final:
+00037Br 1  AD EB F7             lda COMMON_GATEWAY+(horizontal_last-outline_gateway)
+00037Er 1  8D EC F7             sta COMMON_GATEWAY+(horizontal_mask-outline_gateway)
+000381r 1               horizontal_toggle:
+000381r 1               horizontal_load:
+000381r 1  AD FF FF             lda $ffff
+000384r 1  4D EC F7             eor COMMON_GATEWAY+(horizontal_mask-outline_gateway)
+000387r 1               horizontal_store:
+000387r 1  8D FF FF             sta $ffff
+00038Ar 1  60                   rts
+00038Br 1               
+00038Br 1               horizontal_advance:
+00038Br 1  18                   clc
+00038Cr 1  AD 7D F7             lda COMMON_GATEWAY+(horizontal_load-outline_gateway)+1
+00038Fr 1  69 08                adc #$08
+000391r 1  8D 7D F7             sta COMMON_GATEWAY+(horizontal_load-outline_gateway)+1
+000394r 1  8D 83 F7             sta COMMON_GATEWAY+(horizontal_store-outline_gateway)+1
+000397r 1  90 06                bcc horizontal_advance_done
+000399r 1  EE 7E F7             inc COMMON_GATEWAY+(horizontal_load-outline_gateway)+2
+00039Cr 1  EE 84 F7             inc COMMON_GATEWAY+(horizontal_store-outline_gateway)+2
+00039Fr 1               horizontal_advance_done:
+00039Fr 1  60                   rts
+0003A0r 1               
+0003A0r 1               draw_vertical:
+0003A0r 1  AE ED F7             ldx COMMON_GATEWAY+(vertical_count-outline_gateway)
+0003A3r 1  F0 46                beq vertical_done
+0003A5r 1               vertical_next:
+0003A5r 1               vertical_load:
+0003A5r 1  AD FF FF             lda $ffff
+0003A8r 1  4D EF F7             eor COMMON_GATEWAY+(vertical_mask-outline_gateway)
+0003ABr 1               vertical_store:
+0003ABr 1  8D FF FF             sta $ffff
+0003AEr 1  CA                   dex
+0003AFr 1  F0 3A                beq vertical_done
+0003B1r 1  EE EE F7             inc COMMON_GATEWAY+(vertical_row-outline_gateway)
+0003B4r 1  AD EE F7             lda COMMON_GATEWAY+(vertical_row-outline_gateway)
+0003B7r 1  C9 08                cmp #$08
+0003B9r 1  D0 1F                bne vertical_advance_one
+0003BBr 1  A9 00                lda #$00
+0003BDr 1  8D EE F7             sta COMMON_GATEWAY+(vertical_row-outline_gateway)
+0003C0r 1  18                   clc
+0003C1r 1  AD A1 F7             lda COMMON_GATEWAY+(vertical_load-outline_gateway)+1
+0003C4r 1  69 39                adc #$39
+0003C6r 1  8D A1 F7             sta COMMON_GATEWAY+(vertical_load-outline_gateway)+1
+0003C9r 1  8D A7 F7             sta COMMON_GATEWAY+(vertical_store-outline_gateway)+1
+0003CCr 1  AD A2 F7             lda COMMON_GATEWAY+(vertical_load-outline_gateway)+2
+0003CFr 1  69 01                adc #$01
+0003D1r 1  8D A2 F7             sta COMMON_GATEWAY+(vertical_load-outline_gateway)+2
+0003D4r 1  8D A8 F7             sta COMMON_GATEWAY+(vertical_store-outline_gateway)+2
+0003D7r 1  4C A0 F7             jmp COMMON_GATEWAY+(vertical_next-outline_gateway)
+0003DAr 1               vertical_advance_one:
+0003DAr 1  EE A1 F7             inc COMMON_GATEWAY+(vertical_load-outline_gateway)+1
+0003DDr 1  EE A7 F7             inc COMMON_GATEWAY+(vertical_store-outline_gateway)+1
+0003E0r 1  D0 C3                bne vertical_next
+0003E2r 1  EE A2 F7             inc COMMON_GATEWAY+(vertical_load-outline_gateway)+2
+0003E5r 1  EE A8 F7             inc COMMON_GATEWAY+(vertical_store-outline_gateway)+2
+0003E8r 1  4C A0 F7             jmp COMMON_GATEWAY+(vertical_next-outline_gateway)
+0003EBr 1               vertical_done:
+0003EBr 1  60                   rts
+0003ECr 1               
+0003ECr 1  00           outline_record:          .byte $00
+0003EDr 1  00           outline_left:            .byte $00
+0003EEr 1  00           horizontal_count:        .byte $00
+0003EFr 1  00           horizontal_first:        .byte $00
+0003F0r 1  00           horizontal_last:         .byte $00
+0003F1r 1  00           horizontal_mask:         .byte $00
+0003F2r 1  00           vertical_count:          .byte $00
+0003F3r 1  00           vertical_row:            .byte $00
+0003F4r 1  00           vertical_mask:           .byte $00
+0003F5r 1               outline_gateway_end:
+0003F5r 1                       .assert outline_gateway_end-outline_gateway > $100, error, "VIC outline gateway unexpectedly fits one page"
+0003F5r 1                       .assert outline_gateway_end-outline_gateway < $200, error, "VIC outline gateway exceeds common workspace"
+0003F5r 1               
+0003F5r 1                       ; Absolute build symbols consumed by tools/placement_audit.py so the
+0003F5r 1                       ; common-RAM budget measures the real gateway copies instead of
+0003F5r 1                       ; constants.
+0003F5r 1               _udeks_vic_gateway_size_vic = vic_gateway_end-vic_gateway
+0003F5r 1               _udeks_vic_gateway_size_sprite = sprite_swap_gateway_end-sprite_swap_gateway
+0003F5r 1               _udeks_vic_gateway_size_page = page_gateway_end-page_gateway
+0003F5r 1               _udeks_vic_gateway_size_outline = outline_gateway_end-outline_gateway
+0003F5r 1               
+0003F5r 1               ; The safe C outline-mask expression saves eight CODE bytes with the
+0003F5r 1               ; qualified cc65 flags. Keep that saving reserved until a separately qualified
+0003F5r 1               ; placement change: boot delivery currently freezes VICSHADOW at $A1E0.
+0003F5r 1               ; This is resident padding, not part of any copied common-RAM gateway.
+0003F5r 1               outline_mask_placement_reserve:
+0003F5r 1  EA EA EA EA          .res 8, $ea
+0003F9r 1  EA EA EA EA  
+0003FDr 1               ; Scratch-only line/fill storage removes 81 CODE bytes but adds 32 BSS bytes.
+0003FDr 1               ; Hold the measured net 49-byte saving here to retain the same shadow/staging
+0003FDr 1               ; boundary. Future compositor work may consume it only with placement gates.
+0003FDr 1               raster_scratch_placement_reserve:
+0003FDr 1  EA EA EA EA          .res 49, $ea
+000401r 1  EA EA EA EA  
+000405r 1  EA EA EA EA  
+00042Er 1               ; Qualified service-local ASM span/pixel routines save 170 CODE + 3 BSS.
+00042Er 1               ; Keep all 173 bytes owned here: no change to shadow/staging placement,
+00042Er 1               ; common-RAM copies, compiler runtime, or scheduler reservations.
+00042Er 1               raster_primitives_placement_reserve:
+00042Er 1  EA EA EA EA          .res 173, $ea
+000432r 1  EA EA EA EA  
+000436r 1  EA EA EA EA  
+0004DBr 1               ; Shared raster saved 294 bytes. The UAPP 0.3 explicit completion seam spends
+0004DBr 1               ; 158 CODE bytes (no BSS); NMI ownership spends another 71 + 6 call-site
+0004DBr 1               ; bytes (no BSS/ZP). The remaining 59 keep the shadow placement frozen.
+0004DBr 1               raster_shared_placement_reserve:
+0004DBr 1  EA EA EA EA          .res 59, $ea
+0004DFr 1  EA EA EA EA  
+0004E3r 1  EA EA EA EA  
+000516r 1                       .export _udeks_vic_gateway_size_vic, _udeks_vic_gateway_size_sprite
+000516r 1                       .export _udeks_vic_gateway_size_page, _udeks_vic_gateway_size_outline
+000516r 1               

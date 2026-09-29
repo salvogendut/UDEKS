@@ -1,0 +1,1 @@
+-u _udeks_root_console_reset -u _udeks_root_console_set_cursor -u _udeks_root_console_write_at -u decsp2 -u decsp3 -u decsp6 -u incsp3 -u incsp5 -u incsp6 -u pusha -u pushax -u stax0sp

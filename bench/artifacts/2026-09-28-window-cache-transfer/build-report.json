@@ -1,0 +1,57 @@
+{
+  "qualification": "standalone prototype; no resident placement or active IRQ qualification",
+  "flags": {
+    "cache": "-Oirs",
+    "driver": "unoptimized (avoids const-pointer store optimizer defect)"
+  },
+  "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44",
+  "cache_object": {
+    "CODE": 1113,
+    "RODATA": 0,
+    "BSS": 30,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "transfer_object": {
+    "CODE": 130,
+    "RODATA": 0,
+    "BSS": 0,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "sources_sha256": {
+    "bench/graphics-raster/launcher.s": "d6acecc7fd8126fcd248465243608c5d8958e5b43ff0a25c765d8ea112209c6d",
+    "bench/window-cache/cache.c": "eb6a899f0bbebe94fff72894913e8c612db7d100554af9a45a404bd69fc78066",
+    "bench/window-cache/cache.h": "e8397c32ab102e6d3a0f70b12d0bd5fe82b87e1d8f07ee55feacbd146bc91bd5",
+    "bench/window-cache/probe.c": "59b796eaca988782bb84d4c0190e5be35c752c5464e2b481aad3d66d961d00a2",
+    "bench/window-cache/transfer.s": "edac08d781929ff6de230f1dadfc6d8fdc917aa6d5050f6c5f09e0ef823e73c8",
+    "cfg/8502-raster-bench.cfg": "c51ee0b7a2ac5c0c091e9ee1f71bbacc9e603f8c5ca5fd2bcfa1253bf9651f9f",
+    "tools/1986_input_smoke_build.py": "5dbf7e6b2d8a0f3eda15c4796bb81ee3931e5d05b032e74e6a538daf5984256f",
+    "tools/1986_raster_bench.c": "e1d772fc3155d259f84eeff8c8f943e88c85c7cd8d2520a697d92887eb944b68",
+    "tools/bin_to_prg.py": "bc5ea4de3fbd862c1832e0d91114cfe5c6ac5b3cac0a033d7c2d949733b72962",
+    "tools/graphics_raster_bench_run.py": "f15cb59bf9ee40131e62dddeb2dd05f4f4c3d40bfe5a570aebdcb93989e0ad5b",
+    "tools/snapshot_extract.py": "508125b3ca90de50c36825ec8299151ce0fb4cd74bc1891f57ea616dfd4b5d85",
+    "tools/vice_capture.py": "8e086e0cd28d620e028d997e38ec66595d02bf3f2af8c04cf966fbeda0670967",
+    "tools/window_cache_bench.py": "9a94b6771424a73feb90cf98bd7a5772fe7ec0605e9a1ff511e9b4d71892ff9f"
+  },
+  "program_sha256": {
+    "cache-0.prg": "f41fdc913d3098278d0238a9dab2844217a3364e2cd328e4f0b4b4dc9b2d0e72",
+    "cache-1.prg": "d61f93c3afab992edde9e5fb2375e0a534e3545ad88db2e26c16473ed4ff387e",
+    "cache-2.prg": "ecf96449016179f016b9ac41f3a34d05cb23a9db3036d8d6ac50b2ff3afb87a1",
+    "cache-3.prg": "0b0dedaf034241451f772159699cdadadd63cdbdedc6e3827096acdf41cfa61b",
+    "cache-4.prg": "3b237d65789e90c09b1a704c945d611ef8f193236b8b2ee2ea2e317d1d8dadd6",
+    "cache-5.prg": "fa907bddda2f2685e1cffb76e79edd31e92b5cec90f3f008d75e3087d3a1c810",
+    "cache-6.prg": "09f6a9a58851b5c0b524aa397b95e1c2fc7ecf2a8ee698fe2a71ae5837571c92",
+    "cache-7.prg": "5eb447d0ba5a3097948a938a9cd1a78881ec7d8f7817c49ba61cd369ec923f8b",
+    "cache-8.prg": "77c50bab486c7a9065a08c94b50cc6173bfd9f7ed56cbdddbed3e620d58040d0",
+    "cache-9.prg": "7049c4fb0671a728287ec08042761762aadb75cd2b759033b489f18b62477605",
+    "cache-10.prg": "ea20d8e01e291799d5c7803b3717c2bebdeb2e49b884c8670683e6ba5fc6ce70"
+  },
+  "gateway": {
+    "size": 99,
+    "run": 63114,
+    "end_inclusive": 63212
+  }
+}

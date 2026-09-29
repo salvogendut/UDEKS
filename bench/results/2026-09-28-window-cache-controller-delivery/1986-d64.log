@@ -1,0 +1,41 @@
+command: echo smoke -> accepted (Return release=188 frames)
+history: count=1 recalls=0 -> 1 scan=83
+command: xinit -> accepted (Return release=200 frames)
+command: xclock & -> accepted (Return release=208 frames)
+command: xwave -> accepted (Return release=228 frames)
+stress 0: x=3 y=1 row=0 column=12 PC=$91B4 release=108 frames
+stress 1: x=40 y=24 row=0 column=4 PC=$5F94 release=84 frames
+stress 2: x=77 y=47 row=0 column=4 PC=$92AC release=86 frames
+stress 3: x=114 y=70 row=0 column=4 PC=$5F60 release=88 frames
+stress 4: x=151 y=93 row=0 column=4 PC=$910D release=86 frames
+stress 5: x=35 y=19 row=0 column=4 PC=$6CD5 release=103 frames
+stress 6: x=72 y=42 row=0 column=4 PC=$479D release=86 frames
+stress 7: x=109 y=65 row=0 column=4 PC=$917D release=87 frames
+stress 8: x=146 y=88 row=0 column=4 PC=$5EB8 release=85 frames
+stress 9: x=30 y=14 row=0 column=4 PC=$918F release=104 frames
+stress 10: x=67 y=37 row=0 column=4 PC=$4861 release=87 frames
+stress 11: x=104 y=60 row=0 column=4 PC=$5F61 release=86 frames
+stress 12: x=141 y=83 row=0 column=4 PC=$9110 release=87 frames
+stress 13: x=25 y=9 row=0 column=4 PC=$213E release=102 frames
+stress 14: x=62 y=32 row=0 column=4 PC=$91FD release=85 frames
+stress 15: x=99 y=55 row=0 column=4 PC=$2226 release=85 frames
+stress 16: x=136 y=78 row=21 column=0 PC=$5E5A release=87 frames
+stress 17: x=20 y=4 row=0 column=4 PC=$930D release=103 frames
+stress 18: x=57 y=27 row=0 column=4 PC=$8F25 release=86 frames
+stress 19: x=94 y=50 row=0 column=4 PC=$0206 release=87 frames
+stress 20: x=131 y=73 row=0 column=4 PC=$2C75 release=87 frames
+stress 21: x=15 y=96 row=0 column=4 PC=$8F94 release=90 frames
+stress 22: x=52 y=22 row=0 column=4 PC=$5F56 release=97 frames
+stress 23: x=89 y=45 row=0 column=4 PC=$91A5 release=87 frames
+stress 24: x=126 y=68 row=0 column=4 PC=$2C78 release=86 frames
+stress 25: x=10 y=91 row=0 column=4 PC=$6085 release=90 frames
+stress 26: x=47 y=17 row=0 column=4 PC=$5F5C release=97 frames
+stress 27: x=84 y=40 row=0 column=4 PC=$5F92 release=87 frames
+stress 28: x=121 y=63 row=0 column=4 PC=$91A6 release=87 frames
+stress 29: x=5 y=86 row=0 column=4 PC=$2126 release=91 frames
+stress 30: x=42 y=12 row=0 column=4 PC=$930B release=97 frames
+stress 31: x=79 y=35 row=0 column=4 PC=$46EF release=87 frames
+replay: completed in 658 PAL frames after last release; leases=21
+latency: drag release max partial=108 cached=103; completed-wave cancellation=119 PAL frames
+command: echo console alive -> accepted (Return release=148 frames)
+PASS: repeated native wave drags and console cancellation

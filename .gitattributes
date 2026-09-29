@@ -1,1 +1,4 @@
 *.ppm binary
+# Immutable qualification evidence keeps tool-emitted bytes and spacing.
+bench/artifacts/** -text -whitespace linguist-generated=true
+bench/results/** -text -whitespace linguist-generated=true

@@ -1,0 +1,12 @@
+{
+  "scope": "full private make clean, parallel build, same disk bytes",
+  "before": {
+    "d71": "fded272e8ec0b08b69a1e0cb449d6bd002fc336071a4c4cd0c93baf73e53fbc9",
+    "d64": "13433b995d38905916ef88dde98eb66e8629d3eea61b762eb74793d3468d519d"
+  },
+  "after": {
+    "d71": "fded272e8ec0b08b69a1e0cb449d6bd002fc336071a4c4cd0c93baf73e53fbc9",
+    "d64": "13433b995d38905916ef88dde98eb66e8629d3eea61b762eb74793d3468d519d"
+  },
+  "report_sha256": "d069f6ba0a80f2a2dbd3bb6b759083a89222caf5c9c6e42fff0ba674878f36be"
+}

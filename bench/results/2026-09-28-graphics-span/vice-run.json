@@ -1,0 +1,22 @@
+{
+  "program_sha256": {
+    "c-reference-2.prg": "02d1a8364b29633a068812d4a99ccde2f115e89403c94f88d9d68947a21a781f",
+    "c-reference-3.prg": "dca02e53074f89a0c71fee00243cc398a3d65347b45b971b8ce08f30635a212e",
+    "c-reference-4.prg": "9845d86b1eb381eb140298f31e3d51937f292ec500238e7f2e54ebed6ff5edf0",
+    "c-reference-5.prg": "e02ff8acec6af517d7bdc22f4466de6b14a9ff96119e7b2e3db16f372cd60104",
+    "asm-span-2.prg": "bb8016bb90cb1cea11190a926ee40c1378a5c312101696752d86a58b333774fd",
+    "asm-span-3.prg": "b930d877008b6e5ba2391dc583d73518bda30dba27ecd986a23e67542a4862ee",
+    "asm-span-4.prg": "384f6e51d5153beae56665034ec73945c1c3f21430d386e6929f92d7125c6367",
+    "asm-span-5.prg": "68732a9f0037a97af9c039d95359aa3c1177dc8fe5f1bb9ae52468d056e97baa"
+  },
+  "raw_sha256": {
+    "vice-c-reference-2.bin": "7f9d7b6886abaf4f6327c6763d9fbe3d68a801333a55de7b27c79da65b3f1dd9",
+    "vice-c-reference-3.bin": "908137380d2b6e8efebb7dcca435dc208eb66dd8c0c01eb4d4dd8d1bb4538f7b",
+    "vice-c-reference-4.bin": "8a14898dacfd3231a40a5a8488b520576b5d96f418fabc87067f761140d57062",
+    "vice-c-reference-5.bin": "1a9bb420d0a4ca082af056b24a7979f192240a26a4390557e9de8b870d0bdd15",
+    "vice-asm-span-2.bin": "389f7c88dd88646db559a58970a3c9099dc35cc0de19612db7c1b0f018f5fd60",
+    "vice-asm-span-3.bin": "b157bdfc6e6d73e4b62eb41a1245b4dcb6879f00ad0f942827049cdafa440e88",
+    "vice-asm-span-4.bin": "93f93886503878259e366a279ff75b3671aef744490382de3bfe9f42aa23d457",
+    "vice-asm-span-5.bin": "d25feace928f0dd4b94b0ad079d764f273cc6c18c3fcd59ef93ec9545d397309"
+  }
+}

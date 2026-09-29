@@ -1,0 +1,98 @@
+{
+  "program_sha256": {
+    "probe-0.prg": "2ff9820bcdd45074d93be1d9f951d5647427db0901a6205b2be598e1e12add87",
+    "probe-1.prg": "bcaa3bd37008645427482efa9cdb8f9f20436e6593c6361b8965b8d7bea4dc39",
+    "probe-irq-leak.prg": "5e8f3cfe1bf7f789684b4d49222282fab74567e7f4b9487e5e6046470b8d6dde",
+    "probe-zp-leak.prg": "be6794471698d143cdc445c9f5653be8dc145cc3ee0666fc62ffafafd4c952ec",
+    "probe-shell-stack.prg": "5bbfaab3eb9c7b68ee75a395e5348b04c8d1aea82bc78ad7a23c63271ad9e6b1",
+    "probe-no-pending.prg": "19d9ccfeffb00ba94bdeacc249cf562faacb52b8a9e512a94a61bf32f91ed39a"
+  },
+  "raw_sha256": {
+    "vice-0.bin": "bce8c6e82ac962160fd31b0922a3e7ab999dcee3be75b6ea41e771144682da6a",
+    "vice-1.bin": "3639bf2a1078be8f7d62597d4d31ba711263a0df9f6dfd9e288a2f557ed75b84",
+    "vice-irq-leak.bin": "3e6a587dc3db41307a94af40fedf7494fc82aa8b319093ed8e1d2168f7fa5206",
+    "vice-zp-leak.bin": "56dbd83a5bbaf0951902803a3ec91ebc98640fc13e309a0b1a6d9a08554f6857",
+    "vice-shell-stack.bin": "1d4cfc7ed162794839088121281dcd46d1f4092c1adad20b5a4f04d32c331116",
+    "vice-no-pending.bin": "139b21dc9463b7eb9c9815af6a972881bade1f8bf83afeadc5eb0ee8f0099a71"
+  },
+  "decoded": {
+    "0": {
+      "rows": 132,
+      "commands": 476,
+      "images": 66,
+      "interrupts": 16921,
+      "nmi_total": 8785,
+      "nmi_worker_flat": 147,
+      "nmi_drains": 8785,
+      "observed_stack_offset": 204,
+      "pixel_sha256": "e928ae5083036895af16d235cc8e9767e8b6a21eae080a86943e949d59921851"
+    },
+    "1": {
+      "rows": 312,
+      "commands": 333,
+      "images": 2,
+      "interrupts": 29779,
+      "nmi_total": 15096,
+      "nmi_worker_flat": 109,
+      "nmi_drains": 15096,
+      "observed_stack_offset": 204,
+      "pixel_sha256": "8dd6a64cf89e9564f6b5116d753c118f572779cebb3a5ff79c9a1d26ee0ef522"
+    },
+    "irq-leak": {
+      "rows": 132,
+      "commands": 476,
+      "images": 66,
+      "interrupts": 18957,
+      "nmi_total": 9671,
+      "nmi_worker_flat": 801,
+      "nmi_drains": 9671,
+      "observed_stack_offset": 204,
+      "pixel_sha256": "e928ae5083036895af16d235cc8e9767e8b6a21eae080a86943e949d59921851",
+      "detected_fields": [
+        15
+      ]
+    },
+    "zp-leak": {
+      "rows": 132,
+      "commands": 476,
+      "images": 66,
+      "interrupts": 16969,
+      "nmi_total": 8806,
+      "nmi_worker_flat": 119,
+      "nmi_drains": 8806,
+      "observed_stack_offset": 204,
+      "pixel_sha256": "e928ae5083036895af16d235cc8e9767e8b6a21eae080a86943e949d59921851",
+      "detected_fields": [
+        16
+      ]
+    },
+    "shell-stack": {
+      "rows": 132,
+      "commands": 476,
+      "images": 66,
+      "interrupts": 16942,
+      "nmi_total": 8754,
+      "nmi_worker_flat": 137,
+      "nmi_drains": 8754,
+      "observed_stack_offset": 240,
+      "pixel_sha256": "e928ae5083036895af16d235cc8e9767e8b6a21eae080a86943e949d59921851",
+      "detected_fields": [
+        19,
+        21
+      ]
+    },
+    "no-pending": {
+      "rows": 132,
+      "commands": 476,
+      "images": 66,
+      "interrupts": 15517,
+      "nmi_total": 1,
+      "nmi_worker_flat": 0,
+      "nmi_drains": 0,
+      "observed_stack_offset": 204,
+      "pixel_sha256": "e928ae5083036895af16d235cc8e9767e8b6a21eae080a86943e949d59921851",
+      "detected_fields": []
+    }
+  },
+  "provenance": "\nVICE - Versatile Commodore Emulator\n\n            ID: net.sf.VICE\n           Ref: app/net.sf.VICE/x86_64/stable\n          Arch: x86_64\n        Branch: stable\n       Version: 3.10\n       License: GPL-2.0+\n        Origin: flathub\n    Collection: org.flathub.Stable\n  Installation: system\nInstalled Size: 45.8\u00a0MB\n       Runtime: org.freedesktop.Platform/x86_64/25.08\n           Sdk: org.freedesktop.Sdk/x86_64/25.08\n\n        Commit: bbd997ea8cbf7e6ba06ff82136fd71069ce2011f93c006412bcda7bbde17e448\n        Parent: 68a5281bbbfb691d105e1006686691713eb0cab353a7d869f4b72c066eca18c7\n       Subject: Add desktop files for vsid, x64dtv, xcbm5x0, xscpu64 (c39f8386949f)\n          Date: 2026-01-18 14:54:47 +0000\n"
+}

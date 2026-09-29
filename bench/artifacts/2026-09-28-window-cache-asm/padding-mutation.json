@@ -1,0 +1,7 @@
+{
+  "reference_sha256": "b2f042a7b0ff62fead2a8af2413691c8cee3f718e721e9e770ce446352af7176",
+  "negative_sha256": "1ed3462b543d4082d58ad770722ab6619dd3812a1ef7633de6adf650d03c216b",
+  "instruction_address": 10532,
+  "original": "2d572c",
+  "replacement": "eaeaea"
+}

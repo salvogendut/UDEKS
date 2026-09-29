@@ -1,0 +1,73 @@
+build/8502/vic_graphics_transport.o:
+  Exports:
+    Count:                         14
+    Index:                          0
+      Type:                      0x80  (SYM_STD,SYM_EQUATE,SYM_CONST)
+      Address size:              0x02  (absolute)
+      Name:       "_udeks_vic_gateway_size_outline"
+      Value:               0x00000166  (358)
+    Index:                          1
+      Type:                      0x80  (SYM_STD,SYM_EQUATE,SYM_CONST)
+      Address size:              0x02  (absolute)
+      Name:    "_udeks_vic_gateway_size_page"
+      Value:               0x00000044  (68)
+    Index:                          2
+      Type:                      0x80  (SYM_STD,SYM_EQUATE,SYM_CONST)
+      Address size:              0x02  (absolute)
+      Name:      "_udeks_vic_gateway_size_sprite"
+      Value:               0x0000002E  (46)
+    Index:                          3
+      Type:                      0x80  (SYM_STD,SYM_EQUATE,SYM_CONST)
+      Address size:              0x02  (absolute)
+      Name:   "_udeks_vic_gateway_size_vic"
+      Value:               0x000000FE  (254)
+    Index:                          4
+      Type:                      0xB8  (SYM_STD,SYM_LABEL,SYM_EXPR,SYM_SIZE)
+      Address size:              0x02  (absolute)
+      Name:      "_udeks_vic_bitmap_outline_blit"
+      Size:                0x0000  (0)
+    Index:                          5
+      Type:                      0xB8  (SYM_STD,SYM_LABEL,SYM_EXPR,SYM_SIZE)
+      Address size:              0x02  (absolute)
+      Name:     "_udeks_vic_bitmap_commit_page"
+      Size:                0x0000  (0)
+    Index:                          6
+      Type:                      0xB8  (SYM_STD,SYM_LABEL,SYM_EXPR,SYM_SIZE)
+      Address size:              0x02  (absolute)
+      Name:    "_udeks_vic_pointer_busy_tick"
+      Size:                0x0000  (0)
+    Index:                          7
+      Type:                      0xB8  (SYM_STD,SYM_LABEL,SYM_EXPR,SYM_SIZE)
+      Address size:              0x02  (absolute)
+      Name:   "_udeks_vic_pointer_busy_end"
+      Size:                0x0000  (0)
+    Index:                          8
+      Type:                      0xB8  (SYM_STD,SYM_LABEL,SYM_EXPR,SYM_SIZE)
+      Address size:              0x02  (absolute)
+      Name:     "_udeks_vic_pointer_busy_begin"
+      Size:                0x0000  (0)
+    Index:                          9
+      Type:                      0xB8  (SYM_STD,SYM_LABEL,SYM_EXPR,SYM_SIZE)
+      Address size:              0x02  (absolute)
+      Name:       "_udeks_vic_pointer_select_shape"
+      Size:                0x0000  (0)
+    Index:                         10
+      Type:                      0xB8  (SYM_STD,SYM_LABEL,SYM_EXPR,SYM_SIZE)
+      Address size:              0x02  (absolute)
+      Name:"_udeks_vic_pointer_set_y"
+      Size:                0x0000  (0)
+    Index:                         11
+      Type:                      0xB8  (SYM_STD,SYM_LABEL,SYM_EXPR,SYM_SIZE)
+      Address size:              0x02  (absolute)
+      Name:"_udeks_vic_pointer_set_x"
+      Size:                0x0000  (0)
+    Index:                         12
+      Type:                      0xB8  (SYM_STD,SYM_LABEL,SYM_EXPR,SYM_SIZE)
+      Address size:              0x02  (absolute)
+      Name:   "_udeks_vic_graphics_disable"
+      Size:                0x0000  (0)
+    Index:                         13
+      Type:                      0xB8  (SYM_STD,SYM_LABEL,SYM_EXPR,SYM_SIZE)
+      Address size:              0x02  (absolute)
+      Name:  "_udeks_vic_graphics_enable"
+      Size:                0x0000  (0)

@@ -1,0 +1,26 @@
+Modules list:
+-------------
+task-switch-activation.o:
+    ACTCOMMON         Offs=000000  Size=00002A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ACTCOMMON             00F68A  00F6B3  00002A  00001
+
+
+Exports list by name:
+---------------------
+
+
+
+Exports list by value:
+----------------------
+
+
+
+Imports list:
+-------------
+

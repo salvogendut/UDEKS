@@ -10,13 +10,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 HARNESS = r'''
+#define __fastcall__
 #include <assert.h>
 #include <stdint.h>
 static unsigned char test_status[32], test_samples[25];
 SOURCE
 static udeks_window_paint_fn paint;
 static udeks_window_close_fn close_callback;
-static unsigned leases, lines, commits;
+static unsigned leases, lines, commits, notifications;
 static unsigned allowed = 1, fallback;
 static unsigned int gx = 144, gw = 168;
 static unsigned char gy = 88, gh = 104;
@@ -58,6 +59,9 @@ unsigned char udeks_window_create(unsigned char o,unsigned char s,unsigned char 
 unsigned char udeks_window_destroy(unsigned char h) {close_callback(h);return 0;}
 unsigned char udeks_window_begin_paint(unsigned char h) {(void)h;return allowed?0:1;}
 void udeks_window_end_paint(void) {++commits;}
+unsigned char udeks_window_image_complete(unsigned char h) {
+    assert(h==1 && draw_row==21);++notifications;return allowed?0:1;
+}
 unsigned char udeks_window_is_dragging(unsigned char h) {(void)h;return !allowed;}
 unsigned char udeks_window_is_focused(unsigned char h) {(void)h;return allowed;}
 static void check_bitmap(void) {
@@ -82,7 +86,7 @@ static void check_bitmap(void) {
 }
 int main(void) {
     for (fallback=0;fallback<2;++fallback) {
-        memset(actual,0,sizeof actual); leases=lines=commits=0;
+        memset(actual,0,sizeof actual); leases=lines=commits=notifications=0;
         assert(udeks_xwave_initialize()==0 && udeks_xwave_start()==0);
         assert(!leases && !lines); /* create must not draw the entire grid */
         for (unsigned i=0;draw_row<21 && i<200;++i) {
@@ -91,18 +95,32 @@ int main(void) {
             assert(leases-l<=1 && lines-n<=8);
             if (i==10) {
                 unsigned saved_offset=draw_offset;
-                allowed=0; udeks_xwave_poll(); allowed=1;
+                allowed=0; udeks_xwave_poll();
                 assert(draw_offset==saved_offset);
                 memset(actual,0,sizeof actual); paint(1);
                 assert(leases==l || leases==l+1);
                 assert(draw_offset==saved_offset);
+                /* Obscured damage still replays the clipped cached prefix. */
+                allowed=1;
+                memset(actual,0,sizeof actual);
+                unsigned before=lines;
+                paint(1);
+                assert(draw_offset==0 && draw_row==0 && lines==before);
+                /* Focused damage yields to polls without reacquiring rows. */
             }
         }
-        assert(draw_row==21 && leases==21 && commits==147);
+        assert(draw_row==21 && leases==21 && commits>=147);
+        assert(notifications==0);udeks_xwave_poll();assert(notifications==1);
         check_bitmap();
         unsigned l=leases;
         gx=12; gy=12; gw=220; gh=160;
-        memset(actual,0,sizeof actual); paint(1); check_bitmap();
+        memset(actual,0,sizeof actual); paint(1);
+        assert(draw_row==0 && leases==l);
+        for(unsigned i=0; draw_row<21 && i<200; ++i) {
+            unsigned n=lines; udeks_xwave_poll();
+            assert(lines-n<=8 && leases==l);
+        }
+        assert(draw_row==21); check_bitmap();
         assert(leases==l); /* resize must not recompute mathematical samples */
         udeks_xwave_stop(); assert(!udeks_xwave_is_running());
         udeks_xwave_poll(); assert(leases==l);

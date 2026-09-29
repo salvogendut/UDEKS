@@ -56,6 +56,25 @@ The window manager is service class `9`, instance `0`, with its own start,
 poll, and stop lifecycle. The VIC-IIe display service does not call its poll
 routine or know about window clients.
 
+## Explicit image completion (UAPP 0.3)
+
+`udeks_window_image_complete(handle)` returns `OK` only for a live, visible,
+topmost bitmap while no window is being dragged. It sets a private descriptor
+flag, consumes no additional BSS, and may be repeated. The application, not
+the manager, asserts that its whole image is finished. `end_paint()` alone
+does not imply completion of an incremental renderer.
+
+A successful `begin_paint` and any intersecting compositor repaint withdraw
+completion before changing pixels. Creation masks application flags to the
+four defined public bits so clients cannot forge the private completion bit;
+handle reuse, reset and closure discard the old descriptor. Newly raised,
+previously obscured windows pass through damage repaint before eligibility.
+
+This increment publishes the completion seam only. It does **not** enable
+capture, cached dragging, or expose the application's private render state.
+The bank-1 cache module and bounded continuations are still qualification
+work. Existing moved-window redraw remains the fallback.
+
 ## Diagnostic record
 
 The 32-byte `WMGR` record begins at `$F240`:

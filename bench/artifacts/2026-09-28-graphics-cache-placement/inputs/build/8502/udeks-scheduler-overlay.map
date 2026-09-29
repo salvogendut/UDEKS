@@ -1,0 +1,257 @@
+Modules list:
+-------------
+scheduler.o:
+    SCHEDULER         Offs=000000  Size=00002E  Align=00001  Fill=0000
+task_state.o:
+    CODE              Offs=000000  Size=00035D  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=00001F  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000047  Align=00001  Fill=0000
+    SCHEDULER         Offs=00002E  Size=00038D  Align=00001  Fill=0000
+task_scheduler.o:
+    SCHEDULER         Offs=0003BB  Size=00003F  Align=00001  Fill=0000
+task-wait-state.o:
+    CODE              Offs=00035D  Size=000322  Align=00001  Fill=0000
+    BSS               Offs=000047  Size=000053  Align=00001  Fill=0000
+and.o:
+    CODE              Offs=00067F  Size=000010  Align=00001  Fill=0000
+aslax2.o:
+    CODE              Offs=00068F  Size=00000B  Align=00001  Fill=0000
+scheduler-overlay-bridge.o:
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+SCHEDULER             001C00  001FF9  0003FA  00001
+CODE                  00C120  00C7B9  00069A  00001
+RODATA                00C7BA  00C7D8  00001F  00001
+BSS                   00C7D9  00C872  00009A  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               00C7D9 RLA    __BSS_SIZE__              00009A REA    
+__CODE_RUN__              00C120 RLA    __SCHEDULER_RUN__         001C00 RLA    
+__SCHEDULER_SIZE__        0003FA REA    _udeks_bootfs_finish_error 00F65B REA    
+_udeks_bootfs_finish_ok   00F667 REA    _udeks_lifecycle_apply    001C2E RLA    
+_udeks_lifecycle_bootstrap 00C3BC RLA    _udeks_lifecycle_current_private 00C819 RLA    
+_udeks_lifecycle_get      00C235 RLA    _udeks_lifecycle_last_event_private 00C81C RLA    
+_udeks_lifecycle_rejected_private 00C81A RLA    _udeks_lifecycle_slots_private 00C7D9 RLA    
+_udeks_line_editor_get_line 00660A REA    _udeks_line_editor_submitted_ready_value 0011F8 REA    
+_udeks_monotonic_ticks_high 00C872 RLA    _udeks_monotonic_ticks_low 00C871 RLA    
+_udeks_scheduler_select_next 001FBB RLA    _udeks_task_cancel_request 00C619 RLA    
+_udeks_task_console_get_line 00C4A3 RLA    _udeks_task_poll_request  00C551 RLA    
+_udeks_task_sleep_poll    00C6B5 RLA    _udeks_task_tick_advance  00C76E RLA    
+_udeks_task_wait_child_private 00C860 RLA    _udeks_task_wait_count_private 00C840 RLA    
+_udeks_task_wait_descriptor_private 00C838 RLA    _udeks_task_wait_flags_private 00C848 RLA    
+_udeks_task_wait_operation_private 00C828 RLA    _udeks_task_wait_publish_current 00C4B4 RLA    
+_udeks_task_wait_reset    00C47D RLA    _udeks_task_wait_selector_high_private 00C858 RLA    
+_udeks_task_wait_selector_private 00C850 RLA    _udeks_task_wait_sequence_private 00C830 RLA    
+_udeks_task_wait_state_private 00C820 RLA    _udeks_task_wait_status_private 00C868 RLA    
+addysp1                   008F1C REA    decsp1                    008F6B REA    
+decsp2                    008F74 REA    decsp4                    008F8E REA    
+incsp1                    009007 REA    incsp2                    009016 REA    
+incsp3                    009024 REA    incsp4                    009029 REA    
+incsp7                    009038 REA    ptr1                      00000E REZ    
+pusha                     009189 REA    pusha0                    00919D REA    
+pushax                    00919F REA    pushwysp                  0091B7 REA    
+shlax3                    008F45 REA    sp                        000006 REZ    
+staspidx                  009236 REA    stax0sp                   00924C REA    
+staxysp                   00924E REA    tmp1                      000016 REZ    
+tosanda0                  00C79F RLA    
+
+
+Exports list by value:
+----------------------
+sp                        000006 REZ    ptr1                      00000E REZ    
+tmp1                      000016 REZ    __BSS_SIZE__              00009A REA    
+__SCHEDULER_SIZE__        0003FA REA    _udeks_line_editor_submitted_ready_value 0011F8 REA    
+__SCHEDULER_RUN__         001C00 RLA    _udeks_lifecycle_apply    001C2E RLA    
+_udeks_scheduler_select_next 001FBB RLA    _udeks_line_editor_get_line 00660A REA    
+addysp1                   008F1C REA    shlax3                    008F45 REA    
+decsp1                    008F6B REA    decsp2                    008F74 REA    
+decsp4                    008F8E REA    incsp1                    009007 REA    
+incsp2                    009016 REA    incsp3                    009024 REA    
+incsp4                    009029 REA    incsp7                    009038 REA    
+pusha                     009189 REA    pusha0                    00919D REA    
+pushax                    00919F REA    pushwysp                  0091B7 REA    
+staspidx                  009236 REA    stax0sp                   00924C REA    
+staxysp                   00924E REA    __CODE_RUN__              00C120 RLA    
+_udeks_lifecycle_get      00C235 RLA    _udeks_lifecycle_bootstrap 00C3BC RLA    
+_udeks_task_wait_reset    00C47D RLA    _udeks_task_console_get_line 00C4A3 RLA    
+_udeks_task_wait_publish_current 00C4B4 RLA    _udeks_task_poll_request  00C551 RLA    
+_udeks_task_cancel_request 00C619 RLA    _udeks_task_sleep_poll    00C6B5 RLA    
+_udeks_task_tick_advance  00C76E RLA    tosanda0                  00C79F RLA    
+__BSS_RUN__               00C7D9 RLA    _udeks_lifecycle_slots_private 00C7D9 RLA    
+_udeks_lifecycle_current_private 00C819 RLA    _udeks_lifecycle_rejected_private 00C81A RLA    
+_udeks_lifecycle_last_event_private 00C81C RLA    _udeks_task_wait_state_private 00C820 RLA    
+_udeks_task_wait_operation_private 00C828 RLA    _udeks_task_wait_sequence_private 00C830 RLA    
+_udeks_task_wait_descriptor_private 00C838 RLA    _udeks_task_wait_count_private 00C840 RLA    
+_udeks_task_wait_flags_private 00C848 RLA    _udeks_task_wait_selector_private 00C850 RLA    
+_udeks_task_wait_selector_high_private 00C858 RLA    _udeks_task_wait_child_private 00C860 RLA    
+_udeks_task_wait_status_private 00C868 RLA    _udeks_monotonic_ticks_low 00C871 RLA    
+_udeks_monotonic_ticks_high 00C872 RLA    _udeks_bootfs_finish_error 00F65B REA    
+_udeks_bootfs_finish_ok   00F667 REA    
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    scheduler-overlay-bridge.o build/8502/scheduler-overlay-bridge.s(56)
+__BSS_SIZE__ ([linker generated]):
+    scheduler-overlay-bridge.o build/8502/scheduler-overlay-bridge.s(56)
+__CODE_RUN__ ([linker generated]):
+    scheduler-overlay-bridge.o build/8502/scheduler-overlay-bridge.s(56)
+__SCHEDULER_RUN__ ([linker generated]):
+    scheduler-overlay-bridge.o build/8502/scheduler-overlay-bridge.s(55)
+__SCHEDULER_SIZE__ ([linker generated]):
+    scheduler-overlay-bridge.o build/8502/scheduler-overlay-bridge.s(55)
+_udeks_bootfs_finish_error (scheduler-overlay-bridge.o):
+    task-wait-state.o         src/scheduler/task_wait_state.s(34)
+_udeks_bootfs_finish_ok (scheduler-overlay-bridge.o):
+    task-wait-state.o         src/scheduler/task_wait_state.s(35)
+_udeks_lifecycle_apply (task_state.o):
+    [linker generated]       
+_udeks_lifecycle_bootstrap (task_state.o):
+    scheduler.o               src/scheduler/scheduler.s(12)
+_udeks_lifecycle_current_private (task_state.o):
+    task-wait-state.o         src/scheduler/task_wait_state.s(30)
+    [linker generated]       
+_udeks_lifecycle_get (task_state.o):
+    task_scheduler.o          build/8502/task_scheduler.s(14)
+_udeks_lifecycle_last_event_private (task_state.o):
+    task-wait-state.o         src/scheduler/task_wait_state.s(31)
+    [linker generated]       
+_udeks_lifecycle_rejected_private (task_state.o):
+    task-wait-state.o         src/scheduler/task_wait_state.s(32)
+    [linker generated]       
+_udeks_lifecycle_slots_private (task_state.o):
+    task-wait-state.o         src/scheduler/task_wait_state.s(33)
+    [linker generated]       
+_udeks_line_editor_get_line (scheduler-overlay-bridge.o):
+    task-wait-state.o         src/scheduler/task_wait_state.s(37)
+_udeks_line_editor_submitted_ready_value (scheduler-overlay-bridge.o):
+    task-wait-state.o         src/scheduler/task_wait_state.s(36)
+_udeks_monotonic_ticks_high (task-wait-state.o):
+    [linker generated]       
+_udeks_monotonic_ticks_low (task-wait-state.o):
+    [linker generated]       
+_udeks_scheduler_select_next (task_scheduler.o):
+    [linker generated]       
+_udeks_task_cancel_request (task-wait-state.o):
+    [linker generated]       
+_udeks_task_console_get_line (task-wait-state.o):
+    [linker generated]       
+_udeks_task_poll_request (task-wait-state.o):
+    [linker generated]       
+_udeks_task_sleep_poll (task-wait-state.o):
+    [linker generated]       
+_udeks_task_tick_advance (task-wait-state.o):
+    [linker generated]       
+_udeks_task_wait_child_private (task-wait-state.o):
+    [linker generated]       
+_udeks_task_wait_count_private (task-wait-state.o):
+    [linker generated]       
+_udeks_task_wait_descriptor_private (task-wait-state.o):
+    [linker generated]       
+_udeks_task_wait_flags_private (task-wait-state.o):
+    [linker generated]       
+_udeks_task_wait_operation_private (task-wait-state.o):
+    [linker generated]       
+_udeks_task_wait_publish_current (task-wait-state.o):
+    [linker generated]       
+_udeks_task_wait_reset (task-wait-state.o):
+    [linker generated]       
+_udeks_task_wait_selector_high_private (task-wait-state.o):
+    [linker generated]       
+_udeks_task_wait_selector_private (task-wait-state.o):
+    [linker generated]       
+_udeks_task_wait_sequence_private (task-wait-state.o):
+    [linker generated]       
+_udeks_task_wait_state_private (task-wait-state.o):
+    [linker generated]       
+_udeks_task_wait_status_private (task-wait-state.o):
+    [linker generated]       
+addysp1 (scheduler-overlay-bridge.o):
+    and.o                     runtime/and.s(8)
+decsp1 (scheduler-overlay-bridge.o):
+    task_scheduler.o          build/8502/task_scheduler.s(59)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+decsp2 (scheduler-overlay-bridge.o):
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+decsp4 (scheduler-overlay-bridge.o):
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+incsp1 (scheduler-overlay-bridge.o):
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+incsp2 (scheduler-overlay-bridge.o):
+    task-wait-state.o         src/scheduler/task_wait_state.s(38)
+    task_scheduler.o          build/8502/task_scheduler.s(59)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+incsp3 (scheduler-overlay-bridge.o):
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+incsp4 (scheduler-overlay-bridge.o):
+    task_state.o              build/8502/task_state.s(1203)
+incsp7 (scheduler-overlay-bridge.o):
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+ptr1 (scheduler-overlay-bridge.o):
+    task_state.o              build/8502/task_state.s(11)
+pusha (scheduler-overlay-bridge.o):
+    task_scheduler.o          build/8502/task_scheduler.s(59)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+pusha0 (scheduler-overlay-bridge.o):
+    task_state.o              build/8502/task_state.s(1203)
+pushax (scheduler-overlay-bridge.o):
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+pushwysp (scheduler-overlay-bridge.o):
+    task_state.o              build/8502/task_state.s(1203)
+shlax3 (scheduler-overlay-bridge.o):
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+sp (scheduler-overlay-bridge.o):
+    and.o                     runtime/and.s(9)
+    task_scheduler.o          build/8502/task_scheduler.s(10)
+    task_state.o              build/8502/task_state.s(10)
+staspidx (scheduler-overlay-bridge.o):
+    task_state.o              build/8502/task_state.s(1203)
+stax0sp (scheduler-overlay-bridge.o):
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+staxysp (scheduler-overlay-bridge.o):
+    task_state.o              build/8502/task_state.s(1203)
+    task_state.o              build/8502/task_state.s(1203)
+tmp1 (scheduler-overlay-bridge.o):
+    aslax2.o                  runtime/aslax2.s(8)
+tosanda0 (and.o):
+    task_state.o              build/8502/task_state.s(1203)
+

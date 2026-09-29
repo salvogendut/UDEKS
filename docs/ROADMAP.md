@@ -185,6 +185,153 @@ the [Tasking 0.1 handover](../HANDOVER.md).
 - [ ] Qualify responsive graphics under input pressure (issue #6): xwave initial
   drawing now advances in four-vertex polls; synchronous compositor replay and
   exposed-window redraw still need work before performance acceptance.
+  Issue #10 integrates scratch-only raster storage with preserved placement;
+  emulator primitive and drag-release timings improve, but cached repaint still
+  takes seconds. Focused xwave replay now uses four-vertex poll chunks after
+  damage/chrome composition; the obscured-window path and damage/chrome/clock
+  redraw remain synchronous. Full compositor and physical qualification remain.
+  A packed move-cache format and standalone bank-crossing prototype now pass
+  pixel/guard checks in 1986 and VICE with IRQs masked. The C paste still takes
+  seconds and needs 1,273 bytes against a 49-byte resident reserve. The measured
+  ASM byte blitter now passes both emulators plus all 64 alignment pairs;
+  default paste is 4.56–6.87× faster but wrapper/ASM/state still needs 1,023
+  bytes, and its complete-operation lease does not yield. The runtime placement
+  audit finds no drop-in home: scheduler overlays own the entire primary-map
+  gap. Next is measuring in-place ASM raster replacements without changing
+  stacks/shadow/APIs, then bounded lease integration; active-IRQ, ownership,
+  compositor and physical gates remain. Production still replays pixels on moves.
+  C-clipping/ASM-span fill and the public ASM pixel entry now pass independent
+  pixel/dirty/stack gates and are installed in the display service. Their 173
+  net bytes remain named padding; frozen placements and ABIs are unchanged.
+  D71/D64 native drag/input/background-clock and VICE app/bitmap gates pass.
+  Measured release delays improve, but full deferred repaint still takes
+  seconds; physical validation and responsive-compositor acceptance remain.
+  Shared-pixel C line stepping, span rectangles and ASM clear are also now
+  installed: another 294 saved bytes stay padded; both-format emulator gates
+  and clean-build determinism pass. Primitive lines improve 6–8%, rectangle
+  matrix 4.14×, clear about 10×; sampled cancellation is not improved.
+  Cache reserves total 516, still at least 507 short before bindings/bounded
+  state. Next: explicit service-placement/shared-raster budget investigation.
+  Physical/visual qualification remains pending; pixel-cache moves are not
+  enabled. See [GRAPHICS-SHARED.md](GRAPHICS-SHARED.md).
+  A private bank-1 row-overlay proof now passes both emulators with active
+  IRQs and an actual SEI-removal negative control: 213 bytes in bank 1,
+  194 resident binding bytes, leaving 322 before integration costs. Delivery,
+  ownership/completion, bounded compositor state and live-service/HW gates
+  remain; no pixel-cache move is enabled. See
+  [WINDOW-CACHE-OVERLAY.md](WINDOW-CACHE-OVERLAY.md).
+  Experimental core-prefix delivery now passes both-format VICE/native boot
+  and lifetime gates without changing normal disks or resident bytes. Pure C
+  generation/row policy is host-tested; its 2,567-byte bank-1 core/policy/helper
+  link is measured but unexecuted. The live shell stack cannot be borrowed;
+  private C runtime/stack and explicit completed-image ABI gates come next.
+  See [WINDOW-CACHE-DELIVERY.md](WINDOW-CACHE-DELIVERY.md). Cached moves remain
+  disabled; there is no new user-visible cache build to test yet.
+  A subsequent private C dispatcher/stack proof passes both emulators: real
+  policy and row transfers, all runtime/I/D/stack/guard checks, and three
+  single-byte fault controls (IRQ map, ZP restore, shell-stack alias) are
+  qualified. Module code is 2,685 + 28 state; bindings277 leave239 resident
+  reserve bytes before integration. Completion/marshalling/continuation fit,
+  production delivery, live input/task/Z80, NMI and HW gates remain. See
+  [WINDOW-CACHE-C-RUNTIME.md](WINDOW-CACHE-C-RUNTIME.md).
+  Latest checkpoint: the combined bounded C command and repeated pixel reuse
+  pass both emulators, including live fault controls. UAPP 0.3 explicit image
+  completion IS installed, preserving all 53 vectors/ZP; both-format boot,
+  input/drag/cancellation/recertification and bitmap gates pass. The seam
+  spends 158 resident bytes. Subsequent installed NMI deferral spends 77,
+  leaving 281 padding; exact-stub C-lease stress and both-format normal
+  input/Z80/clock/drag/cancellation gates pass in both emulators. Physical
+  RESTORE confirmation remains. The uninstalled 241-byte binding would leave
+  40 before manager/delivery integration; bootfs is exactly 11,708 bytes.
+  Complete integration fit, C-module delivery and live cached moves remain
+  unfinished. Production moves still
+  redraw. See [WINDOW-CACHE-COMMAND.md](WINDOW-CACHE-COMMAND.md).
+  NMI evidence/manual gate: [WINDOW-CACHE-NMI.md](WINDOW-CACHE-NMI.md).
+  Subsequent private C manager savings recover 221 with identical host drawing/
+  state traces and both-format emulator gates. Current padding502, binding241
+  leaves261; a real bank-0 continuation/link is still739 short BEFORE actual
+  manager hooks/locks/delivery. The four-byte C continuation is host-tested,
+  not installed. The subsequent direct in-bank controller fits at3,977 bytes
+  with26 private state, guarded240-byte stack and2,224-byte image (default2,184).
+  Both emulators pass single-row/stale-ticket/repeated-paste/pixel/dirty/ZP/
+  stack/I/D/IRQ/NMI and four live fault controls. Next: complete module delivery
+  and bounded resident hooks/locks within261 remaining bytes before live GUI
+  gates. No cached move is enabled. See
+  [WINDOW-MANAGER-BUDGET.md](WINDOW-MANAGER-BUDGET.md) and
+  [WINDOW-CACHE-CONTROLLER.md](WINDOW-CACHE-CONTROLLER.md).
+  Whole-controller delivery/lifetime now passes on separate D71/D64 test disks
+  in both emulators, moving only the temporary scheduler source5000→6000.
+  Complete code/identity bytes survive apps, utilities and graphics restart;
+  native32-drag/clock/cancellation gates pass. Zero new resident delivery bytes,
+  but runtime acceptance, persistent tickets, bounded compositor hooks/locks
+  and actual live cache execution still need qualification. Normal disks
+  unchanged; no cached move is enabled. See
+  [WINDOW-CACHE-CONTROLLER-DELIVERY.md](WINDOW-CACHE-CONTROLLER-DELIVERY.md).
+  Page-bounded pre-C acceptance and persistent original-ticket reconstruction
+  now pass standalone machine tests in both emulators, including bad payload/
+  header rejection and four live runtime faults. The safe measured closure is
+  553 resident bytes versus502 available:51 short BEFORE compositor hooks.
+  Recover implementation bytes, then qualify the full manager hook/lock link;
+  normal disks remain unchanged and pixel-cached moves are still disabled. See
+  [WINDOW-CACHE-ACCEPTANCE.md](WINDOW-CACHE-ACCEPTANCE.md).
+  A subsequent standalone compact transport recovers182 resident bytes by
+  loading the gateway from the validated bank-1 module. Charged closure371,
+  aggregate headroom131 BEFORE compositor hooks; no complete-link fit claim.
+  Module4,106 bytes includes196-byte gateway source and needs17 validation
+  polls. Stack/image capacity unchanged; both emulators pass full pixels,
+  repeated pastes, bad-image rejection and four live fault controls. Revised
+  module delivery now passes both formats/emulators; isolated normal/panic
+  transport-only links preserve every segment/helper with131 bytes remaining.
+  No live cache invocation or compositor hook fit yet. Next: measure real
+  manager hooks/locks, regenerate bridges, then qualify the integrated path.
+  See [WINDOW-CACHE-COMPACT.md](WINDOW-CACHE-COMPACT.md) and
+  [WINDOW-CACHE-COMPACT-DELIVERY.md](WINDOW-CACHE-COMPACT-DELIVERY.md).
+  Latest: a separate bootable compositor candidate now invokes the bounded
+  cache. Actual normal/panic links preserve every segment and runtime helper,
+  with159 padding bytes left; regenerated bridges avoid the earlier stale-link
+  hazard. Both-format native1986 tests cover repeated cached moves with full
+  pixels and no new wave painter/Z80 calls, clock repair, resize fallback,
+  Ctrl+C, typing and restart. VICE qualifies capture/bitmap/NMI/restart (not
+  native dragging). The user reports the manual candidate looks good; platform
+  and individual cases were not specified. Normal disks remain
+  unchanged. Release plus cache presentation still takes roughly4–5s in the
+  sampled PAL sequence, so responsive-compositor and physical gates remain
+  open. See [WINDOW-CACHE-LIVE.md](WINDOW-CACHE-LIVE.md).
+  A separate band-boundary commit follow-up keeps the four-row poll budget,
+  reduces median page copies56→22.5 and settled-paste frames156.5→129.5; every
+  pixel/input/guard gate passes. A clock-minute repair outlier still takes313
+  frames, so worst-case responsiveness remains open. The timing change also
+  exposed and fixed a `$D011` shutdown raster-target bug (one byte, unchanged
+  placement), now tested at late raster295 with continued typing/restart.
+  See [WINDOW-CACHE-REPAINT.md](WINDOW-CACHE-REPAINT.md). Normal cache promotion
+  remains separate from this test disk; only the shutdown fix is normal-linked.
+  A geometry-based occlusion follow-up now avoids pasting for hidden, exposed
+  upper-strip and disjoint lower-window damage. Forced clock updates drop from
+  278 to 119/126 PAL frames (hidden/upper strip), copying 0/2 pages instead of
+  40/44 with identical canvases. Sampled worst drag-paste latency drops313→163;
+  median full move time is essentially unchanged. Complex overlap remains a
+  ~5s fallback, so general responsiveness and physical/default-promotion gates
+  stay open. See [WINDOW-CACHE-OCCLUSION.md](WINDOW-CACHE-OCCLUSION.md).
+  A separately qualified prefix/row-range command now repairs only intersecting
+  rows and the necessary left prefix, preserving the full packed source stride.
+  Partial-overlap clock repair improves254→195 PAL frames, 33→23 page copies,
+  with complete canvas equality; hidden/strip timings stay unchanged. Provider
+  and integrated disks pass host/1986/VICE gates, including cancellation/input
+  regression tests and clean-build determinism. Normal disks remain unchanged;
+  ~3.9s still leaves responsiveness and physical/default-promotion gates open.
+  See [WINDOW-CACHE-PARTIAL.md](WINDOW-CACHE-PARTIAL.md).
+  User testing then exposed xclock-over-xwave drag-start latency missed by
+  wave-only drag tests. An isolated deferred-background candidate clears the
+  old rectangle and moves only the outline, repairing exposed pixels on
+  release. Native clock drag-start improves265→16 PAL frames; full pixel,
+  input/cancel/restart, placement and clean-build gates pass in both formats.
+  Release repair remains synchronous; manual/physical acceptance and normal
+  promotion are still open. See [WINDOW-DRAG-START.md](WINDOW-DRAG-START.md).
+  The user reports improved drag start. App-specific projection and wireframe
+  optimizations are deferred to separate xwave work; they must not become
+  window-manager policy. This milestone keeps caching opt-in. Default-build
+  integration and its input/hardware acceptance gates are the next manager step.
+  See [WINDOW-MANAGER-MILESTONE.md](WINDOW-MANAGER-MILESTONE.md).
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

@@ -1,0 +1,37 @@
+{
+  "qualification": "standalone active-IRQ row proof; no production delivery/state/GUI qualification",
+  "cases": [
+    {
+      "1986": {
+        "case": 0,
+        "row_calls": 132,
+        "images": 66,
+        "interrupts": 1347,
+        "pixels_dirty_sha256": "e928ae5083036895af16d235cc8e9767e8b6a21eae080a86943e949d59921851"
+      },
+      "vice": {
+        "case": 0,
+        "row_calls": 132,
+        "images": 66,
+        "interrupts": 1340,
+        "pixels_dirty_sha256": "e928ae5083036895af16d235cc8e9767e8b6a21eae080a86943e949d59921851"
+      }
+    },
+    {
+      "1986": {
+        "case": 1,
+        "row_calls": 320,
+        "images": 1,
+        "interrupts": 16070,
+        "pixels_dirty_sha256": "5522791f259b83250a7aca953790289efde55e28229f4f9863b746bb226dd98f"
+      },
+      "vice": {
+        "case": 1,
+        "row_calls": 320,
+        "images": 1,
+        "interrupts": 16014,
+        "pixels_dirty_sha256": "5522791f259b83250a7aca953790289efde55e28229f4f9863b746bb226dd98f"
+      }
+    }
+  ]
+}

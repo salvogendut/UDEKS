@@ -1,0 +1,402 @@
+{
+  "qualification": "standalone fill mechanism; not resident or live-input qualified",
+  "flags": {
+    "display": "-Oirs",
+    "driver": "unoptimized"
+  },
+  "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44",
+  "c-reference": {
+    "CODE": 4258,
+    "RODATA": 0,
+    "BSS": 32,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0,
+    "VICSHADOW": 8000
+  },
+  "asm-span": {
+    "CODE": 4073,
+    "RODATA": 0,
+    "BSS": 29,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0,
+    "VICSHADOW": 8000
+  },
+  "span": {
+    "CODE": 102,
+    "RODATA": 0,
+    "BSS": 0,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "object_net_saving": 86,
+  "experimental_link": {
+    "c-reference": {
+      "ZEROPAGE": {
+        "start": 4,
+        "end": 31,
+        "size": 28
+      },
+      "PROBECODE": {
+        "start": 2816,
+        "end": 3024,
+        "size": 209
+      },
+      "LOWBSS": {
+        "start": 3072,
+        "end": 4604,
+        "size": 1533
+      },
+      "STARTUP": {
+        "start": 7168,
+        "end": 7374,
+        "size": 207
+      },
+      "KERNELENTRY": {
+        "start": 8192,
+        "end": 8197,
+        "size": 6
+      },
+      "CODE": {
+        "start": 8198,
+        "end": 37674,
+        "size": 29477
+      },
+      "RODATA": {
+        "start": 37675,
+        "end": 40734,
+        "size": 3060
+      },
+      "DATA": {
+        "start": 40735,
+        "end": 40737,
+        "size": 3
+      },
+      "BSS": {
+        "start": 40738,
+        "end": 41439,
+        "size": 702
+      },
+      "VICSHADOW": {
+        "start": 41440,
+        "end": 49439,
+        "size": 8000
+      },
+      "SYSCALLS": {
+        "start": 52992,
+        "end": 53246,
+        "size": 255
+      },
+      "HIGHBSS": {
+        "start": 57784,
+        "end": 58081,
+        "size": 298
+      },
+      "MODULECODE": {
+        "start": 58112,
+        "end": 58874,
+        "size": 763
+      },
+      "MODULERODATA": {
+        "start": 58875,
+        "end": 58947,
+        "size": 73
+      },
+      "BOOTFSCODE": {
+        "start": 62447,
+        "end": 63112,
+        "size": 666
+      },
+      "TASKREQUEST": {
+        "start": 63488,
+        "end": 63748,
+        "size": 261
+      },
+      "TASKGATE": {
+        "start": 65285,
+        "end": 65476,
+        "size": 192
+      }
+    },
+    "asm-span": {
+      "ZEROPAGE": {
+        "start": 4,
+        "end": 31,
+        "size": 28
+      },
+      "PROBECODE": {
+        "start": 2816,
+        "end": 3024,
+        "size": 209
+      },
+      "LOWBSS": {
+        "start": 3072,
+        "end": 4604,
+        "size": 1533
+      },
+      "STARTUP": {
+        "start": 7168,
+        "end": 7374,
+        "size": 207
+      },
+      "KERNELENTRY": {
+        "start": 8192,
+        "end": 8197,
+        "size": 6
+      },
+      "CODE": {
+        "start": 8198,
+        "end": 37591,
+        "size": 29394
+      },
+      "RODATA": {
+        "start": 37592,
+        "end": 40651,
+        "size": 3060
+      },
+      "DATA": {
+        "start": 40652,
+        "end": 40654,
+        "size": 3
+      },
+      "BSS": {
+        "start": 40655,
+        "end": 41353,
+        "size": 699
+      },
+      "VICSHADOW": {
+        "start": 41354,
+        "end": 49353,
+        "size": 8000
+      },
+      "SYSCALLS": {
+        "start": 52992,
+        "end": 53246,
+        "size": 255
+      },
+      "HIGHBSS": {
+        "start": 57784,
+        "end": 58081,
+        "size": 298
+      },
+      "MODULECODE": {
+        "start": 58112,
+        "end": 58874,
+        "size": 763
+      },
+      "MODULERODATA": {
+        "start": 58875,
+        "end": 58947,
+        "size": 73
+      },
+      "BOOTFSCODE": {
+        "start": 62447,
+        "end": 63112,
+        "size": 666
+      },
+      "TASKREQUEST": {
+        "start": 63488,
+        "end": 63748,
+        "size": 261
+      },
+      "TASKGATE": {
+        "start": 65285,
+        "end": 65476,
+        "size": 192
+      }
+    }
+  },
+  "linked_helpers": {
+    "c-reference": [
+      "/usr/share/cc65/lib/none.lib(add.o)",
+      "/usr/share/cc65/lib/none.lib(addeqsp.o)",
+      "/usr/share/cc65/lib/none.lib(addysp.o)",
+      "/usr/share/cc65/lib/none.lib(and.o)",
+      "/usr/share/cc65/lib/none.lib(aslax2.o)",
+      "/usr/share/cc65/lib/none.lib(aslax3.o)",
+      "/usr/share/cc65/lib/none.lib(aslax4.o)",
+      "/usr/share/cc65/lib/none.lib(call.o)",
+      "/usr/share/cc65/lib/none.lib(decsp1.o)",
+      "/usr/share/cc65/lib/none.lib(decsp2.o)",
+      "/usr/share/cc65/lib/none.lib(decsp3.o)",
+      "/usr/share/cc65/lib/none.lib(decsp4.o)",
+      "/usr/share/cc65/lib/none.lib(decsp5.o)",
+      "/usr/share/cc65/lib/none.lib(decsp6.o)",
+      "/usr/share/cc65/lib/none.lib(decsp7.o)",
+      "/usr/share/cc65/lib/none.lib(decsp8.o)",
+      "/usr/share/cc65/lib/none.lib(eq.o)",
+      "/usr/share/cc65/lib/none.lib(icmp.o)",
+      "/usr/share/cc65/lib/none.lib(incsp1.o)",
+      "/usr/share/cc65/lib/none.lib(incsp2.o)",
+      "/usr/share/cc65/lib/none.lib(incsp3.o)",
+      "/usr/share/cc65/lib/none.lib(incsp4.o)",
+      "/usr/share/cc65/lib/none.lib(incsp5.o)",
+      "/usr/share/cc65/lib/none.lib(incsp6.o)",
+      "/usr/share/cc65/lib/none.lib(incsp7.o)",
+      "/usr/share/cc65/lib/none.lib(incsp8.o)",
+      "/usr/share/cc65/lib/none.lib(jmpvec.o)",
+      "/usr/share/cc65/lib/none.lib(ldai.o)",
+      "/usr/share/cc65/lib/none.lib(ldeaxi.o)",
+      "/usr/share/cc65/lib/none.lib(makebool.o)",
+      "/usr/share/cc65/lib/none.lib(mul.o)",
+      "/usr/share/cc65/lib/none.lib(mul8.o)",
+      "/usr/share/cc65/lib/none.lib(mulax10.o)",
+      "/usr/share/cc65/lib/none.lib(mulax5.o)",
+      "/usr/share/cc65/lib/none.lib(mulax6.o)",
+      "/usr/share/cc65/lib/none.lib(negabs.o)",
+      "/usr/share/cc65/lib/none.lib(or.o)",
+      "/usr/share/cc65/lib/none.lib(popptr1.o)",
+      "/usr/share/cc65/lib/none.lib(pusha.o)",
+      "/usr/share/cc65/lib/none.lib(pushax.o)",
+      "/usr/share/cc65/lib/none.lib(pushwsp.o)",
+      "/usr/share/cc65/lib/none.lib(shl.o)",
+      "/usr/share/cc65/lib/none.lib(shrax1.o)",
+      "/usr/share/cc65/lib/none.lib(shrax2.o)",
+      "/usr/share/cc65/lib/none.lib(shrax3.o)",
+      "/usr/share/cc65/lib/none.lib(shrax4.o)",
+      "/usr/share/cc65/lib/none.lib(staspidx.o)",
+      "/usr/share/cc65/lib/none.lib(staxsp.o)",
+      "/usr/share/cc65/lib/none.lib(staxspi.o)",
+      "/usr/share/cc65/lib/none.lib(steaxspi.o)",
+      "/usr/share/cc65/lib/none.lib(sub.o)",
+      "/usr/share/cc65/lib/none.lib(subeqsp.o)",
+      "/usr/share/cc65/lib/none.lib(subysp.o)",
+      "/usr/share/cc65/lib/none.lib(udiv.o)",
+      "/usr/share/cc65/lib/none.lib(umod.o)",
+      "/usr/share/cc65/lib/none.lib(zeropage.o)"
+    ],
+    "asm-span": [
+      "/usr/share/cc65/lib/none.lib(add.o)",
+      "/usr/share/cc65/lib/none.lib(addeqsp.o)",
+      "/usr/share/cc65/lib/none.lib(addysp.o)",
+      "/usr/share/cc65/lib/none.lib(and.o)",
+      "/usr/share/cc65/lib/none.lib(aslax2.o)",
+      "/usr/share/cc65/lib/none.lib(aslax3.o)",
+      "/usr/share/cc65/lib/none.lib(aslax4.o)",
+      "/usr/share/cc65/lib/none.lib(call.o)",
+      "/usr/share/cc65/lib/none.lib(decsp1.o)",
+      "/usr/share/cc65/lib/none.lib(decsp2.o)",
+      "/usr/share/cc65/lib/none.lib(decsp3.o)",
+      "/usr/share/cc65/lib/none.lib(decsp4.o)",
+      "/usr/share/cc65/lib/none.lib(decsp5.o)",
+      "/usr/share/cc65/lib/none.lib(decsp6.o)",
+      "/usr/share/cc65/lib/none.lib(decsp7.o)",
+      "/usr/share/cc65/lib/none.lib(decsp8.o)",
+      "/usr/share/cc65/lib/none.lib(eq.o)",
+      "/usr/share/cc65/lib/none.lib(icmp.o)",
+      "/usr/share/cc65/lib/none.lib(incsp1.o)",
+      "/usr/share/cc65/lib/none.lib(incsp2.o)",
+      "/usr/share/cc65/lib/none.lib(incsp3.o)",
+      "/usr/share/cc65/lib/none.lib(incsp4.o)",
+      "/usr/share/cc65/lib/none.lib(incsp5.o)",
+      "/usr/share/cc65/lib/none.lib(incsp6.o)",
+      "/usr/share/cc65/lib/none.lib(incsp7.o)",
+      "/usr/share/cc65/lib/none.lib(incsp8.o)",
+      "/usr/share/cc65/lib/none.lib(jmpvec.o)",
+      "/usr/share/cc65/lib/none.lib(ldai.o)",
+      "/usr/share/cc65/lib/none.lib(ldeaxi.o)",
+      "/usr/share/cc65/lib/none.lib(makebool.o)",
+      "/usr/share/cc65/lib/none.lib(mul.o)",
+      "/usr/share/cc65/lib/none.lib(mul8.o)",
+      "/usr/share/cc65/lib/none.lib(mulax10.o)",
+      "/usr/share/cc65/lib/none.lib(mulax5.o)",
+      "/usr/share/cc65/lib/none.lib(mulax6.o)",
+      "/usr/share/cc65/lib/none.lib(negabs.o)",
+      "/usr/share/cc65/lib/none.lib(or.o)",
+      "/usr/share/cc65/lib/none.lib(popptr1.o)",
+      "/usr/share/cc65/lib/none.lib(pusha.o)",
+      "/usr/share/cc65/lib/none.lib(pushax.o)",
+      "/usr/share/cc65/lib/none.lib(pushwsp.o)",
+      "/usr/share/cc65/lib/none.lib(shl.o)",
+      "/usr/share/cc65/lib/none.lib(shrax1.o)",
+      "/usr/share/cc65/lib/none.lib(shrax2.o)",
+      "/usr/share/cc65/lib/none.lib(shrax3.o)",
+      "/usr/share/cc65/lib/none.lib(shrax4.o)",
+      "/usr/share/cc65/lib/none.lib(staspidx.o)",
+      "/usr/share/cc65/lib/none.lib(staxsp.o)",
+      "/usr/share/cc65/lib/none.lib(staxspi.o)",
+      "/usr/share/cc65/lib/none.lib(steaxspi.o)",
+      "/usr/share/cc65/lib/none.lib(sub.o)",
+      "/usr/share/cc65/lib/none.lib(subeqsp.o)",
+      "/usr/share/cc65/lib/none.lib(subysp.o)",
+      "/usr/share/cc65/lib/none.lib(udiv.o)",
+      "/usr/share/cc65/lib/none.lib(umod.o)",
+      "/usr/share/cc65/lib/none.lib(zeropage.o)"
+    ]
+  },
+  "linked_net_saving": 86,
+  "program_sha256": {
+    "c-reference-2.prg": "02d1a8364b29633a068812d4a99ccde2f115e89403c94f88d9d68947a21a781f",
+    "c-reference-3.prg": "dca02e53074f89a0c71fee00243cc398a3d65347b45b971b8ce08f30635a212e",
+    "c-reference-4.prg": "9845d86b1eb381eb140298f31e3d51937f292ec500238e7f2e54ebed6ff5edf0",
+    "c-reference-5.prg": "e02ff8acec6af517d7bdc22f4466de6b14a9ff96119e7b2e3db16f372cd60104",
+    "asm-span-2.prg": "bb8016bb90cb1cea11190a926ee40c1378a5c312101696752d86a58b333774fd",
+    "asm-span-3.prg": "b930d877008b6e5ba2391dc583d73518bda30dba27ecd986a23e67542a4862ee",
+    "asm-span-4.prg": "384f6e51d5153beae56665034ec73945c1c3f21430d386e6929f92d7125c6367",
+    "asm-span-5.prg": "68732a9f0037a97af9c039d95359aa3c1177dc8fe5f1bb9ae52468d056e97baa"
+  },
+  "source_sha256": {
+    "Makefile": "da7249772f97ad1b9aed58876f0a1aaf64fd2a1073ebabce86bcb04c5d39a34b",
+    "bench/graphics-raster/launcher.s": "d6acecc7fd8126fcd248465243608c5d8958e5b43ff0a25c765d8ea112209c6d",
+    "bench/graphics-raster/workload.c": "c89edf168c7d71b527f16ef560151156dd0bcc9cfc214a8a77e9448056417693",
+    "bench/graphics-span/fill.c": "6860ebc17be65946bd3f931d3144465b08afbbb84da7decee7823adebbb3bf1e",
+    "bench/graphics-span/matrix.c": "b3316729d620e29cd930fafff3da70115020d823d7f6f24985033d25d3944222",
+    "bench/graphics-span/span.s": "71a7345e96c41e7cd3a0259e48c1833acf125ad31e351206d536f32a3751d450",
+    "build/8502/udeks-8502.map": "9a1912bd4eb96cc7d7a03455053a8e24b6263351ed9b8cf586666edb67e6bed6",
+    "cfg/8502-bootstrap.cfg": "b844513bdd2636411c60ce7fd895c9be5a5ee4e0320f2637c16913fc5a777343",
+    "cfg/8502-raster-bench.cfg": "c51ee0b7a2ac5c0c091e9ee1f71bbacc9e603f8c5ca5fd2bcfa1253bf9651f9f",
+    "include/udeks/boot_console.h": "e199ad7a7ecf177c6906e5ff1f4f2c5f043fa4c7aef2123805b0809224d251c6",
+    "include/udeks/bootfs.h": "8f81f21c3f67abed51fa6bdc71016437edb6e0c45b34a284e12b8a4975b01579",
+    "include/udeks/capability.h": "2daed32452c6f3b7aa32e948de358eb7153d8a15c7f39bc24a74650ac67ae440",
+    "include/udeks/clock.h": "d21c16d9069191183c07dda0380a5dc4a18f59a570e522ee9b11bf761d24e530",
+    "include/udeks/compiler.h": "728737cc3379ea1feed5bfc3a09c9572a3e6db25f90aa99ab0363d37071960a7",
+    "include/udeks/console.h": "2312d89b528e1d1733cf887ab4e8fb00037594a83c8440ff39778de65954d5dd",
+    "include/udeks/executable.h": "d83d19c2e99cb2f9706880fd956edacaa289fff2926780ca32d290f0ccfb46f1",
+    "include/udeks/font.h": "6a3099f6a422e8405461fb4d6ebe9523a133c45cad2f018fffab7e8d8485003e",
+    "include/udeks/framebuffer.h": "6ce29d13d1a7786293723dcb9577171643132fc98cda3a76456aa108997a738d",
+    "include/udeks/framebuffer_surface.h": "9338efe8903fe375db7967094048e22b93d6d15661717dd05d22bddae40c964c",
+    "include/udeks/joystick.h": "1cd37aaea0af51b22550d4155d14f7a8dbf4ea91ca2594a77eca6b4a9059e4a3",
+    "include/udeks/keyboard.h": "d0f583d1f5083c3c7b061550646411dd66ce652c333d4cd3ef2febaea041a09c",
+    "include/udeks/line_editor.h": "ab4771491f70fdde727d67392b0665201bc39cc621feee9ff70f9424565708bc",
+    "include/udeks/mailbox.h": "23fe022094332d0a109fa63a19cafce507c3339cb86ba7d66d4a08de312b0076",
+    "include/udeks/memory.h": "9b99a8518c610b051b3b7a4e41af290eb292440cb4eeb73c3decdfea1c0adf65",
+    "include/udeks/mouse1351.h": "656f8d94dcbe22622b3e70154a7f0a0ff45e4cb2621705811998b538618b5686",
+    "include/udeks/panic.h": "5b81fff9a4b567c30d54fb5ea7e9aeee4268fb7b91d265487e08ba720436f1dd",
+    "include/udeks/pointer.h": "8d2256afd2ca535ebe140378f688c646c4681bd6f59d956c39d49348344d98b2",
+    "include/udeks/root_console.h": "a117fe7e49a434248deb964237510f81c2ed45a30baa979e735059e0d4744520",
+    "include/udeks/root_terminal.h": "7602aa0170b96afad450858dcfb7c89393d424cf8984617f48c51f8e0dcea76c",
+    "include/udeks/service.h": "47dab620a941e478bb88279ada25fefb772b17dc3d8e0e2d12e4b772440578df",
+    "include/udeks/shell.h": "bde10386ce264871d36384afe5c854a3dc8b29324455c15d0a79bd524e835f79",
+    "include/udeks/stream.h": "a640ee78b6a55bbfaa402a849d62b3486fdda10c2ea25fb2b1976b7595b2d593",
+    "include/udeks/syscall.h": "e5ead3ed343fe51ae72fdb445976b9d8e52e24c678092f33b760c6ca9e9bc216",
+    "include/udeks/task.h": "0843ba19baca30b9ef25eab4fe9879630f58bb2fe1cc3867c7f6c8f30520038c",
+    "include/udeks/task_bank.h": "e854a1c9317266a41edcb036472e20a3d9da8cd2ff2138c5261549098c737a4f",
+    "include/udeks/task_policy.h": "333f6aa9f2b49b1292adddcc7d7d62a4334a772026949b6b28d9b2a2f8809db9",
+    "include/udeks/task_poll_policy.h": "943ba292f9be0e8cfeb029851d0616c5247a2db0a6a2a601b1bb39d9341ec800",
+    "include/udeks/task_request.h": "64e204aa2c6b2d5a551688e33a77ea08ca58fcdd54b46db507e01eafc3997a9d",
+    "include/udeks/task_scheduler.h": "9b159d02139cf038bea064901a1c5645605d2da82e2127632ba2caf75ce3a074",
+    "include/udeks/task_state.h": "3553dc9c40c39226fa070521e8d51713426c672434bb6a02935d54c438178516",
+    "include/udeks/theme.h": "71a2aaf263271cc8023f59eb7a5cde63776dfc7cd60697ff65b7deb59907f762",
+    "include/udeks/time.h": "6181f9d1b53e95762b9a8df080dc054b7bb725248b39645d13c64a505bc6be55",
+    "include/udeks/vdc.h": "37e8156699488e63d969d4c233aa746a498624dada7c165027f2c0fa94326ada",
+    "include/udeks/vic_graphics.h": "d724c3732c279cef8b536d353dd4c1cf51bcbbc9866387fa37197b10eab96e88",
+    "include/udeks/window.h": "56527fb9e1f4142cce735b56fdc7f339e158f2e163c20f814122f0c86550e68b",
+    "include/udeks/xclock.h": "639e09810dbaf6095611fb9e8b9308b857f86aab01ab0cb053c42faf29ce4a77",
+    "include/udeks/xwave.h": "6acc669ac04840499721bc463e853b69a426377cba4c4d75f40057c9352cce92",
+    "include/udeks/z80_worker.h": "ce54195c011bad0ad66a88465ba23cdd5b5a6e01a25a583a7cc650bfd330c8a2",
+    "src/services/display/vic_graphics.c": "9ee4fc921ae2e9209ec6e40d5a3fddb2a64c1538423940fa5d23ef0867faa89e",
+    "tools/1986_input_smoke_build.py": "5dbf7e6b2d8a0f3eda15c4796bb81ee3931e5d05b032e74e6a538daf5984256f",
+    "tools/1986_raster_bench.c": "e1d772fc3155d259f84eeff8c8f943e88c85c7cd8d2520a697d92887eb944b68",
+    "tools/gen_capability_imports.py": "b505025f70ee77d09d537130baac4415944f82100767680b042b0e36ab718038",
+    "tools/graphics_raster_audit.py": "3a255275d24f3dbd81d744ebd0bf7c6159cf822d6a124b39c1509e67ec9483ff",
+    "tools/graphics_raster_bench_build.py": "f75bd660dfe3d0b74f1386b7799444a5436f4486719276dd8a3edf03ede7a731",
+    "tools/graphics_raster_bench_decode.py": "0ff7c8ab0bdba272fa1e63094c0d5dcde04b1b8bf887d4f9df2c84f0aaf5291c",
+    "tools/graphics_raster_bench_run.py": "f15cb59bf9ee40131e62dddeb2dd05f4f4c3d40bfe5a570aebdcb93989e0ad5b",
+    "tools/graphics_raster_link_audit.py": "0c9c2c72ca13f0807a8292282271455d54a1b4c9b0181501f3484d6181fce248",
+    "tools/graphics_span_bench.py": "53323244291a8226a8c8288548c35607d1bc070058704550a09e4c9f84029a18",
+    "tools/placement_audit.py": "b04d55f8227108df64695a118efacb752f5038d6801ef995bccab08017b1f9c7",
+    "tools/vice_capture.py": "8e086e0cd28d620e028d997e38ec66595d02bf3f2af8c04cf966fbeda0670967"
+  }
+}

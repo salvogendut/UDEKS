@@ -1,0 +1,159 @@
+{
+  "qualification": "display disabled, IRQ masked, 1 MHz; isolated capture/paste CIA timer ticks, no GUI latency claim",
+  "cases": [
+    {
+      "alignment": 0,
+      "1986": {
+        "capture_ticks": 1154134,
+        "paste_ticks": 2706567,
+        "total_ticks": 3860701
+      },
+      "vice": {
+        "capture_ticks": 1154116,
+        "paste_ticks": 2706525,
+        "total_ticks": 3860641
+      },
+      "pixels_dirty_sha256": "999e51a4cd6381d0bf854a63d6fbe1220db8c1b054fc56f374813fe90aed7e19"
+    },
+    {
+      "alignment": 1,
+      "1986": {
+        "capture_ticks": 1623869,
+        "paste_ticks": 2715300,
+        "total_ticks": 4339169
+      },
+      "vice": {
+        "capture_ticks": 1623844,
+        "paste_ticks": 2715258,
+        "total_ticks": 4339102
+      },
+      "pixels_dirty_sha256": "6b0eb94b8a27f5edb0e3adab620143bf0a11bc39f75d60fafea078b06b30c7c8"
+    },
+    {
+      "alignment": 2,
+      "1986": {
+        "capture_ticks": 1623869,
+        "paste_ticks": 2724033,
+        "total_ticks": 4347902
+      },
+      "vice": {
+        "capture_ticks": 1623844,
+        "paste_ticks": 2723991,
+        "total_ticks": 4347835
+      },
+      "pixels_dirty_sha256": "39ae4e2c125014ef22cee07b1e901fe5a2efffbe44041e33f5dfeabc9329eacc"
+    },
+    {
+      "alignment": 3,
+      "1986": {
+        "capture_ticks": 1623869,
+        "paste_ticks": 2732766,
+        "total_ticks": 4356635
+      },
+      "vice": {
+        "capture_ticks": 1623844,
+        "paste_ticks": 2732724,
+        "total_ticks": 4356568
+      },
+      "pixels_dirty_sha256": "5ad95569b151a2522df1089168caf14dbc2b1db3f4e91e7af37f051dd3bece4e"
+    },
+    {
+      "alignment": 4,
+      "1986": {
+        "capture_ticks": 1623869,
+        "paste_ticks": 2741499,
+        "total_ticks": 4365368
+      },
+      "vice": {
+        "capture_ticks": 1623844,
+        "paste_ticks": 2741457,
+        "total_ticks": 4365301
+      },
+      "pixels_dirty_sha256": "43e1af10599c46bdad6605488951f734f6afa4666773aca64e9790716eabf6cf"
+    },
+    {
+      "alignment": 5,
+      "1986": {
+        "capture_ticks": 1623869,
+        "paste_ticks": 2750232,
+        "total_ticks": 4374101
+      },
+      "vice": {
+        "capture_ticks": 1623844,
+        "paste_ticks": 2750190,
+        "total_ticks": 4374034
+      },
+      "pixels_dirty_sha256": "170bd2150d014a8a87b48fd88e9a3418ab2dd92d99dfdb5dd5924c78424336ae"
+    },
+    {
+      "alignment": 6,
+      "1986": {
+        "capture_ticks": 1623869,
+        "paste_ticks": 2758966,
+        "total_ticks": 4382835
+      },
+      "vice": {
+        "capture_ticks": 1623844,
+        "paste_ticks": 2758923,
+        "total_ticks": 4382767
+      },
+      "pixels_dirty_sha256": "bd639b1b602709fe38e452706244f4e8b043a6227a2b77b60ad24012c56af566"
+    },
+    {
+      "alignment": 7,
+      "1986": {
+        "capture_ticks": 1623869,
+        "paste_ticks": 1939439,
+        "total_ticks": 3563308
+      },
+      "vice": {
+        "capture_ticks": 1623844,
+        "paste_ticks": 1939409,
+        "total_ticks": 3563253
+      },
+      "pixels_dirty_sha256": "5747f22093a530842db9f66b9d746bd47ab65671336ffe96744848ea1d1c9e8c"
+    },
+    {
+      "alignment": 8,
+      "1986": {
+        "capture_ticks": 95326,
+        "paste_ticks": 100143,
+        "total_ticks": 195469
+      },
+      "vice": {
+        "capture_ticks": 95324,
+        "paste_ticks": 100141,
+        "total_ticks": 195465
+      },
+      "pixels_dirty_sha256": "5ac3c54bdc4f52385430fcb7a8546ff305b64c24e7a2c8548b165346c67c001e"
+    },
+    {
+      "alignment": 9,
+      "1986": {
+        "capture_ticks": 8829,
+        "paste_ticks": 8679,
+        "total_ticks": 17508
+      },
+      "vice": {
+        "capture_ticks": 8828,
+        "paste_ticks": 8678,
+        "total_ticks": 17506
+      },
+      "pixels_dirty_sha256": "75c3f5d9e707b72cc773049d3031d34338fab4b7abacdbb32be36ac96ac7c319"
+    },
+    {
+      "alignment": 10,
+      "1986": {
+        "capture_ticks": 2943053,
+        "paste_ticks": 5186449,
+        "total_ticks": 8129502
+      },
+      "vice": {
+        "capture_ticks": 2943008,
+        "paste_ticks": 5186369,
+        "total_ticks": 8129377
+      },
+      "pixels_dirty_sha256": "5522791f259b83250a7aca953790289efde55e28229f4f9863b746bb226dd98f"
+    }
+  ]
+}

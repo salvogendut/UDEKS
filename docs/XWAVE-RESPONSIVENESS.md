@@ -68,7 +68,10 @@ redraw are still synchronous. Native Ctrl+C reaches the app during row 0 but
 completion of close takes 222 PAL frames with the clock underneath. The smoke
 has a maximum release delay of 383 frames (baseline 689), not a general
 interactive-latency qualification. The user reported the requested manual
-1986 interaction check looked good (2026-09-27); no measured timing or separate
-physical-C128 run was supplied. Physical C128 checks remain outstanding.
+1986 interaction check looked good (2026-09-27). After the subsequent
+[drag-freeze correction](../bench/results/2026-09-27-xwave-drag-freeze/README.md),
+the user also reported the physical-C128 functional checklist passed
+(2026-09-27). No measured hardware latency was supplied; timing qualification
+remains outstanding.
 Do not mark roadmap task
 migration or responsive compositor completion from this increment.

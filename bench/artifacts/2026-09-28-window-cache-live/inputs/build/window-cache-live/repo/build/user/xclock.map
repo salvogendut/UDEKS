@@ -1,0 +1,230 @@
+Modules list:
+-------------
+xclock_entry.o:
+    STARTUP           Offs=000000  Size=000012  Align=00001  Fill=0000
+xclock.o:
+    CODE              Offs=000000  Size=0008FE  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=0000B6  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=00000D  Align=00001  Fill=0000
+app_imports.o:
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+STARTUP               000200  000211  000012  00001
+CODE                  000212  000B0F  0008FE  00001
+RODATA                000B10  000BC5  0000B6  00001
+BSS                   000BC6  000BD2  00000D  00001
+
+
+Exports list by name:
+---------------------
+_udeks_time_now           00CF60 REA    _udeks_vic_bitmap_fill    00CF63 REA    
+_udeks_vic_bitmap_line    00CF66 REA    _udeks_vic_bitmap_pixel   00CF69 REA    
+_udeks_vic_graphics_is_active 00CF6C REA    _udeks_window_create      00CF6F REA    
+_udeks_window_destroy     00CF72 REA    _udeks_window_get_geometry 00CF75 REA    
+_udeks_window_is_dragging 00CF78 REA    _udeks_window_is_focused  00CF7B REA    
+_udeks_window_repaint     00CF7E REA    _udeks_xclock_initialize  000212 RLA    
+_udeks_xclock_is_focused  00036A RLA    _udeks_xclock_is_running  00035A RLA    
+_udeks_xclock_poll        000317 RLA    _udeks_xclock_start       000281 RLA    
+_udeks_xclock_stop        00033B RLA    addysp                    00CF84 REA    
+decsp1                    00CF8A REA    decsp2                    00CF8D REA    
+decsp3                    00CF90 REA    decsp4                    00CF93 REA    
+decsp6                    00CF99 REA    decsp7                    00CF9C REA    
+decsp8                    00CF9F REA    incsp1                    00CFA2 REA    
+incsp2                    00CFA5 REA    incsp3                    00CFA8 REA    
+incsp4                    00CFAB REA    incsp5                    00CFAE REA    
+incsp6                    00CFB1 REA    ldaidx                    00CFB7 REA    
+mulax5                    00CFBA REA    ptr1                      00000E REZ    
+pusha                     00CFBD REA    pusha0                    00CFC0 REA    
+pushax                    00CFC3 REA    shrax1                    00CFC9 REA    
+shrax2                    00CFCC REA    shrax4                    00CFCF REA    
+sp                        000006 REZ    stax0sp                   00CFD5 REA    
+staxysp                   00CFD8 REA    subysp                    00CFDB REA    
+tosaddax                  00CFDE REA    tosicmp                   00CFE1 REA    
+tossuba0                  00CFE4 REA    tosudiva0                 00CFEA REA    
+tosumoda0                 00CFED REA    tosumula0                 00CFF0 REA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000006 REZ    ptr1                      00000E REZ    
+_udeks_xclock_initialize  000212 RLA    _udeks_xclock_start       000281 RLA    
+_udeks_xclock_poll        000317 RLA    _udeks_xclock_stop        00033B RLA    
+_udeks_xclock_is_running  00035A RLA    _udeks_xclock_is_focused  00036A RLA    
+_udeks_time_now           00CF60 REA    _udeks_vic_bitmap_fill    00CF63 REA    
+_udeks_vic_bitmap_line    00CF66 REA    _udeks_vic_bitmap_pixel   00CF69 REA    
+_udeks_vic_graphics_is_active 00CF6C REA    _udeks_window_create      00CF6F REA    
+_udeks_window_destroy     00CF72 REA    _udeks_window_get_geometry 00CF75 REA    
+_udeks_window_is_dragging 00CF78 REA    _udeks_window_is_focused  00CF7B REA    
+_udeks_window_repaint     00CF7E REA    addysp                    00CF84 REA    
+decsp1                    00CF8A REA    decsp2                    00CF8D REA    
+decsp3                    00CF90 REA    decsp4                    00CF93 REA    
+decsp6                    00CF99 REA    decsp7                    00CF9C REA    
+decsp8                    00CF9F REA    incsp1                    00CFA2 REA    
+incsp2                    00CFA5 REA    incsp3                    00CFA8 REA    
+incsp4                    00CFAB REA    incsp5                    00CFAE REA    
+incsp6                    00CFB1 REA    ldaidx                    00CFB7 REA    
+mulax5                    00CFBA REA    pusha                     00CFBD REA    
+pusha0                    00CFC0 REA    pushax                    00CFC3 REA    
+shrax1                    00CFC9 REA    shrax2                    00CFCC REA    
+shrax4                    00CFCF REA    stax0sp                   00CFD5 REA    
+staxysp                   00CFD8 REA    subysp                    00CFDB REA    
+tosaddax                  00CFDE REA    tosicmp                   00CFE1 REA    
+tossuba0                  00CFE4 REA    tosudiva0                 00CFEA REA    
+tosumoda0                 00CFED REA    tosumula0                 00CFF0 REA    
+
+
+
+Imports list:
+-------------
+_udeks_time_now (app_imports.o):
+    xclock.o                  build/user/xclock.s(13)
+_udeks_vic_bitmap_fill (app_imports.o):
+    xclock.o                  build/user/xclock.s(17)
+_udeks_vic_bitmap_line (app_imports.o):
+    xclock.o                  build/user/xclock.s(16)
+_udeks_vic_bitmap_pixel (app_imports.o):
+    xclock.o                  build/user/xclock.s(15)
+_udeks_vic_graphics_is_active (app_imports.o):
+    xclock.o                  build/user/xclock.s(14)
+_udeks_window_create (app_imports.o):
+    xclock.o                  build/user/xclock.s(18)
+_udeks_window_destroy (app_imports.o):
+    xclock.o                  build/user/xclock.s(19)
+_udeks_window_get_geometry (app_imports.o):
+    xclock.o                  build/user/xclock.s(21)
+_udeks_window_is_dragging (app_imports.o):
+    xclock.o                  build/user/xclock.s(22)
+_udeks_window_is_focused (app_imports.o):
+    xclock.o                  build/user/xclock.s(23)
+_udeks_window_repaint (app_imports.o):
+    xclock.o                  build/user/xclock.s(20)
+_udeks_xclock_initialize (xclock.o):
+    xclock_entry.o            user/lib/xclock_entry.s(5)
+_udeks_xclock_is_focused (xclock.o):
+    xclock_entry.o            user/lib/xclock_entry.s(10)
+_udeks_xclock_is_running (xclock.o):
+    xclock_entry.o            user/lib/xclock_entry.s(9)
+_udeks_xclock_poll (xclock.o):
+    xclock_entry.o            user/lib/xclock_entry.s(7)
+_udeks_xclock_start (xclock.o):
+    xclock_entry.o            user/lib/xclock_entry.s(6)
+_udeks_xclock_stop (xclock.o):
+    xclock_entry.o            user/lib/xclock_entry.s(8)
+addysp (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+decsp1 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+decsp2 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+decsp3 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+decsp4 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+decsp6 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+decsp7 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+decsp8 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+incsp1 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+incsp2 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+incsp3 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+incsp4 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+incsp5 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+incsp6 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+ldaidx (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+mulax5 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+ptr1 (app_imports.o):
+    xclock.o                  build/user/xclock.s(11)
+pusha (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+pusha0 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+pushax (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+shrax1 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+shrax2 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+shrax4 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+sp (app_imports.o):
+    xclock.o                  build/user/xclock.s(10)
+stax0sp (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+staxysp (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+subysp (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+tosaddax (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+tosicmp (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+tossuba0 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+tosudiva0 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+tosumoda0 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+tosumula0 (app_imports.o):
+    xclock.o                  build/user/xclock.s(1647)
+    xclock.o                  build/user/xclock.s(1647)
+

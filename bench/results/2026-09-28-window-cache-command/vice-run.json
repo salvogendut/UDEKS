@@ -1,0 +1,51 @@
+{
+  "program_sha256": {
+    "probe-0.prg": "7331ff2ede4393e50b9b39bb4024ca457b46629aa245f27b40a30551a54aa5ef",
+    "probe-1.prg": "0a58f60a9c59058597fb85db5263f37dd3de96da097686aa32fb17ca6c8d6026",
+    "probe-irq-leak.prg": "bdb8acb7367c1e916abcfde692f559310a09b58dcf764c4e31e9ac837f4edd9a",
+    "probe-shell-stack.prg": "52a2e4af236069fa5ca286a32ef6750782fd8bdbd018c84a7a3d44deb371ab83",
+    "probe-zp-leak.prg": "781d90fed4d3a8ec010b4412de452ca21865addcbccfa95ca52bd72a8b74dc35"
+  },
+  "raw_sha256": {
+    "vice-0.bin": "c05a3c88865ac5472152215d8c8f5d15d2706685e53b856cb8bc8befcfd78183",
+    "vice-1.bin": "b82d80851e6166c9c3a0a59bf7b6062aa30311169589600acc43a103589a4534",
+    "vice-irq-leak.bin": "3fc4f5400796e46ddad816e0571e6bf46308a1070fdc6b15cc914baa74a9d582",
+    "vice-zp-leak.bin": "44417e36a3ed9afca66807b270b2e65eec116d1f826e80ccd119539c184abae6",
+    "vice-shell-stack.bin": "b30cbe34e8179121c00e3e48712fb5b7dc1c630083ce60b712eda57c318737f7"
+  },
+  "decoded": {
+    "0": {
+      "rows": 132,
+      "commands": 543,
+      "images": 66,
+      "interrupts": 15149,
+      "observed_stack_offset": 217,
+      "pixel_sha256": "e928ae5083036895af16d235cc8e9767e8b6a21eae080a86943e949d59921851"
+    },
+    "1": {
+      "rows": 312,
+      "commands": 336,
+      "images": 2,
+      "interrupts": 25981,
+      "observed_stack_offset": 217,
+      "pixel_sha256": "8dd6a64cf89e9564f6b5116d753c118f572779cebb3a5ff79c9a1d26ee0ef522"
+    },
+    "irq-leak": {
+      "detected_fields": [
+        15
+      ]
+    },
+    "zp-leak": {
+      "detected_fields": [
+        16
+      ]
+    },
+    "shell-stack": {
+      "detected_fields": [
+        19,
+        21
+      ]
+    }
+  },
+  "provenance": "\nVICE - Versatile Commodore Emulator\n\n            ID: net.sf.VICE\n           Ref: app/net.sf.VICE/x86_64/stable\n          Arch: x86_64\n        Branch: stable\n       Version: 3.10\n       License: GPL-2.0+\n        Origin: flathub\n    Collection: org.flathub.Stable\n  Installation: system\nInstalled Size: 45.8\u00a0MB\n       Runtime: org.freedesktop.Platform/x86_64/25.08\n           Sdk: org.freedesktop.Sdk/x86_64/25.08\n\n        Commit: bbd997ea8cbf7e6ba06ff82136fd71069ce2011f93c006412bcda7bbde17e448\n        Parent: 68a5281bbbfb691d105e1006686691713eb0cab353a7d869f4b72c066eca18c7\n       Subject: Add desktop files for vsid, x64dtv, xcbm5x0, xscpu64 (c39f8386949f)\n          Date: 2026-01-18 14:54:47 +0000\n"
+}

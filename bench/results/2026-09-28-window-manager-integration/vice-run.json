@@ -1,0 +1,36 @@
+{
+  "provenance": "\nVICE - Versatile Commodore Emulator\n\n            ID: net.sf.VICE\n           Ref: app/net.sf.VICE/x86_64/stable\n          Arch: x86_64\n        Branch: stable\n       Version: 3.10\n       License: GPL-2.0+\n        Origin: flathub\n    Collection: org.flathub.Stable\n  Installation: system\nInstalled Size: 45.8\u00a0MB\n       Runtime: org.freedesktop.Platform/x86_64/25.08\n           Sdk: org.freedesktop.Sdk/x86_64/25.08\n\n        Commit: bbd997ea8cbf7e6ba06ff82136fd71069ce2011f93c006412bcda7bbde17e448\n        Parent: 68a5281bbbfb691d105e1006686691713eb0cab353a7d869f4b72c066eca18c7\n       Subject: Add desktop files for vsid, x64dtv, xcbm5x0, xscpu64 (c39f8386949f)\n          Date: 2026-01-18 14:54:47 +0000\n",
+  "decoded": {
+    "d71": {
+      "coalesced_drains": 3747,
+      "pending": 0,
+      "handoff_preserved": true,
+      "owners": [
+        1,
+        2
+      ],
+      "wave_complete": true,
+      "gateway_entry": 17947
+    },
+    "d64": {
+      "coalesced_drains": 3797,
+      "pending": 0,
+      "handoff_preserved": true,
+      "owners": [
+        1,
+        2
+      ],
+      "wave_complete": true,
+      "gateway_entry": 17947
+    }
+  },
+  "raw_sha256": {
+    "vice-d71-nmi.bin": "7d096e6ef5d6f510f3984c1d61f324d6a0d257919ea3b9d3f1d9cb23c7f129b0",
+    "vice-d71-windows.bin": "5dc9fd0e30238a1948ca2d16dc761914f2346af752680fafb93f9eef81123134",
+    "vice-d71-gateway.bin": "64beff32630db7d8b0431a1dff9a4c0184d223eb809740288318e9147d40e62b",
+    "vice-d64-nmi.bin": "18df93a7d51ac7847438f48eb966b2adee75f11d4976f8924789c337b6b792a1",
+    "vice-d64-windows.bin": "5dc9fd0e30238a1948ca2d16dc761914f2346af752680fafb93f9eef81123134",
+    "vice-d64-gateway.bin": "64beff32630db7d8b0431a1dff9a4c0184d223eb809740288318e9147d40e62b"
+  },
+  "build_report_sha256": "aa225e10a8ccc9108a4f434fced7ab18a2c19f6eebdf215ac71eb1ced0efb64d"
+}

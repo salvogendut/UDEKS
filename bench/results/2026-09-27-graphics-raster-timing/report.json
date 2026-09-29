@@ -1,0 +1,62 @@
+{
+  "unit": "cascaded CIA1 timer counts at 1 MHz; includes fixed call/stop overhead",
+  "display": "disabled; IRQs masked; no bitmap commit or compositor",
+  "cases": [
+    {
+      "name": "short-lines",
+      "1986": {
+        "baseline": 1743865,
+        "static_scratch": 1539670,
+        "reduction_percent": 11.709
+      },
+      "vice": {
+        "baseline": 1743838,
+        "static_scratch": 1539646,
+        "reduction_percent": 11.709
+      },
+      "pixels_dirty_sha256": "5a8f686693df74d496a4ada049566b0aed3397d986da406861a7c53f81207372"
+    },
+    {
+      "name": "clipped-long-lines",
+      "1986": {
+        "baseline": 7183209,
+        "static_scratch": 6286652,
+        "reduction_percent": 12.481
+      },
+      "vice": {
+        "baseline": 7183099,
+        "static_scratch": 6286556,
+        "reduction_percent": 12.481
+      },
+      "pixels_dirty_sha256": "ab33ee900015655d289fc3adfa6f3b384df8de654ac5adaaf9e24a58004baaed"
+    },
+    {
+      "name": "aligned-fills",
+      "1986": {
+        "baseline": 13641601,
+        "static_scratch": 10423633,
+        "reduction_percent": 23.589
+      },
+      "vice": {
+        "baseline": 13641392,
+        "static_scratch": 10423473,
+        "reduction_percent": 23.589
+      },
+      "pixels_dirty_sha256": "371b64d85540d17ff7138e111a47fa4034d9c95f49e6f01b843bbc96e83067fd"
+    },
+    {
+      "name": "clipped-fills",
+      "1986": {
+        "baseline": 13954521,
+        "static_scratch": 10625084,
+        "reduction_percent": 23.859
+      },
+      "vice": {
+        "baseline": 13954308,
+        "static_scratch": 10624921,
+        "reduction_percent": 23.859
+      },
+      "pixels_dirty_sha256": "f3dbafe7320222bed7d913af8503e834d1793efec43980d129cecd56615295be"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "program_sha256": {
+    "probe-0.prg": "13eaf84cb39c4518011225d8ccb5b075354ff6aca9b39434e240af30c1754c55",
+    "probe-1.prg": "e9a03dbe88c272d6bb5645e79012e5ff7e6fae24e457c40172cb0c7cda35fd9d",
+    "probe-irq-leak.prg": "8f0cf3d29c4c885aa97ac188cc2bf80eebc5481944ed4ac43b39e52031db37bc",
+    "probe-shell-stack.prg": "76ccf393d71af19ed2b4fed9f48a14fe3adde9d40e0287864a05c6d11317de67",
+    "probe-zp-leak.prg": "d30ab41d5bf13388d93337dd242413bc1f72dc2881424b4e3bbf7de31181d0e3"
+  },
+  "raw_sha256": {
+    "1986-0.bin": "ce254365ab4712bf849f494feb8449c0d832124730aee2a9d293a41201457c09",
+    "1986-1.bin": "79db3578063793760183a66d098a930679153921c7d4ba0db9b31c49b0c43264",
+    "1986-irq-leak.bin": "c506ee638f136b1e4dda3088342fd74d13ba56b60a9f10120c6f0cf85b50f104",
+    "1986-zp-leak.bin": "bfe480b73959b441e443e8592cc956f8a8a4fd69127d80f90f2ed02bbe435957",
+    "1986-shell-stack.bin": "ec6c28db1019d40e4eacd256a0b83f7e435ed947662302c7c2e04cf643095a1c"
+  },
+  "decoded": {
+    "0": {
+      "case": 0,
+      "rows": 132,
+      "policy_calls": 547,
+      "images": 66,
+      "interrupts": 19383,
+      "lowest_observed_changed_stack_offset": 222,
+      "bitmap_dirty_sha256": "e928ae5083036895af16d235cc8e9767e8b6a21eae080a86943e949d59921851"
+    },
+    "1": {
+      "case": 1,
+      "rows": 208,
+      "policy_calls": 439,
+      "images": 1,
+      "interrupts": 29259,
+      "lowest_observed_changed_stack_offset": 222,
+      "bitmap_dirty_sha256": "45e02456bb44b371f217d906e27bc0bf1d613275206efb3ec296c2893b02a13b"
+    },
+    "irq-leak": {
+      "detected_fields": [
+        15
+      ]
+    },
+    "zp-leak": {
+      "detected_fields": [
+        16
+      ]
+    },
+    "shell-stack": {
+      "detected_fields": [
+        19,
+        21
+      ]
+    }
+  }
+}
