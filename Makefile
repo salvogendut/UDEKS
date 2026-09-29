@@ -2148,6 +2148,7 @@ check:
 		tools/window_cache_partial.py tools/window_cache_partial_manager.py \
 		tools/window_drag_start.py tools/window_drag_latency.py \
 		tools/build_window_cache.py tools/window_cache_integration_probe.py tools/window_cache_runtime_probe.py \
+		tools/window_repaint_latency.py \
 		tools/graphics_cache_delivery.py \
 		tools/graphics_cache_placement.py \
 		tools/graphics_span_bench.py \

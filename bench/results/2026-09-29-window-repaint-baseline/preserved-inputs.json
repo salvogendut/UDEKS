@@ -1,0 +1,12 @@
+{
+  "/var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/tools/window_repaint_latency.py": "inputs/source/tools/window_repaint_latency.py",
+  "/var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/tools/window_drag_latency.py": "inputs/source/tools/window_drag_latency.py",
+  "/var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-cache-manager/repaint-latency.inc": "inputs/source/bench/window-cache-manager/repaint-latency.inc",
+  "/var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/results/2026-09-29-window-cache-integration/native.c": "inputs/source/bench/results/2026-09-29-window-cache-integration/native.c",
+  "/var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/results/2026-09-29-window-cache-integration/report.json": "inputs/source/bench/results/2026-09-29-window-cache-integration/report.json",
+  "/var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/results/2026-09-29-window-cache-integration/1986-run.json": "inputs/source/bench/results/2026-09-29-window-cache-integration/1986-run.json",
+  "/var/home/salvogendut/Dev/UDEKS/build/8502/udeks-8502.bin": "inputs/build/build/8502/udeks-8502.bin",
+  "/var/home/salvogendut/Dev/UDEKS/build/8502/udeks-8502.map": "inputs/build/build/8502/udeks-8502.map",
+  "/var/home/salvogendut/Dev/UDEKS/build/boot/udeks.d71": "inputs/build/build/boot/udeks.d71",
+  "/var/home/salvogendut/Dev/UDEKS/build/boot/udeks.d64": "inputs/build/build/boot/udeks.d64"
+}

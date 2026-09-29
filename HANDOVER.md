@@ -1404,3 +1404,20 @@ Scoped promotion gate:821 host tests pass; clean parallel default boot/all/panic
 and placement-check pass. Default→0→default without clean reproduces selected
 D64c00d8936.../D7100ab0c99... and prior65a37c26.../d99463d6... exactly. The kernel
 dfef7e6d... and module758965e4... match the archived qualified integration.
+
+2026-09-29 next manager work: issue #14, branch graphics-bounded-repaint in
+build/window-manager-bounded-repaint. Original workspace's local xwave prototype
+is preserved on main and excluded. Initial increment is a read-only native
+entry/return observer for release/background service gaps; normal code/disks
+unchanged. Plan and placement/painter-contract gates are in
+docs/WINDOW-REPAINT-CONTINUATION.md. A deferred whole void-painter callback is
+not a bounded stage. Qualify generic manager-owned stages and any optional
+painter continuation separately from application rendering optimization.
+First baseline complete on default disks in1986 (reference-containerSDL): D71
+andD64 produce identical18case records. Clock-only keyboardgap941873 buscycles;
+median of16wave per-move maxima1228648.5; clock-over-wave5862866 (~6s nominalPAL),
+with one managercall5838505. Observer/source/runner/map/disk/provenance preserved
+under2026-09-29-window-repaint-baseline; no ROM snapshots archived. Seven new
+tests; scoped fullsuite828. Normal OS/app code and disk hashes unchanged.
+Next: host-tested generic damage/continuation/cancellation seam plus a measured
+placement budget; synchronous painter compatibility must not be called bounded.

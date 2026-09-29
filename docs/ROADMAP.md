@@ -342,6 +342,12 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   now enables the cache; `WINDOW_CACHE=0` retains the prior compositor. Slow
   synchronous release/background repair remains open. See
   [WINDOW-CACHE-INTEGRATION.md](WINDOW-CACHE-INTEGRATION.md).
+  Next manager increment is issue #14, `graphics-bounded-repaint`: measure
+  continuous compositor call durations and input-service gaps, then host-test
+  damage continuation/cancellation and bound manager-owned composition. The
+  synchronous painter contract must be addressed explicitly; merely moving a
+  whole callback to another poll is not bounded. No xwave-specific projection
+  work is included. See [WINDOW-REPAINT-CONTINUATION.md](WINDOW-REPAINT-CONTINUATION.md).
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.
