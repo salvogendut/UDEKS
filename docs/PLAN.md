@@ -7,10 +7,11 @@ processors, two display engines, banked RAM, and expansion hardware through one
 coherent executive. It is not a CP/M replacement running solely on the Z80, a
 C64-mode environment, or an attempt to imitate modern symmetric multiprocessing.
 
-The active implementation handover is [Tasking 0.1](../HANDOVER.md). It records
-the next concrete milestone, migration order, non-regression constraints, and
-acceptance gate; this document remains the longer-term architectural source of
-truth.
+The [roadmap](ROADMAP.md) sets the current feature priorities and acceptance
+gates. The [engineering handover](../HANDOVER.md) preserves detailed Tasking
+0.1 and graphics bring-up decisions; it is an implementation record rather
+than the current list of next milestones. This document remains the longer-term
+architectural source of truth.
 
 ## Design principles
 
