@@ -357,6 +357,12 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   117 CODE + 12 HIGHBSS bytes in both normal/panic links, with matching host
   canvases and lifecycle traces. This is not installed or a latency improvement;
   the bounded adapter/state layout and renderer contract remain open.
+  The private 18-byte lane now matches reference traces/canvases; one-row chrome,
+  <=4-row clearing and <=1-page commit are host-tested with receipt validation
+  and clip cleanup. CLIENT/RESTORE stay delegated, not implemented. State can
+  replace the old damage box within 88 bytes, but the C code remains at least
+  3,171 bytes short before integration costs. Next is the modular service's
+  placement/transport proof, then renderer and real poll gates. No disk change.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

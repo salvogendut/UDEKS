@@ -1467,3 +1467,37 @@ Scoped make check855 tests pass, including eight new tests and all evidence
 hashes/pycompile. Normal boot/all/panic/placement checks pass; D64c00d8936...,
 D7100ab0c99..., kerneldfef7e6d..., module758965e4... still accepted hashes.
 No VICE session was launched; the original main/xwave prototype is untouched.
+
+2026-09-29 next prototype: repaint_lane.h/C owns an explicit18-byte HIGHBSS job
+(current6,pending6,epoch2,cursor2,packedphase/selector2). One epoch replaces the
+separate revision; ALL validated manager scene/content/cache mutations must
+fence via changed BEFORE editing. This is not a public parser/UAPP ABI. No
+pointers/drag/guard/cache scratch reused. State plan76compact-oldDamage6+18=88;
+old damage globals still present in compile-only sizing source, not integrated.
+Target ticket6/work12/view9; views/backend continuation/software-stack costs
+additional. Fresh init only when quiesced; epoch/cursor exhaustion fails closed.
+7 differential host tests match generic reference status/rects/receipts/cursors
+and final canvases including40seeded changes and cancellation/reuse in all phases.
+chrome.inc renders one opaque row with <=3spans and250directpixel calls, exact
+original borders/font/buttons/strokes under many sizes/flags/titles/clips. C
+raster.inc validates BEFOREpixels, clears<=4rows or renders1chromeRow or commits
+<=1dirty256bytepage; successful steps resetclip thenack. Error/stale atomic
+rejection leaves caller workspace untouched; poll-driver cleanup remains.
+CLIENT/RESTORE return BACKEND_REQUIRED without callbacks/lease/ack; real providers
+and busy/app-paint interlocks are NOT implemented. Backend test uses mock row
+client and modeled pages, not real app/VIC/IRQ/NMI execution or timing.
+make repaint-lane measures laneCODE2641/HIGHBSS18, chromeRow1468, raster1175.
+Compiler omitted uncalled static backend initially; now private exported bench
+entry with object-presence guard, NO UAPP entry. Synccompatloop70 remains in
+sizing translation unit, not real polling. Optimistic code shortfall3171 even
+granting all five old chrome/paint/compose bodies and137reserve; helper closure,
+new call sites/adapters/cleanup costs additional. Evidence2026-09-29-repaint-lane.
+Next: modular window-service code placement/transport or measured replacement
+proof with byte-accurate lifetimes/restoration, then bounded client/cache provider
+and real poll/cancellation interlocks. Normal disks remain accepted/unchanged;
+no new manual test or application-specific/xwave optimization in this work.
+Scoped make check868 tests/manifest/pycompile pass; 13 new tests. Normal parallel
+boot/all/panic/placement checks pass; accepted D64c00d8936..., D7100ab0c99...,
+kerneldfef7e6d..., module758965e4... hashes unchanged. Strong stale test reaches
+a glyph row before replacing title with an invalid pointer; no dereference or
+pixel/dirty/clip/progress mutation occurs. No emulator sessions launched.

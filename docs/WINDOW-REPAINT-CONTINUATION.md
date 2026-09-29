@@ -3,7 +3,8 @@
 Issue [#14](https://github.com/salvogendut/UDEKS/issues/14), branch
 `graphics-bounded-repaint`; follows the default-cache integration in PR #13.
 Status: baseline, host-tested continuation reference and measured state-reclaim
-preparation. Normal disks unchanged; the bounded service adapter is not linked.
+preparation, compact lane plus bounded row-backend prototype. Normal disks
+unchanged; the bounded service adapter is not linked.
 
 ## Why another step is needed
 
@@ -202,6 +203,81 @@ bindings/state/clip/cache cancellation before any production candidate is run.
 Evidence under `bench/{artifacts,results}/2026-09-29-repaint-compact` preserves
 source, providers, target objects/listings, isolated normal/panic maps and hash
 bindings, with two integrity tests. No latency improvement is claimed yet.
+
+## Compact lane and bounded raster prototype
+
+`src/services/window/repaint_lane.c` is a private, single-surface continuation.
+It packs phase/pending and rank/handle, and uses one non-wrapping epoch to fence
+both scene changes and new jobs. Unlike the generic reference it has no separate
+caller revision: the manager must call `changed` **before every table/content/
+cache-lifetime mutation**. Views are trusted, already-validated manager metadata,
+not a new public scene parser. There are no stored pointers or callback addresses.
+Do not expose this reduced contract as the public/generic reference ABI.
+
+Target state is **18 bytes**: active rectangle 6, pending rectangle 6, epoch 2,
+cursor 2, packed state/selector 2. Replacing the existing damage box and using
+the recovered twelve bytes gives `76 - 6 + 18 = 88` manager state bytes, within
+the current allocation. This is a replacement plan: old damage globals still
+exist in the sizing translation unit. Caller views/work/backend continuations
+and stack costs are additional. No drag/guard/cache-workspace overlap is used.
+Target ticket/work/view sizes are 6/12/9. Init remains fresh/quiesced-lifetime
+only; abort retires work, and epoch/cursor exhaustion fails closed, never wraps.
+
+Seven host tests execute both actual policies and compare status, active/pending
+extents, epoch, cursor, phase, rank, handle, clips and progress receipts. They
+exercise queued damage, empty/hidden/title-only repairs, cancellation/reuse in
+clear/chrome/client/restore/commit, invalid requests, exhaustion and 40 seeded
+scene changes. The final full 320x200 mock canvases match an independent oracle.
+The commit model follows VIC byte-interleaving, one page per record. These are
+not execution/timing or NMI qualification of the cc65 object.
+
+`bench/window-repaint-lane/chrome.inc` renders an opaque **single row** directly,
+not the old full chrome routine under a small clip. It preserves both borders,
+title bar and 3x5 glyphs, close button and resize strokes. One call uses at most
+three one-row spans and 250 direct pixel calls, bounded by the 320-pixel width.
+The pixel test compares the original drawing across narrow/full-width and
+short/full-height windows, all flags, titles/case, edge positions and clips;
+every generated primitive is restricted to the requested row. This proves
+operation counts and pixels, not a target input-service deadline.
+
+The private raster entry in `raster.inc` validates its receipt before drawing,
+clears at most four rows, renders one chrome row, or copies at most one dirty
+256-byte bitmap page. Successful steps reset shared clipping before ack.
+Stale/rejected work leaves pixels, dirty map, clip and progress untouched; the
+future poll driver owns cleanup on cancellation/error. CLIENT and RESTORE
+return `BACKEND_REQUIRED` without running a legacy callback, touching a lease,
+or acknowledging it. Their real bounded providers are still missing.
+
+The actual C backend host test checks complete chrome/client pixels, all 32
+modeled pages, clip cleanup, progress, stale work after a table/title replacement,
+clean-page handling and client/restore delegation. Its client is a **bounded mock
+row provider**, not xclock/xwave. No old callback is repeatedly clipped/replayed.
+Two sizing guards and two evidence tests prevent omitted code or uncharged state.
+
+```
+distrobox enter my-distrobox -- make repaint-lane
+```
+
+Actual cc65 sizes: lane CODE **2,641**, own HIGHBSS **18**; chrome row **1,468**;
+raster backend **1,175**. The sizing source keeps a 70-byte synchronous chrome
+compatibility loop and all old call sites; it is not poll integration. The
+compiler originally omitted the unused static raster entry. It is now an explicit
+private exported bench symbol (no UAPP gate), and the gate requires both measured
+functions in the actual object listing.
+
+Even optimistically removing all five old glyph/title/chrome/paint/compose
+bodies and spending the 137-byte reserve leaves **at least 3,171 CODE bytes**
+short. Helpers, call-site replacement, legacy/cache adapters, admission and
+teardown interlocks remain uncharged. State fit does **not** mean code fit.
+Evidence is preserved under `bench/{artifacts,results}/2026-09-29-repaint-lane`.
+No normal link, disk, UAPP entry or application changes; no new test disk yet.
+
+Next is a real code-placement/transport spike for the modular window service
+(or measured code replacement), with a byte-accurate bank/lifetime budget and
+runtime-restoration gates. Do not annex bootfs/task/USH/VIC regions, grow the
+common gateway into the transient stack, or silently move the frozen shadow.
+Then qualify the renderer/retained-lease continuation and real poll/cancellation
+interlocks before timing/input/physical-machine acceptance.
 
 ## Next increments and gates
 

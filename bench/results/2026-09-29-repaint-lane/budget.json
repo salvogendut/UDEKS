@@ -1,0 +1,1102 @@
+{
+  "scope": "compile-only lane/row backend; lower bound, not linked closure or poll integration",
+  "objects": {
+    "lane": {
+      "segments": {
+        "CODE": 2641,
+        "RODATA": 0,
+        "BSS": 0,
+        "DATA": 0,
+        "ZEROPAGE": 0,
+        "NULL": 0,
+        "HIGHBSS": 18
+      },
+      "functions": {
+        "_udeks_lane_init": {
+          "offset": 0,
+          "size": 21
+        },
+        "_udeks_lane_request": {
+          "offset": 21,
+          "size": 102
+        },
+        "_udeks_lane_changed": {
+          "offset": 123,
+          "size": 198
+        },
+        "_udeks_lane_abort": {
+          "offset": 321,
+          "size": 79
+        },
+        "_udeks_lane_peek": {
+          "offset": 400,
+          "size": 956
+        },
+        "_udeks_lane_validate": {
+          "offset": 1356,
+          "size": 167
+        },
+        "_udeks_lane_ack": {
+          "offset": 1523,
+          "size": 229
+        },
+        "_live": {
+          "offset": 1752,
+          "size": 38
+        },
+        "_phase": {
+          "offset": 1790,
+          "size": 22
+        },
+        "_advance": {
+          "offset": 1812,
+          "size": 58
+        },
+        "_valid": {
+          "offset": 1870,
+          "size": 150
+        },
+        "_unite": {
+          "offset": 2020,
+          "size": 271
+        },
+        "_intersect": {
+          "offset": 2291,
+          "size": 350
+        }
+      },
+      "imports": [
+        [
+          "_memcpy",
+          "02"
+        ],
+        [
+          "addeqysp",
+          "02"
+        ],
+        [
+          "addysp",
+          "02"
+        ],
+        [
+          "aslax3",
+          "02"
+        ],
+        [
+          "decsp2",
+          "02"
+        ],
+        [
+          "decsp6",
+          "02"
+        ],
+        [
+          "incsp1",
+          "02"
+        ],
+        [
+          "incsp2",
+          "02"
+        ],
+        [
+          "incsp3",
+          "02"
+        ],
+        [
+          "incsp4",
+          "02"
+        ],
+        [
+          "mulax9",
+          "02"
+        ],
+        [
+          "ptr1",
+          "01"
+        ],
+        [
+          "pusha",
+          "02"
+        ],
+        [
+          "pusha0",
+          "02"
+        ],
+        [
+          "pushax",
+          "02"
+        ],
+        [
+          "pushwysp",
+          "02"
+        ],
+        [
+          "sp",
+          "01"
+        ],
+        [
+          "sreg",
+          "01"
+        ],
+        [
+          "staspidx",
+          "02"
+        ],
+        [
+          "staxspidx",
+          "02"
+        ],
+        [
+          "staxysp",
+          "02"
+        ],
+        [
+          "subeqysp",
+          "02"
+        ],
+        [
+          "subysp",
+          "02"
+        ],
+        [
+          "tmp1",
+          "01"
+        ],
+        [
+          "tosaddax",
+          "02"
+        ],
+        [
+          "tosicmp",
+          "02"
+        ],
+        [
+          "tosicmp0",
+          "02"
+        ],
+        [
+          "tosora0",
+          "02"
+        ]
+      ]
+    },
+    "compact": {
+      "segments": {
+        "CODE": 7645,
+        "RODATA": 130,
+        "BSS": 0,
+        "DATA": 0,
+        "ZEROPAGE": 0,
+        "NULL": 0,
+        "HIGHBSS": 76
+      },
+      "functions": {
+        "_udeks_window_manager_start": {
+          "offset": 0,
+          "size": 76
+        },
+        "_udeks_window_manager_poll": {
+          "offset": 76,
+          "size": 613
+        },
+        "_udeks_window_manager_stop": {
+          "offset": 689,
+          "size": 7
+        },
+        "_udeks_window_manager_reset": {
+          "offset": 696,
+          "size": 72
+        },
+        "_udeks_window_create": {
+          "offset": 768,
+          "size": 361
+        },
+        "_udeks_window_destroy": {
+          "offset": 1129,
+          "size": 297
+        },
+        "_udeks_window_repaint": {
+          "offset": 1426,
+          "size": 419
+        },
+        "_udeks_window_begin_paint": {
+          "offset": 1845,
+          "size": 193
+        },
+        "_udeks_window_end_paint": {
+          "offset": 2038,
+          "size": 6
+        },
+        "_udeks_window_image_complete": {
+          "offset": 2044,
+          "size": 108
+        },
+        "_udeks_window_get_geometry": {
+          "offset": 2152,
+          "size": 212
+        },
+        "_udeks_window_is_dragging": {
+          "offset": 2364,
+          "size": 26
+        },
+        "_udeks_window_is_focused": {
+          "offset": 2390,
+          "size": 26
+        },
+        "_increment_counter": {
+          "offset": 2416,
+          "size": 69
+        },
+        "_window_by_handle": {
+          "offset": 2485,
+          "size": 83
+        },
+        "_publish_state": {
+          "offset": 2568,
+          "size": 114
+        },
+        "_point_inside": {
+          "offset": 2682,
+          "size": 126
+        },
+        "_damage_set": {
+          "offset": 2808,
+          "size": 87
+        },
+        "_damage_add": {
+          "offset": 2895,
+          "size": 163
+        },
+        "_set_damage_intersection": {
+          "offset": 3058,
+          "size": 316
+        },
+        "_draw_glyph": {
+          "offset": 3374,
+          "size": 142
+        },
+        "_draw_title": {
+          "offset": 3516,
+          "size": 282
+        },
+        "_draw_chrome": {
+          "offset": 3798,
+          "size": 888
+        },
+        "_cache_request": {
+          "offset": 4686,
+          "size": 94
+        },
+        "_cache_invalidate": {
+          "offset": 4780,
+          "size": 5
+        },
+        "_paint_window_damage": {
+          "offset": 4785,
+          "size": 334
+        },
+        "_compose_damage": {
+          "offset": 5119,
+          "size": 330
+        },
+        "_cache_paint_image": {
+          "offset": 5449,
+          "size": 156
+        },
+        "_top_window": {
+          "offset": 5605,
+          "size": 97
+        },
+        "_raise_window": {
+          "offset": 5702,
+          "size": 161
+        },
+        "_top_window_at": {
+          "offset": 5863,
+          "size": 235
+        },
+        "_close_hit": {
+          "offset": 6098,
+          "size": 172
+        },
+        "_title_hit": {
+          "offset": 6270,
+          "size": 134
+        },
+        "_resize_hit": {
+          "offset": 6404,
+          "size": 117
+        },
+        "_begin_drag": {
+          "offset": 6521,
+          "size": 238
+        },
+        "_move_drag": {
+          "offset": 6759,
+          "size": 349
+        },
+        "_resize_drag": {
+          "offset": 7108,
+          "size": 353
+        },
+        "_finish_drag": {
+          "offset": 7461,
+          "size": 184
+        }
+      },
+      "imports": [
+        [
+          "_cache_accept_poll",
+          "02"
+        ],
+        [
+          "_cache_accept_state",
+          "02"
+        ],
+        [
+          "_cache_command",
+          "02"
+        ],
+        [
+          "_cache_owner",
+          "02"
+        ],
+        [
+          "_cache_phase",
+          "02"
+        ],
+        [
+          "_cache_step",
+          "02"
+        ],
+        [
+          "_udeks_pointer_buttons",
+          "02"
+        ],
+        [
+          "_udeks_pointer_resynchronize",
+          "02"
+        ],
+        [
+          "_udeks_pointer_x",
+          "02"
+        ],
+        [
+          "_udeks_pointer_y",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_commit",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_fill",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_line",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_outline_move",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_outline_toggle",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_pixel",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_rectangle",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_reset_clip",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_set_clip",
+          "02"
+        ],
+        [
+          "_udeks_vic_graphics_is_active",
+          "02"
+        ],
+        [
+          "_udeks_vic_pointer_busy_begin",
+          "02"
+        ],
+        [
+          "_udeks_vic_pointer_busy_end",
+          "02"
+        ],
+        [
+          "addeqysp",
+          "02"
+        ],
+        [
+          "addysp",
+          "02"
+        ],
+        [
+          "decsp1",
+          "02"
+        ],
+        [
+          "decsp2",
+          "02"
+        ],
+        [
+          "decsp3",
+          "02"
+        ],
+        [
+          "decsp4",
+          "02"
+        ],
+        [
+          "decsp5",
+          "02"
+        ],
+        [
+          "decsp6",
+          "02"
+        ],
+        [
+          "decsp7",
+          "02"
+        ],
+        [
+          "decsp8",
+          "02"
+        ],
+        [
+          "incsp1",
+          "02"
+        ],
+        [
+          "incsp2",
+          "02"
+        ],
+        [
+          "incsp3",
+          "02"
+        ],
+        [
+          "incsp4",
+          "02"
+        ],
+        [
+          "incsp5",
+          "02"
+        ],
+        [
+          "incsp6",
+          "02"
+        ],
+        [
+          "incsp7",
+          "02"
+        ],
+        [
+          "incsp8",
+          "02"
+        ],
+        [
+          "jmpvec",
+          "02"
+        ],
+        [
+          "mulax5",
+          "02"
+        ],
+        [
+          "ptr1",
+          "01"
+        ],
+        [
+          "pusha",
+          "02"
+        ],
+        [
+          "pusha0",
+          "02"
+        ],
+        [
+          "pushax",
+          "02"
+        ],
+        [
+          "pushwysp",
+          "02"
+        ],
+        [
+          "regbank",
+          "01"
+        ],
+        [
+          "regsave",
+          "01"
+        ],
+        [
+          "regswap2",
+          "02"
+        ],
+        [
+          "sp",
+          "01"
+        ],
+        [
+          "stax0sp",
+          "02"
+        ],
+        [
+          "staxysp",
+          "02"
+        ],
+        [
+          "tmp1",
+          "01"
+        ],
+        [
+          "tosaddax",
+          "02"
+        ],
+        [
+          "tosicmp",
+          "02"
+        ],
+        [
+          "tosicmp0",
+          "02"
+        ],
+        [
+          "tosmula0",
+          "02"
+        ],
+        [
+          "tossuba0",
+          "02"
+        ],
+        [
+          "tossubax",
+          "02"
+        ]
+      ]
+    },
+    "raster": {
+      "segments": {
+        "CODE": 9046,
+        "RODATA": 130,
+        "BSS": 0,
+        "DATA": 0,
+        "ZEROPAGE": 0,
+        "NULL": 0,
+        "HIGHBSS": 76
+      },
+      "functions": {
+        "_udeks_window_manager_start": {
+          "offset": 0,
+          "size": 76
+        },
+        "_udeks_window_manager_poll": {
+          "offset": 76,
+          "size": 613
+        },
+        "_udeks_window_manager_stop": {
+          "offset": 689,
+          "size": 7
+        },
+        "_udeks_window_manager_reset": {
+          "offset": 696,
+          "size": 72
+        },
+        "_udeks_window_create": {
+          "offset": 768,
+          "size": 361
+        },
+        "_udeks_window_destroy": {
+          "offset": 1129,
+          "size": 297
+        },
+        "_udeks_window_repaint": {
+          "offset": 1426,
+          "size": 419
+        },
+        "_udeks_window_begin_paint": {
+          "offset": 1845,
+          "size": 193
+        },
+        "_udeks_window_end_paint": {
+          "offset": 2038,
+          "size": 6
+        },
+        "_udeks_window_image_complete": {
+          "offset": 2044,
+          "size": 108
+        },
+        "_udeks_window_get_geometry": {
+          "offset": 2152,
+          "size": 212
+        },
+        "_udeks_window_is_dragging": {
+          "offset": 2364,
+          "size": 26
+        },
+        "_udeks_window_is_focused": {
+          "offset": 2390,
+          "size": 26
+        },
+        "_increment_counter": {
+          "offset": 2416,
+          "size": 69
+        },
+        "_window_by_handle": {
+          "offset": 2485,
+          "size": 83
+        },
+        "_publish_state": {
+          "offset": 2568,
+          "size": 114
+        },
+        "_point_inside": {
+          "offset": 2682,
+          "size": 126
+        },
+        "_damage_set": {
+          "offset": 2808,
+          "size": 87
+        },
+        "_damage_add": {
+          "offset": 2895,
+          "size": 163
+        },
+        "_set_damage_intersection": {
+          "offset": 3058,
+          "size": 316
+        },
+        "_draw_chrome_row": {
+          "offset": 3374,
+          "size": 1468
+        },
+        "_draw_chrome": {
+          "offset": 4842,
+          "size": 70
+        },
+        "_cache_request": {
+          "offset": 4912,
+          "size": 94
+        },
+        "_cache_invalidate": {
+          "offset": 5006,
+          "size": 5
+        },
+        "_paint_window_damage": {
+          "offset": 5011,
+          "size": 334
+        },
+        "_compose_damage": {
+          "offset": 5345,
+          "size": 330
+        },
+        "_cache_paint_image": {
+          "offset": 5675,
+          "size": 156
+        },
+        "_top_window": {
+          "offset": 5831,
+          "size": 97
+        },
+        "_raise_window": {
+          "offset": 5928,
+          "size": 161
+        },
+        "_top_window_at": {
+          "offset": 6089,
+          "size": 235
+        },
+        "_close_hit": {
+          "offset": 6324,
+          "size": 172
+        },
+        "_title_hit": {
+          "offset": 6496,
+          "size": 134
+        },
+        "_resize_hit": {
+          "offset": 6630,
+          "size": 117
+        },
+        "_begin_drag": {
+          "offset": 6747,
+          "size": 238
+        },
+        "_move_drag": {
+          "offset": 6985,
+          "size": 349
+        },
+        "_resize_drag": {
+          "offset": 7334,
+          "size": 353
+        },
+        "_finish_drag": {
+          "offset": 7687,
+          "size": 184
+        },
+        "_lane_raster_step": {
+          "offset": 7871,
+          "size": 1175
+        }
+      },
+      "imports": [
+        [
+          "_cache_accept_poll",
+          "02"
+        ],
+        [
+          "_cache_accept_state",
+          "02"
+        ],
+        [
+          "_cache_command",
+          "02"
+        ],
+        [
+          "_cache_owner",
+          "02"
+        ],
+        [
+          "_cache_phase",
+          "02"
+        ],
+        [
+          "_cache_step",
+          "02"
+        ],
+        [
+          "_udeks_lane_ack",
+          "02"
+        ],
+        [
+          "_udeks_lane_validate",
+          "02"
+        ],
+        [
+          "_udeks_pointer_buttons",
+          "02"
+        ],
+        [
+          "_udeks_pointer_resynchronize",
+          "02"
+        ],
+        [
+          "_udeks_pointer_x",
+          "02"
+        ],
+        [
+          "_udeks_pointer_y",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_commit",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_commit_page",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_fill",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_outline_move",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_outline_toggle",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_pixel",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_reset_clip",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_set_clip",
+          "02"
+        ],
+        [
+          "_udeks_vic_graphics_is_active",
+          "02"
+        ],
+        [
+          "_udeks_vic_pointer_busy_begin",
+          "02"
+        ],
+        [
+          "_udeks_vic_pointer_busy_end",
+          "02"
+        ],
+        [
+          "addeqysp",
+          "02"
+        ],
+        [
+          "addysp",
+          "02"
+        ],
+        [
+          "boolne",
+          "02"
+        ],
+        [
+          "decsp1",
+          "02"
+        ],
+        [
+          "decsp2",
+          "02"
+        ],
+        [
+          "decsp3",
+          "02"
+        ],
+        [
+          "decsp4",
+          "02"
+        ],
+        [
+          "decsp5",
+          "02"
+        ],
+        [
+          "decsp6",
+          "02"
+        ],
+        [
+          "decsp7",
+          "02"
+        ],
+        [
+          "decsp8",
+          "02"
+        ],
+        [
+          "incsp1",
+          "02"
+        ],
+        [
+          "incsp2",
+          "02"
+        ],
+        [
+          "incsp3",
+          "02"
+        ],
+        [
+          "incsp4",
+          "02"
+        ],
+        [
+          "incsp5",
+          "02"
+        ],
+        [
+          "incsp6",
+          "02"
+        ],
+        [
+          "incsp7",
+          "02"
+        ],
+        [
+          "incsp8",
+          "02"
+        ],
+        [
+          "jmpvec",
+          "02"
+        ],
+        [
+          "mulax5",
+          "02"
+        ],
+        [
+          "ptr1",
+          "01"
+        ],
+        [
+          "pusha",
+          "02"
+        ],
+        [
+          "pusha0",
+          "02"
+        ],
+        [
+          "pushax",
+          "02"
+        ],
+        [
+          "pushwysp",
+          "02"
+        ],
+        [
+          "regbank",
+          "01"
+        ],
+        [
+          "regsave",
+          "01"
+        ],
+        [
+          "regswap2",
+          "02"
+        ],
+        [
+          "sp",
+          "01"
+        ],
+        [
+          "sreg",
+          "01"
+        ],
+        [
+          "stax0sp",
+          "02"
+        ],
+        [
+          "staxysp",
+          "02"
+        ],
+        [
+          "subeqysp",
+          "02"
+        ],
+        [
+          "subysp",
+          "02"
+        ],
+        [
+          "tmp1",
+          "01"
+        ],
+        [
+          "tosaddax",
+          "02"
+        ],
+        [
+          "tosicmp",
+          "02"
+        ],
+        [
+          "tosicmp0",
+          "02"
+        ],
+        [
+          "tosmula0",
+          "02"
+        ],
+        [
+          "tossuba0",
+          "02"
+        ],
+        [
+          "tossubax",
+          "02"
+        ],
+        [
+          "tosulta0",
+          "02"
+        ]
+      ]
+    }
+  },
+  "layout": {
+    "lane": 18,
+    "ticket": 6,
+    "work": 12,
+    "scene_view": 9
+  },
+  "state_replacement": {
+    "compact_manager": 76,
+    "old_damage_removed": 6,
+    "lane_added": 18,
+    "total": 88,
+    "accepted_manager_total": 88,
+    "qualification": "requires real poll/interlock replacement; old damage globals are still present in sizing object"
+  },
+  "code": {
+    "lane": 2641,
+    "row_adapter_delta": 1401,
+    "scope": "objects only; synchronous compatibility loop and uncalled raster entry still included",
+    "optimistic_shortfall": 3171,
+    "shortfall_scope": "lower bound only: grants all five old function bodies plus 137 reserve bytes; excludes new call sites, helper closure, legacy/cache adapters and admission/teardown interlocks"
+  },
+  "toolchain": {
+    "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44",
+    "ca65": "ca65 V2.18 - Fedora 2.19-15.fc44",
+    "ld65": "ld65 V2.18 - Fedora 2.19-15.fc44",
+    "cl65": "cl65 V2.18 - Fedora 2.19-15.fc44"
+  },
+  "input_sha256": {
+    "src/services/window/window_manager_cached.c": "58025fa46fb13fa60b6bd8fb3a2440f22f3b10da71a0ad2f39f2de8a86bc86ae",
+    "src/services/window/repaint_lane.c": "70e0ed376f83be7265e412ad8845373e8fa3846a4407e3f6ddb28e51b55aa2b8",
+    "src/services/window/repaint_policy.c": "94dd9ce3d13ad159764891d817b1dc10372c0eb4343b8f829caf1154a410a601",
+    "include/udeks/repaint_lane.h": "235b594906dd68ec23a5959afe026987ada46c69c7c7a6e09236b2c193f76016",
+    "include/udeks/window_repaint.h": "95769b5d1bd8dde9f6641f07193026b1ef757f82ea4e5a3e695ea3f1406f56e3",
+    "include/udeks/window.h": "2f5665511816c78578333bca3952efff0bcedfb997cfd8373e0c42d7388400aa",
+    "include/udeks/vic_graphics.h": "d724c3732c279cef8b536d353dd4c1cf51bcbbc9866387fa37197b10eab96e88",
+    "include/udeks/memory.h": "6fddeb7f9419ce258424695219989f4586dd11fc00306c7fc8eff5eed15ac9d9",
+    "include/udeks/pointer.h": "8d2256afd2ca535ebe140378f688c646c4681bd6f59d956c39d49348344d98b2",
+    "include/udeks/window_cache_state.h": "c5dab7fb33976298c2c18e3327c74664c8b41b675543412045585d855c901243",
+    "include/udeks/window_cache_command.h": "38cfe6f79a330e68e791c66ee4e7fda1a06df03001f424c59594239b464bc42c",
+    "bench/window-repaint-lane/chrome.inc": "04e305e92ee56aaa2c1e638e25a63efcefb66c1d6c2c1c5e9092602c629d8b32",
+    "bench/window-repaint-lane/raster.inc": "098165c80119be54c482390666ece70307a1058289579b98381ee04718205175",
+    "bench/window-repaint-lane/layout.c": "7bbe1a0894fe78c138222dda393c234b01cd4be135a59dc38a0a9894ec066f18",
+    "bench/window-cache-manager/occlusion-host.inc": "74b6c8f4a3b744bc3264ee6635d539f053d8be2d6fa11bef80dc7c151d39ac05",
+    "tools/repaint_lane_budget.py": "210ce671b8dc395b033f4eb50cb977f21aeb3143a44d54ac06b7cb2c9f58a742",
+    "tools/window_repaint_compact.py": "9015fef79126a31f1de8c52be959bb1769578dec19c528a6ba09debf27e8bc25",
+    "tools/window_cache_manager.py": "85400318858f0b7737b9a002566979513e33a1b9ba0ee37e4af4cfab7d77cef9",
+    "tools/graphics_raster_bench_build.py": "baba59502f62edb26a5c215be72ef7eb53f97749ad835251c8c72c769f858f63",
+    "tools/graphics_span_bench.py": "6db1d9e8be5bc58dd505d349ed0ef68a32c212449641e9fa17ff0bef297ce9b2",
+    "tools/graphics_cache_placement.py": "0f7e5baabc89c5191a7abd34c4ae173363f0475abe6d09bbb6826f22832bcc29",
+    "tools/gen_capability_imports.py": "b505025f70ee77d09d537130baac4415944f82100767680b042b0e36ab718038",
+    "tests/test_repaint_lane.py": "5f3e5eba1c9ad69a09a45d0ae3c6585689569cfb83ed91bbb9297de001520edc",
+    "tests/test_repaint_chrome_rows.py": "e0f7e93581f247ad48e0a866196c6858614619f9a5f1e6be0ca26d339f057591",
+    "tests/test_repaint_raster.py": "e0930d79f31706945cb807b9faad04c5cf404993571e075d1e8d66c164f4af5b",
+    "tests/test_repaint_lane_budget.py": "772f20b0ef987550a400bbb3ed07db663b750c6a75ed26154906b4e719cb0aa5",
+    "tests/test_window_repaint_policy.py": "e6991e275bd79a693a4ca4b0f1692f38c8426f0289250226e34c10c44a4ba55d",
+    "tests/test_window_cache_manager.py": "71b64901c259a442eea2c48c0e61717cda5dc7abc08925e5eea4a35a3215b7c6",
+    "tests/test_window_cache_partial_manager.py": "eb49b3d890d0e09c9b0af4161580d05c0333a960bacdd2047d7b2461090e1495",
+    "Makefile": "3b6f8e5c654fcd24ecb0ae7738872300aa4cd68e1fac2cce8fcda41f787377eb",
+    "mk/toolchain.mk": "ff5f0c42c00f656601405e0055e884e7c6c07520a67a384a2a8fccfd6868cc70",
+    "cfg/8502-repaint-layout.cfg": "93551ef2533e282fadab4bfb4d74327c92b4a0a15b3ca4f9103843c8a25c8db4"
+  },
+  "output_sha256": {
+    "compact.c": "3c275ad8731cce8591817b8dbdd1137181ec3b0df88d2fd4251f98d9cdbff08a",
+    "compact.imports.txt": "b5a883f024949a6b2c227fafe1d13a2c42ca0c04c693284857f694d086719690",
+    "compact.lst": "385713f315d947019b518883e90252022dfe6842dd81bff4659a6e71bc74eb03",
+    "compact.o": "2ae33856fef5f223d7b1fa40b036616ce5ddfaf7328909f38388454acbb7da4b",
+    "compact.s": "1a9c741ae1ad8489e2c8a22179321e1321193277e2e1f8db3cbfaf6d240be91d",
+    "lane.c": "70e0ed376f83be7265e412ad8845373e8fa3846a4407e3f6ddb28e51b55aa2b8",
+    "lane.imports.txt": "80a45cccea7da6da69ca73aad0bca198f53c8d98b0d21f55dd24467a2d87ca26",
+    "lane.lst": "8f4b61332597b329cc1066a99afd255ede05b6231f503efe91c897b40f5d3fb2",
+    "lane.o": "b355d9b91e7fb90c255ec84b9e3727dd5fbf7b1d2903da3cee5dd67b446e81c5",
+    "lane.s": "fa6536f7943a44247fd55e858f7722e6a2e03fd65f37026c395ae2647b30504e",
+    "layout.bin": "ed58c93b2ff451fcc32ddfabcce7c0de1ce8eb14817e6472710b17572245b84e",
+    "layout.o": "949c1b494b0a7e91d915f214e8b8b48d76c61c24d5a8df4892f174d60167abcf",
+    "raster.c": "f0e9e0f321386933c30325f9fb1f74df1a88f31377fd887f6315e43f07cf3cc9",
+    "raster.imports.txt": "bd3a14dd871335f3c746493dd0c8d4364935d1224c17859e002bd2bfb4676b7e",
+    "raster.lst": "3b721674d30096becc3fb90a78addf22adc2faa71b68354f0ddab2abed2d6527",
+    "raster.o": "72a2e0f9cd0d0c2065f81d1d6dfb31089e9902ecd071d053417e013b4f4da0c7",
+    "raster.s": "4a58874e3879ca9c904d69cb9581c3a16247c2fe47dbaca75e965735a1693429"
+  }
+}
