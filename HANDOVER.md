@@ -1,13 +1,12 @@
-# UDEKS active handover — Tasking 0.1
+# UDEKS engineering handover — Tasking 0.1 and graphics bring-up
 
-This is the active implementation plan as of 2026-09-27. It is intended
-to let a future development session resume without reconstructing the current
-architectural priorities from the commit history. The detailed architecture
-remains in [`docs/PLAN.md`](docs/PLAN.md), the capability gates remain in
-[`docs/ROADMAP.md`](docs/ROADMAP.md), and ADR 0007 remains authoritative about
-the resident-core boundary.
+This records the Tasking 0.1 implementation plan as of 2026-09-27 and later
+engineering checkpoints. It is retained for reproducibility and handover, not
+as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
+feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
+0007 remains authoritative about the resident-core boundary.
 
-## Decision
+## Historical Tasking 0.1 decision
 
 The next milestone is **Tasking 0.1**. Do not add another application or grow
 the resident compatibility dispatcher before this milestone is complete.
