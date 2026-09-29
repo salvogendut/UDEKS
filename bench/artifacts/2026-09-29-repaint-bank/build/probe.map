@@ -1,0 +1,288 @@
+Modules list:
+-------------
+launcher.o:
+    CODE              Offs=000000  Size=00004C  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000076  Align=00001  Fill=0000
+probe.o:
+    CODE              Offs=00004C  Size=00063A  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000003  Align=00001  Fill=0000
+    DATA              Offs=000000  Size=000002  Align=00001  Fill=0000
+driver.o:
+    CODE              Offs=000686  Size=00031A  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000F00  Align=00001  Fill=0000
+    BSS               Offs=000003  Size=00002C  Align=00001  Fill=0000
+binding.o:
+    CODE              Offs=0009A0  Size=000054  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=0009F4  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000A05  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=000A13  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp4.o):
+    CODE              Offs=000A20  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=000A2D  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000A5B  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000A62  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000A78  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=000A7D  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lpop.o):
+    CODE              Offs=000A82  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lpush.o):
+    CODE              Offs=000A97  Size=000021  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lshr.o):
+    CODE              Offs=000AB8  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=000AD2  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(memcmp.o):
+    CODE              Offs=000AFE  Size=000036  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(memcpy.o):
+    CODE              Offs=000B34  Size=00003C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000B70  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000B7E  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000B94  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(return0.o):
+    CODE              Offs=000BAE  Size=000004  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000BB2  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=000BC8  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=000BD3  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000006  00001F  00001A  00001
+STARTUP               002000  002075  000076  00001
+CODE                  002076  002C55  000BE0  00001
+RODATA                002C56  003B55  000F00  00001
+DATA                  003B56  003B57  000002  00001
+BSS                   003B58  003B86  00002F  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               003B58 RLA    __BSS_SIZE__              00002F REA    
+__STARTUP__               000001 REA    _main                     00258C RLA    
+_memcmp                   002B74 RLA    _memcpy                   002BAA RLA    
+_private_cache_policy_call 002A16 RLA    _runtime_call             0027EE RLA    
+_runtime_call_count       003B5F RLA    _runtime_check_memory     002892 RLA    
+_runtime_flags_bad        003B64 RLA    _runtime_guard_bad        003B66 RLA    
+_runtime_hw_bad           003B63 RLA    _runtime_install          0026FC RLA    
+_runtime_irq_bad          003B61 RLA    _runtime_irq_count        003B5B RLA    
+_runtime_irq_start        00299D RLA    _runtime_irq_stop         0029D1 RLA    
+_runtime_low_water        003B68 RLA    _runtime_seen_flags       003B69 RLA    
+_runtime_sw_bad           003B65 RLA    _runtime_ush_bad          003B67 RLA    
+_runtime_zp_bad           003B62 RLA    addeq0sp                  002A6A RLA    
+addeqysp                  002A6C RLA    addysp                    002A7C RLA    
+booleq                    002B4E RLA    decsp2                    002A89 RLA    
+decsp4                    002A96 RLA    incsp1                    002AD1 RLA    
+incsp2                    002AE0 RLA    incsp4                    002AEE RLA    
+incsp5                    002AF3 RLA    popax                     002AD8 RLA    
+popeax                    002AF8 RLA    popptr1                   002BE6 RLA    
+ptr1                      00000E RLZ    ptr2                      000010 RLZ    
+ptr3                      000012 RLZ    pusha                     002BF8 RLA    
+pushax                    002C0E RLA    pusheax                   002B16 RLA    
+return0                   002C24 RLA    sp                        000006 RLZ    
+sreg                      000008 RLZ    staspidx                  002C28 RLA    
+staxysp                   002C40 RLA    subysp                    002C49 RLA    
+tmp1                      000016 RLZ    tosicmp0                  002AA3 RLA    
+tosshreax                 002B2E RLA    
+
+
+Exports list by value:
+----------------------
+__STARTUP__               000001 REA    sp                        000006 RLZ    
+sreg                      000008 RLZ    ptr1                      00000E RLZ    
+ptr2                      000010 RLZ    ptr3                      000012 RLZ    
+tmp1                      000016 RLZ    __BSS_SIZE__              00002F REA    
+_main                     00258C RLA    _runtime_install          0026FC RLA    
+_runtime_call             0027EE RLA    _runtime_check_memory     002892 RLA    
+_runtime_irq_start        00299D RLA    _runtime_irq_stop         0029D1 RLA    
+_private_cache_policy_call 002A16 RLA    addeq0sp                  002A6A RLA    
+addeqysp                  002A6C RLA    addysp                    002A7C RLA    
+decsp2                    002A89 RLA    decsp4                    002A96 RLA    
+tosicmp0                  002AA3 RLA    incsp1                    002AD1 RLA    
+popax                     002AD8 RLA    incsp2                    002AE0 RLA    
+incsp4                    002AEE RLA    incsp5                    002AF3 RLA    
+popeax                    002AF8 RLA    pusheax                   002B16 RLA    
+tosshreax                 002B2E RLA    booleq                    002B4E RLA    
+_memcmp                   002B74 RLA    _memcpy                   002BAA RLA    
+popptr1                   002BE6 RLA    pusha                     002BF8 RLA    
+pushax                    002C0E RLA    return0                   002C24 RLA    
+staspidx                  002C28 RLA    staxysp                   002C40 RLA    
+subysp                    002C49 RLA    __BSS_RUN__               003B58 RLA    
+_runtime_irq_count        003B5B RLA    _runtime_call_count       003B5F RLA    
+_runtime_irq_bad          003B61 RLA    _runtime_zp_bad           003B62 RLA    
+_runtime_hw_bad           003B63 RLA    _runtime_flags_bad        003B64 RLA    
+_runtime_sw_bad           003B65 RLA    _runtime_guard_bad        003B66 RLA    
+_runtime_ush_bad          003B67 RLA    _runtime_low_water        003B68 RLA    
+_runtime_seen_flags       003B69 RLA    
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/launcher.s(3)
+__BSS_SIZE__ ([linker generated]):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/launcher.s(3)
+__STARTUP__ (launcher.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(13)
+_main (probe.o):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/launcher.s(3)
+_memcmp (memcmp.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(14)
+_memcpy (memcpy.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+_private_cache_policy_call (binding.o):
+    driver.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/driver.s(7)
+_runtime_call (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(20)
+_runtime_call_count (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(22)
+_runtime_check_memory (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(19)
+_runtime_flags_bad (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(26)
+_runtime_guard_bad (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(28)
+_runtime_hw_bad (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(25)
+_runtime_install (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(16)
+_runtime_irq_bad (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(23)
+_runtime_irq_count (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(21)
+_runtime_irq_start (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(17)
+_runtime_irq_stop (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(18)
+_runtime_low_water (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(30)
+_runtime_seen_flags (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(31)
+_runtime_sw_bad (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(27)
+_runtime_ush_bad (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(29)
+_runtime_zp_bad (driver.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(24)
+addeq0sp (addeqsp.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+addeqysp (addeqsp.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+addysp (addysp.o):
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+booleq (makebool.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+decsp2 (decsp2.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+decsp4 (decsp4.o):
+    lpush.o                   runtime/lpush.s(12)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+incsp1 (incsp1.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+incsp4 (incsp4.o):
+    lpop.o                    runtime/lpop.s(9)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+incsp5 (incsp5.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+popax (incsp2.o):
+    memcpy.o                  common/memcpy.s(14)
+    memcmp.o                  common/memcmp.s(8)
+popeax (lpop.o):
+    lshr.o                    runtime/lshr.s(15)
+popptr1 (popptr1.o):
+    memcpy.o                  common/memcpy.s(14)
+    memcmp.o                  common/memcmp.s(8)
+ptr1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    memcpy.o                  common/memcpy.s(15)
+    memcmp.o                  common/memcmp.s(9)
+    driver.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/driver.s(6)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(11)
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/launcher.s(4)
+ptr2 (zeropage.o):
+    memcpy.o                  common/memcpy.s(15)
+    memcmp.o                  common/memcmp.s(9)
+    driver.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/driver.s(6)
+ptr3 (zeropage.o):
+    memcpy.o                  common/memcpy.s(15)
+    memcmp.o                  common/memcmp.s(9)
+pusha (pusha.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+pushax (pushax.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+pusheax (lpush.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+return0 (return0.o):
+    memcmp.o                  common/memcmp.s(8)
+sp (zeropage.o):
+    lpop.o                    runtime/lpop.s(10)
+    subysp.o                  runtime/subysp.s(9)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    memcpy.o                  common/memcpy.s(15)
+    lpush.o                   runtime/lpush.s(13)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp4.o                  runtime/decsp4.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(10)
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/launcher.s(4)
+sreg (zeropage.o):
+    lpop.o                    runtime/lpop.s(10)
+    lshr.o                    runtime/lshr.s(16)
+    lpush.o                   runtime/lpush.s(13)
+    icmp.o                    runtime/icmp.s(9)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(10)
+staspidx (staspidx.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+staxysp (staxsp.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+subysp (subysp.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    lshr.o                    runtime/lshr.s(16)
+tosicmp0 (icmp.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+tosshreax (lshr.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/bench/window-repaint-bank/probe.s(797)
+

@@ -1501,3 +1501,40 @@ boot/all/panic/placement checks pass; accepted D64c00d8936..., D7100ab0c99...,
 kerneldfef7e6d..., module758965e4... hashes unchanged. Strong stale test reaches
 a glyph row before replacing title with an invalid pointer; no dereference or
 pixel/dirty/clip/progress mutation occurs. No emulator sessions launched.
+
+2026-09-29 banked placement/transport checkpoint: make repaint-bank and
+tools/window_repaint_bank.py build a standalone module, NEVER an OS disk.
+Pure-C lane2641 + dispatcher160 + fixedentry3 + all linked helpers482 =3286
+at bank1$D100-$DDD5. Proposed state$DFE0-$DFF1=18; upperguard14; codeSpare522.
+Exact none.lib/map/objects/generatedcallerAssembly/programs and all inputs are
+preserved in bench/{artifacts,results}/2026-09-29-repaint-bank with SHA manifests.
+Binding84 including copiedgateway59 atcommon$F68A; packet82 at$F780-$F7D1,
+diagnosticreturnedSP2 at$F7D2. Bank-owned lane is authority; packet snapshot is
+debug-only. No pointers crossbank. Packet/gateway are transient serialized leases,
+NOT persistent scratch; copy receipts/work out before VIC/cache overwrites them.
+Reuse existingprivateCstack$5250-$533F ONLY with cache idle; do not annex its
+22/16byteguards, image$5350-$5BFF, cacheState26, bootfs$A000-$D0FF, shellStack,
+task slots/backup, sprites, workerCode, transientStackGuard or frozen shadow.
+Binding holdsIRQmask from publication through kernel map/runtime restoration.
+Real cc65 module runs workerFLAT$7F underI/O; restores26ZPbytes, hardwareSP,
+softwareSP and callerI/D before returningkernelIO. No callbacks/polls/Z80 inside.
+1986 andVICE both pass1415commands, explicitsemantics and hostpackedstream
+checksum$CF65 (noncryptographic, not soleequivalenceproof). IRQ28486/28592;
+lowestobservedchangedprivateStackOffset211 ($5323), notworstcasestackbound;
+lowest64bytes unchanged. Both detectexactnegativecontrols: shiftedZPrestore,
+CLIinsideworkerlease, andsoftwareStackHigh$53->$EF. No normaldecoderfalsepass.
+Guardscan coverscacheState/allstackguards/cacheimage plus80screenbytes/boundary
+bootfspage/workerShellStack. Scan reusesdiagnosticIRQbytes AFTER stoppingIRQ;
+unsignedcopy for>127bytes andrelativebranchescorrecttwoharnessbugs. cc65caller
+successcheck restructuredtoavoidfalsebooleq afterCMP5; generatedassemblysaved.
+Sevenhosttests plus3evidence/decoder tests; scoped make check878 passes.
+Normal parallelboot/all/panic/placementpasses; acceptedD64c00d8936/D7100ab0c99/
+kerneldfef7e6d hashes unchanged. No x128 processes remain; rootxwaveworkuntouched.
+NOT qualified: productiondelivery/admission, NMI/RESTORE, liveapps/taskpaging,
+Z80cooperation, realpixels/inputlatency orphysicalhardware. CandidateunderIO
+regionneedsexplicitproductionreservation; standaloneuploaderisnotfreeinstaller.
+Codebudgetstillshort: row1468+backend1175+binding84=2727 vsoptimistic2113,
+atleast614 BEFORE additionalhelpers/callers/painter/cache/busy/teardowncosts.
+Next: measuredcompactresidentraster/sharedprimitives (or explicitbankedpart),
+then delivery/admission/serialization/NMI andboundedproviders/poll gates.
+No visiblecandidateyet, so no newmanualtest. See docs/WINDOW-REPAINT-BANK.md.

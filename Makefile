@@ -296,6 +296,11 @@ repaint-compact: $(KERNEL_BIN) $(PANIC_PROBE_KERNEL_BIN)
 repaint-lane:
 	$(PYTHON) tools/repaint_lane_budget.py
 
+# Isolated bank-1 closure and runtime probe. Never packages a boot disk.
+.PHONY: repaint-bank
+repaint-bank:
+	$(PYTHON) tools/window_repaint_bank.py build
+
 task-scheduler: $(BUILD_8502)/task_scheduler.o
 
 task-switch-tail: $(TASK_SWITCH_TAIL_BIN) $(TASK_CONTEXT_BIN) \
@@ -2180,6 +2185,7 @@ check:
 		tools/window_repaint_budget.py \
 		tools/window_repaint_compact.py \
 		tools/repaint_lane_budget.py \
+		tools/window_repaint_bank.py \
 		tools/graphics_cache_delivery.py \
 		tools/graphics_cache_placement.py \
 		tools/graphics_span_bench.py \

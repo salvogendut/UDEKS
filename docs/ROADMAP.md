@@ -363,6 +363,12 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   replace the old damage box within 88 bytes, but the C code remains at least
   3,171 bytes short before integration costs. Next is the modular service's
   placement/transport proof, then renderer and real poll gates. No disk change.
+  An isolated complete policy/helper link now fits 3,286 bytes in proposed bank-1
+  I/O-underlay RAM, with 18-byte state and an 84-byte binding. 1986/VICE pass 1,415
+  calls and detect three transport faults. This is not installed: at least 614
+  resident raster/binding bytes still need recovery, plus integration costs.
+  Next: measured resident raster replacement, then delivery/admission/NMI and
+  real painter/cache/poll gates. See [WINDOW-REPAINT-BANK.md](WINDOW-REPAINT-BANK.md).
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

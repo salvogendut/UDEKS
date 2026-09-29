@@ -272,12 +272,17 @@ teardown interlocks remain uncharged. State fit does **not** mean code fit.
 Evidence is preserved under `bench/{artifacts,results}/2026-09-29-repaint-lane`.
 No normal link, disk, UAPP entry or application changes; no new test disk yet.
 
-Next is a real code-placement/transport spike for the modular window service
-(or measured code replacement), with a byte-accurate bank/lifetime budget and
-runtime-restoration gates. Do not annex bootfs/task/USH/VIC regions, grow the
-common gateway into the transient stack, or silently move the frozen shadow.
-Then qualify the renderer/retained-lease continuation and real poll/cancellation
-interlocks before timing/input/physical-machine acceptance.
+The next placement spike is now qualified **in isolation**: the complete C
+policy/dispatcher/helper link fits 3,286 bytes at proposed bank-1 `$D100`, with
+18-byte bank-owned state and an 84-byte binding. Both 1986/VICE pass 1,415 calls
+and reject zero-page/IRQ/private-stack fault controls. See
+[WINDOW-REPAINT-BANK.md](WINDOW-REPAINT-BANK.md) for exact ranges/lifetimes and
+limits. This does not install a service or qualify NMI/live apps/cold-boot delivery.
+Row/backend/binding still exceed the optimistic resident replacement budget by
+at least 614 bytes before integration costs. Next is measured resident raster
+replacement/shared primitives, then delivery/admission and real painter/cache/
+poll interlocks. Do not annex bootfs/task/USH/VIC regions, persist state in common
+scratch, or silently move the frozen shadow. Normal disks remain unchanged.
 
 ## Next increments and gates
 

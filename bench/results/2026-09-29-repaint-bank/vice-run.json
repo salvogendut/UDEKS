@@ -1,0 +1,47 @@
+{
+  "decoded": {
+    "normal": {
+      "calls": 1415,
+      "trace": 53093,
+      "interrupts": 28592,
+      "lowest_changed_stack_offset": 211,
+      "detected_fields": []
+    },
+    "zp-leak": {
+      "calls": 1415,
+      "trace": 53093,
+      "interrupts": 28550,
+      "lowest_changed_stack_offset": 211,
+      "detected_fields": [
+        17
+      ]
+    },
+    "irq-leak": {
+      "calls": 1415,
+      "trace": 53093,
+      "interrupts": 37510,
+      "lowest_changed_stack_offset": 211,
+      "detected_fields": [
+        16
+      ]
+    },
+    "shell-stack": {
+      "calls": 1415,
+      "trace": 53093,
+      "interrupts": 28613,
+      "lowest_changed_stack_offset": 240,
+      "detected_fields": [
+        20,
+        22
+      ]
+    }
+  },
+  "raw_sha256": {
+    "vice-normal.bin": "628e32ba6e4a26d20039e9b4413e4f519c66b3a022f9714fb190feaca4113019",
+    "vice-zp-leak.bin": "6ee89015516c6c69a90ab7cf277817699f2d3a1e45794c9222bc5be9f9dbc0ab",
+    "vice-irq-leak.bin": "fb4e729dfc3461749ca7605ad06bc8cbeb0bb0ee8fb06f861eac6e3e41b622ab",
+    "vice-shell-stack.bin": "16571c2e19c748fbae22e0376b954afa3e64bfb1e01355380543d2a54d4f871e"
+  },
+  "build_report_sha256": "28271c7e2c8a832ec5ce6ba9cda6777e1d0df7a2d4f7dd1df3616e6ecca77e09",
+  "provenance": "\nVICE - Versatile Commodore Emulator\n\n            ID: net.sf.VICE\n           Ref: app/net.sf.VICE/x86_64/stable\n          Arch: x86_64\n        Branch: stable\n       Version: 3.10\n       License: GPL-2.0+\n        Origin: flathub\n    Collection: org.flathub.Stable\n  Installation: system\nInstalled Size: 45,8\u00a0MB\n       Runtime: org.freedesktop.Platform/x86_64/25.08\n           Sdk: org.freedesktop.Sdk/x86_64/25.08\n\n        Commit: bbd997ea8cbf7e6ba06ff82136fd71069ce2011f93c006412bcda7bbde17e448\n        Parent: 68a5281bbbfb691d105e1006686691713eb0cab353a7d869f4b72c066eca18c7\n       Subject: Add desktop files for vsid, x64dtv, xcbm5x0, xscpu64 (c39f8386949f)\n          Date: 2026-01-18 14:54:47 +0000\n"
+}
