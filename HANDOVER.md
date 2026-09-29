@@ -1737,3 +1737,20 @@ pre-edit/deferred scene-change semantics. A generic INVALID return on busy
 destroy risks lost cleanup; merely moving an old `void` painter to another
 poll does not bound it. Only then measure real call sites/provider/admission,
 and qualify NMI-safe ownership, delivery and an eventual visible disk.
+
+2026-09-29 private client-step contract (issue #14 continuation):
+
+`bench/window-repaint-provider/provider.{h,c}` and
+`tests/test_repaint_provider.py` prove a one-row CLIENT step with ticket
+validation, selected handle/rank/visibility and clip/cursor checks, pure
+preflight deferral, clip reset before acknowledgement, and `MORE`/`DONE`
+progress. The host harness completes 83 rows and rejects stale/malformed
+records without pixels, clip or lane mutation. This is deliberately private
+and compile-only: existing `void` xclock/xwave painters are unchanged and no
+UDEX app bridge or NMI-safe lease is established. A generic callback-table
+version cost 1,396 cc65 CODE bytes; the fixed dispatcher still costs 1,124
+CODE bytes with no state at `-Oirs`, so it is not resident-placement viable
+given the pre-existing >=255-byte shortfall. See
+docs/WINDOW-REPAINT-CALLERS.md. Next: pre-edit/deferred semantics plus a
+substantially smaller provider/banked placement proof; do not ship a test disk
+until full normal/panic links, ownership and NMI gates pass.

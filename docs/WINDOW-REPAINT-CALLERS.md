@@ -66,6 +66,32 @@ Before inserting a real caller, specify and host-test:
    `SEI` alone does not cover NMI. Account every caller/provider byte in
    normal and panic links before producing a visible disk.
 
+## Private client-step experiment
+
+`bench/window-repaint-provider/provider.{h,c}` and
+`tests/test_repaint_provider.py` define a **host-tested, compile-only** fixed
+dispatcher seam. It validates a live lane ticket, selected handle/rank,
+visibility, clip bounds and row cursor before calling a pure admission check.
+Admission may defer with no clip, pixels or lane acknowledgement. On admission
+it sets the clip, draws exactly one row through an explicitly stepwise provider,
+resets the clip, and acknowledges `MORE` or `DONE`. The host test verifies 83
+row advances, order `validate → ready → clip → draw → reset → ack`, stale and
+malformed rejection, no mutation on defer, and withdrawal after a scene change.
+
+The fixed dispatch was chosen after measuring a generic callback-table version
+at **1,396 CODE bytes**. The fixed version still compiles to **1,124 CODE
+bytes**, no object-owned state, using the project's `-Oirs` cc65 options.
+These are standalone object sizes, not linked incremental costs. The previous
+normal/panic isolated links were already at least 255 bytes short; therefore
+this C implementation is a contract/proof, **not a resident placement
+candidate**. A smaller shared/assembly dispatch or an alternate banked
+placement needs a complete normal/panic link measurement before integration.
+
+The contract does not turn the current `void` xclock/xwave painters into
+bounded providers. It also does not establish a safe UDEX task/app bridge,
+hold scene/graphics ownership, or cover NMI/RESTORE between drawing and ack.
+Those are explicit remaining gates. No boot image or public API changed.
+
 Evidence under `bench/{artifacts,results}/2026-09-29-repaint-callers` includes
 the exact source, cc65 listing/object, full isolated links, provider library,
 input/build SHA-256 bindings and the audit report. `make repaint-callers` in
