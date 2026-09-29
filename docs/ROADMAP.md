@@ -390,6 +390,14 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   and are not reclaimed. No production disk or latency claim. Next: measured
   complete adapter/code recovery, then delivery/admission/NMI and live providers.
   See [WINDOW-REPAINT-SCENES.md](WINDOW-REPAINT-SCENES.md).
+  A private 8502 assembly replacement for the still-used damage-set/add
+  routines saves 81 CODE bytes in both full sizing links without changing
+  fixed ranges or state. Standalone 1986/VICE compare 100 rectangle pairs to
+  independent C arithmetic, including wrap edges. The provisional shortfall
+  falls to at least 177 bytes before real integration costs; the candidate is
+  not installed, not a disk or latency qualification. Next remains measured
+  provider/caller recovery followed by delivery/admission/NMI and live gates.
+  See [WINDOW-REPAINT-GEOMETRY.md](WINDOW-REPAINT-GEOMETRY.md).
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

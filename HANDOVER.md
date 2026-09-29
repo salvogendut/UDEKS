@@ -1684,3 +1684,30 @@ stack overlap or bootfs to invent fit. Then qualify checksummed delivery,
 admission, paint leases and NMI drain in the restored kernel map, followed by
 live poll/providers/interlocks and finally a visible disk/latency gate.
 Keep xwave-specific work separate.
+
+2026-09-29 private geometry checkpoint (issue #14):
+
+The C-only title-row specialization saved only 17 bytes and was discarded.
+The retained candidate replaces the still-used `damage_set`/`damage_add` C
+bodies (250 CODE bytes) with 169 bytes of private 8502 assembly. Both isolated
+normal/panic whole links recover 81 CODE bytes and retain unchanged fixed
+ranges, HIGHBSS, RODATA/DATA/BSS/shadow sizes and 72-byte new helper closure.
+Their CODE growth falls from 1012 to 931. No legacy helper is retired or
+persistent state allocated. Against the current 2371-byte component, the
+measured extra 81 bytes reduce the optimistic deficit from 258 to **177**;
+real callers, providers, admission, delivery, NMI and teardown remain uncharged.
+The sizing links are UNBOOTABLE and not packaged.
+
+The standalone PRG runs real ASM and independent C arithmetic over 100
+rectangle pairs, including edge/wrap values. Both 1986 and VICE pass. VICE
+caught a missing diagnostic BSS clear; the corrected startup now initializes
+BSS on both emulators. Record decoder rejects malformed completion/failure/
+case-count bytes. This is not a live manager, mouse, NMI, hardware or latency
+gate. Exact sources, all split links, toolchain and hash-bound raw results are
+preserved under bench/{artifacts,results}/2026-09-29-repaint-geometry; see
+docs/WINDOW-REPAINT-GEOMETRY.md. Root xwave work remains untouched.
+
+NEXT: measure further *real* caller/provider costs and recover the remaining
+resident deficit; do not grant unretired helper bodies or reserved stack/guard
+bytes as free. Qualify delivery/admission and NMI-safe serialized ownership in
+the restored kernel before producing a live manual-test disk.

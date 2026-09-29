@@ -1,0 +1,108 @@
+ca65 V2.18 - Fedora 2.19-15.fc44
+Main file   : /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/damage.s
+Current file: /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/damage.s
+
+000000r 1               ; SPDX-License-Identifier: GPL-3.0-or-later
+000000r 1               ; Private 8502 damage-box value primitives, NOT in the production kernel.
+000000r 1               ; Input AX: pointer to the compact manager's eight-byte value prefix.
+000000r 1               ; Fields are flags@0, x@1..2, y@3, width@4..5, height@6, rank@7.
+000000r 1               ; ptr1/ptr2 are caller-clobbered cc65 runtime scratch, not persistent state.
+000000r 1                       .setcpu "6502"
+000000r 1                       .importzp ptr1, ptr2
+000000r 1                       .import _damage_left, _damage_top, _damage_right, _damage_bottom
+000000r 1                       .export _damage_set, _damage_add
+000000r 1                       .segment "CODE"
+000000r 1               
+000000r 1               _damage_set:
+000000r 1  85 rr                sta ptr1
+000002r 1  86 rr                stx ptr1+1
+000004r 1  A0 01                ldy #$01
+000006r 1  B1 rr                lda (ptr1),y
+000008r 1  8D rr rr             sta _damage_left
+00000Br 1  C8                   iny
+00000Cr 1  B1 rr                lda (ptr1),y
+00000Er 1  8D rr rr             sta _damage_left+1
+000011r 1  C8                   iny
+000012r 1  B1 rr                lda (ptr1),y
+000014r 1  8D rr rr             sta _damage_top
+000017r 1  18                   clc
+000018r 1  A0 04                ldy #$04
+00001Ar 1  B1 rr                lda (ptr1),y
+00001Cr 1  6D rr rr             adc _damage_left
+00001Fr 1  8D rr rr             sta _damage_right
+000022r 1  C8                   iny
+000023r 1  B1 rr                lda (ptr1),y
+000025r 1  6D rr rr             adc _damage_left+1
+000028r 1  8D rr rr             sta _damage_right+1
+00002Br 1  C8                   iny
+00002Cr 1  B1 rr                lda (ptr1),y
+00002Er 1  18                   clc
+00002Fr 1  6D rr rr             adc _damage_top
+000032r 1  8D rr rr             sta _damage_bottom
+000035r 1  60                   rts
+000036r 1               
+000036r 1               _damage_add:
+000036r 1  85 rr                sta ptr1
+000038r 1  86 rr                stx ptr1+1
+00003Ar 1                       ; left := min(left,x), unsigned 16-bit high byte first.
+00003Ar 1  A0 02                ldy #$02
+00003Cr 1  B1 rr                lda (ptr1),y
+00003Er 1  CD rr rr             cmp _damage_left+1
+000041r 1  90 0A                bcc set_left
+000043r 1  D0 15                bne left_done
+000045r 1  88                   dey
+000046r 1  B1 rr                lda (ptr1),y
+000048r 1  CD rr rr             cmp _damage_left
+00004Br 1  B0 0D                bcs left_done
+00004Dr 1               set_left:
+00004Dr 1  A0 01                ldy #$01
+00004Fr 1  B1 rr                lda (ptr1),y
+000051r 1  8D rr rr             sta _damage_left
+000054r 1  C8                   iny
+000055r 1  B1 rr                lda (ptr1),y
+000057r 1  8D rr rr             sta _damage_left+1
+00005Ar 1               left_done:
+00005Ar 1  A0 03                ldy #$03
+00005Cr 1  B1 rr                lda (ptr1),y
+00005Er 1  CD rr rr             cmp _damage_top
+000061r 1  B0 03                bcs top_done
+000063r 1  8D rr rr             sta _damage_top
+000066r 1               top_done:
+000066r 1                       ; right := max(right,(x+width) mod 65536).
+000066r 1  A0 01                ldy #$01
+000068r 1  B1 rr                lda (ptr1),y
+00006Ar 1  18                   clc
+00006Br 1  A0 04                ldy #$04
+00006Dr 1  71 rr                adc (ptr1),y
+00006Fr 1  85 rr                sta ptr2
+000071r 1  A0 02                ldy #$02
+000073r 1  B1 rr                lda (ptr1),y
+000075r 1  A0 05                ldy #$05
+000077r 1  71 rr                adc (ptr1),y
+000079r 1  85 rr                sta ptr2+1
+00007Br 1  CD rr rr             cmp _damage_right+1
+00007Er 1  90 15                bcc right_done
+000080r 1  D0 09                bne set_right
+000082r 1  A5 rr                lda ptr2
+000084r 1  CD rr rr             cmp _damage_right
+000087r 1  90 0C                bcc right_done
+000089r 1  F0 0A                beq right_done
+00008Br 1               set_right:
+00008Br 1  A5 rr                lda ptr2
+00008Dr 1  8D rr rr             sta _damage_right
+000090r 1  A5 rr                lda ptr2+1
+000092r 1  8D rr rr             sta _damage_right+1
+000095r 1               right_done:
+000095r 1                       ; bottom := max(bottom,(y+height) mod 256).
+000095r 1  A0 03                ldy #$03
+000097r 1  B1 rr                lda (ptr1),y
+000099r 1  18                   clc
+00009Ar 1  A0 06                ldy #$06
+00009Cr 1  71 rr                adc (ptr1),y
+00009Er 1  CD rr rr             cmp _damage_bottom
+0000A1r 1  90 05                bcc bottom_done
+0000A3r 1  F0 03                beq bottom_done
+0000A5r 1  8D rr rr             sta _damage_bottom
+0000A8r 1               bottom_done:
+0000A8r 1  60                   rts
+0000A8r 1               

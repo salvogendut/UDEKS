@@ -1,0 +1,125 @@
+Modules list:
+-------------
+startup.o:
+    STARTUP           Offs=000000  Size=00003D  Align=00001  Fill=0000
+probe.o:
+    CODE              Offs=000000  Size=0002F5  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=00003C  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000007  Align=00001  Fill=0000
+damage.o:
+    CODE              Offs=0002F5  Size=0000A9  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=00039E  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp6.o):
+    CODE              Offs=0003AC  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=0003B9  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=0003C0  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=0003C5  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=0003DB  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=0003E6  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000006  00001F  00001A  00001
+STARTUP               002000  00203C  00003D  00001
+CODE                  00203D  00242F  0003F3  00001
+RODATA                002430  00246B  00003C  00001
+BSS                   00246C  002472  000007  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               00246C RLA    __BSS_SIZE__              000007 REA    
+__STARTUP__               000001 REA    _damage_add               002368 RLA    
+_damage_bottom            002471 RLA    _damage_left              00246C RLA    
+_damage_right             00246E RLA    _damage_set               002332 RLA    
+_damage_top               002470 RLA    _main                     002091 RLA    
+addysp                    0023DC RLA    decsp6                    0023E9 RLA    
+incsp1                    0023F6 RLA    incsp7                    0023FD RLA    
+ptr1                      00000E RLZ    ptr2                      000010 RLZ    
+pusha                     002406 RLA    sp                        000006 RLZ    
+staxysp                   00241A RLA    subysp                    002423 RLA    
+tmp1                      000016 RLZ    
+
+
+Exports list by value:
+----------------------
+__STARTUP__               000001 REA    sp                        000006 RLZ    
+__BSS_SIZE__              000007 REA    ptr1                      00000E RLZ    
+ptr2                      000010 RLZ    tmp1                      000016 RLZ    
+_main                     002091 RLA    _damage_set               002332 RLA    
+_damage_add               002368 RLA    addysp                    0023DC RLA    
+decsp6                    0023E9 RLA    incsp1                    0023F6 RLA    
+incsp7                    0023FD RLA    pusha                     002406 RLA    
+staxysp                   00241A RLA    subysp                    002423 RLA    
+__BSS_RUN__               00246C RLA    _damage_left              00246C RLA    
+_damage_right             00246E RLA    _damage_top               002470 RLA    
+_damage_bottom            002471 RLA    
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    startup.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/startup.s(4)
+__BSS_SIZE__ ([linker generated]):
+    startup.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/startup.s(4)
+__STARTUP__ (startup.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/probe.s(13)
+_damage_add (damage.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/probe.s(19)
+_damage_bottom (probe.o):
+    damage.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/damage.s(8)
+_damage_left (probe.o):
+    damage.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/damage.s(8)
+_damage_right (probe.o):
+    damage.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/damage.s(8)
+_damage_set (damage.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/probe.s(18)
+_damage_top (probe.o):
+    damage.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/damage.s(8)
+_main (probe.o):
+    startup.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/startup.s(4)
+addysp (addysp.o):
+    incsp7.o                  runtime/incsp7.s(8)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/probe.s(517)
+decsp6 (decsp6.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/probe.s(517)
+incsp1 (incsp1.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/probe.s(517)
+incsp7 (incsp7.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/probe.s(517)
+ptr1 (zeropage.o):
+    damage.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/damage.s(7)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/probe.s(11)
+    startup.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/startup.s(5)
+ptr2 (zeropage.o):
+    damage.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/damage.s(7)
+pusha (pusha.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/probe.s(517)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/probe.s(517)
+sp (zeropage.o):
+    subysp.o                  runtime/subysp.s(9)
+    staxsp.o                  runtime/staxsp.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    decsp6.o                  runtime/decsp6.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/probe.s(10)
+    startup.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/startup.s(5)
+staxysp (staxsp.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/probe.s(517)
+subysp (subysp.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/probe.s(517)
+tmp1 (zeropage.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/probe.s(11)
+

@@ -1,0 +1,45 @@
+/var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/probe.o:
+  Imports:
+    Count:                         14
+    Index:                          0
+      Address size:              0x02  (absolute)
+      Name:                  "addysp"
+    Index:                          1
+      Address size:              0x02  (absolute)
+      Name:                  "decsp6"
+    Index:                          2
+      Address size:              0x02  (absolute)
+      Name:                 "staxysp"
+    Index:                          3
+      Address size:              0x02  (absolute)
+      Name:                  "subysp"
+    Index:                          4
+      Address size:              0x02  (absolute)
+      Name:                  "incsp7"
+    Index:                          5
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                          6
+      Address size:              0x02  (absolute)
+      Name:                  "incsp1"
+    Index:                          7
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                          8
+      Address size:              0x02  (absolute)
+      Name:             "_damage_add"
+    Index:                          9
+      Address size:              0x02  (absolute)
+      Name:             "_damage_set"
+    Index:                         10
+      Address size:              0x02  (absolute)
+      Name:             "__STARTUP__"
+    Index:                         11
+      Address size:              0x01  (zeropage)
+      Name:                    "ptr1"
+    Index:                         12
+      Address size:              0x01  (zeropage)
+      Name:                    "tmp1"
+    Index:                         13
+      Address size:              0x01  (zeropage)
+      Name:                      "sp"
