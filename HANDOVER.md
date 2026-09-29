@@ -1421,3 +1421,25 @@ under2026-09-29-window-repaint-baseline; no ROM snapshots archived. Seven new
 tests; scoped fullsuite828. Normal OS/app code and disk hashes unchanged.
 Next: host-tested generic damage/continuation/cancellation seam plus a measured
 placement budget; synchronous painter compatibility must not be called bounded.
+
+2026-09-29 continuation reference implemented in window_repaint.h and
+src/services/window/repaint_policy.c, NOT production-linked. Caller-owned job
+unions pending damage, clears <=4rows/action, selects visible windows by rank,
+emits chrome/client or retained-restore work and commits in resumable steps.
+No callbacks/app/cache pointers stored. Generation+scene+phase+rank+handle+cursor
+receipts reject stale/replayed ack; scene_changed fences work before table
+mutation and unions active/pending/old-new extents. Validate BEFORE any drawing,
+with no yield until that bounded operation ends. Abort is whole-surface shutdown,
+not window-close; exhaustion fails closed, no generation/cursor wrap.
+17 strict host tests pass including independent full320x200 mock pixel equality
+after interruption/move/resize/restack/destroy/reuse and queued partial damage.
+This is not actual VIC/painter or cc65 execution qualification. Compiler budget
+make repaint-policy:CODE4643, ownBSS/DATA/ZP0; target sizeofjob22,ticket9,work15,
+windowview9. Runtime closure/backend/scene temporaries are not yet charged.
+Evidence2026-09-29-repaint-policy binds source/object/assembly/dumps/toolchain.
+Scoped suite847 tests. Normal OS/app code and default disks unchanged.
+Next: compact service adapter replacing existing composition, not adding this
+4.6KiB generic draft to the 20-byte reserve. Prove state placement and equivalence
+before resident linking; never borrow guard/stack/shadow bytes silently. Real
+clip/workspace resets, paint/completion interlocks and cache/busy cancellation
+remain adapter work. Optional bounded painter contract is still a separate gate.

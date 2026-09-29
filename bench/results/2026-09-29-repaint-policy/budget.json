@@ -1,0 +1,158 @@
+{
+  "scope": "compile-only private policy; object CODE is a lower bound, not linked runtime closure",
+  "sizes": {
+    "CODE": 4643,
+    "RODATA": 0,
+    "BSS": 0,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "cc65_layout": {
+    "job": 22,
+    "ticket": 9,
+    "work": 15,
+    "window": 9
+  },
+  "imports": [
+    [
+      "_memcpy",
+      "02"
+    ],
+    [
+      "addeqysp",
+      "02"
+    ],
+    [
+      "addysp",
+      "02"
+    ],
+    [
+      "decsp4",
+      "02"
+    ],
+    [
+      "decsp6",
+      "02"
+    ],
+    [
+      "incsp2",
+      "02"
+    ],
+    [
+      "incsp4",
+      "02"
+    ],
+    [
+      "incsp5",
+      "02"
+    ],
+    [
+      "incsp6",
+      "02"
+    ],
+    [
+      "incsp7",
+      "02"
+    ],
+    [
+      "incsp8",
+      "02"
+    ],
+    [
+      "mulax9",
+      "02"
+    ],
+    [
+      "ptr1",
+      "01"
+    ],
+    [
+      "pusha",
+      "02"
+    ],
+    [
+      "pusha0",
+      "02"
+    ],
+    [
+      "pushax",
+      "02"
+    ],
+    [
+      "pushwysp",
+      "02"
+    ],
+    [
+      "sp",
+      "01"
+    ],
+    [
+      "sreg",
+      "01"
+    ],
+    [
+      "staspidx",
+      "02"
+    ],
+    [
+      "stax0sp",
+      "02"
+    ],
+    [
+      "staxspidx",
+      "02"
+    ],
+    [
+      "staxysp",
+      "02"
+    ],
+    [
+      "subeqysp",
+      "02"
+    ],
+    [
+      "subysp",
+      "02"
+    ],
+    [
+      "tosaddax",
+      "02"
+    ],
+    [
+      "tosicmp",
+      "02"
+    ],
+    [
+      "tosicmp0",
+      "02"
+    ],
+    [
+      "tossuba0",
+      "02"
+    ],
+    [
+      "tossubax",
+      "02"
+    ]
+  ],
+  "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44",
+  "input_sha256": {
+    "include/udeks/window_repaint.h": "95769b5d1bd8dde9f6641f07193026b1ef757f82ea4e5a3e695ea3f1406f56e3",
+    "src/services/window/repaint_policy.c": "94dd9ce3d13ad159764891d817b1dc10372c0eb4343b8f829caf1154a410a601",
+    "bench/window-repaint-policy/layout.c": "466cb88aeed3886d788ecd76a34dac373068d04219e80386980bef8299e2021f",
+    "cfg/8502-repaint-layout.cfg": "93551ef2533e282fadab4bfb4d74327c92b4a0a15b3ca4f9103843c8a25c8db4",
+    "tools/window_repaint_budget.py": "ba208b148f2064049051c019871269f02c41c0b1f1c3db802c076027b791816b",
+    "mk/toolchain.mk": "ff5f0c42c00f656601405e0055e884e7c6c07520a67a384a2a8fccfd6868cc70",
+    "Makefile": "046da98dc2a0ba4eec38b02d40254a1437b3992b805f01c91e2ed368bbb02a34",
+    "tests/test_window_repaint_policy.py": "e6991e275bd79a693a4ca4b0f1692f38c8426f0289250226e34c10c44a4ba55d"
+  },
+  "output_sha256": {
+    "policy.o": "56bf30c197c11e0724f72b74a6e88609dba7b25f875ded7fe332b4906fe93554",
+    "policy.s": "4b9219439c4a760b2f8151a7ab0c308445334fddaef7c10949b3b0373298d9fe",
+    "layout.o": "a555ee739b7d1791b7e312dfddee9acc0bd49b227b9b168226e7519386d5c6b6",
+    "layout.bin": "7fe445a5d3446a375259241dcb1eea6c7ad4946d56c5a8fed1a40ea48c1ca088",
+    "imports.txt": "800835975f5d9005964ba64c36e3787bb3822d8bb1c6127c0528a6c78a44ac7b",
+    "segments.txt": "dab428fb81f8bbbd0e3dbdee1d528653bc2237861c386c73bac0b8cd631f5280"
+  }
+}

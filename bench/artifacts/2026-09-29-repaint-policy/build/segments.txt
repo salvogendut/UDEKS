@@ -1,0 +1,45 @@
+build/window-repaint-policy/policy.o:
+  Segments:
+    Count:                          6
+    Index:                          0
+      Name:                    "CODE"
+      Flags:                        0
+      Size:                      4643
+      Alignment:                    1
+      Address size:              0x02  (absolute)
+      Fragment count:            3774
+    Index:                          1
+      Name:                  "RODATA"
+      Flags:                        0
+      Size:                         0
+      Alignment:                    1
+      Address size:              0x02  (absolute)
+      Fragment count:               0
+    Index:                          2
+      Name:                     "BSS"
+      Flags:                        0
+      Size:                         0
+      Alignment:                    1
+      Address size:              0x02  (absolute)
+      Fragment count:               0
+    Index:                          3
+      Name:                    "DATA"
+      Flags:                        0
+      Size:                         0
+      Alignment:                    1
+      Address size:              0x02  (absolute)
+      Fragment count:               0
+    Index:                          4
+      Name:                "ZEROPAGE"
+      Flags:                        0
+      Size:                         0
+      Alignment:                    1
+      Address size:              0x01  (zeropage)
+      Fragment count:               0
+    Index:                          5
+      Name:                    "NULL"
+      Flags:                        0
+      Size:                         0
+      Alignment:                    1
+      Address size:              0x02  (absolute)
+      Fragment count:               0

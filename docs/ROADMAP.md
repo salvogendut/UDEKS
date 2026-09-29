@@ -348,6 +348,11 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   synchronous painter contract must be addressed explicitly; merely moving a
   whole callback to another poll is not bounded. No xwave-specific projection
   work is included. See [WINDOW-REPAINT-CONTINUATION.md](WINDOW-REPAINT-CONTINUATION.md).
+  The private continuation reference now passes host receipt/invalidation and
+  full mock-canvas tests, including interrupted repair and destroy/reuse. Actual
+  cc65 measurement is 4,643 CODE plus 22 caller-state bytes, too large to add
+  directly. Next is a compact replacement adapter with a measured placement
+  plan; normal disks and public painter ABI remain unchanged.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

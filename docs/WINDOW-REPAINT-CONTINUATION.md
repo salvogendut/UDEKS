@@ -2,7 +2,7 @@
 
 Issue [#14](https://github.com/salvogendut/UDEKS/issues/14), branch
 `graphics-bounded-repaint`; follows the default-cache integration in PR #13.
-Status: baseline measurement and continuation design. Normal disks unchanged.
+Status: baseline plus host-tested continuation reference. Normal disks unchanged.
 
 ## Why another step is needed
 
@@ -71,6 +71,75 @@ requires all 18 cases and both services, rejects incomplete/duplicate records,
 and keeps the settled pixel/input/shutdown and <=30-frame drag-start gates.
 Seven new observer/evidence tests pass; the full scoped suite has 828 tests.
 
+## Continuation reference (not production-linked)
+
+`src/services/window/repaint_policy.c` and the private
+`include/udeks/window_repaint.h` now implement a caller-owned job. No application
+callback, app-slot address, cache pointer or hidden mutable state is retained.
+The policy emits one work record; the driver resolves its handle and executes
+one bounded operation, then acknowledges DONE or MORE.
+
+```
+pending damage → clear (≤4 rows/record) → windows in ascending rank → commit
+                                        ├─ chrome → client steps
+                                        └─ retained-image restore steps
+```
+
+Active and pending damage stay distinct. Repeated requests coalesce pending
+damage without changing the current clip/cursor. A scene change unions active,
+pending and old/new affected extents, withdraws the old job ticket, and restarts
+composition. Changes to geometry, rank, visibility, content/cache eligibility,
+destruction or handle reuse must use this operation before altering the scene;
+ordinary queueing is not a structural-invalidation substitute. A retained flag
+is a trusted driver's promise of an immutable, eligible image, not proof from
+this policy that a cache lease exists.
+
+Each work ticket contains generation, scene revision, stage, rank, handle and
+cursor. Validation precedes drawing and acknowledgment validates again. No
+yield is permitted between validation and the bounded raster operation. Replayed
+or stale acknowledgments cannot advance the job. MORE advances the stage cursor;
+the next stage cannot run until DONE. A title-only repair yields past an empty
+client intersection without calling its painter. Empty/hidden scenes still clear
+and commit. Abort discards work only when retiring the whole graphics surface;
+closing one window must instead invalidate and repair the exposed region.
+
+Generation/cursor exhaustion fails closed rather than wrapping to an old ticket.
+Init/reset is valid only after all old records are quiesced; it is not a safe
+way to reuse an exhausted live ticket namespace. This is a private reference
+contract, not a frozen application ABI or a protection boundary for untrusted
+clients. The real adapter must also reset shared clips/workspace between polls,
+interlock ordinary app painting/image completion, and release busy/cache locks
+on interruption. Those real-backend mechanisms are not implemented here.
+
+Seventeen host tests compile the actual policy with strict warnings. They cover
+atomic rejection/output preservation, pending unions, sorted/sparse ranks,
+clipped opaque composition, retained restore, progress receipts, invalidation,
+abort/exhaustion and complete 320×200 canvases. The incremental mock renderer
+matches an independent full-scene reference after partial damage, queued work,
+move/resize/restack and destroy/reuse during client/restore/commit. This is not
+execution of the cc65 object or qualification of actual VIC/application painters.
+
+The target budget gate is repeatable:
+
+```
+distrobox enter my-distrobox -- make repaint-policy
+```
+
+The actual cc65 object measures **4,643 CODE bytes**, with no own BSS/DATA/ZP.
+Target sizeof probes report job **22**, ticket **9**, work record **15**, window
+view **9** bytes. The caller also owns its scene views and backend continuation;
+those temporary costs and any added runtime helpers must be charged on linkage.
+The CODE number is a lower bound, not a closed linked footprint. Source/object/
+assembly/dumps and toolchain/hash bindings are preserved under
+`bench/{artifacts,results}/2026-09-29-repaint-policy`.
+
+Directly adding this generic object is ruled out by the existing budget: HIGHBSS
+is full and resident padding is only 20 bytes. Do not relocate the shadow or
+consume guard/stack bytes to force it in. The next increment is a compact service
+adapter that replaces existing compositor logic and has a separately measured
+state/placement plan, checked against this reference before resident linkage.
+The normal fallback and the public UAPP painter API remain unchanged.
+
 ## Next increments and gates
 
 1. Establish baseline input-service gaps, not just release totals or row counts.
@@ -78,6 +147,7 @@ Seven new observer/evidence tests pass; the full scoped suite has 828 tests.
    order windows correctly, distinguish current work from new damage, and restart
    safely on geometry/stack changes, destruction/reuse, reset and cancellation.
    Do not retain a stale callback or pointer into a replaced app slot.
+   Reference contract/tests are complete; this is not yet a resident adapter.
 3. Split manager-owned clearing, chrome and commit into bounded stages. Measure
    code/state placement before linking: the current HIGHBSS is full and only
    20 resident padding bytes remain. Bank-1 availability is not automatically

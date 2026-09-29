@@ -1,0 +1,276 @@
+build/window-repaint-policy/policy.o:
+  Imports:
+    Count:                         91
+    Index:                          0
+      Address size:              0x02  (absolute)
+      Name:                "tosicmp0"
+    Index:                          1
+      Address size:              0x02  (absolute)
+      Name:                "tossuba0"
+    Index:                          2
+      Address size:              0x02  (absolute)
+      Name:                  "pusha0"
+    Index:                          3
+      Address size:              0x02  (absolute)
+      Name:                "tossubax"
+    Index:                          4
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                          5
+      Address size:              0x02  (absolute)
+      Name:                 "stax0sp"
+    Index:                          6
+      Address size:              0x02  (absolute)
+      Name:                "tosaddax"
+    Index:                          7
+      Address size:              0x02  (absolute)
+      Name:                  "mulax9"
+    Index:                          8
+      Address size:              0x02  (absolute)
+      Name:                "pushwysp"
+    Index:                          9
+      Address size:              0x02  (absolute)
+      Name:                  "incsp7"
+    Index:                         10
+      Address size:              0x02  (absolute)
+      Name:                  "decsp4"
+    Index:                         11
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                         12
+      Address size:              0x02  (absolute)
+      Name:               "staxspidx"
+    Index:                         13
+      Address size:              0x02  (absolute)
+      Name:                  "incsp2"
+    Index:                         14
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         15
+      Address size:              0x02  (absolute)
+      Name:                  "incsp2"
+    Index:                         16
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         17
+      Address size:              0x02  (absolute)
+      Name:                  "incsp6"
+    Index:                         18
+      Address size:              0x02  (absolute)
+      Name:                "staspidx"
+    Index:                         19
+      Address size:              0x02  (absolute)
+      Name:                "tosicmp0"
+    Index:                         20
+      Address size:              0x02  (absolute)
+      Name:                  "pusha0"
+    Index:                         21
+      Address size:              0x02  (absolute)
+      Name:               "staxspidx"
+    Index:                         22
+      Address size:              0x02  (absolute)
+      Name:                 "tosicmp"
+    Index:                         23
+      Address size:              0x02  (absolute)
+      Name:                "pushwysp"
+    Index:                         24
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         25
+      Address size:              0x02  (absolute)
+      Name:                  "incsp4"
+    Index:                         26
+      Address size:              0x02  (absolute)
+      Name:                "staspidx"
+    Index:                         27
+      Address size:              0x02  (absolute)
+      Name:                "tosicmp0"
+    Index:                         28
+      Address size:              0x02  (absolute)
+      Name:                  "pusha0"
+    Index:                         29
+      Address size:              0x02  (absolute)
+      Name:               "staxspidx"
+    Index:                         30
+      Address size:              0x02  (absolute)
+      Name:                "pushwysp"
+    Index:                         31
+      Address size:              0x02  (absolute)
+      Name:                 "tosicmp"
+    Index:                         32
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         33
+      Address size:              0x02  (absolute)
+      Name:                  "incsp2"
+    Index:                         34
+      Address size:              0x02  (absolute)
+      Name:                "tosicmp0"
+    Index:                         35
+      Address size:              0x02  (absolute)
+      Name:                  "pusha0"
+    Index:                         36
+      Address size:              0x02  (absolute)
+      Name:                 "tosicmp"
+    Index:                         37
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         38
+      Address size:              0x02  (absolute)
+      Name:                "tosicmp0"
+    Index:                         39
+      Address size:              0x02  (absolute)
+      Name:               "staxspidx"
+    Index:                         40
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         41
+      Address size:              0x02  (absolute)
+      Name:                  "incsp8"
+    Index:                         42
+      Address size:              0x02  (absolute)
+      Name:                  "decsp4"
+    Index:                         43
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                         44
+      Address size:              0x02  (absolute)
+      Name:                "tosicmp0"
+    Index:                         45
+      Address size:              0x02  (absolute)
+      Name:                  "pusha0"
+    Index:                         46
+      Address size:              0x02  (absolute)
+      Name:                 "tosicmp"
+    Index:                         47
+      Address size:              0x02  (absolute)
+      Name:                "pushwysp"
+    Index:                         48
+      Address size:              0x02  (absolute)
+      Name:                  "incsp7"
+    Index:                         49
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                         50
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         51
+      Address size:              0x02  (absolute)
+      Name:                  "addysp"
+    Index:                         52
+      Address size:              0x02  (absolute)
+      Name:                "subeqysp"
+    Index:                         53
+      Address size:              0x02  (absolute)
+      Name:                "addeqysp"
+    Index:                         54
+      Address size:              0x02  (absolute)
+      Name:                  "decsp4"
+    Index:                         55
+      Address size:              0x02  (absolute)
+      Name:                 "staxysp"
+    Index:                         56
+      Address size:              0x02  (absolute)
+      Name:                "tosaddax"
+    Index:                         57
+      Address size:              0x02  (absolute)
+      Name:                  "mulax9"
+    Index:                         58
+      Address size:              0x02  (absolute)
+      Name:                "tosicmp0"
+    Index:                         59
+      Address size:              0x02  (absolute)
+      Name:                  "pusha0"
+    Index:                         60
+      Address size:              0x02  (absolute)
+      Name:               "staxspidx"
+    Index:                         61
+      Address size:              0x02  (absolute)
+      Name:                "staspidx"
+    Index:                         62
+      Address size:              0x02  (absolute)
+      Name:                 "_memcpy"
+    Index:                         63
+      Address size:              0x02  (absolute)
+      Name:                 "tosicmp"
+    Index:                         64
+      Address size:              0x02  (absolute)
+      Name:                "pushwysp"
+    Index:                         65
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                         66
+      Address size:              0x02  (absolute)
+      Name:                  "subysp"
+    Index:                         67
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         68
+      Address size:              0x02  (absolute)
+      Name:                 "staxysp"
+    Index:                         69
+      Address size:              0x02  (absolute)
+      Name:                  "incsp7"
+    Index:                         70
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                         71
+      Address size:              0x02  (absolute)
+      Name:                  "decsp4"
+    Index:                         72
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         73
+      Address size:              0x02  (absolute)
+      Name:                  "addysp"
+    Index:                         74
+      Address size:              0x02  (absolute)
+      Name:                "staspidx"
+    Index:                         75
+      Address size:              0x02  (absolute)
+      Name:                 "_memcpy"
+    Index:                         76
+      Address size:              0x02  (absolute)
+      Name:                 "tosicmp"
+    Index:                         77
+      Address size:              0x02  (absolute)
+      Name:                "pushwysp"
+    Index:                         78
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                         79
+      Address size:              0x02  (absolute)
+      Name:                  "decsp6"
+    Index:                         80
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         81
+      Address size:              0x02  (absolute)
+      Name:                 "_memcpy"
+    Index:                         82
+      Address size:              0x02  (absolute)
+      Name:                "pushwysp"
+    Index:                         83
+      Address size:              0x02  (absolute)
+      Name:                  "incsp5"
+    Index:                         84
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                         85
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         86
+      Address size:              0x02  (absolute)
+      Name:                  "incsp4"
+    Index:                         87
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         88
+      Address size:              0x01  (zeropage)
+      Name:                    "ptr1"
+    Index:                         89
+      Address size:              0x01  (zeropage)
+      Name:                    "sreg"
+    Index:                         90
+      Address size:              0x01  (zeropage)
+      Name:                      "sp"
