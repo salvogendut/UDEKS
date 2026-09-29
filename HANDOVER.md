@@ -1808,3 +1808,19 @@ callers/provider/delivery. See docs/WINDOW-REPAINT-ADMISSION.md and
 tools/window_repaint_admission_link.py. Do not produce a live candidate from
 that sizing image. Next: recover legitimate state placement or redesign
 admission, then solve the remaining CODE budget and public retry semantics.
+
+2026-09-29 private bank-0 admission placement follow-up (issue #14):
+
+`REPAINT_ADMISSION_BANK0_BSS` relocates only the owner byte out of full
+HIGHBSS. Reproducible complete isolated normal/panic **strict** links now
+pass with +130 CODE, +1 ordinary BSS, unchanged HIGHBSS/fixed segments and
+an 8,000-byte VIC shadow shifted by one byte to `$A654`. The original
+HIGHBSS variant still fails at reserved `$E2E2`. A source-locked test checks
+the existing binding's IRQ-masked banked call and record-only NMI stub; this
+does not prove all re-entry paths. The owner is only accessible in bank 0,
+so try/release and caller mutation must remain synchronous under that map;
+no banked policy, worker or callback may inspect it. This resolves the single
+byte's placement, NOT the >=385-byte optimistic CODE shortfall, public retry
+contract, provider bridge, actual callers or delivery. Both sizing links are
+still UNBOOTABLE; no manual disk yet. Next: measured CODE recovery and
+verified caller/entry ownership before any production integration.

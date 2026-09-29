@@ -52,8 +52,20 @@ context. `tools/window_repaint_admission_link.py` reproduces the rejection
 and uses an explicitly `UNBOOTABLE-sizing.cfg` to measure CODE closure only.
 The optimistic resident deficit rises from 255 to **385 bytes**, still before
 actual call sites, provider or delivery. The sizing image is never a disk or
-placement proposal; a legitimate byte of state recovery or different owner
-design is required before production linking.
+placement proposal.
+
+A separate `REPAINT_ADMISSION_BANK0_BSS` build puts the owner byte in resident
+bank-0 BSS instead. Both **strict** normal/panic links then pass: +130 CODE,
++1 BSS, no HIGHBSS growth, and the 8,000-byte VIC shadow starts one byte
+later than the corresponding sizing link (`$A654`). This resolves the *single
+state byte's* placement without borrowing `$E2E2` or changing the owner
+algorithm. Its lifetime condition is narrow: every try/release and caller edit
+must execute with bank 0 mapped; the existing binding masks IRQ during its
+banked policy call and restores the map before return, and the installed NMI
+stub only records a flag. Other IRQ/re-entry paths and all real call sites
+still require an audit. These isolated links remain UNBOOTABLE because the
+repaint candidate has moved shadow/stale delivery bindings and the 385-byte
+optimistic CODE deficit. No live admission or performance claim follows.
 
 No public retry status exists: create returns
 handle/zero; other operations have OK/INVALID/FULL. A busy destroy cannot be

@@ -429,6 +429,11 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   16-bit-wrapping create coordinates without changing their frozen layout.
   Next: legitimate admission-state placement or redesign, CODE recovery and
   app-visible retry semantics before a new manual-test image.
+  A private bank-0 BSS owner variant now passes strict normal/panic placement
+  without touching task context: +1 BSS, unchanged HIGHBSS, same +130 CODE.
+  It is safe only for synchronous bank-0 manager access; re-entry paths still
+  need proof. The >=385-byte CODE shortfall and app-visible retry/provider
+  gates remain, so no new test disk is ready.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

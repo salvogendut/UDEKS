@@ -1,9 +1,13 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "admission.h"
 
+#ifndef REPAINT_ADMISSION_BANK0_BSS
 #pragma bss-name(push, "HIGHBSS")
+#endif
 unsigned char repaint_admission_owner;
+#ifndef REPAINT_ADMISSION_BANK0_BSS
 #pragma bss-name(pop)
+#endif
 
 unsigned char repaint_admission_try(unsigned char owner)
 {

@@ -66,6 +66,19 @@ int main(void) {
 
 
 class RepaintAdmissionTests(unittest.TestCase):
+    def test_bank0_owner_placement_contract(self):
+        source = (ROOT / 'bench/window-repaint-admission/admission.c').read_text()
+        self.assertEqual(source.count('unsigned char repaint_admission_owner;'), 1)
+        self.assertIn('#ifndef REPAINT_ADMISSION_BANK0_BSS\n#pragma bss-name(push, "HIGHBSS")', source)
+        self.assertIn('#ifndef REPAINT_ADMISSION_BANK0_BSS\n#pragma bss-name(pop)', source)
+        binding = (ROOT / 'bench/window-repaint-bank/binding.s').read_text()
+        body = binding.split('_private_cache_policy_call:', 1)[1].split('image:', 1)[0]
+        for earlier, later in (('php', 'sei'), ('sei', 'jsr RUN'),
+                               ('jsr RUN', 'plp'), ('plp', 'rts')):
+            self.assertLess(body.index(earlier), body.index(later))
+        frontend = (ROOT / 'bench/window-repaint-frontend/frontend.inc').read_text()
+        self.assertNotIn('repaint_admission_owner', frontend)
+
     def test_installed_nmi_stub_remains_record_only(self):
         common = (ROOT / 'src/8502/nmi-common.inc').read_text()
         body = common.split('.macro UDEKS_NMI_STUB\n', 1)[1].split('.endmacro', 1)[0]

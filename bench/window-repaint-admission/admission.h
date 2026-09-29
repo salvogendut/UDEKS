@@ -11,8 +11,11 @@
 #define REPAINT_ADMISSION_DEFERRED 8u
 struct udeks_repaint_rect;
 
-/* Storage must be a dedicated, always-visible byte; cache readiness is not
- * admission. This prototype's only allowed lifetime is one synchronous
+/* Storage must be a dedicated byte; cache readiness is not admission. The
+ * default HIGHBSS variant is always visible. The BANK0_BSS sizing variant
+ * requires all try/release and scene edits to run with bank 0 mapped; no
+ * admission access may occur inside the banked policy call. This prototype's
+ * only allowed lifetime is one synchronous
  * no-yield call frame: no saved token, task switch, app callback retaining
  * ownership, or release after reacquisition. The installed 8502 NMI stub
  * records only a flag and does not enter the manager. IRQ/other CPU callers
