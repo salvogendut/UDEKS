@@ -332,6 +332,11 @@ repaint-callers: $(KERNEL_BIN) $(PANIC_PROBE_KERNEL_BIN)
 repaint-admission-link: repaint-callers
 	$(PYTHON) tools/window_repaint_admission_link.py
 
+# Private still-used clipping rewrite; full-link sizing only, no OS disk.
+.PHONY: repaint-intersection
+repaint-intersection: repaint-admission-link
+	$(PYTHON) tools/window_repaint_intersection.py
+
 task-scheduler: $(BUILD_8502)/task_scheduler.o
 
 task-switch-tail: $(TASK_SWITCH_TAIL_BIN) $(TASK_CONTEXT_BIN) \
@@ -2222,6 +2227,7 @@ check:
 		tools/window_repaint_scenes.py \
 		tools/window_repaint_geometry.py \
 		tools/window_repaint_callers.py \
+		tools/window_repaint_admission_link.py tools/window_repaint_intersection.py \
 		tools/graphics_cache_delivery.py \
 		tools/graphics_cache_placement.py \
 		tools/graphics_span_bench.py \

@@ -1824,3 +1824,19 @@ byte's placement, NOT the >=385-byte optimistic CODE shortfall, public retry
 contract, provider bridge, actual callers or delivery. Both sizing links are
 still UNBOOTABLE; no manual disk yet. Next: measured CODE recovery and
 verified caller/entry ownership before any production integration.
+
+2026-09-29 clipping micro-recovery gate (issue #14):
+
+The still-used `set_damage_intersection` helper was tested for local C
+compaction. Reusing width/height as endpoint temporaries and registering
+left/top saves exactly 23 CODE bytes in complete isolated normal/panic links,
+with unchanged state/helpers/fixed segments; a 4,096-case host oracle passes.
+This only reduces the optimistic admission-era shortfall from 385 to 362
+bytes, before actual callers/providers/delivery. Do not install this tiny
+rewrite into the frozen production manager. The helper's two legacy paint
+uses and one cache-paint use identify the structural retirement seam: the
+316-byte intersection and 156-byte cache-paint bodies are not yet reclaimable
+while their callers remain. See docs/WINDOW-REPAINT-CODE-RECOVERY.md. Next:
+implement and measure genuinely bounded client/cache replacement and public
+deferred completion, then retire superseded users in a complete link. No new
+bootable repaint candidate or manual test yet.

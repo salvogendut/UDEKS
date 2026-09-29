@@ -434,6 +434,12 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   It is safe only for synchronous bank-0 manager access; re-entry paths still
   need proof. The >=385-byte CODE shortfall and app-visible retry/provider
   gates remain, so no new test disk is ready.
+  A complete-link clipping rewrite saves just 23 CODE bytes (4,096 host
+  geometry cases pass), leaving a >=362-byte optimistic gap. It is not
+  promoted: the next CODE gate is replacement of legacy client/cache painting
+  and measured retirement of their intersection/cache helpers, with the new
+  provider and retry costs included. See
+  [WINDOW-REPAINT-CODE-RECOVERY.md](WINDOW-REPAINT-CODE-RECOVERY.md).
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.
