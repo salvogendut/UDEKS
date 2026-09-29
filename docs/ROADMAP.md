@@ -57,7 +57,8 @@ disk writes, a new filesystem format, or relocatable executables prerequisites.
 `cat` can display a file from that media, and error/no-device/media
 change paths return control to the shell. Qualify D64/D71 in `1986` and VICE,
 then read from PI1541 on a physical C128 without breaking graphics, input,
-boot, or the Z80 worker.
+boot, or the Z80 worker. The implementation sequence and current gate are in
+[Storage 0.1](STORAGE-0.1.md).
 
 ### 2. Storage 0.2: launch a program from disk
 
