@@ -101,7 +101,10 @@ _udeks_vic_graphics_disable:
         and #$fe
         sta VIC_SPRITE_ENABLE
         lda VIC_CONTROL_1
-        and #$cf
+        ; Bit 7 READS the live raster high bit, but WRITES the IRQ target's
+        ; high bit. The pointer sampler uses targets 200/226 (<256). Never
+        ; copy a lower-frame read back as a target beyond the PAL frame.
+        and #$4f
         sta VIC_CONTROL_1
         lda MMU_RCR
         and #$bf
@@ -606,5 +609,11 @@ raster_scratch_placement_reserve:
 ; common-RAM copies, compiler runtime, or scheduler reservations.
 raster_primitives_placement_reserve:
         .res 173, $ea
+; Shared raster saved 294 bytes. The UAPP 0.3 explicit completion seam spends
+; 158 CODE bytes (no BSS); NMI ownership spends another 71 + 6 call-site
+; bytes (no BSS/ZP). Private window-manager C savings recover 221, increasing
+; the remaining 59 to 280. All bytes remain owned; shadow placement is frozen.
+raster_shared_placement_reserve:
+        .res 280, $ea
         .export _udeks_vic_gateway_size_vic, _udeks_vic_gateway_size_sprite
         .export _udeks_vic_gateway_size_page, _udeks_vic_gateway_size_outline

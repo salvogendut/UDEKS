@@ -1,0 +1,9 @@
+{
+  "disk_sha256": "afc0f96179c33babb732471596c2ff8006ffdfb4574778c0f6bee570d1ace8b0",
+  "shadow_clear_bytes": 8000,
+  "tail_preimage_bytes": 50,
+  "remaining_padding": 281,
+  "bitmap_sha256": "0f5f951c50c7a6c6a2f8eb59ab99f31c50b0eb7db7fd4c6fa50a1de6bd824878",
+  "owned_post_shadow_bytes": 3552,
+  "qualification": "same frozen disk; clear/install/bitmap/layout only"
+}

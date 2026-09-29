@@ -1,0 +1,118 @@
+Modules list:
+-------------
+hardware_capability.o:
+    CODE              Offs=000000  Size=0003C7  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000001  Align=00001  Fill=0000
+capability-bridge.o:
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+CODE                  000200  0005C6  0003C7  00001
+BSS                   0005C7  0005C7  000001  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               0005C7 RLA    __BSS_SIZE__              000001 REA    
+__CODE_SIZE__             0003C7 REA    _udeks_capability_start   000200 RLA    
+_udeks_probe_georam       000B88 REA    _udeks_probe_reu          000B5C REA    
+_udeks_probe_vdc_revision 000B47 REA    _udeks_probe_video_standard 000B04 REA    
+_udeks_vdc_read_selected  00204D REA    _udeks_vdc_select         002019 REA    
+_udeks_vdc_status         009F28 REA    _udeks_vdc_write_selected 002033 REA    
+addysp                    008F0D REA    decsp2                    008F64 REA    
+decsp6                    008F98 REA    incsp1                    008FF7 REA    
+incsp2                    009006 REA    incsp3                    009014 REA    
+incsp4                    009019 REA    incsp6                    009023 REA    
+ptr1                      00000E REZ    pusha                     009179 REA    
+pushax                    00918F REA    pushw0sp                  0091A5 REA    
+sp                        000006 REZ    staspidx                  00923C REA    
+subysp                    0092C4 REA    
+
+
+Exports list by value:
+----------------------
+__BSS_SIZE__              000001 REA    sp                        000006 REZ    
+ptr1                      00000E REZ    _udeks_capability_start   000200 RLA    
+__CODE_SIZE__             0003C7 REA    __BSS_RUN__               0005C7 RLA    
+_udeks_probe_video_standard 000B04 REA    _udeks_probe_vdc_revision 000B47 REA    
+_udeks_probe_reu          000B5C REA    _udeks_probe_georam       000B88 REA    
+_udeks_vdc_select         002019 REA    _udeks_vdc_write_selected 002033 REA    
+_udeks_vdc_read_selected  00204D REA    addysp                    008F0D REA    
+decsp2                    008F64 REA    decsp6                    008F98 REA    
+incsp1                    008FF7 REA    incsp2                    009006 REA    
+incsp3                    009014 REA    incsp4                    009019 REA    
+incsp6                    009023 REA    pusha                     009179 REA    
+pushax                    00918F REA    pushw0sp                  0091A5 REA    
+staspidx                  00923C REA    subysp                    0092C4 REA    
+_udeks_vdc_status         009F28 REA    
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    capability-bridge.o       build/8502/capability-bridge.s(54)
+__BSS_SIZE__ ([linker generated]):
+    capability-bridge.o       build/8502/capability-bridge.s(54)
+__CODE_SIZE__ ([linker generated]):
+    capability-bridge.o       build/8502/capability-bridge.s(54)
+_udeks_capability_start (hardware_capability.o):
+    capability-bridge.o       build/8502/capability-bridge.s(53)
+_udeks_probe_georam (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(16)
+_udeks_probe_reu (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(15)
+_udeks_probe_vdc_revision (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(14)
+_udeks_probe_video_standard (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(13)
+_udeks_vdc_read_selected (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(21)
+_udeks_vdc_select (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(19)
+_udeks_vdc_status (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(18)
+_udeks_vdc_write_selected (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(20)
+addysp (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+decsp2 (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+decsp6 (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+incsp1 (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+incsp2 (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+incsp3 (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+incsp4 (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+incsp6 (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+ptr1 (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(11)
+pusha (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+pushax (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+pushw0sp (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+sp (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(10)
+staspidx (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+subysp (capability-bridge.o):
+    hardware_capability.o     build/8502/hardware_capability.s(574)
+

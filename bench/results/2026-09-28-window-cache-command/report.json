@@ -1,0 +1,70 @@
+{
+  "1986": {
+    "0": {
+      "rows": 132,
+      "commands": 543,
+      "images": 66,
+      "interrupts": 15141,
+      "observed_stack_offset": 217,
+      "pixel_sha256": "e928ae5083036895af16d235cc8e9767e8b6a21eae080a86943e949d59921851"
+    },
+    "1": {
+      "rows": 312,
+      "commands": 336,
+      "images": 2,
+      "interrupts": 26056,
+      "observed_stack_offset": 217,
+      "pixel_sha256": "8dd6a64cf89e9564f6b5116d753c118f572779cebb3a5ff79c9a1d26ee0ef522"
+    },
+    "irq-leak": {
+      "detected_fields": [
+        15
+      ]
+    },
+    "zp-leak": {
+      "detected_fields": [
+        16
+      ]
+    },
+    "shell-stack": {
+      "detected_fields": [
+        19,
+        21
+      ]
+    }
+  },
+  "vice": {
+    "0": {
+      "rows": 132,
+      "commands": 543,
+      "images": 66,
+      "interrupts": 15149,
+      "observed_stack_offset": 217,
+      "pixel_sha256": "e928ae5083036895af16d235cc8e9767e8b6a21eae080a86943e949d59921851"
+    },
+    "1": {
+      "rows": 312,
+      "commands": 336,
+      "images": 2,
+      "interrupts": 25981,
+      "observed_stack_offset": 217,
+      "pixel_sha256": "8dd6a64cf89e9564f6b5116d753c118f572779cebb3a5ff79c9a1d26ee0ef522"
+    },
+    "irq-leak": {
+      "detected_fields": [
+        15
+      ]
+    },
+    "zp-leak": {
+      "detected_fields": [
+        16
+      ]
+    },
+    "shell-stack": {
+      "detected_fields": [
+        19,
+        21
+      ]
+    }
+  }
+}

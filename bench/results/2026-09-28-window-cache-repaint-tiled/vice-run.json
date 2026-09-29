@@ -1,0 +1,49 @@
+{
+  "results": {
+    "d71": {
+      "pixels": 17472,
+      "geometry": [
+        144,
+        88,
+        168,
+        104
+      ],
+      "coalesced_drains": 589,
+      "pending": 0,
+      "handoff_preserved": true
+    },
+    "d64": {
+      "pixels": 17472,
+      "geometry": [
+        144,
+        88,
+        168,
+        104
+      ],
+      "coalesced_drains": 1180,
+      "pending": 0,
+      "handoff_preserved": true
+    }
+  },
+  "provenance": "\nVICE - Versatile Commodore Emulator\n\n            ID: net.sf.VICE\n           Ref: app/net.sf.VICE/x86_64/stable\n          Arch: x86_64\n        Branch: stable\n       Version: 3.10\n       License: GPL-2.0+\n        Origin: flathub\n    Collection: org.flathub.Stable\n  Installation: system\nInstalled Size: 45.8\u00a0MB\n       Runtime: org.freedesktop.Platform/x86_64/25.08\n           Sdk: org.freedesktop.Sdk/x86_64/25.08\n\n        Commit: bbd997ea8cbf7e6ba06ff82136fd71069ce2011f93c006412bcda7bbde17e448\n        Parent: 68a5281bbbfb691d105e1006686691713eb0cab353a7d869f4b72c066eca18c7\n       Subject: Add desktop files for vsid, x64dtv, xcbm5x0, xscpu64 (c39f8386949f)\n          Date: 2026-01-18 14:54:47 +0000\n",
+  "report_sha256": "b3685933175a5d7ab69358031e71f59ee0b921730d18b09972975ff862b917b6",
+  "raw_sha256": {
+    "vice-d64-bitmap.bin": "bf1ec5e270ca15a51c7a31b5af880c65e42e8f018061d63f66ad244746a25b2e",
+    "vice-d64-guards.bin": "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+    "vice-d64-image.bin": "2d59fa22a9de37942a185638a9db24e8f822a4f19170489f928943e4e7029e89",
+    "vice-d64-nmi.bin": "bd8220ddad7b6c8aa7237fb2358ba6fee800047246dd5f03405e9b6bce08e2fc",
+    "vice-d64-phase.bin": "dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986",
+    "vice-d64-shadow.bin": "bf1ec5e270ca15a51c7a31b5af880c65e42e8f018061d63f66ad244746a25b2e",
+    "vice-d64-source.bin": "f80b445ff887ea4fec808d4ddb46543f36ca1cbf24cd93afe845d8935a4ce0e0",
+    "vice-d64-window.bin": "4f2c53f46b8ab14c03342ff031fb438d0b43070d153b94aecb73b5553d1b7847",
+    "vice-d71-bitmap.bin": "bf1ec5e270ca15a51c7a31b5af880c65e42e8f018061d63f66ad244746a25b2e",
+    "vice-d71-guards.bin": "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+    "vice-d71-image.bin": "2d59fa22a9de37942a185638a9db24e8f822a4f19170489f928943e4e7029e89",
+    "vice-d71-nmi.bin": "15edd25ba1e47a6c644ea91ed7fbfcdc07ef56b1541c20adddb86dd6be6dc11f",
+    "vice-d71-phase.bin": "dbc1b4c900ffe48d575b5da5c638040125f65db0fe3e24494b76ea986457d986",
+    "vice-d71-shadow.bin": "bf1ec5e270ca15a51c7a31b5af880c65e42e8f018061d63f66ad244746a25b2e",
+    "vice-d71-source.bin": "f80b445ff887ea4fec808d4ddb46543f36ca1cbf24cd93afe845d8935a4ce0e0",
+    "vice-d71-window.bin": "4f2c53f46b8ab14c03342ff031fb438d0b43070d153b94aecb73b5553d1b7847"
+  },
+  "scope": "cold boot, native row capture, pixels, NMI and graphics restart; dragging separately native-tested in 1986"
+}

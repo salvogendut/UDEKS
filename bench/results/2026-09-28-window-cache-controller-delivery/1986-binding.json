@@ -1,0 +1,15 @@
+{
+  "build_report_sha256": "1041c1172850670201a7d55bc627ab19d5348394eb1c7b6c5f2d873f607c90e9",
+  "disk_sha256": {
+    "delivery.d71": "da12cf2caa0d270230b5f8f2e015c584e5d27919ccc6cffa54a6d0a957e112e4",
+    "delivery.d64": "00cbbe44338eac680f5b0c37f432b38697a177ea0154ec2673f0934b32034103"
+  },
+  "raw_sha256": {
+    "1986-d64-core.bin": "1a7f1fe95ffb0ee0266a6e25819d471fd914a443b8c0d24f09c1bffe0beee9fa",
+    "1986-d64.log": "acf11b9518db637da76a20eca5dcbc381fb6bf32325638360341377e0e1ec2da",
+    "1986-d71-core.bin": "1a7f1fe95ffb0ee0266a6e25819d471fd914a443b8c0d24f09c1bffe0beee9fa",
+    "1986-d71.log": "acf11b9518db637da76a20eca5dcbc381fb6bf32325638360341377e0e1ec2da",
+    "1986-provenance.json": "d4abf8c05199526671a760b00faf0aeb777a7bbf6eecf8d69d9f078fcaa1c52b",
+    "1986-results.json": "f682f3c459592db027e372a377fc0fdf6bc394c0ce670a180ab8cb1b3f8f4814"
+  }
+}

@@ -114,6 +114,11 @@ class GraphicsCachePlacementTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'reserve changed'):
             audit(*args)
 
+    def test_arbitrary_shared_padding_cannot_create_a_false_cache_budget(self):
+        with self.assertRaisesRegex(ValueError, 'shared raster padding'):
+            audit(*inputs(), primitives={'pixel': {'CODE': 190}, 'span': {'CODE': 102}},
+                  primitive_reserve=173, shared_reserve=123)
+
     def test_candidate_additional_allocation_is_rejected(self):
         args = inputs(); args[12][0] += '\nName: "EXTRA"\nFlags: 0\nSize: 1\n'
         with self.assertRaisesRegex(ValueError, 'non-CODE/BSS'):

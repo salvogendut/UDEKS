@@ -1,0 +1,12 @@
+{
+  "program_sha256": {
+    "probe-0.prg": "0e7783c40a85e222c37f2ab3ae8ceee5d85dc701e9dda39d917fb6ad3fe8a2df",
+    "probe-1.prg": "51efe91a9ebf12333ecf266dbe3384c75178064c5b82061f9be44e148d4efa3c",
+    "probe-irq-leak.prg": "360f0f8e88a12140a4eaa4b256fdfe83feb3c2ca14db38962c40d3158fa0bfe1"
+  },
+  "raw_sha256": {
+    "1986-0.bin": "e6c0fe3498b70b76dab3683089a2a4e6ada76b09e13b8e7b0df0981a84574b9b",
+    "1986-1.bin": "6f4a54b83854608d9e273f16d0d5e32dc00c00b34f1c9676edc5eb3f8d367072",
+    "1986-irq-leak.bin": "ac94559a737858d49da1fa044f67f963d338b5706d082930401dcc36fee05823"
+  }
+}

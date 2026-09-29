@@ -1,0 +1,216 @@
+Modules list:
+-------------
+poll_entry.o:
+    STARTUP           Offs=000000  Size=000064  Align=00001  Fill=0000
+task_stream.o:
+    CODE              Offs=000000  Size=00021B  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000002  Align=00001  Fill=0000
+ush.o:
+    CODE              Offs=00021B  Size=000455  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=00007F  Align=00001  Fill=0000
+    BSS               Offs=000002  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=000670  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000681  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(call.o):
+    CODE              Offs=00068F  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=000696  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=00069F  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=0006AC  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=0006B9  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=0006E7  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=0006EE  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=000704  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000709  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=00070E  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000713  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000729  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000743  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=000759  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               009000  009063  000064  00001
+CODE                  009064  0097C9  000766  00001
+RODATA                0097CA  009848  00007F  00001
+BSS                   009849  009884  00003C  00001
+
+
+Exports list by name:
+---------------------
+_submit_request           00920C RLA    _udeks_exec_line          009171 RLA    
+_udeks_poll               00901C RLA    _udeks_prompt             009207 RLA    
+_udeks_read               0090FD RLA    _udeks_submit_simple      00900B RLA    
+_udeks_ush_poll           0095C0 RLA    _udeks_wait_foreground    009202 RLA    
+_udeks_write              009064 RLA    _udeks_write_byte         009032 RLA    
+addeq0sp                  0096D4 RLA    addeqysp                  0096D6 RLA    
+addysp                    0096E6 RLA    callax                    0096F3 RLA    
+decsp1                    0096FA RLA    decsp2                    009703 RLA    
+decsp3                    009710 RLA    incsp1                    00974B RLA    
+incsp2                    00975A RLA    incsp3                    009768 RLA    
+incsp4                    00976D RLA    incsp6                    009772 RLA    
+ptr1                      00000A RLZ    pusha                     00977B RLA    
+pusha0                    00978F RLA    pushax                    009791 RLA    
+sp                        000002 RLZ    sreg                      000004 RLZ    
+staspidx                  0097A7 RLA    subysp                    0097BD RLA    
+tmp1                      000012 RLZ    tosicmp0                  00971D RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+ptr1                      00000A RLZ    tmp1                      000012 RLZ    
+_udeks_submit_simple      00900B RLA    _udeks_poll               00901C RLA    
+_udeks_write_byte         009032 RLA    _udeks_write              009064 RLA    
+_udeks_read               0090FD RLA    _udeks_exec_line          009171 RLA    
+_udeks_wait_foreground    009202 RLA    _udeks_prompt             009207 RLA    
+_submit_request           00920C RLA    _udeks_ush_poll           0095C0 RLA    
+addeq0sp                  0096D4 RLA    addeqysp                  0096D6 RLA    
+addysp                    0096E6 RLA    callax                    0096F3 RLA    
+decsp1                    0096FA RLA    decsp2                    009703 RLA    
+decsp3                    009710 RLA    tosicmp0                  00971D RLA    
+incsp1                    00974B RLA    incsp2                    00975A RLA    
+incsp3                    009768 RLA    incsp4                    00976D RLA    
+incsp6                    009772 RLA    pusha                     00977B RLA    
+pusha0                    00978F RLA    pushax                    009791 RLA    
+staspidx                  0097A7 RLA    subysp                    0097BD RLA    
+
+
+
+Imports list:
+-------------
+_submit_request (task_stream.o):
+    poll_entry.o              user/lib/poll_entry.s(16)
+_udeks_exec_line (task_stream.o):
+    ush.o                     build/user/ush.s(17)
+_udeks_poll (poll_entry.o):
+    ush.o                     build/user/ush.s(16)
+_udeks_prompt (task_stream.o):
+    ush.o                     build/user/ush.s(19)
+_udeks_read (task_stream.o):
+    ush.o                     build/user/ush.s(15)
+_udeks_submit_simple (poll_entry.o):
+    task_stream.o             build/user/task_stream.s(20)
+_udeks_ush_poll (ush.o):
+    poll_entry.o              user/lib/poll_entry.s(15)
+_udeks_wait_foreground (task_stream.o):
+    ush.o                     build/user/ush.s(18)
+_udeks_write (task_stream.o):
+    ush.o                     build/user/ush.s(14)
+_udeks_write_byte (poll_entry.o):
+    ush.o                     build/user/ush.s(13)
+addeq0sp (addeqsp.o):
+    ush.o                     build/user/ush.s(674)
+    ush.o                     build/user/ush.s(674)
+addeqysp (addeqsp.o):
+    task_stream.o             build/user/task_stream.s(370)
+addysp (addysp.o):
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    ush.o                     build/user/ush.s(674)
+callax (call.o):
+    task_stream.o             build/user/task_stream.s(370)
+decsp1 (decsp1.o):
+    task_stream.o             build/user/task_stream.s(370)
+decsp2 (decsp2.o):
+    task_stream.o             build/user/task_stream.s(370)
+    task_stream.o             build/user/task_stream.s(370)
+    task_stream.o             build/user/task_stream.s(370)
+    poll_entry.o              user/lib/poll_entry.s(17)
+decsp3 (decsp3.o):
+    ush.o                     build/user/ush.s(674)
+    ush.o                     build/user/ush.s(674)
+    task_stream.o             build/user/task_stream.s(370)
+incsp1 (incsp1.o):
+    ush.o                     build/user/ush.s(674)
+    poll_entry.o              user/lib/poll_entry.s(18)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    ush.o                     build/user/ush.s(674)
+incsp3 (incsp3.o):
+    ush.o                     build/user/ush.s(674)
+    ush.o                     build/user/ush.s(674)
+    ush.o                     build/user/ush.s(674)
+    task_stream.o             build/user/task_stream.s(370)
+incsp4 (incsp4.o):
+    task_stream.o             build/user/task_stream.s(370)
+incsp6 (incsp6.o):
+    task_stream.o             build/user/task_stream.s(370)
+    task_stream.o             build/user/task_stream.s(370)
+ptr1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    call.o                    runtime/call.s(8)
+    ush.o                     build/user/ush.s(11)
+    task_stream.o             build/user/task_stream.s(11)
+pusha (pusha.o):
+    ush.o                     build/user/ush.s(674)
+    ush.o                     build/user/ush.s(674)
+    ush.o                     build/user/ush.s(674)
+    ush.o                     build/user/ush.s(674)
+    task_stream.o             build/user/task_stream.s(370)
+    task_stream.o             build/user/task_stream.s(370)
+    task_stream.o             build/user/task_stream.s(370)
+pusha0 (pushax.o):
+    ush.o                     build/user/ush.s(674)
+    ush.o                     build/user/ush.s(674)
+pushax (pushax.o):
+    ush.o                     build/user/ush.s(674)
+    ush.o                     build/user/ush.s(674)
+    ush.o                     build/user/ush.s(674)
+    ush.o                     build/user/ush.s(674)
+    ush.o                     build/user/ush.s(674)
+    task_stream.o             build/user/task_stream.s(370)
+    task_stream.o             build/user/task_stream.s(370)
+sp (zeropage.o):
+    subysp.o                  runtime/subysp.s(9)
+    staspidx.o                runtime/staspidx.s(9)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    ush.o                     build/user/ush.s(10)
+    task_stream.o             build/user/task_stream.s(10)
+    poll_entry.o              user/lib/poll_entry.s(19)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+    task_stream.o             build/user/task_stream.s(10)
+staspidx (staspidx.o):
+    ush.o                     build/user/ush.s(674)
+    task_stream.o             build/user/task_stream.s(370)
+    task_stream.o             build/user/task_stream.s(370)
+subysp (subysp.o):
+    ush.o                     build/user/ush.s(674)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+tosicmp0 (icmp.o):
+    ush.o                     build/user/ush.s(674)
+    ush.o                     build/user/ush.s(674)
+

@@ -499,6 +499,843 @@ improvement. Physical C128 and visual resize/overlap tests are pending.
 Exact testable disks and evidence:
 `bench/{artifacts,results}/2026-09-28-graphics-primitives-integration`.
 See [GRAPHICS-PRIMITIVES.md](docs/GRAPHICS-PRIMITIVES.md) for the user test.
-Next: compact line/rectangle/clear/shared plumbing and remeasure; do not promise
-the remaining deficit can be eliminated. Do not shrink stacks, move the shadow,
-remove compatibility paths, or claim moves avoid redraw before cache integration.
+The user reports the span/pixel build looks good; that checkpoint is committed
+and pushed as `0406805`. This does not identify a physical-HW qualification.
+
+The follow-on shared-raster step is now installed and emulator-qualified:
+line stepping remains C but shares the ASM pixel entry; rectangles use four
+fill spans; clear is 52-byte ASM. Twelve standalone PRGs/24 records compare
+all pixels, dirty flags, stack balance and guards; host geometry oracle passes
+1,000 randomized trials. The complete link saves another 294 bytes, held as
+named padding; helper membership and frozen placements/ABIs remain unchanged.
+Line primitives improve 6–8%, rectangle matrix 4.14×, clear about 10×.
+Native D71/D64 32-drag and normal input/clock/console gates, VICE both-format
+app/scheduler and full bitmap-equality gates, and deterministic clean build
+pass. Same-harness maximum releases are 171/167→107/103 frames; cancellation
+is **140→161**, not an improvement; remaining post-release replay is 970→655.
+Physical/visual resize and overlap tests remain pending. Exact new test images
+and evidence: `bench/{artifacts,results}/2026-09-28-graphics-shared-integration`;
+standalone suite: `...-graphics-shared`. See
+[GRAPHICS-SHARED.md](docs/GRAPHICS-SHARED.md).
+
+Current cache reserves total 516; **at least 507 more bytes** are needed before
+binding/continuation state. Cache remains uninstalled. Next: explicit
+service-placement/shared-raster budget investigation with measured alternatives.
+Do not promise more optimization can cover the deficit, shrink stacks, move
+the shadow, remove commands or claim moves avoid redraw before integration.
+
+The next placement/IRQ increment is now qualified as a **standalone private
+bank-1 row overlay**, not a production cache: 213 bytes at bank-1 $4200 inside
+a candidate 512-byte lease, packed image $4400-$5BFF (6144), measured/tested
+resident binding194 including gateway source, zero resident BSS. That leaves
+322 of the 516 reserve before policy, state, delivery and whole-link effects.
+Common parameters/staging stay in the existing VIC gateway workspace; neither
+$F400 nor shell/filesystem scratch is borrowed (outline tag invalidation is
+explicit). Every row restores the kernel map and caller I/D flags; both
+emulators pass 66 alignment/edge images plus a 220x160 snapshot, all pixels,
+dirty flags and guards, stack balance and active IRQs. Removing only the live
+SEI in a negative-control PRG is detected and rejected on both emulators.
+Exact evidence: `bench/{artifacts,results}/2026-09-28-window-cache-overlay`.
+See [WINDOW-CACHE-OVERLAY.md](docs/WINDOW-CACHE-OVERLAY.md) for reproduce/limits.
+Next: measured bank-1 delivery/lifetime ownership, then explicit completed-image
+notification and generation-owned bounded cache continuations in the window
+service. Do not cache partial or newly raised obscured windows, infer completion
+from end-paint, or claim production input/NMI/GUI/HW qualification from this proof.
+No new user boot image or cache-enabled move path is available yet.
+
+The subsequent delivery/lifetime increment is now experimental-qualified:
+prefix the secondary payload at bank-1 $4200 with the exact 213-byte core;
+USOV and activation bytes remain at $5000+, same end $6229, one stage-1 LOAD
+address byte changes. The 512-byte core/identity slot survives both-format
+VICE boot/xinit/clock/wave/console/shutdown/restart and native 32-drag gates
+with background clock and console cancellation. No new resident bytes or
+extra LOAD; ordinary disks are unchanged. Delivered core is not invoked.
+Evidence: `bench/{artifacts,results}/2026-09-28-window-cache-delivery`.
+
+Pure C cache lease/generation/row policy is host-tested, not production-linked.
+Actual cc65 record sizes are lease13/row9; measured bank-1 link is
+213 core + 1828 policy + 526 helpers = 2567 bytes, unexecuted. Bank-1
+$E700-$EFF0 is the shell's live stack, not scratch. Candidate code4200-4CFF,
+private C stack4D00-4DEF, identity4DF0-4DFF, packed image4E00-5BFF (3584)
+needs dispatcher/state/stack gates before freezing; default168x104 fits,
+220x160 would redraw. Do not confuse it with the delivered 512-byte core
+or earlier row-only 6144-byte image candidate.
+Next: private C runtime/stack machine proof and measured dispatcher, then
+explicit completed-image notification (UAPP ends at CFFF; no D000 append),
+generation-owned bounded window-service continuations and whole-link/input/
+compositor/HW gates. Current normal build still replays moved windows.
+See [WINDOW-CACHE-DELIVERY.md](docs/WINDOW-CACHE-DELIVERY.md).
+
+The private C runtime proof is now standalone-qualified in 1986 and VICE.
+Real C policy/helpers execute from bank 1 behind a 118-byte dispatcher:
+module2685 code at4200-4C7C, state28 at4CD0-4CEB, private C stack4D00-4DEF,
+image4E00-5BFF3584. C gateway59/common source binding83 + row binding194 =277,
+leaving239 of516 before marshalling/completion/delivery/NMI/continuation costs.
+All26 published ZP bytes are saved/restored, twelve addresses link-asserted;
+caller uses bank0EFF0, while bank1E700-EFFF remains independently protected.
+547 dispatcher calls/132 rows/66 images and439 calls/208 rows/default168x104 pass full
+shadow/dirty/runtime/stack/guard oracles. Three exact one-byte negative controls
+detect unsafe IRQ mapping, shifted ZP restoration and using the shell stack,
+even with correct pixels. Diagnostic repair is outside the candidate binding.
+Lowest observed changed private stack byte4DDE is not a hard depth bound;
+do not shrink the240-byte stack. IRQ counter is32bit, allfour I/D modes tested.
+Evidence: `bench/{artifacts,results}/2026-09-28-window-cache-c-runtime`.
+No production binding, completion notification or cached move is installed.
+Next: measure versioned UAPP completion + C manager marshalling/continuation
+cost, qualify production delivery/validation and NMI ownership/deferral before
+enablement. Preserve53 vectors throughCFFF; do not append atD000, cache partial
+or newly raised obscured windows, borrowUSHstack or claim live input/task/Z80/
+GUI/HW qualification. See [WINDOW-CACHE-C-RUNTIME.md](docs/WINDOW-CACHE-C-RUNTIME.md).
+
+### Latest graphics checkpoint — 2026-09-28
+
+This supersedes the earlier candidate budgets above. A bounded C command now
+combines policy, one row transfer and acknowledgement in one private-runtime
+lease. Both emulators pass alignment/edge cases and one capture reused for two
+pastes after erasing the source, all pixel/dirty/runtime/stack guards and three
+one-byte live fault controls. Candidate module: 3,116 bytes at bank-1
+$4200-$4E2B; state 22 at $4EE0-$4EF5; private stack $4F00-$4FEF; packed image
+$5000-$5BFF (3,072). Combined resident binding: 241 bytes, not installed.
+Evidence: `bench/{artifacts,results}/2026-09-28-window-cache-command`.
+
+The explicit completion seam IS installed: UAPP 0.3 optional header pointer
+$CF58, unchanged 53 vectors/ZP, version-gated xwave-only helper. Actual C host
+tests and both-format VICE/native boot/input/drag/Ctrl+C/background-clock and
+post-drag completion gates pass. Shadow/scheduler and bitmap-equality gates
+pass. It spends 158 CODE bytes and no BSS from shared padding (294 → 136);
+all primary placements remain frozen. Bootfs is exactly 11,708 bytes: no
+application growth without a capacity decision.
+Evidence: `bench/{artifacts,results}/2026-09-28-window-completion`.
+
+Remaining padding is 358; the combined binding would leave 117 BEFORE manager,
+NMI and delivery integration. Do not claim complete cache fit or skipped plotting.
+Next: production-shaped manager continuation/marshalling budget, NMI ownership
+and deferral, and exact C-module delivery validation. Preserve existing memory,
+stack, service and scheduler contracts and redraw fallback. There is no new
+user-visible cached-move build yet; this checkpoint needs no new manual test.
+See [WINDOW-CACHE-COMMAND.md](docs/WINDOW-CACHE-COMMAND.md).
+
+Final gate: 736 host tests pass; complete clean parallel `boot all` rebuild and
+`placement-check` pass. Both rebuilt disk hashes match the qualified completion
+images exactly. Evidence includes the shadow/install/layout blocks in
+`bench/results/2026-09-28-window-completion-layout`. No VICE sessions remain.
+
+### Latest graphics checkpoint — deferred NMI, 2026-09-28
+
+This supersedes the 358/117-byte budget immediately above. The production
+8502 NMI service is installed: exact eight-byte common stub at FFE2-FFE9,
+pending FFF5 and wrapping/coalesced drains FFF6-FFF7. No I/O, MMU writes,
+compiler ZP or C in the stub; the pointer IRQ drains only after mapping kernel
+I/O and saving registers. Z80 return/bootstrap bytes remain unchanged.
+Installation is boot-only before input readiness; RESTORE during boot is not
+qualified, nor is RESTORE a reset/cancel command. Physical confirmation remains.
+
+Standalone combined-C NMI stress passes in both emulators, with independently
+counted arrivals in worker-flat leases and outside them, exact arrival/drain
+totals and complete pixel/dirty/runtime/stack guards. One live STA→BIT opcode
+fault retains correct pixels but fails the drain proof. Diagnostic observer
+FF20 is NEVER production-linked; that address belongs to TASKGATE in the OS.
+Evidence: `bench/{artifacts,results}/2026-09-28-window-cache-nmi`.
+
+Both normal disk formats pass VICE/native boot and continuous CIA2 NMI across
+Z80 wave/clock/completion gates. Native additionally uses the real RESTORE
+keyboard API and tests typing/history, mouse dragging, foreground Ctrl+C,
+console recovery and background-clock survival. Evidence:
+`bench/{artifacts,results}/2026-09-28-nmi-integration`, plus the independently
+bound `bench/results/2026-09-28-nmi-integration-layout` clear/install/bitmap/
+placement gate. Docs and reproduction/manual steps: `docs/WINDOW-CACHE-NMI.md`.
+
+NMI object71 CODE + two JSRs6 =77, no BSS/ZP. Shared padding136→59; remaining
+total281. Candidate binding241 leaves only40 BEFORE manager continuation/
+marshalling and delivery validation. Actual-link tests prove unchanged primary
+segments, all unchanged module footprints except the charged transport/pointer
+changes, normal/panic agreement and actual linked call sites. Placement audit
+rejects one-byte NMI/pointer growth. Bootfs is still full at11,708 bytes.
+
+Final gate:745 host tests, complete clean parallel `boot all`, placement-check,
+and rebuilt-image/input hash equality pass. D71 SHA256:
+`afc0f96179c33babb732471596c2ff8006ffdfb4574778c0f6bee570d1ace8b0`;
+D64: `06892e171b443af308adcf794979d621ba109559142a7677e942ac9168062786`.
+No VICE sessions remain. Changes are uncommitted on graphics-window-cache-spike;
+latest user said continue, not commit/push.
+
+Manual test now useful: xinit → xclock & → xwave &, RESTORE during plotting
+and after drag, verify mouse/console remain alive; foreground xwave → Ctrl+C
+must still leave the background clock alive. RESTORE should not cancel wave.
+This is resilience, NOT faster moves: cached GUI moves remain disabled.
+
+Next: measure the production-shaped C manager continuation/marshalling and
+identify service-local code savings or a reviewed relocation BEFORE enabling
+the combined binding. Completion eligibility alone is not a generation-owned
+cache; preserve explicit completion, reject partial/obscured images, bound rows,
+handle damage/clock/resize/cancellation and retain redraw fallback. No borrowing
+USH/private stacks, common gateways, module guards, app slots or scheduler
+padding. Physical NMI confirmation can proceed while the budget work continues.
+
+### Latest graphics checkpoint — manager budget, 2026-09-28
+
+User reports the preceding build looks good; the test platform was not named,
+so do not convert that into a platform-identified physical NMI qualification.
+This section supersedes the 281/40-byte budget above.
+
+Private C manager savings ARE installed: reset sharing58, chrome geometry
+reuse145, intersection arithmetic18 =221. Manager7679 CODE,130 RODATA,88 HIGHBSS;
+all other module footprints and primary segment bounds unchanged except the
+compensating transport padding59→280. No added helper modules. Explicit private
+fastcall annotations saved0 and were NOT applied; public calling conventions
+remain unchanged. Host tests compare complete binary drawing/state traces
+against the prior C source for geometry/flags/lifecycle/move/resize/close paths.
+
+Remaining total padding502. Combined binding241 leaves261 BEFORE controller,
+hooks, source/destination locks and delivery validation. A real isolated bank-0
+link of the flow992 CODE+4 RODATA, caller state4 and binding241 is739 bytes
+short even after spending ALL502. No new library helpers. Its shadow moves;
+it is deliberately UNBOOTABLE and never packaged. Every split ld65 output was
+retargeted, and source/provider/object/map/hash evidence is preserved in
+`bench/artifacts/2026-09-28-window-manager-budget`. Do not mistake this sizing
+map for the normal installed map or repurpose scheduler/app/stack/common space.
+
+The four-byte C continuation (`move_cache_flow.c`/`window_cache_flow.h`) is
+host-tested but NOT normal-linked: capture, same-content-generation repeated
+pastes, stale/wrong-ticket rejection before touching the shared request, at
+most one row per STEP, cancellation/handle reuse/generation wrap, bad geometry
+and exhaustive unexpected result tags. It calls the actual C command/policy
+in host tests. The original variable-mask result comparison crashed the
+reference cc65 optimizer; explicit scalar comparisons compile with full-Oirs.
+This is not yet a complete compositor integration: no locks, hooks, private
+placement, delivery or live continuation machine qualification.
+
+Both normal formats pass native typing/history/mouse drag/Ctrl+C/background
+clock/completion/RESTORE/CIA2-NMI gates and VICE boot/Z80/clock/completion/NMI.
+Independent clear/install/tail/bitmap equality gates pass; new audit rejects
+manager footprint drift. Evidence: `bench/{artifacts,results}/2026-09-28-window-manager-integration`
+and `bench/results/2026-09-28-window-manager-integration-layout`.
+Final750 host tests, clean parallel boot/all, placement-check and rebuilt
+disk/map/kernel/bootfs hash equality pass. D71:
+`5dc9c2bfc00e5c221e77ebcc1737587f2681337841316a2a24f80f2cf1d35db0`;
+D64: `1fae55695a76d5e69eb641ed7910f81d3cb88a8c1f31b4cf5aa8a6ca6a24ada6`.
+No VICE processes remain. Changes remain uncommitted; user said continue.
+
+Next: measure a direct IN-BANK C controller under the existing SINGLE private
+C runtime lease, with only bounded marshalling/hooks resident. Do NOT move the
+current flow unchanged: its call to the resident binding would nest/reset its
+own MMU/runtime/software stack. Refactor the backend to direct in-bank C calls,
+measure the complete module/helper/dispatcher closure, persistent flow/lease
+state, guarded240-byte private stack and packed-image capacity. No new layout
+is frozen; keep the default168x104 image (2184 bytes) viable and oversize redraw
+fallback. Repeat full pixel/dirty/ZP/stack/I/D/IRQ/NMI and real fault controls
+for any new placement before delivery and live GUI enablement. Kernel hooks
+must freeze capture/paste geometry and invalidate before damage, repaint,
+restacking, resize, destruction/reuse or shutdown. Same-generation reuse is a
+content ticket, NOT a per-paste nonce; no queued/reentrant continuation calls.
+
+Cached GUI moves remain disabled; no new manual test is needed here. Docs:
+`docs/WINDOW-MANAGER-BUDGET.md`. New qualifier invocation uses
+`tools/nmi_integration_probe.py --checkpoint 2026-09-28-window-manager-integration --work build/window-manager-integration`
+with build/1986/vice actions. `make clean` removed generated work directories,
+not the preserved evidence; rebuild before rerunning those tools.
+
+### Latest graphics checkpoint — direct bank-1 controller, 2026-09-28
+
+Standalone controller now FITS and is emulator-qualified; production pixel
+cache remains disabled. Read `docs/WINDOW-CACHE-CONTROLLER.md` for layout,
+private protocol, evidence and remaining gates. No new manual test yet.
+
+`move_cache_flow.c` has an opt-in IN_BANK direct backend and a private fixed
+single-owner STATE specialization; default caller-owned prototype unchanged.
+It must not re-enter the resident binding from banked C. Generic and fixed
+flows pass the same exhaustive host contract/fault tests; actual fixed C
+dispatcher+flow+command+policy is separately host-tested. Address/capacity
+parameters default to the older command proof unless explicitly overridden.
+
+First generic full link overflowed CODE by202. Fixed-state flow637 CODE+4 RO
+(generic994 CODE), controller209; entire core/helpers closure3977 at4200-5188.
+151 code slack; lease13/row9/flow4 at5220-5239; state guard22 at523A-524F;
+private C stack240 at5250-533F and16 top guard5340-534F; image5350-5BFF2224,
+default2184 leaves40. This layout is qualified only for the standalone proof.
+Do not shrink the stack or claim its observed offsetCC is a maximum depth.
+The unchanged213-byte row core is verified byte-identical. Gateway217 and
+uninstalled binding241 leave261 of502 resident padding before hooks/delivery.
+No ordinary kernel-linked module or frozen primary allocation changed.
+
+Private protocol0.1: OP F790 init/invalidate/capture/paste/step0..4;
+owner/window handleF792, content ticketF793word, eligibleF795, geometryF7A1;
+success result0 publishes phaseF791 and ticketF793, INVALID1/BUSY2 otherwise.
+This is NOT the prior raw command phase-tag result protocol. Stale/wrong-owner
+STEP must leave request and state unchanged; other rejection scratch is not
+promised unchanged. Capture/paste use the module epoch; repeated same-epoch
+pastes are deliberate, calls serialized, no queued/reentrant operations.
+
+VICE3.10/1986: alignment132rows476calls66images, repeated capture+two
+pastes312rows333calls after destroying original source. Full independent
+8000pixel+32dirty oracle, original ticket rejection, cancellation/oversize
+fallback checks, all26ZP, hardware stack, caller/worker/USH software stacks,
+all I/D modes and IRQ/MMU checks. Actual CIA2NMI reaches worker+kernel and
+exact drains=total: 1986alignment8906(worker128), repeated15194(worker104);
+VICE8785(worker147),15096(worker109). Four exact live single-byte faults
+(SEI/ZP restore/USH-stack/NMI-pending) are detected without pixel corruption.
+Diagnostics FF20/FF80 observer/IRQ are NEVER production addresses.
+Physical RESTORE/Z80 NMI routing still unqualified; no new hardware claim.
+
+Evidence `bench/{artifacts,results}/2026-09-28-window-cache-controller` with
+exact inputs/generated assembly/maps/PRGs/raw/provenance/hash verification.
+Tool `tools/window_cache_controller.py` build/run(--engine1986|vice)/preserve.
+ca65 source-directory lookup must not consume the older template layout:
+copied gateway/core assembly now uses the new include and build asserts C/ASM
+address agreement. Preserve refuses overwrite. Changes remain uncommitted.
+
+Next: measure full normal/panic integration delivery of the WHOLE C module
+and bounded resident marshalling/hooks/locks within remaining261, then live
+GUI/input/task/Z80/completion/cancellation/pixel gates before enabling moves.
+Freeze capture source/destination per continuation; invalidate before damage,
+clock overlap, repaint, resize, restack, destroy/reuse, shutdown and cancellation.
+No borrowing common gateway/stack/module guards, app slots, USH or scheduler
+reservations. Bootfs remains exactly full. Normal disks should remain byte-
+identical to the manager-integration checkpoint. Final754 host tests and full
+clean parallel boot/all + placement-check pass. D71/D64/kernel/maps/bootfs
+hashes exactly match the prior checkpoint. The regenerated standalone build
+report (all linked/program/source hashes) is byte-identical to the preserved
+report after clean. New evidence is safe; transient emulator result directories
+were removed by make clean, but the controller build was regenerated. No VICE
+sessions remain.
+
+### Latest graphics checkpoint — whole controller delivery, 2026-09-28
+
+Whole controller now cold-boots and survives lifetimes in ISOLATED test disks;
+still UNINVOKED there. Ordinary production disks remain unchanged and cached
+GUI dragging remains disabled. No new manual test needed. Read
+`docs/WINDOW-CACHE-CONTROLLER-DELIVERY.md` before next work.
+
+The complete3977-byte archived machine-qualified module4200-5188 overlaps the
+canonical scheduler source5000. New experimental secondary envelope LOAD4200:
+module bytes, zero slack5189-520F, VCC2identity0.1 at5210-521F, zero to5FFF,
+EXACT canonical scheduler/context/gate payload at6000-7228. Installed scheduler/
+context/task-tail homes unchanged; boot source retired before VIC bitmap reuse.
+The zero prefix also initializes future state/stack/image, but they are NOT
+invoked by these disks. Identity includes length/checksum/entry4200/dispatch42D5/
+capacity2224. Every complete4128-byte code/identity capture compares byte-exact.
+
+Measured relocation deltas only: stage1two LOAD/end bytes, scheduler-tail
+installerthree source bytes, task activationtwo source bytes, console installer
+one checksum byte. Installer lengths unchanged, zero extra resident delivery
+bytes. Console checksum is regenerated over composer+new activation bytes and
+the build rejects any console byte change beyond checksum operands. ca65 uses
+isolated generated constants; no normal build output is overwritten.
+
+Both formats VICE exact slot at boot/xinit/clock/wave/completion/utilities/
+shutdown/restart. Native both formats history/input, backgroundclock,32 wave
+drags, foregroundCtrlC and console recovery, then exact slot check. Log's
+"cached" latency means cached vertices, NOT pixels. No bootchainNMI stress or
+physicalHW claim here; standalone C execution/NMI proof is separate.
+
+Tool `tools/window_cache_controller_delivery.py` build/1986/vice/preserve,
+work `build/window-cache-controller-delivery`. Reuses mature read-only smoke
+functions from `graphics_cache_delivery.py` with explicit CORE_BYTES sizing
+(former hardcoded512 captures generalized). All source inputs, emitted artifacts,
+experimental disk hashes, exact build-report hash and every raw/log/provenance
+file are bound by run reports before archival. Preserve revalidates all expected
+captures/formats/32-drag gates and refuses overwrite. No ROMs/full snapshots
+preserved. QUALIFIED evidence
+`bench/{artifacts,results}/2026-09-28-window-cache-controller-delivery-r1`.
+Non-r1 archive is historical/incomplete: archive test caught an omitted
+canonical scheduler input copy/hash (bytes were embedded in secondary.prg).
+Do not overwrite it or treat it as the final qualification. r1 explicitly
+binds/preserves the consumed canonical input and must pass all archive tests.
+
+Next actual normal/panic resident acceptance+compositor integration. Padding
+still502, binding241 leaves261 BEFORE runtime validation, hooks/locks/marshalling/
+persistent ticket/state. No complete-fit claim yet. Validate code/version/layout
+before invoking unvalidated bank-1 C; initial checksum must precede row-core
+selfmodification. CommonF7xx workspace is overwritten by other VIC gateways,
+so it CANNOT retain a ticket/phase across polls. All state bytes must be charged,
+not tucked into someone else's guards. Capture source and paste destination
+must be immutable through READY; early drag cancels capture and falls back;
+second drag/content mutation/resize/restack/close/handle-reuse/shutdown/cancel
+must not resume stale row work. Ordinary recomposition during a move must not
+destroy the retained READY cache merely because the source pixels are gone.
+Full normal input/task/Z80/CtrlC/completion/overlap/resize/NMI/pixel gates are
+required before enabling GUI cache use. Changes remain uncommitted.
+Final758 host tests pass, including complete r1 archive/source/output/raw/run
+binding checks. Clean parallel boot/all + placement-check passes; normal disk
+hashes remain5dc9c2bf… (D71),1fae5569… (D64). Rebuilt experimental report is
+byte-identical to r1, proving all listed input/linked/disk hashes regenerate
+after clean. Both test disks are rebuilt under the work directory; transient
+raw/logs were removed by make clean, not immutable evidence. No VICE sessions
+remain. No new manual test yet; this step qualifies delivery, not pixel moves.
+
+### Latest graphics checkpoint — pre-C acceptance and ticket seam, 2026-09-28
+
+Read `docs/WINDOW-CACHE-ACCEPTANCE.md`. Page-bounded validation and persistent
+original-ticket reconstruction now pass STANDALONE machine qualification in
+VICE 3.10 and 1986. Normal disks are unchanged; no compositor hooks or pixel-
+cached GUI dragging are installed. No new manual test yet. Changes remain
+uncommitted on `graphics-window-cache-spike`.
+
+New `bench/window-cache-acceptance/{validator,binding}.s` and
+`tools/window_cache_acceptance.py` build/run(--engine 1986|vice)/preserve.
+Trusted 79-byte validator copied to $F68A maps worker-flat, compares all 16 VCC2
+identity bytes, sums ONE page (<=256), restores kernel. No unvalidated C, ZP,
+software stack or callback; 16 polls for 3,977 bytes, last 137. Whole initial
+sum and exact header required before INIT. Bad header/payload disable the
+service; guarded calls return $FF without C. Sum is not authentication or
+compensating-change protection. Do not revalidate mutable core after acceptance.
+
+Five explicitly charged writable CODE bytes: acceptance state, checksum/ticket
+word, owner, phase. Checksumming reuses ticket until acceptance; successful
+commands snapshot original generation/owner/phase while masked; rejects retain
+them. STEP reconstructs original ticket and owner, not current common scratch.
+The probe replaces common code and poisons checksum/page between validation
+polls; poisons common ticket/owner/phase before EVERY row STEP. Full 8,000-pixel
+and 32-dirty-byte oracle passes: 132 rows/480 calls/66 images and 312 rows/337
+calls/two images. Four commands blocked before acceptance account for +4 versus
+the previous controller proof.
+
+Safe pending-NMI drain under kernel I/O after copy/before worker (validator and
+raw binding). Without this, outer serialization masks IRQ during copy and a
+copy-time pending NMI suppresses worker observations. Each JSR charged three
+bytes, existing installed drain already budgeted. Diagnostic CIA2 period 768
+avoids 512-cycle CIA1 phase-lock. Stress positives: native 12,104 NMI (302 worker)
+and 20,749 (159); VICE 12,034 (273) and 20,757 (237), exact drains=totals.
+All 26 ZP bytes, I/D, MMU, caller/worker/USH/hardware stacks and guards pass.
+Observed private offset $CC is not maximum-depth proof. $FF20/$FF80 observer/
+IRQ ONLY standalone; physical RESTORE/Z80 NMI routing still unqualified.
+
+Bad payload/header single-byte controls reject after 16/one polls, six blocked
+commands, zero rows/pixels, all 26 private bytes stay $6D, no private C stack use
+(seed intact). Actual single-byte SEI/ZP/USH stack/NMI pending faults trigger
+only expected fields and fail positive oracle while pixel output remains exact.
+Separate original PRGs prove one-byte changes despite different probe variants.
+Extended diagnostic seed/scanner exceed old 128-byte signed-X copy limit;
+unsigned loops qualified. Label insertion must match `\nscan:\n`, NOT install_scan.
+
+REAL FOOTPRINT: raw 244 (217 gateway + copy/drain), seam 309 INCLUDES 79 validator
+source and five state bytes, total 553 vs 502 available => 51 SHORT BEFORE hooks.
+All objects have zero BSS/ZP. No production link/fit claim. Next recover bytes
+via measured private savings/shared-installer refactor, then all actual normal/
+panic hooks/locks/marshalling before live GUI tests. Do not borrow frozen shadow,
+scheduler/apps/USH/common workspace/guards. Existing manager fixed-layout tests
+require a new host trace/emulator qualification for any further savings.
+
+Capture source and paste destination frozen until READY. Early drag cancels
+capture/falls back; content mutation/clock overlap/resize/restack/close/handle
+reuse/shutdown/cancellation invalidate stale ownership before writing. Moving
+retained READY image cannot be invalidated just because ordinary background
+recomposition erases source pixels. Need complete input/task/Z80/CtrlC/completion/
+pixel/overlap gates before cached GUI enabled. Normal moves replay vertices,
+NOT cached pixels.
+
+Immutable `bench/{artifacts,results}/2026-09-28-window-cache-acceptance`
+contains exact sources/generated assembly/maps/PRGs/raw/provenance/report hashes.
+Run records bind full build-report hash plus programs/raw; preserve verifies all
+and refuses overwrite. Five new host tests check decoders/state/no-C rejection/
+budget/actual one-byte faults/archive hashes. make check: 763 tests, py_compile
+and checksums pass. Full clean parallel boot/all/placement-check pass. Normal
+D71/D64/kernel/maps/bootfs hashes match previous checkpoint exactly. Rebuilt
+acceptance report is byte-identical to archive after clean; linked/program/source
+hashes regenerate. make clean removed transient work raw/logs, not immutable
+evidence; isolated PRGs rebuilt. No VICE sessions remain.
+
+### Latest graphics checkpoint — compact validated transport, 2026-09-28
+
+Read `docs/WINDOW-CACHE-COMPACT.md`. Standalone footprint reduction qualified
+in VICE 3.10 and 1986. Still no normal resident link, revised-module disk
+delivery, compositor hooks or pixel-cached GUI moves. No new manual test yet.
+Changes remain uncommitted on `graphics-window-cache-spike`.
+
+`tools/window_cache_compact.py` measure/module/build/run/preserve builds an
+isolated specialization, reusing the acceptance diagnostic. Work directory
+`build/bench/window-cache-compact`; new assembly source
+`bench/window-cache-compact/raw.s`. Generic/production C flow remains unchanged.
+Generated fixed-flow C rejects capture/paste geometry pointers other than the
+shared request, then omits self-copying that request. Flow CODE 637→570.
+Actual C dispatcher already uses the shared pointer. Host checks prove foreign
+or NULL geometry rejection before mutation, capture/two-paste rows, cancellation
+and generation wrap. Other C policy/command/controller sources unchanged.
+
+Gateway is 196 bytes instead of 217: outer guard now owns PHP/SEI/PLP, common
+command still CLDs; omit zero loads before MMU preset strobes; compute logical
+dirty end from OFFSET+(RAWCOUNT-1)*8 with both carries. Full pixels/dirty and
+all low-byte/count carry combinations qualified. UNCHANGED 213-byte row core.
+Gateway source is appended to bank-1 module at $5146-$5209 and included in the
+INITIAL checksum. Module 4,106 bytes, six spare before VCC2 $5210. All private
+state, guarded 240-byte stack and 2,224-byte image remain unchanged. Do not
+expand module past identity or shrink those allocations to fit future hooks.
+
+Trusted raw wrapper installs a 20-byte loader at $F75A-$F76D. Loader copies
+accepted source from worker RAM to common $F68A-$F74D, restores kernel I/O,
+returns before the command. Source copy cannot overwrite the executing loader;
+assembler guards enforce gateway<=208 and loader end<=PARAM. Raw called ONLY
+behind accepted state + serialized resident guard, never directly. Same pending
+NMI drain and common-workspace ticket reconstruction rules as previous proof.
+Immutable banked source is not the common self-modifying copied gateway.
+
+FULLY CHARGED: raw51 + seam309 (includes validator79/state5) + diagnostic patch
+helper11 =371 resident bytes. Recover182 from553, aggregate headroom131 from502
+BEFORE real manager hooks. Raw's diagnostic call remains charged. No complete
+normal/panic allocation/fit claim; sources have zero BSS/ZP. Earlier delivered
+3977-byte module DOES NOT contain this banked gateway source. Deliver this new
+module before invoking new transport in an OS image.
+
+Validation now17 polls, last10 bytes. Initial test caught the old hardcoded16
+poll bound; generator/record decode derive it from module size. Page arithmetic
+also handles exact256 multiples (last count0 encodes a full page, not an extra
+page). Parent acceptance tool now accepts optional module/gateway/raw/driver/
+source/fault-selector inputs; default CLI remains the older proof. Historical
+archive immutable; current tool source hash has changed. Decoder default still
+16 for old snapshots, new runs/preserve pass measured page_calls explicitly.
+
+Both emulators: alignment132 rows/480 calls/66 images; repeated312/337/2 after
+destroying original source, full8000+32 oracle exact. Poisoned common parameters
+and original-ticket reconstruction still pass. Bad payload/header reject after
+17/one polls; private26 bytes stay6D, stack unused, pixels untouched. Positives
+NMI exact drains: native11981(worker475)/20762(338), VICE11937(483)/20647(339).
+Coverage includes the worker source-copy lease; do not claim C-only arrivals.
+All26ZP/I-D/MMU/stack/guard gates pass; observed private offsetCC unchanged.
+Physical RESTORE/Z80 NMI routing still unqualified.
+
+Four exact single-byte faults still fail positive oracle and preserve pixels.
+ZP/USH-stack faults now patch the COPIED gateway via diagnostic helper after
+acceptance: baseline writes original bytes, mutated immediate writes bad byte.
+Do NOT alter accepted source and then weaken checksum to obtain a runtime
+fault. SEI/NMI-pending faults remain actual instruction changes. Intentional
+SEI leak may race NMI accounting (VICE drains differs by1); its negative gate
+does not require positive NMI equality. All positive cases do require equality.
+
+Evidence `bench/{artifacts,results}/2026-09-28-window-cache-compact` binds every
+source/generated C/ASM/module/map/program/compiler flag, report/program/raw
+hash and emulator provenance. New four host tests qualify C pointer semantics,
+carry/page boundaries, full charged budget/allocations and both-emulator live
+fault/archive hashes. make check767 tests and checksums pass. Full clean
+parallel boot/all/placement-check pass; normal D71/D64/kernel/maps/bootfs hashes
+exactly match prior checkpoint. Regenerated compact report is byte-identical
+to archive after clean. Transient raw/logs removed by make clean, immutable
+evidence retained; diagnostic PRGs rebuilt. No VICE processes remain.
+
+NEXT: cold-boot/lifetime delivery of this revised module, then real normal/panic
+resident hooks/locks/marshalling link within padding (or further measured private
+savings if needed). Do not call aggregate131 a proved link fit. Freeze capture
+source and paste destination until READY; early drag cancels capture/falls back;
+invalidate ownership before content/overlap/resize/restack/close/reuse/shutdown/
+cancel. Retained READY pixels must survive ordinary move background repair.
+Full live GUI/input/task/Z80/CtrlC/completion/overlap/pixel gates before enabling.
+
+## Compact module delivery and real transport link — 2026-09-28
+
+Read `docs/WINDOW-CACHE-COMPACT-DELIVERY.md` before the next increment.
+NEW delivery proof qualifies the exact4,106-byte module INCLUDING its banked
+196-byte gateway source. Earlier controller delivery was3,977 without source.
+Normal production sources/links/disks are unchanged by this increment; cache
+is still not installed or invoked. No new manual test. Do not merge partial
+placement proofs into a claim of active GUI caching.
+
+`tools/window_cache_compact_delivery.py` wraps the existing isolated recipe.
+Parent build accepts qualified module_path/extra_inputs; module must be listed
+in verified proof manifest. Wrapper verifies map/module/gateway hashes and
+exact gateway suffix. Same scheduler source6000, LOAD4200, endpoint7229,
+same strict operand/checksum deltas, zero new resident delivery bytes.
+Cold boot D71/D64 in VICE3.10: exact4,128-byte slot through eight lifetime
+checkpoints (boot/xinit/clock/wave/complete/utilities/shutdown/restart).
+1986: exact slot both formats after32 wave drags each with clock running,
+completed-wave cancellation and console-alive command. This is NOT a cached
+move performance test. Test disks D71 sha5339634c... / D64 d2194468....
+Full artifacts/results at `2026-09-28-window-cache-compact-delivery` bind
+qualified compact inputs, canonical scheduler, all derived installers/maps,
+disks, full raw captures, logs, provenance and run/report hashes. Four tests.
+
+`tools/window_cache_resident_link.py` replays actual normal AND panic recipes
+in isolation and retargets EVERY split file. Qualified sources raw51+seam309
+(includes validator79 and state5)+diagnostic helper11 =371CODE; all added
+objects zeroBSS/DATA/ZP/RODATA. Spend49scratch+42primitive+280shared padding;
+131primitive padding remains. Outline8 untouched. These are ordinary CODE
+segments: whole-link placement, not forcing each object into an independent
+fixed padding hole. Every segment matches both baselines, exact shadow
+A1E0-C11F8000, LOW/HIGHBSS, module/common/syscall regions unchanged. Runtime
+helper module sets/sizes unchanged, UAPP ZP link assertions pass. Five seam
+fields live in charged writable CODE with exact offsets0/1/3/4.
+
+This closes REAL transport placement only. NO adapter/hook bytes charged yet.
+Experimental binaries explicitly UNBOOTABLE because private provider addresses
+move and derived import bridges are stale. Do not package/run them. No OS
+entry/poll or manager callback references the new seam. State init is only
+relevant once the integrated startup path exists. Artifacts
+`2026-09-28-window-cache-resident-link` include real provider objects, source/
+generated inputs, normal/panic maps, split binaries and before/after normal
+provider/output hashes. Three tests. make check774 tests/checksums/pycompile
+pass; container boot/all are up-to-date and placement-check passes. Normal
+D71/D64 remain5dc9c2bf.../1fae5569.... No VICE sessions remain.
+
+NEXT: real C compositor adapter/hook/lock sizing within131 residual padding
+(or further measured private C savings if it exceeds). Then regenerate all
+private bridges and package integrated isolated disks, acceptance/polls/init
+and actual bounded row invocation. Source/destination frozen untilREADY;
+early drag cancels capture/fallback. Invalidate before content/overlap/resize/
+restack/close/reuse/shutdown/cancel, but keep READY image during own move's
+background repair. Reconstruct original ticket after shared-workspace reuse.
+Full live GUI/input/task/Z80/CtrlC/completion/overlap/pixel gates before enable.
+
+## Integrated cached-move candidate — 2026-09-28
+
+Read `docs/WINDOW-CACHE-LIVE.md`. This supersedes the previous NEXT sizing/link
+step. User asked to continue until there is something testable: stop here for
+manual visual/input feedback, not at another placement-only checkpoint.
+
+Private sources live in `bench/window-cache-manager/{adapter,native}.inc` and
+`tools/window_cache_manager.py`; packaging/qualification in
+`tools/window_cache_live.py`. The generated private repository is
+`build/window-cache-live/repo`. Normal build sources/outputs are not switched
+to cache hooks. Exact disks to test: `udeks-cache.d64/.d71`, NOT the private
+repo's ordinary boot disks. Preserve at
+`bench/artifacts/2026-09-28-window-cache-live/build/` with matching results.
+
+Local register pointers save521 bytes with complete host trace equivalence.
+487 bytes of adapter/hooks yield netmanager−34: CODE7645, RO130, HIGHBSS88.
+Full transport377 (371closure+6commandwrapper), no new BSS/ZP/helper; pad159.
+All normal/panic segments remain exact, shadowA1E0-C11F. All private bridges,
+checksum installers, managed apps and bootfs rebuilt through actual recipes;
+both incremental and cleanparallel test disks agree. Normal D71/D64 remain
+5dc9c2bf.../1fae5569.... Runtime/module/delivery allocation unchanged.
+
+At most4 STEP rows/poll; each row releases MMU/runtime/IRQ ownership, dirty
+pages commit once/batch. Source/destination locks prevent writes while capture/
+paste is active. Early drag cancels capture/fallback. Move retains owner image
+through background repair. Lower clock repair also skips cached owner and
+pastes retained pixels; no app replay. Resident phase82 marks frontend repair
+busy while banked phase remains2; next PASTE sets3 and finishes2. New clicks
+defer during paste, pointer IRQ/keyboard/task polls remain active. Content/
+resize/restack/create/destroy/reuse/reset/cancel take invalidation/fallback.
+
+Both native formats:16 moves, all8 horizontal alignments, every17472 pixel
+matches shadow AND VIC, painter count and21 Z80 leases unchanged, active clock,
+partialpaint fallback, partialpaste CtrlC, oversized resize fallback, handle
+reuse, typed/history/echo/shutdown/restart, RESTORE/CIA2 NMI pressure, guards.
+VICE both formats: captured17472 pixels/full8000 shadow=bitmap, immutable source,
+guard, NMI drain/handoff, shutdown/restart. Native VICE input/drag NOT qualified.
+Private xwave status uses callback handle BEFORE initial painting, because
+window_create calls painter before assigning the app's global handle; initial
+diagnostic handle would otherwise stay0 when cached moves never call painter.
+Native runner's PC Minus was C128 Plus; choose positional Equals for C128 Minus
+so xinit-q test remains strict. Sibling1986 source is untouched.
+
+Runtime slot is not byte-identical to uninvoked delivery: row core has two
+selfmod address operands and4 scratch bytes. Live oracle permits only those8
+bytes, validates operands against exact last row, and compares everything else
+(controller/gateway/header/slack) exactly. Tests inject pointer/opcode/header/
+padding changes to ensure failure. Full VSF containsROM and is NOT archived.
+
+Sample release60–81 PALframes plus settledpaste139–164, roughly4–5s combined:
+reuse is proved, responsiveness is NOT accepted. Next after manual feedback:
+reduce synchronous background/clock and dirty commit cost, then consider normal
+promotion. Physical RESTORE/Z80 routing remains open. No commit/push this turn.
+
+Final qualification: make check781 tests/checksums/pycompile pass; normal
+container boot/all are up-to-date and placement-check passes. git diff--check
+passes. Test artifacts/results are preserved with immutable SHA256SUMS and
+report-to-run bindings; no VICE sessions remain. Normal disk hashes unchanged.
+
+## Live-cache manual feedback — 2026-09-28
+
+User: "it all looks good to me." Record positive manual feedback for the
+presented live-cache candidate; do not infer the platform, exact cases, physical
+RESTORE/Z80 routing or a latency measurement. Preserved evidence is unchanged.
+Normal cache hooks are still not enabled, and no commit/push was requested.
+
+NEXT engineering gate: measure background-repair versus paste/commit cost,
+including number of256-byte dirty-page copies per move. The current4-row batch
+can recopy a tiled bitmap page across adjacent batches. Evaluate bounded
+commit/row alternatives against the existing native-input/CtrlC/clock/fullpixel/
+guard gates before normal promotion; do not just raise batch size without
+measuring console latency. The previous "stop for manual feedback" is satisfied.
+
+## Band-boundary repaint follow-up — 2026-09-28
+
+User authorized the repaint work. Read `docs/WINDOW-CACHE-REPAINT.md`.
+New tool `tools/window_cache_repaint.py` generates reference/tiled private links
+via the live builder; baseline and old manual artifacts remain immutable.
+New test disk is under `bench/artifacts/2026-09-28-window-cache-repaint-tiled/build/`
+or `build/window-cache-repaint/tiled/udeks-cache.d64/.d71`. NOT private repo's
+ordinary boot disks. Normal cache hooks remain disabled.
+
+Keep max4rows/poll; end pasted batches at8scanline boundary and commit only
+there/final/error. Read lastSTEP offsetF780 low3bits before another gateway;
+IRQ/NMI don't borrow it. Partialbands staydirty. Source/destination locks and
+row runtime/MMU/IRQ restoration unchanged. No newstate/helper/ABI/modulebytes.
+ManagerCODE7677 (+32vsacceptedcandidate), RO130/HIGHBSS88, transport377,pad127.
+All normal/panic segments and shadowA1E0-C11F remainexact; bridges regenerate.
+
+Read-only native page-entry/stack-derived return breakpoints count real page
+copies/cycles, continuing the same partialframe. Paired D71/D64 medians:
+pastecopies56→22.5, copycycles709451.5→288659.5, pasteframes156.5→129.5,
+release+paste220→194.5, CtrlC211→156. No maskinginput/IRQ or OS patches.
+Worstpaste164→313 due coincident clockminute repair; DON'T claim worstcase
+improvement or accept responsiveness. Clockpaint counter in log attributes it.
+NEXT: visible-damage/occlusion-aware clock/background repair, not a larger row
+budget; preserve pixel/input/cancel/guard/ownership gates and hardware gates.
+
+Initial tiled run exposed realshutdown bug: D011ANDCF copied live rasterhigh
+to targethigh; sampler target482 (>PAL312), phase1stuck, OS Return held although
+physicalkey released. Fixed normal `vic_graphics.s` toAND4F, oneimmediatebyte
+2328, no footprintgrowth. Both comparisonvariants usefix. Native tiledshutdown
+at295 retains226 and keyboard/restart pass; reference238→200. Sanitized failure
+disk/kernel/map/runner/log/state preserved; NO ROMbearing VSF in archives.
+Source/arithmetic and failed-vs-fixed onebyte-diff tests lock the correction.
+Normaldisks NOW d99463d6.../65a37c26... due this correctnessfix; older unchanged
+hash statements describe earlier checkpoints. Newcache disks d1be51f9.../
+af502122.... Incremental/cleanparallel tiled builds match.
+
+Final measured clock attribution: native tiled move7 has2 clock paints during
+release/paste and313 pasteframes; all other paired moves have1. Its actual
+page-copy count69 includes extra clockbackground plus a second presentation;
+do not filter that sample out. All paired and tiled native records pass both
+formats; VICE both variants/formats pass capture/bitmap/NMI/restart. Archives
+`2026-09-28-window-cache-repaint-{baseline,tiled}` preserve complete source/map/
+disk/run bindings andcomparison; failure/manifest locks originalCF kernel to
+fixed4F by exactonebytediff. No ROM-bearing snapshots archived.
+make check787 tests/checksums/pycompile pass; normalboot/all/placement-check and
+gitdiff--check pass. No VICE remains. No commit/push or cache-default promotion.
+
+User feedback 2026-09-28: "looks ok" for the presented tiled repaint candidate.
+Platform and individual test cases were not specified; this is positive manual
+feedback, not physical-C128, RESTORE/NMI, or worst-case performance qualification.
+Next engineering gate remains visible-damage/occlusion-aware clock/background
+repair. No commit/push or normal-cache promotion is implied by this feedback.
+
+2026-09-28 visible clock/background repair candidate:
+`tools/window_cache_occlusion.py`, doc WINDOW-CACHE-OCCLUSION.md. Separate disks
+only, normal images untouched. Generic geometry fast paths: disjoint damage
+does not paste; fully hidden damage does not draw; full-width/bottom-covered
+damage repairs only its exposed upper strip. Other overlaps keep bounded
+background/paste fallback, now with damage limited to the requesting window.
+Hidden clients receive one empty-clip callback to acknowledge the update;
+otherwise clock previous-minute state would cause repeated repairs per poll.
+No app-ID policy, app binary, public ABI, BSS or banked module changes.
+Register private window parameters pay the cost. Linked manager CODE7695,
+RO130/HIGHBSS88, transport377, heldpad87; all normal/panic segments/helpers
+unchanged, shadowA1E0-C11F. Cleanparallel disks match incremental: D64d4e2a96c...
+and D71e27ebf93.... Normal still65a37c26.../d99463d6....
+
+Matched native date changes after exact native mouse drags (D71==D64):
+clock fully hidden (109,40) 278→119 frames, 40→0 pagecopies;
+upper4-row strip (109,65) 278→126, 44→2;
+complex overlap (144,88) 267→254, 40→33. One callback/change, no repeat over120
+frames, no wave painter/Z80 reacquisition. Every8000-byte case canvas matches
+reference and bank0/bank1; retained17472pixel oracle passes. Original16moves
+worst sampled settledpaste313→163, medianfullmove194.5→194 (NOT general speedup).
+Complex overlap still~5s: next optimize selective partial-overlap repair.
+Physical/input/RESTORE gate and normal cache promotion remain separate.
+
+Host pixel oracle117 geometries + disjoint/highX/three-layer/uncovering;
+nativeinput/earlydrag/16moves/partialpasteCtrlC/resize/guards/console/restart;
+VICEbothformats capture/pixels/NMI/restart, NOT nativeVICEdrag qualification.
+Read-only profiler ignores only identical-frame/register/SP entry redispatch
+after IRQ/NMI (3 candidate,0 reference), preserving all interrupt cycles. Clock
+timing ends only after leaseREADY AND emptydirtymap AND pagecallreturn.
+Archives `2026-09-28-window-cache-occlusion{,-reference}` bind source/maps/disks/
+runners/provenance/logs/pixels/comparison, no ROM-bearing snapshots. No push or
+normal cache promotion; prompt user to test candidate disks next.
+
+Final gate: make check793 tests/manifests/pycompile pass, normalcontainerboot/all
+and actualobjectplacement-check OK, gitdiff--check OK. No VICE remains. User
+reported "looks good" on 2026-09-29 for the presented occlusion candidate.
+Platform and individual cases unspecified; record positive manual feedback,
+not physical/input/RESTORE or universal responsiveness qualification.
+Next engineering step remains selective partial-overlap repair. No commit/push
+or normal-cache promotion is authorized by this feedback.
+
+2026-09-29 prefix/row-range repair is implemented and emulator-qualified as
+another isolated candidate; see docs/WINDOW-CACHE-PARTIAL.md. First qualified
+the banked provider independently (`tools/window_cache_partial.py`), then its
+C compositor adapter (`tools/window_cache_partial_manager.py`). Preserve both
+archives under bench/{artifacts,results}/2026-09-29-window-cache-partial{,-manager}.
+
+Private command0.2 adds op6, PARAM F78A first/F78B end-exclusive/F78C-D prefix
+width. Validate before mutation; retain original geometry and source stride;
+only rows[first,end) and the left prefix are restored. Outside pixels unchanged.
+Range metadata3 initialized DATA bytes are charged INSIDE the module, not a new
+allocation. Private fixed-lease policy rejects wrong pointers; generic normal
+policy remains unchanged. Core213/common gateway196 byte-identical to prior
+proof. Module3971, identityslack141, gateway source50BF (loader-derived; removed
+VICE's hardcoded5146 source range). VCC2 layout0.1 unchanged; checksum/header and
+validator rebuilt for exact new provider. Do not mix provider/validator versions.
+
+Standalone host tests cover alignments/widths/ranges/rejection snapshots,
+corrupt metadata, full paste after partial, cancel/recapture. Compiled1986/VICE
+all64bit alignments +52prefix rows17..66 pass completepixel/dirtymap oracle,
+IRQ/I-D/ZP/HW-SWstack/shell/guards/NMI and six negative controls. Raw/state
+decoders have mutation tests and hash-bound source/maps/executables/results.
+
+Manager reuses clipped top/bottom/right and marshals only AFTER callbacks finish
+(sharedVICworkspace can be clobbered); resetclip before the command. Host tests
+match all screen pixels/117placements +disjoint/highX/three-layer/uncovering and
+deliberate callback argument clobber. CODE7750 (+55), RO130/HIGHBSS88 unchanged,
+transport377, heldpad32. All normal/panic segments/helpers exact. Clean private
+parallel build equals incremental D64 13433b995d.../D71 fded272e8e.... Normal
+still65a37c26.../d99463d6.... No source change in1986; no normal cache promotion.
+
+Native bothformats: hidden119frames/0pages and upperstrip126/2 unchanged;
+partial-overlap254/33 ->195/23 (~23%faster). Whole8000byte canvases match the
+saved occlusion reference, same emulator provenance. One callback/change, no
+repeat120frames, no wave painter/Z80 reacquisition. Same native earlydrag,
+16moves, partialpasteCtrlC, typing, resizefallback, guards/NMI/restart pass.
+VICEbothformats capture/fullpixels/NMI/restart, NOT nativeVICE dragging.
+195frames remains~3.9s: no general responsiveness claim. Next after manual
+feedback: bound/reduce synchronous lower-window composition, not more row
+budget or larger cache. Prompt user to test this disk; physical/input/RESTORE
+and default-promotion gates stay separate. No commit/push requested this turn.
+
+Final qualification: make check803 tests +all preserved manifests/pycompile
+pass; normalcontainer boot/all up-to-date and actualplacement-check OK;
+gitdiff--check OK; no x128 sessions remain. Candidate archives/comparison/
+clean-build proof saved. Subsequent feedback below supersedes the untested status.
+
+2026-09-29 user rejected prefix candidate: considerable xclock drag-start delay.
+Native reproduction exposed a missing case: xclock over completed xwave takes
+265 PAL frames before outline (5.3s), clock alone17. Old suites moved xwave,
+not xclock-over-wave. This is synchronous 8502 background wireframe replay,
+not a new Z80 job or a mouse-driver regression. User approved temporarily blank
+background while dragging, repairing it after release.
+
+Isolated deferred candidate qualified; docs/WINDOW-DRAG-START.md. Existing
+compositor gains private erase-only selector255; begin invokes no painters.
+Valid CACHED_MOVE preserves image ownership; release repairs full old/new union.
+Manager7762 (+12), RO130/HIGHBSS88, transport377, heldpad20; all normal/panic
+segments/helpers unchanged. Cleanparallel private disks identical; normal still
+65a37c26.../d99463d6.... Native D71/D64 clock-alone17 unchanged, overlap265→16
+frames (~0.32s); gate<=30, mouse outline movement, no newZ80, fullshadow/VIC,
+CtrlC+console typing+shutdown. Full prior native16move/cancel/resize/guards/NMI/
+restart and VICEbothformats pass. Host releasecanvas matches prior after move,
+resize, destruction during drag and cachedwave move; forcedclock canvases exact.
+Release/background composition remains synchronous: no universal speed claim.
+Archives2026-09-29-window-drag-start include timing source/runners/logs vs previous
+prefix archive and clean-build proof, no ROM snapshots. D644872d6aa...,
+D71e3eaa384.... Prompt user to test this separate disk next; no commit/push,
+physical qualification or normal cache promotion authorized by this feedback.
+
+Final gate for deferred drag: make check808 tests/manifests/pycompile pass;
+normalcontainer boot/all up-to-date and actualobjectplacement-check OK;
+gitdiff--check clean; normal disk hashes unchanged; no x128 sessions remain.
+
+User feedback on deferred-drag candidate: "ok much better now, continue".
+Record positive manual drag-start feedback, platform unspecified, not physical
+qualification or normal-cache promotion. Next reduce the synchronous exposed
+background replay after release; preserve fast outline start and input gates.
+
+Architectural direction from user: projection/wireframe optimization belongs
+to xwave, NOT the entire windowing system. Preserve this boundary in future
+work. App owns samples/projection/render caches; manager stays generic about
+composition/damage/clipping/stacking. The app-local projection prototype and
+its tools/tests/evidence remain separate from this window-manager milestone.
+
+2026-09-29 merge scope approved by user: commit the generic manager foundations,
+tests and opt-in evidence; exclude the xwave projection experiment and its
+app-transform build hooks. Do not enable caching/deferred dragging in normal
+builds as a side effect of merging. Keep the minimal xwave image-completion
+notification needed by the generic UAPP contract, not an app-specific cache.
+Next: default-build delivery/integration as explicit manager work, then fresh
+native keyboard/mouse/CtrlC/resize/RESTORE and physical acceptance gates.
+See docs/WINDOW-MANAGER-MILESTONE.md for scope and outstanding limitations.
+
+Scoped clean-worktree merge gate: make check808 tests/manifests/pycompile pass;
+fresh parallel make boot/all and realobjectplacement-check pass. Default disks
+are byte-identical to the previously qualified normal image (D6465a37c26...,
+D71d99463d6...). Xwave projection tools/tests/images and build hooks excluded;
+default cached/deferred dragging remains disabled. User approved this scope.

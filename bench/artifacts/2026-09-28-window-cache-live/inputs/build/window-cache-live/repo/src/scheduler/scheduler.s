@@ -1,0 +1,62 @@
+; SPDX-License-Identifier: GPL-3.0-or-later
+;
+; Scheduler segment skeleton delivered into $1C00-$1FFF after crt0. The entry
+; continues the boot through the fixed kernel entry vector at $2000; the
+; resident kernel reaches the scheduler through the published routines below.
+
+        .setcpu "6502"
+        .export _scheduler_entry
+        .export _udeks_scheduler_init
+        .export _udeks_scheduler_tick
+        .export _udeks_scheduler_lifecycle_bootstrap_gate
+        .import _udeks_lifecycle_bootstrap
+
+KERNEL_ENTRY = $2000
+TASK_GATE_SOURCE = $ce00
+TASK_GATE_DESTINATION = $ff05
+TASK_GATE_SIZE = $c0
+
+        .segment "SCHEDULER"
+_scheduler_entry:
+        ; The one-shot tail installer temporarily owns TASKGATE. Its source
+        ; at $CE00 remains intact because the installed tail ends below it.
+        ; Replace it before any bank-1 task can enter the public gates.
+        ldy #$00
+install_task_gate:
+        lda TASK_GATE_SOURCE,y
+        sta TASK_GATE_DESTINATION,y
+        iny
+        cpy #TASK_GATE_SIZE
+        bne install_task_gate
+        jmp KERNEL_ENTRY
+        .assert _scheduler_entry = $1c00, error, "scheduler entry moved"
+
+scheduler_identity:
+        .byte 'S', 'C', 'H', 'D'
+        .byte $00, $01                  ; version 0.1
+        .byte $00, $00                  ; reserved
+
+_udeks_scheduler_init:
+        lda #$00
+        rts
+
+_udeks_scheduler_tick:
+        lda #$00
+        rts
+
+_udeks_scheduler_lifecycle_bootstrap_gate:
+        .assert _udeks_scheduler_lifecycle_bootstrap_gate = $1c1e, error, "lifecycle bootstrap gate moved"
+        lda #<$f110
+        ldx #>$f110
+        jsr _udeks_lifecycle_bootstrap
+        bne lifecycle_bootstrap_done
+        ; Tail-call the common installer: it may now overwrite this retired
+        ; bootstrap prefix and its RTS returns directly to init_start.
+        jmp $f68a
+lifecycle_bootstrap_done:
+        rts
+        ; Runtime YIELD may replace the entire one-shot prefix through $1C2D.
+        .res 3, $ea
+
+scheduler_end:
+        .assert scheduler_end <= $2000, error, "scheduler exceeds its page"

@@ -1,0 +1,12 @@
+-mjwx
+-i build/z80/udeks-z80.ihx
+-b _CODE = 0x2000
+-b _DATA = 0x3000
+-k /var/home/salvogendut/Dev/sdcc/bin/../share/sdcc/lib/z80
+-k /usr/local/share/sdcc/lib/z80
+-l z80
+build/z80/crt0.rel
+build/z80/handoff.rel
+build/z80/worker.rel
+
+-e

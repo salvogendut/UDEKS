@@ -1,0 +1,12 @@
+{
+  "d71": {
+    "bytes": 4106,
+    "slot_sha256": "60c8e2bb1d7aaf736c701ee11c0d10648edf03b48c2c6efdc75b0e2e06b2fef0",
+    "core_sha256": "edbf20474b4f8e27ff518bc8aaa4f1653c4b270daf4118e350a97a8fd67e9f70"
+  },
+  "d64": {
+    "bytes": 4106,
+    "slot_sha256": "60c8e2bb1d7aaf736c701ee11c0d10648edf03b48c2c6efdc75b0e2e06b2fef0",
+    "core_sha256": "edbf20474b4f8e27ff518bc8aaa4f1653c4b270daf4118e350a97a8fd67e9f70"
+  }
+}

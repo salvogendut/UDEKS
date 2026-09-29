@@ -1,0 +1,71 @@
+ASxxxx Linker V05.50.4-SDLD,  page 1.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+.  .ABS.                            00000000    00000000 =           0. bytes (ABS,CON)
+
+         Value  Global                             Global Defined In Module
+         -----  --------------------------------   ------------------------
+     00000000  .__.ABS.                           
+     00000000  l__CABS                         
+     00000000  l__DABS                         
+     00000000  l__DATA                         
+     00000000  l__GSFINAL                      
+     00000000  l__GSINIT                       
+     00000000  l__HOME                         
+     00000000  l__INITIALIZED                  
+     00000000  l__INITIALIZER                  
+     00000000  s__CABS                         
+     00000000  s__DABS                         
+     00000297  l__CODE                         
+     00002000  s__CODE                         
+     00003000  s__DATA                         
+     00003000  s__GSFINAL                      
+     00003000  s__GSINIT                       
+     00003000  s__HOME                         
+     00003000  s__INITIALIZED                  
+     00003000  s__INITIALIZER                  
+
+ASxxxx Linker V05.50.4-SDLD,  page 2.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_CODE                               00002000    00000297 =         663. bytes (REL,CON)
+
+         Value  Global                             Global Defined In Module
+         -----  --------------------------------   ------------------------
+     00002000  _start                             crt0
+     0000200B  _udeks_z80_yield                   handoff
+     000021A5  _z80_main                          worker
+     00002259  __divuchar                         divunsigned
+     0000225B  __divu8                            divunsigned
+     0000225E  __divu16                           divunsigned
+     0000225E  __divuint                          divunsigned
+     0000228D  ___sdcc_enter_ix                   
+
+ASxxxx Linker V05.50.4-SDLD,  page 3.
+
+Files Linked                              [ module(s) ]
+
+build/z80/crt0.rel                        [ crt0 ]
+build/z80/handoff.rel                     [ handoff ]
+build/z80/worker.rel                      [ worker ]
+
+
+Libraries Linked                          [ object file ]
+
+/var/home/salvogendut/Dev/sdcc/bin/../share/sdcc/lib/z80/z80.lib
+                                          [ divunsigned.rel ]
+/var/home/salvogendut/Dev/sdcc/bin/../share/sdcc/lib/z80/z80.lib
+                                          [ crtenter.rel ]
+
+ASxxxx Linker V05.50.4-SDLD,  page 4.
+
+User Base Address Definitions
+
+_CODE = 0x2000
+_DATA = 0x3000
+
+

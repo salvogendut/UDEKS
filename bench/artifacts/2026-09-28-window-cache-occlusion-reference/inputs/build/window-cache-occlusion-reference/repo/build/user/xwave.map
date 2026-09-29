@@ -1,0 +1,185 @@
+Modules list:
+-------------
+xwave_entry.o:
+    STARTUP           Offs=000000  Size=000012  Align=00001  Fill=0000
+xwave.o:
+    CODE              Offs=000000  Size=000652  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000029  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000225  Align=00001  Fill=0000
+app_imports.o:
+window_completion.o:
+    CODE              Offs=000652  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxspi.o):
+    CODE              Offs=000668  Size=00001B  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+STARTUP               001200  001211  000012  00001
+CODE                  001212  001894  000683  00001
+RODATA                001895  0018BD  000029  00001
+BSS                   0018BE  001AE2  000225  00001
+
+
+Exports list by name:
+---------------------
+_udeks_vic_bitmap_line    00CF66 REA    _udeks_vic_graphics_is_active 00CF6C REA    
+_udeks_window_begin_paint 00CFF9 REA    _udeks_window_create      00CF6F REA    
+_udeks_window_destroy     00CF72 REA    _udeks_window_end_paint   00CFFC REA    
+_udeks_window_get_geometry 00CF75 REA    _udeks_window_image_complete 001864 RLA    
+_udeks_window_is_dragging 00CF78 REA    _udeks_window_is_focused  00CF7B REA    
+_udeks_xwave_initialize   001212 RLA    _udeks_xwave_is_focused   001418 RLA    
+_udeks_xwave_is_running   001408 RLA    _udeks_xwave_poll         0012FE RLA    
+_udeks_xwave_start        001272 RLA    _udeks_xwave_stop         0013F0 RLA    
+_udeks_z80_submit         00CF81 REA    decsp1                    00CF8A REA    
+decsp2                    00CF8D REA    decsp5                    00CF96 REA    
+decsp7                    00CF9C REA    decsp8                    00CF9F REA    
+incsp1                    00CFA2 REA    incsp2                    00CFA5 REA    
+incsp4                    00CFAB REA    incsp7                    00CFB4 REA    
+ldaidx                    00CFB7 REA    ptr1                      00000E REZ    
+pusha                     00CFBD REA    pushax                    00CFC3 REA    
+pushwysp                  00CFC6 REA    sp                        000006 REZ    
+sreg                      000008 REZ    staspidx                  00CFD2 REA    
+staxspidx                 00187A RLA    subysp                    00CFDB REA    
+tmp1                      000016 REZ    tosaddax                  00CFDE REA    
+tossubax                  00CFE7 REA    tosudiva0                 00CFEA REA    
+tosumulax                 00CFF3 REA    
+
+
+Exports list by value:
+----------------------
+sp                        000006 REZ    sreg                      000008 REZ    
+ptr1                      00000E REZ    tmp1                      000016 REZ    
+_udeks_xwave_initialize   001212 RLA    _udeks_xwave_start        001272 RLA    
+_udeks_xwave_poll         0012FE RLA    _udeks_xwave_stop         0013F0 RLA    
+_udeks_xwave_is_running   001408 RLA    _udeks_xwave_is_focused   001418 RLA    
+_udeks_window_image_complete 001864 RLA    staxspidx                 00187A RLA    
+_udeks_vic_bitmap_line    00CF66 REA    _udeks_vic_graphics_is_active 00CF6C REA    
+_udeks_window_create      00CF6F REA    _udeks_window_destroy     00CF72 REA    
+_udeks_window_get_geometry 00CF75 REA    _udeks_window_is_dragging 00CF78 REA    
+_udeks_window_is_focused  00CF7B REA    _udeks_z80_submit         00CF81 REA    
+decsp1                    00CF8A REA    decsp2                    00CF8D REA    
+decsp5                    00CF96 REA    decsp7                    00CF9C REA    
+decsp8                    00CF9F REA    incsp1                    00CFA2 REA    
+incsp2                    00CFA5 REA    incsp4                    00CFAB REA    
+incsp7                    00CFB4 REA    ldaidx                    00CFB7 REA    
+pusha                     00CFBD REA    pushax                    00CFC3 REA    
+pushwysp                  00CFC6 REA    staspidx                  00CFD2 REA    
+subysp                    00CFDB REA    tosaddax                  00CFDE REA    
+tossubax                  00CFE7 REA    tosudiva0                 00CFEA REA    
+tosumulax                 00CFF3 REA    _udeks_window_begin_paint 00CFF9 REA    
+_udeks_window_end_paint   00CFFC REA    
+
+
+Imports list:
+-------------
+_udeks_vic_bitmap_line (app_imports.o):
+    xwave.o                   build/user/xwave.s(14)
+_udeks_vic_graphics_is_active (app_imports.o):
+    xwave.o                   build/user/xwave.s(13)
+_udeks_window_begin_paint (app_imports.o):
+    xwave.o                   build/user/xwave.s(17)
+_udeks_window_create (app_imports.o):
+    xwave.o                   build/user/xwave.s(15)
+_udeks_window_destroy (app_imports.o):
+    xwave.o                   build/user/xwave.s(16)
+_udeks_window_end_paint (app_imports.o):
+    xwave.o                   build/user/xwave.s(18)
+_udeks_window_get_geometry (app_imports.o):
+    xwave.o                   build/user/xwave.s(20)
+_udeks_window_image_complete (window_completion.o):
+    xwave.o                   build/user/xwave.s(19)
+_udeks_window_is_dragging (app_imports.o):
+    xwave.o                   build/user/xwave.s(21)
+_udeks_window_is_focused (app_imports.o):
+    xwave.o                   build/user/xwave.s(22)
+_udeks_xwave_initialize (xwave.o):
+    xwave_entry.o             user/lib/xwave_entry.s(5)
+_udeks_xwave_is_focused (xwave.o):
+    xwave_entry.o             user/lib/xwave_entry.s(10)
+_udeks_xwave_is_running (xwave.o):
+    xwave_entry.o             user/lib/xwave_entry.s(9)
+_udeks_xwave_poll (xwave.o):
+    xwave_entry.o             user/lib/xwave_entry.s(7)
+_udeks_xwave_start (xwave.o):
+    xwave_entry.o             user/lib/xwave_entry.s(6)
+_udeks_xwave_stop (xwave.o):
+    xwave_entry.o             user/lib/xwave_entry.s(8)
+_udeks_z80_submit (app_imports.o):
+    xwave.o                   build/user/xwave.s(29)
+decsp1 (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+decsp2 (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+decsp5 (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+decsp7 (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+decsp8 (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+incsp1 (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+incsp2 (app_imports.o):
+    staxspi.o                 runtime/staxspi.s(9)
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+incsp4 (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+incsp7 (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+ldaidx (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+ptr1 (app_imports.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    xwave.o                   build/user/xwave.s(11)
+pusha (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+pushax (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+pushwysp (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+sp (app_imports.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    xwave.o                   build/user/xwave.s(10)
+sreg (app_imports.o):
+    xwave.o                   build/user/xwave.s(10)
+staspidx (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+staxspidx (staxspi.o):
+    xwave.o                   build/user/xwave.s(1064)
+subysp (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+tmp1 (app_imports.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    xwave.o                   build/user/xwave.s(11)
+tosaddax (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+tossubax (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+tosudiva0 (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+tosumulax (app_imports.o):
+    xwave.o                   build/user/xwave.s(1064)
+    xwave.o                   build/user/xwave.s(1064)
+

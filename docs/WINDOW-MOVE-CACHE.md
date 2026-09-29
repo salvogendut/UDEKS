@@ -58,8 +58,9 @@ use the existing computed redraw path (or a later larger allocation).
 4. The 8502 cannot execute ordinary bank-0 C while the worker-flat profile
    exposes bank-1 RAM. A small always-mapped transfer gateway must stage
    the packed image through common RAM, without crossing the frozen gateway,
-   task-gate, UAPP or `$A1E0` VICSHADOW reservations. The current 222-byte
-   named resident raster reserves are insufficient for the measured prototype. Measure linked
+   task-gate, UAPP or `$A1E0` VICSHADOW reservations. The original 516-byte
+   raster reserve is now 358 after the explicit-completion seam; neither
+   budget fits the original prototype. Measure linked
    CODE, gateway-copy extent, and placement before enabling the path. If it
    cannot fit, make a service-placement decision; do not silently move the
    shadow or overwrite worker/task memory.
@@ -217,4 +218,27 @@ increment above did not change boot disks. Subsequent
 [display-service span/pixel integration](GRAPHICS-PRIMITIVES.md) now provides
 a testable image: it holds 173 additional bytes as padding, making 222 total
 and leaving at least 801 still needed before cache bindings/bounded state.
-The cache itself remains uninstalled; unchanged-size moves still replay pixels.
+The [shared-raster follow-on](GRAPHICS-SHARED.md) adds another 294 reserved
+bytes: 516 total, at least 507 short before bindings/bounded state. The cache
+itself remains uninstalled; unchanged-size moves still replay pixels.
+
+The subsequent [private bank-1 row-overlay proof](WINDOW-CACHE-OVERLAY.md)
+addresses code placement rather than assuming more bank-0 savings. It measures
+213 bank-1 core bytes and a 194-byte resident binding, with 6,144 bytes left
+for the image. Active-IRQ row tests and a real SEI-removal negative control
+pass both emulators. This does **not** qualify production delivery, cache
+ownership or bounded compositor integration, and does not enable pixel moves.
+
+Latest: [bounded C command and completion seam](WINDOW-CACHE-COMMAND.md).
+The application completion notification is installed, while the combined
+bank-1 command remains standalone-qualified. After installed
+[NMI deferral](WINDOW-CACHE-NMI.md) and
+[private manager savings](WINDOW-MANAGER-BUDGET.md), current padding is 502 bytes;
+its 241-byte binding would leave 261 before manager/delivery costs. A real
+bank-0 controller/link experiment is still at least 739 bytes short.
+No pixel-cache move is enabled.
+
+The later [integrated live candidate](WINDOW-CACHE-LIVE.md) now enables bounded
+cached moves on **separate test disks**, with unchanged normal boot outputs.
+This supersedes the preceding standalone checkpoints, not their preserved
+historical evidence. Manual visual/input and physical/performance gates remain.

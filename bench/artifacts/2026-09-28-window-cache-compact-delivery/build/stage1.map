@@ -1,0 +1,28 @@
+Modules list:
+-------------
+stage1.o:
+    CODE              Offs=000000  Size=0003B6  Align=00001  Fill=0000
+    PRELOAD           Offs=000000  Size=000045  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+CODE                  001C00  001FB5  0003B6  00001
+PRELOAD               001FBB  001FFF  000045  00001
+
+
+Exports list by name:
+---------------------
+
+
+
+Exports list by value:
+----------------------
+
+
+
+Imports list:
+-------------
+

@@ -1,0 +1,1 @@
+-u _udeks_probe_georam -u _udeks_probe_reu -u _udeks_probe_vdc_revision -u _udeks_probe_video_standard -u _udeks_vdc_read_selected -u _udeks_vdc_select -u _udeks_vdc_status -u _udeks_vdc_write_selected -u addysp -u decsp2 -u decsp6 -u incsp1 -u incsp2 -u incsp3 -u incsp4 -u incsp6 -u pusha -u pushax -u pushw0sp -u staspidx -u subysp

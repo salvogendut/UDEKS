@@ -1,0 +1,15 @@
+XL4
+H 1 areas 3 global symbols
+M crt0
+S _z80_main Ref00000000
+S .__.ABS. Def00000000
+A _CODE size B flags 0 addr 0
+S _start Def00000000
+T 00 00 00 00
+R 00 00 00 00
+T 00 00 00 00 F3 31 00 F3 CD 00 00
+R 00 00 00 00 02 09 00 00
+T 07 00 00 00
+R 00 00 00 00
+T 07 00 00 00 F3 C3 07 00
+R 00 00 00 00 00 06 00 00

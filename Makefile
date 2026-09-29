@@ -685,6 +685,9 @@ $(USER_CANCEL_PROBE_BOOTFS): $(USER_CANCEL_PROBE_UDEX) tools/build_bootfs.py
 $(USER_APP_IMPORTS_OBJ): user/lib/app_imports.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
 
+$(BUILD_USER)/window_completion.o: user/lib/window_completion.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+
 $(USER_XCLOCK_ASM): src/apps/xclock.c include/udeks/time.h \
 		include/udeks/vic_graphics.h include/udeks/window.h \
 		include/udeks/xclock.h | $(BUILD_USER)
@@ -717,7 +720,7 @@ $(USER_XWAVE_ENTRY_OBJ): user/lib/xwave_entry.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
 
 $(USER_XWAVE_BIN): $(USER_XWAVE_ENTRY_OBJ) $(USER_XWAVE_OBJ) \
-		$(USER_APP_IMPORTS_OBJ) cfg/8502-managed-app2.cfg
+		$(USER_APP_IMPORTS_OBJ) $(BUILD_USER)/window_completion.o cfg/8502-managed-app2.cfg
 	$(CL65) -t none --cpu 6502 -C cfg/8502-managed-app2.cfg \
 		-m $(BUILD_USER)/xwave.map -o $@ $(filter %.o,$^)
 
@@ -903,6 +906,9 @@ $(BUILD_8502)/mouse1351.o: $(BUILD_8502)/mouse1351.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/pointer.o: src/8502/pointer_irq.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/nmi.o: src/8502/nmi.s src/8502/nmi-common.inc | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/line_editor.o: $(BUILD_8502)/line_editor.s | $(BUILD_8502)
@@ -1146,7 +1152,7 @@ $(BUILD_8502)/control_ports.o: src/8502/control_ports.s | $(BUILD_8502)
 $(BUILD_8502)/line_editor_read.o: src/8502/line_editor_read.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(BUILD_8502)/z80_handoff.o: src/8502/z80_handoff.s | $(BUILD_8502)
+$(BUILD_8502)/z80_handoff.o: src/8502/z80_handoff.s src/8502/nmi-common.inc | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/vic_graphics_transport.o: src/8502/vic_graphics.s | $(BUILD_8502)
@@ -1156,6 +1162,9 @@ $(BUILD_8502)/vic_span.o: src/services/display/vic_span.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/vic_pixel.o: src/services/display/vic_pixel.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/vic_clear.o: src/services/display/vic_clear.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &: \
@@ -1189,13 +1198,14 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &: \
 		$(BUILD_8502)/vdc_console.o $(BUILD_8502)/app_panel.o \
 		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o \
 		$(BUILD_8502)/keyboard.o \
-		$(BUILD_8502)/pointer.o \
+		$(BUILD_8502)/pointer.o $(BUILD_8502)/nmi.o \
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
 		$(BUILD_8502)/terminal_stream.o \
 		$(BUILD_8502)/shell_parser.o $(BUILD_8502)/shell.o \
 		$(BUILD_8502)/z80_worker.o \
 		$(BUILD_8502)/vic_graphics.o \
 		$(BUILD_8502)/vic_span.o $(BUILD_8502)/vic_pixel.o \
+		$(BUILD_8502)/vic_clear.o \
 		$(BUILD_8502)/managed_apps.o \
 		$(BUILD_8502)/vdc_text_assets.o \
 		$(CAPABILITY_FORCE_IMPORTS) $(BOOT_CONSOLE_FORCE_IMPORTS) \
@@ -1387,13 +1397,14 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(BUILD_8502)/vdc_console.o $(BUILD_8502)/app_panel.o \
 		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o \
 		$(BUILD_8502)/keyboard.o \
-		$(BUILD_8502)/pointer.o \
+		$(BUILD_8502)/pointer.o $(BUILD_8502)/nmi.o \
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
 		$(BUILD_8502)/terminal_stream.o \
 		$(BUILD_8502)/shell_parser.o $(BUILD_8502)/shell.o \
 		$(BUILD_8502)/z80_worker.o \
 		$(BUILD_8502)/vic_graphics.o \
 		$(BUILD_8502)/vic_span.o $(BUILD_8502)/vic_pixel.o \
+		$(BUILD_8502)/vic_clear.o \
 		$(BUILD_8502)/managed_apps.o \
 		$(BUILD_8502)/vdc_text_assets.o \
 		$(CAPABILITY_FORCE_IMPORTS) $(BOOT_CONSOLE_FORCE_IMPORTS) \
@@ -2122,11 +2133,24 @@ check:
 		tools/graphics_raster_bench_build.py tools/graphics_raster_bench_run.py \
 		tools/graphics_raster_bench_decode.py \
 		tools/window_move_cache_spike.py tools/window_cache_bench.py tools/window_cache_compare.py \
-		tools/window_cache_padding_fault.py \
+		tools/window_cache_padding_fault.py tools/window_cache_overlay.py \
+		tools/window_cache_c_runtime.py tools/window_cache_command.py tools/window_cache_nmi.py \
+		tools/nmi_integration_probe.py \
+		tools/window_manager_budget.py tools/window_cache_controller.py \
+		tools/window_cache_controller_delivery.py tools/window_cache_acceptance.py \
+		tools/window_cache_compact.py \
+		tools/window_cache_compact_delivery.py \
+		tools/window_cache_resident_link.py \
+		tools/window_cache_manager.py tools/window_cache_live.py \
+		tools/window_cache_repaint.py tools/window_cache_occlusion.py \
+		tools/window_cache_partial.py tools/window_cache_partial_manager.py \
+		tools/window_drag_start.py tools/window_drag_latency.py \
+		tools/graphics_cache_delivery.py \
 		tools/graphics_cache_placement.py \
 		tools/graphics_span_bench.py \
 		tools/graphics_pixel_bench.py \
 		tools/graphics_primitives_qualify.py \
+		tools/graphics_shared_bench.py \
 		tools/join_boot_crt0.py \
 		tools/placement_audit.py \
 		tools/gen_capability_imports.py \

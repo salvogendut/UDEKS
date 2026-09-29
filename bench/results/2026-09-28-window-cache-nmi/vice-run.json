@@ -1,0 +1,48 @@
+{
+  "program_sha256": {
+    "probe-0.prg": "5083e4d43d5e67c9a6a5f566426ee0877b99d0b058e4ad02e1f3c844b8d92e56",
+    "probe-1.prg": "12aa687d15c32939ad5be9d179dfbd0d2127285f919c644c7d82708805f54ac0",
+    "probe-no-pending.prg": "30e3280e248824c10fb9a1aca206292d61214f9d72ed9e24501c218140c0ea47"
+  },
+  "raw_sha256": {
+    "vice-0.bin": "e079aa3dfae3dea8b6917c0ae9264539ca2bdae62a27306985a7cabe29897c53",
+    "vice-1.bin": "98ca3866dec49af033ad71556e441f6afb89136501d0284e0777a8513c9191bf",
+    "vice-no-pending.bin": "1dc9c70eb49ea65cb2fe2b49f7ceb83e14e49db59717317eda63b86d190ccf9d"
+  },
+  "decoded": {
+    "0": {
+      "rows": 132,
+      "commands": 543,
+      "images": 66,
+      "interrupts": 17098,
+      "observed_stack_offset": 217,
+      "pixel_sha256": "e928ae5083036895af16d235cc8e9767e8b6a21eae080a86943e949d59921851",
+      "nmi_total": 8896,
+      "nmi_worker_flat": 122,
+      "nmi_drains": 8896
+    },
+    "1": {
+      "rows": 312,
+      "commands": 336,
+      "images": 2,
+      "interrupts": 30137,
+      "observed_stack_offset": 217,
+      "pixel_sha256": "8dd6a64cf89e9564f6b5116d753c118f572779cebb3a5ff79c9a1d26ee0ef522",
+      "nmi_total": 15292,
+      "nmi_worker_flat": 106,
+      "nmi_drains": 15292
+    },
+    "no-pending": {
+      "rows": 132,
+      "commands": 543,
+      "images": 66,
+      "interrupts": 15833,
+      "observed_stack_offset": 217,
+      "pixel_sha256": "e928ae5083036895af16d235cc8e9767e8b6a21eae080a86943e949d59921851",
+      "nmi_total": 1,
+      "nmi_worker_flat": 0,
+      "nmi_drains": 0
+    }
+  },
+  "provenance": "\nVICE - Versatile Commodore Emulator\n\n            ID: net.sf.VICE\n           Ref: app/net.sf.VICE/x86_64/stable\n          Arch: x86_64\n        Branch: stable\n       Version: 3.10\n       License: GPL-2.0+\n        Origin: flathub\n    Collection: org.flathub.Stable\n  Installation: system\nInstalled Size: 45.8\u00a0MB\n       Runtime: org.freedesktop.Platform/x86_64/25.08\n           Sdk: org.freedesktop.Sdk/x86_64/25.08\n\n        Commit: bbd997ea8cbf7e6ba06ff82136fd71069ce2011f93c006412bcda7bbde17e448\n        Parent: 68a5281bbbfb691d105e1006686691713eb0cab353a7d869f4b72c066eca18c7\n       Subject: Add desktop files for vsid, x64dtv, xcbm5x0, xscpu64 (c39f8386949f)\n          Date: 2026-01-18 14:54:47 +0000\n"
+}

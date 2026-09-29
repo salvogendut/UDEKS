@@ -1,0 +1,162 @@
+{
+  "qualification": "standalone prefix/row-range command 0.2; no GUI hooks",
+  "objects": {
+    "raw": {
+      "CODE": 51,
+      "RODATA": 0,
+      "BSS": 0,
+      "DATA": 0,
+      "ZEROPAGE": 0,
+      "NULL": 0
+    },
+    "binding": {
+      "CODE": 309,
+      "RODATA": 0,
+      "BSS": 0,
+      "DATA": 0,
+      "ZEROPAGE": 0,
+      "NULL": 0
+    },
+    "validator": {
+      "CODE": 0,
+      "RODATA": 0,
+      "BSS": 0,
+      "DATA": 0,
+      "ZEROPAGE": 0,
+      "NULL": 0,
+      "GATEWAY": 79
+    }
+  },
+  "resident_bytes": 371,
+  "available": 502,
+  "remaining_before_hooks": 131,
+  "module_bytes": 3971,
+  "page_calls": 16,
+  "last_page_bytes": 131,
+  "negative_controls": {
+    "irq-leak": {
+      "offset": 3792,
+      "before": 120,
+      "after": 234
+    },
+    "zp-leak": {
+      "offset": 3730,
+      "before": 6,
+      "after": 7
+    },
+    "shell-stack": {
+      "offset": 3735,
+      "before": 83,
+      "after": 239
+    },
+    "no-pending": {
+      "offset": 4166,
+      "before": 141,
+      "after": 44
+    }
+  },
+  "rejection_controls": {
+    "bad-code": {
+      "offset": 8221,
+      "before": 96,
+      "after": 97
+    },
+    "bad-header": {
+      "offset": 8367,
+      "before": 0,
+      "after": 1
+    }
+  },
+  "source_sha256": {
+    "bench/window-cache-acceptance/validator.s": "0d17cb8031ffc83cceb66eceedc07a21b619b06b5086ecc9074326ad925b6dad",
+    "bench/window-cache-acceptance/binding.s": "eed4aeb5077022dc83a6df13a171c4f6b43dbc97eac2393f44d8b20c20125f12",
+    "tools/window_cache_acceptance.py": "c0c92ab744ef990d3024441bc32919c46463373e26b47a75dd5c0f2ce7864039",
+    "bench/window-cache-controller/layout.inc": "fd879148b7d0ea6859fa1647a981e6b24c25fcd50fb03560a369efbe7403cf02",
+    "bench/window-cache-controller/probe.c": "10ae89d100f0146e99dd26c37ddbbe838da74e76daef62eeb7133a987f8d0d10",
+    "tools/window_cache_controller.py": "2317c3bcd856353c297c24b09784f6c614009778be82748b1656e3f4f4096dc9",
+    "tools/window_cache_controller_delivery.py": "087aee3f1d57822e70032f301d37340d60fa3d00dd4b0a741d59629c765d0cd8",
+    "tools/1986_raster_bench.c": "e1d772fc3155d259f84eeff8c8f943e88c85c7cd8d2520a697d92887eb944b68",
+    "tools/1986_input_smoke_build.py": "5dbf7e6b2d8a0f3eda15c4796bb81ee3931e5d05b032e74e6a538daf5984256f",
+    "tools/graphics_raster_bench_run.py": "f15cb59bf9ee40131e62dddeb2dd05f4f4c3d40bfe5a570aebdcb93989e0ad5b",
+    "tools/vice_capture.py": "8e086e0cd28d620e028d997e38ec66595d02bf3f2af8c04cf966fbeda0670967",
+    "src/8502/nmi.s": "0e8b1a88b4b32138df0ac4606f44dee2648e58d3967abee9e404d19e15068b82",
+    "src/8502/nmi-common.inc": "887c7ee02f0458fada7394848cfdc839adec985a40cbfc540419089625d0e9ad",
+    "bench/window-cache-nmi/probe.s": "20a6ccd29d3ca3bf6cb02742ae3899791702bafb5fd9e1a68df1c0f720b447b7",
+    "bench/window-cache-c-runtime/probe.cfg": "c3ee54ed22961b56264f498f36108160f615f15e8bd58ba3fc374756194d2ab7",
+    "bench/window-cache-c-runtime/gateway.cfg": "5db7e1f71ffaf765e71424cfcf62a36742d1821f5b2256dcdc2ef5985741d19c",
+    "bench/artifacts/2026-09-28-window-cache-controller/build/module.bin": "7fa738e0ceaff3fedde43c1a6356e1d0ab56271f56fe284dc937af7976370016",
+    "bench/artifacts/2026-09-28-window-cache-controller/build/gateway.bin": "4863ff209f6d01355fcaf6338e8fc2f116f6250a8f70d6dd9dd8b7e768db7a8c",
+    "bench/artifacts/2026-09-28-window-cache-controller/build/driver.s": "7f891493a8cb3c81adbb363a4dc55780de92dfb3ebcfe93a7422fad5740cd957",
+    "bench/artifacts/2026-09-28-window-cache-controller/build/binding.s": "b6086ea3b63bbd0691aaea051f6ba5c711923f8a119669ef03ac7389b3f7bbf0",
+    "bench/artifacts/2026-09-28-window-cache-controller/build/launcher.s": "2f5386379407121c499ce1178b0b78323774aa7ba2aaf8008b09f314a689f664",
+    "tools/window_cache_partial.py": "18881e911a77af39214b4a4d41db49996962ea0e7beb0bc4bf98d67d1fbca86b",
+    "tests/test_window_cache_partial.py": "5ecfdc73f50bed8baa3c587f6421b72b52b5e218049b43fb6fb14c2b514ab86f",
+    "bench/window-cache-controller/partial-host.c": "6b810bf26ed98fb84e2c6dd3efa89afaa3be0663b760af73b5d035cfbf33f272",
+    "build/bench/window-cache-partial/acceptance/loader.inc": "f6318fabc5af3cdc6c72d2fd80af61d45c3cd535a0b8689f679f3a60a9d9c669",
+    "bench/window-cache-compact/raw.s": "75ed29f6dba52b3fa38bd45937c50f853bbfa090ccf0d38a517c23d8b323b481",
+    "tools/window_cache_compact.py": "76d3ebc275e615c06182b9e70bba4de595afdc2d382b103195a014720d349636",
+    "tools/graphics_span_bench.py": "6db1d9e8be5bc58dd505d349ed0ef68a32c212449641e9fa17ff0bef297ce9b2",
+    "tools/graphics_raster_bench_build.py": "baba59502f62edb26a5c215be72ef7eb53f97749ad835251c8c72c769f858f63",
+    "tools/placement_audit.py": "b04d55f8227108df64695a118efacb752f5038d6801ef995bccab08017b1f9c7",
+    "tools/gen_capability_imports.py": "b505025f70ee77d09d537130baac4415944f82100767680b042b0e36ab718038",
+    "bench/window-cache-controller/module.cfg": "95973954b545d67f697dc9d6625b0cd4b36654f37ebf7984ce649d70d45102f4",
+    "bench/artifacts/2026-09-28-window-cache-controller/build/build-report.json": "deb0b34413172be4c8b0b17db1a4f17c577c82d7c9d6dae0071a4079ba83365b",
+    "bench/artifacts/2026-09-28-window-cache-controller/build/gateway.s": "fda3dc545ba987deef8c6332a060e82b470923025dd0f3677364cce573ca4b12",
+    "bench/artifacts/2026-09-28-window-cache-controller/build/core.s": "1a6933dc929aa4049a0208d9f9e15680a3eab4de733355d1e531d9b9fe2d83eb",
+    "bench/artifacts/2026-09-28-window-cache-controller/build/module.s": "1c3ec95d884a6b5731a155bdd1cdb81ab8891e230d4259836509acd93178c496",
+    "src/services/window/move_cache_state.c": "64944eda2cf7e396ecfb4742b67ec6ef7f19e9f0d967913ed11969dcaade0c97",
+    "src/services/window/cache_overlay.c": "698803c548baa4441d331f3e31e48590d1655227c5ae64a934147e80ceb3de70",
+    "src/services/window/move_cache_flow.c": "a8fff045a2cb3d94b7c744f3f036cbab9b9b66423e301efb84a02224f57dce9c",
+    "include/udeks/window_cache_state.h": "c5dab7fb33976298c2c18e3327c74664c8b41b675543412045585d855c901243",
+    "include/udeks/window_cache_command.h": "38cfe6f79a330e68e791c66ee4e7fda1a06df03001f424c59594239b464bc42c",
+    "include/udeks/window_cache_flow.h": "15a3cea110608634adac8b97613900dda4972fea2c7fd8c93b0deaaaa8ca4ffd",
+    "build/bench/window-cache-partial/policy.c": "9784b1f5d435af0284c9cf07d804fb643c256d98cc6e7dea60f92a646f2b6b61",
+    "build/bench/window-cache-partial/command.c": "cd0bd073e6bc32fc6bb1e97ab913de908148858ee30debfba4652a725f583896",
+    "build/bench/window-cache-partial/flow.c": "c387c851eaa60debc896a141eb826564d23173c7d8ac102077acaa9e7e0f145e",
+    "build/bench/window-cache-partial/controller.c": "9694ab78f0224c7fdb0f4fc08d3b53458f5ddcdf4cf2fe1648c9e5ebe4afc00c",
+    "build/bench/window-cache-partial/module.cfg": "a36077ef73898938db5f91645096f0358818eba9cee6c7d8b4fee305179aa4fc",
+    "build/bench/window-cache-partial/module.map": "fac5fdb1cbed8dcc82cb9391fd15cdcbabd8c82543e1cc7e98fd62ae5bc2b604",
+    "build/bench/window-cache-partial/module.bin": "758965e4f32ae6f267c662b6da340caac4c9db03785ef4c4f18f002dc20b5bd0",
+    "build/bench/window-cache-partial/gateway.bin": "f80b445ff887ea4fec808d4ddb46543f36ca1cbf24cd93afe845d8935a4ce0e0",
+    "build/bench/window-cache-partial/gateway.s": "36acd7f6e92dafd12a342ae65d64e8e4e0f3453e56b40d4e2ab111d3f27bf201",
+    "build/bench/window-cache-partial/gateway-image.s": "218f6fb2ac526d90b229eeb99f3662ddc376aa2daeaddc01b19ee2f0bc660320",
+    "build/bench/window-cache-partial/module.s": "1c3ec95d884a6b5731a155bdd1cdb81ab8891e230d4259836509acd93178c496",
+    "build/bench/window-cache-partial/core.s": "1a6933dc929aa4049a0208d9f9e15680a3eab4de733355d1e531d9b9fe2d83eb",
+    "build/bench/window-cache-partial/module-report.json": "277d893e61157e52fe80e7c992897e8eab94d77f4d913062edcf32189f3e65b2"
+  },
+  "linked_sha256": {
+    "module-envelope.bin": "4872c6b3762f7ffeb05826f58aa32a31918e8d0457707e6f19a93a6460aba7e8",
+    "acceptance.inc": "dca55b90a219c4f6c5c8f855fcff630e75f35043daea0897bec5e2632f01df1f",
+    "validator.bin": "44edca033673889956cbc4c954363150cd4eb486f25f7412f6108fac32a250cd",
+    "gateway.bin": "f80b445ff887ea4fec808d4ddb46543f36ca1cbf24cd93afe845d8935a4ce0e0",
+    "raw.s": "75ed29f6dba52b3fa38bd45937c50f853bbfa090ccf0d38a517c23d8b323b481",
+    "binding.s": "2d026e4b1a24503fa7c3e9a33d7ca8a4803ee9863ff0e16d0dff2b2a91990f6b",
+    "driver.s": "80b4aed26eeb282d7410759832b48f47315273b8d92f155a60de995cae3850e1",
+    "observer.s": "971789bca79999d023c36037d4a469a2ec61005844e9f0b6b18f446ca347f1c5",
+    "probe.c": "75a42fe589e921ee1534a7a9626ffdb141d1900e78edca7fded2e0289488ad6d",
+    "probe-0.bin": "282cfef4f62f742293714eead169e666f87a164eff0970397001fb36ac801d4b",
+    "probe-0.map": "dd6f3bbf0d572876f4a33558d8518e3021c3ce476859338fa00b5a66927c3bfe",
+    "probe-1.bin": "347c5b473c47e4e92f7062f2c63b0aba2d1c1bf6fb8bb71824fdd7570c36efe1",
+    "probe-1.map": "2e2ff3b0831230abab69e60d32e5523ae7c4ae3d0c33b667ab96c7d556c8e2f5",
+    "probe-bad-code.bin": "e1b5c81cf2634cdd400aafd31abfac508c112f866576a4dfea75ce65eaa26038",
+    "probe-bad-code.map": "f6b57587e39af09b36ae781b02bc317e1325eed5352d54f7bdff3bee711c5eb2",
+    "probe-bad-header.bin": "7cc43b9820f50514e1077196fe3baa9961f86ec276a85c1efb275e37b722b770",
+    "probe-bad-header.map": "6e71e346e251a33210d27812f9bded69049af1de65d5c96f2b424051bce574ac",
+    "probe-bad-code.original.prg": "8a1079cfe1e378f3f166b950f6577f7d3e5604b061f264a9b5c607319bf691a6",
+    "probe-bad-header.original.prg": "e9629c16464162926222715024853b1694eb4cec211d48802587bb0e4f712459"
+  },
+  "program_sha256": {
+    "probe-0.prg": "b63b33328e9544dd4796fa351130395e0cb01cfab2d4d71ab695276f3cb13da0",
+    "probe-1.prg": "703cc967d38f0d9c761c2047e8d73b155acc4e8a2212035fd7e271cd1d2401bb",
+    "probe-bad-code.prg": "d2e6174d6601479c9166a3f5e3a77f28f8d6692669f6841f8eee0a87f21af3c5",
+    "probe-bad-header.prg": "644a86a43428f4a67dde776051b337a077c52c8d3b07d8978310337f7ecbec28",
+    "probe-irq-leak.prg": "e4b92ea8772b5887da9ec7cabcc3d88e5cf24853d2f0928783df0f9b498679ee",
+    "probe-zp-leak.prg": "b1f0ad217ebb4f9948d97c91e9f7a1e20a6c2c16f8924ecd0284b374c73123be",
+    "probe-shell-stack.prg": "5f79d3c6f47f117106d4bde4951f6e4059fba5d6bfb476e72b80bbc1cd0b6d01",
+    "probe-no-pending.prg": "d78f1f00c4ba7bfc4e28bc7090090a81f5ca2a5710070d20d255d88cbca60c5a"
+  },
+  "private_data_bytes": 3,
+  "gateway_source": 20671,
+  "gateway_bytes": 196,
+  "diagnostic_patch_bytes": 11
+}

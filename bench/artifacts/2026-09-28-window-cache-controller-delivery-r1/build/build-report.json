@@ -1,0 +1,188 @@
+{
+  "qualification": "whole-controller cold-boot delivery only; uninvoked; GUI moves disabled",
+  "scheduler_source": 24576,
+  "secondary_load": 16896,
+  "secondary_end": 29225,
+  "module_bytes": 3977,
+  "slot_bytes": 4128,
+  "identity": 21008,
+  "resident_delivery_bytes_added": 0,
+  "relocation_deltas": {
+    "stage1": [
+      [
+        996,
+        80,
+        66
+      ],
+      [
+        1007,
+        98,
+        114
+      ]
+    ],
+    "scheduler-tail-installer": [
+      [
+        9,
+        80,
+        96
+      ],
+      [
+        36,
+        80,
+        96
+      ],
+      [
+        63,
+        84,
+        100
+      ]
+    ],
+    "task-switch-activation": [
+      [
+        7,
+        96,
+        112
+      ],
+      [
+        26,
+        97,
+        113
+      ]
+    ],
+    "boot-console-installer": [
+      [
+        71,
+        208,
+        240
+      ]
+    ]
+  },
+  "disk_recipe": [
+    "python3",
+    "tools/build_d71.py",
+    "--stage0",
+    "build/boot/stage0.bin",
+    "--stage1",
+    "/var/home/salvogendut/Dev/UDEKS/build/window-cache-controller-delivery/stage1.bin",
+    "--kernel",
+    "build/8502/udeks-8502.bin",
+    "--z80",
+    "build/z80/udeks-z80.bin",
+    "--boot-delivery",
+    "build/boot/8502-boot-delivery.bin",
+    "--crt0",
+    "build/boot/8502-crt0.bin",
+    "--probe",
+    "build/boot/8502-probe.bin",
+    "--map",
+    "build/8502/udeks-8502.map",
+    "--scheduler-overlay",
+    "/var/home/salvogendut/Dev/UDEKS/build/window-cache-controller-delivery/secondary.prg",
+    "--scheduler-tail-installer",
+    "/var/home/salvogendut/Dev/UDEKS/build/window-cache-controller-delivery/scheduler-tail-installer.bin",
+    "--busy-sprite",
+    "build/assets/24x21-pipe-sprite.vic",
+    "--capability",
+    "build/boot/8502-capability.bin",
+    "--capability-installer",
+    "build/boot/capability-installer.bin",
+    "--boot-console",
+    "build/boot/8502-boot-console.bin",
+    "--task-switch-activation",
+    "/var/home/salvogendut/Dev/UDEKS/build/window-cache-controller-delivery/task-switch-activation.bin",
+    "--boot-console-installer",
+    "/var/home/salvogendut/Dev/UDEKS/build/window-cache-controller-delivery/boot-console-installer.bin",
+    "--bootfs",
+    "build/user/bootfs.img",
+    "--module",
+    "build/8502/udeks-module.bin",
+    "--ush",
+    "build/user/ush.udx",
+    "--task-loader",
+    "build/boot/task-loader.bin",
+    "--task-request-gateway",
+    "build/boot/task-request-gateway.bin",
+    "--bootfs-request-service",
+    "build/boot/bootfs-request-service.bin",
+    "--task-bank-gateway",
+    "build/boot/task-bank-gateway.bin",
+    "--d64-output",
+    "/var/home/salvogendut/Dev/UDEKS/build/window-cache-controller-delivery/delivery.d64",
+    "/var/home/salvogendut/Dev/UDEKS/build/window-cache-controller-delivery/delivery.d71"
+  ],
+  "core_sha256": "7fa738e0ceaff3fedde43c1a6356e1d0ab56271f56fe284dc937af7976370016",
+  "disk_sha256": {
+    "delivery.d71": "da12cf2caa0d270230b5f8f2e015c584e5d27919ccc6cffa54a6d0a957e112e4",
+    "delivery.d64": "00cbbe44338eac680f5b0c37f432b38697a177ea0154ec2673f0934b32034103"
+  },
+  "normal_disks_before": {
+    "udeks.d71": "5dc9c2bfc00e5c221e77ebcc1737587f2681337841316a2a24f80f2cf1d35db0",
+    "udeks.d64": "1fae55695a76d5e69eb641ed7910f81d3cb88a8c1f31b4cf5aa8a6ca6a24ada6"
+  },
+  "inputs_sha256": {
+    "Makefile": "e8291a07c67ec21f440a45e56b37929df11d0ea7684c70be671230a8e01cc91c",
+    "bench/artifacts/2026-09-28-window-cache-controller/build/build-report.json": "deb0b34413172be4c8b0b17db1a4f17c577c82d7c9d6dae0071a4079ba83365b",
+    "bench/artifacts/2026-09-28-window-cache-controller/build/module.bin": "7fa738e0ceaff3fedde43c1a6356e1d0ab56271f56fe284dc937af7976370016",
+    "build/8502/boot-console-delivery.inc": "466bea2a52b6ff3dd4ffab2191ac9f61f5cf892a46c9a8cf973514ce0791a693",
+    "build/8502/scheduler-overlay-delivery.inc": "2736dfff4e17ef2b913216eeb5229d401a77d8febcf53119430d83a967404717",
+    "build/8502/udeks-8502-panic-probe.map": "5252a232e0d088b58f5c6e067116bba65b31e4963bc53a5e53fb1d0629aa8105",
+    "build/8502/udeks-8502.bin": "579c10ba878398f366d7c3023026ee3c7980c90039c1e613fb13b4551bdb1f5c",
+    "build/8502/udeks-8502.map": "2adaa4b05ff6a2ddbc051058f0059e039140cea42b34394cfc36298f48faa418",
+    "build/8502/udeks-module.bin": "e751a5223ba2ee0dce6e244dd6f73d060f6f1f1b35f28d09bca03d0f95e58fe4",
+    "build/assets/24x21-pipe-sprite.vic": "df5e16bb2f712aa3ff0680df0c95143955edc14ad74e7aeaab9d72d4ea918c92",
+    "build/boot/8502-boot-console.bin": "c1eb285e58d34c86e41154715006e44b4d959a3090397f0fc944cf04d5dab790",
+    "build/boot/8502-boot-delivery.bin": "402def4fc4e521e845d4a54f998195c76e1f38d32e7383d51592403b5d411dd2",
+    "build/boot/8502-capability.bin": "99131209c42e47a5b80708d647a7f678cadd234eff5707aa211d99147149026b",
+    "build/boot/8502-crt0.bin": "2bba2258b902d6c3e8d09e302f259aebe0ad985f8fca2ecb1904bee3b7573099",
+    "build/boot/8502-probe.bin": "b0cdf72de5a0af53c4e6c1c233dc32caf1fa3dd966f5ccfd43565ba51d1417f4",
+    "build/boot/boot-console-installer.bin": "9b891485ce32a419045a434e4ede415959d0a00fbec6393e243bf22687537e3d",
+    "build/boot/bootfs-request-service.bin": "627ea0dda31a87886968e5f360f2c3616f00a4e61ac05d095e51105e4ca4082e",
+    "build/boot/capability-installer.bin": "0714d0b1e0230f16bd60de51393a0d39ee1fccf93960ed35e504d637743cf5b9",
+    "build/boot/scheduler-overlay.prg": "797b5a90cfe57f56aa4845c82cd76204a565d83d0cf2e457dc7eebf7297bbb72",
+    "build/boot/scheduler-tail-installer.bin": "ab872af8e9fed1ca6ad583a0a93d2f440fb50449877ef041fb5940e66e0faaf1",
+    "build/boot/stage0.bin": "98171d390046af575cebb033a1f073ff826256ee1f193c4ccd58d1e50ed7c2bd",
+    "build/boot/stage1.bin": "f6120aa35f6026b25191d9cb5a770206d45665b44dd92def38f28995cb45dca7",
+    "build/boot/task-bank-gateway.bin": "01be28d5d5eab6f16694086247ffecf9c8b425832f6433423d842a5c732c9ab7",
+    "build/boot/task-loader.bin": "ee3084484cd5e1389fbb87435f7993491577c3f77fc633ea80c8e8e9520d5529",
+    "build/boot/task-request-gateway.bin": "90ef71b761d4dff21a0ba821f0e4ef24e0ba0f06401ba89fa7e6f45fdbda6d40",
+    "build/boot/task-switch-activation.bin": "8468a2887a4e4d68e311c0ec798a2f7e547f404a6ed5c6999bf497a4ee8d362d",
+    "build/user/bootfs.img": "1ab1255f214f92fbf7a05dc65f6ed07fbb529c870bdc9b08da3e942d7260974d",
+    "build/user/ush.udx": "772325227f3d267d64435a08a2fd6ac6e3d3ee588c02220263eb10816973e834",
+    "build/z80/udeks-z80.bin": "2e755ea96ae87507fd7c21199db117f99dbcbf223e58afd29d1613668469516f",
+    "cfg/8502-boot-console-installer.cfg": "b25774f6f1e8be4fe994ab0ee9dc72bc98f055dd34c69a42fbf91dccc7300f27",
+    "cfg/8502-scheduler-tail-installer.cfg": "bb590116555c8bb4c105c36ef6c6cd82f4579bdfc5376f1da1459cde7cbebd55",
+    "cfg/8502-stage1.cfg": "cef9a9584af8aa2547ea796278d92ca3a25f69b65702aaf02743d9e4b0b53b96",
+    "cfg/8502-task-switch-activation.cfg": "5469d8f11773760a73be6c5019ffdde8f0c2da28ec791c55a71eac1db6ad874c",
+    "src/boot/boot-console-installer.s": "13bfdbd942ddb924d1d798530ffcccfbecf08ac08b256af14739b86cd7e089bf",
+    "src/boot/scheduler-tail-installer.s": "647d7beb026d1c831c2d04eee5e6c0948c44f845995a3e40c350e56d8ea6f504",
+    "src/boot/stage1.s": "d3c203dcdfa9b09d3eed20efe3a72f2124e6f2c8d44f207c748b920bfe8e9fb3",
+    "src/boot/task-switch-activation.s": "f6aa113b24840d1b9237153d83135c9d7bce9f954497a70f7f8049a06de076aa",
+    "tests/test_window_cache_controller_delivery.py": "5371bd8b9a2e26924552dc603f3d0a631dd5766e9ab38a6d86862003de7da456",
+    "tools/1986_input_smoke.c": "d1b2f6d4264c18a3eac19fadad0fbcafafd5fd137374d2a98e5750c4b8db3aed",
+    "tools/1986_input_smoke_build.py": "5dbf7e6b2d8a0f3eda15c4796bb81ee3931e5d05b032e74e6a538daf5984256f",
+    "tools/bench_decode.py": "51d2ac03fad2f3e3aa0a8a5e516396b15a32eb2ff42c3dcad23928c329425974",
+    "tools/build_d71.py": "092cdc9cbaba36e0b2dd2d11e2be23f5c4f97c9f434f27f554177e4996c896ed",
+    "tools/build_scheduler_overlay.py": "a702ae6139b8f91553263a7dab6b5f4b1947a20dc94684741d5991109c4de6b7",
+    "tools/capability_relocation_probe.py": "61e59c91bdd11a399f93a6316780dc002be91adaf5941dddc29b409e3f297470",
+    "tools/gen_boot_console_imports.py": "16b3de903c25af25c29413a4bd10b75382e9fdcf80ec2484f7f6e6181f17d3ca",
+    "tools/graphics_cache_delivery.py": "c768ce2dcadb30db62acabcdfed30530319214b368a6b2ebf7f66fb526bdd313",
+    "tools/graphics_raster_bench_run.py": "f15cb59bf9ee40131e62dddeb2dd05f4f4c3d40bfe5a570aebdcb93989e0ad5b",
+    "tools/shadow_boot_probe.py": "b361a4fa090ef53b3afd3c3747d9468f5b062adde8405efd84bdc33d7f1aa333",
+    "tools/vice_capture.py": "8e086e0cd28d620e028d997e38ec66595d02bf3f2af8c04cf966fbeda0670967",
+    "tools/window_cache_controller_delivery.py": "bca7205c1e77fc6dacf1352b165ef09e5e14eb255d63ac022338c2b365207b32"
+  },
+  "linked_sha256": {
+    "core.bin": "7fa738e0ceaff3fedde43c1a6356e1d0ab56271f56fe284dc937af7976370016",
+    "secondary.prg": "16dc0b1a2dad6e36f5953b26f497b20f8ec4325ca6415a653a8ecb0096325cf3",
+    "stage1.s": "f6c9e2d7bfd64fb996faa7a8c44b048d9d6b2b0eceb369fc6f81050720df95f7",
+    "stage1.bin": "cb054351ee39d0770cc5a63abac30b75314cf0713b2bd55cac39b5109b112d0f",
+    "stage1.map": "c491317c557c70a019a32442abb86e421fb490daac3ab29ac65aafca74f463e0",
+    "scheduler-overlay-delivery.inc": "ec053bee4256f5de3d9ece142d1386bc4f7fcfbb3583c547ea32f19443a15dde",
+    "boot-console-delivery.inc": "4cee616a4134faf7f6d27884e125b10b7c7075cbcd05125741fe7836225c7107",
+    "boot-console-installer.bin": "3f2219ddc4834ec7a28fecedc13cbc8d891ceba2665eef8671e3c853c2af4f93",
+    "scheduler-tail-installer.bin": "31273f741c37b3f3d49f091832e9d691350a7cc6d36b86cd985e333f11563303",
+    "scheduler-tail-installer.map": "9436f5c625582ffb0c24a95da89c2f1796d447e00734deab1d7a6503e6403d8b",
+    "task-switch-activation.bin": "edf09342f8d34102d877f42d2514fdc762d0d9ce7354eccb6704846685f7e5eb",
+    "task-switch-activation.map": "b7a8e5e90a3f959f54f512327b3c8361d37424df804556991c2c7e3615a5d949"
+  }
+}

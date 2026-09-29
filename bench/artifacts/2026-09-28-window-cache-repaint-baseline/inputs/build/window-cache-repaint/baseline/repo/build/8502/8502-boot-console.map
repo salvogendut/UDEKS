@@ -1,0 +1,93 @@
+Modules list:
+-------------
+boot_console.o:
+    CODE              Offs=000000  Size=00038F  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=00021B  Align=00001  Fill=0000
+boot-console-bridge.o:
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+CODE                  001600  00198E  00038F  00001
+RODATA                00198F  001BA9  00021B  00001
+
+
+Exports list by name:
+---------------------
+__BSS_SIZE__              000000 REA    __CODE_RUN__              001600 RLA    
+__CODE_SIZE__             00038F REA    __RODATA_RUN__            00198F RLA    
+__RODATA_SIZE__           00021B REA    _udeks_boot_console_build 001600 RLA    
+_udeks_root_console_reset 00388D REA    _udeks_root_console_set_cursor 003AAF REA    
+_udeks_root_console_write_at 0038AF REA    decsp2                    008F7A REA    
+decsp3                    008F87 REA    decsp6                    008FAE REA    
+incsp3                    00902A REA    incsp5                    009034 REA    
+incsp6                    009039 REA    ptr1                      00000E REZ    
+pusha                     00918F REA    pushax                    0091A5 REA    
+sp                        000006 REZ    stax0sp                   009252 REA    
+
+
+
+Exports list by value:
+----------------------
+__BSS_SIZE__              000000 REA    sp                        000006 REZ    
+ptr1                      00000E REZ    __RODATA_SIZE__           00021B REA    
+__CODE_SIZE__             00038F REA    __CODE_RUN__              001600 RLA    
+_udeks_boot_console_build 001600 RLA    __RODATA_RUN__            00198F RLA    
+_udeks_root_console_reset 00388D REA    _udeks_root_console_write_at 0038AF REA    
+_udeks_root_console_set_cursor 003AAF REA    decsp2                    008F7A REA    
+decsp3                    008F87 REA    decsp6                    008FAE REA    
+incsp3                    00902A REA    incsp5                    009034 REA    
+incsp6                    009039 REA    pusha                     00918F REA    
+pushax                    0091A5 REA    stax0sp                   009252 REA    
+
+
+
+Imports list:
+-------------
+__BSS_SIZE__ ([linker generated]):
+    boot-console-bridge.o     build/8502/boot-console-bridge.s(37)
+__CODE_RUN__ ([linker generated]):
+    boot-console-bridge.o     build/8502/boot-console-bridge.s(36)
+__CODE_SIZE__ ([linker generated]):
+    boot-console-bridge.o     build/8502/boot-console-bridge.s(36)
+__RODATA_RUN__ ([linker generated]):
+    boot-console-bridge.o     build/8502/boot-console-bridge.s(37)
+__RODATA_SIZE__ ([linker generated]):
+    boot-console-bridge.o     build/8502/boot-console-bridge.s(37)
+_udeks_boot_console_build (boot_console.o):
+    boot-console-bridge.o     build/8502/boot-console-bridge.s(35)
+_udeks_root_console_reset (boot-console-bridge.o):
+    boot_console.o            build/8502/boot_console.s(14)
+_udeks_root_console_set_cursor (boot-console-bridge.o):
+    boot_console.o            build/8502/boot_console.s(16)
+_udeks_root_console_write_at (boot-console-bridge.o):
+    boot_console.o            build/8502/boot_console.s(15)
+decsp2 (boot-console-bridge.o):
+    boot_console.o            build/8502/boot_console.s(559)
+    boot_console.o            build/8502/boot_console.s(559)
+    boot_console.o            build/8502/boot_console.s(559)
+decsp3 (boot-console-bridge.o):
+    boot_console.o            build/8502/boot_console.s(559)
+decsp6 (boot-console-bridge.o):
+    boot_console.o            build/8502/boot_console.s(559)
+incsp3 (boot-console-bridge.o):
+    boot_console.o            build/8502/boot_console.s(559)
+incsp5 (boot-console-bridge.o):
+    boot_console.o            build/8502/boot_console.s(559)
+incsp6 (boot-console-bridge.o):
+    boot_console.o            build/8502/boot_console.s(559)
+ptr1 (boot-console-bridge.o):
+    boot_console.o            build/8502/boot_console.s(11)
+pusha (boot-console-bridge.o):
+    boot_console.o            build/8502/boot_console.s(559)
+    boot_console.o            build/8502/boot_console.s(559)
+pushax (boot-console-bridge.o):
+    boot_console.o            build/8502/boot_console.s(559)
+    boot_console.o            build/8502/boot_console.s(559)
+sp (boot-console-bridge.o):
+    boot_console.o            build/8502/boot_console.s(10)
+stax0sp (boot-console-bridge.o):
+    boot_console.o            build/8502/boot_console.s(559)
+

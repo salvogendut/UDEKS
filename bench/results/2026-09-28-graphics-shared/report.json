@@ -1,0 +1,62 @@
+{
+  "0": {
+    "1986": {
+      "reference": 1636277,
+      "combined": 1520932
+    },
+    "vice": {
+      "reference": 1636252,
+      "combined": 1520908
+    }
+  },
+  "1": {
+    "1986": {
+      "reference": 6313601,
+      "combined": 5934849
+    },
+    "vice": {
+      "reference": 6313504,
+      "combined": 5934758
+    }
+  },
+  "2": {
+    "1986": {
+      "reference": 32482663,
+      "combined": 30169198
+    },
+    "vice": {
+      "reference": 32482167,
+      "combined": 30168737
+    }
+  },
+  "3": {
+    "1986": {
+      "reference": 4798062,
+      "combined": 1158189
+    },
+    "vice": {
+      "reference": 4797988,
+      "combined": 1158171
+    }
+  },
+  "4": {
+    "1986": {
+      "reference": 890429,
+      "combined": 89346
+    },
+    "vice": {
+      "reference": 890415,
+      "combined": 89344
+    }
+  },
+  "5": {
+    "1986": {
+      "reference": 889867,
+      "combined": 88788
+    },
+    "vice": {
+      "reference": 889853,
+      "combined": 88786
+    }
+  }
+}

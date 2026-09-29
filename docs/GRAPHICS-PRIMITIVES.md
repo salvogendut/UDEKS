@@ -112,6 +112,12 @@ oracle real, retains executable benchmark PRGs for future hardware tests, and
 does not alter any production output. Experimental unpadded kernels must not
 be packaged or booted.
 
-Next: compact the remaining line/rectangle/clear mechanisms and remeasure the
-whole link. If savings cannot fund cache, bindings and bounded state, make an
-explicit service-placement decision rather than using live memory as a hole.
+The follow-on [shared-raster mechanisms](GRAPHICS-SHARED.md) are now integrated
+and separately qualified; the measurements here remain the preceding checkpoint.
+They save another 294 net bytes, retaining all savings as padding. An explicit
+service-placement/budget investigation is next: the cache still does not fit.
+
+That is the historical shared-raster checkpoint. The subsequent
+[completion seam](WINDOW-CACHE-COMMAND.md) spends 158 bytes from that padding,
+leaving 358 total resident reserve. Its combined C cache command is qualified
+standalone but not integrated; complete manager/NMI/delivery fit remains open.

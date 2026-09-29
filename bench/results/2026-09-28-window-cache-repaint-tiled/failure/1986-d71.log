@@ -1,0 +1,69 @@
+command: echo smoke -> accepted (Return release=189 frames)
+history: count=1 recalls=0 -> 1 scan=83
+command: xinit -> accepted (Return release=158 frames)
+command: xclock & -> accepted (Return release=251 frames)
+command: xwave -> accepted (Return release=229 frames)
+page profile 0 stage=1 calls=20 unique=20 cycles=255045
+page profile 0 stage=2 calls=20 unique=17 cycles=250567
+cache move 0: x=3 y=1 release=60 paste=129 pixels=OK
+page profile 1 stage=1 calls=20 unique=20 cycles=254613
+page profile 1 stage=2 calls=23 unique=17 cycles=296921
+cache move 1: x=40 y=24 release=62 paste=121 pixels=OK
+page profile 2 stage=1 calls=21 unique=21 cycles=268051
+page profile 2 stage=2 calls=22 unique=18 cycles=277246
+cache move 2: x=77 y=47 release=63 paste=132 pixels=OK
+page profile 3 stage=1 calls=22 unique=22 cycles=280554
+page profile 3 stage=2 calls=25 unique=18 cycles=314570
+cache move 3: x=114 y=70 release=64 paste=130 pixels=OK
+page profile 4 stage=1 calls=22 unique=22 cycles=278036
+page profile 4 stage=2 calls=21 unique=18 cycles=263023
+cache move 4: x=151 y=93 release=62 paste=140 pixels=OK
+page profile 5 stage=1 calls=30 unique=30 cycles=379459
+page profile 5 stage=2 calls=25 unique=18 cycles=314790
+cache move 5: x=35 y=19 release=82 paste=129 pixels=OK
+page profile 6 stage=1 calls=22 unique=22 cycles=281119
+page profile 6 stage=2 calls=22 unique=18 cycles=279187
+cache move 6: x=72 y=42 release=64 paste=125 pixels=OK
+page profile 7 stage=1 calls=22 unique=22 cycles=280248
+page profile 7 stage=2 calls=69 unique=19 cycles=875654
+cache move 7: x=109 y=65 release=64 paste=313 pixels=OK
+page profile 8 stage=1 calls=20 unique=20 cycles=255001
+page profile 8 stage=2 calls=19 unique=16 cycles=236754
+cache move 8: x=146 y=88 release=63 paste=121 pixels=OK
+page profile 9 stage=1 calls=29 unique=29 cycles=369568
+page profile 9 stage=2 calls=25 unique=18 cycles=315992
+cache move 9: x=30 y=14 release=81 paste=136 pixels=OK
+page profile 10 stage=1 calls=22 unique=22 cycles=280598
+page profile 10 stage=2 calls=21 unique=18 cycles=262777
+cache move 10: x=67 y=37 release=64 paste=127 pixels=OK
+page profile 11 stage=1 calls=22 unique=22 cycles=280274
+page profile 11 stage=2 calls=24 unique=18 cycles=306191
+cache move 11: x=104 y=60 release=63 paste=121 pixels=OK
+page profile 12 stage=1 calls=21 unique=21 cycles=267504
+page profile 12 stage=2 calls=20 unique=17 cycles=254656
+cache move 12: x=141 y=83 release=63 paste=130 pixels=OK
+page profile 13 stage=1 calls=29 unique=29 cycles=369873
+page profile 13 stage=2 calls=25 unique=18 cycles=313460
+cache move 13: x=25 y=9 release=80 paste=128 pixels=OK
+page profile 14 stage=1 calls=20 unique=20 cycles=254610
+page profile 14 stage=2 calls=22 unique=16 cycles=280398
+cache move 14: x=62 y=32 release=62 paste=135 pixels=OK
+page profile 15 stage=1 calls=20 unique=20 cycles=254955
+page profile 15 stage=2 calls=24 unique=18 cycles=300452
+cache move 15: x=99 y=55 release=63 paste=132 pixels=OK
+cancel profile: frames=156
+command: echo console alive -> accepted (Return release=236 frames)
+command: xwave & -> accepted (Return release=222 frames)
+FAIL: keyboard release was not sampled (frame 22116, PC $C259, request 00/10/00)
+trace PC=$6E8B drag=0 buttons=0 moves=143 finishes=20
+trace PC=$2AC7 drag=0 buttons=0 moves=143 finishes=20
+trace PC=$C43C drag=0 buttons=0 moves=143 finishes=20
+trace PC=$912E drag=0 buttons=0 moves=143 finishes=20
+trace PC=$9259 drag=0 buttons=0 moves=143 finishes=20
+trace PC=$91A8 drag=0 buttons=0 moves=143 finishes=20
+trace PC=$7190 drag=0 buttons=0 moves=143 finishes=20
+trace PC=$9195 drag=0 buttons=0 moves=143 finishes=20
+trace PC=$2E80 drag=0 buttons=0 moves=143 finishes=20
+trace PC=$C441 drag=0 buttons=0 moves=143 finishes=20
+trace PC=$2AE4 drag=0 buttons=0 moves=143 finishes=20
+trace PC=$FF2C drag=0 buttons=0 moves=143 finishes=20

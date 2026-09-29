@@ -1,0 +1,79 @@
+command: echo smoke -> accepted (Return release=188 frames)
+history: count=1 recalls=0 -> 1 scan=83
+command: xinit -> accepted (Return release=202 frames)
+command: xclock & -> accepted (Return release=250 frames)
+command: xwave -> accepted (Return release=228 frames)
+page profile 0 stage=1 calls=20 unique=20 cycles=254957
+page profile 0 stage=2 calls=54 unique=17 cycles=687298
+clock profile 0: paints=1
+cache move 0: x=3 y=1 release=60 paste=155 pixels=OK
+page profile 1 stage=1 calls=20 unique=20 cycles=254955
+page profile 1 stage=2 calls=46 unique=17 cycles=582545
+clock profile 1: paints=1
+cache move 1: x=40 y=24 release=61 paste=141 pixels=OK
+page profile 2 stage=1 calls=21 unique=21 cycles=267719
+page profile 2 stage=2 calls=56 unique=18 cycles=709046
+clock profile 2: paints=1
+cache move 2: x=77 y=47 release=62 paste=157 pixels=OK
+page profile 3 stage=1 calls=22 unique=22 cycles=280248
+page profile 3 stage=2 calls=62 unique=18 cycles=787984
+clock profile 3: paints=1
+cache move 3: x=114 y=70 release=65 paste=159 pixels=OK
+page profile 4 stage=1 calls=22 unique=22 cycles=277686
+page profile 4 stage=2 calls=56 unique=18 cycles=705778
+clock profile 4: paints=1
+cache move 4: x=151 y=93 release=61 paste=164 pixels=OK
+page profile 5 stage=1 calls=30 unique=30 cycles=379483
+page profile 5 stage=2 calls=62 unique=18 cycles=782881
+clock profile 5: paints=1
+cache move 5: x=35 y=19 release=80 paste=163 pixels=OK
+page profile 6 stage=1 calls=22 unique=22 cycles=281119
+page profile 6 stage=2 calls=56 unique=18 cycles=709857
+clock profile 6: paints=1
+cache move 6: x=72 y=42 release=64 paste=148 pixels=OK
+page profile 7 stage=1 calls=22 unique=22 cycles=280228
+page profile 7 stage=2 calls=62 unique=18 cycles=788639
+clock profile 7: paints=1
+cache move 7: x=109 y=65 release=63 paste=159 pixels=OK
+page profile 8 stage=1 calls=20 unique=20 cycles=254957
+page profile 8 stage=2 calls=38 unique=16 cycles=480768
+clock profile 8: paints=1
+cache move 8: x=146 y=88 release=62 paste=141 pixels=OK
+page profile 9 stage=1 calls=29 unique=29 cycles=369912
+page profile 9 stage=2 calls=62 unique=18 cycles=786588
+clock profile 9: paints=1
+cache move 9: x=30 y=14 release=81 paste=164 pixels=OK
+page profile 10 stage=1 calls=22 unique=22 cycles=280554
+page profile 10 stage=2 calls=56 unique=18 cycles=712036
+clock profile 10: paints=1
+cache move 10: x=67 y=37 release=64 paste=155 pixels=OK
+page profile 11 stage=1 calls=22 unique=22 cycles=280248
+page profile 11 stage=2 calls=45 unique=18 cycles=570166
+clock profile 11: paints=1
+cache move 11: x=104 y=60 release=64 paste=142 pixels=OK
+page profile 12 stage=1 calls=21 unique=21 cycles=267198
+page profile 12 stage=2 calls=54 unique=17 cycles=680595
+clock profile 12: paints=1
+cache move 12: x=141 y=83 release=63 paste=158 pixels=OK
+page profile 13 stage=1 calls=29 unique=29 cycles=369567
+page profile 13 stage=2 calls=62 unique=18 cycles=788630
+clock profile 13: paints=1
+cache move 13: x=25 y=9 release=80 paste=156 pixels=OK
+page profile 14 stage=1 calls=20 unique=20 cycles=255395
+page profile 14 stage=2 calls=44 unique=16 cycles=565075
+clock profile 14: paints=1
+cache move 14: x=62 y=32 release=63 paste=155 pixels=OK
+page profile 15 stage=1 calls=20 unique=20 cycles=255045
+page profile 15 stage=2 calls=61 unique=18 cycles=768901
+clock profile 15: paints=1
+cache move 15: x=99 y=55 release=62 paste=162 pixels=OK
+cancel profile: frames=211
+command: echo console alive -> accepted (Return release=191 frames)
+command: xwave & -> accepted (Return release=222 frames)
+shutdown profile: raster=238 target=200
+command: xinit -q -> accepted (Return release=206 frames)
+command: xinit -> accepted (Return release=160 frames)
+command: xwave & -> accepted (Return release=197 frames)
+command: echo graphics restarted -> accepted (Return release=150 frames)
+cache latency: release=81 paste=164 PAL frames; NMI drains=7479
+PASS: live cached moves, full pixels, fallback, cancellation and restart

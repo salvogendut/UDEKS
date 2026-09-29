@@ -4,6 +4,31 @@ Status: measured on `graphics-window-cache-spike`, 2026-09-28; **no cache
 installed**. This closes the placement inventory step in issue #6, not the
 responsive-graphics acceptance gate. The current disks still use vertex replay.
 
+Latest checkpoint: UAPP 0.3 explicit completion spends 158 CODE bytes from the
+shared-raster reserve. Deferred NMI ownership spends another 77 CODE bytes,
+and private window-manager C savings recover 221. Current total padding is
+502 while preserving the shadow. The combined C-command candidate binding
+measures 241 bytes, leaving 261 before manager/delivery integration. The real
+resident controller experiment is still at least 739 bytes short; its
+bank-1 image capacity in the previous combined-command proof is
+3,072 bytes. This is not full-integration fit. See
+[WINDOW-CACHE-COMMAND.md](WINDOW-CACHE-COMMAND.md) and
+[WINDOW-CACHE-NMI.md](WINDOW-CACHE-NMI.md); earlier measurements below
+remain historical evidence, not the current available budget.
+Current sizing and next placement gate:
+[WINDOW-MANAGER-BUDGET.md](WINDOW-MANAGER-BUDGET.md).
+
+Newer standalone transport checkpoint: pre-C acceptance initially measured
+553 resident bytes; loading the gateway source from the validated bank-1
+module reduces the fully charged closure to371. This leaves131 aggregate
+bytes before actual compositor hooks. Revised module delivery now passes in
+both emulators/formats, and isolated normal/panic **transport-only** links
+preserve every segment and runtime helper with131 residual padding bytes.
+Full compositor integration is NOT yet linked/qualified; normal disks remain
+unchanged. Those experimental links are not bootable because private import
+bridges are stale. See [WINDOW-CACHE-COMPACT.md](WINDOW-CACHE-COMPACT.md) and
+[WINDOW-CACHE-COMPACT-DELIVERY.md](WINDOW-CACHE-COMPACT-DELIVERY.md).
+
 ## Reproduce
 
 ```sh
@@ -107,3 +132,17 @@ in named placement padding; total raster reserves are 222, leaving **at least
 above remains its saved baseline. The live audit measures both ASM objects,
 checks them against the actual map, and rejects changed primitive padding.
 No cache path has been enabled and no unowned post-shadow space has appeared.
+
+The subsequent [shared-raster step](GRAPHICS-SHARED.md) saves another 294
+linked bytes and retains them as a separate named reserve. The live audit now
+measures the clear provider too and verifies both sets of placement padding:
+516 bytes total, still **507 short** before bindings/bounded state. The saved
+baseline inventory above remains historical; no scheduler or stack byte is
+counted as newly available.
+
+The [private bank-1 overlay experiment](WINDOW-CACHE-OVERLAY.md) is now a
+measured alternative: 213 bytes in a candidate bank-1 display-code lease and
+194 resident binding bytes including gateway source. The 322 remaining
+reserve bytes are not yet proven sufficient for integration; the bank-1 code
+and 6,144-byte image candidate also need delivery/lifetime qualification.
+Current allocations and boot disks are unchanged by that standalone proof.

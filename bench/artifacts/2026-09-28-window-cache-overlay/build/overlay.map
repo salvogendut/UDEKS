@@ -1,0 +1,29 @@
+Modules list:
+-------------
+core.o:
+    OVERLAY           Offs=000000  Size=0000D5  Align=00001  Fill=0000
+gateway.o:
+    GATEWAY           Offs=000000  Size=0000AA  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+OVERLAY               004200  0042D4  0000D5  00001
+GATEWAY               00F68A  00F733  0000AA  00001
+
+
+Exports list by name:
+---------------------
+
+
+
+Exports list by value:
+----------------------
+
+
+
+Imports list:
+-------------
+

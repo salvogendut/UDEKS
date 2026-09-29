@@ -1,0 +1,61 @@
+{
+  "qualification": "standalone active-IRQ row proof; no production delivery/state/GUI qualification",
+  "core_bytes": 213,
+  "gateway_bytes": 170,
+  "binding_object": {
+    "CODE": 194,
+    "RODATA": 0,
+    "BSS": 0,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "core_reservation": [
+    16896,
+    17407
+  ],
+  "cache_reservation": [
+    17408,
+    23551
+  ],
+  "row_stage": [
+    63408,
+    63447
+  ],
+  "parameters": [
+    63360,
+    63369
+  ],
+  "diagnostic_guard_parameter": [
+    63370,
+    63371
+  ],
+  "negative_control": {
+    "program": "probe-irq-leak.prg",
+    "offset": 2870,
+    "before": 120,
+    "after": 234
+  },
+  "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44",
+  "source_sha256": {
+    "bench/graphics-raster/launcher.s": "d6acecc7fd8126fcd248465243608c5d8958e5b43ff0a25c765d8ea112209c6d",
+    "bench/window-cache-overlay/binding.s": "bd70f389f2e540dbbebf48bfaecc3ee9dae5675a8a2f908ea86bf4f1b6c542c3",
+    "bench/window-cache-overlay/core.s": "1a6933dc929aa4049a0208d9f9e15680a3eab4de733355d1e531d9b9fe2d83eb",
+    "bench/window-cache-overlay/driver.s": "33ea795e521263724c43ecf3f45fcc44ba446e1e3fe80fbe5edc969dbdd6ccaa",
+    "bench/window-cache-overlay/gateway.s": "5e4e252d7c4005193eaf1311704b98fd7ea1375442003e8ccf84051f3438eb80",
+    "bench/window-cache-overlay/layout.inc": "1ad3cc8881a4281dd85f448529113e3a47b80ddf0585014cdc80e09d7ee83e96",
+    "bench/window-cache-overlay/overlay.cfg": "0eb97a607550d5c717b0fc9cbd5d9443a0a17a1de2705a7f63d8054277fdd7e5",
+    "bench/window-cache-overlay/probe.c": "c2d6869aa5b3c7dccd9ebdddd9807f2f0d006d3c8977f4fd87915a03f3e9f18e",
+    "cfg/8502-raster-bench.cfg": "c51ee0b7a2ac5c0c091e9ee1f71bbacc9e603f8c5ca5fd2bcfa1253bf9651f9f",
+    "tools/1986_input_smoke_build.py": "5dbf7e6b2d8a0f3eda15c4796bb81ee3931e5d05b032e74e6a538daf5984256f",
+    "tools/1986_raster_bench.c": "e1d772fc3155d259f84eeff8c8f943e88c85c7cd8d2520a697d92887eb944b68",
+    "tools/graphics_raster_bench_run.py": "f15cb59bf9ee40131e62dddeb2dd05f4f4c3d40bfe5a570aebdcb93989e0ad5b",
+    "tools/vice_capture.py": "8e086e0cd28d620e028d997e38ec66595d02bf3f2af8c04cf966fbeda0670967",
+    "tools/window_cache_overlay.py": "c4a194d850ed17fdad65fe8927cf5a54a3e4119b1552c01be3626c025ac508f6"
+  },
+  "program_sha256": {
+    "probe-0.prg": "0e7783c40a85e222c37f2ab3ae8ceee5d85dc701e9dda39d917fb6ad3fe8a2df",
+    "probe-1.prg": "51efe91a9ebf12333ecf266dbe3384c75178064c5b82061f9be44e148d4efa3c",
+    "probe-irq-leak.prg": "360f0f8e88a12140a4eaa4b256fdfe83feb3c2ca14db38962c40d3158fa0bfe1"
+  }
+}

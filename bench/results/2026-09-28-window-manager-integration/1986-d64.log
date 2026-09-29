@@ -1,0 +1,15 @@
+command: echo smoke -> accepted (Return release=189 frames)
+history: count=1 recalls=0 -> 1 scan=83
+command: xinit -> accepted (Return release=158 frames)
+command: xclock & -> accepted (Return release=209 frames)
+drag: starts=1 moves=3 finishes=1
+command: echo pointer released -> accepted (Return release=192 frames)
+command: xwave -> accepted (Return release=240 frames)
+wave: cancel during row=0 column=8 leases=1
+wave: cancelled in 154 frames, row=0
+command: echo console alive -> accepted (Return release=192 frames)
+command: xwave & -> accepted (Return release=228 frames)
+wave: complete rows=21 leases=21; cached drag without recomputation
+NMI: RESTORE and CIA2 timer drained 12565 coalesced events
+sampling: maximum press=3 release=240 frames (functional, not a latency benchmark)
+PASS: native boot, stable idle, typing/backspace/history, 1351 drag, foreground Ctrl+C, background clock and console recovery (7288 frames)

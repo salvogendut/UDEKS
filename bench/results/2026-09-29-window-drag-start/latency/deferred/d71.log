@@ -1,0 +1,93 @@
+command: echo smoke -> accepted (Return release=188 frames)
+history: count=1 recalls=0 -> 1 scan=83
+command: xinit -> accepted (Return release=201 frames)
+command: xclock & -> accepted (Return release=208 frames)
+clock drag start: frames=17
+command: xwave -> accepted (Return release=299 frames)
+drag start: resize=0 phase=0 frames=24 x=144 y=88
+drag start: resize=0 phase=2 frames=25 x=35 y=19
+page profile 0 stage=1 calls=20 unique=20 cycles=254957
+page profile 0 stage=2 calls=20 unique=17 cycles=252943
+clock profile 0: paints=1
+cache move 0: x=3 y=1 release=61 paste=122 pixels=OK
+drag start: resize=0 phase=2 frames=24 x=3 y=1
+page profile 1 stage=1 calls=20 unique=20 cycles=255592
+page profile 1 stage=2 calls=23 unique=17 cycles=290797
+clock profile 1: paints=1
+cache move 1: x=40 y=24 release=60 paste=118 pixels=OK
+drag start: resize=0 phase=2 frames=23 x=40 y=24
+page profile 2 stage=1 calls=21 unique=21 cycles=267178
+page profile 2 stage=2 calls=22 unique=18 cycles=276884
+clock profile 2: paints=1
+cache move 2: x=77 y=47 release=64 paste=128 pixels=OK
+drag start: resize=0 phase=2 frames=25 x=77 y=47
+page profile 3 stage=1 calls=22 unique=22 cycles=280248
+page profile 3 stage=2 calls=25 unique=18 cycles=323989
+clock profile 3: paints=1
+cache move 3: x=114 y=70 release=64 paste=127 pixels=OK
+drag start: resize=0 phase=2 frames=26 x=114 y=70
+page profile 4 stage=1 calls=22 unique=22 cycles=277665
+page profile 4 stage=2 calls=21 unique=18 cycles=261765
+clock profile 4: paints=1
+cache move 4: x=151 y=93 release=62 paste=129 pixels=OK
+drag start: resize=0 phase=2 frames=25 x=151 y=93
+page profile 5 stage=1 calls=30 unique=30 cycles=380374
+page profile 5 stage=2 calls=25 unique=18 cycles=318557
+clock profile 5: paints=1
+cache move 5: x=35 y=19 release=80 paste=130 pixels=OK
+drag start: resize=0 phase=2 frames=25 x=35 y=19
+page profile 6 stage=1 calls=22 unique=22 cycles=281145
+page profile 6 stage=2 calls=22 unique=18 cycles=278868
+clock profile 6: paints=1
+cache move 6: x=72 y=42 release=64 paste=114 pixels=OK
+drag start: resize=0 phase=2 frames=25 x=72 y=42
+page profile 7 stage=1 calls=22 unique=22 cycles=280253
+page profile 7 stage=2 calls=27 unique=19 cycles=338395
+clock profile 7: paints=2
+cache move 7: x=109 y=65 release=64 paste=153 pixels=OK
+drag start: resize=0 phase=2 frames=24 x=109 y=65
+page profile 8 stage=1 calls=20 unique=20 cycles=254942
+page profile 8 stage=2 calls=19 unique=16 cycles=245027
+clock profile 8: paints=1
+cache move 8: x=146 y=88 release=62 paste=120 pixels=OK
+drag start: resize=0 phase=2 frames=24 x=146 y=88
+page profile 9 stage=1 calls=29 unique=29 cycles=369866
+page profile 9 stage=2 calls=25 unique=18 cycles=312868
+clock profile 9: paints=1
+cache move 9: x=30 y=14 release=81 paste=127 pixels=OK
+drag start: resize=0 phase=2 frames=24 x=30 y=14
+page profile 10 stage=1 calls=22 unique=22 cycles=280207
+page profile 10 stage=2 calls=21 unique=18 cycles=266765
+clock profile 10: paints=1
+cache move 10: x=67 y=37 release=64 paste=122 pixels=OK
+drag start: resize=0 phase=2 frames=25 x=67 y=37
+page profile 11 stage=1 calls=22 unique=22 cycles=279709
+page profile 11 stage=2 calls=24 unique=18 cycles=303116
+clock profile 11: paints=1
+cache move 11: x=104 y=60 release=63 paste=118 pixels=OK
+drag start: resize=0 phase=2 frames=24 x=104 y=60
+page profile 12 stage=1 calls=21 unique=21 cycles=268051
+page profile 12 stage=2 calls=20 unique=17 cycles=249631
+clock profile 12: paints=1
+cache move 12: x=141 y=83 release=62 paste=125 pixels=OK
+drag start: resize=0 phase=2 frames=24 x=141 y=83
+page profile 13 stage=1 calls=29 unique=29 cycles=369912
+page profile 13 stage=2 calls=25 unique=18 cycles=320662
+clock profile 13: paints=1
+cache move 13: x=25 y=9 release=79 paste=123 pixels=OK
+drag start: resize=0 phase=2 frames=24 x=25 y=9
+page profile 14 stage=1 calls=20 unique=20 cycles=254436
+page profile 14 stage=2 calls=22 unique=16 cycles=277858
+clock profile 14: paints=1
+cache move 14: x=62 y=32 release=63 paste=128 pixels=OK
+drag start: resize=0 phase=2 frames=24 x=62 y=32
+page profile 15 stage=1 calls=20 unique=20 cycles=255024
+page profile 15 stage=2 calls=24 unique=18 cycles=303081
+clock profile 15: paints=1
+cache move 15: x=99 y=55 release=63 paste=127 pixels=OK
+drag start: resize=0 phase=2 frames=25 x=99 y=55
+overlap clock drag start: frames=16
+command: echo clock drag alive -> accepted (Return release=190 frames)
+shutdown profile: raster=309 target=226
+command: xinit -q -> accepted (Return release=166 frames)
+PASS: native clock-only/overlap drag-start timing and shutdown

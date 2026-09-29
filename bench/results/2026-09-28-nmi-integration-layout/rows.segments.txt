@@ -1,0 +1,45 @@
+/var/home/salvogendut/Dev/UDEKS/build/nmi-integration-layout/placement/rows.o:
+  Segments:
+    Count:                          6
+    Index:                          0
+      Name:                    "CODE"
+      Flags:                        0
+      Size:                       267
+      Alignment:                    1
+      Address size:              0x02  (absolute)
+      Fragment count:             197
+    Index:                          1
+      Name:                  "RODATA"
+      Flags:                        0
+      Size:                         0
+      Alignment:                    1
+      Address size:              0x02  (absolute)
+      Fragment count:               0
+    Index:                          2
+      Name:                     "BSS"
+      Flags:                        0
+      Size:                         5
+      Alignment:                    1
+      Address size:              0x02  (absolute)
+      Fragment count:               5
+    Index:                          3
+      Name:                    "DATA"
+      Flags:                        0
+      Size:                         0
+      Alignment:                    1
+      Address size:              0x02  (absolute)
+      Fragment count:               0
+    Index:                          4
+      Name:                "ZEROPAGE"
+      Flags:                        0
+      Size:                         0
+      Alignment:                    1
+      Address size:              0x01  (zeropage)
+      Fragment count:               0
+    Index:                          5
+      Name:                    "NULL"
+      Flags:                        0
+      Size:                         0
+      Alignment:                    1
+      Address size:              0x02  (absolute)
+      Fragment count:               0
