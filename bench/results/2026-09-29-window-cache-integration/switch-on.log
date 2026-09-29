@@ -1,0 +1,168 @@
+make: Entering directory '/var/home/salvogendut/Dev/UDEKS/build/window-cache-clean/repo'
+ca65 --cpu 6502 -I src/8502 -D UDEKS_WINDOW_CACHE -o build/8502/vic_graphics_transport.o src/8502/vic_graphics.s
+cc65 -t none --cpu 6502 --standard c99 -Oirs -I include -o build/8502/window_manager.s src/services/window/window_manager_cached.c
+ca65 --cpu 6502 -I src/8502 -o build/8502/window_manager.o build/8502/window_manager.s
+cl65 -t none --cpu 6502 -C cfg/8502-bootstrap.cfg -m build/8502/udeks-8502.map \
+	$(cat build/8502/capability-force-imports.txt) \
+	$(cat build/8502/boot-console-force-imports.txt) \
+	-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok \
+	-u _udeks_line_editor_get_line \
+	-o build/8502/udeks-8502.bin \
+	build/8502/kernel_entry.o build/8502/crt0.o build/8502/vdc.o build/8502/keyboard_scan.o build/8502/control_ports.o build/8502/line_editor_read.o build/8502/z80_handoff.o build/8502/vic_graphics_transport.o build/8502/panic.o build/8502/probe.o build/8502/clock.o build/8502/syscall_gate.o build/8502/task_bank_gateway.o build/8502/kernel.o build/8502/service_start.o build/8502/boot_console_entry.o build/8502/service_registry.o build/8502/service_table.o build/8502/capability_descriptor.o build/8502/time_descriptor.o build/8502/clock_descriptor.o build/8502/console_descriptor.o build/8502/pointer_descriptor.o build/8502/keyboard_descriptor.o build/8502/root_terminal_descriptor.o build/8502/init_descriptor.o build/8502/z80_worker_descriptor.o build/8502/vic_graphics_descriptor.o build/8502/window_descriptor.o build/8502/managed_apps_descriptor.o build/8502/bootfs_request.o build/8502/time.o build/8502/vdc_console.o build/8502/app_panel.o build/8502/root_console.o build/8502/window_manager.o build/8502/cache_transport.o build/8502/keyboard.o build/8502/pointer.o build/8502/nmi.o build/8502/line_editor.o build/8502/root_terminal.o build/8502/terminal_stream.o build/8502/shell_parser.o build/8502/shell.o build/8502/z80_worker.o build/8502/vic_graphics.o build/8502/vic_span.o build/8502/vic_pixel.o build/8502/vic_clear.o build/8502/managed_apps.o build/8502/vdc_text_assets.o
+cl65 -t none --cpu 6502 -C cfg/8502-panic-probe.cfg \
+	$(cat build/8502/capability-force-imports.txt) \
+	$(cat build/8502/boot-console-force-imports.txt) \
+	-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok \
+	-u _udeks_line_editor_get_line \
+	-m build/8502/udeks-8502-panic-probe.map \
+	-o build/8502/udeks-8502-panic-probe.bin \
+	build/8502/kernel_entry.o build/8502/crt0.o build/8502/vdc.o build/8502/keyboard_scan.o build/8502/control_ports.o build/8502/line_editor_read.o build/8502/z80_handoff.o build/8502/vic_graphics_transport.o build/8502/panic.o build/8502/probe.o build/8502/clock.o build/8502/syscall_gate.o build/8502/task_bank_gateway.o build/8502/kernel.o build/8502/service_start.o build/8502/boot_console_entry.o build/8502/service_registry.o build/8502/service_table.o build/8502/capability_descriptor.o build/8502/time_descriptor.o build/8502/clock_descriptor.o build/8502/console_descriptor_fault.o build/8502/pointer_descriptor.o build/8502/keyboard_descriptor.o build/8502/root_terminal_descriptor.o build/8502/init_descriptor.o build/8502/z80_worker_descriptor.o build/8502/vic_graphics_descriptor.o build/8502/window_descriptor.o build/8502/managed_apps_descriptor.o build/8502/bootfs_request.o build/8502/time.o build/8502/vdc_console.o build/8502/app_panel.o build/8502/root_console.o build/8502/window_manager.o build/8502/cache_transport.o build/8502/keyboard.o build/8502/pointer.o build/8502/nmi.o build/8502/line_editor.o build/8502/root_terminal.o build/8502/terminal_stream.o build/8502/shell_parser.o build/8502/shell.o build/8502/z80_worker.o build/8502/vic_graphics.o build/8502/vic_span.o build/8502/vic_pixel.o build/8502/vic_clear.o build/8502/managed_apps.o build/8502/vdc_text_assets.o
+python3 tools/gen_capability_imports.py bridge build/8502/hardware_capability.o \
+	build/8502/udeks-8502.map build/8502/udeks-8502-panic-probe.map build/8502/capability-bridge.s
+python3 tools/gen_scheduler_overlay_imports.py bridge \
+	build/8502/task_state.o \
+	build/8502/task_scheduler.o build/8502/task-wait-state.o \
+	build/8502/scheduler-runtime/and.o build/8502/scheduler-runtime/aslax2.o \
+	--maps build/8502/udeks-8502.map build/8502/udeks-8502-panic-probe.map build/8502/scheduler-overlay-bridge.s
+python3 tools/gen_boot_console_imports.py bridge build/8502/boot_console.o \
+	build/8502/udeks-8502.map build/8502/udeks-8502-panic-probe.map build/8502/boot-console-bridge.s
+test -s build/8502/udeks-module.bin
+test -s build/boot/task-request-gateway.bin
+test -s build/boot/bootfs-request-service.bin
+test -s build/boot/task-bank-gateway.bin
+python3 tools/build_window_cache.py layout build/8502/udeks-8502.map build/8502/udeks-8502-panic-probe.map build/window-cache/layout.json
+ca65 --cpu 6502 -I src/8502 -o build/8502/capability-bridge.o build/8502/capability-bridge.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/boot-console-bridge.o build/8502/boot-console-bridge.s
+ld65 -C cfg/8502-boot-capability.cfg -m build/8502/8502-capability.map \
+	-o build/boot/8502-capability.bin build/8502/hardware_capability.o \
+	build/8502/capability-bridge.o
+ld65 -C cfg/8502-boot-console.cfg -m build/8502/8502-boot-console.map \
+	-o build/boot/8502-boot-console.bin build/8502/boot_console.o \
+	build/8502/boot-console-bridge.o
+python3 tools/gen_capability_imports.py constants build/boot/8502-capability.bin \
+	build/boot/8502-boot-delivery.bin \
+	build/8502/udeks-8502.map build/8502/udeks-8502-panic-probe.map build/8502/capability-delivery.inc \
+	build/8502/capability-installer.cfg
+ca65 --cpu 6502 -I src/8502 -o build/8502/scheduler-overlay-bridge.o build/8502/scheduler-overlay-bridge.s
+ld65 -C cfg/8502-scheduler-overlay.cfg \
+	-m build/8502/udeks-scheduler-overlay.map -o build/8502/udeks-scheduler-overlay-page.bin \
+	-u _udeks_lifecycle_apply -u _udeks_scheduler_select_next \
+	-u _udeks_lifecycle_slots_private \
+	-u _udeks_lifecycle_current_private \
+	-u _udeks_lifecycle_last_event_private \
+	-u _udeks_lifecycle_rejected_private \
+	-u _udeks_task_wait_reset \
+	-u _udeks_task_wait_publish_current \
+	-u _udeks_task_wait_state_private \
+	-u _udeks_task_wait_operation_private \
+	-u _udeks_task_wait_sequence_private \
+	-u _udeks_task_wait_descriptor_private \
+	-u _udeks_task_wait_count_private \
+	-u _udeks_task_wait_flags_private \
+	-u _udeks_task_wait_selector_private \
+	-u _udeks_task_wait_selector_high_private \
+	-u _udeks_task_wait_child_private \
+	-u _udeks_task_wait_status_private \
+	-u _udeks_task_cancel_request \
+	-u _udeks_task_poll_request \
+	-u _udeks_task_console_get_line \
+	-u _udeks_task_sleep_poll \
+	-u _udeks_task_tick_advance \
+	-u _udeks_monotonic_ticks_low -u _udeks_monotonic_ticks_high \
+	build/8502/scheduler.o build/8502/task_state.o \
+	build/8502/task_scheduler.o build/8502/task-wait-state.o \
+	build/8502/scheduler-runtime/and.o \
+	build/8502/scheduler-runtime/aslax2.o build/8502/scheduler-overlay-bridge.o
+python3 tools/gen_task_context_imports.py \
+	build/8502/task_context.o build/8502/udeks-scheduler-overlay.map build/8502/task-context-bridge.s
+ca65 --cpu 6502 -I build/8502 -o build/boot/stage1-gateway.o src/boot/stage1-gateway.s
+ca65 --cpu 6502 -I build/8502 -o build/boot/capability-installer.o src/boot/capability-installer.s
+ld65 -C build/8502/capability-installer.cfg -o build/boot/capability-installer.bin build/boot/capability-installer.o
+ld65 -C cfg/8502-stage1-gateway.cfg \
+	-o build/boot/stage1-gateway.bin build/boot/stage1-gateway.o
+ca65 --cpu 6502 -I src/8502 -o build/8502/task-context-bridge.o build/8502/task-context-bridge.s
+ld65 -C cfg/8502-task-context.cfg -m build/8502/task-context-binding.map \
+	-u _udeks_task_context_save_current \
+	-u _udeks_task_contexts_private \
+	-u _udeks_task_context_current_private \
+	-o build/8502/task-context-binding.bin build/8502/task_context.o \
+	build/8502/task-context-bridge.o build/8502/task_context_vectors.o
+python3 tools/gen_task_yield_imports.py build/8502/task-yield-handler.o \
+	build/8502/udeks-scheduler-overlay.map build/8502/task-context-binding.map \
+	build/8502/udeks-8502.map build/8502/udeks-8502-panic-probe.map build/8502/task-yield-bridge.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/task-yield-bridge.o build/8502/task-yield-bridge.s
+ld65 -C cfg/8502-task-yield-handler.cfg -o build/8502/task-yield-handler.bin \
+	build/8502/task-yield-handler.o build/8502/task-yield-bridge.o
+python3 tools/build_scheduler_overlay.py \
+	build/8502/udeks-scheduler-overlay-page.bin build/8502/udeks-scheduler-overlay-tail.bin \
+	build/8502/udeks-scheduler-overlay.map build/boot/scheduler-overlay.prg \
+	build/8502/scheduler-overlay-delivery.inc \
+	--activation-context build/8502/task-context-binding.bin \
+	--activation-context-map build/8502/task-context-binding.map \
+	--activation-tail build/8502/task-switch-tail.bin \
+	--activation-yield-handler build/8502/task-yield-handler.bin \
+	--activation-vectors build/8502/task-context-vectors.bin --window-cache build/window-cache/module.bin
+ca65 --cpu 6502 -D UDEKS_WINDOW_CACHE -I build/8502 -o build/boot/stage1.o src/boot/stage1.s
+ca65 --cpu 6502 -I build/8502 -o build/boot/task-switch-activation.o src/boot/task-switch-activation.s
+ca65 --cpu 6502 -I build/8502 -o build/boot/scheduler-tail-installer.o src/boot/scheduler-tail-installer.s
+python3 tools/placement_audit.py --verify
+ld65 -C cfg/8502-task-switch-activation.cfg -o build/boot/task-switch-activation.bin build/boot/task-switch-activation.o
+ld65 -C cfg/8502-stage1.cfg -o build/boot/stage1.bin build/boot/stage1.o
+ld65 -C cfg/8502-scheduler-tail-installer.cfg -o build/boot/scheduler-tail-installer.bin build/boot/scheduler-tail-installer.o
+python3 tools/gen_boot_console_imports.py constants \
+	build/boot/8502-boot-console.bin build/boot/8502-boot-delivery.bin \
+	build/boot/8502-capability.bin build/boot/capability-installer.bin \
+	build/boot/task-switch-activation.bin \
+	build/8502/udeks-8502.map build/8502/udeks-8502-panic-probe.map build/8502/boot-console-delivery.inc
+python3 tools/join_boot_crt0.py build/boot/8502-capability.bin \
+	build/boot/8502-boot-console.bin build/boot/8502-probe.bin build/8502/udeks-scheduler.bin \
+	build/boot/8502-crt0.bin build/8502/udeks-8502.bin build/boot/stage1-gateway.bin build/8502/udeks-8502-direct.bin \
+	--task-switch-activation build/boot/task-switch-activation.bin
+ca65 --cpu 6502 -I build/8502 -o build/boot/boot-console-installer.o src/boot/boot-console-installer.s
+ld65 -C cfg/8502-boot-console-installer.cfg -o build/boot/boot-console-installer.bin build/boot/boot-console-installer.o
+python3 tools/build_d71.py --stage0 build/boot/stage0.bin \
+	--stage1 build/boot/stage1.bin --kernel build/8502/udeks-8502.bin --z80 build/z80/udeks-z80.bin \
+	--boot-delivery build/boot/8502-boot-delivery.bin \
+	--crt0 build/boot/8502-crt0.bin --probe build/boot/8502-probe.bin \
+	--map build/8502/udeks-8502.map \
+	--scheduler-overlay build/boot/scheduler-overlay.prg \
+	--scheduler-tail-installer build/boot/scheduler-tail-installer.bin \
+	--busy-sprite build/assets/24x21-pipe-sprite.vic \
+	--capability build/boot/8502-capability.bin \
+	--capability-installer build/boot/capability-installer.bin \
+	--boot-console build/boot/8502-boot-console.bin \
+	--task-switch-activation build/boot/task-switch-activation.bin \
+	--boot-console-installer build/boot/boot-console-installer.bin \
+	--bootfs build/user/bootfs.img \
+	--module build/8502/udeks-module.bin \
+	--ush build/user/ush.udx \
+	--task-loader build/boot/task-loader.bin \
+	--task-request-gateway build/boot/task-request-gateway.bin \
+	--bootfs-request-service build/boot/bootfs-request-service.bin \
+	--task-bank-gateway build/boot/task-bank-gateway.bin \
+	--d64-output build/boot/udeks.d64 build/boot/udeks.d71
+python3 tools/build_d71.py --stage0 build/boot/stage0.bin \
+	--stage1 build/boot/stage1.bin --kernel build/8502/udeks-8502-panic-probe.bin \
+	--boot-delivery build/boot/8502-boot-delivery.bin \
+	--crt0 build/boot/8502-crt0-panic-probe.bin \
+	--probe build/boot/8502-probe-panic-probe.bin \
+	--map build/8502/udeks-8502-panic-probe.map \
+	--scheduler-overlay build/boot/scheduler-overlay.prg \
+	--scheduler-tail-installer build/boot/scheduler-tail-installer.bin \
+	--busy-sprite build/assets/24x21-pipe-sprite.vic \
+	--capability build/boot/8502-capability.bin \
+	--capability-installer build/boot/capability-installer.bin \
+	--boot-console build/boot/8502-boot-console.bin \
+	--task-switch-activation build/boot/task-switch-activation.bin \
+	--boot-console-installer build/boot/boot-console-installer.bin \
+	--z80 build/z80/udeks-z80.bin \
+	--bootfs build/user/bootfs.img \
+	--module build/8502/udeks-module.bin \
+	--ush build/user/ush.udx \
+	--task-loader build/boot/task-loader.bin \
+	--task-request-gateway build/boot/task-request-gateway.bin \
+	--bootfs-request-service build/boot/bootfs-request-service.bin \
+	--task-bank-gateway build/boot/task-bank-gateway.bin build/boot/udeks-panic-probe.d71
+placement audit OK
+python3 tools/bin_to_prg.py --load-address 0x0200 build/8502/udeks-8502-direct.bin build/8502/udeks-8502.prg
+make: Leaving directory '/var/home/salvogendut/Dev/UDEKS/build/window-cache-clean/repo'

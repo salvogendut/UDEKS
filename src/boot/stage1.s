@@ -151,8 +151,14 @@ secondary_payload_load:
         ldy #$00                    ; relocation load
         jsr $ffba                   ; SETLFS
         lda #$00                    ; LOAD, not VERIFY
+        .ifdef UDEKS_WINDOW_CACHE
+        ; The disk envelope starts at the cache, while USOV starts at $6000.
+        ldx #<$4200
+        ldy #>$4200
+        .else
         ldx #<SCHEDULER_OVERLAY_LOAD
         ldy #>SCHEDULER_OVERLAY_LOAD
+        .endif
         jsr $ffd5
         bcs secondary_load_failed
         cpx #<SCHEDULER_OVERLAY_END

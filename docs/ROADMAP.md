@@ -327,11 +327,21 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   input/cancel/restart, placement and clean-build gates pass in both formats.
   Release repair remains synchronous; manual/physical acceptance and normal
   promotion are still open. See [WINDOW-DRAG-START.md](WINDOW-DRAG-START.md).
-  The user reports improved drag start. App-specific projection and wireframe
-  optimizations are deferred to separate xwave work; they must not become
-  window-manager policy. This milestone keeps caching opt-in. Default-build
+  The user reports improved drag start. Per user direction, future wave
+  projection and render caches belong to xwave, not the windowing system;
+  that separate application experiment is not part of this milestone.
+  The merged window-manager milestone keeps caching opt-in. Default-build
   integration and its input/hardware acceptance gates are the next manager step.
   See [WINDOW-MANAGER-MILESTONE.md](WINDOW-MANAGER-MILESTONE.md).
+  The next increment now provides a source-built `WINDOW_CACHE=1` normal-build
+  configuration, regenerated acceptance bindings and pre-packaging normal/panic
+  layout guards. Both-format 1986/VICE qualification and clean 1→0→1 switching
+  pass. The user reports it looks OK on real hardware and confirms RESTORE
+  during window dragging with working input afterward. The requested manual
+  hardware gate is passed, and the user approved default promotion. `make boot`
+  now enables the cache; `WINDOW_CACHE=0` retains the prior compositor. Slow
+  synchronous release/background repair remains open. See
+  [WINDOW-CACHE-INTEGRATION.md](WINDOW-CACHE-INTEGRATION.md).
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

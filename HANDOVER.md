@@ -1339,3 +1339,68 @@ fresh parallel make boot/all and realobjectplacement-check pass. Default disks
 are byte-identical to the previously qualified normal image (D6465a37c26...,
 D71d99463d6...). Xwave projection tools/tests/images and build hooks excluded;
 default cached/deferred dragging remains disabled. User approved this scope.
+
+2026-09-29 issue #12 / graphics-window-manager-integration: the next manager
+step now has a regular source-built WINDOW_CACHE=1 configuration. It promotes
+the accepted generic compositor and bank-1 controller under the window service,
+regenerates identity/checksum/page/gateway bindings from the actual link, and
+rejects any normal/panic segment drift before packaging. Manager7762/RO130/
+HIGHBSS88, charged transport377, heldpad20, shadow$A1E0-$C11F; no published
+runtime or scheduler destinations move. Disk LOAD$4200 is distinct from USOV
+temporary source$6000; a boot regression caught and corrected conflating them.
+
+Default WINDOW_CACHE=0 remains off. Fresh source-only parallel builds and
+1->0->1 switching reproduce both selected disks and the old default hashes.
+No archived binary or app-transform path is needed. Xwave projection work stays
+local/separate; no app BSS or projection table is added by this integration.
+Runtime-only probes avoid the local xwave private-builder hooks.
+
+Actual selected D71/D64 pass native1986 input/history, early/cached moves,
+overlap repairs, oversize resize fallback, partial-pasteCtrlC, console typing,
+guards/NMI and shutdown/restart; VICEbothformats fullpixels/NMI/restart pass.
+Evidence under bench/{artifacts,results}/2026-09-29-window-cache-integration.
+Selected D64c00d8936..., D7100ab0c99...; stable manual copies remain under
+build/window-cache-integration/udeks-cache.{d64,d71}. See
+docs/WINDOW-CACHE-INTEGRATION.md for build commands and manual acceptance.
+Background release repair stays synchronous/slow; native VICE mouse and physical
+input/RESTORE acceptance remain open before changing the default policy.
+
+Final selected-build gate: make check825 tests/manifests/pycompile pass
+(including the four still-local xwave projection tests; integration does not
+use that prototype). Actual selected clock-only/clock-over-wave drag starts
+are17PALframes in both formats, with a <=30 guard, outline motion, drained
+repaint/fullshadowVIC, CtrlC+typing+shutdown. Timing evidence is separate from
+the full compositor suite. A fixed300frame sample caught a subsequent periodic
+clock commit; the read-only observer now waits for the dirty map to drain.
+Immutable integration manifests bind inputs/runners/logs/pixels/clean switching.
+Default build outputs restored to65a37c26.../d99463d6..., actualplacement OK;
+integrated manual copies retained. No commit/push or default promotion yet.
+
+2026-09-29 user feedback on the selected integration: "it looks ok on real HW".
+Record positive overall physical-machine manual feedback. No itemized hardware
+log, format/hash confirmation or explicit RESTORE/input-afterward result was
+provided; do not infer those or authorize a default change/commit/merge from
+this report alone. RESTORE + subsequent input confirmation was requested;
+the subsequent report below resolves that gate. Keep xwave work separate.
+
+2026-09-29 follow-up hardware confirmation: the user pressed RESTORE while
+dragging a window on real hardware and input still worked afterward. Together
+with the preceding positive overall feedback, this closes the requested manual
+integration acceptance gate. Do not ask for that check again or infer exhaustive
+physical NMI-source/Z80-handoff coverage. WINDOW_CACHE=0 remains unchanged until
+promotion is approved. Recommended next: promote the accepted configuration,
+commit/push the scoped window-manager work and review/merge via PR, keeping the
+local xwave projection experiment out of that scope.
+
+2026-09-29 user approved default promotion, scoped commit/push and PR merge.
+WINDOW_CACHE now defaults to1; explicit0 retains the old compositor. Integration
+contains no xwave projection tools, table, app changes or prototype evidence.
+Historical opt-in qualification archives are immutable. Verify a fresh scoped
+default build against their accepted D64/D71 hashes before publishing. Requested
+hardware acceptance is complete, not exhaustive physical NMI/Z80 coverage.
+Next manager work: bounded release/background composition, which is still
+synchronous and slow; keep application-specific rendering outside the manager.
+Scoped promotion gate:821 host tests pass; clean parallel default boot/all/panic
+and placement-check pass. Default→0→default without clean reproduces selected
+D64c00d8936.../D7100ab0c99... and prior65a37c26.../d99463d6... exactly. The kernel
+dfef7e6d... and module758965e4... match the archived qualified integration.

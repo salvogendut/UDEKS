@@ -31,8 +31,13 @@ bridges are stale. See [WINDOW-CACHE-COMPACT.md](WINDOW-CACHE-COMPACT.md) and
 
 ## Reproduce
 
+This historical pre-integration audit requires the prior compositor. The normal
+build now enables the accepted cache; see
+[WINDOW-CACHE-INTEGRATION.md](WINDOW-CACHE-INTEGRATION.md) for current placement
+and qualification.
+
 ```sh
-distrobox enter my-distrobox -- make graphics-cache-placement
+distrobox enter my-distrobox -- make WINDOW_CACHE=0 graphics-cache-placement
 ```
 
 The target builds current prerequisites, assembles actual display listings and
