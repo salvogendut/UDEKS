@@ -1840,3 +1840,16 @@ while their callers remain. See docs/WINDOW-REPAINT-CODE-RECOVERY.md. Next:
 implement and measure genuinely bounded client/cache replacement and public
 deferred completion, then retire superseded users in a complete link. No new
 bootable repaint candidate or manual test yet.
+
+## Bounded retained-image cache checkpoint — 2026-09-29
+
+Issue #14 remains private/unbootable. See `docs/WINDOW-REPAINT-CACHE-RESTORE.md`.
+`bench/window-repaint-provider/cache_restore.{h,c}` implements a one-row
+full-window RESTORE receipt under synchronous CACHE admission. Host tests bind
+it both to fault-injected cache mocks and to the real repaint lane, proving
+18-row progression and left-clipped rejection. Invalid content/paste/ack
+queues full-window repair rather than silently continuing a partial paste.
+The cc65 object costs 1,170 CODE bytes, no state; no legacy code has been
+retired and the resident shortfall is not closed. Next, replace synchronous
+background composition and bind the real retained-generation identity before
+any normal/panic link or bootable candidate.

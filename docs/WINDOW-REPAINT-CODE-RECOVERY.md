@@ -30,3 +30,8 @@ source-verified removal of the legacy users. Only then can complete links
 measure net savings after the new callers and providers are charged. The
 current `void` painter and cache paths cannot simply be deleted or queued
 unchanged. No new test disk or hardware prompt follows from this experiment.
+
+The next private cache-side checkpoint is documented in
+`docs/WINDOW-REPAINT-CACHE-RESTORE.md`; it proves one-row full-window cache
+progress but does not yet replace synchronous background composition or fit
+the resident image.
