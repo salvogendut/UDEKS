@@ -407,6 +407,13 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   pre-edit/deferred caller semantics, then measure the complete provider and
   cancellation/admission/NMI path. See
   [WINDOW-REPAINT-CALLERS.md](WINDOW-REPAINT-CALLERS.md).
+  Private host/cc65-only proofs now specify one-row client progress and a
+  pre-edit retry fence. The latter withdraws stale work before create/drag/
+  destroy mutations and unites old/new with active/pending damage; its C
+  object alone is 495 bytes, still not a resident fit. Public retry semantics,
+  actual caller wiring, a small dispatcher, serialized NMI-safe admission and
+  full-link placement remain open. See
+  [WINDOW-REPAINT-EDIT.md](WINDOW-REPAINT-EDIT.md).
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

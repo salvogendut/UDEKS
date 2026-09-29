@@ -1754,3 +1754,17 @@ given the pre-existing >=255-byte shortfall. See
 docs/WINDOW-REPAINT-CALLERS.md. Next: pre-edit/deferred semantics plus a
 substantially smaller provider/banked placement proof; do not ship a test disk
 until full normal/panic links, ownership and NMI gates pass.
+
+2026-09-29 pre-edit/deferred scene-fence prototype (issue #14):
+
+`bench/window-repaint-edit/fence.{h,c}` and `tests/test_repaint_edit.py` prove
+the old/new damage union, no lane or scene mutation on unavailable admission,
+old-ticket withdrawal before a drag geometry edit, create/destroy ordering,
+and fail-closed exhaustion using the real private lane. cc65 `-Oirs` emits
+495 CODE bytes, zero owned state; not a full-link fit. The public window API
+has no retry result and cannot silently map contention to INVALID or NONE;
+actual callers and application cleanup remain unchanged. The `available`
+boolean is only a test stand-in, not a lease/NMI solution. See
+docs/WINDOW-REPAINT-EDIT.md for the caller migration table and remaining gates.
+No new test disk or hardware prompt yet. Next is an explicit retry/admission
+protocol plus smaller placement candidates, followed by normal/panic links.
