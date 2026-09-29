@@ -27,4 +27,9 @@ unsigned char repaint_admission_release(unsigned char owner);
 unsigned char repaint_edit_begin(const struct udeks_repaint_rect *old_bounds,
     const struct udeks_repaint_rect *new_bounds);
 unsigned char repaint_edit_end(void);
+/* Separate size candidate: caller has already composed valid old/new bounds
+ * using the existing manager damage_set/add primitives. The damage box is
+ * scratch; scene edits still wait until OK and end_damage follows the edit. */
+unsigned char repaint_edit_begin_damage(void);
+unsigned char repaint_edit_end_damage(void);
 #endif

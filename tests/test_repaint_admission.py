@@ -85,6 +85,53 @@ class RepaintAdmissionTests(unittest.TestCase):
                 ROOT / 'src/services/window/repaint_lane.c'))
         self.assertEqual(output, b'synchronous admission/retry/release OK\n')
 
+    def test_no_second_union_uses_existing_damage_box(self):
+        harness = r'''
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
+#include "udeks/repaint_lane.h"
+#include "ADMISSION_HEADER"
+unsigned int damage_left, damage_right;
+unsigned char damage_top, damage_bottom;
+static unsigned calls;
+unsigned char repaint_control_damage(unsigned char op, unsigned char lease) {
+    struct udeks_repaint_rect r;
+    assert(op == 2 && lease == 1); ++calls;
+    r.left = damage_left; r.right = damage_right;
+    r.top = damage_top; r.bottom = damage_bottom;
+    return udeks_lane_changed(&r);
+}
+int main(void) {
+    struct udeks_repaint_lane before;
+    udeks_lane_init();
+    damage_left=10;damage_right=140;damage_top=20;damage_bottom=120;
+    before=udeks_repaint_lane;
+    assert(repaint_admission_try(REPAINT_ADMISSION_RASTER)==0);
+    assert(repaint_edit_begin_damage()==REPAINT_ADMISSION_DEFERRED);
+    assert(calls==0 && memcmp(&before,&udeks_repaint_lane,sizeof(before))==0);
+    assert(repaint_admission_release(REPAINT_ADMISSION_RASTER)==0);
+    assert(repaint_edit_begin_damage()==UDEKS_REPAINT_OK);
+    assert(calls==1 && repaint_admission_owner==REPAINT_ADMISSION_EDIT);
+    assert(udeks_repaint_lane.pending.left==10 && udeks_repaint_lane.pending.right==140);
+    assert(repaint_edit_end_damage()==0);
+    damage_right=10;
+    assert(repaint_edit_begin_damage()==UDEKS_REPAINT_INVALID);
+    assert(calls==2 && repaint_admission_owner==REPAINT_ADMISSION_FREE);
+    udeks_lane_init();udeks_repaint_lane.epoch=0xffffu;damage_right=140;
+    assert(repaint_edit_begin_damage()==UDEKS_REPAINT_EXHAUSTED);
+    assert(calls==3 && repaint_admission_owner==REPAINT_ADMISSION_FREE);
+    puts("admitted existing-damage transaction OK");return 0;
+}
+'''
+        with tempfile.TemporaryDirectory() as directory:
+            output = compile_run(Path(directory), 'damage_admission', harness.replace(
+                'ADMISSION_HEADER', str(ROOT / 'bench/window-repaint-admission/admission.h')), (
+                ROOT / 'bench/window-repaint-admission/admission.c',
+                ROOT / 'bench/window-repaint-admission/transaction_damage.c',
+                ROOT / 'src/services/window/repaint_lane.c'))
+        self.assertEqual(output, b'admitted existing-damage transaction OK\n')
+
 
 if __name__ == '__main__':
     unittest.main()

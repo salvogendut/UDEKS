@@ -421,6 +421,14 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   caller geometry is hardened against target-width overflow. No public retry
   ABI, real caller, full-link fit or test image yet. See
   [WINDOW-REPAINT-ADMISSION.md](WINDOW-REPAINT-ADMISSION.md).
+  The private admission/no-second-union experiment now has a complete
+  normal/panic link measurement: +130 CODE and +1 HIGHBSS. Strict links reject
+  the state byte at `$E2E2` because it belongs to task context; the sizing-only
+  link is unbootable. The optimistic resident shortfall is 385 bytes before
+  callers, provider and delivery. Both production manager variants now reject
+  16-bit-wrapping create coordinates without changing their frozen layout.
+  Next: legitimate admission-state placement or redesign, CODE recovery and
+  app-visible retry semantics before a new manual-test image.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

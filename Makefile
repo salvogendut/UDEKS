@@ -326,6 +326,12 @@ repaint-geometry: $(KERNEL_BIN) $(PANIC_PROBE_KERNEL_BIN)
 repaint-callers: $(KERNEL_BIN) $(PANIC_PROBE_KERNEL_BIN)
 	$(PYTHON) tools/window_repaint_callers.py build
 
+# Private admission probe: strict links must reject task-context overlap.
+# Its one-byte-expanded config is UNBOOTABLE and used for CODE sizing only.
+.PHONY: repaint-admission-link
+repaint-admission-link: repaint-callers
+	$(PYTHON) tools/window_repaint_admission_link.py
+
 task-scheduler: $(BUILD_8502)/task_scheduler.o
 
 task-switch-tail: $(TASK_SWITCH_TAIL_BIN) $(TASK_CONTEXT_BIN) \

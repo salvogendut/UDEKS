@@ -176,7 +176,34 @@ int main(void) {
         report=json.loads((directory / 'build-report.json').read_text())
         self.assertEqual((report['remaining_padding'],report['remaining_before_manager_delivery']),(502,261))
         self.assertNotIn('flow.o',modules)
-        self.assertEqual((ROOT / 'src/services/window/window_manager.c').read_text(),variant(BASE.read_text(),'lean'))
+        # Historical integration evidence stays immutable. The later
+        # production delta is limited to the 16-bit-safe create bound and two
+        # source-level compactions that recover its bytes without moving the
+        # fixed boot/shadow layout.
+        qualified = variant(BASE.read_text(), 'lean')
+        edits = (
+            ('x + width > UDEKS_VIC_WIDTH ||',
+             'x > UDEKS_VIC_WIDTH || width > UDEKS_VIC_WIDTH - x ||'),
+            ('''    if (handle == UDEKS_WINDOW_NONE || handle > UDEKS_WINDOW_MAX ||
+        windows[handle - 1u].active == 0) {
+        return 0;
+    }
+    return &windows[handle - 1u];''',
+             '''    --handle; /* Zero wraps to 255 and fails the bounded index check. */
+    if (handle >= UDEKS_WINDOW_MAX || windows[handle].active == 0) {
+        return 0;
+    }
+    return &windows[handle];'''),
+            ('''window->flags = (unsigned char)((flags & 0x0Fu) | UDEKS_WINDOW_FLAG_VISIBLE |
+        UDEKS_WINDOW_FLAG_RESIZABLE);''',
+             '''window->flags = (unsigned char)((flags & 0x0Fu) |
+        (UDEKS_WINDOW_FLAG_VISIBLE | UDEKS_WINDOW_FLAG_RESIZABLE));'''),
+        )
+        for before, after in edits:
+            self.assertEqual(qualified.count(before), 1)
+            qualified = qualified.replace(before, after)
+        self.assertEqual((ROOT / 'src/services/window/window_manager.c').read_text(),
+                         qualified)
         expected={'sp':6,'sreg':8,'regsave':10,'ptr1':14,'ptr2':16,'ptr3':18,'ptr4':20,
             'tmp1':22,'tmp2':23,'tmp3':24,'tmp4':25,'regbank':26}
         exports=map_exports(text)

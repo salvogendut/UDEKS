@@ -33,17 +33,29 @@ Using cc65 `-Oirs`, standalone objects measure:
 
 The trusted alternative matches the validating reference for 1,800 valid
 old/new/availability cases against the real lane. It deliberately omits
-per-input bounds validation and is **not approved for real callers**. In
-particular, the current `udeks_window_create` tests `x + width > 320`; on the
-target's 16-bit `unsigned int`, an overflowing sum may pass. Caller geometry
-must be corrected and audited before trusting it. A better eventual route may
-reuse the existing measured ASM `damage_set`/`damage_add` and 78-byte control
-marshaller rather than install a second rectangle-union body. Neither route
-has a complete normal/panic link or live app bridge yet.
+per-input bounds validation and is **not approved for real callers**. Both
+manager variants now reject 16-bit-wrapping create coordinates with
+`x > 320 || width > 320 - x`; host tests exercise the real create paths and
+the normal/panic production links retain their frozen layout. This fixes
+one caller, not the whole geometry/admission audit. The production D71/D64
+integration probes pass in 1986 and host VICE Flatpak.
 
-The previous candidate was already at least 255 resident bytes short before
-admission, callers or a provider. These standalone sizes cannot be booked as
-exact incremental link costs. No public retry status exists: create returns
+`transaction_damage.c` is a second private candidate. It uses the manager's
+existing ASM `damage_set`/`damage_add` box and the previously measured
+78-byte control marshaller, so it adds no second rectangle-union body. A host
+test checks deferred/no-change, successful retained ownership, invalid
+damage and exhausted-lane release. Its cc65 object is 51 CODE bytes; together
+with the admission object, the complete isolated normal/panic links add
+130 CODE bytes and one HIGHBSS byte. **Both strict links reject that byte**:
+HIGHBSS already ends at `$E2E1`, while `$E2E2` belongs to selected-task cc65
+context. `tools/window_repaint_admission_link.py` reproduces the rejection
+and uses an explicitly `UNBOOTABLE-sizing.cfg` to measure CODE closure only.
+The optimistic resident deficit rises from 255 to **385 bytes**, still before
+actual call sites, provider or delivery. The sizing image is never a disk or
+placement proposal; a legitimate byte of state recovery or different owner
+design is required before production linking.
+
+No public retry status exists: create returns
 handle/zero; other operations have OK/INVALID/FULL. A busy destroy cannot be
 silently mapped to INVALID, and `xclock`/`xwave` stop paths currently translate
 non-OK into NOT_READY. The app-visible retry/versioning decision and all

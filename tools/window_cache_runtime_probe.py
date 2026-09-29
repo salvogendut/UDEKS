@@ -51,7 +51,8 @@ def probe_native(transform=None):
     from window_completion_probe import window_base
     builder=import_module('1986_input_smoke_build')
     report=verify_build()
-    emulator=ROOT.parent / '1986';sources=builder.emulator_sources(emulator)
+    emulator=Path(os.environ.get('UDEKS_1986_ROOT', ROOT.parent / '1986'))
+    sources=builder.emulator_sources(emulator)
     provenance=emulator_provenance(emulator,sources)
     original=(ROOT / 'tools/1986_input_smoke.c').read_text()
     # 1986 uses positional C128 bindings: the PC '=' key is the C128 '-'.

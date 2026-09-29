@@ -71,11 +71,11 @@ static void increment_counter(unsigned char low_offset)
 
 static struct udeks_window *window_by_handle(unsigned char handle)
 {
-    if (handle == UDEKS_WINDOW_NONE || handle > UDEKS_WINDOW_MAX ||
-        windows[handle - 1u].active == 0) {
+    --handle; /* Zero wraps to 255 and fails the bounded index check. */
+    if (handle >= UDEKS_WINDOW_MAX || windows[handle].active == 0) {
         return 0;
     }
-    return &windows[handle - 1u];
+    return &windows[handle];
 }
 
 static void publish_state(void)
@@ -599,7 +599,7 @@ unsigned char udeks_window_create(
     struct udeks_window *window;
 
     if (width < 16u || height <= UDEKS_WINDOW_TITLE_HEIGHT + 4u ||
-        x + width > UDEKS_VIC_WIDTH ||
+        x > UDEKS_VIC_WIDTH || width > UDEKS_VIC_WIDTH - x ||
         (unsigned int)y + height > UDEKS_VIC_HEIGHT ||
         surface != UDEKS_WINDOW_SURFACE_BITMAP) {
         return UDEKS_WINDOW_NONE;
@@ -616,8 +616,8 @@ unsigned char udeks_window_create(
     window->active = 1;
     window->owner = owner;
     window->surface = surface;
-    window->flags = (unsigned char)((flags & 0x0Fu) | UDEKS_WINDOW_FLAG_VISIBLE |
-        UDEKS_WINDOW_FLAG_RESIZABLE);
+    window->flags = (unsigned char)((flags & 0x0Fu) |
+        (UDEKS_WINDOW_FLAG_VISIBLE | UDEKS_WINDOW_FLAG_RESIZABLE));
     window->x = x;
     window->y = y;
     window->width = width;

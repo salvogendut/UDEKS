@@ -1788,3 +1788,23 @@ provider bridge and resident placement remain gates. See
 docs/WINDOW-REPAINT-ADMISSION.md. No new disk/manual test. Next: harden/audit
 caller geometry and compare a no-second-union path in complete normal/panic
 links before attempting live integration.
+
+2026-09-29 create-bound hardening and no-second-union link gate (issue #14):
+
+Both generic and cached manager variants now use subtraction-based create
+bounds, rejecting target 16-bit wraparound. The two equivalent source
+compactions recover the guard's bytes, preserving the frozen normal/panic
+boot layouts; host regressions exercise both real create paths, including
+right/bottom edges. The existing 1986 integration probe passes D71 and D64
+with cached moves, pixel oracle, cancellation, console and graphics restart.
+The host VICE Flatpak probe passes both formats with exact window pixels,
+NMI handoff and graphics restart. A private admission transaction reuses the
+existing ASM damage box and control marshaller. Its host test covers defer,
+commit and release. Complete isolated normal/panic links add 130 CODE and one HIGHBSS
+byte, but strict placement rejects that byte at `$E2E2` (selected-task cc65
+context). The measurement-only config intentionally trespasses there and is
+UNBOOTABLE. Optimistic resident shortfall is now 385 bytes before actual
+callers/provider/delivery. See docs/WINDOW-REPAINT-ADMISSION.md and
+tools/window_repaint_admission_link.py. Do not produce a live candidate from
+that sizing image. Next: recover legitimate state placement or redesign
+admission, then solve the remaining CODE budget and public retry semantics.

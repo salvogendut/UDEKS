@@ -49,6 +49,8 @@ emulator or physical C128 test is useful for this uninstalled prototype.
 
 The follow-up [admission prototype](WINDOW-REPAINT-ADMISSION.md) pairs this
 fence with a short-lived owner byte, retaining EDIT ownership until the
-actual mutation completes. Its smaller trusted-bounds alternative is only a
-size comparison: current create geometry can overflow on a 16-bit target, so
-it cannot replace validation without a caller fix/audit.
+actual mutation completes. Both production manager variants now reject
+16-bit-wrapping create geometry; the trusted-bounds alternative still needs
+the remaining caller audit before it can replace validation. The measured
+no-second-union candidate also has a strict one-byte HIGHBSS placement
+failure, described in the admission note.
