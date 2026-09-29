@@ -108,6 +108,32 @@ class CbmDirectoryTests(unittest.TestCase):
                                  (1, b'NOTES FOR UDEKS', b'SEQ', 0, 1)])
         self.assertEqual(self.lib.udeks_cbm_dir_finish(c.byref(self.state)), END)
 
+    def test_true_drive_1571_directory_capture(self):
+        # 96 bytes captured from VICE 3.10's ROM-backed 1571, true-drive
+        # mode, with one TESTPROG PRG. This exercises actual PETSCII output
+        # and the footer's three-byte zero termination.
+        stream = bytes.fromhex('''
+            01 04 01 01 00 00 12 22 c9 c5 c3 20 d4 c5 d3 d4
+            20 20 20 20 20 20 20 20 22 20 30 31 20 32 41 00
+            01 01 04 00 20 20 20 22 d4 c5 d3 d4 d0 d2 cf c7
+            22 20 20 20 20 20 20 20 20 20 50 52 47 20 20 00
+            01 01 94 02 42 4c 4f 43 4b 53 20 46 52 45 45 2e
+            20 20 20 20 20 20 20 20 20 20 20 20 20 00 00 00
+        ''')
+        found = []
+        results = []
+        for value in stream:
+            result = self.lib.udeks_cbm_dir_feed(c.byref(self.state), value,
+                                                 c.byref(self.entry))
+            results.append(result)
+            if result == ENTRY:
+                found.append((self.entry.blocks,
+                              bytes(self.entry.name[:self.entry.name_length]),
+                              bytes(self.entry.type)))
+        self.assertEqual(results[-1], END)
+        self.assertEqual(found, [(4, b'\xd4\xc5\xd3\xd4\xd0\xd2\xcf\xc7', b'PRG')])
+        self.assertEqual(self.lib.udeks_cbm_dir_finish(c.byref(self.state)), END)
+
     def test_padding_trimmed_but_interior_spaces_and_raw_petscii_preserved(self):
         stream = (b'\x01\x04' + line(0, b'\x12"DISK"') +
                   line(7, b'  "A B\xc1           " PRG') +

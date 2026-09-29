@@ -18,6 +18,7 @@ BUILD_CONTEXT_8502 := $(BUILD_DIR)/bench/context/8502
 BUILD_CONTEXT_Z80 := $(BUILD_DIR)/bench/context/z80
 BUILD_CONTEXT_SWITCH := $(BUILD_DIR)/bench/context-switch
 BUILD_CONTEXT_SWITCH_C := $(BUILD_DIR)/bench/context-switch-c
+BUILD_IEC_DIRECTORY := $(BUILD_DIR)/bench/iec-directory
 BUILD_KERNEL_8502 := $(BUILD_DIR)/bench/kernel/8502
 BUILD_KERNEL_Z80 := $(BUILD_DIR)/bench/kernel/z80
 BUILD_HANDOFF_8502 := $(BUILD_DIR)/bench/handoff/8502
@@ -147,6 +148,7 @@ TASK_BANK_GATE_BIN := $(BUILD_BOOT)/task-bank-gateway.bin
 STAGE1_BIN := $(BUILD_BOOT)/stage1.bin
 BOOT_D71 := $(BUILD_BOOT)/udeks.d71
 BOOT_D64 := $(BUILD_BOOT)/udeks.d64
+IEC_DIRECTORY_PRG := $(BUILD_IEC_DIRECTORY)/iec-directory.prg
 TASK_EXIT_PROBE_D71 := $(BUILD_BOOT)/udeks-task-exit-probe.d71
 TASK_EXIT_PROBE_D64 := $(BUILD_BOOT)/udeks-task-exit-probe.d64
 TASK_WAITPID_PROBE_D71 := $(BUILD_BOOT)/udeks-task-waitpid-probe.d71
@@ -245,11 +247,36 @@ include mk/window-cache.mk
 	shadow-probe capability-probe boot-console-probe task-yield-probe \
 	task-exit-probe task-waitpid-probe task-spawn-loader-probe task-spawn-probe \
 	task-sleep-probe task-cancel-probe task-poll-probe \
+	iec-probe iec-vice-probe \
 	check doctor clean help
 
 all: 8502 z80 z80-asm
 
 boot: $(BOOT_D71) $(BOOT_D64)
+
+# Standalone native-bus qualification, deliberately not linked into the
+# resident kernel before its storage-service placement is frozen.
+iec-probe: $(IEC_DIRECTORY_PRG)
+
+iec-vice-probe: $(IEC_DIRECTORY_PRG)
+	$(PYTHON) tools/iec_directory_probe.py
+
+$(BUILD_IEC_DIRECTORY):
+	mkdir -p $@
+
+$(BUILD_IEC_DIRECTORY)/transport.o: src/services/filesystem/iec_slow.s | $(BUILD_IEC_DIRECTORY)
+	$(CA65) -o $@ $<
+
+$(BUILD_IEC_DIRECTORY)/probe.o: bench/iec-directory/iec-directory.s | $(BUILD_IEC_DIRECTORY)
+	$(CA65) -o $@ $<
+
+$(BUILD_IEC_DIRECTORY)/iec-directory.bin: $(BUILD_IEC_DIRECTORY)/transport.o \
+		$(BUILD_IEC_DIRECTORY)/probe.o cfg/8502-iec-directory.cfg
+	$(LD65) -C cfg/8502-iec-directory.cfg -o $@ \
+		$(BUILD_IEC_DIRECTORY)/probe.o $(BUILD_IEC_DIRECTORY)/transport.o
+
+$(IEC_DIRECTORY_PRG): $(BUILD_IEC_DIRECTORY)/iec-directory.bin tools/bin_to_prg.py
+	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
 
 panic-probe: $(PANIC_PROBE_D71)
 
@@ -2168,7 +2195,7 @@ check:
 		tools/task_exit_probe.py tools/task_waitpid_probe.py \
 		tools/task_spawn_loader_probe.py tools/task_spawn_probe.py \
 		tools/task_sleep_probe.py tools/task_cancel_probe.py tools/task_poll_probe.py \
-		tools/vice_capture.py
+		tools/vice_capture.py tools/iec_directory_probe.py
 	cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
 	cd bench/artifacts/2026-09-24-r2 && sha256sum -c SHA256SUMS
 	cd bench/results/vice-3.10-2026-09-24-r1/raw && sha256sum -c SHA256SUMS

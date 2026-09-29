@@ -28,7 +28,7 @@ format, and storage-backed UDEX launch belong to later milestones.
   VICE testing likewise needs true-drive/line-level operation; physical
   PI1541 remains the final device gate.
 
-## First committed component
+## Directory decoder
 
 `src/services/filesystem/cbm_directory.c` incrementally decodes the
 Commodore DOS directory program a byte at a time. Its caller owns the bounded
@@ -47,12 +47,39 @@ explicit termination, and the 24-byte `GETDENTS` envelope. The source also
 compiles under the reference cc65 toolchain; it is service code, **not**
 resident-kernel code.
 
+## Native IEC transport qualification
+
+`src/services/filesystem/iec_slow.s` implements a private 8502 slow-serial
+transport for directory channel 0 on devices 8–11. It uses no KERNAL
+vectors: line writes preserve CIA2's live VIC bank bits; waits are finite;
+IRQs are masked only around one byte's bit edges; and a transaction selects
+1 MHz, then restores the prior CPU speed and releases ATN/CLK/DATA on close
+or failure. A future storage service must serialize ownership of CIA2 and
+the CPU-speed register before linking this transport into UDEKS.
+
+`make iec-probe` builds this same transport into a standalone raw-load PRG.
+`make iec-vice-probe` creates a **non-autoboot** D64 in `build/`, reads its
+directory through VICE true-drive 1571 and 1541 models, compares the exact
+96-byte streams, and checks that an absent device returns `NO_DEVICE` with
+the bus released and CPU speed restored. The probe forces 2 MHz before open
+to prove the transport's 1 MHz selection and restoration. The first live
+VICE 1571 directory capture is also a host decoder regression fixture.
+These are line-level runs, not VICE's KERNAL disk traps.
+Build the PRG in the reference container with
+`distrobox enter my-distrobox -- make iec-probe`, then run
+`make iec-vice-probe` on the host with the VICE Flatpak installed.
+
+The standalone probe is **not** a bootable UDEKS mount test. It validates
+the transport and parser separately; nonresident service placement, request
+routing, and shell commands are still missing. `1986`'s ROM-backed raw IEC
+mode and physical C128 + PI1541 remain unqualified.
+
 ## Remaining vertical slices
 
-1. Build and qualify a native, bounded slow-serial IEC transport. Treat CIA2
-   port A and its VIC-bank bits as jointly owned hardware; no whole-transfer
-   interrupt mask or unbounded wait. Validate a directory read first in raw
-   `1986`, VICE true-drive, then on PI1541.
+1. Qualify the native transport in `1986`'s ROM-backed raw IEC mode and on a
+   physical C128 + PI1541. VICE true-drive 1571/1541 and no-device cases are
+   qualified; a separate integration gate must prove VIC bank selection is
+   unchanged when graphics is active.
 2. Establish a nonresident C storage-service placement and an explicit
    request/descriptor handoff. Keep bootfs as a fallback, and make `/mnt`
    resolve to the mounted device without exposing IEC registers to commands.
@@ -64,5 +91,5 @@ resident-kernel code.
    emulators, and physical C128 + PI1541 before claiming Storage 0.1.
 
 Storage-backed UDEX loading is the subsequent Storage 0.2 milestone. The
-directory decoder and its host tests are real service ingredients, but they
+directory decoder and native IEC transport are real service ingredients, but they
 are **not** a completed mount or an image ready for manual testing.
