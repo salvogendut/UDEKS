@@ -1768,3 +1768,23 @@ boolean is only a test stand-in, not a lease/NMI solution. See
 docs/WINDOW-REPAINT-EDIT.md for the caller migration table and remaining gates.
 No new test disk or hardware prompt yet. Next is an explicit retry/admission
 protocol plus smaller placement candidates, followed by normal/panic links.
+
+2026-09-29 synchronous admission spike (issue #14):
+
+`bench/window-repaint-admission/{admission,transaction}.{h,c}` (transaction
+only has `.c`) models a dedicated 1-byte FREE/EDIT/RASTER/CLIENT/CACHE owner.
+Nested acquisition defers; wrong release fails unchanged; edit begin retains
+ownership across the actual caller mutation and failed begin releases it.
+Host tests use the real lane and source-lock the installed NMI stub to its
+record-only five instructions. cc65 `-Oirs`: admission 79 CODE + 1 HIGHBSS,
+transaction 80 CODE. A separate trusted-bounds fence saves 495→298 CODE and
+matches 1,800 valid-case reference runs, but **cannot yet be installed**:
+the present create check uses `x + width > 320`, susceptible to 16-bit target
+overflow. The existing ASM damage primitives plus 78-byte marshaller may be
+a smaller alternative; no full link has measured either path. Existing app
+begin/end paint spans worker work and is explicitly outside this synchronous
+lease. Public retry/versioning, all real callers, cache/IRQ/NMI ownership,
+provider bridge and resident placement remain gates. See
+docs/WINDOW-REPAINT-ADMISSION.md. No new disk/manual test. Next: harden/audit
+caller geometry and compare a no-second-union path in complete normal/panic
+links before attempting live integration.

@@ -16,4 +16,9 @@
 unsigned char repaint_edit_fence(unsigned char available,
     const struct udeks_repaint_rect *old_bounds,
     const struct udeks_repaint_rect *new_bounds);
+/* Alternative cost spike ONLY for manager-owned, already-validated bounds.
+ * Never expose to a UAPP or use before auditing every caller's bounds. */
+unsigned char repaint_edit_fence_trusted(unsigned char available,
+    const struct udeks_repaint_rect *old_bounds,
+    const struct udeks_repaint_rect *new_bounds);
 #endif

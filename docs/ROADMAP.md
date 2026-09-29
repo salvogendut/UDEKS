@@ -414,6 +414,13 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   actual caller wiring, a small dispatcher, serialized NMI-safe admission and
   full-link placement remain open. See
   [WINDOW-REPAINT-EDIT.md](WINDOW-REPAINT-EDIT.md).
+  A private synchronous owner-byte admission/paired edit envelope now passes
+  host re-entry, defer, wrong-release, failed-begin and record-only NMI-stub
+  checks. Standalone cc65 costs 79 CODE + 1 HIGHBSS for admission and 80 CODE
+  for the transaction; the 298-byte trusted-bounds fence is unapproved until
+  caller geometry is hardened against target-width overflow. No public retry
+  ABI, real caller, full-link fit or test image yet. See
+  [WINDOW-REPAINT-ADMISSION.md](WINDOW-REPAINT-ADMISSION.md).
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

@@ -32,6 +32,10 @@ int main(void) {
     struct udeks_repaint_lane before;
     struct udeks_repaint_rect scene = first;
     unsigned char live = 0, close_count = 0;
+    unsigned i, mode, availability;
+    unsigned char reference_result, trusted_result;
+    struct udeks_repaint_lane reference;
+    struct udeks_repaint_rect a, b;
 
     udeks_lane_init(); before = udeks_repaint_lane;
     assert(repaint_edit_fence(0, 0, &first) == REPAINT_EDIT_DEFERRED);
@@ -74,6 +78,30 @@ int main(void) {
     assert(live && close_count == 1);
     rect(&scene, 40, 100, 30, 90);
     assert((udeks_repaint_lane.state & 7u) == UDEKS_REPAINT_FAILED);
+
+    /* The smaller trusted variant is equivalent only over validated manager
+     * rectangles; all external/unchecked geometry stays with the reference. */
+    for (i = 0; i < 300; ++i) {
+        a.left = (i * 29u) % 300u; a.right = a.left + 1u + i % 20u;
+        a.top = (i * 17u) % 180u; a.bottom = a.top + 1u + i % 20u;
+        b.left = (i * 31u) % 300u; b.right = b.left + 1u + i % 20u;
+        b.top = (i * 19u) % 180u; b.bottom = b.top + 1u + i % 20u;
+        for (mode = 0; mode < 3; ++mode) {
+            const struct udeks_repaint_rect *old = mode == 0 ? 0 : &a;
+            const struct udeks_repaint_rect *newer = mode == 1 ? 0 : &b;
+            for (availability = 0; availability < 2; ++availability) {
+                udeks_lane_init(); assert(udeks_lane_request(&first) == 0);
+                assert(udeks_lane_peek(&view, 1, &work) == 0);
+                before = udeks_repaint_lane;
+                reference_result = repaint_edit_fence(availability, old, newer);
+                reference = udeks_repaint_lane;
+                udeks_repaint_lane = before;
+                trusted_result = repaint_edit_fence_trusted(availability, old, newer);
+                assert(reference_result == trusted_result);
+                assert(memcmp(&reference, &udeks_repaint_lane, sizeof(reference)) == 0);
+            }
+        }
+    }
     puts("pre-edit defer/withdraw/union/exhaustion OK"); return 0;
 }
 '''
@@ -85,6 +113,7 @@ class RepaintEditTests(unittest.TestCase):
             output = compile_run(Path(directory), 'edit', HARNESS.replace(
                 'EDIT_HEADER', str(ROOT / 'bench/window-repaint-edit/fence.h')), (
                 ROOT / 'bench/window-repaint-edit/fence.c',
+                ROOT / 'bench/window-repaint-edit/fence_trusted.c',
                 ROOT / 'src/services/window/repaint_lane.c'))
         self.assertEqual(output, b'pre-edit defer/withdraw/union/exhaustion OK\n')
 

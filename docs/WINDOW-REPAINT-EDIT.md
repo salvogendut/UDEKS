@@ -46,3 +46,9 @@ prove it against NMI/RESTORE; `SEI` alone is insufficient. The fence also
 does not make a `void` painter bounded, safely invoke a UDEX application from
 the resident service, or handle a failure after pixels but before ack. No
 emulator or physical C128 test is useful for this uninstalled prototype.
+
+The follow-up [admission prototype](WINDOW-REPAINT-ADMISSION.md) pairs this
+fence with a short-lived owner byte, retaining EDIT ownership until the
+actual mutation completes. Its smaller trusted-bounds alternative is only a
+size comparison: current create geometry can overflow on a 16-bit target, so
+it cannot replace validation without a caller fix/audit.
