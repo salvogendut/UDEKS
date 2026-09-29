@@ -1580,3 +1580,53 @@ Next: measureactualdelivery/admission/poll/provideradapter and furthercode
 recovery if100bytes insufficient; qualifygraphics/private-stack serialization
 andNMI/cancellation cleanup BEFORE real linking. Then visiblelatency/manualtest.
 No new testdisk yet. See docs/WINDOW-REPAINT-RASTER.md.
+
+2026-09-29 private frontend checkpoint (issue14):
+bench/window-repaint-frontend/frontend.inc is NOT wired to actual manager
+poll/lifecycle. It packs current visible manager views (sparse handles/ranks,
+wrap-safe geometry), sends private INIT/REQUEST/CHANGED/ABORT and runs at most
+one manager raster step. Copy packet.work into caller LOCAL storage BEFORE
+raster/receipts can reuse common scratch. CLIENT remains BACKEND_REQUIRED with
+receipt unacknowledged; no legacy callback, job-draining loop, cache provider or
+retained flag slipped into the budget. INIT requires fresh/quiesced lifetime;
+REQUEST preserves current work, CHANGED must succeed BEFORE any scene edit,
+ABORT only for whole-surface retirement. Deferral does NOT authorize an edit.
+Caller lease value1 is a trusted assertion, NOT implemented lock/admission.
+Reject other lease values, graphics inactive, cache admission !=$80 and phases
+other than EMPTY/READY (including frontend-busy$82/unknown). Poll defers while
+dragging; control can fence/cancel. Deferral leaves packet/lane/output/clip/pixels
+untouched. Invalid table geometry may edit view-packing scratch, but never calls
+policy or changes lane/output/clip/pixels. Production admission/paint-lease flags,
+callers, NMI drain and teardown interlocks still absent/unqualified.
+Sequential register-local view packing avoids mulax9 helper. Gate48 + control98
++ poll440 =586 added CODE. Manager object8719/HIGHBSS88; no frontend globals or
+extra BSS/DATA/ZP. Both full normal/panic links grow CODE1240 while legacy paths
+remain, same newhelperclosure72 (memcpy60/return0 4/ult8), no removed helpers.
+All frozen segments/HIGHBSS298 and RODATA/DATA/BSS/shadow sizes unchanged.
+COMPONENT lowerbound2599 vs retired-body/reserve2113 => at least486 SHORT;
+call-site/admission/delivery/NMI/busy/teardown/providers additional. Prior100-byte
+headroom was drawing-only, NOT fullfit. Possible extra retirements: damage_set87,
+damage_add163, intersection316, cache_paint_image156 =722. NOT counted as free:
+real drag/cache/callback users still need replacement, with measured new costs.
+tools/window_repaint_frontend.py / make repaint-frontend replay isolated links;
+UNBOOTABLE moved-shadow/stalebridges, never disk package. Exact sources/providers/
+library/generatedC-ASM/objects/splitoutputs/maps archived under
+bench/{artifacts,results}/2026-09-29-repaint-frontend with complete SHA manifests,
+including nested manifests. Compiler versions measured directly. Earlier
+unpublished pre-version-measurement evidence kept recoverably in
+build/window-repaint-frontend-{artifacts,results}-preversion, not committed.
+Four new host tests use real table/dispatcher/lane/receipt/backend with modeled
+rowclient/pagecopy: complete overlapping old-reference canvases, sparse rank
+order/highX/hidden4slot views, <=4rowclear/1chromerow/1pagecommit, repeated delegated
+receipts, packetclobber-after-local-copy, pending requests, poisoned title/slot
+fences, geometrywrap, exhaustion/abort and all cache/lease/graphics/drag conflicts.
+Two budget negative/source tests +3evidence tests. No new native/emulator/liveapp/
+paging/Z80/NMI/physicalHW/inputlatency qualification claimed. Existing native
+raster evidence retains ONLY its previous scope; no VICE sessions launched.
+Next: real damage/clip/cache call-site replacement, prove actual helper retirement
+and complete fit, then checksummed delivery/admission, serialized private-stack/
+gateway ownership and NMI drain in restored kernel map. SEI is not NMI proof.
+Only after real poll/providers/placement/interlocks pass, produce visible disk.
+Scoped make check896 tests/manifest/pycompile pass; normalparallelboot/all/panic/
+placement pass; D64c00d8936/D7100ab0c99/kerneldfef7e6d accepted hashes unchanged.
+Root main/xwave work untouched. See docs/WINDOW-REPAINT-FRONTEND.md.

@@ -374,6 +374,13 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   and busy/teardown costs. No production fit or latency claim, and no new disk.
   Next: measure actual integration costs and qualify delivery/serialization/NMI,
   then real painter/cache/poll gates. See [WINDOW-REPAINT-RASTER.md](WINDOW-REPAINT-RASTER.md).
+  Private actual-table view packing, request/fence control and one-step polling
+  now pass host full-canvas/receipt/deferral tests. Their measured 586 CODE bytes
+  put the component total at 2,599: at least 486 over the current allowance,
+  still excluding call sites, admission/delivery and providers. Possible legacy
+  helper retirements are not yet reclaimed; no production fit or new disk.
+  Next: prove actual damage/clip/cache call-site replacement and code recovery,
+  then the delivery/lease/NMI gates. See [WINDOW-REPAINT-FRONTEND.md](WINDOW-REPAINT-FRONTEND.md).
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

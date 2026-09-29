@@ -289,6 +289,17 @@ uncharged. See [WINDOW-REPAINT-RASTER.md](WINDOW-REPAINT-RASTER.md).
 Do not annex bootfs/task/USH/VIC regions, persist state in common scratch, or
 silently move the frozen shadow. Normal disks remain unchanged.
 
+The private frontend now reconstructs views from the actual manager table,
+handles request/fence/abort control and performs at most one manager raster
+step per poll. Host tests prove current sparse ranks/full canvases, atomic
+resource deferral and unacknowledged client delegation. Actual added CODE is
+586 with unchanged helper closure, so the component total is 2,599, at least
+486 bytes above the current allowance before delivery/providers/call sites.
+Possible legacy damage/clip/cache helpers are not credited as retired until
+their real users are replaced and qualified. This is still not wired to the
+production manager; no new emulator or test disk qualification follows.
+See [WINDOW-REPAINT-FRONTEND.md](WINDOW-REPAINT-FRONTEND.md).
+
 ## Next increments and gates
 
 1. Establish baseline input-service gaps, not just release totals or row counts.
