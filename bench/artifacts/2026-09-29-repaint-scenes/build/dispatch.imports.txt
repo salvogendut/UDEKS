@@ -1,0 +1,84 @@
+/var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.o:
+  Imports:
+    Count:                         27
+    Index:                          0
+      Address size:              0x02  (absolute)
+      Name:                  "addysp"
+    Index:                          1
+      Address size:              0x02  (absolute)
+      Name:                  "decsp3"
+    Index:                          2
+      Address size:              0x02  (absolute)
+      Name:                "tosaddax"
+    Index:                          3
+      Address size:              0x02  (absolute)
+      Name:               "staxspidx"
+    Index:                          4
+      Address size:              0x02  (absolute)
+      Name:                "tossuba0"
+    Index:                          5
+      Address size:              0x02  (absolute)
+      Name:                  "pusha0"
+    Index:                          6
+      Address size:              0x02  (absolute)
+      Name:                 "tosicmp"
+    Index:                          7
+      Address size:              0x02  (absolute)
+      Name:                "tossubax"
+    Index:                          8
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                          9
+      Address size:              0x02  (absolute)
+      Name:                  "decsp1"
+    Index:                         10
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         11
+      Address size:              0x02  (absolute)
+      Name:                  "subysp"
+    Index:                         12
+      Address size:              0x02  (absolute)
+      Name:                  "incsp1"
+    Index:                         13
+      Address size:              0x02  (absolute)
+      Name:                 "_memcpy"
+    Index:                         14
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                         15
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                         16
+      Address size:              0x02  (absolute)
+      Name:         "_udeks_lane_ack"
+    Index:                         17
+      Address size:              0x02  (absolute)
+      Name:    "_udeks_lane_validate"
+    Index:                         18
+      Address size:              0x02  (absolute)
+      Name:        "_udeks_lane_peek"
+    Index:                         19
+      Address size:              0x02  (absolute)
+      Name:       "_udeks_lane_abort"
+    Index:                         20
+      Address size:              0x02  (absolute)
+      Name:     "_udeks_lane_changed"
+    Index:                         21
+      Address size:              0x02  (absolute)
+      Name:     "_udeks_lane_request"
+    Index:                         22
+      Address size:              0x02  (absolute)
+      Name:        "_udeks_lane_init"
+    Index:                         23
+      Address size:              0x02  (absolute)
+      Name:     "_udeks_repaint_lane"
+    Index:                         24
+      Address size:              0x01  (zeropage)
+      Name:                    "ptr1"
+    Index:                         25
+      Address size:              0x01  (zeropage)
+      Name:                 "regbank"
+    Index:                         26
+      Address size:              0x01  (zeropage)
+      Name:                      "sp"

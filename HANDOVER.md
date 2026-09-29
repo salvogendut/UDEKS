@@ -1630,3 +1630,57 @@ Only after real poll/providers/placement/interlocks pass, produce visible disk.
 Scoped make check896 tests/manifest/pycompile pass; normalparallelboot/all/panic/
 placement pass; D64c00d8936/D7100ab0c99/kerneldfef7e6d accepted hashes unchanged.
 Root main/xwave work untouched. See docs/WINDOW-REPAINT-FRONTEND.md.
+
+2026-09-29 private scene-prefix checkpoint (issue #14):
+
+The four potential legacy helper retirements still have real drag, overlap,
+cache and callback users. None of their 722 bytes is reclaimed. Instead,
+bench/window-repaint-scenes/poll.inc copies exactly eight value bytes per slot,
+never titles or callbacks. Banked C validates geometry/format and derives
+sparse handles/current views. Private packet 0.2 uses marker $84 plus four zero
+reserved bytes, retaining its 82-byte size and receipt/work offsets. Old/new
+PEEK reject one another. Compiler-emitted 13-byte target layout sidecars and
+intentional prefix/packet shift controls gate the copy. Host tests explicitly
+model packed 16-bit fields; native host pointer layout is not target-wire proof.
+
+Poll 212 versus 440 saves 228 resident bytes; gate/control remain 48/98.
+Manager CODE 8491, HIGHBSS 88; no new persistent state. Complete normal/panic
+CODE growth 1012, new resident helper closure 72. Fixed segments/HIGHBSS 298 and
+RODATA/DATA/BSS/shadow sizes unchanged. Component 2371 versus 2113 is still at
+least 258 SHORT, excluding callers, admission/delivery, NMI, providers and
+busy/teardown. Sizing links are UNBOOTABLE (moved shadow/stale bridges), never
+package them. Legacy helper bodies remain unchanged.
+
+Bank entry 3 + lane 2641 + dispatcher 564 + all helpers 512 = 3720 bytes at
+$D100-$DF87, 88 code bytes spare. State $DFE0-$DFF1, 14-byte guard and existing
+26-byte saved/restored runtime ZP set unchanged. Four local nine-byte views
+charge 36 bytes to the existing 240-byte private C stack, no retained views or
+new BSS/RODATA. Observed lowest changed stack offset 169 versus previous 211;
+not a worst-case bound. No callbacks/polls/Z80 within the bank lease.
+
+Actual new poll/decoder plus real C/ASM raster pass both 1986/VICE: eight
+old-reference scenes and four malformed protocol cases, rejecting without
+lane/pixel/clip changes. Exact final 8000-byte SHA-256:
+8efa40f4c55d395b9681363a2d872a625ea5a36532cad5a38b6d3ecc266423c7.
+IRQ counts 440821/439734; runtime/guards survive. The 12767 PAL diagnostic frames
+include heavy full-image/guard scans, NOT latency or speed qualification.
+Native client/page-copy/graphics/cache admission remain models; lease value 1
+is not an implemented lock. CLIENT stays delegated/unacknowledged. No retained
+flag, legacy whole painter, live apps, task paging, Z80, NMI/RESTORE, production
+delivery or physical-HW claim. Earlier transport faults were NOT re-run.
+
+Exact inputs/providers/libraries/objects/maps/layout controls/PRG/raw records
+and emulator provenance: bench/{artifacts,results}/2026-09-29-repaint-scenes.
+Runs bind program/report/raw hashes, check drift before/after, and refuse to
+overwrite evidence. make repaint-scenes builds the isolated proof; tool run
+engines 1986/vice, then preserve. make check passes 905 tests; normal parallel
+boot/all/panic/placement pass. Accepted D64 c00d8936, D71 00ab0c99 and kernel
+dfef7e6d hashes unchanged. Own VICE sessions closed, root main/xwave work
+untouched. No new manual disk. See docs/WINDOW-REPAINT-SCENES.md.
+
+NEXT: recover remaining resident code and measure real call-site/provider costs.
+Retire legacy helpers only with their users; do not annex guards, common app
+stack overlap or bootfs to invent fit. Then qualify checksummed delivery,
+admission, paint leases and NMI drain in the restored kernel map, followed by
+live poll/providers/interlocks and finally a visible disk/latency gate.
+Keep xwave-specific work separate.

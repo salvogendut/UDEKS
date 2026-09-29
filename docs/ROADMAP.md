@@ -381,6 +381,15 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   helper retirements are not yet reclaimed; no production fit or new disk.
   Next: prove actual damage/clip/cache call-site replacement and code recovery,
   then the delivery/lease/NMI gates. See [WINDOW-REPAINT-FRONTEND.md](WINDOW-REPAINT-FRONTEND.md).
+  The next private frontend now copies an eight-byte value-only window prefix,
+  with banked C view validation/derivation. Exact target layout and both-emulator
+  pixel/guard/protocol gates pass. Resident poll saves 228 bytes: component
+  2,371 remains at least 258 short before integration costs. Complete bank
+  code/helpers fit 3,720 bytes with 88 spare; temporary views use 36 private
+  stack bytes, no new persistent allocation. Legacy helpers remain necessary
+  and are not reclaimed. No production disk or latency claim. Next: measured
+  complete adapter/code recovery, then delivery/admission/NMI and live providers.
+  See [WINDOW-REPAINT-SCENES.md](WINDOW-REPAINT-SCENES.md).
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

@@ -1,0 +1,338 @@
+Modules list:
+-------------
+module.o:
+    ENTRY             Offs=000000  Size=000003  Align=00001  Fill=0000
+dispatch.o:
+    CODE              Offs=000000  Size=000234  Align=00001  Fill=0000
+lane.o:
+    CODE              Offs=000234  Size=000A51  Align=00001  Fill=0000
+    HIGHBSS           Offs=000000  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=000C85  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=000CA1  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000CB2  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax3.o):
+    CODE              Offs=000CC0  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=000CCE  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=000CD7  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=000CE4  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp6.o):
+    CODE              Offs=000CF1  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=000CFE  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000D2C  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000D33  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=000D49  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000D4E  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(memcpy.o):
+    CODE              Offs=000D53  Size=00003C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax9.o):
+    CODE              Offs=000D8F  Size=000017  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(or.o):
+    CODE              Offs=000DA6  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000DB8  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000DC6  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000DDC  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=000DF6  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000E12  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=000E28  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxspi.o):
+    CODE              Offs=000E33  Size=00001B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(sub.o):
+    CODE              Offs=000E4E  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subeqsp.o):
+    CODE              Offs=000E63  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=000E78  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000006  00001F  00001A  00001
+ENTRY                 00D100  00D102  000003  00001
+CODE                  00D103  00DF87  000E85  00001
+HIGHBSS               00DFE0  00DFF1  000012  00001
+
+
+Exports list by name:
+---------------------
+_memcpy                   00DE56 RLA    _repaint_dispatch         00D103 RLA    
+_udeks_lane_abort         00D478 RLA    _udeks_lane_ack           00D92A RLA    
+_udeks_lane_changed       00D3B2 RLA    _udeks_lane_init          00D337 RLA    
+_udeks_lane_peek          00D4C7 RLA    _udeks_lane_request       00D34C RLA    
+_udeks_lane_validate      00D883 RLA    _udeks_repaint_lane       00DFE0 RLA    
+addeqysp                  00DDA6 RLA    addysp                    00DDB6 RLA    
+addysp1                   00DDB5 RLA    aslax3                    00DDC3 RLA    
+decsp1                    00DDD1 RLA    decsp2                    00DDDA RLA    
+decsp3                    00DDE7 RLA    decsp6                    00DDF4 RLA    
+incsp1                    00DE2F RLA    incsp2                    00DE3E RLA    
+incsp3                    00DE4C RLA    incsp4                    00DE51 RLA    
+mulax9                    00DE92 RLA    popax                     00DE36 RLA    
+popptr1                   00DEBB RLA    ptr1                      00000E RLZ    
+ptr2                      000010 RLZ    ptr3                      000012 RLZ    
+ptr4                      000014 RLZ    pusha                     00DECD RLA    
+pusha0                    00DEE1 RLA    pushax                    00DEE3 RLA    
+pushwysp                  00DEFB RLA    regbank                   00001A RLZ    
+regsave                   00000A RLZ    sp                        000006 RLZ    
+sreg                      000008 RLZ    staspidx                  00DF15 RLA    
+staxspidx                 00DF36 RLA    staxysp                   00DF2D RLA    
+subeqysp                  00DF68 RLA    subysp                    00DF7B RLA    
+tmp1                      000016 RLZ    tmp2                      000017 RLZ    
+tmp3                      000018 RLZ    tmp4                      000019 RLZ    
+tosaddax                  00DD8A RLA    tosicmp                   00DE03 RLA    
+tosicmp0                  00DE01 RLA    tosora0                   00DEA9 RLA    
+tossuba0                  00DF51 RLA    tossubax                  00DF53 RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000006 RLZ    sreg                      000008 RLZ    
+regsave                   00000A RLZ    ptr1                      00000E RLZ    
+ptr2                      000010 RLZ    ptr3                      000012 RLZ    
+ptr4                      000014 RLZ    tmp1                      000016 RLZ    
+tmp2                      000017 RLZ    tmp3                      000018 RLZ    
+tmp4                      000019 RLZ    regbank                   00001A RLZ    
+_repaint_dispatch         00D103 RLA    _udeks_lane_init          00D337 RLA    
+_udeks_lane_request       00D34C RLA    _udeks_lane_changed       00D3B2 RLA    
+_udeks_lane_abort         00D478 RLA    _udeks_lane_peek          00D4C7 RLA    
+_udeks_lane_validate      00D883 RLA    _udeks_lane_ack           00D92A RLA    
+tosaddax                  00DD8A RLA    addeqysp                  00DDA6 RLA    
+addysp1                   00DDB5 RLA    addysp                    00DDB6 RLA    
+aslax3                    00DDC3 RLA    decsp1                    00DDD1 RLA    
+decsp2                    00DDDA RLA    decsp3                    00DDE7 RLA    
+decsp6                    00DDF4 RLA    tosicmp0                  00DE01 RLA    
+tosicmp                   00DE03 RLA    incsp1                    00DE2F RLA    
+popax                     00DE36 RLA    incsp2                    00DE3E RLA    
+incsp3                    00DE4C RLA    incsp4                    00DE51 RLA    
+_memcpy                   00DE56 RLA    mulax9                    00DE92 RLA    
+tosora0                   00DEA9 RLA    popptr1                   00DEBB RLA    
+pusha                     00DECD RLA    pusha0                    00DEE1 RLA    
+pushax                    00DEE3 RLA    pushwysp                  00DEFB RLA    
+staspidx                  00DF15 RLA    staxysp                   00DF2D RLA    
+staxspidx                 00DF36 RLA    tossuba0                  00DF51 RLA    
+tossubax                  00DF53 RLA    subeqysp                  00DF68 RLA    
+subysp                    00DF7B RLA    _udeks_repaint_lane       00DFE0 RLA    
+
+
+
+Imports list:
+-------------
+_memcpy (memcpy.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+_repaint_dispatch (dispatch.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-bank/module.s(3)
+_udeks_lane_abort (lane.o):
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(17)
+_udeks_lane_ack (lane.o):
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(20)
+_udeks_lane_changed (lane.o):
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(16)
+_udeks_lane_init (lane.o):
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(14)
+_udeks_lane_peek (lane.o):
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(18)
+_udeks_lane_request (lane.o):
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(15)
+_udeks_lane_validate (lane.o):
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(19)
+_udeks_repaint_lane (lane.o):
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(13)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-bank/module.s(3)
+addeqysp (addeqsp.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+addysp (addysp.o):
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+    or.o                      runtime/or.s(9)
+aslax3 (aslax3.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+decsp1 (decsp1.o):
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+decsp2 (decsp2.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+decsp3 (decsp3.o):
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+decsp6 (decsp6.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+incsp1 (incsp1.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+incsp2 (incsp2.o):
+    staxspi.o                 runtime/staxspi.s(9)
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+incsp3 (incsp3.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+incsp4 (incsp4.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+mulax9 (mulax9.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+popax (incsp2.o):
+    memcpy.o                  common/memcpy.s(14)
+popptr1 (popptr1.o):
+    memcpy.o                  common/memcpy.s(14)
+ptr1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mulax9.o                  runtime/mulax9.s(10)
+    memcpy.o                  common/memcpy.s(15)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(11)
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(11)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-bank/module.s(4)
+ptr2 (zeropage.o):
+    memcpy.o                  common/memcpy.s(15)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-bank/module.s(4)
+ptr3 (zeropage.o):
+    memcpy.o                  common/memcpy.s(15)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-bank/module.s(4)
+ptr4 (zeropage.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-bank/module.s(4)
+pusha (pusha.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+pusha0 (pushax.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+pushax (pushax.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+pushwysp (pushwsp.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+regbank (zeropage.o):
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(10)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-bank/module.s(5)
+regsave (zeropage.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-bank/module.s(4)
+sp (zeropage.o):
+    subysp.o                  runtime/subysp.s(9)
+    subeqsp.o                 runtime/subeqsp.s(8)
+    sub.o                     runtime/sub.s(9)
+    staxspi.o                 runtime/staxspi.s(10)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    or.o                      runtime/or.s(10)
+    memcpy.o                  common/memcpy.s(15)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp6.o                  runtime/decsp6.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    add.o                     runtime/add.s(12)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(10)
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(10)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-bank/module.s(4)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(10)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-bank/module.s(4)
+staspidx (staspidx.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+staxspidx (staxspi.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+staxysp (staxsp.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+subeqysp (subeqsp.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+subysp (subysp.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+tmp1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    or.o                      runtime/or.s(10)
+    aslax3.o                  runtime/aslax3.s(8)
+    add.o                     runtime/add.s(12)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(11)
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-bank/module.s(5)
+tmp2 (zeropage.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-bank/module.s(5)
+tmp3 (zeropage.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-bank/module.s(5)
+tmp4 (zeropage.o):
+    module.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-bank/module.s(5)
+tosaddax (add.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+tosicmp (icmp.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+tosicmp0 (icmp.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+tosora0 (or.o):
+    lane.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/lane.s(1471)
+tossuba0 (sub.o):
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+tossubax (sub.o):
+    dispatch.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-scenes/dispatch.s(317)
+
