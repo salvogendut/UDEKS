@@ -365,10 +365,15 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   placement/transport proof, then renderer and real poll gates. No disk change.
   An isolated complete policy/helper link now fits 3,286 bytes in proposed bank-1
   I/O-underlay RAM, with 18-byte state and an 84-byte binding. 1986/VICE pass 1,415
-  calls and detect three transport faults. This is not installed: at least 614
-  resident raster/binding bytes still need recovery, plus integration costs.
-  Next: measured resident raster replacement, then delivery/admission/NMI and
-  real painter/cache/poll gates. See [WINDOW-REPAINT-BANK.md](WINDOW-REPAINT-BANK.md).
+  calls and detect three transport faults. See [WINDOW-REPAINT-BANK.md](WINDOW-REPAINT-BANK.md).
+  The compact resident raster follow-up saves 913 bytes from the row/backend
+  draft. Real C receipt wrappers and both full-link helper closures bring the
+  component total to 2,013 bytes; retiring old bodies/reserve would leave 100
+  provisional bytes. Real C/ASM shadow pixels and banked receipts pass in both
+  engines, but this excludes delivery/admission, poll/view packing, providers
+  and busy/teardown costs. No production fit or latency claim, and no new disk.
+  Next: measure actual integration costs and qualify delivery/serialization/NMI,
+  then real painter/cache/poll gates. See [WINDOW-REPAINT-RASTER.md](WINDOW-REPAINT-RASTER.md).
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

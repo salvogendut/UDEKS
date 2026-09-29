@@ -1,0 +1,42 @@
+/var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.o:
+  Imports:
+    Count:                         13
+    Index:                          0
+      Address size:              0x02  (absolute)
+      Name:                  "incsp3"
+    Index:                          1
+      Address size:              0x02  (absolute)
+      Name:                  "decsp3"
+    Index:                          2
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                          3
+      Address size:              0x02  (absolute)
+      Name:                  "incsp2"
+    Index:                          4
+      Address size:              0x02  (absolute)
+      Name:                  "decsp3"
+    Index:                          5
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                          6
+      Address size:              0x02  (absolute)
+      Name:                 "_memcpy"
+    Index:                          7
+      Address size:              0x02  (absolute)
+      Name:                "pushwysp"
+    Index:                          8
+      Address size:              0x02  (absolute)
+      Name:                  "pushax"
+    Index:                          9
+      Address size:              0x02  (absolute)
+      Name:                  "incsp4"
+    Index:                         10
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                         11
+      Address size:              0x02  (absolute)
+      Name:    "_private_repaint_policy_call"
+    Index:                         12
+      Address size:              0x01  (zeropage)
+      Name:                      "sp"

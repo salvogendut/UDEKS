@@ -1538,3 +1538,45 @@ atleast614 BEFORE additionalhelpers/callers/painter/cache/busy/teardowncosts.
 Next: measuredcompactresidentraster/sharedprimitives (or explicitbankedpart),
 then delivery/admission/serialization/NMI andboundedproviders/poll gates.
 No visiblecandidateyet, so no newmanualtest. See docs/WINDOW-REPAINT-BANK.md.
+
+2026-09-29 compact resident raster checkpoint (issue14): make repaint-raster
+and tools/window_repaint_raster.py build isolated normal/panic closure links and
+a standalone native program. Normal production source/link/disks unchanged.
+bench/window-repaint-raster/chrome.inc shares twelve explicitly allocated scalar
+HIGHBSS bytes, NOT drag/cache/guard scratch; compact manager76+12=original88.
+Title pointers automatic, never retained between row steps. Serialize drawing;
+no poll/callback/IRQ renderer inside it. One-row chrome/helpers975 vs old1468;
+backend755 vs old1175 =913 saved. Backend validates banked receipt BEFOREpixels,
+rejects forged geometry/page/row cursors, resetsclip beforeack; CLIENT/RESTORE
+still delegated. Real C receipt wrappers127 + privatebinding84 + NEW linked
+helpers72 (memcpy60/return0 4/ult8) yield componentCODE2013. Oldbodies1976+reserve137
+give100 PROVISIONAL headroom, NOT fullfit: actualpoll/view/admission/provider/
+busy/teardown uncharged. Both complete normal/panic links growCODE654 while
+legacypaint/compose/syncwrapper remain; all fixed segments/HIGHBSS298 unchanged,
+RODATA/DATA/BSS/shadow sizes unchanged. Sizing images UNBOOTABLE/stalebridges,
+never package. Exact none.lib, objects/listings/generatedsources/splitoutputs/
+providerobjects/maps/inputs archived with SHA manifests under
+bench/{artifacts,results}/2026-09-29-repaint-raster.
+Native program links real C/ASM pixel/span raster, real receipt wrappers and
+EXACT prior qualified bankedpolicy. LOCAL work copy protects from reused common
+RPC/gateway scratch; caller serialized kernelIO required. RPCscratch can change
+on rejection, pixels/dirty/clip/progress cannot. CLIENT mockrow, COMMIT bank0
+memorymodel, not liveapp/VICgateway. Eight edge/fullscreen/flag/title scenes pass
+both engines; independent Pythonoracle additionally matches OLD fullwindow C
+with yellowclient pixels clearing resizegrip. Exact final8000bytes match:
+8efa40f4c55d395b9681363a2d872a625ea5a36532cad5a38b6d3ecc266423c7.
+Scenechecksums49629/45346/1790/64949/64211/8171/57/57329 supplementfullcanvasproof,
+not sole equivalence. Staletitlepointer1 rejected on glyphrow without mutations.
+IRQ1986 427181/VICE425942; observedprivateStackOffset211, not worstcasebound.
+Heavyfullimage/guardscans and16000frame terminationbudget NOT latency acceptance
+or realrenderer speed. Runtimechecks preserve MMU/ZP/hwSP/swSP/I-D/guards/cache/
+bootfsboundary/USH; stopIRQ before retiring diagnosticIRQbytes forguardscan.
+No liveapps/taskpaging/Z80/NMI/RESTORE/productiondelivery/physicalHW qualification.
+Runs verifyinput/outputhashes before/after and bindraw/programpair tobuildreport.
+Scoped make check887 tests/manifest/pycompile pass; normalparallelboot/all/panic/
+placementpasses. AcceptedD64c00d8936/D7100ab0c99/kerneldfef7e6d hashes unchanged.
+Own VICE sessions closed, no x128 processes remain; rootxwavework untouched.
+Next: measureactualdelivery/admission/poll/provideradapter and furthercode
+recovery if100bytes insufficient; qualifygraphics/private-stack serialization
+andNMI/cancellation cleanup BEFORE real linking. Then visiblelatency/manualtest.
+No new testdisk yet. See docs/WINDOW-REPAINT-RASTER.md.

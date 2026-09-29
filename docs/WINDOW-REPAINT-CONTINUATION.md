@@ -278,11 +278,16 @@ policy/dispatcher/helper link fits 3,286 bytes at proposed bank-1 `$D100`, with
 and reject zero-page/IRQ/private-stack fault controls. See
 [WINDOW-REPAINT-BANK.md](WINDOW-REPAINT-BANK.md) for exact ranges/lifetimes and
 limits. This does not install a service or qualify NMI/live apps/cold-boot delivery.
-Row/backend/binding still exceed the optimistic resident replacement budget by
-at least 614 bytes before integration costs. Next is measured resident raster
-replacement/shared primitives, then delivery/admission and real painter/cache/
-poll interlocks. Do not annex bootfs/task/USH/VIC regions, persist state in common
-scratch, or silently move the frozen shadow. Normal disks remain unchanged.
+That first row/backend/binding draft exceeded the optimistic resident replacement
+budget by at least 614 bytes before integration costs. The follow-up compact
+raster now measures 2,013 bytes including real receipt wrappers, binding and new
+linked helpers; granting retired bodies/reserve leaves 100 provisional bytes.
+Both engines pass real C/ASM shadow pixels with banked receipts. This is still
+only a component lower bound, not a full adapter fit: delivery/admission, real
+painter/cache providers, poll/view packing and busy/teardown interlocks remain
+uncharged. See [WINDOW-REPAINT-RASTER.md](WINDOW-REPAINT-RASTER.md).
+Do not annex bootfs/task/USH/VIC regions, persist state in common scratch, or
+silently move the frozen shadow. Normal disks remain unchanged.
 
 ## Next increments and gates
 

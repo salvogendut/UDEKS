@@ -1,0 +1,598 @@
+Modules list:
+-------------
+launcher.o:
+    CODE              Offs=000000  Size=00004C  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000076  Align=00001  Fill=0000
+native.o:
+    CODE              Offs=00004C  Size=00110B  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=0000D6  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000066  Align=00001  Fill=0000
+    HIGHBSS           Offs=000000  Size=000058  Align=00001  Fill=0000
+display.o:
+    CODE              Offs=001157  Size=000330  Align=00001  Fill=0000
+    BSS               Offs=000066  Size=00000E  Align=00001  Fill=0000
+    VICSHADOW         Offs=000000  Size=001F40  Align=00001  Fill=0000
+driver.o:
+    CODE              Offs=001487  Size=00031A  Align=00001  Fill=0000
+    RODATA            Offs=0000D6  Size=000F00  Align=00001  Fill=0000
+    BSS               Offs=000074  Size=00002C  Align=00001  Fill=0000
+pixel.o:
+    CODE              Offs=0017A1  Size=0000BE  Align=00001  Fill=0000
+span.o:
+    CODE              Offs=00185F  Size=000066  Align=00001  Fill=0000
+receipt.o:
+    CODE              Offs=0018C5  Size=00007F  Align=00001  Fill=0000
+binding.o:
+    CODE              Offs=001944  Size=000054  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=001998  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=0019B4  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=0019C5  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=0019D3  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=0019DC  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=0019E9  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp4.o):
+    CODE              Offs=0019F6  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp6.o):
+    CODE              Offs=001A03  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp8.o):
+    CODE              Offs=001A10  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(eq.o):
+    CODE              Offs=001A1D  Size=00000A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=001A27  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=001A55  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=001A5C  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=001A72  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=001A77  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=001A7C  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=001A81  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=001A86  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lpop.o):
+    CODE              Offs=001A8B  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lpush.o):
+    CODE              Offs=001AA0  Size=000021  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lshr.o):
+    CODE              Offs=001AC1  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=001ADB  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(memcmp.o):
+    CODE              Offs=001B07  Size=000036  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(memcpy.o):
+    CODE              Offs=001B3D  Size=00003C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(memset.o):
+    CODE              Offs=001B79  Size=00005D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=001BD6  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax3.o):
+    CODE              Offs=001C10  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax5.o):
+    CODE              Offs=001C21  Size=000014  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax7.o):
+    CODE              Offs=001C35  Size=000019  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=001C4E  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=001C5C  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=001C72  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=001C8C  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(regswap2.o):
+    CODE              Offs=001CA8  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(return0.o):
+    CODE              Offs=001CBE  Size=000004  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax3.o):
+    CODE              Offs=001CC2  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=001CD0  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=001CE6  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxspi.o):
+    CODE              Offs=001CF1  Size=00001B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(sub.o):
+    CODE              Offs=001D0C  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=001D21  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(udiv.o):
+    CODE              Offs=001D2E  Size=00004F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ult.o):
+    CODE              Offs=001D7D  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(umod.o):
+    CODE              Offs=001D85  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000006  00001F  00001A  00001
+STARTUP               002000  002075  000076  00001
+CODE                  002076  003E0B  001D96  00001
+RODATA                003E0C  004DE1  000FD6  00001
+BSS                   004DE2  004E81  0000A0  00001
+VICSHADOW             00A1E0  00C11F  001F40  00001
+HIGHBSS               00E1B8  00E20F  000058  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               004DE2 RLA    __BSS_SIZE__              0000A0 REA    
+__STARTUP__               000001 REA    _main                     002CEF RLA    
+_memcmp                   003B7D RLA    _memcpy                   003BB3 RLA    
+_memset                   003BF7 RLA    _private_repaint_policy_call 0039BA RLA    
+_repaint_receipt_ack      003995 RLA    _repaint_receipt_validate 003972 RLA    
+_runtime_call             0035EF RLA    _runtime_check_memory     003693 RLA    
+_runtime_flags_bad        004E5F RLA    _runtime_guard_bad        004E61 RLA    
+_runtime_hw_bad           004E5E RLA    _runtime_install          0034FD RLA    
+_runtime_irq_bad          004E5C RLA    _runtime_irq_count        004E56 RLA    
+_runtime_irq_start        00379E RLA    _runtime_irq_stop         0037D2 RLA    
+_runtime_low_water        004E63 RLA    _runtime_seen_flags       004E64 RLA    
+_runtime_sw_bad           004E60 RLA    _runtime_ush_bad          004E62 RLA    
+_runtime_zp_bad           004E5D RLA    _udeks_span_color         004E4D RLA    
+_udeks_span_count         004E4A RLA    _udeks_span_fill_row      0038D5 RLA    
+_udeks_span_first         004E4B RLA    _udeks_span_last          004E4C RLA    
+_udeks_span_offset        004E48 RLA    _udeks_vic_bitmap_fill    0031CD RLA    
+_udeks_vic_bitmap_pixel   003817 RLA    _udeks_vic_bitmap_reset_clip 0034DB RLA    
+_udeks_vic_bitmap_set_clip 00339B RLA    _udeks_vic_bitmap_shadow  00A1E0 RLA    
+addeq0sp                  003A2A RLA    addeqysp                  003A2C RLA    
+addysp                    003A3C RLA    addysp1                   003A3B RLA    
+booleq                    003B57 RLA    boolne                    003B51 RLA    
+boolult                   003B70 RLA    decsp1                    003A49 RLA    
+decsp2                    003A52 RLA    decsp3                    003A5F RLA    
+decsp4                    003A6C RLA    decsp6                    003A79 RLA    
+decsp8                    003A86 RLA    incsp1                    003ACB RLA    
+incsp2                    003ADA RLA    incsp3                    003AE8 RLA    
+incsp4                    003AED RLA    incsp5                    003AF2 RLA    
+incsp6                    003AF7 RLA    incsp7                    003AFC RLA    
+mulax3                    003C86 RLA    mulax5                    003C97 RLA    
+mulax7                    003CAB RLA    popax                     003AD2 RLA    
+popeax                    003B01 RLA    popptr1                   003CC4 RLA    
+ptr1                      00000E RLZ    ptr2                      000010 RLZ    
+ptr3                      000012 RLZ    ptr4                      000014 RLZ    
+pusha                     003CD6 RLA    pusha0                    003CEA RLA    
+pushax                    003CEC RLA    pusheax                   003B1F RLA    
+pushw0sp                  003D02 RLA    pushwysp                  003D04 RLA    
+regbank                   00001A RLZ    regsave                   00000A RLZ    
+regswap2                  003D1E RLA    return0                   003D34 RLA    
+shrax3                    003D38 RLA    sp                        000006 RLZ    
+sreg                      000008 RLZ    staspidx                  003D46 RLA    
+stax0sp                   003D5C RLA    staxspidx                 003D67 RLA    
+staxysp                   003D5E RLA    subysp                    003D97 RLA    
+tmp1                      000016 RLZ    tmp2                      000017 RLZ    
+tosadda0                  003A0E RLA    tosaddax                  003A10 RLA    
+toseqax                   003A97 RLA    tosicmp                   003A9F RLA    
+tosicmp0                  003A9D RLA    tosmula0                  003C4C RLA    
+tosshreax                 003B37 RLA    tossuba0                  003D82 RLA    
+tossubax                  003D84 RLA    tosulta0                  003DF3 RLA    
+tosumoda0                 003DFB RLA    tosumula0                 003C4C RLA    
+udiv16                    003DB5 RLA    
+
+
+Exports list by value:
+----------------------
+__STARTUP__               000001 REA    sp                        000006 RLZ    
+sreg                      000008 RLZ    regsave                   00000A RLZ    
+ptr1                      00000E RLZ    ptr2                      000010 RLZ    
+ptr3                      000012 RLZ    ptr4                      000014 RLZ    
+tmp1                      000016 RLZ    tmp2                      000017 RLZ    
+regbank                   00001A RLZ    __BSS_SIZE__              0000A0 REA    
+_main                     002CEF RLA    _udeks_vic_bitmap_fill    0031CD RLA    
+_udeks_vic_bitmap_set_clip 00339B RLA    _udeks_vic_bitmap_reset_clip 0034DB RLA    
+_runtime_install          0034FD RLA    _runtime_call             0035EF RLA    
+_runtime_check_memory     003693 RLA    _runtime_irq_start        00379E RLA    
+_runtime_irq_stop         0037D2 RLA    _udeks_vic_bitmap_pixel   003817 RLA    
+_udeks_span_fill_row      0038D5 RLA    _repaint_receipt_validate 003972 RLA    
+_repaint_receipt_ack      003995 RLA    _private_repaint_policy_call 0039BA RLA    
+tosadda0                  003A0E RLA    tosaddax                  003A10 RLA    
+addeq0sp                  003A2A RLA    addeqysp                  003A2C RLA    
+addysp1                   003A3B RLA    addysp                    003A3C RLA    
+decsp1                    003A49 RLA    decsp2                    003A52 RLA    
+decsp3                    003A5F RLA    decsp4                    003A6C RLA    
+decsp6                    003A79 RLA    decsp8                    003A86 RLA    
+toseqax                   003A97 RLA    tosicmp0                  003A9D RLA    
+tosicmp                   003A9F RLA    incsp1                    003ACB RLA    
+popax                     003AD2 RLA    incsp2                    003ADA RLA    
+incsp3                    003AE8 RLA    incsp4                    003AED RLA    
+incsp5                    003AF2 RLA    incsp6                    003AF7 RLA    
+incsp7                    003AFC RLA    popeax                    003B01 RLA    
+pusheax                   003B1F RLA    tosshreax                 003B37 RLA    
+boolne                    003B51 RLA    booleq                    003B57 RLA    
+boolult                   003B70 RLA    _memcmp                   003B7D RLA    
+_memcpy                   003BB3 RLA    _memset                   003BF7 RLA    
+tosmula0                  003C4C RLA    tosumula0                 003C4C RLA    
+mulax3                    003C86 RLA    mulax5                    003C97 RLA    
+mulax7                    003CAB RLA    popptr1                   003CC4 RLA    
+pusha                     003CD6 RLA    pusha0                    003CEA RLA    
+pushax                    003CEC RLA    pushw0sp                  003D02 RLA    
+pushwysp                  003D04 RLA    regswap2                  003D1E RLA    
+return0                   003D34 RLA    shrax3                    003D38 RLA    
+staspidx                  003D46 RLA    stax0sp                   003D5C RLA    
+staxysp                   003D5E RLA    staxspidx                 003D67 RLA    
+tossuba0                  003D82 RLA    tossubax                  003D84 RLA    
+subysp                    003D97 RLA    udiv16                    003DB5 RLA    
+tosulta0                  003DF3 RLA    tosumoda0                 003DFB RLA    
+__BSS_RUN__               004DE2 RLA    _udeks_span_offset        004E48 RLA    
+_udeks_span_count         004E4A RLA    _udeks_span_first         004E4B RLA    
+_udeks_span_last          004E4C RLA    _udeks_span_color         004E4D RLA    
+_runtime_irq_count        004E56 RLA    _runtime_irq_bad          004E5C RLA    
+_runtime_zp_bad           004E5D RLA    _runtime_hw_bad           004E5E RLA    
+_runtime_flags_bad        004E5F RLA    _runtime_sw_bad           004E60 RLA    
+_runtime_guard_bad        004E61 RLA    _runtime_ush_bad          004E62 RLA    
+_runtime_low_water        004E63 RLA    _runtime_seen_flags       004E64 RLA    
+_udeks_vic_bitmap_shadow  00A1E0 RLA    
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/launcher.s(3)
+__BSS_SIZE__ ([linker generated]):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/launcher.s(3)
+__STARTUP__ (launcher.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(13)
+_main (native.o):
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/launcher.s(3)
+_memcmp (memcmp.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(22)
+_memcpy (memcpy.o):
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(23)
+_memset (memset.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(24)
+_private_repaint_policy_call (binding.o):
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(13)
+    driver.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/driver.s(7)
+_repaint_receipt_ack (receipt.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(20)
+_repaint_receipt_validate (receipt.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(19)
+_runtime_call (driver.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(30)
+_runtime_check_memory (driver.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(29)
+_runtime_flags_bad (driver.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(35)
+_runtime_guard_bad (driver.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(37)
+_runtime_hw_bad (driver.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(34)
+_runtime_install (driver.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(26)
+_runtime_irq_bad (driver.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(32)
+_runtime_irq_count (driver.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(31)
+_runtime_irq_start (driver.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(27)
+_runtime_irq_stop (driver.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(28)
+_runtime_low_water (driver.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(39)
+_runtime_seen_flags (driver.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(40)
+_runtime_sw_bad (driver.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(36)
+_runtime_ush_bad (driver.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(38)
+_runtime_zp_bad (driver.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(33)
+_udeks_span_color (display.o):
+    span.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/src/services/display/vic_span.s(9)
+_udeks_span_count (display.o):
+    span.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/src/services/display/vic_span.s(8)
+_udeks_span_fill_row (span.o):
+    display.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/display.s(22)
+_udeks_span_first (display.o):
+    span.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/src/services/display/vic_span.s(9)
+_udeks_span_last (display.o):
+    span.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/src/services/display/vic_span.s(9)
+_udeks_span_offset (display.o):
+    span.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/src/services/display/vic_span.s(8)
+_udeks_vic_bitmap_fill (display.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(15)
+_udeks_vic_bitmap_pixel (pixel.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(14)
+_udeks_vic_bitmap_reset_clip (display.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(17)
+_udeks_vic_bitmap_set_clip (display.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(16)
+_udeks_vic_bitmap_shadow (display.o):
+    span.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/src/services/display/vic_span.s(7)
+    pixel.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/src/services/display/vic_pixel.s(7)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(25)
+addeq0sp (addeqsp.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+addeqysp (addeqsp.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+addysp (addysp.o):
+    incsp7.o                  runtime/incsp7.s(8)
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    display.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/display.s(471)
+    display.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/display.s(471)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+booleq (makebool.o):
+    eq.o                      runtime/eq.s(8)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+boolne (makebool.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+boolult (makebool.o):
+    ult.o                     runtime/ult.s(8)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+decsp1 (decsp1.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+decsp2 (decsp2.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+decsp3 (decsp3.o):
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+decsp4 (decsp4.o):
+    lpush.o                   runtime/lpush.s(12)
+    display.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/display.s(471)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+decsp6 (decsp6.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+decsp8 (decsp8.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+incsp1 (incsp1.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+incsp2 (incsp2.o):
+    staxspi.o                 runtime/staxspi.s(9)
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+incsp3 (incsp3.o):
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+incsp4 (incsp4.o):
+    lpop.o                    runtime/lpop.s(9)
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    pixel.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/src/services/display/vic_pixel.s(7)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+incsp5 (incsp5.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+incsp6 (incsp6.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+incsp7 (incsp7.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+mulax3 (mulax3.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+mulax5 (mulax5.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+mulax7 (mulax7.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+popax (incsp2.o):
+    memset.o                  common/memset.s(19)
+    memcpy.o                  common/memcpy.s(14)
+    memcmp.o                  common/memcmp.s(8)
+popeax (lpop.o):
+    lshr.o                    runtime/lshr.s(15)
+popptr1 (popptr1.o):
+    udiv.o                    runtime/udiv.s(9)
+    umod.o                    runtime/umod.s(8)
+    mul8.o                    runtime/mul8.s(9)
+    memcpy.o                  common/memcpy.s(14)
+    memcmp.o                  common/memcmp.s(8)
+ptr1 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mulax7.o                  runtime/mulax7.s(10)
+    mulax5.o                  runtime/mulax5.s(9)
+    mulax3.o                  runtime/mulax3.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    memset.o                  common/memset.s(20)
+    memcpy.o                  common/memcpy.s(15)
+    memcmp.o                  common/memcmp.s(9)
+    span.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/src/services/display/vic_span.s(6)
+    pixel.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/src/services/display/vic_pixel.s(6)
+    driver.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/driver.s(6)
+    display.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/display.s(11)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(11)
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/launcher.s(4)
+ptr2 (zeropage.o):
+    memset.o                  common/memset.s(20)
+    memcpy.o                  common/memcpy.s(15)
+    memcmp.o                  common/memcmp.s(9)
+    driver.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/driver.s(6)
+ptr3 (zeropage.o):
+    memset.o                  common/memset.s(20)
+    memcpy.o                  common/memcpy.s(15)
+    memcmp.o                  common/memcmp.s(9)
+ptr4 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    umod.o                    runtime/umod.s(9)
+    mul8.o                    runtime/mul8.s(10)
+pusha (pusha.o):
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    display.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/display.s(471)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+pusha0 (pushax.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+pushax (pushax.o):
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    display.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/display.s(471)
+    display.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/display.s(471)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+pusheax (lpush.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+pushw0sp (pushwsp.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+pushwysp (pushwsp.o):
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+regbank (zeropage.o):
+    regswap2.o                runtime/regswap2.s(8)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(10)
+regsave (zeropage.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(10)
+regswap2 (regswap2.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+return0 (return0.o):
+    ult.o                     runtime/ult.s(8)
+    memcmp.o                  common/memcmp.s(8)
+shrax3 (shrax3.o):
+    display.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/display.s(471)
+sp (zeropage.o):
+    lpop.o                    runtime/lpop.s(10)
+    subysp.o                  runtime/subysp.s(9)
+    sub.o                     runtime/sub.s(9)
+    staxspi.o                 runtime/staxspi.s(10)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    regswap2.o                runtime/regswap2.s(8)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    memset.o                  common/memset.s(20)
+    memcpy.o                  common/memcpy.s(15)
+    lpush.o                   runtime/lpush.s(13)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp8.o                  runtime/decsp8.s(8)
+    decsp6.o                  runtime/decsp6.s(8)
+    decsp4.o                  runtime/decsp4.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    add.o                     runtime/add.s(12)
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(10)
+    pixel.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/src/services/display/vic_pixel.s(6)
+    display.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/display.s(10)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(10)
+    launcher.o                /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/launcher.s(4)
+sreg (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    lpop.o                    runtime/lpop.s(10)
+    umod.o                    runtime/umod.s(9)
+    lshr.o                    runtime/lshr.s(16)
+    lpush.o                   runtime/lpush.s(13)
+    icmp.o                    runtime/icmp.s(9)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(10)
+staspidx (staspidx.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+stax0sp (staxsp.o):
+    display.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/display.s(471)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+staxspidx (staxspi.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+staxysp (staxsp.o):
+    display.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/display.s(471)
+    display.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/display.s(471)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+subysp (subysp.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+tmp1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    shrax3.o                  runtime/shrax3.s(8)
+    lshr.o                    runtime/lshr.s(16)
+    add.o                     runtime/add.s(12)
+    span.o                    /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/src/services/display/vic_span.s(6)
+    pixel.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/src/services/display/vic_pixel.s(6)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(11)
+tmp2 (zeropage.o):
+    pixel.o                   /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/src/services/display/vic_pixel.s(6)
+tosadda0 (add.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+tosaddax (add.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+toseqax (eq.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+tosicmp (icmp.o):
+    ult.o                     runtime/ult.s(8)
+    eq.o                      runtime/eq.s(8)
+    display.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/display.s(471)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+tosicmp0 (icmp.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+tosmula0 (mul8.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+tosshreax (lshr.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+tossuba0 (sub.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+tossubax (sub.o):
+    display.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/display.s(471)
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+tosulta0 (ult.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+tosumoda0 (umod.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+tosumula0 (mul8.o):
+    native.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/native.s(2558)
+udiv16 (udiv.o):
+    umod.o                    runtime/umod.s(8)
+
