@@ -2,7 +2,8 @@
 
 Issue [#14](https://github.com/salvogendut/UDEKS/issues/14), branch
 `graphics-bounded-repaint`; follows the default-cache integration in PR #13.
-Status: baseline plus host-tested continuation reference. Normal disks unchanged.
+Status: baseline, host-tested continuation reference and measured state-reclaim
+preparation. Normal disks unchanged; the bounded service adapter is not linked.
 
 ## Why another step is needed
 
@@ -139,6 +140,68 @@ consume guard/stack bytes to force it in. The next increment is a compact servic
 adapter that replaces existing compositor logic and has a separately measured
 state/placement plan, checked against this reference before resident linkage.
 The normal fallback and the public UAPP painter API remain unchanged.
+
+## Compact adapter preparation: state reclaim
+
+`tools/window_repaint_compact.py` constructs a private candidate from the selected
+manager. It removes three redundant bytes per window: `active` (a live rank is
+already nonzero), `surface` (create admits only bitmap windows), and `owner`
+(the current private manager never reads it). The public create signature still
+accepts owner and validates surface; this does not introduce ownership checking.
+If future isolation needs a stored owner, account for it explicitly. The tool
+rejects new owner/surface readers instead of silently stripping them.
+
+Rank zero now retires a slot. Destroy saves its old rank first, repairs remaining
+ranks, and invokes the close callback only after retirement. The live test in
+`top_window` is deliberately retained: without it an empty table would focus a
+free rank-zero slot when the active count is also zero.
+
+Six host tests cover the actual old/candidate managers and budget-parser guards:
+full retained-image
+occlusion and partial-paste canvases, then sparse four-slot create/close/reuse,
+move/resize/close while dragging, callback retirement and reset for all 256
+owner bytes. Their pixels, diagnostics and callback counts agree. This tests
+state compaction, not bounded composition or actual cc65 execution. The mock
+painter uses caller identity rather than reaching into the removed private
+owner field; real application painters have no such internal-field access.
+
+Repeatable target measurement (reference container):
+
+```
+distrobox enter my-distrobox -- make repaint-compact
+```
+
+| Manager allocation | Selected baseline | Private compact candidate |
+| --- | ---: | ---: |
+| CODE | 7,762 | 7,645 |
+| HIGHBSS | 88 | 76 |
+| RODATA | 130 | 130 |
+
+Both normal and panic whole-link replays prove **117 CODE + 12 HIGHBSS bytes**
+reclaimed; the imported helpers and linked library module sizes are unchanged.
+The total HIGHBSS end would move from `$E2E1` to `$E2D5`, making
+`$E2D6-$E2E1` available. Combined with the existing 20-byte CODE reserve,
+this is a prospective 137-byte code budget, not a delivery/placement approval.
+The full 22-byte reference job is still ten bytes larger than this new state
+space before any reuse/specialization. Do not claim its caller temporaries,
+backend state, or app continuations are free.
+
+The experiment inventories actual procedure sizes: selected draw-glyph/title/
+chrome total 1,315 CODE bytes, and paint-window/compose-damage total 697.
+These are replacement candidates, not wholly reclaimable bytes: their pixel,
+cache and callback semantics must survive in the bounded adapter. The next
+step is a compact continuation/state layout and bounded chrome/clear/commit
+driver, checked against the reference. Any overlay with drag fields must first
+prove its input/create/destroy lifetimes; none is assumed safe here.
+
+Every split output is redirected into the private experiment; normal outputs
+are untouched. Its kernel images are **UNBOOTABLE sizing artifacts**, not test
+disks: the unpadded shadow moves to `$A16B` and derived private import bridges
+have not been regenerated. Restore the frozen `$A1E0` shadow and prove all
+bindings/state/clip/cache cancellation before any production candidate is run.
+Evidence under `bench/{artifacts,results}/2026-09-29-repaint-compact` preserves
+source, providers, target objects/listings, isolated normal/panic maps and hash
+bindings, with two integrity tests. No latency improvement is claimed yet.
 
 ## Next increments and gates
 

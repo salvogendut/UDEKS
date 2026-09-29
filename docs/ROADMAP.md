@@ -353,6 +353,10 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   cc65 measurement is 4,643 CODE plus 22 caller-state bytes, too large to add
   directly. Next is a compact replacement adapter with a measured placement
   plan; normal disks and public painter ABI remain unchanged.
+  Preparation now proves a private state-compaction candidate can recover
+  117 CODE + 12 HIGHBSS bytes in both normal/panic links, with matching host
+  canvases and lifecycle traces. This is not installed or a latency improvement;
+  the bounded adapter/state layout and renderer contract remain open.
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

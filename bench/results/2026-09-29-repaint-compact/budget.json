@@ -1,0 +1,2003 @@
+{
+  "scope": "UNBOOTABLE state-reclaim budget links; no delivery/import bridge regeneration",
+  "variants": {
+    "baseline": {
+      "segments": {
+        "CODE": 7762,
+        "RODATA": 130,
+        "BSS": 0,
+        "DATA": 0,
+        "ZEROPAGE": 0,
+        "NULL": 0,
+        "HIGHBSS": 88
+      },
+      "functions": {
+        "_udeks_window_manager_start": {
+          "offset": 0,
+          "size": 76
+        },
+        "_udeks_window_manager_poll": {
+          "offset": 76,
+          "size": 613
+        },
+        "_udeks_window_manager_stop": {
+          "offset": 689,
+          "size": 7
+        },
+        "_udeks_window_manager_reset": {
+          "offset": 696,
+          "size": 70
+        },
+        "_udeks_window_create": {
+          "offset": 766,
+          "size": 380
+        },
+        "_udeks_window_destroy": {
+          "offset": 1146,
+          "size": 325
+        },
+        "_udeks_window_repaint": {
+          "offset": 1471,
+          "size": 419
+        },
+        "_udeks_window_begin_paint": {
+          "offset": 1890,
+          "size": 191
+        },
+        "_udeks_window_end_paint": {
+          "offset": 2081,
+          "size": 6
+        },
+        "_udeks_window_image_complete": {
+          "offset": 2087,
+          "size": 115
+        },
+        "_udeks_window_get_geometry": {
+          "offset": 2202,
+          "size": 211
+        },
+        "_udeks_window_is_dragging": {
+          "offset": 2413,
+          "size": 26
+        },
+        "_udeks_window_is_focused": {
+          "offset": 2439,
+          "size": 26
+        },
+        "_increment_counter": {
+          "offset": 2465,
+          "size": 69
+        },
+        "_window_by_handle": {
+          "offset": 2534,
+          "size": 81
+        },
+        "_publish_state": {
+          "offset": 2615,
+          "size": 114
+        },
+        "_point_inside": {
+          "offset": 2729,
+          "size": 126
+        },
+        "_damage_set": {
+          "offset": 2855,
+          "size": 87
+        },
+        "_damage_add": {
+          "offset": 2942,
+          "size": 164
+        },
+        "_set_damage_intersection": {
+          "offset": 3106,
+          "size": 316
+        },
+        "_draw_glyph": {
+          "offset": 3422,
+          "size": 142
+        },
+        "_draw_title": {
+          "offset": 3564,
+          "size": 285
+        },
+        "_draw_chrome": {
+          "offset": 3849,
+          "size": 888
+        },
+        "_cache_request": {
+          "offset": 4737,
+          "size": 95
+        },
+        "_cache_invalidate": {
+          "offset": 4832,
+          "size": 5
+        },
+        "_paint_window_damage": {
+          "offset": 4837,
+          "size": 338
+        },
+        "_compose_damage": {
+          "offset": 5175,
+          "size": 359
+        },
+        "_cache_paint_image": {
+          "offset": 5534,
+          "size": 157
+        },
+        "_top_window": {
+          "offset": 5691,
+          "size": 95
+        },
+        "_raise_window": {
+          "offset": 5786,
+          "size": 194
+        },
+        "_top_window_at": {
+          "offset": 5980,
+          "size": 235
+        },
+        "_close_hit": {
+          "offset": 6215,
+          "size": 172
+        },
+        "_title_hit": {
+          "offset": 6387,
+          "size": 134
+        },
+        "_resize_hit": {
+          "offset": 6521,
+          "size": 117
+        },
+        "_begin_drag": {
+          "offset": 6638,
+          "size": 238
+        },
+        "_move_drag": {
+          "offset": 6876,
+          "size": 349
+        },
+        "_resize_drag": {
+          "offset": 7225,
+          "size": 353
+        },
+        "_finish_drag": {
+          "offset": 7578,
+          "size": 184
+        }
+      },
+      "imports": [
+        [
+          "_cache_accept_poll",
+          "02"
+        ],
+        [
+          "_cache_accept_state",
+          "02"
+        ],
+        [
+          "_cache_command",
+          "02"
+        ],
+        [
+          "_cache_owner",
+          "02"
+        ],
+        [
+          "_cache_phase",
+          "02"
+        ],
+        [
+          "_cache_step",
+          "02"
+        ],
+        [
+          "_udeks_pointer_buttons",
+          "02"
+        ],
+        [
+          "_udeks_pointer_resynchronize",
+          "02"
+        ],
+        [
+          "_udeks_pointer_x",
+          "02"
+        ],
+        [
+          "_udeks_pointer_y",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_commit",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_fill",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_line",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_outline_move",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_outline_toggle",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_pixel",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_rectangle",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_reset_clip",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_set_clip",
+          "02"
+        ],
+        [
+          "_udeks_vic_graphics_is_active",
+          "02"
+        ],
+        [
+          "_udeks_vic_pointer_busy_begin",
+          "02"
+        ],
+        [
+          "_udeks_vic_pointer_busy_end",
+          "02"
+        ],
+        [
+          "addeqysp",
+          "02"
+        ],
+        [
+          "addysp",
+          "02"
+        ],
+        [
+          "decsp1",
+          "02"
+        ],
+        [
+          "decsp2",
+          "02"
+        ],
+        [
+          "decsp3",
+          "02"
+        ],
+        [
+          "decsp4",
+          "02"
+        ],
+        [
+          "decsp5",
+          "02"
+        ],
+        [
+          "decsp6",
+          "02"
+        ],
+        [
+          "decsp7",
+          "02"
+        ],
+        [
+          "decsp8",
+          "02"
+        ],
+        [
+          "incsp1",
+          "02"
+        ],
+        [
+          "incsp2",
+          "02"
+        ],
+        [
+          "incsp3",
+          "02"
+        ],
+        [
+          "incsp4",
+          "02"
+        ],
+        [
+          "incsp5",
+          "02"
+        ],
+        [
+          "incsp6",
+          "02"
+        ],
+        [
+          "incsp7",
+          "02"
+        ],
+        [
+          "incsp8",
+          "02"
+        ],
+        [
+          "jmpvec",
+          "02"
+        ],
+        [
+          "mulax5",
+          "02"
+        ],
+        [
+          "ptr1",
+          "01"
+        ],
+        [
+          "pusha",
+          "02"
+        ],
+        [
+          "pusha0",
+          "02"
+        ],
+        [
+          "pushax",
+          "02"
+        ],
+        [
+          "pushwysp",
+          "02"
+        ],
+        [
+          "regbank",
+          "01"
+        ],
+        [
+          "regsave",
+          "01"
+        ],
+        [
+          "regswap2",
+          "02"
+        ],
+        [
+          "sp",
+          "01"
+        ],
+        [
+          "stax0sp",
+          "02"
+        ],
+        [
+          "staxysp",
+          "02"
+        ],
+        [
+          "tmp1",
+          "01"
+        ],
+        [
+          "tosaddax",
+          "02"
+        ],
+        [
+          "tosicmp",
+          "02"
+        ],
+        [
+          "tosicmp0",
+          "02"
+        ],
+        [
+          "tosmula0",
+          "02"
+        ],
+        [
+          "tossuba0",
+          "02"
+        ],
+        [
+          "tossubax",
+          "02"
+        ]
+      ]
+    },
+    "compact": {
+      "segments": {
+        "CODE": 7645,
+        "RODATA": 130,
+        "BSS": 0,
+        "DATA": 0,
+        "ZEROPAGE": 0,
+        "NULL": 0,
+        "HIGHBSS": 76
+      },
+      "functions": {
+        "_udeks_window_manager_start": {
+          "offset": 0,
+          "size": 76
+        },
+        "_udeks_window_manager_poll": {
+          "offset": 76,
+          "size": 613
+        },
+        "_udeks_window_manager_stop": {
+          "offset": 689,
+          "size": 7
+        },
+        "_udeks_window_manager_reset": {
+          "offset": 696,
+          "size": 72
+        },
+        "_udeks_window_create": {
+          "offset": 768,
+          "size": 361
+        },
+        "_udeks_window_destroy": {
+          "offset": 1129,
+          "size": 297
+        },
+        "_udeks_window_repaint": {
+          "offset": 1426,
+          "size": 419
+        },
+        "_udeks_window_begin_paint": {
+          "offset": 1845,
+          "size": 193
+        },
+        "_udeks_window_end_paint": {
+          "offset": 2038,
+          "size": 6
+        },
+        "_udeks_window_image_complete": {
+          "offset": 2044,
+          "size": 108
+        },
+        "_udeks_window_get_geometry": {
+          "offset": 2152,
+          "size": 212
+        },
+        "_udeks_window_is_dragging": {
+          "offset": 2364,
+          "size": 26
+        },
+        "_udeks_window_is_focused": {
+          "offset": 2390,
+          "size": 26
+        },
+        "_increment_counter": {
+          "offset": 2416,
+          "size": 69
+        },
+        "_window_by_handle": {
+          "offset": 2485,
+          "size": 83
+        },
+        "_publish_state": {
+          "offset": 2568,
+          "size": 114
+        },
+        "_point_inside": {
+          "offset": 2682,
+          "size": 126
+        },
+        "_damage_set": {
+          "offset": 2808,
+          "size": 87
+        },
+        "_damage_add": {
+          "offset": 2895,
+          "size": 163
+        },
+        "_set_damage_intersection": {
+          "offset": 3058,
+          "size": 316
+        },
+        "_draw_glyph": {
+          "offset": 3374,
+          "size": 142
+        },
+        "_draw_title": {
+          "offset": 3516,
+          "size": 282
+        },
+        "_draw_chrome": {
+          "offset": 3798,
+          "size": 888
+        },
+        "_cache_request": {
+          "offset": 4686,
+          "size": 94
+        },
+        "_cache_invalidate": {
+          "offset": 4780,
+          "size": 5
+        },
+        "_paint_window_damage": {
+          "offset": 4785,
+          "size": 334
+        },
+        "_compose_damage": {
+          "offset": 5119,
+          "size": 330
+        },
+        "_cache_paint_image": {
+          "offset": 5449,
+          "size": 156
+        },
+        "_top_window": {
+          "offset": 5605,
+          "size": 97
+        },
+        "_raise_window": {
+          "offset": 5702,
+          "size": 161
+        },
+        "_top_window_at": {
+          "offset": 5863,
+          "size": 235
+        },
+        "_close_hit": {
+          "offset": 6098,
+          "size": 172
+        },
+        "_title_hit": {
+          "offset": 6270,
+          "size": 134
+        },
+        "_resize_hit": {
+          "offset": 6404,
+          "size": 117
+        },
+        "_begin_drag": {
+          "offset": 6521,
+          "size": 238
+        },
+        "_move_drag": {
+          "offset": 6759,
+          "size": 349
+        },
+        "_resize_drag": {
+          "offset": 7108,
+          "size": 353
+        },
+        "_finish_drag": {
+          "offset": 7461,
+          "size": 184
+        }
+      },
+      "imports": [
+        [
+          "_cache_accept_poll",
+          "02"
+        ],
+        [
+          "_cache_accept_state",
+          "02"
+        ],
+        [
+          "_cache_command",
+          "02"
+        ],
+        [
+          "_cache_owner",
+          "02"
+        ],
+        [
+          "_cache_phase",
+          "02"
+        ],
+        [
+          "_cache_step",
+          "02"
+        ],
+        [
+          "_udeks_pointer_buttons",
+          "02"
+        ],
+        [
+          "_udeks_pointer_resynchronize",
+          "02"
+        ],
+        [
+          "_udeks_pointer_x",
+          "02"
+        ],
+        [
+          "_udeks_pointer_y",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_commit",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_fill",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_line",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_outline_move",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_outline_toggle",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_pixel",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_rectangle",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_reset_clip",
+          "02"
+        ],
+        [
+          "_udeks_vic_bitmap_set_clip",
+          "02"
+        ],
+        [
+          "_udeks_vic_graphics_is_active",
+          "02"
+        ],
+        [
+          "_udeks_vic_pointer_busy_begin",
+          "02"
+        ],
+        [
+          "_udeks_vic_pointer_busy_end",
+          "02"
+        ],
+        [
+          "addeqysp",
+          "02"
+        ],
+        [
+          "addysp",
+          "02"
+        ],
+        [
+          "decsp1",
+          "02"
+        ],
+        [
+          "decsp2",
+          "02"
+        ],
+        [
+          "decsp3",
+          "02"
+        ],
+        [
+          "decsp4",
+          "02"
+        ],
+        [
+          "decsp5",
+          "02"
+        ],
+        [
+          "decsp6",
+          "02"
+        ],
+        [
+          "decsp7",
+          "02"
+        ],
+        [
+          "decsp8",
+          "02"
+        ],
+        [
+          "incsp1",
+          "02"
+        ],
+        [
+          "incsp2",
+          "02"
+        ],
+        [
+          "incsp3",
+          "02"
+        ],
+        [
+          "incsp4",
+          "02"
+        ],
+        [
+          "incsp5",
+          "02"
+        ],
+        [
+          "incsp6",
+          "02"
+        ],
+        [
+          "incsp7",
+          "02"
+        ],
+        [
+          "incsp8",
+          "02"
+        ],
+        [
+          "jmpvec",
+          "02"
+        ],
+        [
+          "mulax5",
+          "02"
+        ],
+        [
+          "ptr1",
+          "01"
+        ],
+        [
+          "pusha",
+          "02"
+        ],
+        [
+          "pusha0",
+          "02"
+        ],
+        [
+          "pushax",
+          "02"
+        ],
+        [
+          "pushwysp",
+          "02"
+        ],
+        [
+          "regbank",
+          "01"
+        ],
+        [
+          "regsave",
+          "01"
+        ],
+        [
+          "regswap2",
+          "02"
+        ],
+        [
+          "sp",
+          "01"
+        ],
+        [
+          "stax0sp",
+          "02"
+        ],
+        [
+          "staxysp",
+          "02"
+        ],
+        [
+          "tmp1",
+          "01"
+        ],
+        [
+          "tosaddax",
+          "02"
+        ],
+        [
+          "tosicmp",
+          "02"
+        ],
+        [
+          "tosicmp0",
+          "02"
+        ],
+        [
+          "tosmula0",
+          "02"
+        ],
+        [
+          "tossuba0",
+          "02"
+        ],
+        [
+          "tossubax",
+          "02"
+        ]
+      ]
+    }
+  },
+  "links": {
+    "normal": {
+      "baseline": {
+        "ZEROPAGE": {
+          "start": 4,
+          "end": 31,
+          "size": 28
+        },
+        "PROBECODE": {
+          "start": 2816,
+          "end": 3024,
+          "size": 209
+        },
+        "LOWBSS": {
+          "start": 3072,
+          "end": 4604,
+          "size": 1533
+        },
+        "STARTUP": {
+          "start": 7168,
+          "end": 7374,
+          "size": 207
+        },
+        "KERNELENTRY": {
+          "start": 8192,
+          "end": 8197,
+          "size": 6
+        },
+        "CODE": {
+          "start": 8198,
+          "end": 37680,
+          "size": 29483
+        },
+        "RODATA": {
+          "start": 37681,
+          "end": 40740,
+          "size": 3060
+        },
+        "DATA": {
+          "start": 40741,
+          "end": 40743,
+          "size": 3
+        },
+        "BSS": {
+          "start": 40744,
+          "end": 41439,
+          "size": 696
+        },
+        "VICSHADOW": {
+          "start": 41440,
+          "end": 49439,
+          "size": 8000
+        },
+        "SYSCALLS": {
+          "start": 52992,
+          "end": 53246,
+          "size": 255
+        },
+        "HIGHBSS": {
+          "start": 57784,
+          "end": 58081,
+          "size": 298
+        },
+        "MODULECODE": {
+          "start": 58112,
+          "end": 58874,
+          "size": 763
+        },
+        "MODULERODATA": {
+          "start": 58875,
+          "end": 58947,
+          "size": 73
+        },
+        "BOOTFSCODE": {
+          "start": 62447,
+          "end": 63112,
+          "size": 666
+        },
+        "TASKREQUEST": {
+          "start": 63488,
+          "end": 63748,
+          "size": 261
+        },
+        "TASKGATE": {
+          "start": 65285,
+          "end": 65476,
+          "size": 192
+        }
+      },
+      "compact": {
+        "ZEROPAGE": {
+          "start": 4,
+          "end": 31,
+          "size": 28
+        },
+        "PROBECODE": {
+          "start": 2816,
+          "end": 3024,
+          "size": 209
+        },
+        "LOWBSS": {
+          "start": 3072,
+          "end": 4604,
+          "size": 1533
+        },
+        "STARTUP": {
+          "start": 7168,
+          "end": 7374,
+          "size": 207
+        },
+        "KERNELENTRY": {
+          "start": 8192,
+          "end": 8197,
+          "size": 6
+        },
+        "CODE": {
+          "start": 8198,
+          "end": 37563,
+          "size": 29366
+        },
+        "RODATA": {
+          "start": 37564,
+          "end": 40623,
+          "size": 3060
+        },
+        "DATA": {
+          "start": 40624,
+          "end": 40626,
+          "size": 3
+        },
+        "BSS": {
+          "start": 40627,
+          "end": 41322,
+          "size": 696
+        },
+        "VICSHADOW": {
+          "start": 41323,
+          "end": 49322,
+          "size": 8000
+        },
+        "SYSCALLS": {
+          "start": 52992,
+          "end": 53246,
+          "size": 255
+        },
+        "HIGHBSS": {
+          "start": 57784,
+          "end": 58069,
+          "size": 286
+        },
+        "MODULECODE": {
+          "start": 58112,
+          "end": 58874,
+          "size": 763
+        },
+        "MODULERODATA": {
+          "start": 58875,
+          "end": 58947,
+          "size": 73
+        },
+        "BOOTFSCODE": {
+          "start": 62447,
+          "end": 63112,
+          "size": 666
+        },
+        "TASKREQUEST": {
+          "start": 63488,
+          "end": 63748,
+          "size": 261
+        },
+        "TASKGATE": {
+          "start": 65285,
+          "end": 65476,
+          "size": 192
+        }
+      },
+      "code_saved": 117,
+      "highbss_saved": 12,
+      "library_modules": {
+        "/usr/share/cc65/lib/none.lib(add.o)": {
+          "CODE": 28
+        },
+        "/usr/share/cc65/lib/none.lib(addeqsp.o)": {
+          "CODE": 17
+        },
+        "/usr/share/cc65/lib/none.lib(addysp.o)": {
+          "CODE": 14
+        },
+        "/usr/share/cc65/lib/none.lib(and.o)": {
+          "CODE": 16
+        },
+        "/usr/share/cc65/lib/none.lib(aslax2.o)": {
+          "CODE": 11
+        },
+        "/usr/share/cc65/lib/none.lib(aslax3.o)": {
+          "CODE": 14
+        },
+        "/usr/share/cc65/lib/none.lib(aslax4.o)": {
+          "CODE": 17
+        },
+        "/usr/share/cc65/lib/none.lib(call.o)": {
+          "CODE": 7
+        },
+        "/usr/share/cc65/lib/none.lib(decsp1.o)": {
+          "CODE": 9
+        },
+        "/usr/share/cc65/lib/none.lib(decsp2.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(decsp3.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(decsp4.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(decsp5.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(decsp6.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(decsp7.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(decsp8.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(eq.o)": {
+          "CODE": 10
+        },
+        "/usr/share/cc65/lib/none.lib(icmp.o)": {
+          "CODE": 46
+        },
+        "/usr/share/cc65/lib/none.lib(incsp1.o)": {
+          "CODE": 7
+        },
+        "/usr/share/cc65/lib/none.lib(incsp2.o)": {
+          "CODE": 22
+        },
+        "/usr/share/cc65/lib/none.lib(incsp3.o)": {
+          "CODE": 5
+        },
+        "/usr/share/cc65/lib/none.lib(incsp4.o)": {
+          "CODE": 5
+        },
+        "/usr/share/cc65/lib/none.lib(incsp5.o)": {
+          "CODE": 5
+        },
+        "/usr/share/cc65/lib/none.lib(incsp6.o)": {
+          "CODE": 5
+        },
+        "/usr/share/cc65/lib/none.lib(incsp7.o)": {
+          "CODE": 5
+        },
+        "/usr/share/cc65/lib/none.lib(incsp8.o)": {
+          "CODE": 5
+        },
+        "/usr/share/cc65/lib/none.lib(jmpvec.o)": {
+          "DATA": 3
+        },
+        "/usr/share/cc65/lib/none.lib(ldai.o)": {
+          "CODE": 12
+        },
+        "/usr/share/cc65/lib/none.lib(ldeaxi.o)": {
+          "CODE": 23
+        },
+        "/usr/share/cc65/lib/none.lib(makebool.o)": {
+          "CODE": 44
+        },
+        "/usr/share/cc65/lib/none.lib(mul.o)": {
+          "CODE": 69
+        },
+        "/usr/share/cc65/lib/none.lib(mul8.o)": {
+          "CODE": 58
+        },
+        "/usr/share/cc65/lib/none.lib(mulax10.o)": {
+          "CODE": 25
+        },
+        "/usr/share/cc65/lib/none.lib(mulax5.o)": {
+          "CODE": 20
+        },
+        "/usr/share/cc65/lib/none.lib(mulax6.o)": {
+          "CODE": 22
+        },
+        "/usr/share/cc65/lib/none.lib(negabs.o)": {
+          "CODE": 18
+        },
+        "/usr/share/cc65/lib/none.lib(or.o)": {
+          "CODE": 18
+        },
+        "/usr/share/cc65/lib/none.lib(popptr1.o)": {
+          "CODE": 14
+        },
+        "/usr/share/cc65/lib/none.lib(pusha.o)": {
+          "CODE": 22
+        },
+        "/usr/share/cc65/lib/none.lib(pushax.o)": {
+          "CODE": 26
+        },
+        "/usr/share/cc65/lib/none.lib(pushwsp.o)": {
+          "CODE": 28
+        },
+        "/usr/share/cc65/lib/none.lib(regswap2.o)": {
+          "CODE": 22
+        },
+        "/usr/share/cc65/lib/none.lib(shl.o)": {
+          "CODE": 51
+        },
+        "/usr/share/cc65/lib/none.lib(shrax1.o)": {
+          "CODE": 8
+        },
+        "/usr/share/cc65/lib/none.lib(shrax2.o)": {
+          "CODE": 11
+        },
+        "/usr/share/cc65/lib/none.lib(shrax3.o)": {
+          "CODE": 14
+        },
+        "/usr/share/cc65/lib/none.lib(shrax4.o)": {
+          "CODE": 17
+        },
+        "/usr/share/cc65/lib/none.lib(staspidx.o)": {
+          "CODE": 22
+        },
+        "/usr/share/cc65/lib/none.lib(staxsp.o)": {
+          "CODE": 11
+        },
+        "/usr/share/cc65/lib/none.lib(staxspi.o)": {
+          "CODE": 27
+        },
+        "/usr/share/cc65/lib/none.lib(steaxspi.o)": {
+          "CODE": 34
+        },
+        "/usr/share/cc65/lib/none.lib(sub.o)": {
+          "CODE": 21
+        },
+        "/usr/share/cc65/lib/none.lib(subeqsp.o)": {
+          "CODE": 21
+        },
+        "/usr/share/cc65/lib/none.lib(subysp.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(udiv.o)": {
+          "CODE": 79
+        },
+        "/usr/share/cc65/lib/none.lib(umod.o)": {
+          "CODE": 17
+        },
+        "/usr/share/cc65/lib/none.lib(zeropage.o)": {
+          "ZEROPAGE": 26
+        }
+      },
+      "command": [
+        "cl65",
+        "-t",
+        "none",
+        "--cpu",
+        "6502",
+        "-C",
+        "cfg/8502-bootstrap.cfg",
+        "-m",
+        "build/8502/udeks-8502.map",
+        "-u",
+        "_udeks_probe_georam",
+        "-u",
+        "_udeks_probe_reu",
+        "-u",
+        "_udeks_probe_vdc_revision",
+        "-u",
+        "_udeks_probe_video_standard",
+        "-u",
+        "_udeks_vdc_read_selected",
+        "-u",
+        "_udeks_vdc_select",
+        "-u",
+        "_udeks_vdc_status",
+        "-u",
+        "_udeks_vdc_write_selected",
+        "-u",
+        "addysp",
+        "-u",
+        "decsp2",
+        "-u",
+        "decsp6",
+        "-u",
+        "incsp1",
+        "-u",
+        "incsp2",
+        "-u",
+        "incsp3",
+        "-u",
+        "incsp4",
+        "-u",
+        "incsp6",
+        "-u",
+        "pusha",
+        "-u",
+        "pushax",
+        "-u",
+        "pushw0sp",
+        "-u",
+        "staspidx",
+        "-u",
+        "subysp",
+        "-u",
+        "_udeks_root_console_reset",
+        "-u",
+        "_udeks_root_console_set_cursor",
+        "-u",
+        "_udeks_root_console_write_at",
+        "-u",
+        "decsp2",
+        "-u",
+        "decsp3",
+        "-u",
+        "decsp6",
+        "-u",
+        "incsp3",
+        "-u",
+        "incsp5",
+        "-u",
+        "incsp6",
+        "-u",
+        "pusha",
+        "-u",
+        "pushax",
+        "-u",
+        "stax0sp",
+        "-u",
+        "_udeks_bootfs_finish_error",
+        "-u",
+        "_udeks_bootfs_finish_ok",
+        "-u",
+        "_udeks_line_editor_get_line",
+        "-o",
+        "build/8502/udeks-8502.bin",
+        "build/8502/kernel_entry.o",
+        "build/8502/crt0.o",
+        "build/8502/vdc.o",
+        "build/8502/keyboard_scan.o",
+        "build/8502/control_ports.o",
+        "build/8502/line_editor_read.o",
+        "build/8502/z80_handoff.o",
+        "build/8502/vic_graphics_transport.o",
+        "build/8502/panic.o",
+        "build/8502/probe.o",
+        "build/8502/clock.o",
+        "build/8502/syscall_gate.o",
+        "build/8502/task_bank_gateway.o",
+        "build/8502/kernel.o",
+        "build/8502/service_start.o",
+        "build/8502/boot_console_entry.o",
+        "build/8502/service_registry.o",
+        "build/8502/service_table.o",
+        "build/8502/capability_descriptor.o",
+        "build/8502/time_descriptor.o",
+        "build/8502/clock_descriptor.o",
+        "build/8502/console_descriptor.o",
+        "build/8502/pointer_descriptor.o",
+        "build/8502/keyboard_descriptor.o",
+        "build/8502/root_terminal_descriptor.o",
+        "build/8502/init_descriptor.o",
+        "build/8502/z80_worker_descriptor.o",
+        "build/8502/vic_graphics_descriptor.o",
+        "build/8502/window_descriptor.o",
+        "build/8502/managed_apps_descriptor.o",
+        "build/8502/bootfs_request.o",
+        "build/8502/time.o",
+        "build/8502/vdc_console.o",
+        "build/8502/app_panel.o",
+        "build/8502/root_console.o",
+        "build/8502/window_manager.o",
+        "build/8502/cache_transport.o",
+        "build/8502/keyboard.o",
+        "build/8502/pointer.o",
+        "build/8502/nmi.o",
+        "build/8502/line_editor.o",
+        "build/8502/root_terminal.o",
+        "build/8502/terminal_stream.o",
+        "build/8502/shell_parser.o",
+        "build/8502/shell.o",
+        "build/8502/z80_worker.o",
+        "build/8502/vic_graphics.o",
+        "build/8502/vic_span.o",
+        "build/8502/vic_pixel.o",
+        "build/8502/vic_clear.o",
+        "build/8502/managed_apps.o",
+        "build/8502/vdc_text_assets.o"
+      ],
+      "input_sha256": {
+        "build/8502/kernel_entry.o": "f8895e3ed89e47c0433d0deebcd4983602dc759e39f2f65ffae91f49e7d2213b",
+        "build/8502/crt0.o": "935095c0bee3c35c1ed7f7c8d963e6e7db2d533c55a64f6651ea83b114e8e052",
+        "build/8502/vdc.o": "8b2ed9d544718a688d1aa3adb265a94a574a87824a2c45fea3a71448af9e9288",
+        "build/8502/keyboard_scan.o": "368c80f6e7dc10e9101e4b156569bbaa9b053a9757fd0ab429d5f230a5e74d31",
+        "build/8502/control_ports.o": "3861e031cc668b53d6d47f30a21e76b03b21d4470f19cc7828525c5b7f9b65b6",
+        "build/8502/line_editor_read.o": "cfb63fd18747feca4f392d1726b4fd28b92b03b88008d5fbcb092d5f11daf699",
+        "build/8502/z80_handoff.o": "d34f052ea7144fddaaff90c3ff8b587d0f2fac64a4e7c89c6eb81e95bd6d3cb4",
+        "build/8502/vic_graphics_transport.o": "13ab58984d4a5e140af7bbc7f9c181c251588ec38a05314ef7dbb0711cc3f401",
+        "build/8502/panic.o": "08c25d5b735ee9bb08a76168902252eab6801b64ea43abf43dc1818d7e4a56c5",
+        "build/8502/probe.o": "17be146bcefd4f6d591f90aded11a620f1594e1f9934e84640644f494a481fc1",
+        "build/8502/clock.o": "ebeb9e9abbe7415611fd30f3c0122a9eaf88c3fdebd2a47364f1b7ba8914f088",
+        "build/8502/syscall_gate.o": "762c22c6aaa997bb39cf0e98b254d290d03163498b0999d125af68454ce351cf",
+        "build/8502/task_bank_gateway.o": "c7047a65ae0a71ebd678193fbacada0f55be1d72db5ce86fbc447fb3bded6cc6",
+        "build/8502/kernel.o": "adf3d67a120fddc7fcdd963d54e5fc7bc0cdfe91ccbd0c525fa2459bf378c574",
+        "build/8502/service_start.o": "512c2a655dd6324617d3db4b291c96ce10f8eaf14088329c5371ff021492f6b3",
+        "build/8502/boot_console_entry.o": "62d6e09346e6e33bd1de05e30cb9bfe324bd1e55f3b88f5dad6b9299588cbebf",
+        "build/8502/service_registry.o": "18ee1262efc54d0f0ee9363dfc32e0c4745d9c32cfd27115bc61706995ffe622",
+        "build/8502/service_table.o": "42ec35f7e1e222a228b730220fde14e4427eca7e129dd858e526dc0f53df9cd7",
+        "build/8502/capability_descriptor.o": "56d8d6d83feca1d41401b0c0de39242c6b3cf97cf3c8413e794c06f83a34ca3f",
+        "build/8502/time_descriptor.o": "cfa67b5bd6a33341636958d66cace3971716f50804e29c18162dd6200b0c159a",
+        "build/8502/clock_descriptor.o": "afb8c9cf03ba1f6f256522baf7ebded7e17d946f6f0d7c740ec68697f047f298",
+        "build/8502/console_descriptor.o": "48d897a69eadc7ab8d6bf75474e0ec198345cf0b75c6f5f183fda5cda2967868",
+        "build/8502/pointer_descriptor.o": "81ac481b850886def69cff9b06d98bc1edd5ef974dbf3e668c6d513b39df3a12",
+        "build/8502/keyboard_descriptor.o": "36c6e419ccb8aaf096d51d829143baaec38ee5146c6514cc31464468f6cc768c",
+        "build/8502/root_terminal_descriptor.o": "754c0208a6cdad187f0e8b035503e827d379e2eab630709c6aa8842fa03eaefd",
+        "build/8502/init_descriptor.o": "10381b6b6c1525a8e7df05d486be7be2fa0777cf9a7a53ea836b0193fd0d0b2b",
+        "build/8502/z80_worker_descriptor.o": "853b4fc935c4fdf64f7654754d3c01e5151a253e2688c937ea4c93716c985c66",
+        "build/8502/vic_graphics_descriptor.o": "a64d74d58dd6b725d29812ae55b24551a8c7f5b37dc3c43637f6ef2f35b235bb",
+        "build/8502/window_descriptor.o": "6971083957563fe24721f2def0abd9fd875481e06c756fda2f15deb52aa4d501",
+        "build/8502/managed_apps_descriptor.o": "bbc2c82252a96d71063d1f57859de3af03f97b3de41d35ecfd5195a5d984caa8",
+        "build/8502/bootfs_request.o": "fa3dcdc7e2f7658f7d4f7607c2fb6231288a601deafc335f97bdd151fe139d0e",
+        "build/8502/time.o": "9efffc99e28a709c720153f3f702e9f278a587a1d9c501089a96d33b588f375a",
+        "build/8502/vdc_console.o": "71ddbec6714198ba8fd5cfbbca8b7f610167b74a5b23aa687338b5b1191c32db",
+        "build/8502/app_panel.o": "d22bfe5790d9f48edf3c83d0e0716d0c90b16e3dea1bb99f8386adff7a3ae22c",
+        "build/8502/root_console.o": "da612c797f1d34d4c6dfb9f665c687f4722da22872e9eeb233a51aed281f7ace",
+        "build/8502/window_manager.o": "d4ee43dfa2ac1667a4694711d450e1bb50a7893c2df3d1819e041f231a34470f",
+        "build/8502/cache_transport.o": "6c8a80557bd91e1c55ed4fbc65c5103683a1bc45e184ea92735cbf1b392601d0",
+        "build/8502/keyboard.o": "96ce8bb9eaac72faabc0ebf63b265df7c79078bb00d60cef69f6a775e772d1bb",
+        "build/8502/pointer.o": "3dce37c4b9aa507dacae7ce69ed5036a7a4165234f1470aeb2ddc46e0b39511c",
+        "build/8502/nmi.o": "1795cf54ec77ebebc1c7eb5a1648562365703a7f16f569e0065fabb288e4a6e8",
+        "build/8502/line_editor.o": "6edc34aa1863ef26551513d9e9d182f0e1da12f936fc856271c2fa710d8af467",
+        "build/8502/root_terminal.o": "e6c087b6346b93f04adae7a0679fe138f39df1c59788ffe2088907a954b56b35",
+        "build/8502/terminal_stream.o": "7604f8d074327348e7c511c7f5f72e4257351f0d341a59830cd367fc373764b3",
+        "build/8502/shell_parser.o": "6581f67229ca1ca81e1a360510fb414a3e853464712f6b76393d9f58982125db",
+        "build/8502/shell.o": "ea4d23a2d4222c8accaaacfaa40d2e502f6ecef0694aa63eb2540c23127d9e02",
+        "build/8502/z80_worker.o": "e44bb2f7cbdd1670f07587b328b3f9025958898aa7307c5da07698b033a30615",
+        "build/8502/vic_graphics.o": "e39dc9a14989ba27446184c39a0ffd36b32f69fda372676bed069b6c3878569a",
+        "build/8502/vic_span.o": "9d381fa5abc6d4e6e9d82d5b591cb944291bcf61e48e3cb198ae2a0b7826f8de",
+        "build/8502/vic_pixel.o": "9b1f4003f1197b2aff1699a889b1e933b23b855f6e97f44d41846feac8a48dfe",
+        "build/8502/vic_clear.o": "350c8bebb89d74236fe2a74294d09822f13537071bf9a0017292854f94fbf693",
+        "build/8502/managed_apps.o": "0a461e6563bd05dcf57a98b1ec8866c91c93f147e31383bc597103b4ada876a3",
+        "build/8502/vdc_text_assets.o": "7a61e0f6e2614bb2f8cf1b6f4d167c05cb98dc3b9e6a48ef6ab5374cfaa6c291",
+        "build/8502/udeks-8502.map": "135cae9bee5c89513a598ec327d7efd79fb4d0fafe3cd68d7b1ea3a50df276c6",
+        "build/8502/udeks-8502.bin": "dfef7e6dfea3759f57d2fc35eaa62eab6d1f58e7f950f1dea1020c7ca8152a80"
+      }
+    },
+    "panic": {
+      "baseline": {
+        "ZEROPAGE": {
+          "start": 4,
+          "end": 31,
+          "size": 28
+        },
+        "PROBECODE": {
+          "start": 2816,
+          "end": 3024,
+          "size": 209
+        },
+        "LOWBSS": {
+          "start": 3072,
+          "end": 4604,
+          "size": 1533
+        },
+        "STARTUP": {
+          "start": 7168,
+          "end": 7374,
+          "size": 207
+        },
+        "KERNELENTRY": {
+          "start": 8192,
+          "end": 8197,
+          "size": 6
+        },
+        "CODE": {
+          "start": 8198,
+          "end": 37680,
+          "size": 29483
+        },
+        "RODATA": {
+          "start": 37681,
+          "end": 40740,
+          "size": 3060
+        },
+        "DATA": {
+          "start": 40741,
+          "end": 40743,
+          "size": 3
+        },
+        "BSS": {
+          "start": 40744,
+          "end": 41439,
+          "size": 696
+        },
+        "VICSHADOW": {
+          "start": 41440,
+          "end": 49439,
+          "size": 8000
+        },
+        "SYSCALLS": {
+          "start": 52992,
+          "end": 53246,
+          "size": 255
+        },
+        "HIGHBSS": {
+          "start": 57784,
+          "end": 58081,
+          "size": 298
+        },
+        "MODULECODE": {
+          "start": 58112,
+          "end": 58874,
+          "size": 763
+        },
+        "MODULERODATA": {
+          "start": 58875,
+          "end": 58947,
+          "size": 73
+        },
+        "BOOTFSCODE": {
+          "start": 62447,
+          "end": 63112,
+          "size": 666
+        },
+        "TASKREQUEST": {
+          "start": 63488,
+          "end": 63748,
+          "size": 261
+        },
+        "TASKGATE": {
+          "start": 65285,
+          "end": 65476,
+          "size": 192
+        }
+      },
+      "compact": {
+        "ZEROPAGE": {
+          "start": 4,
+          "end": 31,
+          "size": 28
+        },
+        "PROBECODE": {
+          "start": 2816,
+          "end": 3024,
+          "size": 209
+        },
+        "LOWBSS": {
+          "start": 3072,
+          "end": 4604,
+          "size": 1533
+        },
+        "STARTUP": {
+          "start": 7168,
+          "end": 7374,
+          "size": 207
+        },
+        "KERNELENTRY": {
+          "start": 8192,
+          "end": 8197,
+          "size": 6
+        },
+        "CODE": {
+          "start": 8198,
+          "end": 37563,
+          "size": 29366
+        },
+        "RODATA": {
+          "start": 37564,
+          "end": 40623,
+          "size": 3060
+        },
+        "DATA": {
+          "start": 40624,
+          "end": 40626,
+          "size": 3
+        },
+        "BSS": {
+          "start": 40627,
+          "end": 41322,
+          "size": 696
+        },
+        "VICSHADOW": {
+          "start": 41323,
+          "end": 49322,
+          "size": 8000
+        },
+        "SYSCALLS": {
+          "start": 52992,
+          "end": 53246,
+          "size": 255
+        },
+        "HIGHBSS": {
+          "start": 57784,
+          "end": 58069,
+          "size": 286
+        },
+        "MODULECODE": {
+          "start": 58112,
+          "end": 58874,
+          "size": 763
+        },
+        "MODULERODATA": {
+          "start": 58875,
+          "end": 58947,
+          "size": 73
+        },
+        "BOOTFSCODE": {
+          "start": 62447,
+          "end": 63112,
+          "size": 666
+        },
+        "TASKREQUEST": {
+          "start": 63488,
+          "end": 63748,
+          "size": 261
+        },
+        "TASKGATE": {
+          "start": 65285,
+          "end": 65476,
+          "size": 192
+        }
+      },
+      "code_saved": 117,
+      "highbss_saved": 12,
+      "library_modules": {
+        "/usr/share/cc65/lib/none.lib(add.o)": {
+          "CODE": 28
+        },
+        "/usr/share/cc65/lib/none.lib(addeqsp.o)": {
+          "CODE": 17
+        },
+        "/usr/share/cc65/lib/none.lib(addysp.o)": {
+          "CODE": 14
+        },
+        "/usr/share/cc65/lib/none.lib(and.o)": {
+          "CODE": 16
+        },
+        "/usr/share/cc65/lib/none.lib(aslax2.o)": {
+          "CODE": 11
+        },
+        "/usr/share/cc65/lib/none.lib(aslax3.o)": {
+          "CODE": 14
+        },
+        "/usr/share/cc65/lib/none.lib(aslax4.o)": {
+          "CODE": 17
+        },
+        "/usr/share/cc65/lib/none.lib(call.o)": {
+          "CODE": 7
+        },
+        "/usr/share/cc65/lib/none.lib(decsp1.o)": {
+          "CODE": 9
+        },
+        "/usr/share/cc65/lib/none.lib(decsp2.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(decsp3.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(decsp4.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(decsp5.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(decsp6.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(decsp7.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(decsp8.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(eq.o)": {
+          "CODE": 10
+        },
+        "/usr/share/cc65/lib/none.lib(icmp.o)": {
+          "CODE": 46
+        },
+        "/usr/share/cc65/lib/none.lib(incsp1.o)": {
+          "CODE": 7
+        },
+        "/usr/share/cc65/lib/none.lib(incsp2.o)": {
+          "CODE": 22
+        },
+        "/usr/share/cc65/lib/none.lib(incsp3.o)": {
+          "CODE": 5
+        },
+        "/usr/share/cc65/lib/none.lib(incsp4.o)": {
+          "CODE": 5
+        },
+        "/usr/share/cc65/lib/none.lib(incsp5.o)": {
+          "CODE": 5
+        },
+        "/usr/share/cc65/lib/none.lib(incsp6.o)": {
+          "CODE": 5
+        },
+        "/usr/share/cc65/lib/none.lib(incsp7.o)": {
+          "CODE": 5
+        },
+        "/usr/share/cc65/lib/none.lib(incsp8.o)": {
+          "CODE": 5
+        },
+        "/usr/share/cc65/lib/none.lib(jmpvec.o)": {
+          "DATA": 3
+        },
+        "/usr/share/cc65/lib/none.lib(ldai.o)": {
+          "CODE": 12
+        },
+        "/usr/share/cc65/lib/none.lib(ldeaxi.o)": {
+          "CODE": 23
+        },
+        "/usr/share/cc65/lib/none.lib(makebool.o)": {
+          "CODE": 44
+        },
+        "/usr/share/cc65/lib/none.lib(mul.o)": {
+          "CODE": 69
+        },
+        "/usr/share/cc65/lib/none.lib(mul8.o)": {
+          "CODE": 58
+        },
+        "/usr/share/cc65/lib/none.lib(mulax10.o)": {
+          "CODE": 25
+        },
+        "/usr/share/cc65/lib/none.lib(mulax5.o)": {
+          "CODE": 20
+        },
+        "/usr/share/cc65/lib/none.lib(mulax6.o)": {
+          "CODE": 22
+        },
+        "/usr/share/cc65/lib/none.lib(negabs.o)": {
+          "CODE": 18
+        },
+        "/usr/share/cc65/lib/none.lib(or.o)": {
+          "CODE": 18
+        },
+        "/usr/share/cc65/lib/none.lib(popptr1.o)": {
+          "CODE": 14
+        },
+        "/usr/share/cc65/lib/none.lib(pusha.o)": {
+          "CODE": 22
+        },
+        "/usr/share/cc65/lib/none.lib(pushax.o)": {
+          "CODE": 26
+        },
+        "/usr/share/cc65/lib/none.lib(pushwsp.o)": {
+          "CODE": 28
+        },
+        "/usr/share/cc65/lib/none.lib(regswap2.o)": {
+          "CODE": 22
+        },
+        "/usr/share/cc65/lib/none.lib(shl.o)": {
+          "CODE": 51
+        },
+        "/usr/share/cc65/lib/none.lib(shrax1.o)": {
+          "CODE": 8
+        },
+        "/usr/share/cc65/lib/none.lib(shrax2.o)": {
+          "CODE": 11
+        },
+        "/usr/share/cc65/lib/none.lib(shrax3.o)": {
+          "CODE": 14
+        },
+        "/usr/share/cc65/lib/none.lib(shrax4.o)": {
+          "CODE": 17
+        },
+        "/usr/share/cc65/lib/none.lib(staspidx.o)": {
+          "CODE": 22
+        },
+        "/usr/share/cc65/lib/none.lib(staxsp.o)": {
+          "CODE": 11
+        },
+        "/usr/share/cc65/lib/none.lib(staxspi.o)": {
+          "CODE": 27
+        },
+        "/usr/share/cc65/lib/none.lib(steaxspi.o)": {
+          "CODE": 34
+        },
+        "/usr/share/cc65/lib/none.lib(sub.o)": {
+          "CODE": 21
+        },
+        "/usr/share/cc65/lib/none.lib(subeqsp.o)": {
+          "CODE": 21
+        },
+        "/usr/share/cc65/lib/none.lib(subysp.o)": {
+          "CODE": 13
+        },
+        "/usr/share/cc65/lib/none.lib(udiv.o)": {
+          "CODE": 79
+        },
+        "/usr/share/cc65/lib/none.lib(umod.o)": {
+          "CODE": 17
+        },
+        "/usr/share/cc65/lib/none.lib(zeropage.o)": {
+          "ZEROPAGE": 26
+        }
+      },
+      "command": [
+        "cl65",
+        "-t",
+        "none",
+        "--cpu",
+        "6502",
+        "-C",
+        "cfg/8502-bootstrap.cfg",
+        "-u",
+        "_udeks_probe_georam",
+        "-u",
+        "_udeks_probe_reu",
+        "-u",
+        "_udeks_probe_vdc_revision",
+        "-u",
+        "_udeks_probe_video_standard",
+        "-u",
+        "_udeks_vdc_read_selected",
+        "-u",
+        "_udeks_vdc_select",
+        "-u",
+        "_udeks_vdc_status",
+        "-u",
+        "_udeks_vdc_write_selected",
+        "-u",
+        "addysp",
+        "-u",
+        "decsp2",
+        "-u",
+        "decsp6",
+        "-u",
+        "incsp1",
+        "-u",
+        "incsp2",
+        "-u",
+        "incsp3",
+        "-u",
+        "incsp4",
+        "-u",
+        "incsp6",
+        "-u",
+        "pusha",
+        "-u",
+        "pushax",
+        "-u",
+        "pushw0sp",
+        "-u",
+        "staspidx",
+        "-u",
+        "subysp",
+        "-u",
+        "_udeks_root_console_reset",
+        "-u",
+        "_udeks_root_console_set_cursor",
+        "-u",
+        "_udeks_root_console_write_at",
+        "-u",
+        "decsp2",
+        "-u",
+        "decsp3",
+        "-u",
+        "decsp6",
+        "-u",
+        "incsp3",
+        "-u",
+        "incsp5",
+        "-u",
+        "incsp6",
+        "-u",
+        "pusha",
+        "-u",
+        "pushax",
+        "-u",
+        "stax0sp",
+        "-u",
+        "_udeks_bootfs_finish_error",
+        "-u",
+        "_udeks_bootfs_finish_ok",
+        "-u",
+        "_udeks_line_editor_get_line",
+        "-m",
+        "build/8502/udeks-8502-panic-probe.map",
+        "-o",
+        "build/8502/udeks-8502-panic-probe.bin",
+        "build/8502/kernel_entry.o",
+        "build/8502/crt0.o",
+        "build/8502/vdc.o",
+        "build/8502/keyboard_scan.o",
+        "build/8502/control_ports.o",
+        "build/8502/line_editor_read.o",
+        "build/8502/z80_handoff.o",
+        "build/8502/vic_graphics_transport.o",
+        "build/8502/panic.o",
+        "build/8502/probe.o",
+        "build/8502/clock.o",
+        "build/8502/syscall_gate.o",
+        "build/8502/task_bank_gateway.o",
+        "build/8502/kernel.o",
+        "build/8502/service_start.o",
+        "build/8502/boot_console_entry.o",
+        "build/8502/service_registry.o",
+        "build/8502/service_table.o",
+        "build/8502/capability_descriptor.o",
+        "build/8502/time_descriptor.o",
+        "build/8502/clock_descriptor.o",
+        "build/8502/console_descriptor_fault.o",
+        "build/8502/pointer_descriptor.o",
+        "build/8502/keyboard_descriptor.o",
+        "build/8502/root_terminal_descriptor.o",
+        "build/8502/init_descriptor.o",
+        "build/8502/z80_worker_descriptor.o",
+        "build/8502/vic_graphics_descriptor.o",
+        "build/8502/window_descriptor.o",
+        "build/8502/managed_apps_descriptor.o",
+        "build/8502/bootfs_request.o",
+        "build/8502/time.o",
+        "build/8502/vdc_console.o",
+        "build/8502/app_panel.o",
+        "build/8502/root_console.o",
+        "build/8502/window_manager.o",
+        "build/8502/cache_transport.o",
+        "build/8502/keyboard.o",
+        "build/8502/pointer.o",
+        "build/8502/nmi.o",
+        "build/8502/line_editor.o",
+        "build/8502/root_terminal.o",
+        "build/8502/terminal_stream.o",
+        "build/8502/shell_parser.o",
+        "build/8502/shell.o",
+        "build/8502/z80_worker.o",
+        "build/8502/vic_graphics.o",
+        "build/8502/vic_span.o",
+        "build/8502/vic_pixel.o",
+        "build/8502/vic_clear.o",
+        "build/8502/managed_apps.o",
+        "build/8502/vdc_text_assets.o"
+      ],
+      "input_sha256": {
+        "build/8502/kernel_entry.o": "f8895e3ed89e47c0433d0deebcd4983602dc759e39f2f65ffae91f49e7d2213b",
+        "build/8502/crt0.o": "935095c0bee3c35c1ed7f7c8d963e6e7db2d533c55a64f6651ea83b114e8e052",
+        "build/8502/vdc.o": "8b2ed9d544718a688d1aa3adb265a94a574a87824a2c45fea3a71448af9e9288",
+        "build/8502/keyboard_scan.o": "368c80f6e7dc10e9101e4b156569bbaa9b053a9757fd0ab429d5f230a5e74d31",
+        "build/8502/control_ports.o": "3861e031cc668b53d6d47f30a21e76b03b21d4470f19cc7828525c5b7f9b65b6",
+        "build/8502/line_editor_read.o": "cfb63fd18747feca4f392d1726b4fd28b92b03b88008d5fbcb092d5f11daf699",
+        "build/8502/z80_handoff.o": "d34f052ea7144fddaaff90c3ff8b587d0f2fac64a4e7c89c6eb81e95bd6d3cb4",
+        "build/8502/vic_graphics_transport.o": "13ab58984d4a5e140af7bbc7f9c181c251588ec38a05314ef7dbb0711cc3f401",
+        "build/8502/panic.o": "08c25d5b735ee9bb08a76168902252eab6801b64ea43abf43dc1818d7e4a56c5",
+        "build/8502/probe.o": "17be146bcefd4f6d591f90aded11a620f1594e1f9934e84640644f494a481fc1",
+        "build/8502/clock.o": "ebeb9e9abbe7415611fd30f3c0122a9eaf88c3fdebd2a47364f1b7ba8914f088",
+        "build/8502/syscall_gate.o": "762c22c6aaa997bb39cf0e98b254d290d03163498b0999d125af68454ce351cf",
+        "build/8502/task_bank_gateway.o": "c7047a65ae0a71ebd678193fbacada0f55be1d72db5ce86fbc447fb3bded6cc6",
+        "build/8502/kernel.o": "adf3d67a120fddc7fcdd963d54e5fc7bc0cdfe91ccbd0c525fa2459bf378c574",
+        "build/8502/service_start.o": "512c2a655dd6324617d3db4b291c96ce10f8eaf14088329c5371ff021492f6b3",
+        "build/8502/boot_console_entry.o": "62d6e09346e6e33bd1de05e30cb9bfe324bd1e55f3b88f5dad6b9299588cbebf",
+        "build/8502/service_registry.o": "18ee1262efc54d0f0ee9363dfc32e0c4745d9c32cfd27115bc61706995ffe622",
+        "build/8502/service_table.o": "42ec35f7e1e222a228b730220fde14e4427eca7e129dd858e526dc0f53df9cd7",
+        "build/8502/capability_descriptor.o": "56d8d6d83feca1d41401b0c0de39242c6b3cf97cf3c8413e794c06f83a34ca3f",
+        "build/8502/time_descriptor.o": "cfa67b5bd6a33341636958d66cace3971716f50804e29c18162dd6200b0c159a",
+        "build/8502/clock_descriptor.o": "afb8c9cf03ba1f6f256522baf7ebded7e17d946f6f0d7c740ec68697f047f298",
+        "build/8502/console_descriptor_fault.o": "095af7c685068791806c5f4893472b0de318638012d9bad00743215cf7c0bd29",
+        "build/8502/pointer_descriptor.o": "81ac481b850886def69cff9b06d98bc1edd5ef974dbf3e668c6d513b39df3a12",
+        "build/8502/keyboard_descriptor.o": "36c6e419ccb8aaf096d51d829143baaec38ee5146c6514cc31464468f6cc768c",
+        "build/8502/root_terminal_descriptor.o": "754c0208a6cdad187f0e8b035503e827d379e2eab630709c6aa8842fa03eaefd",
+        "build/8502/init_descriptor.o": "10381b6b6c1525a8e7df05d486be7be2fa0777cf9a7a53ea836b0193fd0d0b2b",
+        "build/8502/z80_worker_descriptor.o": "853b4fc935c4fdf64f7654754d3c01e5151a253e2688c937ea4c93716c985c66",
+        "build/8502/vic_graphics_descriptor.o": "a64d74d58dd6b725d29812ae55b24551a8c7f5b37dc3c43637f6ef2f35b235bb",
+        "build/8502/window_descriptor.o": "6971083957563fe24721f2def0abd9fd875481e06c756fda2f15deb52aa4d501",
+        "build/8502/managed_apps_descriptor.o": "bbc2c82252a96d71063d1f57859de3af03f97b3de41d35ecfd5195a5d984caa8",
+        "build/8502/bootfs_request.o": "fa3dcdc7e2f7658f7d4f7607c2fb6231288a601deafc335f97bdd151fe139d0e",
+        "build/8502/time.o": "9efffc99e28a709c720153f3f702e9f278a587a1d9c501089a96d33b588f375a",
+        "build/8502/vdc_console.o": "71ddbec6714198ba8fd5cfbbca8b7f610167b74a5b23aa687338b5b1191c32db",
+        "build/8502/app_panel.o": "d22bfe5790d9f48edf3c83d0e0716d0c90b16e3dea1bb99f8386adff7a3ae22c",
+        "build/8502/root_console.o": "da612c797f1d34d4c6dfb9f665c687f4722da22872e9eeb233a51aed281f7ace",
+        "build/8502/window_manager.o": "d4ee43dfa2ac1667a4694711d450e1bb50a7893c2df3d1819e041f231a34470f",
+        "build/8502/cache_transport.o": "6c8a80557bd91e1c55ed4fbc65c5103683a1bc45e184ea92735cbf1b392601d0",
+        "build/8502/keyboard.o": "96ce8bb9eaac72faabc0ebf63b265df7c79078bb00d60cef69f6a775e772d1bb",
+        "build/8502/pointer.o": "3dce37c4b9aa507dacae7ce69ed5036a7a4165234f1470aeb2ddc46e0b39511c",
+        "build/8502/nmi.o": "1795cf54ec77ebebc1c7eb5a1648562365703a7f16f569e0065fabb288e4a6e8",
+        "build/8502/line_editor.o": "6edc34aa1863ef26551513d9e9d182f0e1da12f936fc856271c2fa710d8af467",
+        "build/8502/root_terminal.o": "e6c087b6346b93f04adae7a0679fe138f39df1c59788ffe2088907a954b56b35",
+        "build/8502/terminal_stream.o": "7604f8d074327348e7c511c7f5f72e4257351f0d341a59830cd367fc373764b3",
+        "build/8502/shell_parser.o": "6581f67229ca1ca81e1a360510fb414a3e853464712f6b76393d9f58982125db",
+        "build/8502/shell.o": "ea4d23a2d4222c8accaaacfaa40d2e502f6ecef0694aa63eb2540c23127d9e02",
+        "build/8502/z80_worker.o": "e44bb2f7cbdd1670f07587b328b3f9025958898aa7307c5da07698b033a30615",
+        "build/8502/vic_graphics.o": "e39dc9a14989ba27446184c39a0ffd36b32f69fda372676bed069b6c3878569a",
+        "build/8502/vic_span.o": "9d381fa5abc6d4e6e9d82d5b591cb944291bcf61e48e3cb198ae2a0b7826f8de",
+        "build/8502/vic_pixel.o": "9b1f4003f1197b2aff1699a889b1e933b23b855f6e97f44d41846feac8a48dfe",
+        "build/8502/vic_clear.o": "350c8bebb89d74236fe2a74294d09822f13537071bf9a0017292854f94fbf693",
+        "build/8502/managed_apps.o": "0a461e6563bd05dcf57a98b1ec8866c91c93f147e31383bc597103b4ada876a3",
+        "build/8502/vdc_text_assets.o": "7a61e0f6e2614bb2f8cf1b6f4d167c05cb98dc3b9e6a48ef6ab5374cfaa6c291",
+        "build/8502/udeks-8502-panic-probe.map": "50243b627b30f061ccbf875195d74ed288030811568d493908e355366853500c",
+        "build/8502/udeks-8502-panic-probe.bin": "a9793799350f8ec6610cf1d1daa9643bc0d0f329a91efc35b7b861ca8f518791"
+      }
+    }
+  },
+  "library_provider": {
+    "path": "/usr/share/cc65/lib/none.lib",
+    "sha256": "01aa4cd157ad227adb3dbcbf606ad60e59f692bddd55e66bd3b786777308ecbc",
+    "archived": "none.lib"
+  },
+  "state": {
+    "window_before": 17,
+    "window_after": 14,
+    "slots": 4,
+    "reclaimed": 12,
+    "reference_job": 22,
+    "remaining_job_shortfall": 10
+  },
+  "input_sha256": {
+    "src/services/window/window_manager_cached.c": "58025fa46fb13fa60b6bd8fb3a2440f22f3b10da71a0ad2f39f2de8a86bc86ae",
+    "tools/window_repaint_compact.py": "9015fef79126a31f1de8c52be959bb1769578dec19c528a6ba09debf27e8bc25",
+    "tools/window_cache_manager.py": "85400318858f0b7737b9a002566979513e33a1b9ba0ee37e4af4cfab7d77cef9",
+    "tools/graphics_raster_link_audit.py": "268bde74476e95822332ad446ff0d80e82c5638fdb4d0a8b04d3e8e42597e566",
+    "tools/graphics_cache_placement.py": "0f7e5baabc89c5191a7abd34c4ae173363f0475abe6d09bbb6826f22832bcc29",
+    "tools/graphics_span_bench.py": "6db1d9e8be5bc58dd505d349ed0ef68a32c212449641e9fa17ff0bef297ce9b2",
+    "tools/gen_capability_imports.py": "b505025f70ee77d09d537130baac4415944f82100767680b042b0e36ab718038",
+    "tools/placement_audit.py": "b04d55f8227108df64695a118efacb752f5038d6801ef995bccab08017b1f9c7",
+    "tools/graphics_raster_audit.py": "36a78e68fc06d098c96ee464105ae44c853773fb69bc3e4d7e65cf4e8343e64f",
+    "mk/toolchain.mk": "ff5f0c42c00f656601405e0055e884e7c6c07520a67a384a2a8fccfd6868cc70",
+    "cfg/8502-bootstrap.cfg": "b844513bdd2636411c60ce7fd895c9be5a5ee4e0320f2637c16913fc5a777343",
+    "cfg/8502-panic-probe.cfg": "1224b8be52cb2eeb4073de9a5658c435a5ac6a7a2656b2f06ff636251c0d8f83",
+    "include/udeks/window.h": "2f5665511816c78578333bca3952efff0bcedfb997cfd8373e0c42d7388400aa",
+    "include/udeks/pointer.h": "8d2256afd2ca535ebe140378f688c646c4681bd6f59d956c39d49348344d98b2",
+    "include/udeks/vic_graphics.h": "d724c3732c279cef8b536d353dd4c1cf51bcbbc9866387fa37197b10eab96e88",
+    "include/udeks/window_cache_state.h": "c5dab7fb33976298c2c18e3327c74664c8b41b675543412045585d855c901243",
+    "include/udeks/window_cache_command.h": "38cfe6f79a330e68e791c66ee4e7fda1a06df03001f424c59594239b464bc42c",
+    "Makefile": "9eb15bb9e82125d7ad6074a2e35955c00c5b22bd1bbc879bbbde885a271537d8",
+    "tests/test_window_repaint_compact.py": "ce6c62eff1142c53651ee0b8fd5d19addfd5b201328aa99834e06ef1f4a51e0d",
+    "tests/test_window_cache_manager.py": "71b64901c259a442eea2c48c0e61717cda5dc7abc08925e5eea4a35a3215b7c6",
+    "tests/test_window_cache_partial_manager.py": "eb49b3d890d0e09c9b0af4161580d05c0333a960bacdd2047d7b2461090e1495",
+    "bench/window-cache-manager/occlusion-host.inc": "74b6c8f4a3b744bc3264ee6635d539f053d8be2d6fa11bef80dc7c151d39ac05",
+    "src/services/window/move_cache_state.c": "64944eda2cf7e396ecfb4742b67ec6ef7f19e9f0d967913ed11969dcaade0c97"
+  },
+  "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44",
+  "toolchain": {
+    "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44",
+    "ca65": "ca65 V2.18 - Fedora 2.19-15.fc44",
+    "ld65": "ld65 V2.18 - Fedora 2.19-15.fc44",
+    "cl65": "cl65 V2.18 - Fedora 2.19-15.fc44"
+  },
+  "output_sha256": {
+    "baseline.c": "58025fa46fb13fa60b6bd8fb3a2440f22f3b10da71a0ad2f39f2de8a86bc86ae",
+    "baseline.imports.txt": "fb40f11400365d9481a0fdf2f5cae8cadd7995558c52611a860350cc3d8f5353",
+    "baseline.lst": "ab92b83947e56958616af56ea090d053d5efbe79c38b4143c49170a43199a836",
+    "baseline.o": "5d57728f99e1b290fdfe4367d14da156c732130dc6d35bd837b5b5fd12828b52",
+    "baseline.s": "dd24b53d9e184a3fb832cad7aa7ce5416c45852492a551c68462b36f261aeb0f",
+    "compact.c": "3c275ad8731cce8591817b8dbdd1137181ec3b0df88d2fd4251f98d9cdbff08a",
+    "compact.imports.txt": "3952a54959e24f99597ddb18d0ee9f3c8e6c49ba0f1280609826ea443f8288eb",
+    "compact.lst": "afab7cd35975a871905ff37c4566d206f9520e4193597fd35aec98240b0257e5",
+    "compact.o": "2d0f417526e0b2960d7680fb62112929f6d784bd001005fd48b861a4faec1ce6",
+    "compact.s": "1a9c741ae1ad8489e2c8a22179321e1321193277e2e1f8db3cbfaf6d240be91d",
+    "none.lib": "01aa4cd157ad227adb3dbcbf606ad60e59f692bddd55e66bd3b786777308ecbc",
+    "normal/baseline/8502-crt0.bin": "2bba2258b902d6c3e8d09e302f259aebe0ad985f8fca2ecb1904bee3b7573099",
+    "normal/baseline/8502-probe.bin": "b0cdf72de5a0af53c4e6c1c233dc32caf1fa3dd966f5ccfd43565ba51d1417f4",
+    "normal/baseline/bootfs-request-service.bin": "627ea0dda31a87886968e5f360f2c3616f00a4e61ac05d095e51105e4ca4082e",
+    "normal/baseline/isolated.cfg": "802d7b2c17a2f1d454dd4c3d3583edbad0353e336c488abd1052bff4758e5767",
+    "normal/baseline/kernel.bin": "dfef7e6dfea3759f57d2fc35eaa62eab6d1f58e7f950f1dea1020c7ca8152a80",
+    "normal/baseline/kernel.map": "d952c017b380d5900234e8f3f0dd9476ac79d21dc975c74f258ca25155ac90dc",
+    "normal/baseline/task-bank-gateway.bin": "01be28d5d5eab6f16694086247ffecf9c8b425832f6433423d842a5c732c9ab7",
+    "normal/baseline/task-request-gateway.bin": "311106b4a1e06421e4b5fd9873bf256de3b7ce78af141b3bab21e19a87d752e2",
+    "normal/baseline/udeks-module.bin": "0b414b4e43ef7bd75ce53b4254709fced851c5f76ecb9d270e8908a38a7c7499",
+    "normal/compact/8502-crt0.bin": "611178429f9b414757db25d4347c5a3964bea99eacdbced89b9d200c15ab59e5",
+    "normal/compact/8502-probe.bin": "b0cdf72de5a0af53c4e6c1c233dc32caf1fa3dd966f5ccfd43565ba51d1417f4",
+    "normal/compact/bootfs-request-service.bin": "627ea0dda31a87886968e5f360f2c3616f00a4e61ac05d095e51105e4ca4082e",
+    "normal/compact/isolated.cfg": "a013f18b19369f6ae5db3e5fd65625006cb47cc2e79f58358bbdb59f3a2c6399",
+    "normal/compact/kernel.bin": "57ce72ea347bfe66efc18064ad6810ba2ea28dda88430a815018536af03d30c4",
+    "normal/compact/kernel.map": "4469add9da5b74bab600b7d61d658c9ca7e6f4437702e1f083fa77a04e638222",
+    "normal/compact/task-bank-gateway.bin": "01be28d5d5eab6f16694086247ffecf9c8b425832f6433423d842a5c732c9ab7",
+    "normal/compact/task-request-gateway.bin": "713edf0731b5f843b47f34bd093026e569c335e33d8b382464ddf5124712ec95",
+    "normal/compact/udeks-module.bin": "649da99ec27d7d0093e473db11faa994c51dc1c9459d94cd5c046aea2a54a470",
+    "panic/baseline/8502-crt0-panic-probe.bin": "2bba2258b902d6c3e8d09e302f259aebe0ad985f8fca2ecb1904bee3b7573099",
+    "panic/baseline/8502-probe-panic-probe.bin": "b0cdf72de5a0af53c4e6c1c233dc32caf1fa3dd966f5ccfd43565ba51d1417f4",
+    "panic/baseline/bootfs-request-service.bin": "627ea0dda31a87886968e5f360f2c3616f00a4e61ac05d095e51105e4ca4082e",
+    "panic/baseline/isolated.cfg": "761420cdaa10e18aeef814d7cffd8976c320a576f47d796e0dc77b8321764049",
+    "panic/baseline/kernel.bin": "a9793799350f8ec6610cf1d1daa9643bc0d0f329a91efc35b7b861ca8f518791",
+    "panic/baseline/kernel.map": "bd4a83f6c361bc4a8d9d0fef287dc7a4e93517474c80b02a86bba9ef7b42ffb8",
+    "panic/baseline/task-bank-gateway.bin": "01be28d5d5eab6f16694086247ffecf9c8b425832f6433423d842a5c732c9ab7",
+    "panic/baseline/task-request-gateway.bin": "311106b4a1e06421e4b5fd9873bf256de3b7ce78af141b3bab21e19a87d752e2",
+    "panic/baseline/udeks-module.bin": "0b414b4e43ef7bd75ce53b4254709fced851c5f76ecb9d270e8908a38a7c7499",
+    "panic/compact/8502-crt0-panic-probe.bin": "611178429f9b414757db25d4347c5a3964bea99eacdbced89b9d200c15ab59e5",
+    "panic/compact/8502-probe-panic-probe.bin": "b0cdf72de5a0af53c4e6c1c233dc32caf1fa3dd966f5ccfd43565ba51d1417f4",
+    "panic/compact/bootfs-request-service.bin": "627ea0dda31a87886968e5f360f2c3616f00a4e61ac05d095e51105e4ca4082e",
+    "panic/compact/isolated.cfg": "3751f3f848342faab3e573ea63ce92dbc170ddb1474324c867f83114642b9e10",
+    "panic/compact/kernel.bin": "d24a74f747deaac14b401d87b46c8fd19f5a7de379b929050b82fa2b79a40676",
+    "panic/compact/kernel.map": "a6e6ee1bbf6d37885398aa9737993fe052031ea47e19f974fad08651b748052d",
+    "panic/compact/task-bank-gateway.bin": "01be28d5d5eab6f16694086247ffecf9c8b425832f6433423d842a5c732c9ab7",
+    "panic/compact/task-request-gateway.bin": "713edf0731b5f843b47f34bd093026e569c335e33d8b382464ddf5124712ec95",
+    "panic/compact/udeks-module.bin": "649da99ec27d7d0093e473db11faa994c51dc1c9459d94cd5c046aea2a54a470"
+  }
+}

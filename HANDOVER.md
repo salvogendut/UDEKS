@@ -1443,3 +1443,27 @@ Next: compact service adapter replacing existing composition, not adding this
 before resident linking; never borrow guard/stack/shadow bytes silently. Real
 clip/workspace resets, paint/completion interlocks and cache/busy cancellation
 remain adapter work. Optional bounded painter contract is still a separate gate.
+
+2026-09-29 compact adapter preparation: tools/window_repaint_compact.py derives
+a PRIVATE candidate from the selected manager, eliminating active (rank-zero
+is free), redundant bitmap surface and the currently unread owner field. Public
+signature/surface validation preserved; no new ownership guarantee. Guard future
+owner/surface readers. Keep top_window's live test when active_count=0; destroy
+saves old_z before retiring rank and calls close after retirement.
+Six host tests cover library parsing and complete occlusion/partial-paste canvases and sparse
+slots, all256 owner bytes, move/resize/close-during-drag, reuse/reset/callback and
+diagnostic traces. Both whole links measure CODE7762->7645 (117), managerHIGHBSS
+88->76 (12); linked helper modules unchanged. Potential HIGHBSS$E2D6-$E2E1
+and CODE117+existing20=137. Full genericjob22 still ten larger than new state
+before specialization/reuse; NO overlay assumed safe. Existing glyph/title/
+chrome1315 and paint/compose697 are replacement code, not automatically free.
+make repaint-compact runs in referencecontainer; every split output isolated.
+Evidence2026-09-29-repaint-compact has objects/listings/normal+panic maps/providers
+and hashes. Experimental images UNBOOTABLE (shadow$A16B, bridges not regenerated).
+Production manager/disks remain unchanged. Next actual adapter step: compact
+state layout plus bounded manager-owned stages checked against reference; prove
+clip/paint/cache/busy/drag lifetimes before normal linkage. No new HW test yet.
+Scoped make check855 tests pass, including eight new tests and all evidence
+hashes/pycompile. Normal boot/all/panic/placement checks pass; D64c00d8936...,
+D7100ab0c99..., kerneldfef7e6d..., module758965e4... still accepted hashes.
+No VICE session was launched; the original main/xwave prototype is untouched.
