@@ -1,0 +1,39 @@
+/var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-callers/control.o:
+  Imports:
+    Count:                         12
+    Index:                          0
+      Address size:              0x02  (absolute)
+      Name:                  "incsp8"
+    Index:                          1
+      Address size:              0x02  (absolute)
+      Name:                  "decsp3"
+    Index:                          2
+      Address size:              0x02  (absolute)
+      Name:                 "staxysp"
+    Index:                          3
+      Address size:              0x02  (absolute)
+      Name:                 "stax0sp"
+    Index:                          4
+      Address size:              0x02  (absolute)
+      Name:                  "decsp6"
+    Index:                          5
+      Address size:              0x02  (absolute)
+      Name:                   "pusha"
+    Index:                          6
+      Address size:              0x02  (absolute)
+      Name: "_repaint_frontend_control"
+    Index:                          7
+      Address size:              0x02  (absolute)
+      Name:          "_damage_bottom"
+    Index:                          8
+      Address size:              0x02  (absolute)
+      Name:             "_damage_top"
+    Index:                          9
+      Address size:              0x02  (absolute)
+      Name:           "_damage_right"
+    Index:                         10
+      Address size:              0x02  (absolute)
+      Name:            "_damage_left"
+    Index:                         11
+      Address size:              0x01  (zeropage)
+      Name:                      "sp"

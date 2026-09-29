@@ -1,0 +1,1930 @@
+Modules list:
+-------------
+kernel_entry.o:
+    KERNELENTRY       Offs=000000  Size=000006  Align=00001  Fill=0000
+crt0.o:
+    STARTUP           Offs=000000  Size=0000CF  Align=00001  Fill=0000
+vdc.o:
+    CODE              Offs=000000  Size=0000E9  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000008  Align=00001  Fill=0000
+    ZEROPAGE          Offs=000000  Size=000002  Align=00001  Fill=0000
+keyboard_scan.o:
+    CODE              Offs=0000E9  Size=00009A  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000008  Align=00001  Fill=0000
+    BSS               Offs=000008  Size=000011  Align=00001  Fill=0000
+control_ports.o:
+    CODE              Offs=000183  Size=0000EF  Align=00001  Fill=0000
+    BSS               Offs=000019  Size=000009  Align=00001  Fill=0000
+line_editor_read.o:
+    CODE              Offs=000272  Size=00003D  Align=00001  Fill=0000
+z80_handoff.o:
+    CODE              Offs=0002AF  Size=000037  Align=00001  Fill=0000
+vic_graphics_transport.o:
+    CODE              Offs=0002E6  Size=000411  Align=00001  Fill=0000
+    BSS               Offs=000022  Size=000002  Align=00001  Fill=0000
+panic.o:
+    CODE              Offs=0006F7  Size=0000FF  Align=00001  Fill=0000
+    RODATA            Offs=000008  Size=00000C  Align=00001  Fill=0000
+probe.o:
+    PROBECODE         Offs=000000  Size=0000D1  Align=00001  Fill=0000
+clock.o:
+    CODE              Offs=0007F6  Size=000095  Align=00001  Fill=0000
+syscall_gate.o:
+    CODE              Offs=00088B  Size=0000F8  Align=00001  Fill=0000
+    SYSCALLS          Offs=000000  Size=0000FF  Align=00001  Fill=0000
+    TASKREQUEST       Offs=000000  Size=000105  Align=00001  Fill=0000
+task_bank_gateway.o:
+    TASKGATE          Offs=000000  Size=0000C0  Align=00001  Fill=0000
+kernel.o:
+    CODE              Offs=000983  Size=000072  Align=00001  Fill=0000
+service_start.o:
+    CODE              Offs=0009F5  Size=00001B  Align=00001  Fill=0000
+    RODATA            Offs=000014  Size=000004  Align=00001  Fill=0000
+boot_console_entry.o:
+service_registry.o:
+    CODE              Offs=000A10  Size=0002E5  Align=00001  Fill=0000
+    BSS               Offs=000024  Size=000008  Align=00001  Fill=0000
+service_table.o:
+    RODATA            Offs=000018  Size=000017  Align=00001  Fill=0000
+capability_descriptor.o:
+    RODATA            Offs=00002F  Size=000010  Align=00001  Fill=0000
+time_descriptor.o:
+    RODATA            Offs=00003F  Size=000010  Align=00001  Fill=0000
+clock_descriptor.o:
+    RODATA            Offs=00004F  Size=000010  Align=00001  Fill=0000
+console_descriptor_fault.o:
+    RODATA            Offs=00005F  Size=000010  Align=00001  Fill=0000
+pointer_descriptor.o:
+    RODATA            Offs=00006F  Size=000010  Align=00001  Fill=0000
+keyboard_descriptor.o:
+    RODATA            Offs=00007F  Size=000010  Align=00001  Fill=0000
+root_terminal_descriptor.o:
+    RODATA            Offs=00008F  Size=000010  Align=00001  Fill=0000
+init_descriptor.o:
+    CODE              Offs=000CF5  Size=000027  Align=00001  Fill=0000
+    RODATA            Offs=00009F  Size=000010  Align=00001  Fill=0000
+z80_worker_descriptor.o:
+    RODATA            Offs=0000AF  Size=000010  Align=00001  Fill=0000
+vic_graphics_descriptor.o:
+    RODATA            Offs=0000BF  Size=000010  Align=00001  Fill=0000
+window_descriptor.o:
+    RODATA            Offs=0000CF  Size=000010  Align=00001  Fill=0000
+managed_apps_descriptor.o:
+    RODATA            Offs=0000DF  Size=000010  Align=00001  Fill=0000
+bootfs_request.o:
+    BOOTFSCODE        Offs=000000  Size=00029A  Align=00001  Fill=0000
+time.o:
+    CODE              Offs=000D1C  Size=000213  Align=00001  Fill=0000
+vdc_console.o:
+    CODE              Offs=000F2F  Size=0008CD  Align=00001  Fill=0000
+    BSS               Offs=00002C  Size=000045  Align=00001  Fill=0000
+    HIGHBSS           Offs=000000  Size=000080  Align=00001  Fill=0000
+app_panel.o:
+    BSS               Offs=000071  Size=00000E  Align=00001  Fill=0000
+    MODULERODATA      Offs=000000  Size=00003C  Align=00001  Fill=0000
+    MODULECODE        Offs=000000  Size=00017B  Align=00001  Fill=0000
+root_console.o:
+    CODE              Offs=0017FC  Size=00058D  Align=00001  Fill=0000
+    LOWBSS            Offs=000000  Size=000597  Align=00001  Fill=0000
+replacement.o:
+    CODE              Offs=001D89  Size=002031  Align=00001  Fill=0000
+    RODATA            Offs=0000EF  Size=000082  Align=00001  Fill=0000
+    HIGHBSS           Offs=000080  Size=000058  Align=00001  Fill=0000
+cache_transport.o:
+    CODE              Offs=003DBA  Size=000179  Align=00001  Fill=0000
+keyboard.o:
+    CODE              Offs=003F33  Size=0004F8  Align=00001  Fill=0000
+    RODATA            Offs=000171  Size=0000B0  Align=00001  Fill=0000
+    BSS               Offs=00007F  Size=000047  Align=00001  Fill=0000
+    LOWBSS            Offs=000597  Size=000021  Align=00001  Fill=0000
+pointer.o:
+    CODE              Offs=00442B  Size=0003EB  Align=00001  Fill=0000
+    BSS               Offs=0000C6  Size=000012  Align=00001  Fill=0000
+nmi.o:
+    CODE              Offs=004816  Size=000047  Align=00001  Fill=0000
+line_editor.o:
+    CODE              Offs=00485D  Size=0005B8  Align=00001  Fill=0000
+    BSS               Offs=0000D8  Size=0001B8  Align=00001  Fill=0000
+    LOWBSS            Offs=0005B8  Size=000045  Align=00001  Fill=0000
+root_terminal.o:
+    CODE              Offs=004E15  Size=000403  Align=00001  Fill=0000
+    RODATA            Offs=000221  Size=00000A  Align=00001  Fill=0000
+    BSS               Offs=000290  Size=000008  Align=00001  Fill=0000
+terminal_stream.o:
+    CODE              Offs=005218  Size=000047  Align=00001  Fill=0000
+shell_parser.o:
+    MODULECODE        Offs=00017B  Size=0000ED  Align=00001  Fill=0000
+shell.o:
+    CODE              Offs=00525F  Size=000C8A  Align=00001  Fill=0000
+    RODATA            Offs=00022B  Size=000571  Align=00001  Fill=0000
+    BSS               Offs=000298  Size=000002  Align=00001  Fill=0000
+    HIGHBSS           Offs=0000D8  Size=000052  Align=00001  Fill=0000
+z80_worker.o:
+    CODE              Offs=005EE9  Size=0002FA  Align=00001  Fill=0000
+    BSS               Offs=00029A  Size=000002  Align=00001  Fill=0000
+vic_graphics.o:
+    CODE              Offs=0061E3  Size=000D7D  Align=00001  Fill=0000
+    BSS               Offs=00029C  Size=00001A  Align=00001  Fill=0000
+    VICSHADOW         Offs=000000  Size=001F40  Align=00001  Fill=0000
+vic_span.o:
+    CODE              Offs=006F60  Size=000066  Align=00001  Fill=0000
+vic_pixel.o:
+    CODE              Offs=006FC6  Size=0000BE  Align=00001  Fill=0000
+vic_clear.o:
+    CODE              Offs=007084  Size=000034  Align=00001  Fill=0000
+managed_apps.o:
+    BSS               Offs=0002B6  Size=000002  Align=00001  Fill=0000
+    MODULERODATA      Offs=00003C  Size=00000D  Align=00001  Fill=0000
+    MODULECODE        Offs=000268  Size=000093  Align=00001  Fill=0000
+vdc_text_assets.o:
+    RODATA            Offs=00079C  Size=000458  Align=00001  Fill=0000
+damage.o:
+    CODE              Offs=0070B8  Size=0000A9  Align=00001  Fill=0000
+receipt.o:
+    CODE              Offs=007161  Size=00007F  Align=00001  Fill=0000
+binding.o:
+    CODE              Offs=0071E0  Size=000054  Align=00001  Fill=0000
+control.o:
+    CODE              Offs=007234  Size=00004E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=007282  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=00729E  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=0072AF  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(and.o):
+    CODE              Offs=0072BD  Size=000010  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax2.o):
+    CODE              Offs=0072CD  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax3.o):
+    CODE              Offs=0072D8  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax4.o):
+    CODE              Offs=0072E6  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(call.o):
+    CODE              Offs=0072F7  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=0072FE  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=007307  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=007314  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp4.o):
+    CODE              Offs=007321  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp5.o):
+    CODE              Offs=00732E  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp6.o):
+    CODE              Offs=00733B  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp7.o):
+    CODE              Offs=007348  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp8.o):
+    CODE              Offs=007355  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(eq.o):
+    CODE              Offs=007362  Size=00000A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=00736C  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=00739A  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=0073A1  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=0073B7  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=0073BC  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=0073C1  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=0073C6  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=0073CB  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp8.o):
+    CODE              Offs=0073D0  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(jmpvec.o):
+    DATA              Offs=000000  Size=000003  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldai.o):
+    CODE              Offs=0073D5  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldeaxi.o):
+    CODE              Offs=0073E1  Size=000017  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=0073F8  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(memcpy.o):
+    CODE              Offs=007424  Size=00003C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul.o):
+    CODE              Offs=007460  Size=000045  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=0074A5  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax10.o):
+    CODE              Offs=0074DF  Size=000019  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax5.o):
+    CODE              Offs=0074F8  Size=000014  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax6.o):
+    CODE              Offs=00750C  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(negabs.o):
+    CODE              Offs=007522  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(or.o):
+    CODE              Offs=007534  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=007546  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=007554  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=00756A  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=007584  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(regswap2.o):
+    CODE              Offs=0075A0  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(return0.o):
+    CODE              Offs=0075B6  Size=000004  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shl.o):
+    CODE              Offs=0075BA  Size=000033  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax1.o):
+    CODE              Offs=0075ED  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax2.o):
+    CODE              Offs=0075F5  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax3.o):
+    CODE              Offs=007600  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax4.o):
+    CODE              Offs=00760E  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=00761F  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=007635  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxspi.o):
+    CODE              Offs=007640  Size=00001B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(steaxspi.o):
+    CODE              Offs=00765B  Size=000022  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(sub.o):
+    CODE              Offs=00767D  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subeqsp.o):
+    CODE              Offs=007692  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=0076A7  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(udiv.o):
+    CODE              Offs=0076B4  Size=00004F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ult.o):
+    CODE              Offs=007703  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(umod.o):
+    CODE              Offs=00770B  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000002  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000004  00001F  00001C  00001
+PROBECODE             000B00  000BD0  0000D1  00001
+LOWBSS                000C00  0011FC  0005FD  00001
+STARTUP               001C00  001CCE  0000CF  00001
+KERNELENTRY           002000  002005  000006  00001
+CODE                  002006  009721  00771C  00001
+RODATA                009722  00A315  000BF4  00001
+DATA                  00A316  00A318  000003  00001
+BSS                   00A319  00A5D0  0002B8  00001
+VICSHADOW             00A5D1  00C510  001F40  00001
+SYSCALLS              00CF00  00CFFE  0000FF  00001
+HIGHBSS               00E1B8  00E2E1  00012A  00001
+MODULECODE            00E300  00E5FA  0002FB  00001
+MODULERODATA          00E5FB  00E643  000049  00001
+BOOTFSCODE            00F3EF  00F688  00029A  00001
+TASKREQUEST           00F800  00F904  000105  00001
+TASKGATE              00FF05  00FFC4  0000C0  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               00A319 RLA    __BSS_SIZE__              0002B8 REA    
+__VICSHADOW_RUN__         00A5D1 RLA    __VICSHADOW_SIZE__        001F40 REA    
+_cache_accept_poll        005DC0 RLA    _cache_accept_state       005EA1 RLA    
+_cache_command            005F33 RLA    _cache_owner              005EA4 RLA    
+_cache_phase              005EA5 RLA    _cache_step               005E87 RLA    
+_damage_add               0090F4 RLA    _damage_bottom            00E283 RLA    
+_damage_left              00E27E RLA    _damage_right             00E281 RLA    
+_damage_set               0090BE RLA    _damage_top               00E280 RLA    
+_kernel_main              0029D5 RLA    _memcpy                   00942A RLA    
+_private_repaint_policy_call 0091E6 RLA    _repaint_frontend_control 005C8A RLA    
+_repaint_receipt_ack      0091C1 RLA    _repaint_receipt_validate 00919E RLA    
+_udeks_boot_console_build 001600 REA    _udeks_bootfs_finish_error 00F65B RLA    
+_udeks_bootfs_finish_ok   00F667 RLA    _udeks_bootfs_request     00F3EF RLA    
+_udeks_capability_service_descriptor 009751 RLA    _udeks_clock_start        0027FC RLA    
+_udeks_console_app_panel_initialize 00E300 RLA    _udeks_console_poll       00E308 RLA    
+_udeks_console_refresh_root 0030BC RLA    _udeks_console_service_descriptor 009781 RLA    
+_udeks_console_start      002F35 RLA    _udeks_control_ports_active 0021E8 RLA    
+_udeks_init_service_descriptor 0097C1 RLA    _udeks_keyboard_caps      00A32C RLA    
+_udeks_keyboard_display_80 00A32D RLA    _udeks_keyboard_event_get 00617C RLA    
+_udeks_keyboard_matrix    00A321 RLA    _udeks_keyboard_poll      005FF3 RLA    
+_udeks_keyboard_scan      0020EF RLA    _udeks_keyboard_service_descriptor 0097A1 RLA    
+_udeks_keyboard_start     005F39 RLA    _udeks_line_editor_cursor 006A1B RLA    
+_udeks_line_editor_get_line 0069A6 RLA    _udeks_line_editor_handle 006892 RLA    
+_udeks_line_editor_history_count 006A2D RLA    _udeks_line_editor_history_position 006A33 RLA    
+_udeks_line_editor_initialize 006863 RLA    _udeks_line_editor_length 006A15 RLA    
+_udeks_line_editor_read   002278 RLA    _udeks_line_editor_submit 006952 RLA    
+_udeks_line_editor_submitted_cursor 0011F9 RLA    _udeks_line_editor_submitted_length_value 0011F7 RLA    
+_udeks_line_editor_submitted_ready_value 0011F8 RLA    _udeks_line_editor_submitted_text 0011B8 RLA    
+_udeks_line_editor_text   006A10 RLA    _udeks_managed_apps_poll  00E571 RLA    
+_udeks_managed_apps_service_descriptor 009801 RLA    _udeks_managed_apps_start 00E568 RLA    
+_udeks_nmi_drain          006845 RLA    _udeks_nmi_start          00681C RLA    
+_udeks_panic              0026FD RLA    _udeks_pointer_buttons    0064FE RLA    
+_udeks_pointer_keyboard_allowed 0064DC RLA    _udeks_pointer_resynchronize 0064DB RLA    
+_udeks_pointer_service_descriptor 009791 RLA    _udeks_pointer_start      006431 RLA    
+_udeks_pointer_x          0064F0 RLA    _udeks_pointer_y          0064FA RLA    
+_udeks_probe_georam       000B88 RLA    _udeks_probe_reu          000B5C RLA    
+_udeks_probe_vdc_revision 000B47 RLA    _udeks_probe_video_standard 000B04 RLA    
+_udeks_root_console_cursor_column 003B37 RLA    _udeks_root_console_cursor_row 003B3D RLA    
+_udeks_root_console_cursor_visible 003B43 RLA    _udeks_root_console_dirty_span 003A9F RLA    
+_udeks_root_console_mark_row_clean 003ADF RLA    _udeks_root_console_put   0038EA RLA    
+_udeks_root_console_reset 003802 RLA    _udeks_root_console_row   003A5F RLA    
+_udeks_root_console_set_cursor 003A24 RLA    _udeks_root_console_write 00396B RLA    
+_udeks_root_console_write_at 003824 RLA    _udeks_root_console_write_string 0039F5 RLA    
+_udeks_root_terminal_poll 006E9E RLA    _udeks_root_terminal_prompt 006FE5 RLA    
+_udeks_root_terminal_service_descriptor 0097B1 RLA    _udeks_root_terminal_start 006E1B RLA    
+_udeks_service_count      009750 RLA    _udeks_service_poll_all   002A16 RLA    
+_udeks_service_start_all  0029FB RLA    _udeks_service_start_all_once 002C0A RLA    
+_udeks_service_table      00973A RLA    _udeks_shell_command_line 00E290 RLA    
+_udeks_shell_foreground_job 00E2DF RLA    _udeks_shell_interrupt_foreground 0073A4 RLA    
+_udeks_shell_poll         0072CF RLA    _udeks_shell_read_line    00C90F REA    
+_udeks_shell_start        007265 RLA    _udeks_shell_tokenize     00E47B RLA    
+_udeks_span_color         00A5BA RLA    _udeks_span_count         00A5B7 RLA    
+_udeks_span_fill_row      008F66 RLA    _udeks_span_first         00A5B8 RLA    
+_udeks_span_last          00A5B9 RLA    _udeks_span_offset        00A5B5 RLA    
+_udeks_stream_write       00723F RLA    _udeks_stream_write_byte  00721E RLA    
+_udeks_time_now           002DD2 RLA    _udeks_time_poll          002DBE RLA    
+_udeks_time_service_descriptor 009761 RLA    _udeks_time_start         002D22 RLA    
+_udeks_time_sync_ti       00290D RLA    _udeks_vdc_block_address  00A31D RLA    
+_udeks_vdc_block_length   00A31F RLA    _udeks_vdc_block_source   00A31B RLA    
+_udeks_vdc_read_selected  00204D RLA    _udeks_vdc_select         002019 RLA    
+_udeks_vdc_status         00A319 RLA    _udeks_vdc_text_assets    009EBE RLA    
+_udeks_vdc_write_block    002063 RLA    _udeks_vdc_write_selected 002033 RLA    
+_udeks_vic_bitmap_commit  008B18 RLA    _udeks_vic_bitmap_commit_page 0023C8 RLA    
+_udeks_vic_bitmap_fill    008662 RLA    _udeks_vic_bitmap_line    00836E RLA    
+_udeks_vic_bitmap_outline_blit 0023E3 RLA    _udeks_vic_bitmap_outline_move 008A1A RLA    
+_udeks_vic_bitmap_outline_toggle 008992 RLA    _udeks_vic_bitmap_pixel   008FCC RLA    
+_udeks_vic_bitmap_reset_clip 008970 RLA    _udeks_vic_bitmap_set_clip 008830 RLA    
+_udeks_vic_bitmap_shadow  00A5D1 RLA    _udeks_vic_buffer_restore 00F678 RLA    
+_udeks_vic_graphics_disable 00231C RLA    _udeks_vic_graphics_enable 0022EC RLA    
+_udeks_vic_graphics_initialize 0082C1 RLA    _udeks_vic_graphics_is_active 00835E RLA    
+_udeks_vic_graphics_poll  0082AE RLA    _udeks_vic_graphics_service_descriptor 0097E1 RLA    
+_udeks_vic_graphics_shutdown 00831D RLA    _udeks_vic_graphics_start 0081E9 RLA    
+_udeks_vic_pointer_busy_begin 002365 RLA    _udeks_vic_pointer_busy_end 002383 RLA    
+_udeks_vic_pointer_busy_tick 002398 RLA    _udeks_vic_pointer_set_x  00234B RLA    
+_udeks_vic_pointer_set_y  002361 RLA    _udeks_window_begin_paint 0044C4 RLA    
+_udeks_window_create      00408F RLA    _udeks_window_destroy     0041F8 RLA    
+_udeks_window_end_paint   004585 RLA    _udeks_window_get_geometry 0045F7 RLA    
+_udeks_window_image_complete 00458B RLA    _udeks_window_is_dragging 0046CB RLA    
+_udeks_window_is_focused  0046E5 RLA    _udeks_window_manager_poll 003DDB RLA    
+_udeks_window_manager_reset 004047 RLA    _udeks_window_manager_start 003D8F RLA    
+_udeks_window_manager_stop 004040 RLA    _udeks_window_repaint     004321 RLA    
+_udeks_window_service_descriptor 0097F1 RLA    _udeks_xclock_is_running  00E5D8 RLA    
+_udeks_xclock_start       00E58F RLA    _udeks_xclock_stop        00E5C5 RLA    
+_udeks_xwave_is_running   00E5E0 RLA    _udeks_xwave_start        00E5AA RLA    
+_udeks_xwave_stop         00E5CD RLA    _udeks_z80_handoff        0022CC RLA    
+_udeks_z80_prepare        0022B5 RLA    _udeks_z80_submit         007FC1 RLA    
+_udeks_z80_worker_service_descriptor 0097D1 RLA    _udeks_z80_worker_start   007EEF RLA    
+addeq0sp                  0092A4 RLA    addeqysp                  0092A6 RLA    
+addysp                    0092B6 RLA    addysp1                   0092B5 RLA    
+aslax2                    0092D3 RLA    booleq                    009404 RLA    
+boolne                    0093FE RLA    boolult                   00941D RLA    
+callax                    0092FD RLA    decsp1                    009304 RLA    
+decsp2                    00930D RLA    decsp3                    00931A RLA    
+decsp4                    009327 RLA    decsp5                    009334 RLA    
+decsp6                    009341 RLA    decsp7                    00934E RLA    
+decsp8                    00935B RLA    incsp1                    0093A0 RLA    
+incsp2                    0093AF RLA    incsp3                    0093BD RLA    
+incsp4                    0093C2 RLA    incsp5                    0093C7 RLA    
+incsp6                    0093CC RLA    incsp7                    0093D1 RLA    
+incsp8                    0093D6 RLA    jmpvec                    00A316 RLA    
+ldaidx                    0093DB RLA    ldeaxi                    0093E7 RLA    
+mul8x16                   0094AD RLA    mul8x16a                  0094B7 RLA    
+mulax10                   0094E5 RLA    mulax5                    0094FE RLA    
+mulax6                    009512 RLA    negax                     00952C RLA    
+popax                     0093A7 RLA    popptr1                   00954C RLA    
+ptr1                      00000E RLZ    ptr2                      000010 RLZ    
+ptr3                      000012 RLZ    ptr4                      000014 RLZ    
+push0                     009570 RLA    pusha                     00955E RLA    
+pusha0                    009572 RLA    pushax                    009574 RLA    
+pushw0sp                  00958A RLA    pushwysp                  00958C RLA    
+regbank                   00001A RLZ    regsave                   00000A RLZ    
+regswap2                  0095A6 RLA    return0                   0095BC RLA    
+shlax3                    0092DE RLA    shlax4                    0092EC RLA    
+shlaxy                    0095C7 RLA    shrax1                    0095F3 RLA    
+shrax2                    0095FB RLA    shrax3                    009606 RLA    
+shrax4                    009614 RLA    sp                        000006 RLZ    
+sreg                      000008 RLZ    staspidx                  009625 RLA    
+stax0sp                   00963B RLA    staxspidx                 009646 RLA    
+staxysp                   00963D RLA    steaxspidx                009661 RLA    
+subeqysp                  00969A RLA    subysp                    0096AD RLA    
+tmp1                      000016 RLZ    tmp2                      000017 RLZ    
+tmp3                      000018 RLZ    tmp4                      000019 RLZ    
+tosaddax                  00928A RLA    tosandax                  0092C5 RLA    
+toseqa0                   00936A RLA    tosicmp                   009374 RLA    
+tosicmp0                  009372 RLA    tosmula0                  0094AB RLA    
+tosorax                   00953C RLA    tossuba0                  009683 RLA    
+tossubax                  009685 RLA    tosudiva0                 0096BA RLA    
+tosulta0                  009709 RLA    tosumoda0                 009711 RLA    
+tosumula0                 0094AB RLA    tosumulax                 009466 RLA    
+udiv16                    0096CB RLA    
+
+
+Exports list by value:
+----------------------
+sp                        000006 RLZ    sreg                      000008 RLZ    
+regsave                   00000A RLZ    ptr1                      00000E RLZ    
+ptr2                      000010 RLZ    ptr3                      000012 RLZ    
+ptr4                      000014 RLZ    tmp1                      000016 RLZ    
+tmp2                      000017 RLZ    tmp3                      000018 RLZ    
+tmp4                      000019 RLZ    regbank                   00001A RLZ    
+__BSS_SIZE__              0002B8 REA    _udeks_probe_video_standard 000B04 RLA    
+_udeks_probe_vdc_revision 000B47 RLA    _udeks_probe_reu          000B5C RLA    
+_udeks_probe_georam       000B88 RLA    _udeks_line_editor_submitted_text 0011B8 RLA    
+_udeks_line_editor_submitted_length_value 0011F7 RLA    _udeks_line_editor_submitted_ready_value 0011F8 RLA    
+_udeks_line_editor_submitted_cursor 0011F9 RLA    _udeks_boot_console_build 001600 REA    
+__VICSHADOW_SIZE__        001F40 REA    _udeks_vdc_select         002019 RLA    
+_udeks_vdc_write_selected 002033 RLA    _udeks_vdc_read_selected  00204D RLA    
+_udeks_vdc_write_block    002063 RLA    _udeks_keyboard_scan      0020EF RLA    
+_udeks_control_ports_active 0021E8 RLA    _udeks_line_editor_read   002278 RLA    
+_udeks_z80_prepare        0022B5 RLA    _udeks_z80_handoff        0022CC RLA    
+_udeks_vic_graphics_enable 0022EC RLA    _udeks_vic_graphics_disable 00231C RLA    
+_udeks_vic_pointer_set_x  00234B RLA    _udeks_vic_pointer_set_y  002361 RLA    
+_udeks_vic_pointer_busy_begin 002365 RLA    _udeks_vic_pointer_busy_end 002383 RLA    
+_udeks_vic_pointer_busy_tick 002398 RLA    _udeks_vic_bitmap_commit_page 0023C8 RLA    
+_udeks_vic_bitmap_outline_blit 0023E3 RLA    _udeks_panic              0026FD RLA    
+_udeks_clock_start        0027FC RLA    _udeks_time_sync_ti       00290D RLA    
+_kernel_main              0029D5 RLA    _udeks_service_start_all  0029FB RLA    
+_udeks_service_poll_all   002A16 RLA    _udeks_service_start_all_once 002C0A RLA    
+_udeks_time_start         002D22 RLA    _udeks_time_poll          002DBE RLA    
+_udeks_time_now           002DD2 RLA    _udeks_console_start      002F35 RLA    
+_udeks_console_refresh_root 0030BC RLA    _udeks_root_console_reset 003802 RLA    
+_udeks_root_console_write_at 003824 RLA    _udeks_root_console_put   0038EA RLA    
+_udeks_root_console_write 00396B RLA    _udeks_root_console_write_string 0039F5 RLA    
+_udeks_root_console_set_cursor 003A24 RLA    _udeks_root_console_row   003A5F RLA    
+_udeks_root_console_dirty_span 003A9F RLA    _udeks_root_console_mark_row_clean 003ADF RLA    
+_udeks_root_console_cursor_column 003B37 RLA    _udeks_root_console_cursor_row 003B3D RLA    
+_udeks_root_console_cursor_visible 003B43 RLA    _udeks_window_manager_start 003D8F RLA    
+_udeks_window_manager_poll 003DDB RLA    _udeks_window_manager_stop 004040 RLA    
+_udeks_window_manager_reset 004047 RLA    _udeks_window_create      00408F RLA    
+_udeks_window_destroy     0041F8 RLA    _udeks_window_repaint     004321 RLA    
+_udeks_window_begin_paint 0044C4 RLA    _udeks_window_end_paint   004585 RLA    
+_udeks_window_image_complete 00458B RLA    _udeks_window_get_geometry 0045F7 RLA    
+_udeks_window_is_dragging 0046CB RLA    _udeks_window_is_focused  0046E5 RLA    
+_repaint_frontend_control 005C8A RLA    _cache_accept_poll        005DC0 RLA    
+_cache_step               005E87 RLA    _cache_accept_state       005EA1 RLA    
+_cache_owner              005EA4 RLA    _cache_phase              005EA5 RLA    
+_cache_command            005F33 RLA    _udeks_keyboard_start     005F39 RLA    
+_udeks_keyboard_poll      005FF3 RLA    _udeks_keyboard_event_get 00617C RLA    
+_udeks_pointer_start      006431 RLA    _udeks_pointer_resynchronize 0064DB RLA    
+_udeks_pointer_keyboard_allowed 0064DC RLA    _udeks_pointer_x          0064F0 RLA    
+_udeks_pointer_y          0064FA RLA    _udeks_pointer_buttons    0064FE RLA    
+_udeks_nmi_start          00681C RLA    _udeks_nmi_drain          006845 RLA    
+_udeks_line_editor_initialize 006863 RLA    _udeks_line_editor_handle 006892 RLA    
+_udeks_line_editor_submit 006952 RLA    _udeks_line_editor_get_line 0069A6 RLA    
+_udeks_line_editor_text   006A10 RLA    _udeks_line_editor_length 006A15 RLA    
+_udeks_line_editor_cursor 006A1B RLA    _udeks_line_editor_history_count 006A2D RLA    
+_udeks_line_editor_history_position 006A33 RLA    _udeks_root_terminal_start 006E1B RLA    
+_udeks_root_terminal_poll 006E9E RLA    _udeks_root_terminal_prompt 006FE5 RLA    
+_udeks_stream_write_byte  00721E RLA    _udeks_stream_write       00723F RLA    
+_udeks_shell_start        007265 RLA    _udeks_shell_poll         0072CF RLA    
+_udeks_shell_interrupt_foreground 0073A4 RLA    _udeks_z80_worker_start   007EEF RLA    
+_udeks_z80_submit         007FC1 RLA    _udeks_vic_graphics_start 0081E9 RLA    
+_udeks_vic_graphics_poll  0082AE RLA    _udeks_vic_graphics_initialize 0082C1 RLA    
+_udeks_vic_graphics_shutdown 00831D RLA    _udeks_vic_graphics_is_active 00835E RLA    
+_udeks_vic_bitmap_line    00836E RLA    _udeks_vic_bitmap_fill    008662 RLA    
+_udeks_vic_bitmap_set_clip 008830 RLA    _udeks_vic_bitmap_reset_clip 008970 RLA    
+_udeks_vic_bitmap_outline_toggle 008992 RLA    _udeks_vic_bitmap_outline_move 008A1A RLA    
+_udeks_vic_bitmap_commit  008B18 RLA    _udeks_span_fill_row      008F66 RLA    
+_udeks_vic_bitmap_pixel   008FCC RLA    _damage_set               0090BE RLA    
+_damage_add               0090F4 RLA    _repaint_receipt_validate 00919E RLA    
+_repaint_receipt_ack      0091C1 RLA    _private_repaint_policy_call 0091E6 RLA    
+tosaddax                  00928A RLA    addeq0sp                  0092A4 RLA    
+addeqysp                  0092A6 RLA    addysp1                   0092B5 RLA    
+addysp                    0092B6 RLA    tosandax                  0092C5 RLA    
+aslax2                    0092D3 RLA    shlax3                    0092DE RLA    
+shlax4                    0092EC RLA    callax                    0092FD RLA    
+decsp1                    009304 RLA    decsp2                    00930D RLA    
+decsp3                    00931A RLA    decsp4                    009327 RLA    
+decsp5                    009334 RLA    decsp6                    009341 RLA    
+decsp7                    00934E RLA    decsp8                    00935B RLA    
+toseqa0                   00936A RLA    tosicmp0                  009372 RLA    
+tosicmp                   009374 RLA    incsp1                    0093A0 RLA    
+popax                     0093A7 RLA    incsp2                    0093AF RLA    
+incsp3                    0093BD RLA    incsp4                    0093C2 RLA    
+incsp5                    0093C7 RLA    incsp6                    0093CC RLA    
+incsp7                    0093D1 RLA    incsp8                    0093D6 RLA    
+ldaidx                    0093DB RLA    ldeaxi                    0093E7 RLA    
+boolne                    0093FE RLA    booleq                    009404 RLA    
+boolult                   00941D RLA    _memcpy                   00942A RLA    
+tosumulax                 009466 RLA    tosmula0                  0094AB RLA    
+tosumula0                 0094AB RLA    mul8x16                   0094AD RLA    
+mul8x16a                  0094B7 RLA    mulax10                   0094E5 RLA    
+mulax5                    0094FE RLA    mulax6                    009512 RLA    
+negax                     00952C RLA    tosorax                   00953C RLA    
+popptr1                   00954C RLA    pusha                     00955E RLA    
+push0                     009570 RLA    pusha0                    009572 RLA    
+pushax                    009574 RLA    pushw0sp                  00958A RLA    
+pushwysp                  00958C RLA    regswap2                  0095A6 RLA    
+return0                   0095BC RLA    shlaxy                    0095C7 RLA    
+shrax1                    0095F3 RLA    shrax2                    0095FB RLA    
+shrax3                    009606 RLA    shrax4                    009614 RLA    
+staspidx                  009625 RLA    stax0sp                   00963B RLA    
+staxysp                   00963D RLA    staxspidx                 009646 RLA    
+steaxspidx                009661 RLA    tossuba0                  009683 RLA    
+tossubax                  009685 RLA    subeqysp                  00969A RLA    
+subysp                    0096AD RLA    tosudiva0                 0096BA RLA    
+udiv16                    0096CB RLA    tosulta0                  009709 RLA    
+tosumoda0                 009711 RLA    _udeks_service_table      00973A RLA    
+_udeks_service_count      009750 RLA    _udeks_capability_service_descriptor 009751 RLA    
+_udeks_time_service_descriptor 009761 RLA    _udeks_console_service_descriptor 009781 RLA    
+_udeks_pointer_service_descriptor 009791 RLA    _udeks_keyboard_service_descriptor 0097A1 RLA    
+_udeks_root_terminal_service_descriptor 0097B1 RLA    _udeks_init_service_descriptor 0097C1 RLA    
+_udeks_z80_worker_service_descriptor 0097D1 RLA    _udeks_vic_graphics_service_descriptor 0097E1 RLA    
+_udeks_window_service_descriptor 0097F1 RLA    _udeks_managed_apps_service_descriptor 009801 RLA    
+_udeks_vdc_text_assets    009EBE RLA    jmpvec                    00A316 RLA    
+__BSS_RUN__               00A319 RLA    _udeks_vdc_status         00A319 RLA    
+_udeks_vdc_block_source   00A31B RLA    _udeks_vdc_block_address  00A31D RLA    
+_udeks_vdc_block_length   00A31F RLA    _udeks_keyboard_matrix    00A321 RLA    
+_udeks_keyboard_caps      00A32C RLA    _udeks_keyboard_display_80 00A32D RLA    
+_udeks_span_offset        00A5B5 RLA    _udeks_span_count         00A5B7 RLA    
+_udeks_span_first         00A5B8 RLA    _udeks_span_last          00A5B9 RLA    
+_udeks_span_color         00A5BA RLA    __VICSHADOW_RUN__         00A5D1 RLA    
+_udeks_vic_bitmap_shadow  00A5D1 RLA    _udeks_shell_read_line    00C90F REA    
+_damage_left              00E27E RLA    _damage_top               00E280 RLA    
+_damage_right             00E281 RLA    _damage_bottom            00E283 RLA    
+_udeks_shell_command_line 00E290 RLA    _udeks_shell_foreground_job 00E2DF RLA    
+_udeks_console_app_panel_initialize 00E300 RLA    _udeks_console_poll       00E308 RLA    
+_udeks_shell_tokenize     00E47B RLA    _udeks_managed_apps_start 00E568 RLA    
+_udeks_managed_apps_poll  00E571 RLA    _udeks_xclock_start       00E58F RLA    
+_udeks_xwave_start        00E5AA RLA    _udeks_xclock_stop        00E5C5 RLA    
+_udeks_xwave_stop         00E5CD RLA    _udeks_xclock_is_running  00E5D8 RLA    
+_udeks_xwave_is_running   00E5E0 RLA    _udeks_bootfs_request     00F3EF RLA    
+_udeks_bootfs_finish_error 00F65B RLA    _udeks_bootfs_finish_ok   00F667 RLA    
+_udeks_vic_buffer_restore 00F678 RLA    
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    crt0.o                    src/8502/crt0.s(11)
+__BSS_SIZE__ ([linker generated]):
+    crt0.o                    src/8502/crt0.s(11)
+__VICSHADOW_RUN__ ([linker generated]):
+    crt0.o                    src/8502/crt0.s(12)
+__VICSHADOW_SIZE__ ([linker generated]):
+    crt0.o                    src/8502/crt0.s(12)
+_cache_accept_poll (cache_transport.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(49)
+_cache_accept_state (cache_transport.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(46)
+_cache_command (cache_transport.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(51)
+_cache_owner (cache_transport.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(47)
+_cache_phase (cache_transport.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(48)
+_cache_step (cache_transport.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(50)
+_damage_add (damage.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(45)
+_damage_bottom (replacement.o):
+    control.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-callers/control.s(16)
+    damage.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/damage.s(8)
+_damage_left (replacement.o):
+    control.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-callers/control.s(13)
+    damage.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/damage.s(8)
+_damage_right (replacement.o):
+    control.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-callers/control.s(14)
+    damage.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/damage.s(8)
+_damage_set (damage.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(44)
+_damage_top (replacement.o):
+    control.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-callers/control.s(15)
+    damage.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/damage.s(8)
+_kernel_main (kernel.o):
+    kernel_entry.o            src/8502/kernel_entry.s(8)
+_memcpy (memcpy.o):
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(58)
+_private_repaint_policy_call (binding.o):
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(13)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(56)
+_repaint_frontend_control (replacement.o):
+    control.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-callers/control.s(17)
+_repaint_receipt_ack (receipt.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(54)
+_repaint_receipt_validate (receipt.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(53)
+_udeks_boot_console_build (boot_console_entry.o):
+    vdc_console.o             build/8502/vdc_console.s(13)
+_udeks_bootfs_finish_error (bootfs_request.o):
+    [linker generated]       
+_udeks_bootfs_finish_ok (bootfs_request.o):
+    [linker generated]       
+_udeks_bootfs_request (bootfs_request.o):
+    syscall_gate.o            src/8502/syscall_gate.s(21)
+_udeks_capability_service_descriptor (capability_descriptor.o):
+    service_table.o           src/services/table.s(7)
+_udeks_clock_start (clock.o):
+    clock_descriptor.o        src/services/clock/descriptor.s(4)
+_udeks_console_app_panel_initialize (app_panel.o):
+    vdc_console.o             build/8502/vdc_console.s(31)
+_udeks_console_poll (app_panel.o):
+    console_descriptor_fault.o src/services/console/descriptor.s(8)
+_udeks_console_refresh_root (vdc_console.o):
+    root_terminal.o           build/8502/root_terminal.s(13)
+_udeks_console_service_descriptor (console_descriptor_fault.o):
+    service_table.o           src/services/table.s(10)
+_udeks_console_start (vdc_console.o):
+    console_descriptor_fault.o src/services/console/descriptor.s(7)
+_udeks_control_ports_active (control_ports.o):
+    pointer.o                 src/8502/pointer_irq.s(16)
+_udeks_init_service_descriptor (init_descriptor.o):
+    service_table.o           src/services/table.s(17)
+_udeks_keyboard_caps (keyboard_scan.o):
+    keyboard.o                build/8502/keyboard.s(14)
+_udeks_keyboard_display_80 (keyboard_scan.o):
+    keyboard.o                build/8502/keyboard.s(15)
+_udeks_keyboard_event_get (keyboard.o):
+    root_terminal.o           build/8502/root_terminal.s(14)
+_udeks_keyboard_matrix (keyboard_scan.o):
+    keyboard.o                build/8502/keyboard.s(13)
+_udeks_keyboard_poll (keyboard.o):
+    keyboard_descriptor.o     src/services/input/descriptor.s(5)
+_udeks_keyboard_scan (keyboard_scan.o):
+    keyboard.o                build/8502/keyboard.s(16)
+_udeks_keyboard_service_descriptor (keyboard_descriptor.o):
+    service_table.o           src/services/table.s(15)
+_udeks_keyboard_start (keyboard.o):
+    keyboard_descriptor.o     src/services/input/descriptor.s(4)
+_udeks_line_editor_cursor (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(20)
+_udeks_line_editor_get_line (line_editor.o):
+    [linker generated]       
+_udeks_line_editor_handle (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(16)
+_udeks_line_editor_history_count (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(21)
+_udeks_line_editor_history_position (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(22)
+_udeks_line_editor_initialize (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(15)
+_udeks_line_editor_length (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(19)
+_udeks_line_editor_read (line_editor_read.o):
+    syscall_gate.o            src/8502/syscall_gate.s(16)
+_udeks_line_editor_submit (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(17)
+_udeks_line_editor_submitted_cursor (line_editor.o):
+    line_editor_read.o        src/8502/line_editor_read.s(13)
+_udeks_line_editor_submitted_length_value (line_editor.o):
+    line_editor_read.o        src/8502/line_editor_read.s(11)
+_udeks_line_editor_submitted_ready_value (line_editor.o):
+    line_editor_read.o        src/8502/line_editor_read.s(12)
+_udeks_line_editor_submitted_text (line_editor.o):
+    line_editor_read.o        src/8502/line_editor_read.s(10)
+_udeks_line_editor_text (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(18)
+_udeks_managed_apps_poll (managed_apps.o):
+    managed_apps_descriptor.o src/services/app/descriptor.s(5)
+_udeks_managed_apps_service_descriptor (managed_apps_descriptor.o):
+    service_table.o           src/services/table.s(14)
+_udeks_managed_apps_start (managed_apps.o):
+    managed_apps_descriptor.o src/services/app/descriptor.s(4)
+_udeks_nmi_drain (nmi.o):
+    pointer.o                 src/8502/pointer_irq.s(17)
+    cache_transport.o         src/8502/cache_transport.s(7)
+_udeks_nmi_start (nmi.o):
+    pointer.o                 src/8502/pointer_irq.s(17)
+_udeks_panic (panic.o):
+    kernel.o                  build/8502/kernel.s(13)
+_udeks_pointer_buttons (pointer.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(16)
+_udeks_pointer_keyboard_allowed (pointer.o):
+    keyboard.o                build/8502/keyboard.s(21)
+_udeks_pointer_resynchronize (pointer.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(13)
+_udeks_pointer_service_descriptor (pointer_descriptor.o):
+    service_table.o           src/services/table.s(11)
+_udeks_pointer_start (pointer.o):
+    pointer_descriptor.o      src/services/input/pointer_descriptor.s(4)
+_udeks_pointer_x (pointer.o):
+    vic_graphics.o            build/8502/vic_graphics.s(27)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(14)
+_udeks_pointer_y (pointer.o):
+    vic_graphics.o            build/8502/vic_graphics.s(28)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(15)
+_udeks_probe_georam (probe.o):
+    [linker generated]       
+_udeks_probe_reu (probe.o):
+    [linker generated]       
+_udeks_probe_vdc_revision (probe.o):
+    [linker generated]       
+_udeks_probe_video_standard (probe.o):
+    [linker generated]       
+_udeks_root_console_cursor_column (root_console.o):
+    root_terminal.o           build/8502/root_terminal.s(27)
+    vdc_console.o             build/8502/vdc_console.s(19)
+_udeks_root_console_cursor_row (root_console.o):
+    root_terminal.o           build/8502/root_terminal.s(28)
+    vdc_console.o             build/8502/vdc_console.s(20)
+_udeks_root_console_cursor_visible (root_console.o):
+    vdc_console.o             build/8502/vdc_console.s(21)
+_udeks_root_console_dirty_span (root_console.o):
+    vdc_console.o             build/8502/vdc_console.s(17)
+_udeks_root_console_mark_row_clean (root_console.o):
+    vdc_console.o             build/8502/vdc_console.s(18)
+_udeks_root_console_put (root_console.o):
+    root_terminal.o           build/8502/root_terminal.s(23)
+_udeks_root_console_reset (root_console.o):
+    [linker generated]       
+_udeks_root_console_row (root_console.o):
+    vdc_console.o             build/8502/vdc_console.s(16)
+_udeks_root_console_set_cursor (root_console.o):
+    root_terminal.o           build/8502/root_terminal.s(26)
+    [linker generated]       
+_udeks_root_console_write (root_console.o):
+    terminal_stream.o         build/8502/terminal_stream.s(13)
+    root_terminal.o           build/8502/root_terminal.s(24)
+    syscall_gate.o            src/8502/syscall_gate.s(17)
+_udeks_root_console_write_at (root_console.o):
+    [linker generated]       
+_udeks_root_console_write_string (root_console.o):
+    terminal_stream.o         build/8502/terminal_stream.s(14)
+    root_terminal.o           build/8502/root_terminal.s(25)
+_udeks_root_terminal_poll (root_terminal.o):
+    root_terminal_descriptor.o src/services/terminal/descriptor.s(5)
+_udeks_root_terminal_prompt (root_terminal.o):
+    shell.o                   build/8502/shell.s(13)
+    syscall_gate.o            src/8502/syscall_gate.s(18)
+_udeks_root_terminal_service_descriptor (root_terminal_descriptor.o):
+    service_table.o           src/services/table.s(16)
+_udeks_root_terminal_start (root_terminal.o):
+    root_terminal_descriptor.o src/services/terminal/descriptor.s(4)
+_udeks_service_count (service_table.o):
+    service_registry.o        build/8502/service_registry.s(15)
+_udeks_service_poll_all (service_registry.o):
+    kernel.o                  build/8502/kernel.s(15)
+_udeks_service_start_all (service_start.o):
+    kernel.o                  build/8502/kernel.s(14)
+_udeks_service_start_all_once (service_registry.o):
+    service_start.o           src/8502/service_start.s(9)
+_udeks_service_table (service_table.o):
+    service_registry.o        build/8502/service_registry.s(14)
+_udeks_shell_command_line (shell.o):
+    syscall_gate.o            src/8502/syscall_gate.s(19)
+_udeks_shell_foreground_job (shell.o):
+    syscall_gate.o            src/8502/syscall_gate.s(20)
+_udeks_shell_interrupt_foreground (shell.o):
+    root_terminal.o           build/8502/root_terminal.s(32)
+_udeks_shell_poll (shell.o):
+    init_descriptor.o         src/services/init/descriptor.s(9)
+_udeks_shell_read_line (init_descriptor.o):
+    shell.o                   build/8502/shell.s(31)
+_udeks_shell_start (shell.o):
+    init_descriptor.o         src/services/init/descriptor.s(8)
+_udeks_shell_tokenize (shell_parser.o):
+    shell.o                   build/8502/shell.s(14)
+_udeks_span_color (vic_graphics.o):
+    vic_span.o                src/services/display/vic_span.s(9)
+_udeks_span_count (vic_graphics.o):
+    vic_span.o                src/services/display/vic_span.s(8)
+_udeks_span_fill_row (vic_span.o):
+    vic_graphics.o            build/8502/vic_graphics.s(42)
+_udeks_span_first (vic_graphics.o):
+    vic_span.o                src/services/display/vic_span.s(9)
+_udeks_span_last (vic_graphics.o):
+    vic_span.o                src/services/display/vic_span.s(9)
+_udeks_span_offset (vic_graphics.o):
+    vic_span.o                src/services/display/vic_span.s(8)
+_udeks_stream_write (terminal_stream.o):
+    shell.o                   build/8502/shell.s(19)
+    syscall_gate.o            src/8502/syscall_gate.s(15)
+_udeks_stream_write_byte (terminal_stream.o):
+    shell.o                   build/8502/shell.s(18)
+    syscall_gate.o            src/8502/syscall_gate.s(14)
+_udeks_time_now (time.o):
+    syscall_gate.o            src/8502/app_gateway.s(10)
+_udeks_time_poll (time.o):
+    time_descriptor.o         src/services/time/descriptor.s(5)
+_udeks_time_service_descriptor (time_descriptor.o):
+    service_table.o           src/services/table.s(8)
+_udeks_time_start (time.o):
+    time_descriptor.o         src/services/time/descriptor.s(4)
+_udeks_time_sync_ti (syscall_gate.o):
+    time.o                    build/8502/time.s(16)
+_udeks_vdc_block_address (vdc.o):
+    app_panel.o               src/services/console/app_panel.s(10)
+    vdc_console.o             build/8502/vdc_console.s(24)
+_udeks_vdc_block_length (vdc.o):
+    app_panel.o               src/services/console/app_panel.s(11)
+    vdc_console.o             build/8502/vdc_console.s(25)
+_udeks_vdc_block_source (vdc.o):
+    app_panel.o               src/services/console/app_panel.s(9)
+    vdc_console.o             build/8502/vdc_console.s(23)
+_udeks_vdc_read_selected (vdc.o):
+    vdc_console.o             build/8502/vdc_console.s(28)
+    [linker generated]       
+_udeks_vdc_select (vdc.o):
+    vdc_console.o             build/8502/vdc_console.s(26)
+    [linker generated]       
+_udeks_vdc_status (vdc.o):
+    vdc_console.o             build/8502/vdc_console.s(22)
+    [linker generated]       
+_udeks_vdc_text_assets (vdc_text_assets.o):
+    app_panel.o               src/services/console/app_panel.s(12)
+    vdc_console.o             build/8502/vdc_console.s(30)
+_udeks_vdc_write_block (vdc.o):
+    app_panel.o               src/services/console/app_panel.s(8)
+    vdc_console.o             build/8502/vdc_console.s(29)
+_udeks_vdc_write_selected (vdc.o):
+    vdc_console.o             build/8502/vdc_console.s(27)
+    [linker generated]       
+_udeks_vic_bitmap_commit (vic_graphics.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(26)
+_udeks_vic_bitmap_commit_page (vic_graphics_transport.o):
+    vic_graphics.o            build/8502/vic_graphics.s(34)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(52)
+_udeks_vic_bitmap_fill (vic_graphics.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(21)
+    syscall_gate.o            src/8502/app_gateway.s(11)
+_udeks_vic_bitmap_line (vic_graphics.o):
+    syscall_gate.o            src/8502/app_gateway.s(12)
+_udeks_vic_bitmap_outline_blit (vic_graphics_transport.o):
+    vic_graphics.o            build/8502/vic_graphics.s(35)
+_udeks_vic_bitmap_outline_move (vic_graphics.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(25)
+_udeks_vic_bitmap_outline_toggle (vic_graphics.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(24)
+_udeks_vic_bitmap_pixel (vic_pixel.o):
+    vic_graphics.o            build/8502/vic_graphics.s(18)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(20)
+    syscall_gate.o            src/8502/app_gateway.s(13)
+_udeks_vic_bitmap_reset_clip (vic_graphics.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(23)
+_udeks_vic_bitmap_set_clip (vic_graphics.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(22)
+_udeks_vic_bitmap_shadow (vic_graphics.o):
+    vic_clear.o               src/services/display/vic_clear.s(6)
+    vic_pixel.o               src/services/display/vic_pixel.s(7)
+    vic_span.o                src/services/display/vic_span.s(7)
+    vic_graphics_transport.o  src/8502/vic_graphics.s(18)
+_udeks_vic_buffer_restore (bootfs_request.o):
+    vic_graphics_transport.o  src/8502/vic_graphics.s(19)
+_udeks_vic_graphics_disable (vic_graphics_transport.o):
+    vic_graphics.o            build/8502/vic_graphics.s(30)
+_udeks_vic_graphics_enable (vic_graphics_transport.o):
+    vic_graphics.o            build/8502/vic_graphics.s(29)
+_udeks_vic_graphics_initialize (vic_graphics.o):
+    shell.o                   build/8502/shell.s(21)
+_udeks_vic_graphics_is_active (vic_graphics.o):
+    shell.o                   build/8502/shell.s(23)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(17)
+    syscall_gate.o            src/8502/app_gateway.s(14)
+_udeks_vic_graphics_poll (vic_graphics.o):
+    vic_graphics_descriptor.o src/services/display/descriptor.s(5)
+_udeks_vic_graphics_service_descriptor (vic_graphics_descriptor.o):
+    service_table.o           src/services/table.s(12)
+_udeks_vic_graphics_shutdown (vic_graphics.o):
+    shell.o                   build/8502/shell.s(22)
+_udeks_vic_graphics_start (vic_graphics.o):
+    vic_graphics_descriptor.o src/services/display/descriptor.s(4)
+_udeks_vic_pointer_busy_begin (vic_graphics_transport.o):
+    z80_worker.o              build/8502/z80_worker.s(13)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(18)
+_udeks_vic_pointer_busy_end (vic_graphics_transport.o):
+    z80_worker.o              build/8502/z80_worker.s(14)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(19)
+_udeks_vic_pointer_busy_tick (vic_graphics_transport.o):
+    vic_graphics.o            build/8502/vic_graphics.s(33)
+_udeks_vic_pointer_set_x (vic_graphics_transport.o):
+    vic_graphics.o            build/8502/vic_graphics.s(31)
+_udeks_vic_pointer_set_y (vic_graphics_transport.o):
+    vic_graphics.o            build/8502/vic_graphics.s(32)
+_udeks_window_begin_paint (replacement.o):
+    syscall_gate.o            src/8502/app_gateway.s(22)
+_udeks_window_create (replacement.o):
+    syscall_gate.o            src/8502/app_gateway.s(15)
+_udeks_window_destroy (replacement.o):
+    syscall_gate.o            src/8502/app_gateway.s(16)
+_udeks_window_end_paint (replacement.o):
+    syscall_gate.o            src/8502/app_gateway.s(22)
+_udeks_window_get_geometry (replacement.o):
+    syscall_gate.o            src/8502/app_gateway.s(17)
+_udeks_window_image_complete (replacement.o):
+    syscall_gate.o            src/8502/app_gateway.s(23)
+_udeks_window_is_dragging (replacement.o):
+    syscall_gate.o            src/8502/app_gateway.s(18)
+_udeks_window_is_focused (replacement.o):
+    syscall_gate.o            src/8502/app_gateway.s(19)
+_udeks_window_manager_poll (replacement.o):
+    window_descriptor.o       src/services/window/descriptor.s(5)
+_udeks_window_manager_reset (replacement.o):
+    shell.o                   build/8502/shell.s(24)
+_udeks_window_manager_start (replacement.o):
+    window_descriptor.o       src/services/window/descriptor.s(4)
+_udeks_window_manager_stop (replacement.o):
+    window_descriptor.o       src/services/window/descriptor.s(6)
+_udeks_window_repaint (replacement.o):
+    syscall_gate.o            src/8502/app_gateway.s(20)
+_udeks_window_service_descriptor (window_descriptor.o):
+    service_table.o           src/services/table.s(13)
+_udeks_xclock_is_running (managed_apps.o):
+    shell.o                   build/8502/shell.s(27)
+_udeks_xclock_start (managed_apps.o):
+    shell.o                   build/8502/shell.s(25)
+_udeks_xclock_stop (managed_apps.o):
+    shell.o                   build/8502/shell.s(26)
+_udeks_xwave_is_running (managed_apps.o):
+    shell.o                   build/8502/shell.s(30)
+_udeks_xwave_start (managed_apps.o):
+    shell.o                   build/8502/shell.s(28)
+_udeks_xwave_stop (managed_apps.o):
+    shell.o                   build/8502/shell.s(29)
+_udeks_z80_handoff (z80_handoff.o):
+    z80_worker.o              build/8502/z80_worker.s(18)
+_udeks_z80_prepare (z80_handoff.o):
+    z80_worker.o              build/8502/z80_worker.s(17)
+_udeks_z80_submit (z80_worker.o):
+    shell.o                   build/8502/shell.s(20)
+    syscall_gate.o            src/8502/app_gateway.s(21)
+_udeks_z80_worker_service_descriptor (z80_worker_descriptor.o):
+    service_table.o           src/services/table.s(9)
+_udeks_z80_worker_start (z80_worker.o):
+    z80_worker_descriptor.o   src/services/engine/descriptor.s(4)
+addeq0sp (addeqsp.o):
+    shell.o                   build/8502/shell.s(2071)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+addeqysp (addeqsp.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    shell.o                   build/8502/shell.s(2071)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(25)
+addysp (addysp.o):
+    incsp8.o                  runtime/incsp8.s(8)
+    incsp7.o                  runtime/incsp7.s(8)
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    syscall_gate.o            src/8502/app_gateway.s(25)
+    [linker generated]       
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+    or.o                      runtime/or.s(9)
+    and.o                     runtime/and.s(8)
+aslax2 (aslax2.o):
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    syscall_gate.o            src/8502/app_gateway.s(25)
+booleq (makebool.o):
+    eq.o                      runtime/eq.s(8)
+    shell.o                   build/8502/shell.s(2071)
+boolne (makebool.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    root_console.o            build/8502/root_console.s(1013)
+boolult (makebool.o):
+    ult.o                     runtime/ult.s(8)
+callax (call.o):
+    shell.o                   build/8502/shell.s(2071)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+decsp1 (decsp1.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+    kernel.o                  build/8502/kernel.s(93)
+    kernel.o                  build/8502/kernel.s(93)
+    syscall_gate.o            src/8502/app_gateway.s(26)
+decsp2 (decsp2.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell_parser.o            build/8502/shell_parser.s(165)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(26)
+    [linker generated]       
+    [linker generated]       
+decsp3 (decsp3.o):
+    control.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-callers/control.s(67)
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    syscall_gate.o            src/8502/app_gateway.s(26)
+    [linker generated]       
+decsp4 (decsp4.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(26)
+decsp5 (decsp5.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(26)
+decsp6 (decsp6.o):
+    control.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-callers/control.s(67)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    shell.o                   build/8502/shell.s(2071)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    syscall_gate.o            src/8502/app_gateway.s(26)
+    [linker generated]       
+    [linker generated]       
+decsp7 (decsp7.o):
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    syscall_gate.o            src/8502/app_gateway.s(26)
+decsp8 (decsp8.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    syscall_gate.o            src/8502/app_gateway.s(26)
+incsp1 (incsp1.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell_parser.o            build/8502/shell_parser.s(165)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    time.o                    build/8502/time.s(351)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+    kernel.o                  build/8502/kernel.s(93)
+    syscall_gate.o            src/8502/app_gateway.s(27)
+    [linker generated]       
+incsp2 (incsp2.o):
+    staxspi.o                 runtime/staxspi.s(9)
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    terminal_stream.o         build/8502/terminal_stream.s(78)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(27)
+    [linker generated]       
+incsp3 (incsp3.o):
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    terminal_stream.o         build/8502/terminal_stream.s(78)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    syscall_gate.o            src/8502/app_gateway.s(27)
+    [linker generated]       
+    [linker generated]       
+incsp4 (incsp4.o):
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    vic_pixel.o               src/services/display/vic_pixel.s(7)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    root_console.o            build/8502/root_console.s(1013)
+    syscall_gate.o            src/8502/app_gateway.s(27)
+    [linker generated]       
+incsp5 (incsp5.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(27)
+    [linker generated]       
+incsp6 (incsp6.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    syscall_gate.o            src/8502/app_gateway.s(27)
+    [linker generated]       
+    [linker generated]       
+incsp7 (incsp7.o):
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell_parser.o            build/8502/shell_parser.s(165)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    syscall_gate.o            src/8502/app_gateway.s(27)
+incsp8 (incsp8.o):
+    control.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-callers/control.s(67)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+jmpvec (jmpvec.o):
+    shell.o                   build/8502/shell.s(2071)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+ldaidx (ldai.o):
+    syscall_gate.o            src/8502/app_gateway.s(28)
+ldeaxi (ldeaxi.o):
+    keyboard.o                build/8502/keyboard.s(935)
+mul8x16 (mul8.o):
+    mul.o                     runtime/mul.s(8)
+mul8x16a (mul8.o):
+    mul.o                     runtime/mul.s(8)
+mulax10 (mulax10.o):
+    time.o                    build/8502/time.s(351)
+mulax5 (mulax5.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    syscall_gate.o            src/8502/app_gateway.s(28)
+mulax6 (mulax6.o):
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+negax (negabs.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+popax (incsp2.o):
+    shl.o                     runtime/shl.s(15)
+    memcpy.o                  common/memcpy.s(14)
+    line_editor_read.o        src/8502/line_editor_read.s(14)
+popptr1 (popptr1.o):
+    umod.o                    runtime/umod.s(8)
+    udiv.o                    runtime/udiv.s(9)
+    steaxspi.o                runtime/steaxspi.s(9)
+    mul8.o                    runtime/mul8.s(9)
+    mul.o                     runtime/mul.s(9)
+    memcpy.o                  common/memcpy.s(14)
+ptr1 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    steaxspi.o                runtime/steaxspi.s(10)
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mulax6.o                  runtime/mulax6.s(9)
+    mulax5.o                  runtime/mulax5.s(9)
+    mulax10.o                 runtime/mulax10.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+    memcpy.o                  common/memcpy.s(15)
+    ldeaxi.o                  runtime/ldeaxi.s(8)
+    ldai.o                    runtime/ldai.s(8)
+    call.o                    runtime/call.s(8)
+    damage.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/damage.s(7)
+    vic_clear.o               src/services/display/vic_clear.s(5)
+    vic_pixel.o               src/services/display/vic_pixel.s(6)
+    vic_span.o                src/services/display/vic_span.s(6)
+    vic_graphics.o            build/8502/vic_graphics.s(11)
+    z80_worker.o              build/8502/z80_worker.s(11)
+    shell.o                   build/8502/shell.s(11)
+    shell_parser.o            build/8502/shell_parser.s(11)
+    root_terminal.o           build/8502/root_terminal.s(11)
+    line_editor.o             build/8502/line_editor.s(11)
+    keyboard.o                build/8502/keyboard.s(11)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(11)
+    root_console.o            build/8502/root_console.s(11)
+    vdc_console.o             build/8502/vdc_console.s(11)
+    time.o                    build/8502/time.s(11)
+    service_registry.o        build/8502/service_registry.s(11)
+    kernel.o                  build/8502/kernel.s(11)
+    syscall_gate.o            src/8502/syscall_gate.s(25)
+    line_editor_read.o        src/8502/line_editor_read.s(15)
+ptr2 (zeropage.o):
+    memcpy.o                  common/memcpy.s(15)
+    damage.o                  /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/bench/window-repaint-geometry/damage.s(7)
+    syscall_gate.o            src/8502/app_gateway.s(38)
+ptr3 (zeropage.o):
+    memcpy.o                  common/memcpy.s(15)
+    syscall_gate.o            src/8502/app_gateway.s(38)
+ptr4 (zeropage.o):
+    umod.o                    runtime/umod.s(9)
+    udiv.o                    runtime/udiv.s(10)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(38)
+push0 (pushax.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+pusha (pusha.o):
+    control.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-callers/control.s(67)
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell_parser.o            build/8502/shell_parser.s(165)
+    shell_parser.o            build/8502/shell_parser.s(165)
+    terminal_stream.o         build/8502/terminal_stream.s(78)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    time.o                    build/8502/time.s(351)
+    service_registry.o        build/8502/service_registry.s(408)
+    syscall_gate.o            src/8502/syscall_gate.s(23)
+    [linker generated]       
+    [linker generated]       
+pusha0 (pushax.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(28)
+pushax (pushax.o):
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    terminal_stream.o         build/8502/terminal_stream.s(78)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time.o                    build/8502/time.s(351)
+    syscall_gate.o            src/8502/syscall_gate.s(24)
+    [linker generated]       
+    [linker generated]       
+pushw0sp (pushwsp.o):
+    shell.o                   build/8502/shell.s(2071)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    root_console.o            build/8502/root_console.s(1013)
+    [linker generated]       
+pushwysp (pushwsp.o):
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(117)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    shell.o                   build/8502/shell.s(2071)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(28)
+regbank (zeropage.o):
+    regswap2.o                runtime/regswap2.s(8)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(37)
+regsave (zeropage.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(37)
+regswap2 (regswap2.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+return0 (return0.o):
+    ult.o                     runtime/ult.s(8)
+shlax3 (aslax3.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+shlax4 (aslax4.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+shlaxy (shl.o):
+    keyboard.o                build/8502/keyboard.s(935)
+shrax1 (shrax1.o):
+    syscall_gate.o            src/8502/app_gateway.s(29)
+shrax2 (shrax2.o):
+    syscall_gate.o            src/8502/app_gateway.s(29)
+shrax3 (shrax3.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+shrax4 (shrax4.o):
+    syscall_gate.o            src/8502/app_gateway.s(29)
+sp (zeropage.o):
+    subysp.o                  runtime/subysp.s(9)
+    subeqsp.o                 runtime/subeqsp.s(8)
+    sub.o                     runtime/sub.s(9)
+    staxspi.o                 runtime/staxspi.s(10)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    regswap2.o                runtime/regswap2.s(8)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    or.o                      runtime/or.s(10)
+    memcpy.o                  common/memcpy.s(15)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp8.o                  runtime/decsp8.s(8)
+    decsp7.o                  runtime/decsp7.s(8)
+    decsp6.o                  runtime/decsp6.s(8)
+    decsp5.o                  runtime/decsp5.s(8)
+    decsp4.o                  runtime/decsp4.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    and.o                     runtime/and.s(9)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    add.o                     runtime/add.s(12)
+    control.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-callers/control.s(10)
+    receipt.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-raster/receipt.s(10)
+    vic_pixel.o               src/services/display/vic_pixel.s(6)
+    vic_graphics.o            build/8502/vic_graphics.s(10)
+    z80_worker.o              build/8502/z80_worker.s(10)
+    shell.o                   build/8502/shell.s(10)
+    shell_parser.o            build/8502/shell_parser.s(10)
+    terminal_stream.o         build/8502/terminal_stream.s(10)
+    root_terminal.o           build/8502/root_terminal.s(10)
+    line_editor.o             build/8502/line_editor.s(10)
+    keyboard.o                build/8502/keyboard.s(10)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(10)
+    root_console.o            build/8502/root_console.s(10)
+    vdc_console.o             build/8502/vdc_console.s(10)
+    time.o                    build/8502/time.s(10)
+    service_registry.o        build/8502/service_registry.s(10)
+    kernel.o                  build/8502/kernel.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(37)
+    crt0.o                    src/8502/crt0.s(13)
+sreg (zeropage.o):
+    umod.o                    runtime/umod.s(9)
+    udiv.o                    runtime/udiv.s(10)
+    steaxspi.o                runtime/steaxspi.s(10)
+    ldeaxi.o                  runtime/ldeaxi.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    shell.o                   build/8502/shell.s(10)
+    line_editor.o             build/8502/line_editor.s(10)
+    keyboard.o                build/8502/keyboard.s(10)
+    vdc_console.o             build/8502/vdc_console.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(37)
+staspidx (staspidx.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    shell.o                   build/8502/shell.s(2071)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(30)
+    [linker generated]       
+stax0sp (staxsp.o):
+    control.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-callers/control.s(67)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    keyboard.o                build/8502/keyboard.s(935)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(30)
+    [linker generated]       
+staxspidx (staxspi.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+staxysp (staxsp.o):
+    control.o                 /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-callers/control.s(67)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    shell.o                   build/8502/shell.s(2071)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(30)
+steaxspidx (steaxspi.o):
+    keyboard.o                build/8502/keyboard.s(935)
+subeqysp (subeqsp.o):
+    vdc_console.o             build/8502/vdc_console.s(1363)
+subysp (subysp.o):
+    shell.o                   build/8502/shell.s(2071)
+    syscall_gate.o            src/8502/app_gateway.s(30)
+    [linker generated]       
+tmp1 (zeropage.o):
+    steaxspi.o                runtime/steaxspi.s(10)
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    shrax4.o                  runtime/shrax4.s(8)
+    shrax3.o                  runtime/shrax3.s(8)
+    shrax2.o                  runtime/shrax2.s(8)
+    shrax1.o                  runtime/shrax1.s(8)
+    shl.o                     runtime/shl.s(16)
+    or.o                      runtime/or.s(10)
+    mul.o                     runtime/mul.s(10)
+    aslax4.o                  runtime/aslax4.s(8)
+    aslax3.o                  runtime/aslax3.s(8)
+    aslax2.o                  runtime/aslax2.s(8)
+    add.o                     runtime/add.s(12)
+    vic_pixel.o               src/services/display/vic_pixel.s(6)
+    vic_span.o                src/services/display/vic_span.s(6)
+    vic_graphics.o            build/8502/vic_graphics.s(11)
+    shell.o                   build/8502/shell.s(11)
+    line_editor.o             build/8502/line_editor.s(11)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(11)
+    syscall_gate.o            src/8502/syscall_gate.s(25)
+    line_editor_read.o        src/8502/line_editor_read.s(15)
+tmp2 (zeropage.o):
+    steaxspi.o                runtime/steaxspi.s(10)
+    vic_pixel.o               src/services/display/vic_pixel.s(6)
+    syscall_gate.o            src/8502/app_gateway.s(39)
+tmp3 (zeropage.o):
+    steaxspi.o                runtime/steaxspi.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(39)
+tmp4 (zeropage.o):
+    syscall_gate.o            src/8502/app_gateway.s(39)
+tosaddax (add.o):
+    root_terminal.o           build/8502/root_terminal.s(648)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(31)
+tosandax (and.o):
+    keyboard.o                build/8502/keyboard.s(935)
+toseqa0 (eq.o):
+    shell.o                   build/8502/shell.s(2071)
+tosicmp (icmp.o):
+    ult.o                     runtime/ult.s(8)
+    eq.o                      runtime/eq.s(8)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    root_terminal.o           build/8502/root_terminal.s(648)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    syscall_gate.o            src/8502/app_gateway.s(31)
+tosicmp0 (icmp.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    z80_worker.o              build/8502/z80_worker.s(450)
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+    line_editor.o             build/8502/line_editor.s(1072)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+tosmula0 (mul8.o):
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+tosorax (or.o):
+    shell.o                   build/8502/shell.s(2071)
+    shell.o                   build/8502/shell.s(2071)
+tossuba0 (sub.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    root_console.o            build/8502/root_console.s(1013)
+    syscall_gate.o            src/8502/app_gateway.s(31)
+tossubax (sub.o):
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    vic_graphics.o            build/8502/vic_graphics.s(2118)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+    syscall_gate.o            src/8502/app_gateway.s(31)
+tosudiva0 (udiv.o):
+    shell.o                   build/8502/shell.s(2071)
+    syscall_gate.o            src/8502/app_gateway.s(32)
+tosulta0 (ult.o):
+    replacement.o             /var/home/salvogendut/Dev/UDEKS/build/window-manager-bounded-repaint/build/window-repaint-geometry/replacement.s(4785)
+tosumoda0 (umod.o):
+    shell.o                   build/8502/shell.s(2071)
+    syscall_gate.o            src/8502/app_gateway.s(32)
+tosumula0 (mul8.o):
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(32)
+tosumulax (mul.o):
+    syscall_gate.o            src/8502/app_gateway.s(32)
+udiv16 (udiv.o):
+    umod.o                    runtime/umod.s(8)
+

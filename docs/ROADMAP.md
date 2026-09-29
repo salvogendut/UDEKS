@@ -398,6 +398,15 @@ the [Tasking 0.1 handover](../HANDOVER.md).
   not installed, not a disk or latency qualification. Next remains measured
   provider/caller recovery followed by delivery/admission/NMI and live gates.
   See [WINDOW-REPAINT-GEOMETRY.md](WINDOW-REPAINT-GEOMETRY.md).
+  The real-caller audit finds ten synchronous compositions and two `void`
+  painter calls; xwave's full callback is not bounded by its separate
+  four-vertex foreground poll. A measured shared damage-to-lane marshaller
+  adds 78 resident CODE bytes in both complete links, returning the optimistic
+  deficit to at least 255 **before any caller or provider**. No production
+  ABI, manager or disk changed. Next: define bounded client progress and
+  pre-edit/deferred caller semantics, then measure the complete provider and
+  cancellation/admission/NMI path. See
+  [WINDOW-REPAINT-CALLERS.md](WINDOW-REPAINT-CALLERS.md).
 - [ ] Add message queues and capability-based device handles.
 - [x] Define service-module descriptor ABI 0.1, version negotiation, and the
   startup lifecycle.

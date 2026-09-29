@@ -1711,3 +1711,29 @@ NEXT: measure further *real* caller/provider costs and recover the remaining
 resident deficit; do not grant unretired helper bodies or reserved stack/guard
 bytes as free. Qualify delivery/admission and NMI-safe serialized ownership in
 the restored kernel before producing a live manual-test disk.
+
+2026-09-29 real caller/provider audit (issue #14):
+
+The selected manager has ten synchronous `compose_damage` calls, seven
+`damage_set`, two `damage_add`, two cache-paint routes and two direct
+`window->paint(handle)` calls. Public painter callbacks return `void`, and
+there is no bounded progress cursor or explicit deferred/retry window status.
+The full xwave callback loops over its plotted prefix despite its separate
+four-vertex foreground poll. Create/destroy/drag/repaint currently rely on
+synchronous repaint/callback ordering. Source-locked audit/tests now fail if
+those representative call counts or ordering seams change unreviewed.
+
+First shared damage-box-to-lane marshaller compiles to 78 CODE bytes and no
+state/data. Complete isolated normal/panic links add exactly 78 with no new
+helpers or fixed-range changes. Optimistic shortfall returns from 177 to
+**255 bytes BEFORE any actual caller**, provider, admission, delivery, NMI or
+teardown. It does not fence any mutation or own a lease. Source/build/library/
+link hashes preserved under bench/{artifacts,results}/2026-09-29-repaint-callers;
+see docs/WINDOW-REPAINT-CALLERS.md. Production images unchanged; isolated
+links UNBOOTABLE. No fresh emulator/manual gate for this uninstalled adapter.
+
+NEXT: define and host-test a private bounded client-step provider and explicit
+pre-edit/deferred scene-change semantics. A generic INVALID return on busy
+destroy risks lost cleanup; merely moving an old `void` painter to another
+poll does not bound it. Only then measure real call sites/provider/admission,
+and qualify NMI-safe ownership, delivery and an eventual visible disk.
