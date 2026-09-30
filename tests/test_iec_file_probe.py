@@ -2,7 +2,7 @@
 """The line-level probe must reject partial or corrupted named-file reads."""
 import unittest
 
-from tools.iec_directory_probe import validate_file
+from tools.iec_directory_probe import validate_file, validate_long_file, validate_short_file
 
 
 SOURCE = bytes(range(32))
@@ -40,6 +40,31 @@ class IecFileProbeTests(unittest.TestCase):
         data[15] = 2
         with self.assertRaises(ValueError):
             validate_file(bytes(data), SOURCE)
+
+    def test_rejects_wrong_multi_sector_bytes(self):
+        data = bytearray(0x300)
+        data[:6] = b'\x02\x00\x00\x00\x00\x02'
+        data[10:13] = b'\x01\x00\x01'
+        data[14:16] = b'\x03\x03'
+        source = bytes(range(256)) * 2
+        data[0x100:0x300] = source
+        validate_long_file(bytes(data), source)
+        data[0x201] ^= 1
+        with self.assertRaises(ValueError):
+            validate_long_file(bytes(data), source)
+
+    def test_rejects_missing_eoi_on_short_file(self):
+        from tools.iec_directory_probe import SHORT_FILE
+        expected = SHORT_FILE.read_bytes()
+        data = bytearray(0x200)
+        data[:6] = bytes((2, 0, 1, 0, len(expected), 0))
+        data[10:13] = b'\x01\x00\x01'
+        data[14:16] = b'\x03\x03'
+        data[0x100:0x100 + len(expected)] = expected
+        validate_short_file(bytes(data))
+        data[2] = 0
+        with self.assertRaises(ValueError):
+            validate_short_file(bytes(data))
 
 
 if __name__ == '__main__':

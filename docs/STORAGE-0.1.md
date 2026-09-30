@@ -56,29 +56,32 @@ uses the same bounded `READ`/`CLOSE` operations. It uses no KERNAL
 vectors: line writes preserve CIA2's live VIC bank bits; waits are finite;
 receive-byte IRQ masking covers the entire clock/data handshake; and each
 transaction selects 1 MHz, then restores the prior CPU speed and releases
-ATN/CLK/DATA on close
-or failure. A future storage service must serialize ownership of CIA2 and
+ATN/CLK/DATA on close or failure. A future storage service must serialize
+ownership of CIA2 and
 the CPU-speed register before linking this transport into UDEKS.
 
 `make iec-probe` builds this same transport into a standalone raw-load PRG.
 `make iec-vice-probe` creates a **non-autoboot** D64 in `build/`, reads its
 directory through VICE true-drive 1571 and 1541 models, compares the exact
-96-byte streams, reads and compares the first 32 bytes of a named on-disk PRG
-through channel 2, and checks that an absent device returns `NO_DEVICE` with
-the bus released and CPU speed restored. The probe forces 2 MHz before open
+directory streams, reads and compares 32 and 512 bytes of a named on-disk PRG
+through channel 2, reads a complete short file through EOI, and checks that
+an absent device returns `NO_DEVICE` with the bus released and CPU speed
+restored. The probe forces 2 MHz before open
 to prove the transport's 1 MHz selection and restoration. The first live
 VICE 1571 directory capture is also a host decoder regression fixture.
 These are line-level runs, not VICE's KERNAL disk traps.
-The named-file probe intentionally stops before a sector boundary: sustained
-multi-sector reads and file EOI need a separate qualification gate before
-`cat` can rely on them. An earlier receiver intermittently timed out after
-4–5 bits of a byte on the 1541 model. Longer waits did not fix it; masking
+The 512-byte PRG probe crosses a sector boundary and the 12-byte text fixture
+tests file EOI. Longer files, error-channel status (including missing files),
+and media changes still need qualification before `cat` can rely on them.
+An earlier receiver intermittently timed out after 4–5 bits of a byte on the
+1541 model. Longer waits did not fix it; masking
 IRQs for the complete receive handshake, matching the
 [original C128 KERNAL serial routine](https://github.com/mist64/cbmsrc/blob/master/KERNAL_C128_05/serial.src),
-passed three independent complete VICE runs on both drive models. The decoder
+passed three independent complete VICE runs on both drive models; the later
+short-file and sector-boundary probe passed once. The decoder
 retains the live bit counter at result offset 17 on read failure. This
-qualifies only the bounded 32-byte file sample, not a complete file, real
-hardware, or the `/mnt` request path.
+qualifies the bounded VICE samples, not real hardware or the `/mnt` request
+path.
 Build the PRG in the reference container with
 `distrobox enter my-distrobox -- make iec-probe`, then run
 `make iec-vice-probe` on the host with the VICE Flatpak installed.
@@ -88,21 +91,19 @@ the transport and parser separately; nonresident service placement, request
 routing, and shell commands are still missing. `1986`'s ROM-backed raw IEC
 mode and physical C128 + PI1541 remain unqualified.
 
-## Remaining vertical slices
+## Shortest path to Storage 0.1
 
-1. Qualify the native transport in `1986`'s ROM-backed raw IEC mode and on a
-   physical C128 + PI1541. VICE true-drive 1571/1541 and no-device cases are
-   qualified; a separate integration gate must prove VIC bank selection is
-   unchanged when graphics is active.
-2. Establish a nonresident C storage-service placement and an explicit
-   request/descriptor handoff. Keep bootfs as a fallback, and make `/mnt`
-   resolve to the mounted device without exposing IEC registers to commands.
-3. Wire `OPEN`/`GETDENTS`/`READ`/`CLOSE` to that service; add `mount`, `umount`,
-   and `cat`. Adapt `ls -l` to stat the selected path rather than its current
-   hard-coded `/bin` path. Define PETSCII-to-path behavior and cleanly report
-   missing device, missing file, EOI, timeout, and media errors.
-4. Qualify the complete user workflow on bootable D64/D71 images, both
-   emulators, and physical C128 + PI1541 before claiming Storage 0.1.
+1. **Bootable service:** reserve and link a nonresident C storage service with
+   its own runtime context. Route `/mnt` requests to it through the existing
+   task-request boundary, preserving bootfs for all other paths and when no
+   disk is present. First gate: `mount 8 /mnt` then `ls /mnt` in VICE.
+2. **Useful files:** connect `OPEN`/`GETDENTS`/`READ`/`CLOSE`, add `umount` and
+   `cat`, and make `ls -l` use the selected path. Handle PETSCII names,
+   missing files, EOI, timeouts, and media errors without stranding the bus.
+   Gate: `cat /mnt/HELLO` prints the disk file and returns to the prompt.
+3. **Qualify the workflow:** test bootfs fallback and graphics-active VIC bank
+   preservation on D64/D71 in VICE and `1986` raw-IEC mode, then on a
+   physical C128 + PI1541. Storage 0.1 is complete only after these pass.
 
 Storage-backed UDEX loading is the subsequent Storage 0.2 milestone. The
 directory decoder and native IEC transport are real service ingredients, but they

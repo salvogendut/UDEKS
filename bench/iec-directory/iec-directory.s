@@ -44,8 +44,10 @@ entry:
         sta RESULT+4
         sta RESULT+5
         lda #$08
-        ldx RESULT+16             ; pre-poked mode: 0=directory, 1=file
+        ldx RESULT+16             ; 0=directory, 1=32 bytes, 2=short EOI, 3=512 bytes
         beq @directory
+        cpx #$02
+        beq @short_name
         ldx #$07
 @copy_name:
         lda test_name,x
@@ -54,6 +56,17 @@ entry:
         bpl @copy_name
         lda #$08
         sta _udeks_iec_filename_length
+        jmp @open_file
+@short_name:
+        ldx #$04
+@copy_short_name:
+        lda short_name,x
+        sta _udeks_iec_filename,x
+        dex
+        bpl @copy_short_name
+        lda #$05
+        sta _udeks_iec_filename_length
+@open_file:
         lda #$08
         jsr _udeks_iec_open_file
         jmp @opened
@@ -72,7 +85,8 @@ entry:
         lda $d030
         sta RESULT+11
         lda RESULT+1
-        bne failed
+        beq read_next
+        jmp failed
 read_next:
         jsr _udeks_iec_read_byte
         stx RESULT+2
@@ -90,9 +104,19 @@ write_byte:
         beq close
         lda RESULT+16
         beq @directory_limit
+        cmp #$02
+        beq read_next
+        cmp #$03
+        beq @long_limit
         lda RESULT+4
         cmp #$20                  ; named-file sample is a bounded 32 bytes
         beq close
+        jmp read_next
+@long_limit:
+        lda RESULT+5
+        cmp #$02                  ; two pages cross a disk-sector boundary
+        beq close
+        jmp read_next
 @directory_limit:
         lda RESULT+5
         cmp #$01
@@ -139,3 +163,5 @@ halt:
 
 test_name:
         .byte $d4,$c5,$d3,$d4,$d0,$d2,$cf,$c7 ; TESTPROG on the disk
+short_name:
+        .byte $c8,$c5,$cc,$cc,$cf               ; HELLO on the disk

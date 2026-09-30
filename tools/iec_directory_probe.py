@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ARTIFACTS = ROOT / 'build/bench/iec-directory'
 PROGRAM = ARTIFACTS / 'iec-directory.prg'
 DISK = ARTIFACTS / 'test.d64'
+SHORT_FILE = ROOT / 'bench/iec-directory/hello.txt'
 VICE = 'net.sf.VICE'
 
 
@@ -66,18 +67,40 @@ def validate_file(data: bytes, source: bytes) -> None:
         raise ValueError('named-file bytes differ from the on-disk PRG')
 
 
+def validate_short_file(data: bytes) -> None:
+    expected = SHORT_FILE.read_bytes()
+    if len(data) != 0x200 or data[:4] != b'\x02\x00\x01\x00':
+        raise ValueError('short file did not end in EOI and close cleanly')
+    if data[4] != len(expected) or data[5] != 0 or \
+       data[0x100:0x100 + len(expected)] != expected:
+        raise ValueError('short file content or byte count differs')
+    if data[10] & 1 != 1 or data[11] & 1 != 0 or data[12] != data[10] or \
+       data[13] != 0 or data[14] != data[15]:
+        raise ValueError('short file changed CPU speed, bus, or VIC bank')
+
+
+def validate_long_file(data: bytes, source: bytes) -> None:
+    if len(data) != 0x300 or data[:6] != b'\x02\x00\x00\x00\x00\x02':
+        raise ValueError(f'multi-sector file read failed: {data[:18].hex()}')
+    if data[0x100:0x300] != source[:512]:
+        raise ValueError('multi-sector bytes differ from on-disk PRG')
+    if data[10] & 1 != 1 or data[11] & 1 != 0 or data[12] != data[10] or \
+       data[13] != 0 or data[14] != data[15]:
+        raise ValueError('multi-sector read changed CPU speed, bus, or VIC bank')
+
+
 def capture(name: str, expected_state: int, *vice_args: str,
-            file_mode: bool = False) -> bytes:
+            file_mode: int = 0, size: int = 0x200) -> bytes:
     result = ARTIFACTS / f'{name}.raw'
     command = [
         'python3', 'tools/vice_capture.py', str(PROGRAM), str(result),
         '--entry', '0x2800', '--raw-load', '--result-address', '0x3100',
-        '--result-size', '0x200', '--state-offset', '0',
+        '--result-size', hex(size), '--state-offset', '0',
         '--complete-value', hex(expected_state), '--timeout', '60',
         '--poll-delay', '10', '--capture-incomplete', '--flatpak-id', VICE,
     ]
     if file_mode:
-        command.extend(('--poke', '0x3110=1'))
+        command.extend(('--poke', f'0x3110={file_mode}'))
     command.extend(f'--vice-arg={arg}' for arg in vice_args)
     run(*command)
     return result.read_bytes()
@@ -93,6 +116,8 @@ def main() -> None:
         'IEC TEST,01', 'd64', str(DISK))
     run('flatpak', 'run', '--command=c1541', VICE, '-attach', str(DISK),
         '-write', str(PROGRAM), 'TESTPROG')
+    run('flatpak', 'run', '--command=c1541', VICE, '-attach', str(DISK),
+        '-write', str(SHORT_FILE), 'HELLO')
     if DISK.stat().st_size != 174848:
         raise ValueError('c1541 did not create a standard 35-track D64')
     streams = []
@@ -105,12 +130,21 @@ def main() -> None:
     for drive in (1571, 1541):
         data = capture(f'vice-file-{drive}', 2, '-drive8truedrive',
                        '-drive8type', str(drive), '-8', str(DISK),
-                       file_mode=True)
+                       file_mode=1)
         validate_file(data, PROGRAM.read_bytes())
+        validate_short_file(capture(f'vice-short-{drive}', 2,
+                                    '-drive8truedrive', '-drive8type',
+                                    str(drive), '-8', str(DISK), file_mode=2))
+        validate_long_file(capture(f'vice-long-{drive}', 2,
+                                   '-drive8truedrive', '-drive8type',
+                                   str(drive), '-8', str(DISK), file_mode=3,
+                                   size=0x300), PROGRAM.read_bytes())
     validate_no_device(capture('vice-no-device', 0x80,
                                '-drive8type', '0'))
-    print(f'native IEC probe OK: {len(streams[0])} directory bytes and '
-          '32 named-file bytes on 1571 and 1541; absent device returns NO_DEVICE')
+    print(f'native IEC probe OK: {len(streams[0])} directory bytes, '
+          '32- and 512-byte named-file reads, and short-file EOI on '
+          '1571 and 1541; '
+          'absent device returns NO_DEVICE')
 
 
 if __name__ == '__main__':
