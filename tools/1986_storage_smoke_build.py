@@ -26,6 +26,7 @@ def main():
     parser.add_argument('--disk-exec', action='store_true', help='test disk-only execution fixtures')
     parser.add_argument('--disk-shell', action='store_true', help='require disk-first shell boot and uname')
     parser.add_argument('--sysinfo', action='store_true', help='check startup completion and standalone free/df')
+    parser.add_argument('--disk-graphics', action='store_true', help='native managed-app load, window interaction and cancellation')
     args = parser.parse_args()
     work = args.output.resolve()
     work.mkdir(parents=True, exist_ok=True)
@@ -36,6 +37,7 @@ def main():
                     *(['-DUDEKS_DISK_EXEC_SMOKE'] if args.disk_exec else []),
                     *(['-DUDEKS_DISK_SHELL_SMOKE'] if args.disk_shell else []),
                     *(['-DUDEKS_SYSINFO_SMOKE'] if args.sysinfo else []),
+                    *(['-DUDEKS_DISK_GRAPHICS_SMOKE'] if args.disk_graphics else []),
                     str(ROOT/'tools/1986_storage_smoke.c'),
                     *map(str, smoke.emulator_sources(emulator)), *flags, '-lm', '-o', str(binary)], check=True)
     disk = work/('test'+args.disk.suffix)
@@ -56,7 +58,7 @@ def main():
         'emulator_revision': subprocess.check_output(
             ['git', '-C', str(emulator), 'rev-parse', 'HEAD'], text=True).strip(),
         'exit_status': result.returncode, 'raw_iec': True, 'disk_exec': args.disk_exec,
-        'disk_shell': args.disk_shell, 'sysinfo': args.sysinfo,
+        'disk_shell': args.disk_shell, 'sysinfo': args.sysinfo, 'disk_graphics': args.disk_graphics,
     }, indent=2)+'\n')
     raise SystemExit(result.returncode)
 

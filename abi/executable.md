@@ -72,12 +72,23 @@ The Storage 0.2 foreground loader accepts explicit `/mnt/NAME` for ordinary
 8502 UDEX images only (flags zero, load `$0200`, image+BSS <= `$0A00`). The
 DOS file is the exact UDEX byte stream, without a Commodore PRG load prefix.
 It stages into a FREE bank-1 task-2 allocation and checks exact file length,
-entry and allocation before replacing live bank-0 APP1. Managed and SPAWN
-loads remain bootfs-only. See [implementation and limits](../docs/STORAGE-0.2.md).
+entry and allocation before replacing live bank-0 APP1. SPAWN still uses bootfs.
+See [implementation and limits](../docs/STORAGE-0.2.md).
+
+Managed first-use loads resolve `xclock` as `/mnt/XCLOCK` (bank-0 `$0200`)
+and `xwave` as `/mnt/XWAVE` (bank-0 `$1200`); they do not fall back to bootfs.
+Both require flags `$02`, load and entry equal to the requested slot base,
+image+BSS <= `$0A00`, exact file length, and six absolute JMP entries whose
+targets are inside the image after the 18-byte table. Validation finishes
+before any live app slot is written. Task 2 must be FREE before borrowing
+bank-1 staging; STOPPED and ZOMBIE also retain ownership. Successful images
+stay installed for polling and subsequent restarts until reboot; this is not
+general dynamic linking, unloading, or isolation from hostile machine code.
+See [managed disk delivery](../docs/DISK-GRAPHICS.md).
 
 Boot 0.2 also allows init's persistent load to read `/mnt/USH` before child
 tasks exist. It requires flag `$01`, load and entry `$9000`, and the same
-`$0A00` image+BSS bound. The fixed scheduler entry cannot currently honor an
+`$1000` image+BSS bound. The fixed scheduler entry cannot currently honor an
 offset entry for persistent tasks, so the loader rejects it. Init temporarily
 mounts the boot device, releases the mount after loading, and uses bootfs on
 failure; no new public syscall is introduced. See [boot policy](../docs/BOOT-STARTUP.md).

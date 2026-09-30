@@ -1,0 +1,11 @@
+{
+  "disk_sha256": "04050e53267bba3b31c9b4b6db6c1316aec53747ecba5277e390cf36ef68cdf9",
+  "test_disk_sha256": "90de6727c1cb165ec390977ed8a79d5716375cb1290ca7043bb42e53909a6820",
+  "emulator_revision": "43d7dceb05e3781414922d6207089d89bd1ba81a",
+  "exit_status": 0,
+  "raw_iec": true,
+  "disk_exec": false,
+  "disk_shell": true,
+  "sysinfo": true,
+  "disk_graphics": true
+}

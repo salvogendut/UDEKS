@@ -46,11 +46,76 @@ static void storage_command(const char *line, unsigned expected_exit) {
     storage_result(line, expected_exit, 0);
 }
 
+#ifdef UDEKS_DISK_GRAPHICS_SMOKE
+static void window_gesture(unsigned x, unsigned y, unsigned dx, unsigned dy) {
+    unsigned starts = word(0xf258), finishes = word(0xf25a);
+    pointer_to(x, y);
+    joyports_mouse_button(&machine->joyports, 0, false, true);
+    for (unsigned n = 0; n < 10000 &&
+         (word(0xf258) == starts || !byte(0xf248)); ++n) frames(1);
+    require(word(0xf258) == starts+1 && byte(0xf248), "window gesture did not start");
+    pointer_to(dx, dy);
+    joyports_mouse_button(&machine->joyports, 0, false, false);
+    for (unsigned n = 0; n < 10000 &&
+         (word(0xf25a) == finishes || byte(0xf248)); ++n) frames(1);
+    require(word(0xf25a) == finishes+1 && !byte(0xf248), "window gesture did not finish");
+    frames(500);
+}
+
+static void disk_graphics(void) {
+    command("xinit"); idle();
+    command("xclock &"); idle();
+    require(byte(0xf225) == 3, "disk clock did not start");
+    unsigned clock_handle = byte(0xf247);
+    window_gesture(150, 106, 110, 86);
+    require(byte(0xf228) < 100 && byte(0xf229) < 50, "clock did not move");
+    unsigned x = byte(0xf228), y = byte(0xf229);
+    unsigned w = byte(0xf22a), h = byte(0xf22b);
+    /* The window manager subtracts pointer biases 12,40. */
+    window_gesture(x+w+7, y+h+35, x+w+25, y+h+47);
+    require(byte(0xf22a) > w && byte(0xf22b) > h, "clock did not resize");
+    command("xwave");
+    wait_byte(0xf265, 3, "disk foreground wave did not start");
+    c128_key_event(machine, SDL_SCANCODE_LCTRL, true);
+    key(SDL_SCANCODE_C);
+    c128_key_event(machine, SDL_SCANCODE_LCTRL, false);
+    wait_byte(0xf265, 2, "foreground Ctrl+C did not stop disk wave"); idle();
+    require(byte(0xf225) == 3, "Ctrl+C stopped background clock");
+    command("xwave &"); idle();
+    wait_byte(0xf27a, 21, "wave did not finish");
+    unsigned wave_handle = byte(0xf247);
+    require(wave_handle != clock_handle, "wave did not become focused");
+    window_gesture(166, 132, 142, 104);
+    require(byte(0xf274) < 130, "wave did not move");
+    wait_byte(0xf27a, 21, "wave did not repaint after move");
+    /* Switch both ways with real clicks in exposed title bars. */
+    x = byte(0xf228); y = byte(0xf229);
+    pointer_to(x+22, y+46);
+    joyports_mouse_button(&machine->joyports, 0, false, true); frames(80);
+    joyports_mouse_button(&machine->joyports, 0, false, false); frames(500);
+    require(byte(0xf247) == clock_handle, "clock focus click failed");
+    pointer_to(byte(0xf274)+92, byte(0xf275)+46);
+    joyports_mouse_button(&machine->joyports, 0, false, true); frames(80);
+    joyports_mouse_button(&machine->joyports, 0, false, false); frames(500);
+    require(byte(0xf247) == wave_handle, "wave focus click failed");
+    command("cowsay both alive"); idle();
+    require(console_contains("both alive"), "console with both apps failed");
+    command("xclock -q"); idle(); require(byte(0xf225) == 2, "clock stop failed");
+    command("xwave -q"); idle(); require(byte(0xf265) == 2, "wave stop failed");
+    command("xclock &"); idle(); require(byte(0xf225) == 3, "clock restart failed");
+    command("xwave &"); idle(); require(byte(0xf265) == 3, "wave restart failed");
+    require(byte(0xf11b) == 0, "lifecycle canary failure");
+    puts("PASS disk graphics: load both, drag/resize clock, Ctrl+C wave, drag/focus, console, stop/restart");
+}
+#endif
+
 int main(int argc, char **argv) {
     require(argc == 5, "usage: storage-smoke ROMDIR DISK SLOTADDR SNAPSHOT");
     Config config;
     config_set_defaults(&config);
     config.col_mode_80 = true;
+    config.joy_port_mode[0] = JOYPORT_MOUSE;
+    config.joy_port_mode[1] = JOYPORT_JOYSTICK;
     config.real_disk_drive = true;
     config.notify_mode = NOTIFY_MODE_CONSOLE;
     machine = calloc(1, sizeof(*machine));
@@ -119,6 +184,9 @@ int main(int argc, char **argv) {
     storage_command("cat /mnt/one", 0);
     require(console_contains("X"), "one-byte file missing");
     storage_command("cat /mnt/nofile", 1);
+#endif
+#ifdef UDEKS_DISK_GRAPHICS_SMOKE
+    disk_graphics();
 #endif
     storage_command("cat /mnt/hello", 0);
     storage_command("umount /mnt", 0);

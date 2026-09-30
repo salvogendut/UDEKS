@@ -299,7 +299,7 @@ user-sources: $(USER_COWSAY_ASM) $(USER_DATE_ASM) $(USER_LS_ASM) $(USER_USH_ASM)
 		$(USER_XCLOCK_ASM) $(USER_XWAVE_ASM) $(USER_TASK_STREAM_OBJ) \
 		$(USER_FILESYSTEM_OBJ) $(USER_POLL_ENTRY_OBJ)
 
-user-programs: $(USER_BOOTFS)
+user-programs: $(USER_BOOTFS) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX)
 
 # Compile-only proof that the host-tested lifecycle modules build for cc65.
 task-state: $(BUILD_8502)/task_state.o
@@ -785,16 +785,14 @@ $(USER_XWAVE_UDEX): $(USER_XWAVE_BIN) tools/build_udex.py
 		--entry-address 0x1200 --bss-size 0x0225 --flags 0x02 $< $@
 
 $(USER_BOOTFS): $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) \
-		$(USER_RECOVERY_USH_UDEX) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) \
-		tools/build_bootfs.py
+		$(USER_RECOVERY_USH_UDEX) \
+		tools/build_bootfs.py Makefile
 	$(PYTHON) tools/build_bootfs.py --max-size 0x3100 \
 		--entry cowsay=$(USER_COWSAY_UDEX) \
 		--entry date=$(USER_DATE_UDEX) \
 		--entry ls=$(USER_FILETOOLS_UDEX) --entry cat=$(USER_FILETOOLS_UDEX) \
 		--entry mount=$(USER_FILETOOLS_UDEX) --entry umount=$(USER_FILETOOLS_UDEX) \
-		--entry ush=$(USER_RECOVERY_USH_UDEX) \
-		--entry xclock=$(USER_XCLOCK_UDEX) \
-		--entry xwave=$(USER_XWAVE_UDEX) $@
+		--entry ush=$(USER_RECOVERY_USH_UDEX) $@
 
 $(VDC_SPLASH_BIN): assets/udekspipe-64.xpm tools/xpm_to_vdc.py | $(BUILD_ASSETS)
 	$(PYTHON) tools/xpm_to_vdc.py $< $@
@@ -1910,7 +1908,8 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
-		tools/build_d71.py bench/iec-directory/hello.txt user/etc/rc $(USER_SYSINFO_UDEX)
+		tools/build_d71.py bench/iec-directory/hello.txt user/etc/rc $(USER_SYSINFO_UDEX) \
+		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX)
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
@@ -1933,6 +1932,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) \
 		--hello bench/iec-directory/hello.txt \
 		--rc user/etc/rc --sysinfo $(USER_SYSINFO_UDEX) \
+		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) \
 		--d64-output $(BOOT_D64) $(BOOT_D71)
 
 $(TASK_EXIT_PROBE_D71) $(TASK_EXIT_PROBE_D64) &: $(STAGE0_BIN) \
@@ -2126,6 +2126,7 @@ $(TASK_CANCEL_PROBE_D71) $(TASK_CANCEL_PROBE_D64) &: $(STAGE0_BIN) \
 		--d64-output $(TASK_CANCEL_PROBE_D64) $(TASK_CANCEL_PROBE_D71)
 
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
+		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) \
 		$(BOOT_DELIVERY_BIN) \
 		$(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) \
 		$(SCHEDULER_BIN) $(CAPABILITY_BIN) $(CAPABILITY_INSTALLER_BIN) \
@@ -2141,6 +2142,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		tools/build_d71.py
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(PANIC_PROBE_KERNEL_BIN) \
+		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(PANIC_PROBE_CRT0_BIN) \
 		--probe $(PANIC_PROBE_PROBE_BIN) \
@@ -2164,6 +2166,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 
 check:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
+	$(PYTHON) -m py_compile tools/managed_app_fixture.py tools/managed_disk_probe.py
 	$(PYTHON) -m py_compile tools/startup_probe.py
 	$(PYTHON) -m py_compile tools/build_storage.py tools/storage_service_probe.py tools/storage_shell_probe.py tools/iec_eof_reference.py tools/disk_exec_fixture.py tools/disk_exec_probe.py tools/gen_disk_loader_bindings.py tools/1986_storage_smoke_build.py tools/disk_shell_fixture.py tools/disk_shell_probe.py
 	$(PYTHON) -m py_compile tools/ihx_to_bin.py tools/bin_to_prg.py \

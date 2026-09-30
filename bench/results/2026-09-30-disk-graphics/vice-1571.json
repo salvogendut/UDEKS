@@ -1,0 +1,79 @@
+{
+  "disk_sha256": "2d2e911308826bad3674ea5ec4f391bb0efed55c87006743a7fd837b52b3ff37",
+  "first": "xwave",
+  "drive": "1571",
+  "faults": false,
+  "bootfs_names": [
+    "cat",
+    "cowsay",
+    "date",
+    "ls",
+    "mount",
+    "umount",
+    "ush"
+  ],
+  "code_matches_disk": true,
+  "retained_restart_without_media": true,
+  "commands": [
+    {
+      "command": "xinit",
+      "loader": "5441534b010000ff7c0b80010000ffff554445580001010100907c0b80010090",
+      "console": "\nINITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018b0bff7c0b80010000ffff787761766501010100907c0b80010090",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01000000bf06250203cfe2ff55444558000101020012bf0625020012",
+      "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "loader": "5441534b01000000c6090d0003cfe2ff55444558000101020002c6090d000002",
+      "console": "REU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay both",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "WELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "VIC-II graphics active on 40-column display\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "xwave: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~>"
+    },
+    {
+      "command": "xwave -q",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xwave &\nxwave started in background\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xclock &\nxclock started in background\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay alive",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> cowsay alive\n _______\n< alive >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    }
+  ]
+}

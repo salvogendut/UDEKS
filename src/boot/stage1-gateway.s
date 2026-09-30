@@ -467,6 +467,7 @@ TASK_STACK_TOP          = $f7f0
 
 TASK_OK                 = $00
 TASK_BAD_SYSCALL_ABI    = $02
+TASK_BUSY               = $03
 TASK_BAD_MAGIC          = $04
 TASK_BAD_VERSION        = $05
 TASK_BAD_CPU            = $06
@@ -509,6 +510,16 @@ task_load_persistent:
         bne task_load_named_destination
 task_load_managed:
         ; The resident application manager supplies a direct name pointer.
+        ; Disk staging borrows bank-1 APP1 only when task 2 is FREE. Reject
+        ; before changing its common launcher, even for STOPPED/ZOMBIE.
+        pha
+        lda DISK_LOADER_CHILD_STATE
+        beq :+
+        pla
+        lda #TASK_BUSY
+        rts
+:
+        pla
         ldy #$02
 task_load_named:
         sta task_command_load+1
@@ -668,6 +679,11 @@ task_lookup_bootfs:
         jmp task_lookup_code
         .byte "ULKP", 0, 1
 task_lookup_code:
+        lda task_load_mode
+        cmp #2
+        bne :+
+        jmp task_managed_name
+:
         lda BOOTFS_BASE+0
         cmp #'U'
         bne task_bootfs_reject_early
@@ -879,6 +895,7 @@ task_lookup_miss:
         beq :+
         jmp task_not_found
 :
+task_disk_leaf_start:
         ldx #4
 :
         lda task_disk_mount,x
@@ -899,6 +916,41 @@ task_lookup_miss:
         lda #>task_disk_leaf
         sta task_command_load+2
         jmp task_disk_fallback
+
+; Managed callers use fixed names and retain fixed bank-0 slots. The disk
+; header is not permitted to choose the other application's destination.
+task_managed_name:
+        lda task_name_length
+        cmp #6
+        beq task_managed_clock
+        cmp #5
+        bne task_managed_unknown
+        ldx #4
+:
+        lda TASK_HEADER,x
+        cmp task_managed_wave_name,x
+        bne task_managed_unknown
+        dex
+        bpl :-
+        lda #$12
+        bne task_managed_named
+task_managed_clock:
+        ldx #5
+:
+        lda TASK_HEADER,x
+        cmp task_managed_clock_name,x
+        bne task_managed_unknown
+        dex
+        bpl :-
+        lda #$02
+task_managed_named:
+        sta task_managed_base
+        jmp task_disk_leaf_start
+task_managed_unknown:
+        jmp task_not_found
+task_managed_clock_name: .byte "xclock"
+task_managed_wave_name:  .byte "xwave"
+task_managed_base:       .byte 0
 
         .segment "TASKLOADER"
 task_disk_fallback:
@@ -990,9 +1042,7 @@ task_check_foreground_load:
         beq :+
         jmp task_bad_load
 task_check_managed_load:
-        cmp #$02
-        beq :+
-        cmp #$12
+        cmp task_managed_base
         beq :+
         jmp task_bad_load
 :
@@ -1055,15 +1105,18 @@ task_size_reject:
 :
 
 task_check_entry:
-        ; Persistent context entry is currently fixed at $9000. Reject a
+        ; Persistent/managed callers use fixed entry veneers. Reject a
         ; different (even in-image) entry instead of silently ignoring it.
         lda task_load_mode
         cmp #1
+        beq task_fixed_entry
+        cmp #2
         bne task_check_entry_offset
+task_fixed_entry:
         lda TASK_HEADER+14
         bne task_persistent_entry_bad
         lda TASK_HEADER+15
-        cmp #$90
+        cmp TASK_HEADER+9
         beq task_check_entry_offset
 task_persistent_entry_bad:
         jmp task_bad_entry
@@ -1090,7 +1143,59 @@ task_check_entry_offset:
         bcc task_valid_jump
         jmp task_bad_entry
 task_valid_jump:
+        lda task_load_mode
+        cmp #2
+        bne task_validated_image
+        ; Six absolute JMP veneers are the managed ABI. Validate every
+        ; target against this image before copying any live app byte.
+        lda TASK_IMAGE_HI
+        bne :+
+        lda TASK_IMAGE_LO
+        cmp #18
+        bcc task_managed_entry_bad
+:
+        clc
+        lda task_file_lo
+        adc #16
+        sta task_managed_read+1
+        lda task_file_hi
+        adc #0
+        sta task_managed_read+2
+        ldy #0
+task_managed_vector:
+        jsr task_managed_read
+        cmp #$4c
+        bne task_managed_entry_bad
+        iny
+        jsr task_managed_read
+        sta task_entry_offset_lo
+        iny
+        jsr task_managed_read
+        sec
+        sbc task_managed_base
+        bcc task_managed_entry_bad
+        bne :+
+        ldx task_entry_offset_lo
+        cpx #18
+        bcc task_managed_entry_bad
+:
+        cmp TASK_IMAGE_HI
+        bcc task_managed_vector_next
+        bne task_managed_entry_bad
+        lda task_entry_offset_lo
+        cmp TASK_IMAGE_LO
+        bcs task_managed_entry_bad
+task_managed_vector_next:
+        iny
+        cpy #18
+        bcc task_managed_vector
+task_validated_image:
         jmp task_valid
+task_managed_entry_bad:
+        jmp task_bad_entry
+task_managed_read:
+        lda $ffff,y
+        rts
 
         .segment "TASKLOADER"
 task_valid:
@@ -1357,8 +1462,10 @@ task_fail_kernel:
         sta TASK_ERROR
         ora #$80
         sta TASK_STATE
-        lda #$01
         ldx #$00
+        ; The managed assembly caller branches on Z immediately after JSR.
+        ; Establish flags from the error result, not X's high-byte zero.
+        lda #$01
         rts
 
 ; Synchronous disk preparation through the existing mount/read/close service.

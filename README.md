@@ -53,8 +53,8 @@ See [LICENSE](LICENSE).
 
 - A native-autoboot D71 starts the assembly-oriented 8502 microkernel, its
   modular services, a loader-managed boot filesystem, and the stock-timing Z80
-  worker. Standalone `xclock` and `xwave` UDEX images are loaded into retained
-  application slots on first invocation.
+  worker. Standalone disk-only `xclock` and `xwave` UDEX images are loaded into
+  retained application slots on first invocation after `mount 8 /mnt`.
 - The VDC hosts a retained black-on-yellow root console with mixed-case input,
   bounded command history, Unix-like standard streams, Bash-like command
   names, foreground `Ctrl+C`, and background jobs launched with `&`.
@@ -173,8 +173,11 @@ kernel, Z80 worker, transitional service bundle, recovery bootfs, and a
 standalone `USH` disk file. Init loads that shell into bank 1 before starting
 its task and running the disk's bounded `RC` startup file. Foreground names
 resolve from bootfs first, then mounted `/mnt`; explicit `/mnt/NAME` works too.
-Disk-only `FREE` and `DF` are included. `xclock` and `xwave` are standalone
-UDEX images loaded from bootfs into retained slots. General task allocation and extracting the
+Disk-only `FREE`, `DF`, `XCLOCK` and `XWAVE` are included. After `mount 8 /mnt`,
+`xclock &` and `xwave &` load the graphical UDEX files into retained slots;
+there are no normal bootfs copies of either app. See
+[disk-loaded graphics](docs/DISK-GRAPHICS.md) for testing and limits.
+General task allocation and extracting the
 remaining non-kernel services are still roadmap work.
 
 The generic retained-window cache is enabled by default in `make boot`, following

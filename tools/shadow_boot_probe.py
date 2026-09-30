@@ -554,7 +554,8 @@ def probe(args: argparse.Namespace) -> None:
     )
 
     port = choose_port()
-    process, master_fd = launch_vice(probe_disk, port, args.flatpak_id)
+    process, master_fd = launch_vice(probe_disk, port, args.flatpak_id,
+                                   ('-drive8truedrive', '-drive8type', '1571'))
     try:
         time.sleep(6.0)
         deadline = time.monotonic() + args.timeout
@@ -673,34 +674,28 @@ def probe(args: argparse.Namespace) -> None:
             path.write_bytes(data)
 
         if args.vic_compare:
+            # Graphical images are ordinary disk files, not bootfs payloads.
+            # Wait for ush and mount through its normal command path first.
+            from storage_shell_probe import keyboard_queue_address, type_command
+            from task_waitpid_probe import scheduler_symbols
+            root = Path(__file__).resolve().parents[1]
+            slots = scheduler_symbols(root / 'build/8502/udeks-scheduler-overlay.map')['_udeks_lifecycle_slots_private']
+            queue = keyboard_queue_address((root / 'build/8502/udeks-8502.map').read_text(),
+                                           (root / 'build/8502/keyboard.s').read_text())
+            mount_deadline = time.monotonic() + args.timeout
+            wait_for_byte(port, 0xF3E0, 2, mount_deadline)
+            wait_for_byte(port, slots + 1, 4, mount_deadline)
+            before = parse_monitor_byte(monitor_command(port, 'm f17e f17e'), 0xF17E)
+            type_command(port, queue, 'mount 8 /mnt', mount_deadline)
+            wait_for_byte(port, 0xF17E, (before + 1) & 255, mount_deadline)
+            wait_for_byte(port, slots + 1, 4, mount_deadline)
             vic_deadline = time.monotonic() + args.timeout
-            while True:
-                inject_line(port, symbols, "xinit")
-                try:
-                    wait_for_byte(
-                        port,
-                        VIC_STATUS_STATE_ADDRESS,
-                        VIC_STATUS_ACTIVE,
-                        min(vic_deadline, time.monotonic() + 6.0),
-                    )
-                    break
-                except TimeoutError:
-                    if time.monotonic() >= vic_deadline:
-                        raise
+            type_command(port, queue, 'xinit', vic_deadline)
+            wait_for_byte(port, VIC_STATUS_STATE_ADDRESS, VIC_STATUS_ACTIVE, vic_deadline)
+            wait_for_byte(port, slots + 1, 4, vic_deadline)
             xclock_deadline = time.monotonic() + args.timeout
-            while True:
-                inject_line(port, symbols, "xclock")
-                try:
-                    wait_for_byte(
-                        port,
-                        XCLOCK_STATUS_STATE_ADDRESS,
-                        XCLOCK_STATUS_RUNNING,
-                        min(xclock_deadline, time.monotonic() + 6.0),
-                    )
-                    break
-                except TimeoutError:
-                    if time.monotonic() >= xclock_deadline:
-                        raise
+            type_command(port, queue, 'xclock &', xclock_deadline)
+            wait_for_byte(port, XCLOCK_STATUS_STATE_ADDRESS, XCLOCK_STATUS_RUNNING, xclock_deadline)
             time.sleep(args.draw_delay)
 
             drawn_path = args.work / "shadow-drawn.bin"
