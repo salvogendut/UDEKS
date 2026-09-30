@@ -41,6 +41,8 @@ def main():
             status = sp.capture_blocks(port, [(work/(variant+'-boot.bin'), 0xF3DD, 0xF3DF, 'kernel')])[0]
             if status != bytes((source, error, 8)):
                 raise AssertionError(f'{variant}: wrong boot source/error/device {status.hex()}')
+            if source == 1:
+                sp.wait_for_byte(port, 0xF3E0, 2, time.monotonic()+90)
 
             def command(text, expected, builtin=False):
                 deadline = time.monotonic()+60
@@ -61,14 +63,14 @@ def main():
                 commands.append(dict(command=text, console=console))
 
             command('help', (version+'ery' if version.startswith('disk') else 'Recovery')+': mount umount', builtin=True)
-            # A successful mount proves the bootstrap mount was released.
-            command('mount 8 /mnt', 'UDEKS:')
+            # Normal RC mounts device 8; recovery skips RC and stays unmounted.
+            if source == 2: command('mount 8 /mnt', 'UDEKS:')
             command('cat /mnt/HELLO', 'HELLO UDEKS')
             command('umount /mnt', 'UDEKS:')
             command('echo recovered', 'recovered', builtin=True)
             results.append(dict(variant=variant, source=source, error=error,
                 disk_sha256=hashlib.sha256(disk.read_bytes()).hexdigest(), commands=commands))
-            print(f'PASS {variant}: source={source}, error={error}, version={version}, mount released, commands work', flush=True)
+            print(f'PASS {variant}: source={source}, error={error}, version={version}, startup/recovery mount policy, commands work', flush=True)
         except Exception:
             print(monitor_command(port, 'r').decode(errors='replace'), flush=True)
             print(monitor_command(port, 'm f280 f29f').decode(errors='replace'), flush=True)

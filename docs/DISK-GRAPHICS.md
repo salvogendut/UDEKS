@@ -9,10 +9,9 @@ yet the final kernel-only boot model.
 
 ## Try it
 
-Cold boot the candidate, then:
+Cold boot a current image (default RC mounts device 8 at `/mnt`), then:
 
 ```text
-mount 8 /mnt
 ls /mnt
 xclock &
 xwave &
@@ -24,11 +23,11 @@ then press Ctrl+C: the clock should keep running and the prompt return.
 Repeat from a cold boot with wave before clock. `xinit` remains optional:
 either application initializes the graphical desktop when needed.
 
-First launch needs `/mnt`; without it, the existing `start failed` message
+First launch needs `/mnt`; without it, the current `request failed` message
 returns to a usable prompt. Mount and retry. Stopping does not unload an app;
 subsequent starts use the retained image, even if media is removed. Reboot to
 test a changed file. Optional automatic startup belongs in disk `RC`:
-`mount 8 /mnt`, `xclock &`, `xwave &` on separate lines.
+append `xclock &` and `xwave &` after the default `mount 8 /mnt` line.
 
 ## Implementation boundaries
 

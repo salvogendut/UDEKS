@@ -83,7 +83,14 @@ def main():
             records.append(dict(command=text, console=output))
             print('PASS', text, flush=True)
 
-        if args.variant != 'valid': command('mount 8 /mnt')
+        if args.variant in ('missing', 'invalid'): command('mount 8 /mnt')
+        if args.variant == 'default':
+            if 'mount: failed' in boot: raise AssertionError(boot)
+            if 'mount: /mnt ready (read-only)' not in boot: raise AssertionError(boot)
+            command('xclock &', ('xclock started &',), builtin=True)
+            sp.wait_for_byte(port, 0xF225, 3, time.monotonic()+30)
+            command('xwave &', ('xwave started &',), builtin=True)
+            sp.wait_for_byte(port, 0xF265, 3, time.monotonic()+30)
         command('free', ('total 2560  used 0  free 2560', 'not total unused physical RAM'))
         # An independent expectation from the disk's primary BAM.
         bam = image[sector_offset(18, 0):sector_offset(18, 0)+256]
@@ -95,6 +102,9 @@ def main():
         command('df /bad', ('usage: df [/mnt]',), 1)
         command('cat /mnt/HELLO', ('HELLO UDEKS',))
         command('ls /mnt', ('FREE', 'DF', 'USH'))
+        if args.variant == 'default':
+            command('xwave -q', ('xwave stopped',), builtin=True)
+            command('xclock -q', ('xclock stopped',), builtin=True)
         command('umount /mnt')
         command('echo recovery OK', ('recovery OK',), builtin=True)
         command('help', ('Recovery: mount umount',), builtin=True)

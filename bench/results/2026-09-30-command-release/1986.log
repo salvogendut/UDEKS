@@ -1,0 +1,61 @@
+PC=FF74 drive=EAB7 jam=0 speed=1 CIA2=07/3F bus=110 via=02/1A request=00/00/00 exit=0
+PC=E3C3 drive=D5C5 jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E569 drive=D127 jam=0 speed=0 CIA2=27/3F bus=100 via=0D/1A request=00/00/00 exit=0
+PC=E3B6 drive=F80F jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=F66E drive=D159 jam=0 speed=0 CIA2=A7/3F bus=100 via=0D/1A request=00/00/00 exit=0
+PC=E4AB drive=E968 jam=0 speed=0 CIA2=47/3F bus=101 via=0D/1A request=00/00/00 exit=0
+PC=E44D drive=F562 jam=0 speed=0 CIA2=27/3F bus=100 via=0D/1A request=00/00/00 exit=0
+PC=E4B9 drive=EA1A jam=0 speed=0 CIA2=8F/3F bus=011 via=91/1A request=01/11/00 exit=0
+command uname -a: PC=8B20 drive=EC4D jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+BASE RAM : 128 KB                                         [ OK ]
+VDC RAM : 64 KB                                           [ OK ]
+INITIALIZING CONSOLE ...                                  [ OK ]
+VIDEO : PAL / VDC 8568                                    [ OK ]
+REU : NOT PRESENT                                         [ -- ]
+GEORAM : NOT PRESENT                                      [ -- ]
+8502 EXECUTIVE : 1 MHZ                                    [ OK ]
+Z80 WORKER : READY                                        [ OK ]
+IEC DRIVER HEADER ...                                     [ OK ]
+BOOTFS HEADER ...                                         [ OK ]
+                                                                
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~>                                                        
+mount 8 /mnt                                                    
+mount: /mnt ready (read-only)                                   
+UDEKS:~> uname -a                                               
+UDEKS 0.1.0 c128 8502                                           
+UDEKS:~>                                                        
+command: z80ctl test -> accepted (Return release=665 frames)
+command: xclock & -> accepted (Return release=754 frames)
+drag 0 from 124,61 to 24,16 clip-code=$06
+border 24,15 72x77: 0 missing pixels
+drag 1 from 24,15 to 61,33 clip-code=$06
+border 61,32 72x77: 0 missing pixels
+drag 2 from 61,32 to 98,50 clip-code=$06
+border 98,49 72x77: 0 missing pixels
+drag 3 from 98,49 to 135,67 clip-code=$06
+border 135,66 72x77: 0 missing pixels
+drag 4 from 135,66 to 172,84 clip-code=$06
+border 172,83 72x77: 0 missing pixels
+drag 5 from 172,83 to 33,5 clip-code=$06
+border 33,4 72x77: 0 missing pixels
+drag 6 from 33,4 to 70,22 clip-code=$06
+border 70,21 72x77: 0 missing pixels
+drag 7 from 70,21 to 107,39 clip-code=$06
+border 107,38 72x77: 0 missing pixels
+drag 8 from 107,38 to 144,56 clip-code=$06
+border 144,55 72x77: 0 missing pixels
+drag 9 from 144,55 to 5,73 clip-code=$06
+border 5,72 72x77: 0 missing pixels
+drag 10 from 5,72 to 42,90 clip-code=$06
+border 42,89 72x77: 0 missing pixels
+drag 11 from 42,89 to 79,11 clip-code=$06
+border 79,10 72x77: 0 missing pixels
+command: xwave & -> accepted (Return release=547 frames)
+border 144,88 168x104: 0 missing pixels
+border 20,20 168x104: 0 missing pixels
+command: cowsay hello -> accepted (Return release=1091 frames)
+PASS reported sequence: implicit desktop, repeated clock drag, wave drag, cowsay

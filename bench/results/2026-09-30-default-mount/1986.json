@@ -1,0 +1,13 @@
+{
+  "disk_sha256": "4fe13bfc93b3254426e5c9ebec0bf18eb6c84ceb225c17fe6294d856e3fb91eb",
+  "test_disk_sha256": "f31777dfc9f6b910382ef20fb43f7f8e754e8b1e06575b3492c0709ede74da44",
+  "emulator_revision": "43d7dceb05e3781414922d6207089d89bd1ba81a",
+  "exit_status": 0,
+  "raw_iec": true,
+  "disk_exec": false,
+  "disk_shell": false,
+  "sysinfo": false,
+  "disk_graphics": false,
+  "drag_regression": true,
+  "boot_mounted": true
+}

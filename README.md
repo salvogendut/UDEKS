@@ -54,7 +54,15 @@ See [LICENSE](LICENSE).
 - A native-autoboot D71 starts the assembly-oriented 8502 microkernel, its
   modular services, a loader-managed boot filesystem, and the stock-timing Z80
   worker. Standalone disk-only `xclock` and `xwave` UDEX images are loaded into
-  retained application slots on first invocation after `mount 8 /mnt`.
+  retained application slots on first invocation. The default startup script
+  mounts device 8 at `/mnt` automatically.
+- Boot messages reflect the measured hardware capabilities and Z80 state.
+  The IEC-driver and bootfs lines check the loaded bank-1 headers; `[ -- ]`
+  means that header did not match, not that the feature is deferred. These
+  are presence/version checks, not full integrity or disk-access tests.
+  `mount: /mnt ready (read-only)` appears only after the startup mount has
+  successfully read the media. Secondary-load progress is visible on normal
+  boot disks, matching the setting used in the successful C128/Pi1541 retest.
 - The VDC hosts a retained black-on-yellow root console with mixed-case input,
   bounded command history, Unix-like standard streams, Bash-like command
   names, foreground `Ctrl+C`, and background jobs launched with `&`.
@@ -100,7 +108,8 @@ See [LICENSE](LICENSE).
   KERNAL calls; VICE true-drive 1541/D64 and 1571/D71 tests pass, including
   listings with both graphical apps active. `/bin` remains the bootfs fallback.
   The 1986 raw-IEC keyboard workflow, tiny-file EOF and media-change recovery
-  tests also pass; physical PI1541 qualification remains unrecorded. See
+  tests also pass. The user has confirmed the command/disk-graphics workflow
+  on C128 + Pi1541; exhaustive physical media-fault coverage is not claimed. See
   [storage tests and limits](docs/STORAGE-0.1.md#interactive-file-checkpoint--2026-09-30).
 - Storage 0.2 adds explicit-path foreground execution: `/mnt/DISKCOW hello`
   loads an ordinary UDEX from disk, with bounds/header/EOF validation and
@@ -110,7 +119,7 @@ See [LICENSE](LICENSE).
 - Boot 0.2 adds disk-first shell boot, with missing/invalid-shell recovery and
   temporary bootstrap mount cleanup. Changing only the DOS `USH` file changes
   the running shell. The disk shell also runs a bounded ASCII `RC` startup
-  file; the default is comments only. After `mount 8 /mnt`, disk-loaded
+  file; the default runs `mount 8 /mnt`. Disk-loaded
   `free` reports the fixed task-memory pool and `df` reports disk blocks.
   [Test the new boot candidate](docs/BOOT-STARTUP.md#test-it).
 
@@ -176,7 +185,8 @@ kernel, Z80 worker, transitional service bundle, recovery bootfs, and a
 standalone `USH` disk file. Init loads that shell into bank 1 before starting
 its task and running the disk's bounded `RC` startup file. Foreground names
 resolve from bootfs first, then mounted `/mnt`; explicit `/mnt/NAME` works too.
-Mount before using disk utilities such as `ls`, `date` and `uname`. After `mount 8 /mnt`,
+The default `RC` mounts device 8 at `/mnt`, so disk utilities such as `ls`,
+`date` and `uname` work immediately after boot. Likewise,
 `xclock &` and `xwave &` load the graphical UDEX files into retained slots;
 there are no normal bootfs copies of either app. See
 [disk-loaded graphics](docs/DISK-GRAPHICS.md) for testing and limits.

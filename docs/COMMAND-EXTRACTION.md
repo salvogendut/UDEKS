@@ -10,8 +10,11 @@ Normal disks contain COWSAY, DATE, LS and CAT as ordinary UDEX SEQ files.
 Bare names resolve from mounted `/mnt`, and explicit uppercase DOS paths work.
 Normal bootfs has only mount, umount (one small helper image) and recovery ush.
 Step 2 shrank it from 8,016 to 3,024 bytes; step 3's larger recovery shell
-brings it to 3,797 bytes. This is bootfs content space, not a new
-general RAM allocator. Disk utilities need `mount 8 /mnt` first. `echo`, `cd`,
+initially brought it to 3,797 bytes; the final error/mount messages bring it
+to 3,906 bytes. This is bootfs content space, not a new
+general RAM allocator. The default disk RC runs `mount 8 /mnt`, making disk
+utilities available at the first prompt. Recovery skips RC and needs a manual
+mount. `echo`, `cd`,
 `pwd` and the recovery shell remain available without a mounted disk.
 
 `tools/disk_commands_probe.py` cold-boots normal or missing-USH recovery disks,
@@ -61,7 +64,6 @@ Cold boot `build/boot/udeks.d64` from this worktree (D71 for a 1571):
 
 ```text
 help
-mount 8 /mnt
 ls /mnt
 uname -a
 lshw
@@ -82,5 +84,16 @@ Drag/focus both windows and type in the console. Then `xwave -q`, `xwave`
 are intentionally unavailable while unmounted; this includes ls and uname.
 Mount and umount remain usable without an external executable file.
 
-There is no new real-hardware acceptance for this candidate yet. Earlier
-accepted images and archived evidence are unchanged.
+The user's functional retest passed in 1986 and on C128 + Pi1541 after moving
+the destructive boot bank probe from live code at $8000 to boot-only $1000
+scratch. Default RC mounting was also accepted. The final presentation fixes
+are emulator-qualified; do not call them a separate physical test. Normal
+disks now retain the SETMSG $FF boot-message setting used in the successful
+hardware retest. Earlier accepted and failing images remain unchanged.
+
+The app wrapper now distinguishes loader failures without reading stale
+status on a native-child busy return. ush reports `not found; check /mnt`,
+`slot busy`, `bad program`, `I/O error`, `not ready` or `already running`.
+Successful background launches use `started &`. The boot banner measures
+IEC/bootfs header presence; runtime mount success is reported separately.
+See [final qualification](../bench/results/2026-09-30-command-release/README.md).

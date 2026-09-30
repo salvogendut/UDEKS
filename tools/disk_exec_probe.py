@@ -65,6 +65,8 @@ def main():
             records.append(dict(command=text, loader=status.hex(), console=console))
             print('PASS', text, flush=True)
 
+        sp.wait_for_byte(port, 0xF3E0, 2, time.monotonic()+90)
+        command('umount /mnt')  # Default RC mounted it; test absence explicitly.
         command('/mnt/DISKCOW hi', error=11)
         command('mount 8 /mnt')
         command('ls /bin', contains=('mount', 'umount', 'ush'))

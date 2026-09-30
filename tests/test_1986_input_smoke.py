@@ -49,6 +49,16 @@ class InputSmokeTests(unittest.TestCase):
         self.assertIn("stress Ctrl+C did not stop wave", source)
         self.assertIn('command("echo console alive")', source)
 
+    def test_reported_sequence_checks_actual_window_borders(self):
+        source = (ROOT / 'tools/1986_storage_smoke.c').read_text()
+        repro = source.split('static void drag_regression(void)', 1)[1].split('\nint main(', 1)[0]
+        self.assertIn('command("z80ctl test")', repro)
+        self.assertNotIn('command("xinit")', repro)
+        self.assertIn('i < 12', repro)
+        self.assertEqual(repro.count('window_border('), 3)
+        self.assertIn('byte(0x16000+offset)', source)
+        self.assertIn('focused window border was clipped or lost', source)
+
     def test_preserved_input_evidence_is_complete_and_hash_verified(self):
         report = ROOT / "bench/results/2026-09-27-event-waits-1986"
         artifacts = ROOT / "bench/artifacts/2026-09-27-event-waits-input"

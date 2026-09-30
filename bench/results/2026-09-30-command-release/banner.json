@@ -1,0 +1,29 @@
+{
+  "source_sha256": "ee560587ee02508e83e8bf04ecf6da9b5036ea7b0536cfa83d8b1d06f0699020",
+  "runs": [
+    {
+      "variant": "normal",
+      "flags": "0101",
+      "console": "INITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>",
+      "disk_sha256": "ee560587ee02508e83e8bf04ecf6da9b5036ea7b0536cfa83d8b1d06f0699020"
+    },
+    {
+      "variant": "iec",
+      "flags": "0001",
+      "console": "INITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ -- ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>",
+      "disk_sha256": "fb95753e39b18f899a46ddbe83722d10e08a0f5f5d1210766092510e2431ce67"
+    },
+    {
+      "variant": "bootfs",
+      "flags": "0100",
+      "console": "INITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nmount: loader error\nUDEKS:~>",
+      "disk_sha256": "39c98230d03c64610cd274c3185c0899aeea615bdd9d71948c718f7a9f04a749"
+    },
+    {
+      "variant": "both",
+      "flags": "0000",
+      "console": "INITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ -- ]\nBOOTFS HEADER ...                                         [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nmount: loader error\nUDEKS:~>",
+      "disk_sha256": "ee8b728b7a3e502c3c76086ca61e5df604beb894502f8fc58c6a704f8e4ca938"
+    }
+  ]
+}

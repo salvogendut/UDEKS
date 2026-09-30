@@ -92,8 +92,14 @@ poll performs it after the caller yields and the task gateway has unwound.
 This is a serialized root-session interface, not general per-task IPC. The
 single completion mailbox reuses `$F3A0-$F3A4` as `[ready, target, action,
 background, result]`. It is safe to reuse because EXEC first copies command
-text privately. Producer publishes ready `$A5` last; `ush` snapshots the reply
-and clears ready before doing output. Ordinary stream requests do not touch it.
+text privately. Producer publishes ready `$A5` last; `ush` consumes the reply
+and clears ready before doing output. Ordinary stream requests do not touch it;
+no new control/EXEC request is submitted while that completion is printed.
+Managed-app results are 0 success, 1 not ready, 2 already running, 3 program
+not found (also covers an unmounted command disk), 4 task slot busy, 5 invalid
+program/loader ABI, and 6 disk I/O failure. These are service results, not
+POSIX errnos. Busy is taken from the loader's direct return; its untouched
+task-status record must not be mistaken for the latest error.
 Result `0` means success, otherwise it is the selected service's error code;
 `130` reports foreground interruption. WAIT reports foreground ownership;
 `ush` prints notices, waits if necessary, and owns prompt rearming, including

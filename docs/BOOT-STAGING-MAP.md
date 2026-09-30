@@ -17,6 +17,13 @@ The audit distinguishes three sizes per staged region:
 
 ## Lifetime phases
 
+The destructive bank-distinction probe uses **`$1000` in each physical bank**
+only during stage 1, before service/task initialization. It is below the
+bank-0 `$1C00` and bank-1 `$1200` loaded payloads, outside relocated pages
+zero/one and top common RAM. Bank 0 later initializes it as root-console BSS;
+bank 1 later owns it as task memory. `$8000` is NOT scratch: the former probe
+silently corrupted a resident instruction there, exposed by command extraction.
+
 | Phase | Meaning |
 |---|---|
 | `load` | after the KERNAL loads the boot sector and the 212-sector payload, before stage 1 |

@@ -65,22 +65,33 @@ def main():
             records.append(dict(command=text, loader=status.hex(), console=console))
             print('PASS', text, flush=True)
 
+        command('umount /mnt')  # Explicit setup for the missing-mount case.
         command('xinit', 'VIC-II graphics active')
-        command(first+' &', first+': request failed', 11)
+        command(first+' -q', first+': not ready')
+        command(first+' &', first+': not found; check /mnt', 11)
         command('mount 8 /mnt')
         command(first+' &', loader_error=0)
         sp.wait_for_byte(port, states[first], 3, time.monotonic()+30)
+        command(first+' &', first+': already running')
         if first == 'xwave': sp.wait_for_byte(port, 0xF27A, 21, time.monotonic()+60)
         peer = capture('peer-before', bases[first], len(programs[first])-16)
         if peer != programs[first][16:]: raise AssertionError('loaded image differs from disk')
         target = capture('target-before', bases[second], 0xA00)
         if args.faults:
+            monitor_command(port, 'detach 8')
+            command(second+' &', second+': I/O error', 13)
+            if capture('io-peer', bases[first], len(peer)) != peer or capture('io-target', bases[second], len(target)) != target:
+                raise AssertionError('I/O failure mutated app slots')
+            command('umount /mnt')
+            monitor_command(port, f'attach "{disk}" 8')
+            command('mount 8 /mnt')
             for variant, error in ERRORS.items():
                 command('umount /mnt')
                 bad = work/(variant+disk.suffix); bad.write_bytes(fixture(image, second.upper(), variant))
                 monitor_command(port, f'attach "{bad}" 8')
                 command('mount 8 /mnt')
-                command(second+' &', second+': request failed', error)
+                message = 'not found; check /mnt' if error == 11 else 'I/O error' if error == 13 else 'bad program'
+                command(second+' &', second+': '+message, error)
                 if capture('peer-after', bases[first], len(peer)) != peer or capture('target-after', bases[second], len(target)) != target:
                     raise AssertionError(variant+': rejected load mutated live slots')
                 if byte(port, states[first]) != 3: raise AssertionError('peer stopped')
@@ -92,7 +103,7 @@ def main():
             child = capture('owned-child', 0x0200, 0x1000, 'worker')
             for state in (5, 6):
                 sp.write_kernel_blocks(port, [(slots+9, bytes((state,)))])
-                command(second+' &', second+': request failed')
+                command(second+' &', second+': slot busy')
                 if capture('after-launcher', 0xF280, 32) != launcher or capture('after-child', 0x0200, 0x1000, 'worker') != child:
                     raise AssertionError('busy load overwrote child storage/launcher')
             sp.write_kernel_blocks(port, [(slots+9, b'\0')])

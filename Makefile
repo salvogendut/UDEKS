@@ -597,14 +597,14 @@ $(USER_USH_BIN): $(USER_POLL_ENTRY_OBJ) $(USER_TASK_STREAM_OBJ) \
 	$(CL65) -t none --cpu 6502 -C cfg/8502-user-bank1.cfg \
 		-m $(BUILD_USER)/ush.map -o $@ $(filter %.o,$^)
 
-$(USER_USH_UDEX): $(USER_USH_BIN) tools/build_udex.py
+$(USER_USH_UDEX): $(USER_USH_BIN) tools/build_udex.py Makefile
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x9000 \
-		--entry-address 0x9000 --bss-size 0x0180 --flags 0x01 $< $@
+		--entry-address 0x9000 --bss-size 0x0170 --flags 0x01 $< $@
 
 $(BUILD_USER)/startup.o: user/lib/startup.c user/include/udeks/startup.h include/udeks/task_request.h user/include/udeks/program.h | $(BUILD_USER)
 	$(CL65) $(CFLAGS_8502) --static-locals -I user/include -c -o $@ $<
-$(BUILD_USER)/ush_bounds.o: user/lib/ush_bounds.s | $(BUILD_USER)
-	$(CA65) --cpu 6502 -D UDEKS_USH_BSS=384 -o $@ $<
+$(BUILD_USER)/ush_bounds.o: user/lib/ush_bounds.s Makefile | $(BUILD_USER)
+	$(CA65) --cpu 6502 -D UDEKS_USH_BSS=368 -o $@ $<
 $(BUILD_USER)/ush_recovery_bounds.o: user/lib/ush_bounds.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -D UDEKS_USH_BSS=80 -o $@ $<
 $(BUILD_USER)/ush-recovery.o: user/bin/ush.c include/udeks/task_request.h user/include/udeks/program.h | $(BUILD_USER)
@@ -872,7 +872,8 @@ $(BUILD_8502)/window_manager.s: $(WINDOW_MANAGER_SOURCE) \
 
 $(BUILD_8502)/boot_console.s: src/services/window/boot_console.c \
 		include/udeks/boot_console.h include/udeks/capability.h \
-		include/udeks/root_console.h include/udeks/z80_worker.h | $(BUILD_8502)
+		include/udeks/root_console.h include/udeks/z80_worker.h \
+		include/udeks/memory.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/keyboard.s: src/services/input/keyboard.c \
@@ -2180,6 +2181,7 @@ check:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
 	$(PYTHON) -m py_compile tools/managed_app_fixture.py tools/managed_disk_probe.py
 	$(PYTHON) -m py_compile tools/startup_probe.py
+	$(PYTHON) -m py_compile tools/boot_entry_probe.py tools/boot_diagnostic.py tools/boot_banner_probe.py
 	$(PYTHON) -m py_compile tools/build_storage.py tools/storage_service_probe.py tools/storage_shell_probe.py tools/iec_eof_reference.py tools/disk_exec_fixture.py tools/disk_exec_probe.py tools/gen_disk_loader_bindings.py tools/1986_storage_smoke_build.py tools/disk_shell_fixture.py tools/disk_shell_probe.py
 	$(PYTHON) -m py_compile tools/ihx_to_bin.py tools/bin_to_prg.py \
 		tools/bench_decode.py tools/irq_probe_decode.py \

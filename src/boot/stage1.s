@@ -133,8 +133,8 @@ gateway_image_end:
         ; KERNAL again after this routine returns.
         .segment "PRELOAD"
 secondary_payload_load:
-        lda #$00
-        jsr $ff90                   ; SETMSG: keep native boot quiet
+        lda #$ff
+        jsr $ff90                   ; SETMSG: show secondary-load progress/errors
         lda #scheduler_name_end-scheduler_name
         ldx #<scheduler_name
         ldy #>scheduler_name

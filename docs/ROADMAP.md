@@ -13,11 +13,18 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
-**Active feature:** [#24 — disk utilities and command/service separation](COMMAND-EXTRACTION.md),
+**Completed feature, merge authorized:** [#24 — disk utilities and command/service separation](COMMAND-EXTRACTION.md),
 branch `boot-disk-commands`. Disk graphics merged as PR #23. Everyday utilities
 and diagnostics now load from disk; the resident command catalog is removed.
-Emulator/clean-build qualification passes; obtain manual acceptance, then extract the
-first independently loadable non-kernel service. Do not start a graphics optimization detour.
+**Functional retest accepted:** after repairing the boot probe's corruption of
+graphics code at `$8000`, the user confirms the diagnostic disk boots on 1986
+and C128 + Pi1541, and apps/windows work after mounting. The earlier hardware
+hang's cause is unproven; the accepted diagnostic variant has boot messages on.
+At the user's request, default RC now mounts device 8 at `/mnt` automatically.
+The finishing corrections are implemented: specific app-launch errors,
+measured IEC/bootfs header status, a real mount-success message, and normal
+boot progress enabled to match the accepted diagnostic setting.
+Next: extract the first independent service; no graphics optimization detour.
 
 - Native D64/D71 boot, an 8502 executive, a bounded Z80 worker, a VDC root
   console, and an independent VIC-IIe graphical display are working.
@@ -67,7 +74,7 @@ mounts or applications must not require rebuilding the kernel.
 | Kernel and tasking | Cooperative two-task path works; general scheduling, IPC, and preemption due. |
 | Z80 secondary engine | Mailbox and xwave computation work; reusable operations and soak tests due. |
 | Graphics and input | Working shell/windows/apps; repaint latency and focused-window input remain open. |
-| Storage and applications | Disk shell, RC and disk-only graphics merged (#21/#23). Issue #24 extracts the other utilities and resident command policy; emulator-qualified candidate awaiting manual acceptance. |
+| Storage and applications | Disk shell, RC and disk-only graphics merged (#21/#23). Issue #24 accepted and finishing fixes qualified; merge authorized. Next: disk-loaded service lifecycle. |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order

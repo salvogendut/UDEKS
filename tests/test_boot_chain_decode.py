@@ -19,6 +19,15 @@ def valid_record() -> bytearray:
 
 
 class BootChainDecodeTests(unittest.TestCase):
+    def test_destructive_bank_probe_is_outside_both_loaded_payloads(self):
+        source = (ROOT / 'src/boot/stage1-gateway.s').read_text()
+        probe = source.split('gateway_start:', 1)[1].split('bank0_ready:', 1)[0]
+        self.assertIn('BANK_PROBE_SCRATCH       = $1000', source)
+        self.assertNotIn('$8000', probe)
+        self.assertEqual(probe.count('sta BANK_PROBE_SCRATCH'), 2)
+        self.assertIn('lda BANK_PROBE_SCRATCH', probe)
+        self.assertIn('cmp BANK_PROBE_SCRATCH', probe)
+
     def test_accepts_complete_native_boot(self):
         result = parse_result(valid_record())
         self.assertEqual(result["blocks"], 212)

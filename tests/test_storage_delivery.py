@@ -6,7 +6,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT/'tools'))
-from build_storage import install_router, wrap_storage, install_bootfs
+from build_storage import install_router, wrap_storage, install_bootfs, USH_BSS
 from build_bootfs import build_bootfs
 from shadow_boot_probe import scheduler_installed_tail
 
@@ -69,7 +69,7 @@ class StorageDelivery(unittest.TestCase):
                         dict(lookup=b''), dict(lookup=bytes(1537)), dict(lookup=b'bad'),
                         dict(policy=bytes(1537)), dict(driver=bytes(1537)),
                         dict(policy=b''), dict(driver=b''),
-                        dict(ush=bytes(0x1000-0x180+1)), dict(payload=b'\0\x41X'),
+                        dict(ush=bytes(0x1000-USH_BSS+1)), dict(payload=b'\0\x41X'),
                         dict(payload=b'\0\x42'+bytes(0x3E01))):
             with self.subTest(changes=list(changes)):
                 with self.assertRaises(ValueError): self.wrap(**changes)

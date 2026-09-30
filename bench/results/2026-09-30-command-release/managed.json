@@ -1,0 +1,320 @@
+{
+  "disk_sha256": "ee560587ee02508e83e8bf04ecf6da9b5036ea7b0536cfa83d8b1d06f0699020",
+  "first": "xclock",
+  "drive": "1541",
+  "faults": true,
+  "bootfs_names": [
+    "mount",
+    "umount",
+    "ush"
+  ],
+  "code_matches_disk": true,
+  "retained_restart_without_media": true,
+  "commands": [
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xinit",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> xinit\nVIC-II graphics active\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> xinit\nVIC-II graphics active\nUDEKS:~> xclock -q\nxclock: not ready\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "loader": "5441534b018b0b003603000002cfe2ff78636c6f636b01000002360300000002",
+      "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> xinit\nVIC-II graphics active\nUDEKS:~> xclock -q\nxclock: not ready\nUDEKS:~> xclock &\nxclock: not found; check /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "Z80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> xinit\nVIC-II graphics active\nUDEKS:~> xclock -q\nxclock: not ready\nUDEKS:~> xclock &\nxclock: not found; check /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "loader": "5441534b01000000c6090d0003cfe2ff55444558000101020002c6090d000002",
+      "console": "BOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> xinit\nVIC-II graphics active\nUDEKS:~> xclock -q\nxclock: not ready\nUDEKS:~> xclock &\nxclock: not found; check /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "loader": "5441534b01000000c6090d0003cfe2ff55444558000101020002c6090d000002",
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> xinit\nVIC-II graphics active\nUDEKS:~> xclock -q\nxclock: not ready\nUDEKS:~> xclock &\nxclock: not found; check /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xclock &\nxclock: already running\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018d0d00c6090d0003cfe2ff78776176650101020002c6090d000002",
+      "console": "WELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> xinit\nVIC-II graphics active\nUDEKS:~> xclock -q\nxclock: not ready\nUDEKS:~> xclock &\nxclock: not found; check /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xclock &\nxclock: already running\nUDEKS:~> xwave &\nxwave: I/O error\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "\nUDEKS:~>\nmount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> xinit\nVIC-II graphics active\nUDEKS:~> xclock -q\nxclock: not ready\nUDEKS:~> xclock &\nxclock: not found; check /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xclock &\nxclock: already running\nUDEKS:~> xwave &\nxwave: I/O error\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> xinit\nVIC-II graphics active\nUDEKS:~> xclock -q\nxclock: not ready\nUDEKS:~> xclock &\nxclock: not found; check /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xclock &\nxclock: already running\nUDEKS:~> xwave &\nxwave: I/O error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "mount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> xinit\nVIC-II graphics active\nUDEKS:~> xclock -q\nxclock: not ready\nUDEKS:~> xclock &\nxclock: not found; check /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xclock &\nxclock: already running\nUDEKS:~> xwave &\nxwave: I/O error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xinit\nVIC-II graphics active\nUDEKS:~> xclock -q\nxclock: not ready\nUDEKS:~> xclock &\nxclock: not found; check /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xclock &\nxclock: already running\nUDEKS:~> xwave &\nxwave: I/O error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018b0b003603000003cfe2ff78776176650101000002360300000002",
+      "console": "UDEKS:~> xclock -q\nxclock: not ready\nUDEKS:~> xclock &\nxclock: not found; check /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xclock &\nxclock: already running\nUDEKS:~> xwave &\nxwave: I/O error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: not found; check /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "xclock: not ready\nUDEKS:~> xclock &\nxclock: not found; check /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xclock &\nxclock: already running\nUDEKS:~> xwave &\nxwave: I/O error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: not found; check /mnt\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "xclock: not found; check /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xclock &\nxclock: already running\nUDEKS:~> xwave &\nxwave: I/O error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: not found; check /mnt\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018404003603000003cfe2ff00444558000101020012bf0625020012",
+      "console": "mount: /mnt ready (read-only)\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xclock &\nxclock: already running\nUDEKS:~> xwave &\nxwave: I/O error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: not found; check /mnt\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xclock &\nxclock started &\nUDEKS:~> xclock &\nxclock: already running\nUDEKS:~> xwave &\nxwave: I/O error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: not found; check /mnt\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xclock &\nxclock: already running\nUDEKS:~> xwave &\nxwave: I/O error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: not found; check /mnt\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018505003603000003cfe2ff55444558000201020012bf0625020012",
+      "console": "UDEKS:~> xwave &\nxwave: I/O error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: not found; check /mnt\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "xwave: I/O error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: not found; check /mnt\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: not found; check /mnt\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018606003603000003cfe2ff55444558000102020012bf0625020012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: not found; check /mnt\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: not found; check /mnt\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xwave &\nxwave: not found; check /mnt\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018707003603000003cfe2ff55444558000101000012bf0625020012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018808003603000003cfe2ff55444558000101020002bf0625020002",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018a0a00bf06250203cfe2ff55444558000101020012bf0625020112",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01890900000a000003cfe2ff55444558000101020012000a25020012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01890900bf06ffff03cfe2ff55444558000101020012bf06ffff0012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018a0a00bf06250203cfe2ff55444558000101020012bf0625020012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018a0a00bf06250203cfe2ff55444558000101020012bf0625020012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018a0a00bf06250203cfe2ff55444558000101020012bf0625020012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018a0a00bf06250203cfe2ff55444558000101020012bf0625020012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: slot busy\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b010300003603000003cfe2ff55444558000101000002360300000002",
+      "console": "mount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: slot busy\nUDEKS:~> xwave &\nxwave: slot busy\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01000000bf06250203cfe2ff55444558000101020012bf0625020012",
+      "console": "xwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: slot busy\nUDEKS:~> xwave &\nxwave: slot busy\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay both",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "UDEKS:~> xwave &\nxwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: slot busy\nUDEKS:~> xwave &\nxwave: slot busy\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "xwave: bad program\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: slot busy\nUDEKS:~> xwave &\nxwave: slot busy\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave -q",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> xwave &\nxwave: slot busy\nUDEKS:~> xwave &\nxwave: slot busy\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xwave &\nxwave: slot busy\nUDEKS:~> xwave &\nxwave: slot busy\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xwave &\nxwave: slot busy\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~>"
+    },
+    {
+      "command": "echo recovery alive",
+      "loader": "5441534b010300003603000002cfe2ff55444558000101000002360300000002",
+      "console": "UDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> echo recovery alive\nrecovery alive\nUDEKS:~>"
+    }
+  ]
+}

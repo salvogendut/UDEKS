@@ -13,6 +13,8 @@ loads `/mnt/USH` using the existing C storage service and UDEX validator,
 closes the file, and releases that mount. The shell then runs at bank-1
 `$9000` using the existing cooperative task/stream boundary. Ordinary
 `mount 8 /mnt` remains available; bootstrap does not impose a user mount.
+The default disk `RC` subsequently issues that command, so the normal prompt
+has device 8 mounted at `/mnt`. Recovery skips RC and still starts unmounted.
 
 The boot-device number is captured from KERNAL `$BA` after loading SCHEDOVR
 and before retiring KERNAL. Supported bootstrap units are 8–11, with 8 as
@@ -62,10 +64,9 @@ They survive shell initialization. `$F064` holds the captured boot unit.
 disk-only DISKCOW and loader regression fixtures. Preserved test candidates
 are under `bench/artifacts/2026-09-30-disk-shell`.
 
-Cold boot the new image, then try:
+Cold boot the new image (default RC mounts device 8), then try:
 
 ```text
-mount 8 /mnt
 uname -a
 ls /mnt
 cat /mnt/HELLO
@@ -138,17 +139,28 @@ xclock &
 echo Ready
 ```
 
-The default file contains comments only, preserving an unmounted prompt.
+The default file runs `mount 8 /mnt`; no manual mount is needed before disk
+commands or the first graphical application. This specifically selects device
+8, even if a different device booted the machine. Edit or comment out the line
+to change that policy. A mount failure reports an error and leaves the prompt
+usable; the recovery shell still requires a manual mount. Successful mounting
+prints `mount: /mnt ready (read-only)` after reading the media, not merely
+because the driver was compiled in.
 Use `mount 9 /mnt` instead if desired; script contents are policy, not kernel
 code. No image rebuild is necessary to change a DOS RC file. The repeatable
 `tools/startup_probe.py` creates modified disk copies to test this explicitly.
 
+The boot banner's IEC-driver and bootfs HEADER rows use stage 1's comparison
+of the actual bank-1 UIEC/UBFS 0.1 headers. Boot-chain offsets 21/22 hold 1 for
+a match and 0 for a mismatch; `[ -- ]` is a mismatch. Neither row implies a
+mounted/writable filesystem or a whole-image integrity check. Normal boot
+shows the KERNAL secondary-load messages, matching the hardware-tested setting.
+
 `FREE` and `DF` are disk-only standalone UDEX files (one C multicall program),
 not resident shell builtins. Bare foreground names search bootfs `/bin` first,
-then `/mnt`; explicit `/mnt/FREE` and `/mnt/DF` work as well. Mount first:
+then `/mnt`; explicit `/mnt/FREE` and `/mnt/DF` work as well. After normal boot:
 
 ```text
-mount 8 /mnt
 free
 df
 ```
@@ -179,7 +191,8 @@ Receipts: `bench/results/2026-09-30-startup-sysinfo`. SHA-256 manifests and
 host tests bind the receipts to these images; the earlier disk-shell artifacts
 are unchanged. The `udeks-rc-demo.d64` copy changes only RC and demonstrates
 automatic mount, `xinit`, `xclock &`, and `RC-END`. Normal `udeks.d64` / `.d71`
-retain the comment-only RC. `udeks-test.*` additionally include disk-execution
+retain the older comment-only RC (current builds mount device 8 by default).
+`udeks-test.*` additionally include disk-execution
 regression programs.
 
 - 913 host/evidence tests pass. Clean parallel `make -j8 boot disk-exec-image

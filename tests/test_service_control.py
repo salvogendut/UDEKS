@@ -11,7 +11,7 @@ HARNESS = r'''
 #include <string.h>
 #define UDEKS_SESSION_HOST_TEST
 #include "src/services/shell/shell.c"
-unsigned char session_memory[65536], active, clock_run, wave_run, calls, starts;
+unsigned char session_memory[65536], active, clock_run, wave_run, calls, starts, app_result;
 unsigned char udeks_shell_read_line(unsigned char *s, unsigned char n) { return UDEKS_LINE_EDITOR_EMPTY; }
 unsigned char udeks_shell_tokenize(unsigned char *s, unsigned char *o, unsigned char n) { return 0; }
 unsigned char udeks_stream_write(unsigned char fd, const unsigned char *s) { return 0; }
@@ -21,8 +21,8 @@ void udeks_window_manager_reset(void) { ++calls; }
 unsigned char udeks_vic_graphics_is_active(void) { return active; }
 unsigned char udeks_vic_graphics_initialize(void) { ++calls; active=1; return 0; }
 unsigned char udeks_vic_graphics_shutdown(void) { ++calls; active=0; return 0; }
-unsigned char udeks_xclock_start(void) { ++calls; ++starts; clock_run=1; return 0; }
-unsigned char udeks_xwave_start(void) { ++calls; ++starts; wave_run=1; return 0; }
+unsigned char udeks_xclock_start(void) { ++calls; ++starts; if (!app_result) clock_run=1; return app_result; }
+unsigned char udeks_xwave_start(void) { ++calls; ++starts; if (!app_result) wave_run=1; return app_result; }
 unsigned char udeks_xclock_stop(void) { ++calls; clock_run=0; return 0; }
 unsigned char udeks_xwave_stop(void) { ++calls; wave_run=0; return 0; }
 unsigned char udeks_xclock_is_running(void) { return clock_run; }
@@ -31,7 +31,7 @@ unsigned char udeks_z80_submit(unsigned char op, unsigned int a, unsigned int b,
     unsigned int n, unsigned int *r) { ++calls; *r=0; return 0; }
 void reset(void) {
     memset(session_memory, 0, sizeof(session_memory));
-    active=clock_run=wave_run=calls=starts=0;
+    active=clock_run=wave_run=calls=starts=app_result=0;
     udeks_shell_start(); session_memory[UDEKS_USH_STATUS_BASE+1]=UDEKS_USH_STATE_READY;
 }
 unsigned char valid(unsigned char t, unsigned char a, unsigned char b) { return udeks_control_valid(t,a,b); }
@@ -129,6 +129,17 @@ class ServiceControl(unittest.TestCase):
         self.lib.udeks_shell_poll()
         self.assertEqual(self.value('calls'), 1)
         self.assertEqual(bytes(self.memory[0xf3a0:0xf3a5]), bytes((165,4,2,0,0)))
+
+    def test_managed_errors_are_preserved_without_claiming_a_running_job(self):
+        for target in (2, 3):
+            for error in range(1, 7):
+                self.lib.reset()
+                ctypes.c_ubyte.in_dll(self.lib, 'app_result').value = error
+                self.assertEqual(self.request(target=target, background=0), 0)
+                self.lib.udeks_shell_poll()
+                self.assertEqual(bytes(self.memory[0xf3a0:0xf3a5]), bytes((165,target,0,0,error)))
+                self.assertEqual(self.memory[0xf184], 0)
+                self.assertEqual(self.memory[0xf185], 0)
 
     def test_assembly_wrapper_clears_scheduler_suspend_flag(self):
         text = (ROOT/'src/8502/syscall_gate.s').read_text()

@@ -1,0 +1,93 @@
+ca65 --cpu 6502 -D UDEKS_USH_BSS=368 -o build/user/ush_bounds.o user/lib/ush_bounds.s
+cl65 -t none --cpu 6502 --standard c99 -Oirs -I include -I user/include -c -o build/user/mount.o user/bin/mount.c
+cl65 -t none --cpu 6502 -C cfg/8502-user-bank1.cfg \
+	-m build/user/ush.map -o build/user/ush.bin build/user/poll_entry.o build/user/task_stream.o build/user/ush.o build/user/startup.o build/user/ush_bounds.o
+cl65 -t none -C cfg/8502-user-app1.cfg -m build/user/mount.map -o build/user/mount.bin build/user/entry.o build/user/syscall.o build/user/mount.o build/user/mount_request.o
+python3 tools/build_udex.py --cpu 8502 --load-address 0x9000 \
+	--entry-address 0x9000 --bss-size 0x0170 --flags 0x01 build/user/ush.bin build/user/ush.udx
+python3 tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 build/user/mount.bin build/user/mount.udx
+python3 tools/build_scheduler_overlay.py \
+	build/8502/udeks-scheduler-overlay-page.bin build/8502/udeks-scheduler-overlay-tail.bin \
+	build/8502/udeks-scheduler-overlay.map build/boot/scheduler-overlay.prg \
+	build/8502/scheduler-overlay-delivery.inc \
+	--activation-context build/8502/task-context-binding.bin \
+	--activation-context-map build/8502/task-context-binding.map \
+	--activation-tail build/8502/task-switch-tail.bin \
+	--activation-yield-handler build/8502/task-yield-handler.bin \
+	--activation-vectors build/8502/task-context-vectors.bin --window-cache build/window-cache/module.bin \
+	--storage build/storage --ush build/user/ush.bin --task-lookup build/boot/task-lookup.bin
+python3 tools/build_bootfs.py --max-size 0x3100 \
+	--entry mount=build/user/mount.udx --entry umount=build/user/mount.udx \
+	--entry ush=build/user/ush-recovery.udx build/user/bootfs.img
+ca65 --cpu 6502 -D UDEKS_WINDOW_CACHE -I build/8502 -o build/boot/stage1.o src/boot/stage1.s
+ca65 --cpu 6502 -I build/8502 -o build/boot/task-switch-activation.o src/boot/task-switch-activation.s
+ca65 --cpu 6502 -I build/8502 -o build/boot/scheduler-tail-installer.o src/boot/scheduler-tail-installer.s
+python3 tools/placement_audit.py --verify
+ld65 -C cfg/8502-task-switch-activation.cfg -o build/boot/task-switch-activation.bin build/boot/task-switch-activation.o
+ld65 -C cfg/8502-stage1.cfg -o build/boot/stage1.bin build/boot/stage1.o
+ld65 -C cfg/8502-scheduler-tail-installer.cfg -o build/boot/scheduler-tail-installer.bin build/boot/scheduler-tail-installer.o
+python3 tools/gen_boot_console_imports.py constants \
+	build/boot/8502-boot-console.bin build/boot/8502-boot-delivery.bin \
+	build/boot/8502-capability.bin build/boot/capability-installer.bin \
+	build/boot/task-switch-activation.bin \
+	build/8502/udeks-8502.map build/8502/udeks-8502-panic-probe.map build/8502/boot-console-delivery.inc
+ca65 --cpu 6502 -I build/8502 -o build/boot/boot-console-installer.o src/boot/boot-console-installer.s
+ld65 -C cfg/8502-boot-console-installer.cfg -o build/boot/boot-console-installer.bin build/boot/boot-console-installer.o
+python3 tools/build_d71.py --stage0 build/boot/stage0.bin \
+	--stage1 build/boot/stage1.bin --kernel build/8502/udeks-8502.bin --z80 build/z80/udeks-z80.bin \
+	--boot-delivery build/boot/8502-boot-delivery.bin \
+	--crt0 build/boot/8502-crt0.bin --probe build/boot/8502-probe.bin \
+	--map build/8502/udeks-8502.map \
+	--scheduler-overlay build/boot/scheduler-overlay.prg --secondary-bootfs \
+	--scheduler-tail-installer build/boot/scheduler-tail-installer.bin \
+	--busy-sprite build/assets/24x21-pipe-sprite.vic \
+	--capability build/boot/8502-capability.bin \
+	--capability-installer build/boot/capability-installer.bin \
+	--boot-console build/boot/8502-boot-console.bin \
+	--task-switch-activation build/boot/task-switch-activation.bin \
+	--boot-console-installer build/boot/boot-console-installer.bin \
+	--bootfs build/user/bootfs.img \
+	--module build/8502/udeks-module.bin \
+	--ush build/user/ush.udx \
+	--task-loader build/boot/task-loader.bin \
+	--task-request-gateway build/boot/task-request-gateway.bin \
+	--bootfs-request-service build/boot/bootfs-request-service.bin \
+	--task-bank-gateway build/boot/task-bank-gateway.bin \
+	--hello bench/iec-directory/hello.txt \
+	--rc user/etc/rc --sysinfo build/user/sysinfo.udx \
+	--xclock build/user/xclock.udx --xwave build/user/xwave.udx \
+	--command COWSAY=build/user/cowsay.udx --command DATE=build/user/date.udx \
+	--command LS=build/user/filetools.udx --command CAT=build/user/filetools.udx \
+	--command UNAME=build/user/diagnostics.udx --command LSHW=build/user/diagnostics.udx \
+	--command LSMOD=build/user/diagnostics.udx --command LSCPU=build/user/diagnostics.udx \
+	--command Z80CTL=build/user/diagnostics.udx \
+	--d64-output build/boot/udeks.d64 build/boot/udeks.d71
+python3 tools/build_d71.py --stage0 build/boot/stage0.bin \
+	--stage1 build/boot/stage1.bin --kernel build/8502/udeks-8502-panic-probe.bin \
+	--xclock build/user/xclock.udx --xwave build/user/xwave.udx \
+	--command COWSAY=build/user/cowsay.udx --command DATE=build/user/date.udx \
+	--command LS=build/user/filetools.udx --command CAT=build/user/filetools.udx \
+	--command UNAME=build/user/diagnostics.udx --command LSHW=build/user/diagnostics.udx \
+	--command LSMOD=build/user/diagnostics.udx --command LSCPU=build/user/diagnostics.udx \
+	--command Z80CTL=build/user/diagnostics.udx \
+	--boot-delivery build/boot/8502-boot-delivery.bin \
+	--crt0 build/boot/8502-crt0-panic-probe.bin \
+	--probe build/boot/8502-probe-panic-probe.bin \
+	--map build/8502/udeks-8502-panic-probe.map \
+	--scheduler-overlay build/boot/scheduler-overlay.prg --secondary-bootfs \
+	--scheduler-tail-installer build/boot/scheduler-tail-installer.bin \
+	--busy-sprite build/assets/24x21-pipe-sprite.vic \
+	--capability build/boot/8502-capability.bin \
+	--capability-installer build/boot/capability-installer.bin \
+	--boot-console build/boot/8502-boot-console.bin \
+	--task-switch-activation build/boot/task-switch-activation.bin \
+	--boot-console-installer build/boot/boot-console-installer.bin \
+	--z80 build/z80/udeks-z80.bin \
+	--bootfs build/user/bootfs.img \
+	--module build/8502/udeks-module.bin \
+	--ush build/user/ush.udx \
+	--task-loader build/boot/task-loader.bin \
+	--task-request-gateway build/boot/task-request-gateway.bin \
+	--bootfs-request-service build/boot/bootfs-request-service.bin \
+	--task-bank-gateway build/boot/task-bank-gateway.bin build/boot/udeks-panic-probe.d71
+placement audit OK
