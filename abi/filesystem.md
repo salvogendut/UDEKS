@@ -7,7 +7,10 @@ bank-1 filesystem service. Bootstrap mounts the system disk at `/`, loads
 `/bin/ush`, and the shell reads `/etc/rc`. `/mnt` starts unmounted. UTRQ 0.8
 adds `CHDIR`/`GETCWD` and executable-candidate OPEN. General `.SH` execution
 is not implemented: scripts are classified, listed and readable, but rejected
-by the UDEX loader. This branch still awaits user hardware acceptance.
+by the UDEX loader. General script execution is deferred under #27; the suffix
+does not promise a POSIX/Bash interpreter. The user accepts the namespace
+test (latest platform unspecified); no new platform-specific hardware claim
+is inferred.
 
 ### Volumes and boot
 

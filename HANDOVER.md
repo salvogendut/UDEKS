@@ -12,9 +12,10 @@ Issue [#26](https://github.com/salvogendut/UDEKS/issues/26), branch
 `storage-root-namespace`, worktree `build/root-filesystem`, based on merged
 PR #25 (`d13a5c2`). Root-namespace runtime integration is implemented.
 Main and historical release images are unchanged. The user reports
-"everything runs beautifully" and authorizes commit/push, a PR, and the next
-bounded .SH step. This is functional acceptance; the latest feedback does
-not identify the test platform. Merge is not authorized by that instruction.
+"everything runs beautifully"; the namespace implementation is committed and
+pushed as `95aa2cc`, with PR #28 open. The user now authorizes merging after
+recording the decision to defer scripting. This is functional acceptance;
+the latest feedback does not identify the test platform.
 
 The system disk (default device 8; bootstrap honors a valid boot-device byte)
 now backs `/`. Physical `USH.BIN` -> `/bin/ush`, `RC.ETC` -> `/etc/rc`,
@@ -53,13 +54,19 @@ container placement-check passes. Both VICE formats, separate device 9,
 missing-shell recovery, all three RC variants, typed BASIC BOOT, compiled-C
 SPAWN/EXIT/WAITPID, shadow/VIC equality, and native 1986 input/dragging pass.
 A fresh parallel build reproduces D64/D71 byte-for-byte. D64 SHA-256 starts
-`e959e62f`, D71 `5985e1d3`. No VICE processes remain. Do not mistake main's
-disk for this candidate. Publish the accepted namespace checkpoint separately
-from the next script-execution changes; do not merge without authorization.
+`e959e62f`, D71 `5985e1d3`. No VICE processes remain. Preserved images and
+evidence are unchanged by the subsequent documentation-only priority update.
 
-Next: finish the bounded .SH interpreter/dispatch as a separate increment
-after publishing the accepted root-namespace PR. No write support,
-tasking expansion, service extraction or graphics optimization in this slice.
+Latest decision: reserve `.SH` and defer general script execution in issue #27.
+The existing RC command runner stays; no scripting implementation was added.
+Branch `shell-bounded-scripts` / worktree `build/shell-scripts` is a clean,
+unused branch at `95aa2cc`, not active work. Do not resume it automatically.
+
+Next: select one existing non-kernel service, define its disk image,
+load/start/stop/dependency contract, and extract it without breaking the minimal
+boot/read recovery path. This is independent of general scripting, four-task
+scheduling, preemption, storage writes and graphics optimization. Keep the
+accepted namespace PR focused; service extraction gets its own work branch.
 The visible [roadmap](docs/ROADMAP.md) remains the priority authority.
 Build/use gh in my-distrobox. Never clean root build: it contains worktrees.
 

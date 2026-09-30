@@ -22,9 +22,10 @@ paternal sweetness. This project is developed in his memory. Read the full
 UDEKS is licensed under the GNU General Public License, version 3 or later.
 See [LICENSE](LICENSE).
 
-**[Roadmap](docs/ROADMAP.md):** current candidate — disk-backed `/` and coherent
+**[Roadmap](docs/ROADMAP.md):** accepted baseline — disk-backed `/` and coherent
 `/bin`, `/etc`, `/mnt` routing ([#26](https://github.com/salvogendut/UDEKS/issues/26)).
-Emulator-qualified and user-accepted; general `.SH` execution is next.
+Next: the first disk-loaded non-kernel service. General `.SH` execution is
+deferred; the suffix is reserved, not a promise of POSIX/Bash compatibility.
 
 > [!IMPORTANT]
 > UDEKS is an experimental kernel prototype in active bring-up. It has a

@@ -13,16 +13,23 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
-**Active milestone:** [#26 — system root and coherent filesystem namespace](https://github.com/salvogendut/UDEKS/issues/26),
-branch `storage-root-namespace`, worktree `build/root-filesystem`.
-Make the system disk back `/`, expose programs at `/bin` and startup policy
-at `/etc/rc`, and reserve `/mnt` for additional/data media. The bounded C
-resolver/suffix contract and runtime integration are implemented on the branch.
-The candidate boots device 8 at `/`, loads `/bin/ush` and `/etc/rc`, and leaves
-`/mnt` free. Emulator qualification is recorded below; the user accepts the
-functional test (latest platform unspecified). Publish this checkpoint for
-review, then implement bounded `.SH` execution. Main's previous release still
-mounts device 8 at `/mnt`.
+**Next milestone: the first disk-loaded non-kernel service.** Define one
+existing service's load/start/stop and dependency contract, then replace its
+preloaded copy with an ordinary disk image. Keep bootstrap/recovery working;
+do not make a scripting language or expanded task capacity prerequisites.
+
+**Accepted baseline:** [#26 — system root and coherent filesystem namespace](https://github.com/salvogendut/UDEKS/issues/26),
+[PR #28](https://github.com/salvogendut/UDEKS/pull/28). Device 8 backs `/`,
+programs live under `/bin`, startup policy is `/etc/rc`, and `/mnt` is free
+for data media. Emulator qualification is recorded below; the user accepts
+the functional test (latest platform unspecified) and authorizes merging.
+
+**Deferred by user decision:** general `.SH` execution
+([#27](https://github.com/salvogendut/UDEKS/issues/27)). Keep the suffix reserved
+and the existing readable/listable mapping; do not add an interpreter merely
+to justify it. The bounded `/etc/rc` command runner stays. Before resuming
+scripting, define the language, execution semantics and memory budget; the
+suffix does not promise POSIX `sh` or Bash compatibility.
 
 **Completed and merged:** [#24 — disk utilities and command/service separation](COMMAND-EXTRACTION.md),
 PR #25 at `d13a5c2`. Disk graphics merged as PR #23. Everyday utilities
@@ -31,12 +38,13 @@ and diagnostics now load from disk; the resident command catalog is removed.
 graphics code at `$8000`, the user confirms the diagnostic disk boots on 1986
 and C128 + Pi1541, and apps/windows work after mounting. The earlier hardware
 hang's cause is unproven; the accepted diagnostic variant has boot messages on.
-At the user's request, default RC now mounts device 8 at `/mnt` automatically.
+That release's default RC mounted device 8 at `/mnt`; #26 supersedes this
+with bootstrap root mounting and an initially unmounted `/mnt`.
 The finishing corrections are implemented: specific app-launch errors,
 measured IEC/bootfs header status, a real mount-success message, and normal
 boot progress enabled to match the accepted diagnostic setting.
-Next: root/mount/path resolution, then the first independent disk-loaded
-service; no graphics optimization detour.
+Next: the first independent disk-loaded service; no scripting or graphics
+optimization detour.
 
 - Native D64/D71 boot, an 8502 executive, a bounded Z80 worker, a VDC root
   console, and an independent VIC-IIe graphical display are working.
@@ -86,12 +94,28 @@ mounts or applications must not require rebuilding the kernel.
 | Kernel and tasking | Cooperative two-task path works; general scheduling, IPC, and preemption due. |
 | Z80 secondary engine | Mailbox and xwave computation work; reusable operations and soak tests due. |
 | Graphics and input | Working shell/windows/apps; repaint latency and focused-window input remain open. |
-| Storage and applications | Disk shell, RC, graphics and disk commands merged (#21/#23/#25). Active #26: disk-backed root and coherent namespace; disk-loaded service lifecycle follows. |
+| Storage and applications | Disk shell, RC, graphics and disk commands (#21/#23/#25); root namespace accepted (#26/PR #28). Next: first disk-loaded service lifecycle. General scripting deferred (#27). |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
 
-### Active: system root and namespace (#26)
+### Next: one disk-loaded non-kernel service
+
+1. Select one existing service and inventory its dependencies, fixed entry
+   points and memory lifetime. Record which minimal boot/read path must stay
+   available to load it and recover from failure.
+2. Define a bounded image and load/start/stop contract; extract the service
+   into an ordinary disk file without moving its policy into the kernel.
+3. Qualify missing/invalid images, repeated start/stop and ownership cleanup,
+   while the shell, input and existing apps remain usable. Preserve a test
+   disk and ask for a short user check.
+
+**Acceptance:** replacing only that service's disk image changes the running
+service without rebuilding the kernel; failure leaves a usable recovery path.
+Do not couple this slice to four-task scheduling, preemption, general shell
+scripting, filesystem writes or performance tuning.
+
+### Completed: system root and namespace (#26)
 
 Replace the fixed `/mnt`-only storage route with a bounded mount/path contract.
 The system volume (default device 8) backs `/`; a separate volume can occupy
@@ -108,7 +132,7 @@ the classification suffix and presents lowercase logical names:
 | Disk filename | Logical path | Handling |
 | --- | --- | --- |
 | `USH.BIN` | `/bin/ush` | Validate/load UDEX. |
-| `STARTUP.SH` | `/bin/startup` | Interpret as a shell script, not UDEX. |
+| `STARTUP.SH` | `/bin/startup` | Reserved script kind; readable/listable, execution deferred. |
 | `RC.ETC` | `/etc/rc` | Designated boot script; other `.ETC` files are data. |
 
 Scripts share `/bin` with executables so normal command lookup can find both.
@@ -119,8 +143,9 @@ of ambiguous names such as `FOO.BIN` plus `FOO.SH`; directory order must not
 silently select a different command. All physical names, including suffixes,
 remain within 16 bytes. Extra `.ETC`/`.SH` files are not automatically executed.
 Data mounts retain ordinary filenames without requiring these conventions.
-Script dispatch/execution is a bounded ush feature to qualify, not a claim
-that the current release supports general `.SH` execution or Bash syntax.
+Script dispatch/execution is deferred under #27, not required to accept the
+namespace. The current release supports neither general `.SH` execution nor
+Bash syntax. The existing `/etc/rc` runner is unchanged.
 
 1. **Implemented:** [namespace contract](../abi/filesystem.md#root-namespace-contract-26),
    C resolver, suffix classification/inverse mapping and collision checks;
@@ -134,7 +159,7 @@ that the current release supports general `.SH` execution or Bash syntax.
    root-namespace test and unmount check (latest platform unspecified).
    VICE covers independent drives and recovery; 1986 covers native typing and
    repeated dragging. See [current filesystem contract](../abi/filesystem.md).
-4. **Next feature:** bounded `.SH` command dispatch/interpreter. Scripts
+4. **Deferred (#27):** bounded `.SH` command dispatch/interpreter. Scripts
    already appear in `/bin` and can be read, but cannot yet be launched.
    Only `/etc/rc` is executed by the existing startup interpreter.
 
@@ -253,12 +278,12 @@ only mount/unmount and ush. Disk ush owns builtin policy and graphics syntax;
 numeric deferred requests replace the resident builtin registry. See
 [the test sequence and remaining limitations](COMMAND-EXTRACTION.md).
 
-**After root/namespace issue #26:** choose one existing non-kernel
+**Next, after accepted root/namespace issue #26:** choose one existing non-kernel
 service, define its load/start/stop and dependency contract, and load its ordinary
 disk image on demand without rebuilding the kernel. Preserve a boot/read recovery
-path. This is separate from expanding task capacity below. Issue #26 first
-separates the system command source from a data mount: today disk utilities
-must be present on `/mnt`; that limitation is not the intended final layout.
+path. This is separate from expanding task capacity below. Issue #26 has
+separated the system command source from data mounts: disk utilities now
+come from `/bin` on the system volume, not `/mnt`.
 
 Generalize the current two-task allocation to at least four C tasks, add a
 bounded message/handle mechanism, and move console, input, graphics, and
