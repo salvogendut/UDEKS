@@ -15,7 +15,7 @@ unsigned char udeks_program_main(unsigned char argc, unsigned char **argv)
     while (*arg) { if (*arg++ == '/') name = arg; }
     op = UDEKS_TREQ_OP_MOUNT;
     offset = 1;
-    if (name[0] == 'u') { op = UDEKS_TREQ_OP_UMOUNT; offset = 0; }
+    if ((name[0] | 32u) == 'u') { op = UDEKS_TREQ_OP_UMOUNT; offset = 0; }
     if (argc != offset+2u || strcmp((const char *)argv[argc-1], "/mnt"))
         goto usage;
     device = 0;

@@ -784,14 +784,11 @@ $(USER_XWAVE_UDEX): $(USER_XWAVE_BIN) tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x1200 \
 		--entry-address 0x1200 --bss-size 0x0225 --flags 0x02 $< $@
 
-$(USER_BOOTFS): $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) \
+$(USER_BOOTFS): $(USER_MOUNT_UDEX) \
 		$(USER_RECOVERY_USH_UDEX) \
 		tools/build_bootfs.py Makefile
 	$(PYTHON) tools/build_bootfs.py --max-size 0x3100 \
-		--entry cowsay=$(USER_COWSAY_UDEX) \
-		--entry date=$(USER_DATE_UDEX) \
-		--entry ls=$(USER_FILETOOLS_UDEX) --entry cat=$(USER_FILETOOLS_UDEX) \
-		--entry mount=$(USER_FILETOOLS_UDEX) --entry umount=$(USER_FILETOOLS_UDEX) \
+		--entry mount=$(USER_MOUNT_UDEX) --entry umount=$(USER_MOUNT_UDEX) \
 		--entry ush=$(USER_RECOVERY_USH_UDEX) $@
 
 $(VDC_SPLASH_BIN): assets/udekspipe-64.xpm tools/xpm_to_vdc.py | $(BUILD_ASSETS)
@@ -1909,7 +1906,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
 		tools/build_d71.py bench/iec-directory/hello.txt user/etc/rc $(USER_SYSINFO_UDEX) \
-		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX)
+		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX)
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
@@ -1933,6 +1930,8 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--hello bench/iec-directory/hello.txt \
 		--rc user/etc/rc --sysinfo $(USER_SYSINFO_UDEX) \
 		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) \
+		--command COWSAY=$(USER_COWSAY_UDEX) --command DATE=$(USER_DATE_UDEX) \
+		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_FILETOOLS_UDEX) \
 		--d64-output $(BOOT_D64) $(BOOT_D71)
 
 $(TASK_EXIT_PROBE_D71) $(TASK_EXIT_PROBE_D64) &: $(STAGE0_BIN) \
@@ -2127,6 +2126,7 @@ $(TASK_CANCEL_PROBE_D71) $(TASK_CANCEL_PROBE_D64) &: $(STAGE0_BIN) \
 
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) \
+		$(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) \
 		$(BOOT_DELIVERY_BIN) \
 		$(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) \
 		$(SCHEDULER_BIN) $(CAPABILITY_BIN) $(CAPABILITY_INSTALLER_BIN) \
@@ -2143,6 +2143,8 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(PANIC_PROBE_KERNEL_BIN) \
 		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) \
+		--command COWSAY=$(USER_COWSAY_UDEX) --command DATE=$(USER_DATE_UDEX) \
+		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_FILETOOLS_UDEX) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(PANIC_PROBE_CRT0_BIN) \
 		--probe $(PANIC_PROBE_PROBE_BIN) \

@@ -24,6 +24,10 @@ class FileTools(unittest.TestCase):
     @classmethod
     def tearDownClass(cls): cls.temp.cleanup()
     def setUp(self): self.lib.test_reset()
+    def test_explicit_uppercase_dos_paths(self):
+        for command, args in (('/mnt/LS', ('/bin',)), ('/mnt/CAT', ('/mnt/HELLO',))):
+            self.setUp()
+            self.assertEqual(self.invoke(command, *args), 0)
     def byte(self, name): return c.c_uint8.in_dll(self.lib, 'test_'+name)
     def word(self, name): return c.c_uint16.in_dll(self.lib, 'test_'+name)
     def output(self, error=False):

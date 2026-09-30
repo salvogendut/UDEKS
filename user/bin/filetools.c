@@ -103,11 +103,11 @@ unsigned char udeks_program_main(unsigned char argc, unsigned char **argv)
     const unsigned char *name, *arg;
     name = argv[0]; arg = name;
     while (*arg) { if (*arg++ == '/') name = arg; }
-    if (name[0] == 'c') {
+    if ((name[0] | 32u) == 'c') {
         if (argc != 2) return fail("cat FILE\n");
         return cat(argv[1]);
     }
-    if (name[0] == 'l') {
+    if ((name[0] | 32u) == 'l') {
         offset = 1;
         op = argc > 1 && !strcmp((const char *)argv[1], "-l");
         offset += op;
@@ -120,7 +120,7 @@ unsigned char udeks_program_main(unsigned char argc, unsigned char **argv)
         return list(arg, op);
     }
     op = UDEKS_TREQ_OP_MOUNT; offset = 1;
-    if (name[0] == 'u') { op = UDEKS_TREQ_OP_UMOUNT; offset = 0; }
+    if ((name[0] | 32u) == 'u') { op = UDEKS_TREQ_OP_UMOUNT; offset = 0; }
     if (argc != offset+2u || strcmp((const char *)argv[argc-1], "/mnt"))
         return fail("mount 8 /mnt | umount /mnt\n");
     device = 0;
