@@ -70,9 +70,12 @@ include `HELLO`; all previous commands remain, with `ls`/`cat`/`mount`/`umount`
 sharing one nonresident C executable. VICE shell tests cover errors and
 graphics-active use; the 1986 raw-IEC keyboard workflow passes too. The user
 has separately confirmed the earlier mount/list slice after restarting 1986.
-**Next: test this file-reading image**, then close the tiny-file EOF and
-media-change/recovery gates and qualify physical C128 + PI1541. This is not
-full Storage 0.1 acceptance. See [the test instructions](STORAGE-0.1.md#interactive-file-checkpoint--2026-09-30).
+The byte-counted sector reader now passes tiny-file EOF and media-error/recovery
+checks in VICE and the keyboard workflow in 1986; 885 host tests pass.
+**Next: physical C128 + PI1541 qualification**, then merge PR #17. The exact
+hardware test disks are preserved in `bench/artifacts/2026-09-30-storage-0.1`.
+This is not full Storage 0.1 acceptance until that hardware result is recorded.
+See [the hardware checklist](STORAGE-0.1.md#hardware-checklist).
 
 Deliver the smallest useful vertical slice through a **C storage service**,
 without moving device policy into the resident kernel. Define bank-aware

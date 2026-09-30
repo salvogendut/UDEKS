@@ -80,10 +80,18 @@ class BuildD71Tests(unittest.TestCase):
             self.assertEqual(view[offset:offset+2], bytes((0, len(data)+1)))
             self.assertEqual(view[offset+2:offset+2+len(data)], data)
 
-    def test_rejects_empty_seq_and_unsupported_file_type(self):
-        for content, file_type in ((b'', 0x81), (b'x', 0x83)):
+    def test_rejects_empty_prg_and_unsupported_file_type(self):
+        for content, file_type in ((b'', 0x82), (b'x', 0x83)):
             with self.assertRaises(ValueError):
                 install_prg_file(blank_d71(), 'BAD', content, file_type=file_type)
+
+    def test_empty_seq_has_one_sector_with_zero_payload(self):
+        image = blank_d71()
+        install_prg_file(image, 'EMPTY', b'', file_type=0x81)
+        entry = sector_offset(18, 1)+2
+        offset = sector_offset(image[entry+1], image[entry+2])
+        self.assertEqual(image[offset:offset+2], b'\0\1')
+        self.assertEqual(image[entry+28:entry+30], b'\1\0')
 
     def test_blank_image_has_standard_size_and_directory(self):
         image = blank_d71()

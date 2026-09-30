@@ -1,6 +1,14 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 STORAGE_BUILD := build/storage
-STORAGE_OBJECTS := $(addprefix $(STORAGE_BUILD)/,iec_entry.o iec_service.o cbm_directory.o iec_slow.o)
+.PHONY: iec-eof-reference
+iec-eof-reference: $(BUILD_IEC_DIRECTORY)/kernal-eof.prg
+$(BUILD_IEC_DIRECTORY)/kernal-eof.o: bench/iec-directory/kernal-eof.s | $(BUILD_IEC_DIRECTORY)
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_IEC_DIRECTORY)/kernal-eof.bin: $(BUILD_IEC_DIRECTORY)/kernal-eof.o cfg/8502-iec-directory.cfg
+	$(LD65) -C cfg/8502-iec-directory.cfg -o $@ $<
+$(BUILD_IEC_DIRECTORY)/kernal-eof.prg: $(BUILD_IEC_DIRECTORY)/kernal-eof.bin
+	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
+STORAGE_OBJECTS := $(addprefix $(STORAGE_BUILD)/,iec_entry.o iec_service.o cbm_file.o iec_slow.o)
 USER_MOUNT_BIN := $(BUILD_USER)/mount.bin
 USER_MOUNT_UDEX := $(BUILD_USER)/mount.udx
 USER_FILETOOLS_BIN := $(BUILD_USER)/filetools.bin
@@ -25,7 +33,7 @@ $(USER_MOUNT_BIN): $(USER_ENTRY_OBJ) $(USER_SYSCALL_OBJ) $(BUILD_USER)/mount.o $
 	$(CL65) -t none -C cfg/8502-user-app1.cfg -m $(BUILD_USER)/mount.map -o $@ $(filter %.o,$^)
 $(USER_MOUNT_UDEX): $(USER_MOUNT_BIN) tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 $< $@
-$(STORAGE_OBJECTS): mk/storage.mk
+$(STORAGE_OBJECTS): mk/storage.mk include/udeks/cbm_file.h include/udeks/iec_slow.h
 .PHONY: storage-service storage-vice-probe storage-shell-probe
 storage-shell-probe:
 	$(PYTHON) tools/storage_shell_probe.py
@@ -42,11 +50,13 @@ $(STORAGE_BUILD)/iec_entry.o: src/services/filesystem/iec_entry.s | $(STORAGE_BU
 	$(CA65) --cpu 6502 -o $@ $<
 $(STORAGE_BUILD)/iec_service.o: src/services/filesystem/iec_service.c include/udeks/task_request.h | $(STORAGE_BUILD)
 	$(CL65) $(CFLAGS_8502) --static-locals --code-name STORAGECODE -c -o $@ $<
+$(STORAGE_BUILD)/cbm_file.o: src/services/filesystem/cbm_file.c include/udeks/cbm_file.h include/udeks/iec_slow.h | $(STORAGE_BUILD)
+	$(CL65) $(CFLAGS_8502) --static-locals -c -o $@ $<
 $(STORAGE_BUILD)/iec_slow.o: src/services/filesystem/iec_slow.s | $(STORAGE_BUILD)
 	$(CA65) --cpu 6502 -D UDEKS_STORAGE_MODULE -o $@ $<
 $(STORAGE_BUILD)/module.bin $(STORAGE_BUILD)/driver.bin $(STORAGE_BUILD)/policy.bin $(STORAGE_BUILD)/module.map &: \
 		$(STORAGE_OBJECTS) cfg/8502-storage.cfg
-	$(CL65) -t none -C cfg/8502-storage.cfg -m $(STORAGE_BUILD)/module.map \
+	$(CL65) -t none -C cfg/8502-storage.cfg -u _udeks_cbm_dos_error -m $(STORAGE_BUILD)/module.map \
 		-o $(STORAGE_BUILD)/module.bin $(STORAGE_OBJECTS)
 $(STORAGE_BUILD)/router.o: src/services/filesystem/iec_router.s | $(STORAGE_BUILD)
 	$(CA65) --cpu 6502 -o $@ $<

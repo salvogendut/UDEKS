@@ -29,7 +29,12 @@ format, and storage-backed UDEX launch belong to later milestones.
   VICE testing likewise needs true-drive/line-level operation; physical
   PI1541 remains the final device gate.
 
-## Directory decoder
+## Directory decoder (original formatted-stream path)
+
+This decoder remains host-tested and used by the standalone transport probe.
+The runtime service now uses the raw sector-chain reader described below;
+formatted directory listings cannot provide the exact byte length needed to
+fix zero/one-byte DOS stream EOF.
 
 `src/services/filesystem/cbm_directory.c` incrementally decodes the
 Commodore DOS directory program a byte at a time. Its caller owns the bounded
@@ -101,10 +106,10 @@ cc65 runtime, saves/restores caller zero page, and makes no KERNAL calls.
 
 | Runtime region | Owner |
 | --- | --- |
-| Bank 1 `$1200-$1FFF` | Service entry, directory decoder and C helpers |
+| Bank 1 `$1200-$1FFF` | Service entry, sector-chain reader and C helpers |
 | Bank 1 `$8A00-$8FFF` | C mount/handle/request policy |
 | Bank 1 `$9A00-$9FFF` | IEC assembly driver; ush image+BSS must end below it |
-| Bank 1 `$E000-$E0FF` | Service BSS (158 bytes currently) |
+| Bank 1 `$E000-$E0FF` | Service BSS (111 bytes currently) |
 | Bank 1 `$E100-$E1FF` | Private C stack, top `$E200` |
 | Bank 0 `$C880-$C8FF` | 75-byte routing/overlay stub, after scheduler BSS |
 | Common `$F68A-$F6B3` | 42-byte temporary bank-switch code; below transient stack |
@@ -206,17 +211,12 @@ snapshot. It does not use KERNAL traps or certify physical drive behavior.
 
 ### Remaining gates
 
-- The strict optional `storage_service_probe.py --tiny-files` currently
-  reproduces a one-byte file returning four DOS-stream bytes on VICE's
-  1541 ROM path. A synthesized zero-byte chain previously returned 254 zero
-  bytes; the packer rejects empty files rather than shipping that fixture.
-  Do not silently discard data or infer exact length from directory blocks.
-  [Original DOS channel-open source](https://github.com/mist64/cbmsrc/blob/master/DOS_1541_05/opnchnl.src)
-  prefetches the first byte and then overwrites channel readiness; this is a
-  firmware-boundary clue, not a fully qualified root cause. Prefetching before
-  reading status did **not** fix the discrepancy and was not retained.
-- Hot media changes, damaged media, removal during an open stream, and
-  physical C128 + PI1541 remain qualification gates.
+- Physical C128 + PI1541 is the remaining release gate; see the hardware
+  checklist below. Automated tests cover the finite cases recorded here, not
+  every drive fault or every damaged disk.
+- Always unmount before exchanging media. Removal during a read is tested to
+  fail and recover, but an undetected swap during a live handle is not a
+  supported workflow. No automatic media-generation detector is claimed.
 - Only absolute `/mnt/NAME` file paths are supported. Names have the restricted
   mapping in [the request ABI](../abi/task-request.md#read-only-iec-mount-05).
   `cd /mnt`, per-file byte-size metadata and storage-backed program loading
@@ -227,8 +227,63 @@ snapshot. It does not use KERNAL traps or certify physical drive behavior.
   historical `STORAGE/FILESYSTEM SERVICES: DEFERRED` wording is also still due
   for correction; runtime commands, not that banner, describe this checkpoint.
 
-**Next concrete step:** test the file-reading image; then close the remaining
-EOF/media/recovery and hardware gates. This is not full Storage 0.1 acceptance.
+**Next concrete step:** physical C128 + PI1541 test, then merge PR #17.
+Storage 0.2 disk-backed program loading is the next feature, not IEC optimization.
+
+### Byte-accurate EOF and media recovery — 2026-09-30
+
+The stock C128 KERNAL reproduces the same error as the old reader on VICE's
+true 1541 and 1571 ROM paths: a one-byte SEQ produces four bytes, a zero-byte
+SEQ produces 254 bytes, and two bytes read correctly. `make iec-eof-reference`
+builds the isolated reference PRG; `tools/iec_eof_reference.py --drive 1541`
+(or `1571`) reproduces this without UDEKS. Prefetching data before reading DOS
+status did not fix it. The reference is evidence for these fixtures, not a
+claim about all DOS versions or a physical-hardware result.
+
+`cbm_file.c` now opens a private `#` buffer and issues the documented read-only
+`U1:2 0 track sector` command. It streams sectors without allocating a 256-byte
+buffer on the C128. It checks DOS status after every U1, parses raw directory
+entries, and uses the final sector's count minus one as the exact payload
+length. No padding is guessed or silently trimmed. File types, counts, sector
+geometry and chain bounds are validated; errors are sticky until close.
+No disk writes, drive-memory patches, new kernel policy or moved memory slots
+are involved. The formatted-directory decoder remains available to benchmarks.
+
+The native service probe with `--tiny-files --media-recovery` passes on VICE
+1541/D64 and 1571/D71: exact reads of 0, 1, 2, 24, 255 and 515 bytes;
+repeated EOF; removal during a read (254 already-buffered bytes, then EIO);
+absent-media mount failure; replacement-disk data without stale bytes; unchanged
+caller context and VIC bitmap. The immediate remount requires one retry in
+both debugger runs. The normal-keyboard shell probes pass empty/one-byte reads,
+missing-file diagnostics, removal/reinsertion, bootfs fallback, and commands
+while xclock/xwave run. These are correctness gates, not performance claims.
+
+### Hardware checklist
+
+Use `build/storage/hardware/udeks-storage-test.d64` on PI1541 in full emulation
+mode (the image includes EMPTY and ONE test files). Cold-boot it as you did the
+previous working D64. In the VDC console:
+
+```text
+mount 8 /mnt
+ls /mnt
+cat /mnt/HELLO
+cat /mnt/EMPTY
+cat /mnt/ONE
+cat /mnt/NOFILE
+cat /mnt/HELLO
+umount /mnt
+ls /bin
+```
+
+HELLO prints `HELLO UDEKS`, EMPTY prints nothing, ONE prints exactly `X`, and
+NOFILE reports `No such file or directory`; each returns a usable prompt.
+Repeat HELLO/EMPTY/ONE with `xinit`, `xclock &` and `xwave &` active, then check
+pointer, dragging and console typing. Unmount, eject/deselect the image on
+PI1541, try mounting (must fail and return), reselect it, and mount/read again.
+If the drive is still busy, retry the mount after it settles. Do not physically
+unplug IEC cables while powered. Report any reset, frozen prompt, extra bytes
+or failed recovery. Merge remains blocked until this test passes.
 
 Initial file-read checkpoint, before the diagnostic follow-up below:
 871 host tests pass, normal/panic images build,

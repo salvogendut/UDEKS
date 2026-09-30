@@ -12,7 +12,7 @@ import subprocess
 import time
 
 import shadow_boot_probe as sp
-from build_d71 import install_prg_file
+from build_d71 import blank_d71, d64_compatibility_image, install_prg_file
 from task_waitpid_probe import scheduler_symbols
 from boot_staging_map import segment_bounds
 from vice_capture import choose_port, monitor_command, parse_monitor_byte
@@ -64,6 +64,8 @@ def main():
     data = bytearray(disk.read_bytes())
     install_prg_file(data, 'TAIL', b'NO FINAL NEWLINE', file_type=0x81)
     install_prg_file(data, 'LONG', b'BLOCK OF FILE DATA\n'*40+b'END OF LONG FILE\n', file_type=0x81)
+    install_prg_file(data, 'EMPTY', b'', file_type=0x81)
+    install_prg_file(data, 'ONE', b'X', file_type=0x81)
     disk.write_bytes(data)
     # c1541 encodes uppercase host names in PETSCII's other letter range.
     subprocess.run(['flatpak', 'run', '--command=c1541', 'net.sf.VICE', '-attach', str(disk),
@@ -119,6 +121,8 @@ def main():
         command('cat /mnt/HELLO', 0, ('HELLO UDEKS',))
         command('cat /mnt/ALT', 0, ('HELLO UDEKS',))
         command('cat /mnt/TAIL', 0, ('NO FINAL NEWLINE',))
+        command('cat /mnt/EMPTY', 0)
+        command('cat /mnt/ONE', 0)
         command('cat /mnt/LONG', 0, ('END OF LONG FILE',))
         command('cat /mnt/NOFILE', 1, ('cat: No such file or directory',))
         command('cat /mnt/HELLO', 0, ('HELLO UDEKS',))
@@ -136,11 +140,28 @@ def main():
         command('cat /mnt/HELLO', 0, ('HELLO UDEKS',))
         command('umount /mnt', 0)
         command('ls /bin', 0, ('cowsay', 'date'))
+        monitor_command(port, 'detach 8')
+        command('mount 8 /mnt', 1)
+        command('ls /bin', 0)
+        replacement = blank_d71()
+        install_prg_file(replacement, 'HELLO', b'SECOND DISK\n', file_type=0x81)
+        new_disk = work/('replacement'+disk.suffix)
+        new_disk.write_bytes(d64_compatibility_image(replacement)
+                             if disk.suffix == '.d64' else replacement)
+        monitor_command(port, f'attach "{new_disk}" 8')
+        command('mount 8 /mnt', 0)
+        command('cat /mnt/HELLO', 0, ('SECOND DISK',))
+        command('umount /mnt', 0)
+        monitor_command(port, f'attach "{disk}" 8')
+        command('mount 8 /mnt', 0)
+        command('cat /mnt/HELLO', 0, ('HELLO UDEKS',))
+        command('umount /mnt', 0)
         if byte(port, 0xF225) != 3 or byte(port, 0xF265) != 3:
             raise AssertionError('background graphics app lost after storage commands')
         monitor_command(port, f'screenshot "{work / "console.bmp"}" 0')
         (work/'result.json').write_text(json.dumps({'drive': args.drive,
             'disk_sha256': hashlib.sha256(args.disk.read_bytes()).hexdigest(),
+            'test_disk_sha256': hashlib.sha256(disk.read_bytes()).hexdigest(),
             'commands': records}, indent=2)+'\n')
         print('PASS interactive storage, input readiness, bootfs and background apps', flush=True)
     finally:

@@ -72,13 +72,24 @@ int main(int argc, char **argv) {
     storage_command("ls /mnt", 0);
     storage_command("cat /mnt/hello", 0);
     require(console_contains("HELLO UDEKS"), "file contents missing");
+    storage_command("cat /mnt/empty", 0);
+    storage_command("cat /mnt/one", 0);
+    require(console_contains("X"), "one-byte file missing");
     storage_command("cat /mnt/nofile", 1);
     storage_command("cat /mnt/hello", 0);
     storage_command("umount /mnt", 0);
     storage_command("ls /bin", 0);
+    require(drive_attach_disk(&machine->drive, NULL) == 0, "remove disk");
+    storage_command("mount 8 /mnt", 1);
+    storage_command("ls /bin", 0);
+    require(drive_attach_disk(&machine->drive, argv[2]) == 0, "reinsert disk");
+    storage_command("mount 8 /mnt", 0);
+    storage_command("cat /mnt/hello", 0);
+    require(console_contains("HELLO UDEKS"), "reinserted file missing");
+    storage_command("umount /mnt", 0);
     require(snapshot_save(machine, snapshot_path) == SNAPSHOT_OK, "save evidence");
     require(drive_attach_disk(&machine->drive, NULL) == 0, "detach disk copy");
-    puts("PASS native 1986 raw-IEC mount/list/cat/error/unmount");
+    puts("PASS native 1986 raw-IEC mount/list/tiny-file/error/media-recovery/unmount");
     free(machine);
     return 0;
 }

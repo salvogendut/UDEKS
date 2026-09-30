@@ -14,6 +14,7 @@
         .export _udeks_iec_open_file
         .export _udeks_iec_prepare_file, _udeks_iec_open_status
         .export _udeks_iec_talk_file, _udeks_iec_untalk
+        .export _udeks_iec_command
         .export _udeks_iec_filename
         .export _udeks_iec_filename_length
         .export _udeks_iec_read_byte
@@ -622,6 +623,43 @@ _udeks_iec_untalk:
         clc
         jsr send_byte
         sta iec_status
+        jsr release_command
+        lda iec_status
+        rts
+
+; Private DOS command bytes supplied by the storage service, not user input.
+_udeks_iec_command:
+        jsr attention
+        lda iec_device
+        ora #$20
+        clc
+        jsr send_byte
+        bne @done
+        lda #$6f
+        clc
+        jsr send_byte
+        bne @done
+        jsr atn_high
+        lda #0
+        sta iec_name_index
+@byte: ldx iec_name_index
+        lda _udeks_iec_filename,x
+        inx
+        cpx _udeks_iec_filename_length
+        beq @last
+        clc
+        jsr send_byte
+        bne @done
+        inc iec_name_index
+        bne @byte
+@last: sec
+        jsr send_byte
+        bne @done
+        jsr attention
+        lda #$3f
+        clc
+        jsr send_byte
+@done: sta iec_status
         jsr release_command
         lda iec_status
         rts

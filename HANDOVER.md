@@ -31,13 +31,20 @@ The user confirmed mount/list after restarting. The new raw-IEC harness also
 passes native boot, keyboard mount/list/cat/missing-file/unmount without
 modifying emulator sources. Runtime storage does not use KERNAL disk traps.
 
-Next: user test of the new file-reading image; resolve tiny-file EOF, test
-media changes/recovery, and complete C128/PI1541 qualification. Exact VICE
-reads pass for 2, 24 and 515 bytes, including NULs and a sector boundary.
-`storage_service_probe.py --tiny-files` deliberately remains a strict failing
-reproducer for the one-byte DOS stream discrepancy; do not silently trim
-bytes or call the entire feature qualified. Empty-file semantics are also
-unqualified. See the storage document for evidence and the DOS source clue.
+Next: physical C128/PI1541 qualification of the preserved test disk, then
+merge PR #17. `cbm_file.c` replaces the runtime formatted-directory/DOS-file
+stream with read-only U1 sector reads: exact byte counts now pass for 0, 1, 2,
+24, 255 and 515 bytes, including a one-byte final sector. The old failure also
+reproduces with stock KERNAL; the isolated reference remains in the suite.
+VICE 1541/D64 and 1571/D71 pass removal mid-read, sticky EIO, absent-media
+failure, replacement media, caller context and unchanged bitmap. Immediate
+remount requires one retry in the debugger test; keyboard tests recover with
+graphics active. 1986 passes empty/one-byte/error/eject/reinsert keyboard tests.
+885 host tests pass; placement, panic build and shadow gates pass. Exact test
+disks/results are in `bench/{artifacts,results}/2026-09-30-storage-0.1`.
+Always unmount before swapping media; no automatic media-generation detector
+or physical-device qualification is claimed. Storage 0.2 may branch from this
+candidate while hardware testing is pending; do not merge Storage 0.1 early.
 Do not expand benchmarks or optimize IEC before completing this feature.
 
 ## Historical Tasking 0.1 decision

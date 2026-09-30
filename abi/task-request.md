@@ -91,25 +91,35 @@ existing fallback. The shared record's sequence is preserved on every reply.
 
 `OPEN /mnt/NAME` with descriptor `O_RDONLY` (`0`) opens a named file on that
 same descriptor `4`. Names are 1–16 ASCII letters, digits, spaces, `.`, `-`,
-or `_`; ASCII lowercase folds to uppercase. Try the low PETSCII uppercase
-range first, retry the high range only after DOS status `62` (file not found).
+or `_`; ASCII lowercase folds to uppercase. Both PETSCII uppercase ranges
+compare equally; the first matching directory entry wins.
 DOS commands, wildcards, embedded NULs and nested paths are rejected with
 `EINVAL`. This is a deliberately restricted filename mapping, not a complete
-PETSCII namespace. `O_DIRECTORY` on a file returns `ENOTDIR`.
+PETSCII namespace. `O_DIRECTORY` on a file returns `ENOTDIR`. Closed SEQ, PRG,
+and sequential USR files are supported; unclosed and REL files return `EINVAL`.
 
 `READ` on descriptor `4` accepts counts 0–24. A zero count consumes nothing;
 otherwise result is the explicit number of bytes in payload, including NULs
-and the byte carrying EOI. After EOI, later reads return zero. A transport
+and the final recorded file byte. The sector chain's last-byte count defines
+EOF, including empty and one-byte files; later reads return zero. A transport
 failure after some bytes returns those bytes first, then `EIO` on the next
 read; an immediate failure returns `EIO`. Failed opens publish no handle:
-DOS `62` maps to `ENOENT`, other DOS/status/transport failures to `EIO`.
+an absent directory name maps to `ENOENT`; malformed chains and
+DOS/status/transport failures map to `EIO`.
 `GETDENTS` on a file is `ENOTDIR`. Always `CLOSE`, including after errors.
-The current adapter exposes the DOS byte stream; zero/one-byte files have an
-outstanding EOF discrepancy on the qualified 1541 ROM path, documented with
-a strict reproducer in [Storage 0.1](../docs/STORAGE-0.1.md#remaining-gates).
+The service uses read-only DOS `U1` sector reads, checking status before
+consuming data. It rejects invalid track/sector addresses, inconsistent block
+counts, truncated sectors and bounded chain exhaustion. A read error remains
+sticky until close; it must not turn into successful EOF on a later request.
+Unmount before changing media. Removal errors release the physical channel;
+close/unmount/remount recovers without reboot. An immediate remount may return
+`EIO` while the drive is still busy; retry after it settles. This is not an
+automatic media-generation detector: undetected swaps during a live handle
+are unsupported, especially disks with identical IDs/content.
 
 This initial single-handle service is synchronous and IRQ-masked per request,
-with finite transport waits and a 256-byte directory decoding budget. It does
+with finite transport waits and a maximum of 19 directory sectors per lookup
+and 1,366 data sectors per file (also bounded by its directory block count). It does
 not schedule, yield, call KERNAL, or call window code while its bank is mapped.
 It is not yet per-process descriptor ownership or cancellation-aware I/O.
 

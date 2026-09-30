@@ -162,15 +162,15 @@ def install_prg_file(image: bytearray, name: str, data: bytes, *, file_type: int
     """Install a closed PRG (or raw-byte SEQ) on side one, also visible in D64."""
     if file_type not in (0x81, 0x82):
         raise ValueError("disk file must be closed SEQ or PRG")
-    if not data:
-        raise ValueError("disk PRG/SEQ is empty")
+    if not data and file_type != 0x81:
+        raise ValueError("disk PRG is empty")
     try:
         encoded = name.upper().encode("ascii")
     except UnicodeEncodeError as error:
         raise ValueError("disk filename must be ASCII") from error
     if not 1 <= len(encoded) <= 16:
         raise ValueError("disk filename must be 1..16 characters")
-    blocks = (len(data) + 253) // 254
+    blocks = max(1, (len(data) + 253) // 254)
     available: list[tuple[int, int]] = []
     for track in range(1, D64_TRACK_COUNT + 1):
         if track == 18:

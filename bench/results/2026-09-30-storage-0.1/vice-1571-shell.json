@@ -1,0 +1,176 @@
+{
+  "drive": "1571",
+  "disk_sha256": "e3c2af348bdb631b172af160f5862d2c27f69c678b15ccde3f27c3d7c998388c",
+  "commands": [
+    {
+      "command": "ls /bin",
+      "exit": 0,
+      "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> ls /bin\ncat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~>"
+    },
+    {
+      "command": "mount 7 /mnt",
+      "exit": 1,
+      "console": "Z80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> ls /bin\ncat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 7 /mnt\nmount: device 8-11\nUDEKS:~>"
+    },
+    {
+      "command": "mount 11 /mnt",
+      "exit": 1,
+      "console": "FILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> ls /bin\ncat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 7 /mnt\nmount: device 8-11\nUDEKS:~> mount 11 /mnt\nmount: failed\nUDEKS:~>"
+    },
+    {
+      "command": "ls /bin",
+      "exit": 0,
+      "console": "ls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 7 /mnt\nmount: device 8-11\nUDEKS:~> mount 11 /mnt\nmount: failed\nUDEKS:~> ls /bin\ncat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "exit": 0,
+      "console": "mount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 7 /mnt\nmount: device 8-11\nUDEKS:~> mount 11 /mnt\nmount: failed\nUDEKS:~> ls /bin\ncat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "ls /mnt",
+      "exit": 0,
+      "console": "mount: failed\nUDEKS:~> ls /bin\ncat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nTAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/HELLO",
+      "exit": 0,
+      "console": "cat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nTAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/ALT",
+      "exit": 0,
+      "console": "date\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nTAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> cat /mnt/ALT\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/TAIL",
+      "exit": 0,
+      "console": "mount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nTAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> cat /mnt/ALT\nHELLO UDEKS\nUDEKS:~> cat /mnt/TAIL\nNO FINAL NEWLINE\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/EMPTY",
+      "exit": 0,
+      "console": "umount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nTAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> cat /mnt/ALT\nHELLO UDEKS\nUDEKS:~> cat /mnt/TAIL\nNO FINAL NEWLINE\nUDEKS:~> cat /mnt/EMPTY\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/ONE",
+      "exit": 0,
+      "console": "xclock\nxwave\nUDEKS:~> mount 8 /mnt\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nTAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> cat /mnt/ALT\nHELLO UDEKS\nUDEKS:~> cat /mnt/TAIL\nNO FINAL NEWLINE\nUDEKS:~> cat /mnt/EMPTY\nUDEKS:~> cat /mnt/ONE\nX\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/LONG",
+      "exit": 0,
+      "console": "BLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nEND OF LONG FILE\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/NOFILE",
+      "exit": 1,
+      "console": "BLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nEND OF LONG FILE\nUDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/HELLO",
+      "exit": 0,
+      "console": "BLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nEND OF LONG FILE\nUDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "exit": 1,
+      "console": "BLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nEND OF LONG FILE\nUDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "exit": 0,
+      "console": "BLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nEND OF LONG FILE\nUDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "ls /mnt",
+      "exit": 1,
+      "console": "BLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nEND OF LONG FILE\nUDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~> umount /mnt\nUDEKS:~> ls /mnt\nls: open failed\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "exit": 0,
+      "console": "BLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nEND OF LONG FILE\nUDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~> umount /mnt\nUDEKS:~> ls /mnt\nls: open failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xinit",
+      "exit": null,
+      "console": "BLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nEND OF LONG FILE\nUDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~> umount /mnt\nUDEKS:~> ls /mnt\nls: open failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "exit": null,
+      "console": "BLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nBLOCK OF FILE DATA\nEND OF LONG FILE\nUDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~> umount /mnt\nUDEKS:~> ls /mnt\nls: open failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~>"
+    },
+    {
+      "command": "ls /mnt",
+      "exit": 0,
+      "console": "UDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~> umount /mnt\nUDEKS:~> ls /mnt\nls: open failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nTAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "exit": null,
+      "console": "UDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~> umount /mnt\nUDEKS:~> ls /mnt\nls: open failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nTAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~>"
+    },
+    {
+      "command": "ls /mnt",
+      "exit": 0,
+      "console": "UDEKS:~> xclock &\nxclock started in background\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nTAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nTAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/HELLO",
+      "exit": 0,
+      "console": "UDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nTAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nTAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "exit": 0,
+      "console": "SCHEDOVR\nHELLO\nTAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nTAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "ls /bin",
+      "exit": 0,
+      "console": "SCHEDOVR\nHELLO\nTAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> ls /bin\ncat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "exit": 1,
+      "console": "TAIL\nLONG\nEMPTY\nONE\nALT\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> ls /bin\ncat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~>"
+    },
+    {
+      "command": "ls /bin",
+      "exit": 0,
+      "console": "cowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~> ls /bin\ncat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "exit": 0,
+      "console": "date\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~> ls /bin\ncat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/HELLO",
+      "exit": 0,
+      "console": "mount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~> ls /bin\ncat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nSECOND DISK\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "exit": 0,
+      "console": "umount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~> ls /bin\ncat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nSECOND DISK\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "exit": 0,
+      "console": "ush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~> ls /bin\ncat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nSECOND DISK\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/HELLO",
+      "exit": 0,
+      "console": "xwave\nUDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~> ls /bin\ncat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nSECOND DISK\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "exit": 0,
+      "console": "UDEKS:~> mount 8 /mnt\nmount: failed\nUDEKS:~> ls /bin\ncat\ncowsay\ndate\nls\nmount\numount\nush\nxclock\nxwave\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nSECOND DISK\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    }
+  ]
+}

@@ -30,6 +30,9 @@ uint8_t UDEKS_FASTCALL udeks_iec_prepare_file(uint8_t device);
 uint8_t udeks_iec_open_status(void);
 uint8_t udeks_iec_untalk(void);
 uint8_t udeks_iec_talk_file(void);
+/* Send the private filename buffer as a DOS command on channel 15. The
+ * caller must UNTALK first. This does not open/close the data channel. */
+uint8_t udeks_iec_command(void);
 /* Low byte is data; high byte is OK, EOI, TIMEOUT, or BAD_STATE. The EOI
  * byte itself is valid and must be consumed before closing the channel. */
 uint16_t udeks_iec_read_byte(void);

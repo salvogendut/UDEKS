@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import socket
@@ -17,7 +18,7 @@ import subprocess
 import time
 
 import shadow_boot_probe as sp
-from build_d71 import install_prg_file
+from build_d71 import blank_d71, d64_compatibility_image, install_prg_file
 from capability_relocation_probe import inject_until_state
 from vice_capture import choose_port, receive_prompts, monitor_command
 
@@ -77,14 +78,15 @@ def main():
     parser.add_argument('--drive', choices=('1541', '1571'), default='1541')
     parser.add_argument('--output', type=Path, default=ROOT/'build/storage/vice')
     parser.add_argument('--tiny-files', action='store_true',
-        help='also reproduce the outstanding one-byte DOS stream EOF discrepancy (strict check)')
+        help='also check empty and one-byte files exactly')
+    parser.add_argument('--media-recovery', action='store_true')
     args = parser.parse_args()
     work = args.output.resolve()
     work.mkdir(parents=True, exist_ok=True)
     disk = work / ('native-storage' + args.disk.suffix)
     shutil.copyfile(args.disk, disk)
     samples = {'TWO': b'AB', 'EDGE': bytes(range(24)), 'BIN': bytes(range(256))*2+b'END'}
-    if args.tiny_files: samples['ONE'] = b'\0'
+    if args.tiny_files: samples.update({'ONE': b'\0', 'EMPTY': b'', 'BOUND': b'A'*254+b'\0'})
     image = bytearray(disk.read_bytes())
     for name, data in samples.items():
         install_prg_file(image, name, data, file_type=0x81)
@@ -105,6 +107,10 @@ def main():
             result = call(port, work, op, payload, fd, count)
             records.append(result.hex())
             if result[12] != error or result[6] != (128 if error else 2):
+                diagnostic = int(re.search(r'_udeks_cbm_dos_error\s+([0-9A-Fa-f]+)',
+                    (ROOT/'build/storage/module.map').read_text())[1], 16)
+                raw = sp.capture_blocks(port, [(work/'dos-error.bin', diagnostic, diagnostic, 'worker')])[0]
+                print('DOS status:', raw.hex(), flush=True)
                 raise AssertionError(f'op {op}: {result.hex()} expected errno {error}')
             return result
         request(6, b'/mnt', 1, error=2)  # take over before snapshotting the clock
@@ -150,6 +156,51 @@ def main():
             print(f'{name}: {len(content)} bytes, exact={content == expected}', flush=True)
         request(18, b'/mnt')
         request(6, b'/mnt', 1, error=2)
+        if args.media_recovery:
+            # Buffered bytes from the original sector may still be delivered;
+            # fetching the next sector with the disk removed must fail, not EOF.
+            request(17, b'\x08/mnt')
+            request(6, b'/mnt/BIN')
+            r = request(1, fd=4, count=24)
+            received = bytearray(r[14:14+r[11]])
+            monitor_command(port, 'detach 8')
+            for _ in range(32):
+                r = call(port, work, 1, fd=4, count=24)
+                records.append(r.hex())
+                if r[12] == 5: break
+                if r[6] != 2 or r[12] or not r[11]:
+                    raise AssertionError('media removal claimed EOF/success')
+                received.extend(r[14:14+r[11]])
+            else: raise AssertionError('removed disk did not fail bounded')
+            if received != samples['BIN'][:len(received)] or len(received) >= len(samples['BIN']):
+                raise AssertionError('removal delivered unexpected bytes')
+            request(1, fd=4, count=24, error=5)
+            request(9, fd=4)
+            request(18, b'/mnt')
+            request(17, b'\x08/mnt', error=5)
+            replacement = blank_d71()
+            install_prg_file(replacement, 'HELLO', b'SECOND DISK\n', file_type=0x81)
+            new_disk = work/('replacement'+disk.suffix)
+            new_disk.write_bytes(d64_compatibility_image(replacement)
+                                 if disk.suffix == '.d64' else replacement)
+            monitor_command(port, f'attach "{new_disk}" 8')
+            remount_errors = []
+            for _ in range(3):
+                r = call(port, work, 17, b'\x08/mnt')
+                records.append(r.hex())
+                if r[6] == 2 and not r[12]: break
+                if r[6] != 128 or r[12] != 5:
+                    raise AssertionError('unexpected remount result: '+r.hex())
+                remount_errors.append(r[12])
+            else:
+                state = sp.capture_blocks(port, [(work/'remount-state.bin', 0xe000, 0xe0ff, 'worker')])[0]
+                raise AssertionError('replacement remount never recovered: '+state.hex())
+            request(6, b'/mnt/HELLO')
+            r = request(1, fd=4, count=24)
+            if r[14:14+r[11]] != b'SECOND DISK\n':
+                raise AssertionError('new medium reused old data')
+            request(9, fd=4); request(18, b'/mnt')
+            print(f'PASS removed mid-file after {len(received)} buffered bytes; absent-media failure; new disk read (remount retries: {len(remount_errors)})', flush=True)
         # The same gate still reaches the original bootfs service.
         if request(6, b'/bin', 1)[11] != 3:
             raise AssertionError('bootfs fallback lost')
@@ -164,6 +215,8 @@ def main():
         (work/'result.json').write_text(json.dumps({'drive': args.drive,
             'disk_sha256': hashlib.sha256(args.disk.read_bytes()).hexdigest(),
             'directory': names, 'requests': records, 'bitmap_unchanged': True,
+            'media_recovery': args.media_recovery,
+            'remount_retry_errors': remount_errors if args.media_recovery else [],
             'exact_file_sizes': {name: len(data) for name, data in samples.items()}}, indent=2)+'\n')
         print(f'PASS: {names}; mount/list/unmount, bootfs fallback, bitmap intact', flush=True)
     finally:
