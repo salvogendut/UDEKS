@@ -29,6 +29,27 @@ Hardware feedback validates particular tested builds and interactions, not
 every C128 model, expansion, disk format, or failure path. `1986` and VICE are
 independent emulator gates; neither substitutes for physical testing.
 
+## Target boot and application model
+
+The intended end state is **kernel first, then the shell**. Everything outside
+the proper kernel—including applications and non-kernel service programs—must
+be a standalone disk-loadable executable, not a permanent component of the
+boot image. Bootfs and today's preloaded service/application bundles are
+transitional mechanisms, not the final system distribution model.
+
+Provide a shell-run startup script (provisionally `/etc/rc`) to perform mounts
+and launch the desired services or applications. Keep startup policy in that
+script and user space, not hard-coded in the kernel; graphical startup should
+be optional. Define the minimal bootstrap read/load path needed to reach the
+shell and its script before ordinary mounts exist, without using that need to
+justify retaining unrelated services or applications in the kernel.
+
+The acceptance target is a cold boot into a disk-loaded shell, followed by
+script-driven initialization and on-demand program loading. Changing startup
+mounts or applications must not require rebuilding the kernel.
+
+## Roadmap position
+
 | Roadmap area | Position |
 | --- | --- |
 | Foundation and CPU choice | Established; independently pinned toolchain still due. |
@@ -78,6 +99,11 @@ ownership rules, exit/wait behavior, and bootfs fallback. Add per-process
 `chdir`/`getcwd` only when paths are represented consistently across both
 sources. Consider writes and a native filesystem format *after* read and
 launch are reliable.
+
+Then use this loading path for the shell itself and introduce the startup
+script described above. Retire preloaded application bundles as their
+disk-backed replacements become usable; extract the remaining non-kernel
+services under milestone 3 rather than treating them as permanent residents.
 
 **Acceptance:** copy a known UDEX onto media, list it, launch it, observe its
 exit status, and launch it again without reboot or memory corruption. Repeat
