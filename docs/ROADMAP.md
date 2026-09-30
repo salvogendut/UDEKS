@@ -91,12 +91,35 @@ mounts or applications must not require rebuilding the kernel.
 Replace the fixed `/mnt`-only storage route with a bounded mount/path contract.
 The system volume (default device 8) backs `/`; a separate volume can occupy
 `/mnt` without taking away system commands. Standard D64/D71 disks stay flat
-CBM DOS: `/bin` and `/etc/rc` initially need explicit virtual mappings to
-ordinary disk filenames, not a new disk format. Keep bootstrap/recovery
+CBM DOS: virtual directories use filename suffixes, not a separate index or
+a new disk format. Keep bootstrap/recovery
 bootfs available, with deliberate lookup precedence and failure behavior.
 
+**Suffix convention (user decision):** `.BIN` identifies UDEX executables,
+`.SH` identifies shell scripts, and `.ETC` maps configuration into `/etc`.
+Do not use `.USR` or `.RC` as namespace suffixes. The directory view hides
+the classification suffix and presents lowercase logical names:
+
+| Disk filename | Logical path | Handling |
+| --- | --- | --- |
+| `USH.BIN` | `/bin/ush` | Validate/load UDEX. |
+| `STARTUP.SH` | `/bin/startup` | Interpret as a shell script, not UDEX. |
+| `RC.ETC` | `/etc/rc` | Designated boot script; other `.ETC` files are data. |
+
+Scripts share `/bin` with executables so normal command lookup can find both.
+Listing filters the real disk directory; opening translates the logical name
+to a physical filename. No per-application map needs updating when files are
+added. Specify bounded lookup/listing, remount cache invalidation and detection
+of ambiguous names such as `FOO.BIN` plus `FOO.SH`; directory order must not
+silently select a different command. All physical names, including suffixes,
+remain within 16 bytes. Extra `.ETC`/`.SH` files are not automatically executed.
+Data mounts retain ordinary filenames without requiring these conventions.
+Script dispatch/execution is a bounded ush feature to qualify, not a claim
+that the current release supports general `.SH` execution or Bash syntax.
+
 1. Specify namespace, DOS-name translation, mount/handle ownership and recovery;
-   host-test a pure path resolver, including relative paths, `.` and `..`.
+   host-test a pure path resolver, including suffix mapping, collisions,
+   relative paths, `.` and `..`.
 2. Integrate root selection and disk-shell bootstrap, then route cwd, file
    operations, command/app lookup and `df` consistently. Root access must be
    available before reading `/etc/rc`; the script configures later mounts.

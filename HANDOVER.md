@@ -22,6 +22,17 @@ loaded from arbitrary data media. Make cwd, file operations, executable lookup
 and df agree. See the visible active milestone in [ROADMAP.md](docs/ROADMAP.md)
 and issue #26 for acceptance and non-goals.
 
+The user chose suffix-based mapping instead of an index file: `.BIN` for
+UDEX programs, `.SH` for shell scripts, `.ETC` for `/etc`; no `.USR` or `.RC`
+namespace suffix. Strip the suffix in the virtual view: `USH.BIN` -> `/bin/ush`,
+`STARTUP.SH` -> `/bin/startup`, `RC.ETC` -> `/etc/rc`. Scripts are planned
+alongside binaries in `/bin`; validate executables and use a bounded script
+interpreter path, never treat `.SH` as a UDEX. Only the designated `/etc/rc`
+auto-runs at boot. Discover files from directory entries, without a persistent
+per-app map; detect folded-name/BIN-vs-SH collisions and retain the 16-byte
+physical filename limit. Raw data mounts keep ordinary filenames. No runtime
+support for this convention or general script execution is implemented yet.
+
 Do not merely replace `mount 8 /mnt` with `mount 8 /`: the current service and
 loader hard-code `/mnt`, while bootfs synthesizes `/` and `/bin`. No root mount
 is implemented yet. Measure memory placement before growing ush (five bytes
