@@ -12,7 +12,8 @@ void test_reset(void)
 unsigned char file_request(unsigned char op, unsigned char fd, unsigned char count)
 {
     ++test_calls;
-    if (op != 19 || fd || count != 4 || memcmp(sysinfo_payload, "/mnt", 4))
+    if (op != 19 || fd || !((count == 1 && sysinfo_payload[0] == '/') ||
+        (count == 4 && !memcmp(sysinfo_payload, "/mnt", 4))))
         sysinfo_error = 22;
     if (sysinfo_error) return 255;
     memcpy(sysinfo_payload, test_result, 8);

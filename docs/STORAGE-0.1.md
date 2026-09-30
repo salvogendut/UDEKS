@@ -1,5 +1,11 @@
 # Storage 0.1 — external read-only disk
 
+Historical checkpoint: the current #26 branch mounts the system disk at `/`
+and reserves `/mnt` for a separate data volume. Names and bank-1 policy
+placement below describe the older release. See the live
+[filesystem contract](../abi/filesystem.md) and
+[candidate test](BOOT-STARTUP.md#root-namespace-candidate-26).
+
 Issue [#15](https://github.com/salvogendut/UDEKS/issues/15). The first user
 gate is `mount 8 /mnt`, `ls /mnt`, and `cat /mnt/NAME` from a real disk, with
 bootfs and the shell still working when device 8 is absent. This is a feature

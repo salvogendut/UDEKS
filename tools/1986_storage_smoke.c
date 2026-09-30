@@ -124,7 +124,9 @@ static void window_border(unsigned x, unsigned y, unsigned width, unsigned heigh
 static void drag_regression(void) {
 #ifdef UDEKS_BOOT_MOUNT_SMOKE
     wait_byte(0xf3e0, 2, "default startup did not finish");
+#ifndef UDEKS_ROOT_NAMESPACE_SMOKE
     require(!console_contains("mount: failed"), "default startup mount failed");
+#endif
 #else
     storage_command("mount 8 /mnt", 0);
 #endif
@@ -187,6 +189,36 @@ int main(int argc, char **argv) {
     }
     diagnostic();
     require(byte(0xf3d9) == 0xa5, "native raw-IEC boot failed");
+#ifdef UDEKS_ROOT_NAMESPACE_SMOKE
+    wait_byte(0xf3e0, 2, "root startup did not finish");
+    require(byte(0xf3dd) == 1 && byte(0xf3de) == 0 && !console_contains("RC failed"),
+            "system disk shell/startup failed");
+    storage_command("df", 0);
+    require(console_contains("iec8"), "df did not report system volume");
+    storage_command("df /mnt", 1);
+    storage_command("ls /bin", 0);
+    command("cd etc"); idle();
+    command("pwd"); idle(); require(console_contains("/etc"), "cwd not /etc");
+    storage_command("cat rc", 0);
+    require(console_contains("Device 8 is already the system root"), "relative config read failed");
+    command("cd ../bin"); idle();
+    storage_command("./cowsay native", 0);
+    command("cd /"); idle();
+    /* The sibling's raw-drive harness has one drive. A second independent
+     * device is covered in VICE; here exercise a raw alias of the same disk. */
+    storage_command("mount 8 /mnt", 0);
+    storage_command("cat /mnt/hello", 0);
+    command("cd /mnt"); idle();
+    storage_command("cat hello", 0);
+    storage_command("umount /mnt", 1);
+    command("cd .."); idle();
+    storage_command("umount /mnt", 0);
+    storage_command("cowsay system survives", 0);
+    drag_regression();
+    puts("PASS root namespace/cwd/data-alias/unmount with native keyboard and graphics");
+    free(machine);
+    return 0;
+#endif
 #ifdef UDEKS_DRAG_REGRESSION
     drag_regression();
     free(machine);

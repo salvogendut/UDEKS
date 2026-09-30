@@ -43,7 +43,7 @@ unsigned char udeks_program_main(unsigned char argc, unsigned char **argv)
 {
     const unsigned char *name, *s;
     unsigned int total, available;
-    unsigned char unit;
+    unsigned char unit, count, i;
     name = s = argv[0];
     while (*s) if (*s++ == '/') name = s;
     if ((name[0] | 32u) == 'f') {
@@ -61,16 +61,21 @@ unsigned char udeks_program_main(unsigned char argc, unsigned char **argv)
         out("\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\n");
         return 0;
     }
-    if (argc > 2 || (argc == 2 && strcmp((const char *)argv[1], "/mnt")))
-        return fail("usage: df [/mnt]\n");
-    P[0] = '/'; P[1] = 'm'; P[2] = 'n'; P[3] = 't';
-    if (file_request(UDEKS_TREQ_OP_STATFS, 0, 4) != UDEKS_STATFS_SIZE)
-        return fail(ERROR == UDEKS_TREQ_ENOENT ? "df: /mnt is not mounted\n" :
+    if (argc > 2 || (argc == 2 && strcmp((const char *)argv[1], "/mnt") &&
+                                  strcmp((const char *)argv[1], "/")))
+        return fail("usage: df [/|/mnt]\n");
+    s = (const unsigned char *)"/";
+    if (argc == 2) s = argv[1];
+    count = strlen((const char *)s);
+    for (i = 0; i <= count; ++i) P[i] = s[i];
+    if (file_request(UDEKS_TREQ_OP_STATFS, 0, count) != UDEKS_STATFS_SIZE)
+        return fail(ERROR == UDEKS_TREQ_ENOENT || ERROR == UDEKS_TREQ_ENODEV ? "df: volume is not mounted\n" :
                     ERROR == UDEKS_TREQ_EBUSY ? "df: filesystem busy\n" : "df: disk read failed\n");
     total = P[2] | ((unsigned int)P[3] << 8);
     available = P[4] | ((unsigned int)P[5] << 8); unit = P[6];
     out("Filesystem  256B-blocks  Used  Available  Mounted on\niec");
     number(unit); out("        "); number(total); out("         ");
-    number(total-available); out("   "); number(available); out("        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\n");
+    number(total-available); out("   "); number(available); out("        ");
+    out((const char *)s); out("\nRead-only mount; DOS data blocks (directory tracks excluded).\n");
     return 0;
 }

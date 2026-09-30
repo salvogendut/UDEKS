@@ -29,7 +29,7 @@ static const unsigned char * const app_errors[] = {
     (const unsigned char *)"",
     (const unsigned char *)": not ready\n",
     (const unsigned char *)": already running\n",
-    (const unsigned char *)": not found; check /mnt\n",
+    (const unsigned char *)": not found; check /bin\n",
     (const unsigned char *)": slot busy\n",
     (const unsigned char *)": bad program\n",
     (const unsigned char *)": I/O error\n"
@@ -176,7 +176,8 @@ static void dispatch_line(void)
 
     rest = command_end(command, (const unsigned char *)"pwd");
     if (rest != 0xFFu && line[skip_space(rest)] == 0) {
-        write_line((const unsigned char *)(CWD_KIND == CWD_BIN ? "/bin" : "/"));
+        if (submit_request(UDEKS_TREQ_OP_GETCWD, 0, 0) != UDEKS_IO_ERROR)
+            write_line((const unsigned char *)PAYLOAD);
         finish_command();
         return;
     }
@@ -184,22 +185,12 @@ static void dispatch_line(void)
     rest = command_end(command, (const unsigned char *)"cd");
     if (rest != 0xFFu) {
         rest = skip_space(rest);
-        if (line[rest] == 0) {
-            CWD_KIND = CWD_ROOT;
-        } else {
-            if (text_equal(rest, (const unsigned char *)"/") ||
-                text_equal(rest, (const unsigned char *)"..")) {
-                CWD_KIND = CWD_ROOT;
-            } else if (text_equal(rest, (const unsigned char *)".")) {
-                /* Retain the current directory. */
-            } else if (text_equal(rest, (const unsigned char *)"/bin") ||
-                       (CWD_KIND == CWD_ROOT &&
-                        text_equal(rest, (const unsigned char *)"bin"))) {
-                CWD_KIND = CWD_BIN;
-            } else {
-                write_line((const unsigned char *)"cd: not found");
-            }
-        }
+        result = 0;
+        while (line[rest] && result < 23u) PAYLOAD[result++] = line[rest++];
+        if (!result) PAYLOAD[result++] = '/';
+        PAYLOAD[result] = 0;
+        if (line[rest] || submit_request(UDEKS_TREQ_OP_CHDIR, 0, result) == UDEKS_IO_ERROR)
+            write_line((const unsigned char *)"cd: not a directory or unavailable");
         finish_command();
         return;
     }

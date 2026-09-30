@@ -1,0 +1,310 @@
+PC=FF74 drive=EAB7 jam=0 speed=1 CIA2=07/3F bus=110 via=02/1A request=00/00/00 exit=0
+PC=E3C3 drive=D5C5 jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E569 drive=D127 jam=0 speed=0 CIA2=27/3F bus=100 via=0D/1A request=00/00/00 exit=0
+PC=E3B1 drive=F80F jam=0 speed=0 CIA2=0F/3F bus=010 via=04/1A request=00/00/00 exit=0
+PC=E49A drive=E9B1 jam=0 speed=0 CIA2=47/3F bus=110 via=07/1A request=00/00/00 exit=0
+PC=E462 drive=EA5B jam=0 speed=0 CIA2=47/3F bus=101 via=08/1A request=00/00/00 exit=0
+PC=E4A0 drive=E980 jam=0 speed=0 CIA2=47/3F bus=110 via=07/1A request=00/00/00 exit=0
+PC=BC7C drive=EC2D jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=01/06/00 exit=0
+command df: PC=8B02 drive=EC17 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+DETECTING MEMORY ...                                      [ OK ]
+BASE RAM : 128 KB                                         [ OK ]
+VDC RAM : 64 KB                                           [ OK ]
+INITIALIZING CONSOLE ...                                  [ OK ]
+VIDEO : PAL / VDC 8568                                    [ OK ]
+REU : NOT PRESENT                                         [ -- ]
+GEORAM : NOT PRESENT                                      [ -- ]
+8502 EXECUTIVE : 1 MHZ                                    [ OK ]
+Z80 WORKER : READY                                        [ OK ]
+IEC DRIVER HEADER ...                                     [ OK ]
+BOOTFS HEADER ...                                         [ OK ]
+                                                                
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~> df                                                     
+Filesystem  256B-blocks  Used  Available  Mounted on            
+iec8        664         563   101        /                      
+Read-only mount; DOS data blocks (directory tracks excluded).   
+UDEKS:~>                                                        
+command df /mnt: PC=8909 drive=EC3F jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=1
+VDC RAM : 64 KB                                           [ OK ]
+INITIALIZING CONSOLE ...                                  [ OK ]
+VIDEO : PAL / VDC 8568                                    [ OK ]
+REU : NOT PRESENT                                         [ -- ]
+GEORAM : NOT PRESENT                                      [ -- ]
+8502 EXECUTIVE : 1 MHZ                                    [ OK ]
+Z80 WORKER : READY                                        [ OK ]
+IEC DRIVER HEADER ...                                     [ OK ]
+BOOTFS HEADER ...                                         [ OK ]
+                                                                
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~> df                                                     
+Filesystem  256B-blocks  Used  Available  Mounted on            
+iec8        664         563   101        /                      
+Read-only mount; DOS data blocks (directory tracks excluded).   
+UDEKS:~> df /mnt                                                
+df: volume is not mounted                                       
+UDEKS:~>                                                        
+command ls /bin: PC=2E46 drive=EC2F jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+Read-only mount; DOS data blocks (directory tracks excluded).   
+UDEKS:~> df /mnt                                                
+df: volume is not mounted                                       
+UDEKS:~> ls /bin                                                
+ush                                                             
+free                                                            
+df                                                              
+xclock                                                          
+xwave                                                           
+cowsay                                                          
+date                                                            
+ls                                                              
+cat                                                             
+uname                                                           
+lshw                                                            
+lsmod                                                           
+lscpu                                                           
+z80ctl                                                          
+mount                                                           
+umount                                                          
+UDEKS:~>                                                        
+command: cd etc -> accepted (Return release=105 frames)
+command: pwd -> accepted (Return release=200 frames)
+command cat rc: PC=2975 drive=EC60 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+xwave                                                           
+cowsay                                                          
+date                                                            
+ls                                                              
+cat                                                             
+uname                                                           
+lshw                                                            
+lsmod                                                           
+lscpu                                                           
+z80ctl                                                          
+mount                                                           
+umount                                                          
+UDEKS:~> cd etc                                                 
+UDEKS:~> pwd                                                    
+/etc                                                            
+UDEKS:~> cat rc                                                 
+# UDEKS startup: one command per line; 255 bytes max.           
+# Device 8 is already the system root.                          
+# /mnt is free for another volume.                              
+# Optional data disk: mount 9 /mnt                              
+UDEKS:~>                                                        
+command: cd ../bin -> accepted (Return release=104 frames)
+command ./cowsay native: PC=88CA drive=EC14 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+mount                                                           
+umount                                                          
+UDEKS:~> cd etc                                                 
+UDEKS:~> pwd                                                    
+/etc                                                            
+UDEKS:~> cat rc                                                 
+# UDEKS startup: one command per line; 255 bytes max.           
+# Device 8 is already the system root.                          
+# /mnt is free for another volume.                              
+# Optional data disk: mount 9 /mnt                              
+UDEKS:~> cd ../bin                                              
+UDEKS:~> ./cowsay native                                        
+ ________                                                       
+< native >                                                      
+ --------                                                       
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~>                                                        
+command: cd / -> accepted (Return release=105 frames)
+command mount 8 /mnt: PC=89B3 drive=F99F jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+UDEKS:~> pwd                                                    
+/etc                                                            
+UDEKS:~> cat rc                                                 
+# UDEKS startup: one command per line; 255 bytes max.           
+# Device 8 is already the system root.                          
+# /mnt is free for another volume.                              
+# Optional data disk: mount 9 /mnt                              
+UDEKS:~> cd ../bin                                              
+UDEKS:~> ./cowsay native                                        
+ ________                                                       
+< native >                                                      
+ --------                                                       
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> cd /                                                   
+UDEKS:~> mount 8 /mnt                                           
+mount: /mnt ready (read-only)                                   
+UDEKS:~>                                                        
+command cat /mnt/hello: PC=2991 drive=EC17 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+UDEKS:~> cat rc                                                 
+# UDEKS startup: one command per line; 255 bytes max.           
+# Device 8 is already the system root.                          
+# /mnt is free for another volume.                              
+# Optional data disk: mount 9 /mnt                              
+UDEKS:~> cd ../bin                                              
+UDEKS:~> ./cowsay native                                        
+ ________                                                       
+< native >                                                      
+ --------                                                       
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> cd /                                                   
+UDEKS:~> mount 8 /mnt                                           
+mount: /mnt ready (read-only)                                   
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~>                                                        
+command: cd /mnt -> accepted (Return release=106 frames)
+command cat hello: PC=88C0 drive=EC12 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+# /mnt is free for another volume.                              
+# Optional data disk: mount 9 /mnt                              
+UDEKS:~> cd ../bin                                              
+UDEKS:~> ./cowsay native                                        
+ ________                                                       
+< native >                                                      
+ --------                                                       
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> cd /                                                   
+UDEKS:~> mount 8 /mnt                                           
+mount: /mnt ready (read-only)                                   
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> cd /mnt                                                
+UDEKS:~> cat hello                                              
+HELLO UDEKS                                                     
+UDEKS:~>                                                        
+command umount /mnt: PC=5F71 drive=EC17 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=1
+UDEKS:~> cd ../bin                                              
+UDEKS:~> ./cowsay native                                        
+ ________                                                       
+< native >                                                      
+ --------                                                       
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> cd /                                                   
+UDEKS:~> mount 8 /mnt                                           
+mount: /mnt ready (read-only)                                   
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> cd /mnt                                                
+UDEKS:~> cat hello                                              
+HELLO UDEKS                                                     
+UDEKS:~> umount /mnt                                            
+mount: failed                                                   
+UDEKS:~>                                                        
+command: cd .. -> accepted (Return release=103 frames)
+command umount /mnt: PC=5FB2 drive=EC12 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+ ________                                                       
+< native >                                                      
+ --------                                                       
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> cd /                                                   
+UDEKS:~> mount 8 /mnt                                           
+mount: /mnt ready (read-only)                                   
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> cd /mnt                                                
+UDEKS:~> cat hello                                              
+HELLO UDEKS                                                     
+UDEKS:~> umount /mnt                                            
+mount: failed                                                   
+UDEKS:~> cd ..                                                  
+UDEKS:~> umount /mnt                                            
+UDEKS:~>                                                        
+command cowsay system survives: PC=8B80 drive=EC17 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+UDEKS:~> mount 8 /mnt                                           
+mount: /mnt ready (read-only)                                   
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> cd /mnt                                                
+UDEKS:~> cat hello                                              
+HELLO UDEKS                                                     
+UDEKS:~> umount /mnt                                            
+mount: failed                                                   
+UDEKS:~> cd ..                                                  
+UDEKS:~> umount /mnt                                            
+UDEKS:~> cowsay system survives                                 
+ _________________                                              
+< system survives >                                             
+ -----------------                                              
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~>                                                        
+command uname -a: PC=2964 drive=EC19 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> cd /mnt                                                
+UDEKS:~> cat hello                                              
+HELLO UDEKS                                                     
+UDEKS:~> umount /mnt                                            
+mount: failed                                                   
+UDEKS:~> cd ..                                                  
+UDEKS:~> umount /mnt                                            
+UDEKS:~> cowsay system survives                                 
+ _________________                                              
+< system survives >                                             
+ -----------------                                              
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> uname -a                                               
+UDEKS 0.1.0 c128 8502                                           
+UDEKS:~>                                                        
+command: z80ctl test -> accepted (Return release=596 frames)
+command: xclock & -> accepted (Return release=854 frames)
+drag 0 from 124,61 to 24,16 clip-code=$06
+border 24,15 72x77: 0 missing pixels
+drag 1 from 24,15 to 61,33 clip-code=$06
+border 61,32 72x77: 0 missing pixels
+drag 2 from 61,32 to 98,50 clip-code=$06
+border 98,49 72x77: 0 missing pixels
+drag 3 from 98,49 to 135,67 clip-code=$06
+border 135,66 72x77: 0 missing pixels
+drag 4 from 135,66 to 172,84 clip-code=$06
+border 172,83 72x77: 0 missing pixels
+drag 5 from 172,83 to 33,5 clip-code=$06
+border 33,4 72x77: 0 missing pixels
+drag 6 from 33,4 to 70,22 clip-code=$06
+border 70,21 72x77: 0 missing pixels
+drag 7 from 70,21 to 107,39 clip-code=$06
+border 107,38 72x77: 0 missing pixels
+drag 8 from 107,38 to 144,56 clip-code=$06
+border 144,55 72x77: 0 missing pixels
+drag 9 from 144,55 to 5,73 clip-code=$06
+border 5,72 72x77: 0 missing pixels
+drag 10 from 5,72 to 42,90 clip-code=$06
+border 42,89 72x77: 0 missing pixels
+drag 11 from 42,89 to 79,11 clip-code=$06
+border 79,10 72x77: 0 missing pixels
+command: xwave & -> accepted (Return release=638 frames)
+border 144,88 168x104: 0 missing pixels
+border 20,20 168x104: 0 missing pixels
+command: cowsay hello -> accepted (Return release=1106 frames)
+PASS reported sequence: implicit desktop, repeated clock drag, wave drag, cowsay
+PASS root namespace/cwd/data-alias/unmount with native keyboard and graphics

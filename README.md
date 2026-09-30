@@ -22,6 +22,10 @@ paternal sweetness. This project is developed in his memory. Read the full
 UDEKS is licensed under the GNU General Public License, version 3 or later.
 See [LICENSE](LICENSE).
 
+**[Roadmap](docs/ROADMAP.md):** current candidate — disk-backed `/` and coherent
+`/bin`, `/etc`, `/mnt` routing ([#26](https://github.com/salvogendut/UDEKS/issues/26)).
+Emulator-qualified and user-accepted; general `.SH` execution is next.
+
 > [!IMPORTANT]
 > UDEKS is an experimental kernel prototype in active bring-up. It has a
 > qualified native boot path, interactive console, dual-CPU worker protocol,
@@ -54,14 +58,15 @@ See [LICENSE](LICENSE).
 - A native-autoboot D71 starts the assembly-oriented 8502 microkernel, its
   modular services, a loader-managed boot filesystem, and the stock-timing Z80
   worker. Standalone disk-only `xclock` and `xwave` UDEX images are loaded into
-  retained application slots on first invocation. The default startup script
-  mounts device 8 at `/mnt` automatically.
+  retained application slots on first invocation. In the current root-namespace
+  candidate, bootstrap mounts device 8 at `/`, then loads `/bin/ush` and
+  `/etc/rc`; `/mnt` remains free for additional media.
 - Boot messages reflect the measured hardware capabilities and Z80 state.
   The IEC-driver and bootfs lines check the loaded bank-1 headers; `[ -- ]`
   means that header did not match, not that the feature is deferred. These
   are presence/version checks, not full integrity or disk-access tests.
-  `mount: /mnt ready (read-only)` appears only after the startup mount has
-  successfully read the media. Secondary-load progress is visible on normal
+  An explicit data mount prints `mount: /mnt ready (read-only)` only after
+  successfully reading the media. Secondary-load progress is visible on normal
   boot disks, matching the setting used in the successful C128/Pi1541 retest.
 - The VDC hosts a retained black-on-yellow root console with mixed-case input,
   bounded command history, Unix-like standard streams, Bash-like command
@@ -85,14 +90,15 @@ See [LICENSE](LICENSE).
   `user/` and must arrive through the executable-loader path.
 - A transitional init service owns the root session. There is no resident
   command catalog. `ush` owns shell builtins and graphics command parsing;
-  other names use the generic loader, searching `/bin` then mounted `/mnt`.
+  other names use the generic loader, searching system `/bin` only. Explicit
+  data-volume paths work; data media never silently replace system commands.
   `cowsay`, `date`, `ls`, `cat`, `free`, `df` and the hardware/CPU diagnostics
   are ordinary disk programs. Normal bootfs retains only mount/unmount and
   recovery ush;
   `date` reads or sets the BASIC `TI`/`TI$`-compatible clock also used by
   `xclock`, while `ls`
   exercises the first Linux-shaped `open`/`getdents`/`stat`/`close` boundary.
-  Init now first loads the ordinary disk file `USH` into bank 1, using the
+  Init now first loads the ordinary disk file `USH.BIN` into bank 1, using the
   embedded `/bin/ush` as recovery. It runs through the public task/stream ABI,
   owns terminal lines, `cd`, `clear`, `echo`, `help` and `pwd`. Graphics and
   Z80 controls cross a bounded numeric service request, deferred until the
@@ -102,26 +108,26 @@ See [LICENSE](LICENSE).
   infinite waits, wake/response ownership and stack preservation on both disk
   formats in VICE. Independent 1986 machine-input typing/history, dragging and
   foreground Ctrl+C also pass; manual input/performance and hardware gates remain open.
-- Storage 0.1 now includes `mount 8 /mnt`, `ls /mnt`, `cat /mnt/HELLO`,
-  and `umount /mnt`. Native images ship the `HELLO` text file. A separate C
-  service uses native slow IEC with no runtime
-  KERNAL calls; VICE true-drive 1541/D64 and 1571/D71 tests pass, including
-  listings with both graphical apps active. `/bin` remains the bootfs fallback.
-  The 1986 raw-IEC keyboard workflow, tiny-file EOF and media-change recovery
-  tests also pass. The user has confirmed the command/disk-graphics workflow
-  on C128 + Pi1541; exhaustive physical media-fault coverage is not claimed. See
-  [storage tests and limits](docs/STORAGE-0.1.md#interactive-file-checkpoint--2026-09-30).
+- The root-namespace candidate exposes flat CBM DOS files as virtual
+  directories: `NAME.BIN` → `/bin/name`, `RC.ETC` → `/etc/rc`. `.SH` files also
+  appear in `/bin`, but general script execution is still pending. No special
+  disk format or per-app index is required. `cd`, `pwd`, `ls`, `cat` and `df`
+  use the same service route; `mount 9 /mnt` adds raw data media without
+  disrupting system commands. Storage remains read-only and single-stream,
+  using native slow IEC with no runtime KERNAL calls. The prior command/graphics
+  release was accepted on C128 + Pi1541; this namespace change needs a fresh
+  hardware test. See the [current filesystem contract](abi/filesystem.md).
 - Storage 0.2 adds explicit-path foreground execution: `/mnt/DISKCOW hello`
   loads an ordinary UDEX from disk, with bounds/header/EOF validation and
   bootfs fallback retained. VICE D64/D71 and native 1986 tests pass; the user
   also confirmed successful manual tests in 1986 and on a real C128 + PI1541.
   [Try the disk-execution image](docs/STORAGE-0.2.md#try-it).
-- Boot 0.2 adds disk-first shell boot, with missing/invalid-shell recovery and
-  temporary bootstrap mount cleanup. Changing only the DOS `USH` file changes
-  the running shell. The disk shell also runs a bounded ASCII `RC` startup
-  file; the default runs `mount 8 /mnt`. Disk-loaded
-  `free` reports the fixed task-memory pool and `df` reports disk blocks.
-  [Test the new boot candidate](docs/BOOT-STARTUP.md#test-it).
+- Disk-first boot retains bootfs recovery if the disk shell cannot load.
+  Changing `USH.BIN` changes the shell; `RC.ETC` holds bounded ASCII startup
+  commands. The default RC is comment-only because root already exists.
+  Disk-loaded `free` reports the fixed task-memory pool; `df` defaults to `/`
+  and `df /mnt` reports the separate data volume when mounted.
+  [Test the root-namespace candidate](docs/BOOT-STARTUP.md#root-namespace-candidate-26).
 
 ## Hardware model
 
@@ -182,11 +188,11 @@ user/                 Standalone program sources and user-side ABI headers
 
 `make boot` produces native-autoboot D64/D71 images with the resident 8502
 kernel, Z80 worker, transitional service bundle, recovery bootfs, and a
-standalone `USH` disk file. Init loads that shell into bank 1 before starting
-its task and running the disk's bounded `RC` startup file. Foreground names
-resolve from bootfs first, then mounted `/mnt`; explicit `/mnt/NAME` works too.
-The default `RC` mounts device 8 at `/mnt`, so disk utilities such as `ls`,
-`date` and `uname` work immediately after boot. Likewise,
+standalone `USH.BIN` disk file. Init establishes the system root and loads that
+shell into bank 1 before starting its task and running `/etc/rc` (`RC.ETC`).
+Foreground names resolve from system `/bin`; explicit `/mnt/NAME` works on a
+mounted data volume. Bootfs is reserved for recovery, not normal command search.
+Disk utilities such as `ls`, `date` and `uname` work immediately after boot. Likewise,
 `xclock &` and `xwave &` load the graphical UDEX files into retained slots;
 there are no normal bootfs copies of either app. See
 [disk-loaded graphics](docs/DISK-GRAPHICS.md) for testing and limits.

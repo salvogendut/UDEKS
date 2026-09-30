@@ -1,0 +1,175 @@
+{
+  "drive": "1571",
+  "recovery": false,
+  "disk_sha256": "5985e1d30ae02bdc1641392d20b82c44cabd238a8940699cabf4340e5773af6f",
+  "data_sha256": "54b28013733117e4339224853f3aacf0bed6cc8fb1a0ce2431b5744146ff6b4e",
+  "boot_console": "UDEKS - UNIFIED DUAL ENGINE EXECUTIVE KERNEL SYSTEM\nV0.1.0 (C)2026\n\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>",
+  "driver_intact": true,
+  "commands": [
+    {
+      "command": "pwd",
+      "console": "\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> pwd\n/\nUDEKS:~>",
+      "seconds": 0.21953175100497901
+    },
+    {
+      "command": "df",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> pwd\n/\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        1328         561   767        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~>",
+      "seconds": 0.6275493840221316
+    },
+    {
+      "command": "df /mnt",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> pwd\n/\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        1328         561   767        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> df /mnt\ndf: volume is not mounted\nUDEKS:~>",
+      "seconds": 0.6259394270600751
+    },
+    {
+      "command": "ls /",
+      "console": "BOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> pwd\n/\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        1328         561   767        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> df /mnt\ndf: volume is not mounted\nUDEKS:~> ls /\nbin\netc\nmnt\nschedovr\nhello\nUDEKS:~>",
+      "seconds": 1.02802938898094
+    },
+    {
+      "command": "ls /bin",
+      "console": "mnt\nschedovr\nhello\nUDEKS:~> ls /bin\nush\nfree\ndf\nxclock\nxwave\ncowsay\ndate\nls\ncat\nuname\nlshw\nlsmod\nlscpu\nz80ctl\nmount\numount\nUDEKS:~>",
+      "seconds": 3.2472759860102087
+    },
+    {
+      "command": "cd etc",
+      "console": "schedovr\nhello\nUDEKS:~> ls /bin\nush\nfree\ndf\nxclock\nxwave\ncowsay\ndate\nls\ncat\nuname\nlshw\nlsmod\nlscpu\nz80ctl\nmount\numount\nUDEKS:~> cd etc\nUDEKS:~>",
+      "seconds": 0.22026280092541128
+    },
+    {
+      "command": "pwd",
+      "console": "UDEKS:~> ls /bin\nush\nfree\ndf\nxclock\nxwave\ncowsay\ndate\nls\ncat\nuname\nlshw\nlsmod\nlscpu\nz80ctl\nmount\numount\nUDEKS:~> cd etc\nUDEKS:~> pwd\n/etc\nUDEKS:~>",
+      "seconds": 0.21902008191682398
+    },
+    {
+      "command": "ls",
+      "console": "free\ndf\nxclock\nxwave\ncowsay\ndate\nls\ncat\nuname\nlshw\nlsmod\nlscpu\nz80ctl\nmount\numount\nUDEKS:~> cd etc\nUDEKS:~> pwd\n/etc\nUDEKS:~> ls\nrc\nUDEKS:~>",
+      "seconds": 0.8294529450358823
+    },
+    {
+      "command": "cat rc",
+      "console": "date\nls\ncat\nuname\nlshw\nlsmod\nlscpu\nz80ctl\nmount\numount\nUDEKS:~> cd etc\nUDEKS:~> pwd\n/etc\nUDEKS:~> ls\nrc\nUDEKS:~> cat rc\n# UDEKS startup: one command per line; 255 bytes max.\n# Device 8 is already the system root.\n# /mnt is free for another volume.\n# Optional data disk: mount 9 /mnt\nUDEKS:~>",
+      "seconds": 0.8281524969497696
+    },
+    {
+      "command": "cd ../bin",
+      "console": "ls\ncat\nuname\nlshw\nlsmod\nlscpu\nz80ctl\nmount\numount\nUDEKS:~> cd etc\nUDEKS:~> pwd\n/etc\nUDEKS:~> ls\nrc\nUDEKS:~> cat rc\n# UDEKS startup: one command per line; 255 bytes max.\n# Device 8 is already the system root.\n# /mnt is free for another volume.\n# Optional data disk: mount 9 /mnt\nUDEKS:~> cd ../bin\nUDEKS:~>",
+      "seconds": 0.2197049860842526
+    },
+    {
+      "command": "pwd",
+      "console": "uname\nlshw\nlsmod\nlscpu\nz80ctl\nmount\numount\nUDEKS:~> cd etc\nUDEKS:~> pwd\n/etc\nUDEKS:~> ls\nrc\nUDEKS:~> cat rc\n# UDEKS startup: one command per line; 255 bytes max.\n# Device 8 is already the system root.\n# /mnt is free for another volume.\n# Optional data disk: mount 9 /mnt\nUDEKS:~> cd ../bin\nUDEKS:~> pwd\n/bin\nUDEKS:~>",
+      "seconds": 0.21951333596371114
+    },
+    {
+      "command": "./cowsay root-path",
+      "console": "/etc\nUDEKS:~> ls\nrc\nUDEKS:~> cat rc\n# UDEKS startup: one command per line; 255 bytes max.\n# Device 8 is already the system root.\n# /mnt is free for another volume.\n# Optional data disk: mount 9 /mnt\nUDEKS:~> cd ../bin\nUDEKS:~> pwd\n/bin\nUDEKS:~> ./cowsay root-path\n ___________\n< root-path >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>",
+      "seconds": 0.842838242999278
+    },
+    {
+      "command": "cd /",
+      "console": "UDEKS:~> ls\nrc\nUDEKS:~> cat rc\n# UDEKS startup: one command per line; 255 bytes max.\n# Device 8 is already the system root.\n# /mnt is free for another volume.\n# Optional data disk: mount 9 /mnt\nUDEKS:~> cd ../bin\nUDEKS:~> pwd\n/bin\nUDEKS:~> ./cowsay root-path\n ___________\n< root-path >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> cd /\nUDEKS:~>",
+      "seconds": 0.22084680502302945
+    },
+    {
+      "command": "cat /hello",
+      "console": "UDEKS:~> cat rc\n# UDEKS startup: one command per line; 255 bytes max.\n# Device 8 is already the system root.\n# /mnt is free for another volume.\n# Optional data disk: mount 9 /mnt\nUDEKS:~> cd ../bin\nUDEKS:~> pwd\n/bin\nUDEKS:~> ./cowsay root-path\n ___________\n< root-path >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> cd /\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>",
+      "seconds": 0.8271186089841649
+    },
+    {
+      "command": "cat /NOFILE",
+      "console": "# Device 8 is already the system root.\n# /mnt is free for another volume.\n# Optional data disk: mount 9 /mnt\nUDEKS:~> cd ../bin\nUDEKS:~> pwd\n/bin\nUDEKS:~> ./cowsay root-path\n ___________\n< root-path >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> cd /\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /NOFILE\ncat: No such file or directory\nUDEKS:~>",
+      "seconds": 0.8291025079088286
+    },
+    {
+      "command": "mount 9 /mnt",
+      "console": "# Optional data disk: mount 9 /mnt\nUDEKS:~> cd ../bin\nUDEKS:~> pwd\n/bin\nUDEKS:~> ./cowsay root-path\n ___________\n< root-path >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> cd /\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /NOFILE\ncat: No such file or directory\nUDEKS:~> mount 9 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>",
+      "seconds": 0.4247321010334417
+    },
+    {
+      "command": "df /mnt",
+      "console": "UDEKS:~> ./cowsay root-path\n ___________\n< root-path >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> cd /\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /NOFILE\ncat: No such file or directory\nUDEKS:~> mount 9 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> df /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec9        664         9   655        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~>",
+      "seconds": 0.6256099489983171
+    },
+    {
+      "command": "cat /mnt/HELLO",
+      "console": "< root-path >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> cd /\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /NOFILE\ncat: No such file or directory\nUDEKS:~> mount 9 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> df /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec9        664         9   655        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> cat /mnt/HELLO\nDEVICE NINE DATA\nUDEKS:~>",
+      "seconds": 0.8269375000381842
+    },
+    {
+      "command": "cd /mnt",
+      "console": " -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> cd /\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /NOFILE\ncat: No such file or directory\nUDEKS:~> mount 9 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> df /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec9        664         9   655        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> cat /mnt/HELLO\nDEVICE NINE DATA\nUDEKS:~> cd /mnt\nUDEKS:~>",
+      "seconds": 0.21961135999299586
+    },
+    {
+      "command": "pwd",
+      "console": "         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> cd /\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /NOFILE\ncat: No such file or directory\nUDEKS:~> mount 9 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> df /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec9        664         9   655        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> cat /mnt/HELLO\nDEVICE NINE DATA\nUDEKS:~> cd /mnt\nUDEKS:~> pwd\n/mnt\nUDEKS:~>",
+      "seconds": 0.22115502296946943
+    },
+    {
+      "command": "ls",
+      "console": "                ||     ||\nUDEKS:~> cd /\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /NOFILE\ncat: No such file or directory\nUDEKS:~> mount 9 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> df /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec9        664         9   655        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> cat /mnt/HELLO\nDEVICE NINE DATA\nUDEKS:~> cd /mnt\nUDEKS:~> pwd\n/mnt\nUDEKS:~> ls\nHELLO\nRECOVER\nUDEKS:~>",
+      "seconds": 0.8274474060162902
+    },
+    {
+      "command": "cat HELLO",
+      "console": "UDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /NOFILE\ncat: No such file or directory\nUDEKS:~> mount 9 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> df /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec9        664         9   655        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> cat /mnt/HELLO\nDEVICE NINE DATA\nUDEKS:~> cd /mnt\nUDEKS:~> pwd\n/mnt\nUDEKS:~> ls\nHELLO\nRECOVER\nUDEKS:~> cat HELLO\nDEVICE NINE DATA\nUDEKS:~>",
+      "seconds": 0.8269845889881253
+    },
+    {
+      "command": "umount /mnt",
+      "console": "UDEKS:~> cat /NOFILE\ncat: No such file or directory\nUDEKS:~> mount 9 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> df /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec9        664         9   655        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> cat /mnt/HELLO\nDEVICE NINE DATA\nUDEKS:~> cd /mnt\nUDEKS:~> pwd\n/mnt\nUDEKS:~> ls\nHELLO\nRECOVER\nUDEKS:~> cat HELLO\nDEVICE NINE DATA\nUDEKS:~> umount /mnt\nmount: failed\nUDEKS:~>",
+      "seconds": 0.42555320996325463
+    },
+    {
+      "command": "cd ..",
+      "console": "cat: No such file or directory\nUDEKS:~> mount 9 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> df /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec9        664         9   655        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> cat /mnt/HELLO\nDEVICE NINE DATA\nUDEKS:~> cd /mnt\nUDEKS:~> pwd\n/mnt\nUDEKS:~> ls\nHELLO\nRECOVER\nUDEKS:~> cat HELLO\nDEVICE NINE DATA\nUDEKS:~> umount /mnt\nmount: failed\nUDEKS:~> cd ..\nUDEKS:~>",
+      "seconds": 0.2202143600443378
+    },
+    {
+      "command": "umount /mnt",
+      "console": "UDEKS:~> mount 9 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> df /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec9        664         9   655        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> cat /mnt/HELLO\nDEVICE NINE DATA\nUDEKS:~> cd /mnt\nUDEKS:~> pwd\n/mnt\nUDEKS:~> ls\nHELLO\nRECOVER\nUDEKS:~> cat HELLO\nDEVICE NINE DATA\nUDEKS:~> umount /mnt\nmount: failed\nUDEKS:~> cd ..\nUDEKS:~> umount /mnt\nUDEKS:~>",
+      "seconds": 0.42275095800869167
+    },
+    {
+      "command": "df",
+      "console": "iec9        664         9   655        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> cat /mnt/HELLO\nDEVICE NINE DATA\nUDEKS:~> cd /mnt\nUDEKS:~> pwd\n/mnt\nUDEKS:~> ls\nHELLO\nRECOVER\nUDEKS:~> cat HELLO\nDEVICE NINE DATA\nUDEKS:~> umount /mnt\nmount: failed\nUDEKS:~> cd ..\nUDEKS:~> umount /mnt\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        1328         561   767        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~>",
+      "seconds": 0.624453992000781
+    },
+    {
+      "command": "cowsay system-still-here",
+      "console": "RECOVER\nUDEKS:~> cat HELLO\nDEVICE NINE DATA\nUDEKS:~> umount /mnt\nmount: failed\nUDEKS:~> cd ..\nUDEKS:~> umount /mnt\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        1328         561   767        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> cowsay system-still-here\n ___________________\n< system-still-here >\n -------------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>",
+      "seconds": 0.8439380539348349
+    },
+    {
+      "command": "xclock &",
+      "console": "DEVICE NINE DATA\nUDEKS:~> umount /mnt\nmount: failed\nUDEKS:~> cd ..\nUDEKS:~> umount /mnt\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        1328         561   767        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> cowsay system-still-here\n ___________________\n< system-still-here >\n -------------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~>",
+      "seconds": 0.6237767731072381
+    },
+    {
+      "command": "xwave &",
+      "console": "mount: failed\nUDEKS:~> cd ..\nUDEKS:~> umount /mnt\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        1328         561   767        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> cowsay system-still-here\n ___________________\n< system-still-here >\n -------------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~>",
+      "seconds": 0.6245592499617487
+    },
+    {
+      "command": "cat /etc/rc",
+      "console": "iec8        1328         561   767        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> cowsay system-still-here\n ___________________\n< system-still-here >\n -------------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cat /etc/rc\n# UDEKS startup: one command per line; 255 bytes max.\n# Device 8 is already the system root.\n# /mnt is free for another volume.\n# Optional data disk: mount 9 /mnt\nUDEKS:~>",
+      "seconds": 0.828895159997046
+    },
+    {
+      "command": "xwave -q",
+      "console": "UDEKS:~> cowsay system-still-here\n ___________________\n< system-still-here >\n -------------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cat /etc/rc\n# UDEKS startup: one command per line; 255 bytes max.\n# Device 8 is already the system root.\n# /mnt is free for another volume.\n# Optional data disk: mount 9 /mnt\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~>",
+      "seconds": 0.22093748592305928
+    },
+    {
+      "command": "xclock -q",
+      "console": "< system-still-here >\n -------------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cat /etc/rc\n# UDEKS startup: one command per line; 255 bytes max.\n# Device 8 is already the system root.\n# /mnt is free for another volume.\n# Optional data disk: mount 9 /mnt\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~>",
+      "seconds": 0.22034740902017802
+    },
+    {
+      "command": "echo namespace-ok",
+      "console": "        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cat /etc/rc\n# UDEKS startup: one command per line; 255 bytes max.\n# Device 8 is already the system root.\n# /mnt is free for another volume.\n# Optional data disk: mount 9 /mnt\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> echo namespace-ok\nnamespace-ok\nUDEKS:~>",
+      "seconds": 0.23679312295280397
+    }
+  ]
+}

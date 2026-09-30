@@ -332,7 +332,7 @@ check_bootfs_header:
         inc BOOT_CHAIN+22
 bootfs_checked:
 
-        ; SCHEDOVR already delivered bootfs to bank-1 $A000-$D0FF. Do not
+        ; SCHEDOVR already delivered bootfs to bank-1 $A000-$AFFF. Do not
         ; overwrite it from legacy Z80/shadow staging. Those old containers
         ; are no longer a limit on command packaging.
         ; The high-memory module still uses its fixed bank-0 staging slot.
@@ -490,7 +490,7 @@ TASK_HEADER             = TASK_STATUS + 16
 
 SYSCALL_TABLE           = $cf00
 BOOTFS_BASE             = $a000
-BOOTFS_LIMIT_HI         = $d1
+BOOTFS_LIMIT_HI         = $b0
 TASK_SLOT               = $0200
 PERSISTENT_SLOT         = $9000
 TASK_BACKUP             = $8000
@@ -677,8 +677,14 @@ task_measure_name_start:
         ldy #$00
 task_disk_name_load:
         lda $ffff,y
+        beq task_bootfs_name
         cmp #'/'
-        bne task_bootfs_name
+        beq task_path_name
+        iny
+        cpy #24
+        bcc task_disk_name_load
+        jmp task_not_found
+task_path_name:
         lda task_load_mode
         beq :+
         cmp #1                      ; persistent bootstrap shell also uses disk
@@ -718,6 +724,15 @@ task_lookup_code:
         cmp #2
         bne :+
         jmp task_managed_name
+:
+        ; Normal session commands come from the system volume. Bootfs is
+        ; explicit recovery, not a higher-priority shadow of disk programs.
+        lda BOOT_SHELL_SOURCE
+        cmp #1
+        bne :+
+        lda task_load_mode
+        bne :+
+        jmp task_disk_leaf_start
 :
         lda BOOTFS_BASE+0
         cmp #'U'
@@ -923,13 +938,10 @@ task_file_reject:
 task_file_bounds_jump:
         jmp task_file_bounds_ready
 
-; Small initial PATH: immutable /bin first, then a leaf on mounted /mnt.
+; The system PATH is /bin. Never search arbitrary data media for bare names.
 ; Only synchronous foreground programs can use the disk loader today.
 task_lookup_miss:
-        lda task_load_mode
-        beq :+
         jmp task_not_found
-:
 task_disk_leaf_start:
         ldx #4
 :
@@ -1532,22 +1544,17 @@ task_disk_path:
         sta DISK_PAYLOAD,y
         beq task_disk_path_end
         iny
-        cpy #22
+        cpy #24
         bcc task_disk_path
 task_disk_bad_path:
         lda #TASK_NOT_FOUND
         jmp task_disk_done
 task_disk_path_end:
         sty DISK_REQUEST+10
-        cpy #6
+        cpy #1
         bcc task_disk_bad_path
-        ldx #4
-task_disk_prefix:
-        lda DISK_PAYLOAD,x
-        cmp task_disk_mount,x
-        bne task_disk_bad_path
-        dex
-        bpl task_disk_prefix
+        lda #2                      ; OPEN_EXEC: reject .SH/.ETC as UDEX
+        sta DISK_REQUEST+9
         lda #6                      ; OPEN
         jsr task_disk_request
         lda DISK_REQUEST+12
@@ -1671,8 +1678,8 @@ task_disk_request:
         lda #1
         sta DISK_REQUEST+6
         jmp $c880
-task_disk_signature: .byte "UTRQ", 0, 5
-task_disk_mount: .byte "/mnt/"
+task_disk_signature: .byte "UTRQ", 0, 8
+task_disk_mount: .byte "/bin/"
 task_disk_leaf: .res 22, 0
 task_disk_saved_request: .res 38, 0
 
@@ -1758,7 +1765,7 @@ boot_shell_load:
         jsr task_load_persistent
         sta MMU_LCR_WORKER_FLAT
         rts
-boot_shell_disk_name: .byte "/mnt/USH", 0
+boot_shell_disk_name: .byte "/bin/ush", 0
 boot_shell_fallback_name: .byte "ush", 0
         .assert * <= $ff00, error, "boot shell gate crosses MMU register hole"
 
@@ -1791,15 +1798,11 @@ boot_shell_default_device:
 boot_shell_device_ready:
         sta BOOT_SHELL_DEVICE
         sta DISK_PAYLOAD
-        ldx #3
-boot_shell_mount_path:
-        lda task_disk_mount,x
-        sta DISK_PAYLOAD+1,x
-        dex
-        bpl boot_shell_mount_path
-        lda #5
+        lda #'/'
+        sta DISK_PAYLOAD+1
+        lda #2
         sta DISK_REQUEST+10
-        lda #17                     ; temporary mount, before any task runs
+        lda #17                     ; root mount, before the shell and /etc/rc
         jsr boot_shell_request
         beq boot_shell_mounted
         lda #TASK_IO_ERROR
@@ -1811,22 +1814,6 @@ boot_shell_mounted:
         jsr boot_shell_load
         lda TASK_ERROR
         sta BOOT_SHELL_ERROR
-        ; The loader closes its file and restores our request. Drop the
-        ; temporary mount so later startup/user policy owns normal mounts.
-        ldx #3
-boot_shell_unmount_path:
-        lda task_disk_mount,x
-        sta DISK_PAYLOAD,x
-        dex
-        bpl boot_shell_unmount_path
-        lda #4
-        sta DISK_REQUEST+10
-        lda #18
-        jsr boot_shell_request
-        beq :+
-        lda #TASK_IO_ERROR
-        sta BOOT_SHELL_ERROR
-:
         lda BOOT_SHELL_ERROR
         bne boot_shell_fallback
         lda #1
@@ -1835,6 +1822,14 @@ boot_shell_unmount_path:
         tax
         rts
 boot_shell_fallback:
+        ; Release a failed bootstrap root before exposing recovery bootfs.
+        ; BOOT_SOURCE is still zero; session requests cannot unmount root.
+        lda #'/'
+        sta DISK_PAYLOAD
+        lda #1
+        sta DISK_REQUEST+10
+        lda #18
+        jsr boot_shell_request
         lda #2
         sta BOOT_SHELL_SOURCE
         lda #<boot_shell_fallback_name

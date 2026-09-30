@@ -70,6 +70,8 @@ static void text(const char *value) {
         else if (*value >= '1' && *value <= '9') key(SDL_SCANCODE_1 + *value - '1');
         else if (*value == '0') key(SDL_SCANCODE_0);
         else if (*value == ' ') key(SDL_SCANCODE_SPACE);
+        else if (*value == '/') key(SDL_SCANCODE_SLASH);
+        else if (*value == '.') key(SDL_SCANCODE_PERIOD);
         else if (*value == '\n') key(SDL_SCANCODE_RETURN);
         else if (*value == '\b') key(SDL_SCANCODE_BACKSPACE);
         /* 1986's positional mapping puts C128 '-' on host Equals (5,3).

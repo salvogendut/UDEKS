@@ -36,9 +36,9 @@ class StorageDelivery(unittest.TestCase):
         payload, constants = self.wrap(policy=b'POLICY', driver=b'DRIVER')
         self.assertEqual(payload[2+0x1A03-0x1200:2+0x1A09-0x1200], b'ULKP\0\1')
         self.assertEqual(payload[:2], b'\0\x12')
-        self.assertEqual(payload[2+0x8A00-0x1200:2+0x8A00-0x1200+6], b'POLICY')
+        self.assertEqual(payload[2+0xB000-0x1200:2+0xB000-0x1200+6], b'POLICY')
         self.assertEqual(payload[2+0xE300-0x1200:2+0xE306-0x1200], b'DRIVER')
-        self.assertEqual(payload[2+0xA000-0x1200:2+0xD100-0x1200], bytes(0x3100))
+        self.assertEqual(payload[2+0xA000-0x1200:2+0xB000-0x1200], bytes(0x1000))
         self.assertEqual(len(payload), 2+0xE900-0x1200)
         self.assertIn('USOV = $6000\n', constants)
         self.assertIn('SECONDARY_PAYLOAD_LOAD = $1200', constants)
@@ -50,8 +50,8 @@ class StorageDelivery(unittest.TestCase):
         fs = build_bootfs([('ush', b'program'), ('mount', b'command')])
         result = install_bootfs(payload, fs)
         self.assertEqual(result[:offset], payload[:offset])
-        self.assertEqual(result[offset:offset+0x3100], fs.ljust(0x3100, b'\0'))
-        self.assertEqual(result[offset+0x3100:], payload[offset+0x3100:])
+        self.assertEqual(result[offset:offset+0x1000], fs.ljust(0x1000, b'\0'))
+        self.assertEqual(result[offset+0x1000:], payload[offset+0x1000:])
         self.assertEqual(len(result), len(payload))
         with self.assertRaises(ValueError): install_bootfs(result, fs)
 
@@ -59,7 +59,7 @@ class StorageDelivery(unittest.TestCase):
         payload, _ = self.wrap()
         fs = build_bootfs([('ush', b'program')])
         for image, filesystem in ((payload[:-1], fs), (payload, b'bad'),
-                                  (payload, fs+bytes(0x3100)),
+                                  (payload, fs+bytes(0x1000)),
                                   (payload, fs[:-1]),
                                   (b'\0\x13'+payload[2:], fs)):
             with self.assertRaises(ValueError): install_bootfs(image, filesystem)
@@ -67,7 +67,7 @@ class StorageDelivery(unittest.TestCase):
     def test_oversized_or_missing_pieces_fail_closed(self):
         for changes in (dict(module=bytes(2049)), dict(module=b'bad'),
                         dict(lookup=b''), dict(lookup=bytes(1537)), dict(lookup=b'bad'),
-                        dict(policy=bytes(1537)), dict(driver=bytes(1537)),
+                        dict(policy=bytes(8193)), dict(driver=bytes(1537)),
                         dict(policy=b''), dict(driver=b''),
                         dict(ush=bytes(0x1000-USH_BSS+1)), dict(payload=b'\0\x41X'),
                         dict(payload=b'\0\x42'+bytes(0x3E01))):

@@ -18,12 +18,9 @@ static unsigned char length, cursor;
 unsigned char udeks_startup_begin(unsigned char device)
 {
     unsigned char fd, count, i, error, width, c;
+    (void)device; /* bootstrap has already mounted the system volume */
     length = cursor = 0;
-    P[0] = device;
-    for (i = 0; i != 4; ++i) P[i+1] = "/mnt"[i];
-    if (submit_request(UDEKS_TREQ_OP_MOUNT, 0, 5) == UDEKS_IO_ERROR)
-        return UDEKS_IO_ERROR;
-    for (i = 0; i != 8; ++i) P[i] = "/mnt/RC"[i];
+    for (i = 0; i != 8; ++i) P[i] = "/etc/rc"[i];
     fd = submit_request(UDEKS_TREQ_OP_OPEN, 0, 7);
     error = 0;
     if (fd == UDEKS_IO_ERROR) {
@@ -40,8 +37,6 @@ unsigned char udeks_startup_begin(unsigned char device)
         }
         if (submit_request(UDEKS_TREQ_OP_CLOSE, fd, 0) == UDEKS_IO_ERROR) error = 1;
     }
-    for (i = 0; i != 4; ++i) P[i] = "/mnt"[i];
-    if (submit_request(UDEKS_TREQ_OP_UMOUNT, 0, 4) == UDEKS_IO_ERROR) error = 1;
     /* Validate the WHOLE file, including later lines, before running any. */
     width = 0;
     for (i = 0; i < length; ++i) {

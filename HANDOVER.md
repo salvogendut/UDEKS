@@ -8,38 +8,60 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 ## Current feature handover — 2026-09-30
 
-The user requested an issue and branch for a disk-backed root namespace.
-Issue [#26](https://github.com/salvogendut/UDEKS/issues/26) is open; branch
+Issue [#26](https://github.com/salvogendut/UDEKS/issues/26), branch
 `storage-root-namespace`, worktree `build/root-filesystem`, based on merged
-PR #25 (`d13a5c2`). This checkpoint is planning only; no runtime changes.
-Main and the preserved command-release test images remain unchanged.
+PR #25 (`d13a5c2`). Root-namespace runtime integration is implemented.
+Main and historical release images are unchanged. The user reports
+"everything runs beautifully" and authorizes commit/push, a PR, and the next
+bounded .SH step. This is functional acceptance; the latest feedback does
+not identify the test platform. Merge is not authorized by that instruction.
 
-Next work: define and host-test the bounded mount/path contract, then integrate
-system disk at `/` (default device 8), virtual `/bin` and `/etc/rc` over flat
-standard CBM DOS files, and a separate data mount at `/mnt`. Keep bootfs recovery
-and an explicit bootstrap route to the shell/RC; system commands must not be
-loaded from arbitrary data media. Make cwd, file operations, executable lookup
-and df agree. See the visible active milestone in [ROADMAP.md](docs/ROADMAP.md)
-and issue #26 for acceptance and non-goals.
+The system disk (default device 8; bootstrap honors a valid boot-device byte)
+now backs `/`. Physical `USH.BIN` -> `/bin/ush`, `RC.ETC` -> `/etc/rc`,
+and program `NAME.BIN` -> `/bin/name`. Startup no longer mounts `/mnt`.
+`mount 9 /mnt` attaches independent raw data media; unmounting it leaves
+system commands available. No fallback search for commands on data media.
+Missing/bad disk shell releases bootstrap root and enters bootfs recovery.
 
-The user chose suffix-based mapping instead of an index file: `.BIN` for
-UDEX programs, `.SH` for shell scripts, `.ETC` for `/etc`; no `.USR` or `.RC`
-namespace suffix. Strip the suffix in the virtual view: `USH.BIN` -> `/bin/ush`,
-`STARTUP.SH` -> `/bin/startup`, `RC.ETC` -> `/etc/rc`. Scripts are planned
-alongside binaries in `/bin`; validate executables and use a bounded script
-interpreter path, never treat `.SH` as a UDEX. Only the designated `/etc/rc`
-auto-runs at boot. Discover files from directory entries, without a persistent
-per-app map; detect folded-name/BIN-vs-SH collisions and retain the 16-byte
-physical filename limit. Raw data mounts keep ordinary filenames. No runtime
-support for this convention or general script execution is implemented yet.
+`fs_namespace.c` is linked into the bank-1 C service. UTRQ 0.8 adds CHDIR,
+GETCWD, and OPEN descriptor 2 (UDEX candidate; reject script/config). Cwd is
+still shared root-session state, not isolated per process. Paths accept
+relative names, dot/dotdot, and repeated slash. Full-directory scans detect
+folded-name/BIN-vs-SH ambiguity; no first-entry winner or persistent index.
+.SH files are listable/readable, but not executable yet. Only designated
+/etc/rc auto-runs, through the existing bounded startup interpreter.
 
-Do not merely replace `mount 8 /mnt` with `mount 8 /`: the current service and
-loader hard-code `/mnt`, while bootfs synthesizes `/` and `/bin`. No root mount
-is implemented yet. Measure memory placement before growing ush (five bytes
-spare), keep policy in C service/user code, and preserve fixed gateway bounds.
+Placement: recovery bootfs now $A000-$AFFF (4 KiB), filesystem policy
+$B000-$CFFF (8 KiB), service state $E000-$E17F. Old $8A00 policy hole stays
+unused. At least 128 bytes remain below service C stack top $E200; driver
+$E300-$E8FF and shell stack $E900-$EFF0 stay put. Link/packer/bootfs lookup
+limits agree. Do not reuse the old bootfs capacity for fixture programs:
+EXIT/WAITPID fixture bootfs now contains just its actual probe shell.
+Public gateway addresses, UAPP runtime, and window/cache placements unchanged.
+
+Qualification tooling: `tools/root_namespace_probe.py` checks real ush on
+true-drive VICE D64/1541 and D71/1571 with a separate device-9 disk and a
+missing-shell recovery variant. `tools/startup_probe.py` accepts RC.ETC and
+checks valid/invalid/missing startup. `tools/1986_storage_smoke_build.py
+--root-namespace` checks native keyboard paths plus 12 clock drags and a wave
+drag; that single-drive harness uses a device-8 alias, so independent device-9
+coverage belongs to VICE. Preserve exact images/results under
+`bench/{artifacts,results}/2026-09-30-root-namespace`.
+
+Final checkpoint: 997 host tests and all preserved checksums pass;
+container placement-check passes. Both VICE formats, separate device 9,
+missing-shell recovery, all three RC variants, typed BASIC BOOT, compiled-C
+SPAWN/EXIT/WAITPID, shadow/VIC equality, and native 1986 input/dragging pass.
+A fresh parallel build reproduces D64/D71 byte-for-byte. D64 SHA-256 starts
+`e959e62f`, D71 `5985e1d3`. No VICE processes remain. Do not mistake main's
+disk for this candidate. Publish the accepted namespace checkpoint separately
+from the next script-execution changes; do not merge without authorization.
+
+Next: finish the bounded .SH interpreter/dispatch as a separate increment
+after publishing the accepted root-namespace PR. No write support,
+tasking expansion, service extraction or graphics optimization in this slice.
+The visible [roadmap](docs/ROADMAP.md) remains the priority authority.
 Build/use gh in my-distrobox. Never clean root build: it contains worktrees.
-No service extraction, extra tasks, filesystem writes or graphics optimization
-in this slice. Prompt for hardware testing at the first usable checkpoint.
 
 ## Previous feature: command extraction (#24, merged as PR #25)
 

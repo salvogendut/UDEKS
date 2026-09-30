@@ -627,16 +627,9 @@ $(USER_EXIT_PROBE_UDEX): $(USER_EXIT_PROBE_BIN) tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x9000 \
 		--entry-address 0x9000 --flags 0x01 $< $@
 
-$(USER_EXIT_PROBE_BOOTFS): $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) \
-		$(USER_LS_UDEX) $(USER_EXIT_PROBE_UDEX) $(USER_XCLOCK_UDEX) \
-		$(USER_XWAVE_UDEX) tools/build_bootfs.py
-	$(PYTHON) tools/build_bootfs.py --max-size 0x2DBC \
-		--entry cowsay=$(USER_COWSAY_UDEX) \
-		--entry date=$(USER_DATE_UDEX) \
-		--entry ls=$(USER_LS_UDEX) \
-		--entry ush=$(USER_EXIT_PROBE_UDEX) \
-		--entry xclock=$(USER_XCLOCK_UDEX) \
-		--entry xwave=$(USER_XWAVE_UDEX) $@
+$(USER_EXIT_PROBE_BOOTFS): $(USER_EXIT_PROBE_UDEX) tools/build_bootfs.py Makefile
+	$(PYTHON) tools/build_bootfs.py --max-size 0x1000 \
+		--entry ush=$(USER_EXIT_PROBE_UDEX) $@
 
 $(USER_WAITPID_PROBE_OBJ): user/probes/task_waitpid.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
@@ -648,16 +641,9 @@ $(USER_WAITPID_PROBE_UDEX): $(USER_WAITPID_PROBE_BIN) tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x9000 \
 		--entry-address 0x9000 --flags 0x01 $< $@
 
-$(USER_WAITPID_PROBE_BOOTFS): $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) \
-		$(USER_LS_UDEX) $(USER_WAITPID_PROBE_UDEX) $(USER_XCLOCK_UDEX) \
-		$(USER_XWAVE_UDEX) tools/build_bootfs.py
-	$(PYTHON) tools/build_bootfs.py --max-size 0x2DBC \
-		--entry cowsay=$(USER_COWSAY_UDEX) \
-		--entry date=$(USER_DATE_UDEX) \
-		--entry ls=$(USER_LS_UDEX) \
-		--entry ush=$(USER_WAITPID_PROBE_UDEX) \
-		--entry xclock=$(USER_XCLOCK_UDEX) \
-		--entry xwave=$(USER_XWAVE_UDEX) $@
+$(USER_WAITPID_PROBE_BOOTFS): $(USER_WAITPID_PROBE_UDEX) tools/build_bootfs.py Makefile
+	$(PYTHON) tools/build_bootfs.py --max-size 0x1000 \
+		--entry ush=$(USER_WAITPID_PROBE_UDEX) $@
 
 $(USER_SPAWN_PARENT_OBJ): user/probes/task_spawn_parent.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
@@ -690,7 +676,7 @@ $(USER_SPAWN_CHILD_UDEX): $(USER_SPAWN_CHILD_BIN) tools/build_udex.py
 
 $(USER_SPAWN_PROBE_BOOTFS): $(USER_SPAWN_PARENT_UDEX) \
 		$(USER_SPAWN_CHILD_UDEX) tools/build_bootfs.py
-	$(PYTHON) tools/build_bootfs.py --max-size 0x2DBC \
+	$(PYTHON) tools/build_bootfs.py --max-size 0x1000 \
 		--entry child=$(USER_SPAWN_CHILD_UDEX) \
 		--entry ush=$(USER_SPAWN_PARENT_UDEX) $@
 
@@ -705,7 +691,7 @@ $(USER_SLEEP_PROBE_UDEX): $(USER_SLEEP_PROBE_BIN) tools/build_udex.py
 		--entry-address 0x9000 --flags 0x01 $< $@
 
 $(USER_SLEEP_PROBE_BOOTFS): $(USER_SLEEP_PROBE_UDEX) tools/build_bootfs.py
-	$(PYTHON) tools/build_bootfs.py --max-size 0x2DBC \
+	$(PYTHON) tools/build_bootfs.py --max-size 0x1000 \
 		--entry ush=$(USER_SLEEP_PROBE_UDEX) $@
 
 $(USER_POLL_PROBE_ASM): user/probes/task_poll.c user/include/udeks/program.h \
@@ -725,7 +711,7 @@ $(USER_POLL_PROBE_UDEX): $(USER_POLL_PROBE_BIN) tools/build_udex.py
 		--entry-address 0x9000 --bss-size 0x0050 --flags 0x01 $< $@
 
 $(USER_POLL_PROBE_BOOTFS): $(USER_POLL_PROBE_UDEX) tools/build_bootfs.py
-	$(PYTHON) tools/build_bootfs.py --max-size 0x2DBC \
+	$(PYTHON) tools/build_bootfs.py --max-size 0x1000 \
 		--entry ush=$(USER_POLL_PROBE_UDEX) $@
 
 $(USER_CANCEL_PROBE_OBJ): user/probes/task_cancel.s | $(BUILD_USER)
@@ -739,7 +725,7 @@ $(USER_CANCEL_PROBE_UDEX): $(USER_CANCEL_PROBE_BIN) tools/build_udex.py
 		--entry-address 0x9000 --flags 0x01 $< $@
 
 $(USER_CANCEL_PROBE_BOOTFS): $(USER_CANCEL_PROBE_UDEX) tools/build_bootfs.py
-	$(PYTHON) tools/build_bootfs.py --max-size 0x2DBC \
+	$(PYTHON) tools/build_bootfs.py --max-size 0x1000 \
 		--entry ush=$(USER_CANCEL_PROBE_UDEX) $@
 
 $(USER_APP_IMPORTS_OBJ): user/lib/app_imports.s | $(BUILD_USER)
@@ -791,7 +777,7 @@ $(USER_XWAVE_UDEX): $(USER_XWAVE_BIN) tools/build_udex.py
 $(USER_BOOTFS): $(USER_MOUNT_UDEX) \
 		$(USER_RECOVERY_USH_UDEX) \
 		tools/build_bootfs.py Makefile
-	$(PYTHON) tools/build_bootfs.py --max-size 0x3100 \
+	$(PYTHON) tools/build_bootfs.py --max-size 0x1000 \
 		--entry mount=$(USER_MOUNT_UDEX) --entry umount=$(USER_MOUNT_UDEX) \
 		--entry ush=$(USER_RECOVERY_USH_UDEX) $@
 
@@ -1940,6 +1926,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--command UNAME=$(USER_DIAGNOSTICS_UDEX) --command LSHW=$(USER_DIAGNOSTICS_UDEX) \
 		--command LSMOD=$(USER_DIAGNOSTICS_UDEX) --command LSCPU=$(USER_DIAGNOSTICS_UDEX) \
 		--command Z80CTL=$(USER_DIAGNOSTICS_UDEX) \
+		--command MOUNT=$(USER_MOUNT_UDEX) --command UMOUNT=$(USER_MOUNT_UDEX) \
 		--d64-output $(BOOT_D64) $(BOOT_D71)
 
 $(TASK_EXIT_PROBE_D71) $(TASK_EXIT_PROBE_D64) &: $(STAGE0_BIN) \
@@ -2156,6 +2143,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--command UNAME=$(USER_DIAGNOSTICS_UDEX) --command LSHW=$(USER_DIAGNOSTICS_UDEX) \
 		--command LSMOD=$(USER_DIAGNOSTICS_UDEX) --command LSCPU=$(USER_DIAGNOSTICS_UDEX) \
 		--command Z80CTL=$(USER_DIAGNOSTICS_UDEX) \
+		--command MOUNT=$(USER_MOUNT_UDEX) --command UMOUNT=$(USER_MOUNT_UDEX) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(PANIC_PROBE_CRT0_BIN) \
 		--probe $(PANIC_PROBE_PROBE_BIN) \
@@ -2180,7 +2168,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 check:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
 	$(PYTHON) -m py_compile tools/managed_app_fixture.py tools/managed_disk_probe.py
-	$(PYTHON) -m py_compile tools/startup_probe.py
+	$(PYTHON) -m py_compile tools/startup_probe.py tools/root_namespace_probe.py
 	$(PYTHON) -m py_compile tools/boot_entry_probe.py tools/boot_diagnostic.py tools/boot_banner_probe.py
 	$(PYTHON) -m py_compile tools/build_storage.py tools/storage_service_probe.py tools/storage_shell_probe.py tools/iec_eof_reference.py tools/disk_exec_fixture.py tools/disk_exec_probe.py tools/gen_disk_loader_bindings.py tools/1986_storage_smoke_build.py tools/disk_shell_fixture.py tools/disk_shell_probe.py
 	$(PYTHON) -m py_compile tools/ihx_to_bin.py tools/bin_to_prg.py \

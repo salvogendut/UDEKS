@@ -1,0 +1,8 @@
+{
+  "disk_sha256": "e959e62fe42bd4592a1c2031e28441c8d9f8b58f848ecca5fc1c94aee3dfd47f",
+  "entry": "BASIC BOOT",
+  "model": "c128",
+  "drive": "1541",
+  "shell": "00a5555348010008ffff00",
+  "probe_site": "06a0077106aa68a0"
+}

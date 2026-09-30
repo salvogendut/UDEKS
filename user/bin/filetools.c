@@ -114,9 +114,6 @@ unsigned char udeks_program_main(unsigned char argc, unsigned char **argv)
         if (argc > offset+1u) return fail("ls [-l] [PATH]\n");
         arg = (const unsigned char *)".";
         if (argc > offset) arg = argv[offset];
-        /* Match the existing root/bin-only working-directory contract. */
-        if (arg[0] == '.' && !arg[1])
-            arg = (const unsigned char *)(CWD_KIND ? "/bin" : "/");
         return list(arg, op);
     }
     op = UDEKS_TREQ_OP_MOUNT; offset = 1;

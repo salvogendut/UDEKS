@@ -20,7 +20,7 @@ class ManagedDiskTests(unittest.TestCase):
         disk = build_image(b'CBM\0\x1c\0\xd4'+bytes(25), b'', b'', b'', xclock=clock, xwave=wave)
         for image in (disk, d64_compatibility_image(disk)):
             for name, data, base in (('XCLOCK', clock, 0x0200), ('XWAVE', wave, 0x1200)):
-                _, offsets = dos_file(image, name)
+                _, offsets = dos_file(image, name+'.BIN')
                 self.assertEqual(bytes(image[p] for p in offsets), data)
                 validate_managed_app(data, base)
 

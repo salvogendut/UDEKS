@@ -16,8 +16,13 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 **Active milestone:** [#26 — system root and coherent filesystem namespace](https://github.com/salvogendut/UDEKS/issues/26),
 branch `storage-root-namespace`, worktree `build/root-filesystem`.
 Make the system disk back `/`, expose programs at `/bin` and startup policy
-at `/etc/rc`, and reserve `/mnt` for additional/data media. This is planned,
-not implemented: the working release still mounts device 8 at `/mnt`.
+at `/etc/rc`, and reserve `/mnt` for additional/data media. The bounded C
+resolver/suffix contract and runtime integration are implemented on the branch.
+The candidate boots device 8 at `/`, loads `/bin/ush` and `/etc/rc`, and leaves
+`/mnt` free. Emulator qualification is recorded below; the user accepts the
+functional test (latest platform unspecified). Publish this checkpoint for
+review, then implement bounded `.SH` execution. Main's previous release still
+mounts device 8 at `/mnt`.
 
 **Completed and merged:** [#24 — disk utilities and command/service separation](COMMAND-EXTRACTION.md),
 PR #25 at `d13a5c2`. Disk graphics merged as PR #23. Everyday utilities
@@ -117,23 +122,29 @@ Data mounts retain ordinary filenames without requiring these conventions.
 Script dispatch/execution is a bounded ush feature to qualify, not a claim
 that the current release supports general `.SH` execution or Bash syntax.
 
-1. Specify namespace, DOS-name translation, mount/handle ownership and recovery;
-   host-test a pure path resolver, including suffix mapping, collisions,
-   relative paths, `.` and `..`.
-2. Integrate root selection and disk-shell bootstrap, then route cwd, file
-   operations, command/app lookup and `df` consistently. Root access must be
-   available before reading `/etc/rc`; the script configures later mounts.
-3. Demonstrate a separate data mount and preserve exact test disks. Qualify
-   cold boot, missing media/programs, recovery and graphics-active use in
-   VICE/1986; request a short hardware test at the first usable checkpoint.
+1. **Implemented:** [namespace contract](../abi/filesystem.md#root-namespace-contract-26),
+   C resolver, suffix classification/inverse mapping and collision checks;
+   host tests cover relative paths, `.`/`..`, limits, atomic rejection, and
+   independent device-8 root/device-9 data routing. cc65 compilation passes.
+2. **Implemented:** live root/data routing, disk-shell bootstrap, service-backed
+   `cd`/`pwd`, file operations, command/app lookup, and `df`. Device 8 is mounted
+   before reading `/etc/rc`; the script configures later mounts. Ordinary flat
+   DOS files use the suffix convention; no new disk format.
+3. **Accepted:** the user reports the candidate runs beautifully after the
+   root-namespace test and unmount check (latest platform unspecified).
+   VICE covers independent drives and recovery; 1986 covers native typing and
+   repeated dragging. See [current filesystem contract](../abi/filesystem.md).
+4. **Next feature:** bounded `.SH` command dispatch/interpreter. Scripts
+   already appear in `/bin` and can be read, but cannot yet be launched.
+   Only `/etc/rc` is executed by the existing startup interpreter.
 
 **Acceptance:** boot to a disk-backed `/`, list/run `/bin` programs, read
 `/etc/rc`, and mount/list/read/unmount a standard data disk at `/mnt` using
 commands from the system volume. `cd`, `pwd`, `ls`, `cat`, `df` and program
 lookup must agree. Invalid requests must leave live state intact.
 
-Measure placement before implementation: ush has only five bytes spare in
-its fixed slot. Keep filesystem policy in C services/user space, preserve
+Placement is checked: policy uses bank-1 `$B000-$CFFF`, recovery bootfs is
+bounded to 4 KiB, and cwd handling moved out of ush. Keep policy in C services/user space, preserve
 public gates and recovery, and explicitly migrate old `/mnt/NAME` paths.
 No writes, graphics optimization, expanded tasking or service extraction in
 this slice. The sections below retain the broader milestone sequence/history.

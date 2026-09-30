@@ -16,6 +16,7 @@ class StorageService(unittest.TestCase):
         subprocess.run(['cc', '-std=c99', '-Wall', '-Wextra', '-Werror', '-shared',
                         '-fPIC', '-DUDEKS_STORAGE_HOST_TEST', '-I'+str(ROOT/'include'),
                         str(ROOT/'src/services/filesystem/iec_service.c'),
+                        str(ROOT/'src/services/filesystem/fs_namespace.c'),
                         str(ROOT/'src/services/filesystem/cbm_file.c'),
                         str(ROOT/'tests/fixtures/storage_transport.c'),
                         '-o', str(library)], check=True)
@@ -34,6 +35,8 @@ class StorageService(unittest.TestCase):
             self.byte(name).value = 0
         self.word('fail_at').value = 65535
         self.tracks = (c.c_uint8 * 32).in_dll(self.lib, 'test_tracks')
+        self.units = (c.c_uint8 * 32).in_dll(self.lib, 'test_units')
+        self.units[:] = bytes(32)
         self.numbers = (c.c_uint8 * 32).in_dll(self.lib, 'test_numbers')
         self.sectors = (c.c_uint16 * 8192).in_dll(self.lib, 'test_sectors')
         self.disk = {(18, 1): bytearray(b'\0\xff'+bytes(254))}
@@ -113,7 +116,7 @@ class StorageService(unittest.TestCase):
 
     def test_directory_entries_eof_close_and_small_buffer(self):
         self.file(b'hi')
-        self.file(b'bye', b'LONG FILE NAME!', slot=1, first=1)
+        self.file(b'bye', b'LONG FILE NAME.', slot=1, first=1)
         self.mount()
         self.assertEqual(self.request(6, b'/mnt', 1), (1, 2, 4, 0))
         self.assertEqual(self.request(18, b'/mnt'), (1, 128, 0, 16))
@@ -165,8 +168,9 @@ class StorageService(unittest.TestCase):
     def test_bad_filenames_cannot_inject_dos_commands_or_wildcards(self):
         self.mount()
         before = self.byte('open_count').value
-        for name in (b'', b'A'*17, b'A/B', b'@A', b'A,W', b'A*', b'A?', b'A:B', b'A\0B', b'\xc1'):
+        for name in (b'A'*17, b'@A', b'A,W', b'A*', b'A?', b'A:B', b'A\0B', b'\xc1'):
             self.assertEqual(self.request(6, b'/mnt/'+name), (1, 128, 0, 22))
+        self.assertEqual(self.request(6, b'/mnt/A/B'), (1, 128, 0, 20))
         self.assertEqual(self.byte('open_count').value, before)
 
     def test_partial_read_defers_io_error_and_allows_reopen(self):
@@ -261,7 +265,7 @@ class StorageService(unittest.TestCase):
         self.assertEqual(self.request(7, fd=4, count=24), (1, 128, 0, 5))
 
     def test_close_failure_releases_logical_handle(self):
-        self.mount(); self.request(6, b'/mnt', 1)
+        self.file(b'AB'); self.mount(); self.request(6, b'/mnt/HELLO')
         self.byte('close_error').value = 2
         self.assertEqual(self.request(9, fd=4), (1, 128, 0, 5))
         self.byte('close_error').value = 0
@@ -289,6 +293,129 @@ class StorageService(unittest.TestCase):
                 (total-3-2*dual).to_bytes(2, 'little')+b'\x08\x01')
         self.assertEqual(self.request(18, b'/mnt'), (1, 2, 0, 0))
 
+    def root(self):
+        self.assertEqual(self.request(17, b'\x08/', minor=8), (1, 2, 0, 0))
+        c.c_uint8.in_dll(self.lib, 'udeks_storage_boot_source').value = 1
+
+    def entries(self, path):
+        self.assertEqual(self.request(6, path, 1, minor=8), (1, 2, 4, 0))
+        result = []
+        for _ in range(160):
+            response = self.request(7, fd=4, count=24, minor=8)
+            self.assertEqual((response[0], response[1], response[3]), (1, 2, 0))
+            if not response[2]: break
+            result.append(bytes(self.r[16:16+self.r[15]]))
+        else: self.fail('unbounded directory')
+        self.assertEqual(self.request(9, fd=4, minor=8), (1, 2, 0, 0))
+        return result
+
+    def test_root_views_and_startup_config_are_real_disk_files(self):
+        for slot, (name, content) in enumerate(((b'USH.BIN', b'shell'),
+                (b'CAT.BIN', b'cat'), (b'RC.ETC', b'echo ready'),
+                (b'TEST.SH', b'echo script'), (b'NOTES.TXT', b'notes'))):
+            self.file(content, name, slot=slot, first=slot)
+        self.root()
+        self.assertEqual(self.entries(b'/'), [b'bin', b'etc', b'mnt', b'notes.txt'])
+        self.assertEqual(self.entries(b'/bin'), [b'ush', b'cat', b'test'])
+        self.assertEqual(self.entries(b'/etc'), [b'rc'])
+        self.assertEqual(self.request(6, b'/etc/rc', minor=8), (1, 2, 4, 0))
+        self.assertEqual(self.read_all(), b'echo ready')
+        self.request(9, fd=4)
+        self.assertEqual(self.request(6, b'/RC.ETC', minor=8), (1, 128, 0, 2))
+        self.assertEqual(self.request(6, b'/mnt', 1, minor=8), (1, 128, 0, 19))
+
+    def test_root_and_device_nine_are_independent_with_handle_ownership(self):
+        self.file(b'SYSTEM', b'FOO.BIN')
+        system = self.disk.copy()
+        self.disk = {(18, 1): bytearray(b'\0\xff'+bytes(254))}
+        self.file(b'DATA', b'FOO.BIN')
+        data = self.disk.copy()
+        self.tracks[:] = bytes(32)
+        index = 0
+        for unit, disk in ((8, system), (9, data)):
+            for (track, sector), content in disk.items():
+                self.units[index], self.tracks[index], self.numbers[index] = unit, track, sector
+                self.sectors[index*256:(index+1)*256] = content
+                index += 1
+        self.root()
+        self.assertEqual(self.request(17, b'\x09/mnt'), (1, 2, 0, 0))
+        self.assertEqual(self.request(6, b'/bin/foo', minor=8), (1, 2, 4, 0))
+        self.assertEqual(self.byte('device').value, 8)
+        self.assertEqual(self.request(18, b'/mnt'), (1, 2, 0, 0))
+        self.assertEqual(self.read_all(), b'SYSTEM')
+        self.assertEqual(self.request(17, b'\x09/mnt'), (1, 128, 0, 16))
+        self.request(9, fd=4)
+        self.assertEqual(self.request(17, b'\x09/mnt'), (1, 2, 0, 0))
+        self.assertEqual(self.request(6, b'/mnt/foo.bin', minor=8), (1, 2, 4, 0))
+        self.assertEqual(self.byte('device').value, 9)
+        self.assertEqual(self.request(18, b'/mnt'), (1, 128, 0, 16))
+        self.assertEqual(self.read_all(), b'DATA')
+        self.request(9, fd=4)
+        self.assertEqual(self.request(18, b'/', minor=8), (1, 128, 0, 16))
+        self.assertEqual(self.request(17, b'\x09/', minor=8), (1, 128, 0, 16))
+
+    def test_cwd_relative_io_parent_and_rejection_are_consistent(self):
+        self.file(b'echo ready', b'RC.ETC'); self.root()
+        self.assertEqual(self.request(21, b'/etc', minor=8), (1, 2, 0, 0))
+        self.assertEqual(self.request(22, minor=8), (1, 2, 4, 0))
+        self.assertEqual(bytes(self.r[14:19]), b'/etc\0')
+        self.assertEqual(self.request(6, b'./rc', minor=8), (1, 2, 4, 0))
+        self.assertEqual(self.read_all(), b'echo ready'); self.request(9, fd=4)
+        self.assertEqual(self.request(21, b'rc', minor=8), (1, 128, 0, 20))
+        self.assertEqual(self.request(21, b'/missing', minor=8), (1, 128, 0, 2))
+        self.assertEqual(self.request(21, b'/mnt', minor=8), (1, 128, 0, 19))
+        self.assertEqual(self.request(22, minor=8), (1, 2, 4, 0))
+        self.assertEqual(bytes(self.r[14:19]), b'/etc\0')
+        self.request(21, b'../bin', minor=8)
+        self.assertEqual(self.request(22, minor=8), (1, 2, 4, 0))
+        self.assertEqual(bytes(self.r[14:19]), b'/bin\0')
+        self.request(21, b'..', minor=8)
+        self.assertEqual(self.request(22, minor=8), (1, 2, 1, 0))
+        self.assertEqual(bytes(self.r[14:16]), b'/\0')
+
+    def test_cwd_keeps_data_mount_busy_without_affecting_root(self):
+        self.root(); self.mount()
+        self.assertEqual(self.request(21, b'/mnt', minor=8), (1, 2, 0, 0))
+        self.assertEqual(self.request(18, b'/mnt'), (1, 128, 0, 16))
+        self.request(21, b'..', minor=8)
+        self.assertEqual(self.request(18, b'/mnt'), (1, 2, 0, 0))
+
+    def test_collisions_fail_both_open_and_listing_without_selecting_first(self):
+        for first, second in ((b'FOO.BIN', b'FOO.SH'), (b'FOO.SH', b'FOO.BIN'),
+                              (b'FOO.BIN', b'foo.bin')):
+            self.setUp(); self.file(b'FIRST', first); self.file(b'SECOND', second, slot=1, first=1)
+            self.root()
+            self.assertEqual(self.request(6, b'/bin/foo', minor=8), (1, 128, 0, 17))
+            self.assertEqual(self.request(6, b'/bin', 1, minor=8), (1, 2, 4, 0))
+            self.assertEqual(self.request(7, fd=4, count=24), (1, 128, 0, 17))
+            self.assertEqual(self.request(7, fd=4, count=24), (1, 128, 0, 17))
+            self.assertEqual(self.request(9, fd=4), (1, 2, 0, 0))
+
+    def test_exec_open_never_treats_scripts_or_configuration_as_udex(self):
+        self.file(b'UDEXpretend', b'TEST.SH')
+        self.file(b'UDEXpretend', b'RC.ETC', slot=1, first=1)
+        self.root()
+        for path in (b'/bin/test', b'/etc/rc'):
+            self.assertEqual(self.request(6, path, fd=2, minor=8), (1, 128, 0, 8))
+            self.assertEqual(self.request(6, path, minor=8), (1, 2, 4, 0))
+            self.assertEqual(self.read_all(), b'UDEXpretend'); self.request(9, fd=4)
+        self.assertEqual(self.request(6, b'/bin', fd=2, minor=8), (1, 128, 0, 21))
+
+    def test_cwd_requests_validate_version_and_shape_without_mutation(self):
+        self.root()
+        for op, payload, extras, errno in ((21, b'/etc', {'minor': 7}, 38),
+                (22, b'', {'minor': 7}, 38), (21, b'/etc', {'fd': 1}, 22),
+                (22, b'X', {}, 22), (21, b'/etc', {'flags': 1}, 22)):
+            options = dict(minor=8); options.update(extras)
+            self.assertEqual(self.request(op, payload, **options), (1, 128, 0, errno))
+        self.assertEqual(self.request(22, minor=8), (1, 2, 1, 0))
+
+    def test_bootstrap_can_release_failed_root_for_recovery(self):
+        self.assertEqual(self.request(17, b'\x08/', minor=8), (1, 2, 0, 0))
+        self.assertEqual(self.request(18, b'/', minor=8), (1, 2, 0, 0))
+        self.assertEqual(self.request(6, b'/bin', 1, minor=8)[0], 0)
+        self.assertEqual(self.request(21, b'/bin', minor=8), (1, 2, 0, 0))
+
     def test_statfs_validates_before_io_and_preserves_open_handle(self):
         self.assertEqual(self.request(19, b'/mnt'), (1, 128, 0, 38))
         self.assertEqual(self.request(19, b'/mnt', minor=6), (1, 128, 0, 2))
@@ -300,6 +427,10 @@ class StorageService(unittest.TestCase):
         self.assertEqual(self.request(19, b'/mnt', minor=6), (1, 128, 0, 16))
         self.assertEqual(self.word('position').value, before)
         self.assertEqual(self.read_all(), b'abc')
+
+    def test_statfs_keeps_counted_non_nul_06_path_contract(self):
+        self.mount(); self.bam(); self.sync()
+        self.assertEqual(self.request(19, b'/mntX', count=4, minor=6), (1, 2, 8, 0))
 
     def test_statfs_corrupt_bam_and_io_errors_close_and_allow_retry(self):
         self.mount()
