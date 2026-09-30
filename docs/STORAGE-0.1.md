@@ -227,7 +227,10 @@ snapshot. It does not use KERNAL traps or certify physical drive behavior.
   historical `STORAGE/FILESYSTEM SERVICES: DEFERRED` wording is also still due
   for correction; runtime commands, not that banner, describe this checkpoint.
 
-**Next concrete step:** physical C128 + PI1541 test, then merge PR #17.
+**Merge update (2026-09-30):** PR #17 merged by explicit user authorization
+as `92a2e36`. Physical C128 + PI1541 qualification is still unrecorded;
+the preserved hardware images remain available for that test. Issue #18 now
+implements the first disk-execution slice.
 Storage 0.2 disk-backed program loading is the next feature, not IEC optimization.
 
 ### Byte-accurate EOF and media recovery — 2026-09-30

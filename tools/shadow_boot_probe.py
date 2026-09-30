@@ -231,6 +231,7 @@ def patch_payload(
     task_activation: bytes,
     preserved_gap_start: int,
     context_start: int,
+    task_loader: bytes,
 ) -> bytes:
     """Seed safe zero bytes and return the staged $shadow_start-$tail_end image."""
     image = bytearray(d71.read_bytes())
@@ -293,6 +294,19 @@ def patch_payload(
                     f"shadow prefix ${address:04X} does not overlay a zero byte"
                 )
             image[disk_offset] = (offset % 255) + 1
+    # The smaller Storage 0.2 common loader leaves zero padding where the
+    # scheduler/context gap used to inherit nonzero loader staging. Seed
+    # only the proven unused suffix, never executable bytes or another owner.
+    staged_loader = bytes(image[payload_disk_offset(0xc800+i, locations)]
+                          for i in range(len(task_loader)))
+    if not task_loader or staged_loader != task_loader:
+        raise ValueError('task-loader staging differs from linked image')
+    for address in range(preserved_gap_start, context_start):
+        if 0xc800+len(task_loader) <= address < 0xcdf0:
+            offset = payload_disk_offset(address, locations)
+            if image[offset] != 0:
+                raise ValueError('unused task-loader staging is not zero')
+            image[offset] = (address % 255)+1
     target.write_bytes(image)
     preimage = bytes(
         image[payload_disk_offset(address, locations)]
@@ -536,6 +550,7 @@ def probe(args: argparse.Namespace) -> None:
         task_activation,
         preserved_gap_start,
         context_start,
+        args.task_loader.read_bytes(),
     )
 
     port = choose_port()
@@ -797,6 +812,7 @@ def main() -> None:
         default=ROOT / "build/boot/task-switch-activation.bin",
     )
     parser.add_argument("--work", type=Path, default=ROOT / "build/vice")
+    parser.add_argument("--task-loader", type=Path, default=ROOT/'build/boot/task-loader.bin')
     parser.add_argument(
         "--boot-output", type=Path,
         default=ROOT / "build/vice/shadow-window.bin",

@@ -142,6 +142,7 @@ MEMORY_MAP_PRG := $(BUILD_MEMORY_MAP)/memory-map.prg
 STAGE0_BIN := $(BUILD_BOOT)/stage0.bin
 STAGE1_GATEWAY_BIN := $(BUILD_BOOT)/stage1-gateway.bin
 TASK_LOADER_BIN := $(BUILD_BOOT)/task-loader.bin
+TASK_LOOKUP_BIN := $(BUILD_BOOT)/task-lookup.bin
 TASK_REQUEST_GATE_BIN := $(BUILD_BOOT)/task-request-gateway.bin
 BOOTFS_REQUEST_SERVICE_BIN := $(BUILD_BOOT)/bootfs-request-service.bin
 TASK_BANK_GATE_BIN := $(BUILD_BOOT)/task-bank-gateway.bin
@@ -234,6 +235,14 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 
 include mk/window-cache.mk
 include mk/storage.mk
+
+# Storage 0.2 positive/negative files live on DOS media, never in bootfs.
+.PHONY: disk-exec-image
+disk-exec-image: $(BUILD_DIR)/disk-exec/test.d64 $(BUILD_DIR)/disk-exec/test.d71
+$(BUILD_DIR)/disk-exec/test.d64: $(BOOT_D64) $(USER_COWSAY_UDEX) tools/disk_exec_fixture.py tools/build_d71.py tools/build_udex.py
+	$(PYTHON) tools/disk_exec_fixture.py $(BOOT_D64) $(USER_COWSAY_UDEX) $@
+$(BUILD_DIR)/disk-exec/test.d71: $(BOOT_D71) $(USER_COWSAY_UDEX) tools/disk_exec_fixture.py tools/build_d71.py tools/build_udex.py
+	$(PYTHON) tools/disk_exec_fixture.py $(BOOT_D71) $(USER_COWSAY_UDEX) $@
 
 .PHONY: all 8502 z80 z80-asm bench bench-8502 bench-z80 bench-irq \
 	bench-irq-8502 bench-irq-z80 bench-irq-service \
@@ -1388,7 +1397,7 @@ $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS) &: \
 		--activation-tail $(TASK_SWITCH_TAIL_BIN) \
 		--activation-yield-handler $(TASK_YIELD_HANDLER_BIN) \
 		--activation-vectors $(TASK_CONTEXT_VECTORS_BIN) $(WINDOW_CACHE_OVERLAY_FLAGS) \
-		--storage $(STORAGE_BUILD) --ush $(USER_USH_BIN)
+		--storage $(STORAGE_BUILD) --ush $(USER_USH_BIN) --task-lookup $(TASK_LOOKUP_BIN)
 
 $(TASK_SWITCH_ACTIVATION_OBJ): src/boot/task-switch-activation.s \
 		$(SCHEDULER_OVERLAY_CONSTANTS) | $(BUILD_BOOT)
@@ -1851,11 +1860,14 @@ $(BUILD_BOOT)/stage0.o: src/boot/stage0.s | $(BUILD_BOOT)
 $(STAGE0_BIN): $(BUILD_BOOT)/stage0.o cfg/8502-stage0.cfg
 	$(LD65) -C cfg/8502-stage0.cfg -o $@ $<
 
+$(BUILD_8502)/disk-loader-bindings.inc: $(SCHEDULER_OVERLAY_MAP) tools/gen_disk_loader_bindings.py
+	$(PYTHON) tools/gen_disk_loader_bindings.py $< $@
+
 $(BUILD_BOOT)/stage1-gateway.o: src/boot/stage1-gateway.s \
-		$(CAPABILITY_CONSTANTS) | $(BUILD_BOOT)
+		$(CAPABILITY_CONSTANTS) $(BUILD_8502)/disk-loader-bindings.inc | $(BUILD_BOOT)
 	$(CA65) --cpu 6502 -I $(BUILD_8502) -o $@ $<
 
-$(STAGE1_GATEWAY_BIN) $(TASK_LOADER_BIN) &: $(BUILD_BOOT)/stage1-gateway.o \
+$(STAGE1_GATEWAY_BIN) $(TASK_LOADER_BIN) $(TASK_LOOKUP_BIN) &: $(BUILD_BOOT)/stage1-gateway.o \
 		cfg/8502-stage1-gateway.cfg
 	$(LD65) -C cfg/8502-stage1-gateway.cfg \
 		-o $(STAGE1_GATEWAY_BIN) $<
@@ -2134,7 +2146,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 
 check:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
-	$(PYTHON) -m py_compile tools/build_storage.py tools/storage_service_probe.py tools/storage_shell_probe.py tools/iec_eof_reference.py
+	$(PYTHON) -m py_compile tools/build_storage.py tools/storage_service_probe.py tools/storage_shell_probe.py tools/iec_eof_reference.py tools/disk_exec_fixture.py tools/disk_exec_probe.py tools/gen_disk_loader_bindings.py tools/1986_storage_smoke_build.py
 	$(PYTHON) -m py_compile tools/ihx_to_bin.py tools/bin_to_prg.py \
 		tools/bench_decode.py tools/irq_probe_decode.py \
 		tools/irq_service_decode.py tools/context_decode.py \

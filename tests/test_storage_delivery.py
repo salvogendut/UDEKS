@@ -28,12 +28,13 @@ class StorageDelivery(unittest.TestCase):
     def wrap(self, **overrides):
         args = dict(payload=b'\0\x42' + bytes(0x3000), constants='USOV = $6000\n',
                     module=b'\x4c\x09\x12UIEC\0\1', policy=b'P', driver=b'D',
-                    ush=bytes(2121))
+                    ush=bytes(2121), lookup=b'\x4c\x09\x1aULKP\0\1')
         args.update(overrides)
         return wrap_storage(**args)
 
     def test_delivery_keeps_scheduler_cache_and_usov_bounds(self):
         payload, constants = self.wrap(policy=b'POLICY', driver=b'DRIVER')
+        self.assertEqual(payload[2+0x1A03-0x1200:2+0x1A09-0x1200], b'ULKP\0\1')
         self.assertEqual(payload[:2], b'\0\x12')
         self.assertEqual(payload[2+0x8A00-0x1200:2+0x8A00-0x1200+6], b'POLICY')
         self.assertEqual(payload[2+0x9A00-0x1200:2+0x9A06-0x1200], b'DRIVER')
@@ -63,7 +64,8 @@ class StorageDelivery(unittest.TestCase):
             with self.assertRaises(ValueError): install_bootfs(image, filesystem)
 
     def test_oversized_or_missing_pieces_fail_closed(self):
-        for changes in (dict(module=bytes(3585)), dict(module=b'bad'),
+        for changes in (dict(module=bytes(2049)), dict(module=b'bad'),
+                        dict(lookup=b''), dict(lookup=bytes(1537)), dict(lookup=b'bad'),
                         dict(policy=bytes(1537)), dict(driver=bytes(1537)),
                         dict(policy=b''), dict(driver=b''),
                         dict(ush=bytes(0xA00-0x50+1)), dict(payload=b'\0\x41X'),

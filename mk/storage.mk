@@ -65,4 +65,4 @@ $(STORAGE_BUILD)/router.bin: $(STORAGE_BUILD)/router.o cfg/8502-storage-router.c
 
 $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS): \
 		$(STORAGE_BUILD)/module.bin $(STORAGE_BUILD)/policy.bin $(STORAGE_BUILD)/driver.bin \
-		$(STORAGE_BUILD)/router.bin $(USER_USH_BIN) tools/build_storage.py
+		$(STORAGE_BUILD)/router.bin $(USER_USH_BIN) $(TASK_LOOKUP_BIN) tools/build_storage.py

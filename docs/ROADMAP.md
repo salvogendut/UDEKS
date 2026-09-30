@@ -22,8 +22,9 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 - The generic retained window cache is enabled in normal builds and has
   positive real-hardware feedback. Window release/background repair can still
   take seconds; that is an open limitation, not a claim of responsive graphics.
-- Bootfs is read-only and packaged with the image. There is no general
-  storage-backed filesystem or installable-program workflow yet.
+- Bootfs remains the bootstrap fallback. Read-only IEC mount/list/read works;
+  issue #18 adds the first explicit-path disk-execution slice. General storage,
+  disk-loaded shell/startup policy and installable services remain incomplete.
 
 Hardware feedback validates particular tested builds and interactions, not
 every C128 model, expansion, disk format, or failure path. `1986` and VICE are
@@ -57,7 +58,7 @@ mounts or applications must not require rebuilding the kernel.
 | Kernel and tasking | Cooperative two-task path works; general scheduling, IPC, and preemption due. |
 | Z80 secondary engine | Mailbox and xwave computation work; reusable operations and soak tests due. |
 | Graphics and input | Working shell/windows/apps; repaint latency and focused-window input remain open. |
-| Storage and applications | Bootfs and UDEX work; IEC/VFS and storage-backed loading are the main gap. |
+| Storage and applications | Read-only IEC merged; foreground disk execution accepted in 1986 and on C128 + PI1541. Disk-loaded shell/startup is next. |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
@@ -72,7 +73,8 @@ graphics-active use; the 1986 raw-IEC keyboard workflow passes too. The user
 has separately confirmed the earlier mount/list slice after restarting 1986.
 The byte-counted sector reader now passes tiny-file EOF and media-error/recovery
 checks in VICE and the keyboard workflow in 1986; 885 host tests pass.
-**Next: physical C128 + PI1541 qualification**, then merge PR #17. The exact
+**Merged:** PR #17 at the user's request (`92a2e36`). Physical C128 + PI1541
+qualification remains unrecorded; merge authorization is not a test result. The exact
 hardware test disks are preserved in `bench/artifacts/2026-09-30-storage-0.1`.
 This is not full Storage 0.1 acceptance until that hardware result is recorded.
 See [the hardware checklist](STORAGE-0.1.md#hardware-checklist).
@@ -95,6 +97,20 @@ boot, or the Z80 worker. The implementation sequence and current gate are in
 [Storage 0.1](STORAGE-0.1.md).
 
 ### 2. Storage 0.2: launch a program from disk
+
+**Started:** issue [#18](https://github.com/salvogendut/UDEKS/issues/18), branch
+`storage-0.2-disk-exec`, now based on merged Storage 0.1.
+**Manual 1986 check passed:** the user confirms all suggested tests following
+checkpoint `f0a9065`. `/mnt/DISKCOW hello` executes from mounted media,
+preserves arguments/exit, and can be run repeatedly. VICE D64/D71 and native
+1986 checks pass; malformed images and I/O failures return to the shell.
+The preserved Storage 0.1 hardware candidate is unchanged.
+The user subsequently confirmed the tests passed on a real C128 with PI1541
+and authorized continuation, completing this slice's manual acceptance gate.
+**Next:** merge the foreground disk-execution slice and move to disk-loaded
+shell/startup policy. This is not exhaustive model/device/failure-path qualification.
+Do not divert this milestone into loader or graphics optimization.
+See [Storage 0.2](STORAGE-0.2.md) for the short implementation/acceptance plan.
 
 Use the same mount and stream contract to resolve and load a fixed-address
 UDEX program from external media. Preserve the existing image validator,

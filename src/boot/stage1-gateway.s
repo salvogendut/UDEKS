@@ -5,6 +5,7 @@
 
         .setcpu "6502"
         .include "capability-delivery.inc"
+        .include "disk-loader-bindings.inc"
 
 BOOT_CHAIN              = $f050
 BOOT_CHAIN_STATE        = BOOT_CHAIN + 12
@@ -471,6 +472,7 @@ TASK_BAD_SIZE           = $09
 TASK_BAD_ENTRY          = $0a
 TASK_NOT_FOUND          = $0b
 TASK_BAD_BOOTFS         = $0c
+TASK_IO_ERROR           = $0d
 
 task_persistent_loader_entry:
         .assert task_persistent_loader_entry = $f910, error, "persistent loader entry moved"
@@ -511,6 +513,22 @@ task_load_named:
         jmp task_initialize
 
 task_load_foreground:
+        ; A live native child owns both bank-1 APP1 and the common launcher
+        ; at TASK_STATUS. Reject BEFORE touching either. X=1 distinguishes
+        ; the busy return from every ordinary eight-bit program exit code.
+        pha
+        lda DISK_LOADER_CHILD_STATE
+        beq :+
+        pla
+        inc RESIDENT_CC65_SP
+        bne task_busy_return
+        inc RESIDENT_CC65_SP+1
+task_busy_return:
+        lda #$03
+        ldx #$01
+        rts
+:
+        pla
         ; Adapt the cc65 call made by the shell. argv arrives in AX and argc is
         ; the one-byte stack argument. Consume argc exactly as a C callee does.
         sta TASK_ARGV_LO
@@ -560,7 +578,22 @@ task_check_syscalls:
         lda SYSCALL_TABLE+6
         cmp #$02
         bcc task_bad_syscalls
+        ; A direct/debug PRG may lack secondary delivery. Fail closed instead
+        ; of jumping into an absent bank-1 service extension.
+        lda #0
+        sta MMU_LCR_WORKER_FLAT
+        ldx #5
+task_lookup_identity:
+        lda task_lookup_bootfs+3,x
+        cmp task_lookup_signature,x
+        bne task_lookup_missing
+        dex
+        bpl task_lookup_identity
+        sta MMU_LCR_KERNEL_IO
         jmp task_find_file
+task_lookup_missing:
+        jmp task_bad_bootfs
+task_lookup_signature: .byte "ULKP", 0, 1
 task_bad_syscalls:
         lda #TASK_BAD_SYSCALL_ABI
         jmp task_fail_kernel
@@ -587,6 +620,19 @@ task_argv_pointer_high_load:
         sta task_command_load+2
         jmp task_measure_name_start
 task_measure_name_start:
+        lda task_command_load+1
+        sta task_disk_name_load+1
+        lda task_command_load+2
+        sta task_disk_name_load+2
+        ldy #$00
+task_disk_name_load:
+        lda $ffff,y
+        cmp #'/'
+        bne task_bootfs_name
+        lda task_load_mode
+        bne task_bootfs_name         ; only ordinary foreground disk programs
+        jmp task_disk_open
+task_bootfs_name:
         ldy #$00
 task_measure_name:
 task_command_load:
@@ -606,6 +652,15 @@ task_name_measured:
 task_validate_bootfs:
         lda #$00
         sta MMU_LCR_WORKER_FLAT
+        jmp task_lookup_bootfs
+
+        ; Pure lookup/validation runs in bank 1. The same link resolves the
+        ; private common continuation addresses; no new public ABI gate.
+        .segment "TASKLOOKUP"
+task_lookup_bootfs:
+        jmp task_lookup_code
+        .byte "ULKP", 0, 1
+task_lookup_code:
         lda BOOTFS_BASE+0
         cmp #'U'
         bne task_bootfs_reject_early
@@ -795,15 +850,18 @@ task_entry_copy_load:
         sta task_allocation_hi
         bcs task_file_reject
         cmp task_bootfs_end_hi
-        bcc task_file_bounds_ready
+        bcc task_file_bounds_jump
         bne task_file_reject
         lda task_allocation_lo
         cmp task_bootfs_end_lo
-        bcc task_file_bounds_ready
-        beq task_file_bounds_ready
+        bcc task_file_bounds_jump
+        beq task_file_bounds_jump
 task_file_reject:
         jmp task_bad_bootfs
+task_file_bounds_jump:
+        jmp task_file_bounds_ready
 
+        .segment "TASKLOADER"
 task_file_bounds_ready:
         lda task_file_lo
         sta task_header_load+1
@@ -828,7 +886,10 @@ task_header_load:
         sta TASK_HEADER,x
         dex
         bpl task_header_loop
+        jmp task_validate_header
 
+        .segment "TASKLOOKUP"
+task_validate_header:
         lda TASK_HEADER+0
         cmp #'U'
         beq :+
@@ -957,15 +1018,18 @@ task_check_entry:
 :
         lda task_entry_offset_hi
         cmp TASK_IMAGE_HI
-        bcc task_valid
+        bcc task_valid_jump
         beq :+
         jmp task_bad_entry
 :
         lda task_entry_offset_lo
         cmp TASK_IMAGE_LO
-        bcc task_valid
+        bcc task_valid_jump
         jmp task_bad_entry
+task_valid_jump:
+        jmp task_valid
 
+        .segment "TASKLOADER"
 task_valid:
         lda task_load_mode
         beq task_save_foreground
@@ -1145,9 +1209,14 @@ task_save_zp:
         sta USER_CC65_SP+1
         lda #$02
         sta TASK_STATE
+        lda TASK_HEADER+14
+        sta task_call_entry+1
+        lda TASK_HEADER+15
+        sta task_call_entry+2
         lda TASK_ARGC
         ldx TASK_ARGV_LO
         ldy TASK_ARGV_HI
+task_call_entry:
         jsr TASK_SLOT
         sta TASK_EXIT
         ldx #$1d
@@ -1228,6 +1297,170 @@ task_fail_kernel:
         lda #$01
         ldx #$00
         rts
+
+; Synchronous disk preparation through the existing mount/read/close service.
+; The request belongs to no running user task during compatibility EXEC;
+; nevertheless restore all 38 bytes (including sequence) before returning.
+; Bank-1 APP1 plus its first 16 stack bytes are private staging ONLY while
+; task 2 is FREE. Live bank-0 APP1 is untouched until UDEX and EOF validate.
+DISK_REQUEST = $f359
+DISK_PAYLOAD = DISK_REQUEST+14
+task_disk_open:
+        ldx #37
+task_disk_save_request:
+        lda DISK_REQUEST,x
+        sta task_disk_saved_request,x
+        lda #0
+        sta DISK_REQUEST,x
+        dex
+        bpl task_disk_save_request
+        ldx #5
+task_disk_request_header:
+        lda task_disk_signature,x
+        sta DISK_REQUEST,x
+        dex
+        bpl task_disk_request_header
+        ldy #0
+task_disk_path:
+        ; Read argv text only while bank 0 is mapped.
+        jsr task_disk_get_char
+        sta DISK_PAYLOAD,y
+        beq task_disk_path_end
+        iny
+        cpy #22
+        bcc task_disk_path
+task_disk_bad_path:
+        lda #TASK_NOT_FOUND
+        jmp task_disk_done
+task_disk_path_end:
+        sty DISK_REQUEST+10
+        cpy #6
+        bcc task_disk_bad_path
+        ldx #4
+task_disk_prefix:
+        lda DISK_PAYLOAD,x
+        cmp task_disk_mount,x
+        bne task_disk_bad_path
+        dex
+        bpl task_disk_prefix
+        lda #6                      ; OPEN
+        jsr task_disk_request
+        lda DISK_REQUEST+12
+        beq task_disk_opened
+        cmp #2                      ; ENOENT
+        bne task_disk_io_unopened
+        lda #TASK_NOT_FOUND
+        jmp task_disk_done
+task_disk_io_unopened:
+        lda #TASK_IO_ERROR
+        jmp task_disk_done
+task_disk_opened:
+        lda #4
+        sta DISK_REQUEST+9
+        lda #0
+        sta task_file_size_lo
+        sta task_file_size_hi
+        sta task_disk_store+1
+        lda #2
+        sta task_disk_store+2
+task_disk_read:
+        lda #24
+        sta DISK_REQUEST+10
+        lda #1                      ; READ
+        jsr task_disk_request
+        lda DISK_REQUEST+12
+        bne task_disk_io
+        ldx DISK_REQUEST+11
+        beq task_disk_eof
+        lda #0
+        sta MMU_LCR_WORKER_FLAT
+        ldy #0
+task_disk_byte:
+        lda task_disk_store+2
+        cmp #$0c
+        bne task_disk_room
+        lda task_disk_store+1
+        cmp #$10
+        beq task_disk_overflow
+task_disk_room:
+        lda DISK_PAYLOAD,y
+task_disk_store:
+        sta $0200
+        inc task_disk_store+1
+        bne :+
+        inc task_disk_store+2
+:
+        inc task_file_size_lo
+        bne :+
+        inc task_file_size_hi
+:
+        iny
+        dex
+        bne task_disk_byte
+        lda #0
+        sta MMU_LCR_KERNEL_IO
+        jmp task_disk_read
+task_disk_overflow:
+        lda #TASK_BAD_SIZE
+        bne task_disk_close
+task_disk_io:
+        lda #TASK_IO_ERROR
+        bne task_disk_close
+task_disk_eof:
+        lda #0
+task_disk_close:
+        pha
+        lda #0
+        sta MMU_LCR_KERNEL_IO
+        sta DISK_REQUEST+10
+        lda #9                      ; CLOSE, even on overflow/read failure
+        jsr task_disk_request
+        pla
+        bne task_disk_done
+        lda DISK_REQUEST+12
+        beq task_disk_done
+        lda #TASK_IO_ERROR
+task_disk_done:
+        pha
+        ldx #37
+task_disk_restore_request:
+        lda task_disk_saved_request,x
+        sta DISK_REQUEST,x
+        dex
+        bpl task_disk_restore_request
+        pla
+        beq task_disk_downloaded
+        jmp task_fail_kernel
+task_disk_downloaded:
+        lda task_file_size_hi
+        bne :+
+        lda task_file_size_lo
+        cmp #16
+        bcs :+
+        jmp task_bad_size
+:
+        lda #0
+        sta task_file_lo
+        sta MMU_LCR_WORKER_FLAT
+        lda #2
+        sta task_file_hi
+        jmp task_file_bounds_ready
+task_disk_get_char:
+        lda task_command_load+1
+        sta task_disk_char+1
+        lda task_command_load+2
+        sta task_disk_char+2
+task_disk_char:
+        lda $ffff,y
+        rts
+task_disk_request:
+        sta DISK_REQUEST+7
+        lda #1
+        sta DISK_REQUEST+6
+        jmp $c880
+task_disk_signature: .byte "UTRQ", 0, 5
+task_disk_mount: .byte "/mnt/"
+task_disk_saved_request: .res 38, 0
 
 task_transfer_byte:     .byte $00
 task_remaining_lo:      .byte $00

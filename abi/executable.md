@@ -65,5 +65,12 @@ cannot be combined.
 
 `tools/build_udex.py` is the canonical host-side packer. It performs all
 format-level bounds checks without assuming a filesystem. The early
-[bootfs](bootfs.md) and future storage-backed filesystem consume the same byte
+[bootfs](bootfs.md) and mounted read-only IEC filesystem consume the same byte
 stream.
+
+The Storage 0.2 foreground loader accepts explicit `/mnt/NAME` for ordinary
+8502 UDEX images only (flags zero, load `$0200`, image+BSS <= `$0A00`). The
+DOS file is the exact UDEX byte stream, without a Commodore PRG load prefix.
+It stages into a FREE bank-1 task-2 allocation and checks exact file length,
+entry and allocation before replacing live bank-0 APP1. Persistent, managed
+and SPAWN loads remain bootfs-only. See [implementation and limits](../docs/STORAGE-0.2.md).

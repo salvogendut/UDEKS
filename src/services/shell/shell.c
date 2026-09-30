@@ -439,6 +439,7 @@ unsigned char udeks_shell_dispatch_line(void)
     unsigned char result;
     volatile unsigned char *task;
     udeks_task_loader_entry loader;
+    unsigned int loaded;
 
     count = udeks_shell_tokenize(
         command_line, argument_offsets, UDEKS_SHELL_MAX_ARGUMENTS);
@@ -474,22 +475,24 @@ unsigned char udeks_shell_dispatch_line(void)
     }
     loader = (udeks_task_loader_entry)UDEKS_TASK_LOADER_ENTRY;
     task = (volatile unsigned char *)UDEKS_TASK_STATUS_BASE;
-    result = loader(count, arguments);
-    if ((task[UDEKS_TASK_STATE_OFFSET] & UDEKS_TASK_STATE_ERROR) == 0) {
+    loaded = loader(count, arguments);
+    result = loaded == UDEKS_TASK_SLOT_OWNED ?
+        UDEKS_TASK_BUSY : task[UDEKS_TASK_ERROR_OFFSET];
+    if (result == UDEKS_TASK_OK) {
         STATUS_BYTE(9) = 0xFEu;
         STATUS_BYTE(10) = task[UDEKS_TASK_EXIT_OFFSET];
         increment_counter(STATUS_COMMANDS_LO);
         return UDEKS_SHELL_OK;
     }
     STATUS_BYTE(9) = 0xFFu;
-    if (task[UDEKS_TASK_ERROR_OFFSET] == UDEKS_TASK_NOT_FOUND) {
+    if (result == UDEKS_TASK_NOT_FOUND) {
         increment_counter(STATUS_UNKNOWN_LO);
         write_text(UDEKS_STDERR, (const unsigned char *)"Unknown command: ");
         write_line(UDEKS_STDERR, arguments[0]);
     } else {
         write_text(UDEKS_STDERR, arguments[0]);
         write_line(UDEKS_STDERR,
-            task[UDEKS_TASK_ERROR_OFFSET] == UDEKS_TASK_BUSY ?
+            result == UDEKS_TASK_BUSY ?
                 (const unsigned char *)": task slot busy" :
                 (const unsigned char *)": loader error");
     }

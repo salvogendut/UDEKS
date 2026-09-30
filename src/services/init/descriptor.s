@@ -32,6 +32,9 @@ init_shell_fallback:
         ; Preserve the frozen resident/VIC-shadow boundary while replacing
         ; the former reset+first-poll calls with the scheduler bootstrap gate.
         .res $03, $ea
+        ; Storage 0.2's explicit loader-result handling saves nine resident
+        ; CODE bytes. Preserve the qualified shadow and delivery addresses.
+        .res 9, $ea
 
 init_poll:
         jsr $c903                       ; wake SLEEP/input event requests

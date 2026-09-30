@@ -176,6 +176,7 @@ def main() -> None:
                         help="prepend the linked cache and relocate temporary scheduler sources")
     parser.add_argument("--storage", type=Path, help="directory containing the linked IEC service")
     parser.add_argument("--ush", type=Path, help="ush image for storage placement validation")
+    parser.add_argument("--task-lookup", type=Path, help="linked bank-1 loader extension")
     args = parser.parse_args()
     try:
         payload, constants = build_overlay(
@@ -192,13 +193,14 @@ def main() -> None:
             from build_window_cache import wrap_scheduler
             payload, constants = wrap_scheduler(payload, constants, args.window_cache.read_bytes())
         if args.storage is not None:
-            if args.ush is None:
-                raise ValueError('storage requires the ush image for overlap validation')
+            if args.ush is None or args.task_lookup is None:
+                raise ValueError('storage requires ush and the linked task lookup image')
             from build_storage import wrap_storage
             payload, constants = wrap_storage(payload, constants,
                 (args.storage / 'module.bin').read_bytes(),
                 (args.storage / 'policy.bin').read_bytes(),
-                (args.storage / 'driver.bin').read_bytes(), args.ush.read_bytes())
+                (args.storage / 'driver.bin').read_bytes(), args.ush.read_bytes(),
+                args.task_lookup.read_bytes())
     except ValueError as error:
         raise SystemExit(f"cannot build scheduler overlay: {error}") from error
     args.output.parent.mkdir(parents=True, exist_ok=True)
