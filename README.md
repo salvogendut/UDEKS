@@ -100,7 +100,8 @@ See [LICENSE](LICENSE).
   [storage tests and limits](docs/STORAGE-0.1.md#interactive-file-checkpoint--2026-09-30).
 - Storage 0.2 adds explicit-path foreground execution: `/mnt/DISKCOW hello`
   loads an ordinary UDEX from disk, with bounds/header/EOF validation and
-  bootfs fallback retained. VICE D64/D71 and native 1986 tests pass.
+  bootfs fallback retained. VICE D64/D71 and native 1986 tests pass; the user
+  also confirmed successful manual tests in 1986 and on a real C128 + PI1541.
   [Try the disk-execution image](docs/STORAGE-0.2.md#try-it).
 
 ## Hardware model

@@ -5,7 +5,7 @@ Exact user-test images are in `bench/artifacts/2026-09-30-storage-0.2`.
 DISKCOW entry. A fresh source-only parallel build reproduced both normal boot
 images and both test disks byte-for-byte. Compiler: my-distrobox cc65 V2.18
 (Fedora package 2.19-15.fc44); VICE x128 3.10; 1986 revision is in `1986.json`.
-No physical-hardware result is claimed.
+Subsequent manual hardware acceptance is recorded below.
 
 - `vice-1541.json`, `vice-1571.json`: cold boot, real shell keyboard queue,
   43 commands each. Repeated disk execution/argv, nonzero entry and BSS,
@@ -31,3 +31,16 @@ profile and could overwrite pending events when that profile was bank 1.
 The runner now reads queue state explicitly under the kernel profile. The
 preserved D64 result is the passing rerun. D71 passed before that harness-only
 correction. The exact runtime disks are identical across these harness versions.
+
+## User acceptance
+
+Following checkpoint `f0a9065`, the user reported: "all these tests passed under
+1986". This refers to the suggested mount, repeated DISKCOW execution,
+xinit/xclock coexistence and subsequent typing/dragging checks. Record this as
+positive manual emulator acceptance; no additional file-format/hash confirmation,
+manual malformed-image coverage or physical-hardware qualification was supplied.
+
+The user subsequently reported: "tests run beautifully on real C128 and
+PI1541, you ca continue". This closes the requested physical-machine manual
+gate for the suggested test sequence. No new format/hash/model confirmation
+or exhaustive device/error-path log was supplied; do not broaden the claim.

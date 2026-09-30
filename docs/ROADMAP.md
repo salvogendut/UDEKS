@@ -58,7 +58,7 @@ mounts or applications must not require rebuilding the kernel.
 | Kernel and tasking | Cooperative two-task path works; general scheduling, IPC, and preemption due. |
 | Z80 secondary engine | Mailbox and xwave computation work; reusable operations and soak tests due. |
 | Graphics and input | Working shell/windows/apps; repaint latency and focused-window input remain open. |
-| Storage and applications | Read-only IEC merged; foreground disk execution ready for testing on #18. Disk-loaded shell/startup is next. |
+| Storage and applications | Read-only IEC merged; foreground disk execution accepted in 1986 and on C128 + PI1541. Disk-loaded shell/startup is next. |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
@@ -100,12 +100,16 @@ boot, or the Z80 worker. The implementation sequence and current gate are in
 
 **Started:** issue [#18](https://github.com/salvogendut/UDEKS/issues/18), branch
 `storage-0.2-disk-exec`, now based on merged Storage 0.1.
-**Ready for user testing:** `/mnt/DISKCOW hello` executes from mounted media,
+**Manual 1986 check passed:** the user confirms all suggested tests following
+checkpoint `f0a9065`. `/mnt/DISKCOW hello` executes from mounted media,
 preserves arguments/exit, and can be run repeatedly. VICE D64/D71 and native
 1986 checks pass; malformed images and I/O failures return to the shell.
 The preserved Storage 0.1 hardware candidate is unchanged.
-**Next:** user acceptance of disk execution, then disk-loaded shell/startup
-policy. Do not divert this milestone into loader or graphics optimization.
+The user subsequently confirmed the tests passed on a real C128 with PI1541
+and authorized continuation, completing this slice's manual acceptance gate.
+**Next:** merge the foreground disk-execution slice and move to disk-loaded
+shell/startup policy. This is not exhaustive model/device/failure-path qualification.
+Do not divert this milestone into loader or graphics optimization.
 See [Storage 0.2](STORAGE-0.2.md) for the short implementation/acceptance plan.
 
 Use the same mount and stream contract to resolve and load a fixed-address

@@ -6,9 +6,12 @@ Storage 0.1, merged by explicit user authorization as PR #17 (`92a2e36`).
 Physical C128/PI1541 results for Storage 0.1 have not been recorded; merging
 does not imply that qualification. Its preserved hardware images are unchanged.
 
-**Current checkpoint:** ordinary foreground disk execution is implemented.
-The next user test is the cold-boot sequence below. Disk-loaded shell/startup
-scripts, disk SPAWN, managed apps and PATH search remain follow-through work.
+**Current checkpoint:** ordinary foreground disk execution is implemented and
+the user reports that all suggested tests passed under 1986 following checkpoint
+`f0a9065`, then confirmed they ran beautifully on a real C128 with PI1541 and
+authorized continuation. This closes the requested manual hardware gate for
+this slice, not exhaustive device/model/error-path qualification. Disk-loaded shell/startup scripts,
+disk SPAWN, managed apps and PATH search remain follow-through work.
 
 ## First acceptance slice
 
@@ -35,8 +38,10 @@ task occupying the proposed staging/destination slot.
    all header rejection classes, truncation/trailing data, size limits,
    nonzero entry/BSS, missing/unmounted/removed media, recovery, bootfs and
    xclock/xwave coexistence. Native 1986 raw-IEC keyboard tests cover execution,
-   arguments, entry/BSS/limit, failures, recovery and bootfs. User testing is
-   next; no physical qualification of this disk-execution build is claimed.
+   arguments, entry/BSS/limit, failures, recovery and bootfs. The user has also
+   confirmed the suggested manual 1986 sequence and successful real C128 +
+   PI1541 testing. No additional format/hash/model or exhaustive failure-path
+   report was supplied; retain that scope when citing hardware acceptance.
 
 ## Placement and ownership
 

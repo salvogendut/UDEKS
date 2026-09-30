@@ -14,8 +14,13 @@ The active development worktree is now `build/storage-disk-exec`, branch
 `/mnt/DISKCOW hello` now runs from disk, with failure/ownership checks and
 bootfs retained. Build the user-test disks with `make disk-exec-image`.
 See [Storage 0.2](docs/STORAGE-0.2.md) for placement, test coverage and limits.
-Next is user acceptance, then the disk-loaded shell/startup-script slice;
-do not branch into optimization. The older hardware candidate is unchanged.
+The user now reports all suggested tests passed under 1986 after checkpoint
+`f0a9065`, followed by successful testing on real C128 + PI1541 and permission
+to continue. The requested manual hardware gate is complete; do not ask for
+the same acceptance again or infer exhaustive device/error-path coverage.
+Next: merge this slice, then disk-loaded shell/startup scripts; do not branch
+into optimization.
+The older hardware candidate is unchanged.
 
 The unchanged hardware candidate remains in `build/storage-iec-read-only`, branch
 `storage-0.1-iec-read-only`, issue #15. Storage 0.2 is now the priority in
