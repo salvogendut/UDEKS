@@ -35,7 +35,8 @@ make check      # host-side unit and utility checks; no target compiler needed
 make 8502       # build build/8502/udeks-8502.bin and .prg
 make z80        # build build/z80/udeks-z80.bin through SDCC
 make z80-asm    # build the independent RASM smoke image
-make boot       # build build/boot/udeks.d71 for native C128 autoboot
+make boot       # build build/boot/udeks.d64 and .d71 for native C128 boot
+make publish-boot  # explicitly refresh checked-in build/udeks.d64/.d71 + SHA256SUMS
 make panic-probe  # build a non-release D71 that injects descriptor failure
 make placement-check  # verify the real linker-map placement budget (reference container)
 make task-poll-policy  # cc65 compile-only event-wait reference policy; not linked
@@ -75,10 +76,36 @@ first task slot, supplies a private C stack and cc65 zero page, runs the
 program, and restores the slot on exit. Runtime qualification in both
 emulators and on hardware remains required before this milestone is closed.
 
+### Publishing disk images
+
+The repository's downloadable snapshots are `build/udeks.d64` and
+`build/udeks.d71`, with provenance in [build/README.md](../build/README.md).
+They are deliberately separate from fresh outputs under `build/boot/` so
+an experiment or fault-injection build does not silently replace a published
+image. Only the two snapshots, their README and SHA256SUMS are tracked;
+all other build contents and nested worktrees remain ignored.
+
+After building and qualifying the normal images in my-distrobox:
+
+```sh
+make publish-boot
+cd build
+sha256sum -c SHA256SUMS
+```
+
+Update image provenance and link the qualification evidence, then commit the
+two disks and checksum file together. `publish-boot` copies the normal build
+and generates checksums; it is not itself a hardware/emulator qualification.
+Do not publish a `WINDOW_CACHE=0` or other experimental configuration as the
+accepted baseline without its own validation. `make clean` removes named
+compiler-output directories only; it preserves these published files and
+unrelated worktrees/test-run directories. Use an isolated source copy when
+you need a completely fresh build without touching ongoing work.
+
 ### Root namespace candidate (#26)
 
-Build in `build/root-filesystem` on `storage-root-namespace`, not an old main
-build. Device 8 backs `/`; `/mnt` starts free. `/etc/rc` is `RC.ETC` on disk.
+The root namespace is merged in main as PR #28. Build from current main, not
+an older worktree. Device 8 backs `/`; `/mnt` starts free. `/etc/rc` is `RC.ETC` on disk.
 Policy uses bank-1 `$B000-$CFFF`; bootfs is bounded to `$A000-$AFFF`. See
 [filesystem contract](../abi/filesystem.md) for limits and the current test image.
 Run these VICE checks from the host after the container build:
