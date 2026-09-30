@@ -8,8 +8,10 @@
 
 /* Native boot and resident-image addresses. */
 #define UDEKS_BOOT_SECTOR_BASE        0x0B00u
-#define UDEKS_RECLAIMED_STATE_BASE    0x0C00u
-#define UDEKS_RECLAIMED_STATE_LIMIT   0x1200u
+#define UDEKS_RECLAIMED_STATE_BASE    0x9B00u
+#define UDEKS_RECLAIMED_STATE_LIMIT   0xA100u
+/* Managed xcalc only, bank 0; native bank-1 APP1 bounds remain unchanged. */
+#define UDEKS_XCALC_LIMIT             0x1200u
 #define UDEKS_APP1_BASE               0x0200u
 #define UDEKS_APP1_LIMIT              0x0C00u
 #define UDEKS_APP2_BASE               0x1200u

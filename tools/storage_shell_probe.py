@@ -19,6 +19,14 @@ from vice_capture import choose_port, monitor_command, parse_monitor_byte
 
 ROOT = Path(__file__).resolve().parents[1]
 
+def console_address():
+    """Resolve the current console backing store, not its old $0C00 address."""
+    text = (ROOT/'build/8502/udeks-8502.map').read_text()
+    module = re.search(r'^root_console\.o:\n((?:[ \t].*\n)+)', text, re.M)
+    if module is None or not re.search(r'LOWBSS\s+Offs=000000\s+Size=000597',module[1]):
+        raise ValueError('console buffer layout changed')
+    return segment_bounds(text, 'LOWBSS')[0]
+
 
 def byte(port, address):
     return parse_monitor_byte(monitor_command(port, f'm {address:04x} {address:04x}'), address)
@@ -107,11 +115,11 @@ def main():
                     (work/'failure-tasks.bin', 0xc7d9, 0xceff, 'kernel'),
                     (work/'failure-status.bin', 0xf000, 0xf3ff, 'kernel'),
                     (work/'failure-storage.bin', 0xe000, 0xe1ff, 'worker'),
-                    (work/'failure-console.bin', 0xc00, 0x1157, 'kernel')])
+                    (work/'failure-console.bin', console_address(), console_address()+0x557, 'kernel')])
                 print('task slots', states[0][:64].hex(), 'request', states[1][0x359:0x37f].hex(), flush=True)
                 raise
             # Source/map-locked root-console cells: 21 rows, 65-byte stride.
-            cells = sp.capture_blocks(port, [(work/'console.bin', 0x0C00, 0x1157, 'kernel')])[0]
+            cells = sp.capture_blocks(port, [(work/'console.bin', console_address(), console_address()+0x557, 'kernel')])[0]
             console = '\n'.join(cells[i:i+64].decode('ascii', errors='replace').rstrip()
                                 for i in range(0, 21*65, 65))
             if cells[-1] != 1:

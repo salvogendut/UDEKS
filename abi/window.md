@@ -1,4 +1,4 @@
-# VIC-IIe window manager 0.3
+# VIC-IIe window manager / UAPP 0.4
 
 The first UDEKS graphical window manager owns VIC-IIe bitmap-window policy.
 Applications register bounded descriptors and repaint callbacks; they do not
@@ -56,6 +56,23 @@ The window manager is service class `9`, instance `0`, with its own start,
 poll, and stop lifecycle. The VIC-IIe display service does not call its poll
 routine or know about window clients.
 
+## Client clicks and fixed-size windows (UAPP 0.4)
+
+The manager routes each primary-button press edge to the topmost hit window.
+Title dragging, close and resize gestures do not generate client clicks.
+`udeks_window_take_click(handle)` consumes the pending event only for its
+focused owner; wrong handles cannot consume it. Coordinates are relative to
+the window origin, including the title height. A held button does not repeat.
+The one-event mailbox retains a click until consumed or superseded by a new
+press; destroy/reset invalidates it, including before handle reuse. Copy the
+borrowed record before returning to the service loop. This is intentionally
+a bounded click API, not a general event queue or focused keyboard routing.
+
+`UDEKS_WINDOW_FLAG_FIXED_SIZE` (0x10) suppresses the resize grip and gestures.
+Old clients without this flag retain their existing resizable behavior.
+xcalc uses it for its initial 104x133 layout; dragging and close remain active.
+The VDC console retains keyboard input, including foreground Ctrl+C.
+
 ## Explicit image completion (UAPP 0.3)
 
 `udeks_window_image_complete(handle)` returns `OK` only for a live, visible,
@@ -66,14 +83,13 @@ does not imply completion of an incremental renderer.
 
 A successful `begin_paint` and any intersecting compositor repaint withdraw
 completion before changing pixels. Creation masks application flags to the
-four defined public bits so clients cannot forge the private completion bit;
+four stored public bits (plus the fixed-size option) so clients cannot forge the private completion bit;
 handle reuse, reset and closure discard the old descriptor. Newly raised,
 previously obscured windows pass through damage repaint before eligibility.
 
-This increment publishes the completion seam only. It does **not** enable
-capture, cached dragging, or expose the application's private render state.
-The bank-1 cache module and bounded continuations are still qualification
-work. Existing moved-window redraw remains the fallback.
+The original increment published the completion seam only. Normal builds now
+enable the bank-1 retained cache; application private state is not exposed.
+Existing moved-window redraw remains the fallback.
 
 ## Diagnostic record
 

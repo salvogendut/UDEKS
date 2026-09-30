@@ -1,0 +1,32 @@
+UDEKS xcalc candidate, 2026-09-30
+
+Branch app-xcalc, based on main debf430. Evidence captured before the feature
+commit; the adjacent artifact manifest pins the exact tested disk images,
+calculator executable and resident/standalone maps.
+
+VICE flatpak x128: tools/xcalc_probe.py with true-drive D64/1541 and D71/1571.
+Clicks are injected into the window-manager event queue, not emulated mouse
+events. Checks include three decimal calculations, console commands between
+clicks, explicit service-control completion/reply, both slot-busy directions,
+xwave coexistence, cowsay, stop/reload and displayed bitmap equality.
+
+The .bin captures retain VICE's two-byte little-endian load-address prefix:
+shadow.bin starts E0 A1, bitmap.bin starts 00 60. Their 8,000-byte payloads
+are identical; the file hashes are therefore intentionally different.
+bitmap.png renders that captured bitmap, excluding the hardware sprite.
+
+1986: tools/1986_storage_smoke_build.py --xcalc, built inside my-distrobox
+against unmodified sibling revision 81485cc7bc88b2113b210a4573529322dceac0c2.
+Native host key events and 1351 mouse APIs exercise arithmetic, drag, console,
+slot conflicts, wave coexistence, restart and Ctrl+C. The harness adds EMPTY
+and ONE files: both the original and altered test disk hashes are recorded.
+No writes to the emulator source were needed.
+
+Root namespace: tools/root_namespace_probe.py regression passed against the
+candidate D64, including independent device 9, disk commands and graphics.
+
+Container make boot placement-check passes. A fresh parallel build in an
+isolated source copy reproduced both disk hashes in the artifact manifest.
+make check passes; tests/test_xcalc_evidence.py verifies these preserved bytes.
+All probe-owned emulator processes were terminated. Physical C128 testing
+of this calculator candidate is pending; published main images are unchanged.

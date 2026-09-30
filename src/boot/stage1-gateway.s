@@ -967,6 +967,8 @@ task_disk_leaf_start:
 ; Managed callers use fixed names and retain fixed bank-0 slots. The disk
 ; header is not permitted to choose the other application's destination.
 task_managed_name:
+        lda #$0a
+        sta task_managed_limit
         lda task_name_length
         cmp #6
         beq task_managed_clock
@@ -976,10 +978,22 @@ task_managed_name:
 :
         lda TASK_HEADER,x
         cmp task_managed_wave_name,x
-        bne task_managed_unknown
+        bne task_managed_calc
         dex
         bpl :-
         lda #$12
+        bne task_managed_named
+task_managed_calc:
+        ldx #4
+:
+        lda TASK_HEADER,x
+        cmp task_managed_calc_name,x
+        bne task_managed_unknown
+        dex
+        bpl :-
+        lda #$10
+        sta task_managed_limit
+        lda #$02
         bne task_managed_named
 task_managed_clock:
         ldx #5
@@ -997,6 +1011,8 @@ task_managed_unknown:
         jmp task_not_found
 task_managed_clock_name: .byte "xclock"
 task_managed_wave_name:  .byte "xwave"
+task_managed_calc_name:  .byte "xcalc"
+task_managed_limit:      .byte 0
 task_managed_base:       .byte 0
 
         .segment "TASKLOADER"
@@ -1135,6 +1151,10 @@ task_file_size_valid:
 :
         ldx #$0a
         lda task_load_mode
+        cmp #2
+        bne :+
+        ldx task_managed_limit
+:
         cmp #1
         bne :+
         ldx #$10                    ; persistent ush ends before bootfs
@@ -1591,6 +1611,12 @@ task_disk_byte:
         lda task_load_mode
         cmp #1
         beq task_disk_persistent_room
+        cmp #2
+        bne :+
+        lda task_managed_limit
+        cmp #$10
+        beq task_disk_persistent_room
+:
         lda task_disk_store+2
         cmp #$0c
         bne task_disk_room

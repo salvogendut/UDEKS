@@ -1,5 +1,9 @@
 # Disk-loaded graphical applications
 
+The initial extraction checkpoint below is historical. For current namespace
+and calculator usage see [Calculator addition](#calculator-addition-branch-app-xcalc)
+and [the roadmap](ROADMAP.md).
+
 Issue [#22](https://github.com/salvogendut/UDEKS/issues/22), branch
 `storage-disk-graphics`, follows merged PR #21. Normal D64/D71 images contain
 closed SEQ `XCLOCK` and `XWAVE` files: raw UDEX bytes without a PRG prefix.
@@ -95,3 +99,34 @@ Exact candidate images and records are preserved under
 in 1986 and/or on hardware is unrecorded. The user subsequently authorized
 review/merge and continuation with utility and command-layer extraction;
 that authorization is not a physical test result.
+
+## Calculator addition (branch app-xcalc)
+
+`xcalc &` loads `/bin/xcalc` from `XCALC.BIN`; no manual mount is needed.
+Use its mouse buttons for +, -, multiplication, division, decimal entry,
+sign change (+ over -), equals, and C (clear). Two fractional digits are
+retained; extra fractional input is ignored and results truncate toward zero.
+The supported range is -200000.00 through 200000.00, with a bounded signed
+32-bit multiplication intermediate. E1 means division by zero; E2 means
+overflow. C clears an error; entering a digit also starts a fresh calculation.
+Operations chain left-to-right, not with expression precedence.
+
+The first version is fixed-size, movable and closable, with black-on-yellow
+graphics. `xcalc -q` stops it; `xcalc` without & is foreground and Ctrl+C at
+the VDC console closes it. Keyboard calculator entry, percent, square root
+and scientific functions are later work. No Z80 is needed for this workload.
+
+The calculator occupies the enlarged bank-0 slot 1 and is mutually exclusive
+with xclock: stop/close one before starting the other. A live peer produces
+`slot busy`, without overwriting its code. xwave can coexist in slot 2.
+Arithmetic and UI are entirely in the disk image; the resident change is
+bounded click delivery and lifecycle/ownership routing. See
+[UDEX placement](../abi/executable.md). No general allocator is implied.
+
+Acceptance tools: `tools/1986_storage_smoke_build.py --xcalc` tests actual
+keyboard/1351 input against the unmodified sibling emulator;
+`tools/xcalc_probe.py` tests VICE true-drive D64/D71 boot, loading, arithmetic
+through an injected WM click queue, slot exclusion, console operation and
+shadow/bitmap equality. The latter does not claim native VICE mouse coverage.
+Fresh candidate images are `build/boot/udeks.d64` and `build/boot/udeks.d71`;
+the published `build/udeks.*` snapshots stay at the accepted main release.

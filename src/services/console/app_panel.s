@@ -10,6 +10,7 @@
         .import _udeks_vdc_block_address
         .import _udeks_vdc_block_length
         .import _udeks_vdc_text_assets
+        .import _udeks_xcalc_is_running
 
 CONSOLE_STATUS  = $f070
 VIC_STATUS      = $f1b0
@@ -35,6 +36,7 @@ panel_none:      .byte 14,15,14,5,0
 panel_xinit:     .byte 24,9,14,9,20,0
 panel_xclock:    .byte 24,3,12,15,3,11,0
 panel_xwave:     .byte 24,23,1,22,5,0
+panel_xcalc:     .byte 24,3,1,12,3,0
 
         .segment "MODULECODE"
 _udeks_console_app_panel_initialize:
@@ -43,6 +45,11 @@ _udeks_console_app_panel_initialize:
         jmp _udeks_console_poll
 
 _udeks_console_poll:
+        jsr _udeks_xcalc_is_running
+        asl a
+        asl a
+        asl a
+        sta panel_mask
         lda #$00
         ldx VIC_STATUS+5
         cpx #$03
@@ -59,6 +66,7 @@ _udeks_console_poll:
         bne :+
         ora #$04
 :
+        ora panel_mask
         cmp APP_MASK
         bne panel_changed
         lda #$00
@@ -66,7 +74,9 @@ _udeks_console_poll:
 panel_changed:
         sta panel_mask
         jsr panel_draw_edges
-        bne panel_error
+        beq :+
+        jmp panel_error
+:
         lda #<panel_title
         ldx #>panel_title
         ldy #$01
@@ -96,6 +106,14 @@ panel_changed:
         beq :+
         lda #<panel_xwave
         ldx #>panel_xwave
+        jsr panel_draw_app
+        bne panel_error
+:
+        lda panel_mask
+        and #$08
+        beq :+
+        lda #<panel_xcalc
+        ldx #>panel_xcalc
         jsr panel_draw_app
         bne panel_error
 :

@@ -64,6 +64,13 @@ of the VDC console. Mouse: port 1 (1351); joystick: port 2. Use `xclock -q`
 or `xwave -q` to stop a background app; `Ctrl+C` stops a foreground app.
 `xinit -q` shuts down the graphics display.
 
+On the calculator feature branch, freshly built images also support
+`xcalc &`: a mouse-operated decimal calculator. Stop xclock first
+(`xclock -q`); they share one application slot, while xwave can coexist.
+`xcalc -q` closes it. Console typing stays available. See
+[calculator scope and tests](docs/DISK-GRAPHICS.md#calculator-addition-branch-app-xcalc).
+The published download snapshots above remain the accepted main build.
+
 `/mnt` starts free. To use a separate data disk on device 9:
 
 ```text
@@ -101,7 +108,8 @@ this is not a claim that every model, peripheral or failure path is qualified.
 The target baseline is a stock 128 KiB C128 with 16 KiB VDC RAM; 64 KiB VDC,
 REU and GeoRAM are optional. PAL and NTSC remain targets.
 
-**Next:** extract the first non-kernel service into a disk-loaded program.
+**Current feature:** qualify the standalone calculator. **Next architectural
+milestone:** extract the first non-kernel service into a disk-loaded program.
 General scripting, filesystem writes, broader tasking and optimization are
 separate roadmap work. The existing `/etc/rc` command runner is not a POSIX
 `sh` or Bash implementation.

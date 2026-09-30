@@ -1,71 +1,93 @@
 ; SPDX-License-Identifier: GPL-3.0-or-later
-; Load-on-first-use dispatcher for the two graphical UDEX applications.
-
+; Fixed-slot managed images. Slot 1 is exclusively xclock OR xcalc.
         .setcpu "6502"
         .export _udeks_managed_apps_start, _udeks_managed_apps_poll
         .export _udeks_xclock_start, _udeks_xclock_stop
         .export _udeks_xclock_is_running, _udeks_xclock_is_focused
         .export _udeks_xwave_start, _udeks_xwave_stop
         .export _udeks_xwave_is_running, _udeks_xwave_is_focused
-
-MANAGED_LOADER  = $f916
-XCLOCK          = $0200
-XWAVE           = $1200
-TASK_ERROR      = $f286
-
+        .export _udeks_xcalc_start, _udeks_xcalc_stop, _udeks_xcalc_is_running
+MANAGED_LOADER=$f916
+XCLOCK=$0200
+XWAVE=$1200
+TASK_ERROR=$f286
         .segment "BSS"
-xclock_loaded:  .res 1
-xwave_loaded:   .res 1
-
+xclock_loaded: .res 1             ; 0 empty, 1 clock, 2 calculator
+xwave_loaded: .res 1
         .segment "MODULERODATA"
-xclock_name:    .asciiz "xclock"
-xwave_name:     .asciiz "xwave"
-
-        .segment "MODULECODE"
+xclock_name: .asciiz "xclock"
+xwave_name: .asciiz "xwave"
+        .segment "RODATA"
+xcalc_name: .asciiz "xcalc"
+        .segment "CODE"
 _udeks_managed_apps_start:
-        lda #$00
+        lda #0
         sta xclock_loaded
         sta xwave_loaded
         rts
-
 _udeks_managed_apps_poll:
         lda xclock_loaded
         beq :+
         jsr XCLOCK+6
-        cmp #$00
+        cmp #0
         bne app_error
 :
         lda xwave_loaded
         beq app_ok
         jsr XWAVE+6
-        cmp #$00
+        cmp #0
         bne app_error
-app_ok: lda #$00
+app_ok: lda #0
         rts
-app_error:
-        lda #$01
+app_error: lda #1
         rts
-
-        ; Start wrappers now include loader-error translation in ordinary
-        ; resident service CODE. Preserve the qualified high-module layout.
-        .res 54, $ea
-        .segment "CODE"
 _udeks_xclock_start:
         lda xclock_loaded
-        bne clock_loaded
+        cmp #1
+        beq slot1_start
+        jsr slot1_available
+        bne app_slot_busy
         lda #<xclock_name
         ldx #>xclock_name
         jsr MANAGED_LOADER
         bne app_load_error
+        lda #1
+        bne slot1_loaded
+_udeks_xcalc_start:
+        lda xclock_loaded
+        cmp #2
+        beq slot1_start
+        jsr slot1_available
+        bne app_slot_busy
+        lda #<xcalc_name
+        ldx #>xcalc_name
+        jsr MANAGED_LOADER
+        bne app_load_error
+        lda #2
+slot1_loaded:
+        pha
         jsr XCLOCK
-        cmp #$00
+        cmp #0
         beq :+
+        pla
+        lda #0
+        sta xclock_loaded
         jmp app_error
 :
-        inc xclock_loaded
-clock_loaded:
+        pla
+        sta xclock_loaded
+slot1_start:
         jmp XCLOCK+3
-
+slot1_available:
+        lda xclock_loaded
+        beq :+
+        jsr XCLOCK+12
+        cmp #0
+        bne :+
+        ; Retire poll callbacks before replacing a stopped image.
+        sta xclock_loaded
+:
+        rts
 _udeks_xwave_start:
         lda xwave_loaded
         bne wave_loaded
@@ -74,55 +96,52 @@ _udeks_xwave_start:
         jsr MANAGED_LOADER
         bne app_load_error
         jsr XWAVE
-        cmp #$00
-        beq :+
-        jmp app_error
-:
+        cmp #0
+        bne app_error
         inc xwave_loaded
 wave_loaded:
         jmp XWAVE+3
-
-; Only the loader-failure branch reads TASK_ERROR. A busy native child returns
-; A=3 WITHOUT publishing a launcher record; never read its stale TASK_ERROR.
-; Completion codes match include/udeks/service_control.h.
-        .segment "CODE"
 app_load_error:
-        cmp #$03
+        cmp #3
         beq app_slot_busy
         lda TASK_ERROR
         cmp #$0b
         beq app_not_found
         cmp #$0d
         beq app_disk_error
-        lda #$05                    ; invalid program / loader ABI
+        lda #5
         rts
-app_slot_busy:
-        lda #$04
+app_slot_busy: lda #4
         rts
-app_not_found:
-        lda #$03
+app_not_found: lda #3
         rts
-app_disk_error:
-        lda #$06
+app_disk_error: lda #6
         rts
-
-        .segment "MODULECODE"
-
 _udeks_xclock_stop:
         lda xclock_loaded
-        beq app_not_ready
+        cmp #1
+        bne app_not_ready
+        jmp XCLOCK+9
+_udeks_xcalc_stop:
+        lda xclock_loaded
+        cmp #2
+        bne app_not_ready
         jmp XCLOCK+9
 _udeks_xwave_stop:
         lda xwave_loaded
         beq app_not_ready
         jmp XWAVE+9
-app_not_ready:
-        lda #$01
+app_not_ready: lda #1
         rts
-
 _udeks_xclock_is_running:
         lda xclock_loaded
-        beq app_false
+        cmp #1
+        bne app_false
+        jmp XCLOCK+12
+_udeks_xcalc_is_running:
+        lda xclock_loaded
+        cmp #2
+        bne app_false
         jmp XCLOCK+12
 _udeks_xwave_is_running:
         lda xwave_loaded
@@ -130,12 +149,12 @@ _udeks_xwave_is_running:
         jmp XWAVE+12
 _udeks_xclock_is_focused:
         lda xclock_loaded
-        beq app_false
+        cmp #1
+        bne app_false
         jmp XCLOCK+15
 _udeks_xwave_is_focused:
         lda xwave_loaded
         beq app_false
         jmp XWAVE+15
-app_false:
-        lda #$00
+app_false: lda #0
         rts

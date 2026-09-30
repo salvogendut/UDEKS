@@ -14,7 +14,7 @@ SCHEDULER_SOURCE = 0x6000
 CAPACITY = 2224
 FROZEN_RANGES = {
     'ZEROPAGE': (0x0004, 0x001f), 'PROBECODE': (0x0b00, 0x0bd0),
-    'LOWBSS': (0x0c00, 0x11fc), 'STARTUP': (0x1c00, 0x1cce),
+    'LOWBSS': (0x9b00, 0xa0fc), 'STARTUP': (0x1c00, 0x1cce),
     'KERNELENTRY': (0x2000, 0x2005), 'CODE': (0x2006, 0x9330),
     'RODATA': (0x9331, 0x9f24), 'DATA': (0x9f25, 0x9f27),
     'BSS': (0x9f28, 0xa1df), 'VICSHADOW': (0xa1e0, 0xc11f),
@@ -31,7 +31,7 @@ def layout_maps(normal, panic):
     # Command extraction may shrink ordinary resident code/data, HIGHBSS and
     # the request implementation. Cache/staging/public gate addresses may not
     # move. Require normal/panic parity and prove each flexible reservation.
-    flexible = {'CODE', 'RODATA', 'DATA', 'BSS', 'HIGHBSS', 'TASKREQUEST'}
+    flexible = {'CODE', 'RODATA', 'DATA', 'BSS', 'HIGHBSS', 'TASKREQUEST', 'MODULECODE', 'MODULERODATA'}
     actual = map_segments(normal)
     for label, text in (('normal', normal), ('panic', panic)):
         current = map_segments(text)
@@ -42,13 +42,17 @@ def layout_maps(normal, panic):
         cursor = 0x2006
         for name in ('CODE', 'RODATA', 'DATA', 'BSS'):
             start, end, size = current[name]
-            if start != cursor or size <= 0 or end != start + size - 1 or end >= 0xa1e0:
+            if start != cursor or size <= 0 or end != start + size - 1 or end >= 0x9b00:
                 raise ValueError('resident command region exceeds reservation: ' + name)
             cursor = end + 1
         for name, start, limit in (('HIGHBSS', 0xe1b8, 0xe2e2), ('TASKREQUEST', 0xf800, 0xf909)):
             low, end, size = current[name]
             if low != start or size <= 0 or end != low + size - 1 or end >= limit:
                 raise ValueError('resident reservation changed: ' + name)
+        start, end, size = current['MODULECODE']
+        rstart, rend, rsize = current['MODULERODATA']
+        if start != 0xe300 or end+1 != rstart or rend >= 0xe644 or size != end-start+1 or rsize != rend-rstart+1:
+            raise ValueError('high module exceeds reservation')
     return actual
 
 

@@ -8,6 +8,30 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 ## Current feature handover — 2026-09-30
 
+Current working branch: `app-xcalc`, created from main `debf430` at the
+user's request for the next graphical app. Mouse-only standalone calculator:
+pure C fixed-point model + VIC UI, UAPP 0.4 bounded client-click pointer,
+fixed-size window opt-out, control target 5 and shared managed slot ownership.
+Bank-0 LOWBSS relocated from $0C00 to $9B00 (1,533 bytes in 1,536 reservation)
+so xcalc can occupy $0200-$11FF; xclock and xcalc are mutually exclusive.
+Bank-1 native APP1/stack and fixed shadow/gates are unchanged. Calculator
+image is 3,993 bytes + 34 BSS; all arithmetic runtime is in that disk image.
+Use build/boot images for testing; do not republish the accepted main snapshots
+until this candidate is accepted. General service extraction remains next.
+Do not mistake the namespace checkpoint below for the current branch.
+
+Qualification: VICE true-drive D64/1541 and D71/1571 pass disk loading,
+arithmetic through the client-click queue, reciprocal slot conflicts,
+xwave coexistence, console commands, restart and shadow/bitmap equality.
+Unmodified 1986 revision 81485cc7 passes native mouse/keyboard arithmetic,
+dragging, error recovery and foreground Ctrl+C. The root-namespace regression
+also passes; a separate clean parallel build reproduces both disks exactly.
+Evidence and exact candidates are in bench/{artifacts,results}/2026-09-30-xcalc.
+User acceptance: "looks good" (platform unspecified); no new physical-C128
+claim is made. 1,016 host tests and preserved checksums pass. The published build/ root snapshots
+are intentionally unchanged. Three-app concurrency is a documented loader
+capacity follow-up, not implemented here.
+
 Issue [#26](https://github.com/salvogendut/UDEKS/issues/26), branch
 `storage-root-namespace`, worktree `build/root-filesystem`, based on merged
 PR #25 (`d13a5c2`). Root-namespace runtime integration is implemented.

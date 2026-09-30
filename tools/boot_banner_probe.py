@@ -15,6 +15,7 @@ import time
 from build_d71 import sector_offset
 from managed_app_fixture import dos_file
 from shadow_boot_probe import launch_vice, wait_for_byte, capture_blocks, terminate
+from storage_shell_probe import console_address
 from vice_capture import choose_port
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -66,7 +67,7 @@ def main():
             wait_for_byte(port, 0xf3e0, 2, time.monotonic()+210)
             flags, cells = capture_blocks(port, [
                 (work/'flags.bin', 0xf065, 0xf066, 'kernel'),
-                (work/'console.bin', 0x0c00, 0x1157, 'kernel')])
+                (work/'console.bin', console_address(), console_address()+0x557, 'kernel')])
             expected = bytes((variant not in ('iec', 'both'),
                               variant not in ('bootfs', 'both')))
             if flags != expected:

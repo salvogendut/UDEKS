@@ -13,7 +13,15 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
-**Next milestone: the first disk-loaded non-kernel service.** Define one
+**Current user-selected feature: xcalc**, on branch `app-xcalc`. A standalone
+mouse-operated calculator adds useful client-area interaction, decimal
+arithmetic and explicit app-slot ownership. VICE D64/D71 and native-input
+1986 qualification pass; the user reports "looks good" (platform unspecified).
+It shares slot 1 with xclock (not
+simultaneous), can run alongside xwave, and leaves console keyboard ownership
+unchanged. See [calculator scope and tests](DISK-GRAPHICS.md).
+
+**Next architectural milestone: the first disk-loaded non-kernel service.** Define one
 existing service's load/start/stop and dependency contract, then replace its
 preloaded copy with an ordinary disk image. Keep bootstrap/recovery working;
 do not make a scripting language or expanded task capacity prerequisites.
@@ -115,6 +123,20 @@ mounts or applications must not require rebuilding the kernel.
 service without rebuilding the kernel; failure leaves a usable recovery path.
 Do not couple this slice to four-task scheduling, preemption, general shell
 scripting, filesystem writes or performance tuning.
+
+### Application-capacity follow-up: three simultaneous graphical apps
+
+The current fixed loader permits xclock **or** xcalc in slot 1, alongside
+xwave in slot 2. The window registry has four entries, but this is not four
+independently loadable application slots. This is a software placement limit,
+not a VIC-IIe display limit.
+
+Define an application allocation/loading scheme with explicit image, state,
+stack and callback ownership before expanding capacity. Acceptance: xclock,
+xcalc and xwave all remain live on the same screen, can be focused/dragged,
+and close/reload independently while the VDC console works. Rejected loads
+must leave existing apps intact. Track this as a feature, separately from
+xwave-specific optimization and the next service-extraction milestone.
 
 ### Completed: system root and namespace (#26)
 

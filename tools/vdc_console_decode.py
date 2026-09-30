@@ -46,7 +46,7 @@ def parse_result(data: bytes) -> dict[str, int]:
             )
     if not block[15] & 0x40:
         raise ValueError("VDC attributes are not enabled")
-    if block[19] & ~0x07:
+    if block[19] & ~0x0F:
         raise ValueError("VDC running-app mask has unknown bits")
     return {
         "format": block[4],

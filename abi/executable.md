@@ -1,6 +1,6 @@
 # UDEKS executable format 0.1
 
-The managed-app call table at `$CF50` now advertises UAPP 0.3, 53 three-byte
+The managed-app call table at `$CF50` now advertises UAPP 0.4, 53 three-byte
 vectors. All 51 UAPP 0.1 vectors and runtime zero-page addresses are unchanged.
 The appended `$CFF9` `udeks_window_begin_paint(handle)` validates a topmost,
 non-dragged window and clips drawing to its interior; `$CFFC`
@@ -11,12 +11,20 @@ require UAPP 0.2; old managed images remain compatible with the new kernel.
 
 UAPP 0.3 uses header bytes `$CF58-$CF59` for an optional little-endian
 fastcall entry pointer to `udeks_window_image_complete(handle)`. The remaining
-six reserved bytes stay zero. No vector is appended at `$D000` (I/O). A client
+bytes were reserved in 0.3. No vector is appended at `$D000` (I/O). A client
 must verify major 0 and minor at least 3 before reading/calling that pointer;
 the library returns `UDEKS_WINDOW_INVALID` on older kernels. Completion is
 an explicit, idempotent assertion of a whole rendered image, not a pixel-copy
 operation. See [window contract](window.md). Current xwave opts in after all
 21 rows are plotted; its existing rendering still works on UAPP 0.2.
+
+UAPP 0.4 adds a fastcall entry pointer at `$CF5A-$CF5B` for
+`udeks_window_take_click(handle)`; the last four header bytes stay zero.
+The helper checks major 0/minor >=4 and returns NULL on older kernels. A
+successful call returns a borrowed three-byte record (16-bit x, 8-bit y),
+window-relative client-click coordinates, valid until the next manager poll.
+No keyboard ownership changes. Existing JMP entries and runtime zero page
+are unchanged. See [window contract](window.md).
 
 UDEKS executables use a compiler-neutral 16-byte header followed immediately
 by a flat linked image. Multi-byte fields are little-endian. Format 0.1 is a
@@ -86,6 +94,19 @@ bank-1 staging; STOPPED and ZOMBIE also retain ownership. Successful images
 stay installed for polling and subsequent restarts until reboot; this is not
 general dynamic linking, unloading, or isolation from hostile machine code.
 See [managed disk delivery](../docs/DISK-GRAPHICS.md).
+
+`xcalc` is the explicitly named exception to the managed allocation size:
+`/bin/xcalc` / `XCALC.BIN` uses bank-0 `$0200-$11FF` (4 KiB) and shares
+slot 1 exclusively with xclock. Its disk stream, including header, must fit
+the 4 KiB bank-1 loader staging area; image+BSS must fit the 4 KiB destination.
+Native bank-1 ordinary APP1 remains `$0200-$0BFF`; its software stack and
+all old image bounds remain unchanged. The loader derives the extended bound
+from the exact requested name, never from an untrusted header. The manager
+rejects replacement of a running peer, and retires stopped poll callbacks
+before loading the other image. Init failure leaves no callable slot.
+Bank-0 console/input LOWBSS moved to `$9B00-$A0FC` (reservation to `$A0FF`),
+with a link assertion keeping resident code/data below `$9B00`. VIC shadow,
+common gates, native task stacks and bank-1 services have not moved.
 
 Init's persistent load reads `/bin/ush` (`USH.BIN`) before child
 tasks exist. It requires flag `$01`, load and entry `$9000`, and the same

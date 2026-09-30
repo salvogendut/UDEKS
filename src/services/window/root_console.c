@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "udeks/root_console.h"
 
-/* Stage 1 has vacated this linker-owned low-RAM segment before kernel_main. */
+/* Linker-owned console/input state (historical segment name LOWBSS).
+ * Now bank 0 $9B00: the enlarged calculator must not overwrite it. */
 #pragma bss-name(push, "LOWBSS")
 static unsigned char cells
     [UDEKS_ROOT_CONSOLE_ROWS][UDEKS_ROOT_CONSOLE_ROW_STRIDE];

@@ -59,6 +59,11 @@ class VdcConsoleDecodeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unknown bits"):
             parse_result(block)
 
+    def test_calculator_panel_bit(self):
+        block = themed_record()
+        block[19] = 0x0d
+        self.assertEqual(parse_result(block)["app_mask"], 0x0d)
+
     def test_rejects_screen_readback_failure(self):
         block = valid_record()
         block[12] = 0x20

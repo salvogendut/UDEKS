@@ -9,6 +9,7 @@ from pathlib import Path
 import time
 from storage_shell_probe import sp, byte, keyboard_queue_address, type_command
 from task_waitpid_probe import scheduler_symbols
+from storage_shell_probe import console_address
 from vice_capture import choose_port
 from disk_shell_fixture import build_fixture
 
@@ -47,10 +48,10 @@ def main():
             except TimeoutError:
                 sp.capture_blocks(port, [(work/'failed-common.bin', 0xf000, 0xffff, 'kernel'),
                     (work/'failed-slots.bin', slots, slots+63, 'kernel'),
-                    (work/'failed-console.bin', 0xc00, 0x1157, 'kernel'),
+                    (work/'failed-console.bin', console_address(), console_address()+0x557, 'kernel'),
                     (work/'failed-ush.bin', 0x9000, 0x9fff, 'worker')])
                 raise
-            data = sp.capture_blocks(port, [(work/'console.bin', 0xc00, 0x1157, 'kernel')])[0]
+            data = sp.capture_blocks(port, [(work/'console.bin', console_address(), console_address()+0x557, 'kernel')])[0]
             console = '\n'.join(data[i:i+64].decode('ascii', errors='replace').rstrip() for i in range(0, 21*65, 65))
             if data[-1] != 1 or any(item not in console for item in expected): raise AssertionError(text+'\n'+console)
             records.append(dict(command=text, console=console)); print('PASS', text, flush=True)

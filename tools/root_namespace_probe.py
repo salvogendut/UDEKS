@@ -12,6 +12,7 @@ from build_d71 import blank_d71, d64_compatibility_image, install_prg_file
 from disk_shell_fixture import build_fixture
 from storage_shell_probe import sp, byte, keyboard_queue_address, type_command
 from task_waitpid_probe import scheduler_symbols
+from boot_staging_map import segment_bounds
 from vice_capture import choose_port, monitor_command
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,6 +36,7 @@ def main():
     queue = keyboard_queue_address((ROOT/'build/8502/udeks-8502.map').read_text(),
                                    (ROOT/'build/8502/keyboard.s').read_text())
     slots = scheduler_symbols(ROOT/'build/8502/udeks-scheduler-overlay.map')['_udeks_lifecycle_slots_private']
+    console_base = segment_bounds((ROOT/'build/8502/udeks-8502.map').read_text(), 'LOWBSS')[0]
     port = choose_port()
     proc, master = sp.launch_vice(disk, port, 'net.sf.VICE',
         ('-drive8truedrive', '-drive8type', args.drive,
@@ -46,7 +48,7 @@ def main():
         if not args.recovery: sp.wait_for_byte(port, 0xF3E0, 2, time.monotonic()+90)
 
         def console(name):
-            cells = sp.capture_blocks(port, [(work/(name+'.bin'), 0x0C00, 0x1157, 'kernel')])[0]
+            cells = sp.capture_blocks(port, [(work/(name+'.bin'), console_base, console_base+0x557, 'kernel')])[0]
             if cells[-1] != 1: raise AssertionError('input cursor missing')
             return '\n'.join(cells[i:i+64].decode('ascii', errors='replace').rstrip()
                              for i in range(0, 21*65, 65))
@@ -120,7 +122,7 @@ def main():
         monitor_command(port, f'screenshot "{work / "console.bmp"}" 0')
     except Exception:
         print(monitor_command(port, 'r').decode(errors='replace'), flush=True)
-        sp.capture_blocks(port, [(work/'failure-console.bin', 0x0C00, 0x1157, 'kernel'),
+        sp.capture_blocks(port, [(work/'failure-console.bin', console_base, console_base+0x557, 'kernel'),
                                 (work/'failure-status.bin', 0xF110, 0xF3EF, 'kernel'),
                                 (work/'failure-storage.bin', 0xE000, 0xE1FF, 'worker')])
         raise

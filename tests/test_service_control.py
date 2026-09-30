@@ -27,11 +27,15 @@ unsigned char udeks_xclock_stop(void) { ++calls; clock_run=0; return 0; }
 unsigned char udeks_xwave_stop(void) { ++calls; wave_run=0; return 0; }
 unsigned char udeks_xclock_is_running(void) { return clock_run; }
 unsigned char udeks_xwave_is_running(void) { return wave_run; }
+unsigned char calc_run;
+unsigned char udeks_xcalc_start(void) { ++calls; ++starts; if (!app_result) calc_run=1; return app_result; }
+unsigned char udeks_xcalc_stop(void) { ++calls; calc_run=0; return 0; }
+unsigned char udeks_xcalc_is_running(void) { return calc_run; }
 unsigned char udeks_z80_submit(unsigned char op, unsigned int a, unsigned int b,
     unsigned int n, unsigned int *r) { ++calls; *r=0; return 0; }
 void reset(void) {
     memset(session_memory, 0, sizeof(session_memory));
-    active=clock_run=wave_run=calls=starts=app_result=0;
+    active=clock_run=wave_run=calc_run=calls=starts=app_result=0;
     udeks_shell_start(); session_memory[UDEKS_USH_STATUS_BASE+1]=UDEKS_USH_STATE_READY;
 }
 unsigned char valid(unsigned char t, unsigned char a, unsigned char b) { return udeks_control_valid(t,a,b); }
@@ -65,7 +69,7 @@ class ServiceControl(unittest.TestCase):
 
     def test_exact_operation_combinations(self):
         allowed = {(1,0,0),(1,1,0),(2,0,0),(2,0,1),(2,1,0),
-                   (3,0,0),(3,0,1),(3,1,0),(4,2,0)}
+                   (3,0,0),(3,0,1),(3,1,0),(4,2,0),(5,0,0),(5,0,1),(5,1,0)}
         for t in range(256):
             for a in range(4):
                 for b in range(3):
@@ -88,7 +92,7 @@ class ServiceControl(unittest.TestCase):
 
     def test_invalid_requests_leave_queue_and_reply_untouched(self):
         for options in ({'descriptor':1}, {'flags':1}, {'count':2}, {'count':4},
-                        {'target':0}, {'target':5}, {'action':9}, {'background':2},
+                        {'target':0}, {'target':6}, {'action':9}, {'background':2},
                         {'target':1, 'background':1}, {'action':1, 'background':1}):
             self.lib.reset()
             self.memory[0xf3a0:0xf3a5] = b'abcde'

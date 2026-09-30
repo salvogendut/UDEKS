@@ -108,7 +108,7 @@ class ZeroPageAbiTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn(".byte 'U', 'A', 'P', 'P'", gateway)
-        self.assertIn(".byte $00, $03", gateway)
+        self.assertIn(".byte $00, $04", gateway)
         self.assertIn(".byte $35, $03", gateway)
         self.assertIn("jmp _udeks_window_begin_paint", gateway)
         self.assertIn("jmp _udeks_window_end_paint", gateway)

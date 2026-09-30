@@ -636,8 +636,12 @@ def validate_command(executable: bytes) -> None:
         raise ValueError('command entry outside image')
 
 
-def validate_managed_app(executable: bytes, base: int) -> None:
+def validate_managed_app(executable: bytes, base: int, capacity: int = 0x0A00) -> None:
     """Fixed-slot managed UDEX and all six entry veneers, before packaging."""
+    if capacity not in (0x0a00, 0x1000) or (capacity == 0x1000 and base != 0x0200):
+        raise ValueError('invalid managed slot capacity')
+    if capacity == 0x1000 and len(executable) > 0x1000:
+        raise ValueError('calculator exceeds disk staging capacity')
     if (len(executable) < 34 or executable[:4] != b'UDEX' or
             executable[4] != 0 or executable[5] > 1 or executable[6:8] != b'\x01\x02'):
         raise ValueError('invalid managed UDEX header or callback table')
@@ -645,7 +649,7 @@ def validate_managed_app(executable: bytes, base: int) -> None:
                               for n in (8, 10, 12, 14))
     if base not in (0x0200, 0x1200) or load != base or entry != base:
         raise ValueError('managed application targets the wrong slot or entry')
-    if len(executable) != 16+size or size < 18 or size+bss > 0x0A00:
+    if len(executable) != 16+size or size < 18 or size+bss > capacity:
         raise ValueError('managed application size exceeds its slot or file')
     for n in range(16, 34, 3):
         target = int.from_bytes(executable[n+1:n+3], 'little')
@@ -731,6 +735,7 @@ def build_image(
     xclock: bytes = b"",
     xwave: bytes = b"",
     commands: tuple[tuple[str, bytes], ...] = (),
+    xcalc: bytes = b"",
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -847,7 +852,10 @@ def build_image(
         if executable:
             validate_managed_app(executable, base)
             install_prg_file(image, name+'.BIN', executable, file_type=0x81)
-    names = {'SCHEDOVR', 'USH', 'RC', 'HELLO', 'FREE', 'DF', 'XCLOCK', 'XWAVE'}
+    if xcalc:
+        validate_managed_app(xcalc, 0x0200, 0x1000)
+        install_prg_file(image, "XCALC.BIN", xcalc, file_type=0x81)
+    names = {'SCHEDOVR', 'USH', 'RC', 'HELLO', 'FREE', 'DF', 'XCLOCK', 'XWAVE', 'XCALC'}
     for name, executable in commands:
         if name in names or not name or len(name) > 12 or any(c not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-' for c in name):
             raise ValueError('invalid or duplicate disk command name')
@@ -892,6 +900,7 @@ def main() -> None:
     parser.add_argument("--sysinfo", type=Path, help="standalone FREE/DF multicall UDEX")
     parser.add_argument("--xclock", type=Path, help="disk-only managed XCLOCK UDEX")
     parser.add_argument("--xwave", type=Path, help="disk-only managed XWAVE UDEX")
+    parser.add_argument("--xcalc", type=Path, help="disk-only managed XCALC UDEX")
     from build_bootfs import parse_entry
     parser.add_argument("--command", action="append", type=parse_entry, default=[], metavar="NAME=UDEX")
     parser.add_argument(
@@ -935,6 +944,7 @@ def main() -> None:
             b"" if args.xclock is None else args.xclock.read_bytes(),
             b"" if args.xwave is None else args.xwave.read_bytes(),
             tuple((name, path.read_bytes()) for name, path in args.command),
+            b"" if args.xcalc is None else args.xcalc.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

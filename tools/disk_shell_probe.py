@@ -10,6 +10,7 @@ import time
 from disk_shell_fixture import build_fixture
 from storage_shell_probe import sp, byte, keyboard_queue_address, type_command
 from task_waitpid_probe import scheduler_symbols
+from storage_shell_probe import console_address
 from vice_capture import choose_port, monitor_command
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -53,7 +54,7 @@ def main():
                 sp.wait_for_byte(port, counter, (before+1)&255, deadline)
                 sp.wait_for_byte(port, slots+1, 4, deadline)
                 sp.wait_for_byte(port, slots+2, 2, deadline)
-                cells = sp.capture_blocks(port, [(work/(variant+'-console.bin'), 0x0C00, 0x1157, 'kernel')])[0]
+                cells = sp.capture_blocks(port, [(work/(variant+'-console.bin'), console_address(), console_address()+0x557, 'kernel')])[0]
                 console = '\n'.join(cells[i:i+64].decode('ascii', errors='replace').rstrip()
                                     for i in range(0, 21*65, 65))
                 if cells[-1] != 1 or expected not in console:

@@ -227,6 +227,7 @@ USER_XCLOCK_OBJ := $(BUILD_USER)/xclock.o
 USER_XCLOCK_ENTRY_OBJ := $(BUILD_USER)/xclock_entry.o
 USER_XCLOCK_BIN := $(BUILD_USER)/xclock.bin
 USER_XCLOCK_UDEX := $(BUILD_USER)/xclock.udx
+USER_XCALC_UDEX := $(BUILD_USER)/xcalc.udx
 USER_XWAVE_ASM := $(BUILD_USER)/xwave.s
 USER_XWAVE_OBJ := $(BUILD_USER)/xwave.o
 USER_XWAVE_ENTRY_OBJ := $(BUILD_USER)/xwave_entry.o
@@ -760,6 +761,27 @@ $(USER_XCLOCK_BIN): $(USER_XCLOCK_ENTRY_OBJ) $(USER_XCLOCK_OBJ) \
 $(USER_XCLOCK_UDEX): $(USER_XCLOCK_BIN) tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 \
 		--entry-address 0x0200 --bss-size 0x000D --flags 0x02 $< $@
+
+$(BUILD_USER)/calc.s: src/apps/calc.c include/udeks/calc.h | $(BUILD_USER)
+	$(CC65) -t none --cpu 6502 --standard c99 -Os -I include -o $@ $<
+
+$(BUILD_USER)/xcalc.s: src/apps/xcalc.c include/udeks/calc.h include/udeks/window.h include/udeks/vic_graphics.h | $(BUILD_USER)
+	$(CC65) -t none --cpu 6502 --standard c99 -Os -I include -o $@ $<
+
+$(BUILD_USER)/calc.o: $(BUILD_USER)/calc.s
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_USER)/xcalc.o: $(BUILD_USER)/xcalc.s
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_USER)/xcalc_entry.o: user/lib/xcalc_entry.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_USER)/xcalc_imports.o: user/lib/xcalc_imports.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_USER)/window_click.o: user/lib/window_click.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_USER)/xcalc.bin: $(BUILD_USER)/xcalc_entry.o $(BUILD_USER)/calc.o $(BUILD_USER)/xcalc.o $(BUILD_USER)/window_click.o $(BUILD_USER)/xcalc_imports.o cfg/8502-xcalc.cfg
+	$(CL65) -t none --cpu 6502 -C cfg/8502-xcalc.cfg -u _udeks_calc_value -u _udeks_calc_error -m $(BUILD_USER)/xcalc.map -o $@ $(filter %.o,$^)
+$(USER_XCALC_UDEX): $(BUILD_USER)/xcalc.bin tools/build_udex.py
+	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 --bss-size 0x0022 --flags 0x02 $< $@
 
 $(USER_XWAVE_ASM): src/apps/xwave.c include/udeks/mailbox.h \
 		include/udeks/vic_graphics.h include/udeks/window.h \
@@ -1904,7 +1926,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
 		tools/build_d71.py bench/iec-directory/hello.txt user/etc/rc $(USER_SYSINFO_UDEX) \
-		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX)
+		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX)
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
@@ -1927,7 +1949,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) \
 		--hello bench/iec-directory/hello.txt \
 		--rc user/etc/rc --sysinfo $(USER_SYSINFO_UDEX) \
-		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) \
+		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) --xcalc $(USER_XCALC_UDEX) \
 		--command COWSAY=$(USER_COWSAY_UDEX) --command DATE=$(USER_DATE_UDEX) \
 		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_FILETOOLS_UDEX) \
 		--command UNAME=$(USER_DIAGNOSTICS_UDEX) --command LSHW=$(USER_DIAGNOSTICS_UDEX) \
@@ -2174,6 +2196,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 
 check:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
+	$(PYTHON) -m py_compile tools/xcalc_probe.py
 	$(PYTHON) -m py_compile tools/managed_app_fixture.py tools/managed_disk_probe.py
 	$(PYTHON) -m py_compile tools/startup_probe.py tools/root_namespace_probe.py
 	$(PYTHON) -m py_compile tools/boot_entry_probe.py tools/boot_diagnostic.py tools/boot_banner_probe.py

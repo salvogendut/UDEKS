@@ -3,10 +3,13 @@
 #define main input_smoke_main
 #include "1986_input_smoke.c"
 #undef main
+#ifndef UDEKS_CONSOLE_BASE
+#define UDEKS_CONSOLE_BASE 0x0c00
+#endif
 
 static bool console_contains(const char *text) {
     for (unsigned row = 0; row < 21; ++row)
-        if (strstr((char *)&machine->mem.ram[0xc00 + row * 65], text)) return true;
+        if (strstr((char *)&machine->mem.ram[UDEKS_CONSOLE_BASE + row * 65], text)) return true;
     return false;
 }
 
@@ -37,7 +40,7 @@ static void storage_result(const char *line, unsigned expected_exit, unsigned er
     idle();
     printf("command %s: ", line); diagnostic();
     for (unsigned row = 0; row < 21; ++row)
-        printf("%.*s\n", 64, (char *)&machine->mem.ram[0xc00 + row * 65]);
+        printf("%.*s\n", 64, (char *)&machine->mem.ram[UDEKS_CONSOLE_BASE + row * 65]);
     require(byte(0xf286) == error && byte(0xf285) == (error ? 0x80 | error : 3),
             "unexpected loader status");
     if (!error) require(byte(0xf287) == expected_exit, "unexpected command exit status");
@@ -62,6 +65,9 @@ static void window_gesture(unsigned x, unsigned y, unsigned dx, unsigned dy) {
     frames(500);
 }
 
+#ifdef UDEKS_XCALC_SMOKE
+#include "1986_xcalc_smoke.inc"
+#endif
 static void disk_graphics(void) {
     command("xinit"); idle();
     command("xclock &"); idle();
@@ -189,6 +195,11 @@ int main(int argc, char **argv) {
     }
     diagnostic();
     require(byte(0xf3d9) == 0xa5, "native raw-IEC boot failed");
+#ifdef UDEKS_XCALC_SMOKE
+    calculator_smoke();
+    free(machine);
+    return 0;
+#endif
 #ifdef UDEKS_ROOT_NAMESPACE_SMOKE
     wait_byte(0xf3e0, 2, "root startup did not finish");
     require(byte(0xf3dd) == 1 && byte(0xf3de) == 0 && !console_contains("RC failed"),

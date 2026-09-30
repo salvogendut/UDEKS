@@ -75,9 +75,9 @@ int main(void) {
         client=(ROOT / 'user/lib/window_completion.s').read_text()
         wave=(ROOT / 'src/apps/xwave.c').read_text()
         manager=(ROOT / 'src/services/window/window_manager.c').read_text()
-        self.assertIn('.byte $00, $03',gateway)
+        self.assertIn('.byte $00, $04',gateway)
         self.assertIn('.byte $35, $03',gateway)
-        self.assertIn('.addr _udeks_window_image_complete\n        .res 6, $00',gateway)
+        self.assertIn('.addr _udeks_window_image_complete\n        .addr _udeks_window_take_click\n        .res 4, $00',gateway)
         self.assertEqual(sum(line.strip().startswith('jmp ') for line in gateway.splitlines()),53)
         extension=client.split('_udeks_window_image_complete:\n',1)[1]
         self.assertLess(extension.index('lda $cf54'),extension.index('jmp ($cf58)'))
