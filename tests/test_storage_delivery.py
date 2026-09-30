@@ -37,12 +37,12 @@ class StorageDelivery(unittest.TestCase):
         self.assertEqual(payload[2+0x1A03-0x1200:2+0x1A09-0x1200], b'ULKP\0\1')
         self.assertEqual(payload[:2], b'\0\x12')
         self.assertEqual(payload[2+0x8A00-0x1200:2+0x8A00-0x1200+6], b'POLICY')
-        self.assertEqual(payload[2+0x9A00-0x1200:2+0x9A06-0x1200], b'DRIVER')
-        self.assertEqual(payload[2+0xA000-0x1200:], bytes(0x3100))
-        self.assertEqual(len(payload), 2+0xD100-0x1200)
+        self.assertEqual(payload[2+0xE300-0x1200:2+0xE306-0x1200], b'DRIVER')
+        self.assertEqual(payload[2+0xA000-0x1200:2+0xD100-0x1200], bytes(0x3100))
+        self.assertEqual(len(payload), 2+0xE900-0x1200)
         self.assertIn('USOV = $6000\n', constants)
         self.assertIn('SECONDARY_PAYLOAD_LOAD = $1200', constants)
-        self.assertIn('SECONDARY_PAYLOAD_END = $d100', constants)
+        self.assertIn('SECONDARY_PAYLOAD_END = $e900', constants)
 
     def test_secondary_bootfs_does_not_change_any_other_service_byte(self):
         payload, _ = self.wrap()
@@ -50,7 +50,8 @@ class StorageDelivery(unittest.TestCase):
         fs = build_bootfs([('ush', b'program'), ('mount', b'command')])
         result = install_bootfs(payload, fs)
         self.assertEqual(result[:offset], payload[:offset])
-        self.assertEqual(result[offset:], fs.ljust(0x3100, b'\0'))
+        self.assertEqual(result[offset:offset+0x3100], fs.ljust(0x3100, b'\0'))
+        self.assertEqual(result[offset+0x3100:], payload[offset+0x3100:])
         self.assertEqual(len(result), len(payload))
         with self.assertRaises(ValueError): install_bootfs(result, fs)
 
@@ -68,7 +69,7 @@ class StorageDelivery(unittest.TestCase):
                         dict(lookup=b''), dict(lookup=bytes(1537)), dict(lookup=b'bad'),
                         dict(policy=bytes(1537)), dict(driver=bytes(1537)),
                         dict(policy=b''), dict(driver=b''),
-                        dict(ush=bytes(0xA00-0x50+1)), dict(payload=b'\0\x41X'),
+                        dict(ush=bytes(0x1000-0x180+1)), dict(payload=b'\0\x41X'),
                         dict(payload=b'\0\x42'+bytes(0x3E01))):
             with self.subTest(changes=list(changes)):
                 with self.assertRaises(ValueError): self.wrap(**changes)

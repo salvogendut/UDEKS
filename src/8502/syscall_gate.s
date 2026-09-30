@@ -261,7 +261,7 @@ task_validate_signature:
         dex
         bpl task_validate_signature
         lda TREQ_BASE+$05
-        cmp #$06
+        cmp #$07
         bcs task_protocol_trampoline
         lda TREQ_STATE
         cmp #TREQ_REQUEST

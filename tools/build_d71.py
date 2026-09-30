@@ -53,7 +53,7 @@ BOOT_SECTOR_SIZE = 0x0100
 SYSCALL_PAGE = 0xCF00
 MODULE_STAGING_ADDRESS = 0xBFBB
 MODULE_STAGING_SIZE = 0x0344
-USH_ALLOCATION_SIZE = 0x0A00
+USH_ALLOCATION_SIZE = 0x1000
 BOOTFS_Z80_OFFSET = 0x0300
 BOOTFS_Z80_SIZE = 0x1D00
 BOOTFS_TAIL_SIZE = 0x1400
@@ -131,7 +131,10 @@ def d64_compatibility_image(image: bytes) -> bytes:
     ) * SECTOR_SIZE
     if len(image) != expected_size:
         raise ValueError("D64 compatibility source is not a standard D71 image")
-    return image[:D64_SIZE]
+    result = bytearray(image[:D64_SIZE])
+    # A single-sided derivative must not advertise a D71 second BAM.
+    result[sector_offset(18, 0)+3] &= 0x7f
+    return bytes(result)
 
 
 def mark_used(image: bytearray, track: int, sector: int) -> None:
@@ -187,13 +190,31 @@ def install_prg_file(image: bytearray, name: str, data: bytes, *, file_type: int
 
     directory = sector_offset(18, 1)
     entry = None
-    for slot in range(8):
-        candidate = directory + 2 + slot * 32
-        if image[candidate] == 0:
-            entry = candidate
+    seen = set()
+    while entry is None:
+        if directory in seen:
+            raise ValueError("cyclic disk directory")
+        seen.add(directory)
+        for slot in range(8):
+            candidate = directory + 2 + slot * 32
+            if image[candidate] == 0:
+                entry = candidate
+                break
+        if entry is not None:
             break
-    if entry is None:
-        raise ValueError("first directory sector is full")
+        if image[directory]:
+            if image[directory] != 18 or not image[directory+1]:
+                raise ValueError("invalid disk directory link")
+            directory = sector_offset(18, image[directory+1])
+        else:
+            free = next((s for s in range(2, sectors_per_track(18))
+                         if sector_is_free(image, 18, s)), None)
+            if free is None:
+                raise ValueError("disk directory is full")
+            image[directory:directory+2] = bytes((18, free))
+            directory = sector_offset(18, free)
+            image[directory:directory+256] = b'\0\xff' + bytes(254)
+            mark_used(image, 18, free)
 
     for index, (track, sector) in enumerate(available):
         chunk = data[index * 254 : (index + 1) * 254]
@@ -553,9 +574,7 @@ def install_module(kernel: bytearray, module: bytes) -> None:
     )
 
 
-def validate_ush(bootfs: bytes, executable: bytes) -> None:
-    if not executable:
-        return
+def validate_persistent_shell(executable: bytes) -> None:
     if len(executable) < 16 or executable[:4] != b"UDEX":
         raise ValueError("ush is not a UDEX executable")
     major, minor, cpu, flags = executable[4:8]
@@ -574,7 +593,15 @@ def validate_ush(bootfs: bytes, executable: bytes) -> None:
     if image_size == 0 or len(executable) != 16 + image_size:
         raise ValueError("ush UDEX image size is inconsistent")
     if image_size + bss_size > USH_ALLOCATION_SIZE:
-        raise ValueError("ush exceeds its 2560-byte bank-1 allocation")
+        raise ValueError("ush exceeds its 4096-byte bank-1 allocation")
+    if len(executable) > 0x1000:
+        raise ValueError("ush file exceeds bootstrap staging before $1200")
+
+
+def validate_ush(bootfs: bytes, executable: bytes) -> None:
+    if not executable:
+        return
+    validate_persistent_shell(executable)
     if len(bootfs) < 40 or bootfs[:4] != b"UBFS" or bootfs[6] == 0:
         raise ValueError("bootfs cannot provide /bin/ush")
     entry = None
@@ -590,10 +617,11 @@ def validate_ush(bootfs: bytes, executable: bytes) -> None:
         raise ValueError("bootfs does not contain /bin/ush")
     file_offset = int.from_bytes(bootfs[entry + 2 : entry + 4], "little")
     file_size = int.from_bytes(bootfs[entry + 4 : entry + 6], "little")
-    if file_size != len(executable) or bootfs[
-        file_offset : file_offset + file_size
-    ] != executable:
-        raise ValueError("bootfs ush entry does not match the staged executable")
+    if file_offset + file_size > len(bootfs):
+        raise ValueError("bootfs ush is truncated")
+    # Recovery may omit startup support; validate it independently rather
+    # than forcing the disk shell and its recovery image to be identical.
+    validate_persistent_shell(bootfs[file_offset:file_offset+file_size])
 
 
 def install_task_loader(kernel: bytearray, loader: bytes) -> None:
@@ -669,6 +697,8 @@ def build_image(
     busy_sprite: bytes = b"",
     secondary_bootfs: bool = False,
     hello: bytes | None = None,
+    rc: bytes | None = None,
+    sysinfo: bytes = b"",
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -776,6 +806,11 @@ def build_image(
         # Raw UDEX, not a KERNAL PRG: the persistent loader validates the
         # header before copying it into bank 1. Bootfs keeps a recovery copy.
         install_prg_file(image, "USH", ush, file_type=0x81)
+    if rc is not None:
+        install_prg_file(image, "RC", rc, file_type=0x81)
+    if sysinfo:
+        install_prg_file(image, "FREE", sysinfo, file_type=0x81)
+        install_prg_file(image, "DF", sysinfo, file_type=0x81)
     return bytes(image)
 
 
@@ -810,6 +845,8 @@ def main() -> None:
     parser.add_argument("--bootfs-request-service", type=Path)
     parser.add_argument("--ush", type=Path)
     parser.add_argument("--hello", type=Path, help="include a raw SEQ HELLO file for cat")
+    parser.add_argument("--rc", type=Path, help="optional ASCII shell startup file")
+    parser.add_argument("--sysinfo", type=Path, help="standalone FREE/DF multicall UDEX")
     parser.add_argument(
         "--d64-output",
         type=Path,
@@ -846,6 +883,8 @@ def main() -> None:
             args.busy_sprite.read_bytes(),
             args.secondary_bootfs,
             None if args.hello is None else args.hello.read_bytes(),
+            None if args.rc is None else args.rc.read_bytes(),
+            b"" if args.sysinfo is None else args.sysinfo.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

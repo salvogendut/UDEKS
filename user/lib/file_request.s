@@ -1,6 +1,9 @@
 ; SPDX-License-Identifier: GPL-3.0-or-later
 ; Transient UTRQ 0.5 marshaling only. Paths/command policy remain C.
         .setcpu "6502"
+        .ifndef UDEKS_FILE_REQUEST_MINOR
+UDEKS_FILE_REQUEST_MINOR = 5
+        .endif
         .export _file_request
         .import popa
         .import __BSS_SIZE__, __BSS_RUN__
@@ -36,4 +39,4 @@ error:  lda #$ff
         ldx #0
         rts
         .segment "RODATA"
-signature: .byte "UTRQ",0,5
+signature: .byte "UTRQ",0,UDEKS_FILE_REQUEST_MINOR

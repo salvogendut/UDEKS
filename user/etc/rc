@@ -1,0 +1,3 @@
+# UDEKS startup: one command per line; 255 bytes max.
+# Uncomment to mount the boot disk:
+# mount 8 /mnt

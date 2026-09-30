@@ -2,6 +2,10 @@
 #include "udeks/program.h"
 #include "udeks/memory.h"
 #include "udeks/task_request.h"
+#ifndef UDEKS_RECOVERY
+#include "udeks/startup.h"
+static unsigned char startup_active;
+#endif
 
 #define LINE_CAPACITY 54u
 #define USH_STATUS(offset) \
@@ -59,7 +63,10 @@ static void finish_command(void)
 {
     line_length = 0;
     line[0] = 0;
-    udeks_prompt();
+#ifndef UDEKS_RECOVERY
+    if (!startup_active)
+#endif
+        udeks_prompt();
 }
 
 static void dispatch_line(void)
@@ -70,6 +77,12 @@ static void dispatch_line(void)
 
     ++USH_COMMANDS;
     command = skip_space(0);
+#ifndef UDEKS_RECOVERY
+    if (startup_active && line[command] == '#') {
+        finish_command();
+        return;
+    }
+#endif
     if (line[command] == 0) {
         finish_command();
         return;
@@ -100,7 +113,7 @@ static void dispatch_line(void)
 
     rest = command_end(command, (const unsigned char *)"help");
     if (rest != 0xFFu && line[skip_space(rest)] == 0) {
-        write_line((const unsigned char *)"cd cowsay date echo help ls pwd uname");
+        write_line((const unsigned char *)"cat cd cowsay date df echo free help ls mount pwd uname");
         finish_command();
         return;
     }
@@ -145,7 +158,10 @@ static void dispatch_line(void)
     if (result == UDEKS_IO_ERROR) {
         write_line((const unsigned char *)"ush: exec failed");
     }
-    udeks_prompt();
+#ifndef UDEKS_RECOVERY
+    if (!startup_active)
+#endif
+        udeks_prompt();
 }
 
 unsigned char udeks_ush_poll(void)
@@ -164,6 +180,17 @@ unsigned char udeks_ush_poll(void)
         USH_STATUS(UDEKS_USH_STATUS_MAGIC0) = 'U';
         USH_STATUS(UDEKS_USH_STATUS_MAGIC1) = 'S';
         USH_STATUS(UDEKS_USH_STATUS_MAGIC2) = 'H';
+#ifndef UDEKS_RECOVERY
+        if (USH_STATUS(UDEKS_USH_BOOT_SOURCE) == 1) {
+            startup_active = udeks_startup_begin(USH_STATUS(UDEKS_USH_BOOT_DEVICE));
+            if (startup_active == UDEKS_IO_ERROR) {
+                startup_active = 0;
+                write_line((const unsigned char *)"ush: RC failed; startup skipped");
+                udeks_prompt();
+            }
+        }
+        USH_STATUS(UDEKS_USH_STARTUP_STATE) = startup_active ? 1 : 2;
+#endif
         return UDEKS_EXIT_SUCCESS;
     }
     if (waiting_foreground != 0) {
@@ -174,6 +201,27 @@ unsigned char udeks_ush_poll(void)
         waiting_foreground = 0;
         return UDEKS_EXIT_SUCCESS;
     }
+
+#ifndef UDEKS_RECOVERY
+    if (startup_active) {
+        line_length = udeks_startup_next(line);
+        if (line_length) {
+            /* Use the normal dispatcher, one command per cooperative turn. */
+            if (line[skip_space(0)] != '#') {
+                if (startup_active == 1) udeks_write_byte(UDEKS_STDOUT, '\n');
+                startup_active = 2;
+                udeks_write(UDEKS_STDOUT, line);
+                udeks_write_byte(UDEKS_STDOUT, '\n');
+            }
+            dispatch_line();
+        } else {
+            if (startup_active == 2) udeks_prompt();
+            startup_active = 0;
+            USH_STATUS(UDEKS_USH_STARTUP_STATE) = 2;
+        }
+        return UDEKS_EXIT_SUCCESS;
+    }
+#endif
 
     if (udeks_poll(UDEKS_STDIN, UDEKS_TREQ_POLL_FOREVER) != 1u) {
         return UDEKS_EXIT_SUCCESS;

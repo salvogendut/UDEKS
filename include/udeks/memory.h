@@ -48,7 +48,8 @@
 #define UDEKS_BOOTFS_BASE             0xA000u
 #define UDEKS_BOOTFS_LIMIT            0xD100u
 #define UDEKS_USH_BASE                0x9000u
-#define UDEKS_USH_LIMIT               0x9A00u
+#define UDEKS_USH_LIMIT               0xA000u
+#define UDEKS_USH_STACK_BOTTOM        0xE900u
 #define UDEKS_TASK_BACKUP_BASE        0x8000u
 #define UDEKS_TASK_BACKUP_LIMIT       0x8A00u
 

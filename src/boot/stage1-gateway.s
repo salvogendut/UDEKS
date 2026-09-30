@@ -753,7 +753,7 @@ task_bootfs_layout_ready:
 task_next_entry:
         lda task_entries_remaining
         bne :+
-        jmp task_not_found
+        jmp task_lookup_miss
 :
         dec task_entries_remaining
         ldy #$00
@@ -778,6 +778,10 @@ task_entry_name_load:
         bne task_compare_name
 
 task_advance_entry:
+        lda task_entries_remaining
+        bne :+
+        jmp task_lookup_miss
+:
         ; Advance both self-modifying directory pointers by one 24-byte
         ; record. The host packer and the data-bound check below prevent the
         ; walk from entering file payloads.
@@ -868,7 +872,38 @@ task_file_reject:
 task_file_bounds_jump:
         jmp task_file_bounds_ready
 
+; Small initial PATH: immutable /bin first, then a leaf on mounted /mnt.
+; Only synchronous foreground programs can use the disk loader today.
+task_lookup_miss:
+        lda task_load_mode
+        beq :+
+        jmp task_not_found
+:
+        ldx #4
+:
+        lda task_disk_mount,x
+        sta task_disk_leaf,x
+        dex
+        bpl :-
+        ldx #0
+:
+        lda TASK_HEADER,x
+        sta task_disk_leaf+5,x
+        inx
+        cpx task_name_length
+        bcc :-
+        lda #0
+        sta task_disk_leaf+5,x
+        lda #<task_disk_leaf
+        sta task_command_load+1
+        lda #>task_disk_leaf
+        sta task_command_load+2
+        jmp task_disk_fallback
+
         .segment "TASKLOADER"
+task_disk_fallback:
+        sta MMU_LCR_KERNEL_IO
+        jmp task_disk_open
 task_file_bounds_ready:
         lda task_file_lo
         sta task_header_load+1
@@ -1001,9 +1036,17 @@ task_file_size_valid:
         bcc :+
         jmp task_bad_size
 :
-        cmp #$0a
-        bcc task_check_entry
+        ldx #$0a
+        lda task_load_mode
+        cmp #1
+        bne :+
+        ldx #$10                    ; persistent ush ends before bootfs
+:
+        cpx task_allocation_hi
+        bcc task_size_reject
         beq :+
+        bne task_check_entry
+task_size_reject:
         jmp task_bad_size
 :
         lda task_allocation_lo
@@ -1396,11 +1439,19 @@ task_disk_read:
         sta MMU_LCR_WORKER_FLAT
         ldy #0
 task_disk_byte:
+        lda task_load_mode
+        cmp #1
+        beq task_disk_persistent_room
         lda task_disk_store+2
         cmp #$0c
         bne task_disk_room
         lda task_disk_store+1
         cmp #$10
+        beq task_disk_overflow
+        bne task_disk_room
+task_disk_persistent_room:
+        lda task_disk_store+2
+        cmp #$12                    ; APP1 plus unused child stack, not service
         beq task_disk_overflow
 task_disk_room:
         lda DISK_PAYLOAD,y
@@ -1480,6 +1531,7 @@ task_disk_request:
         jmp $c880
 task_disk_signature: .byte "UTRQ", 0, 5
 task_disk_mount: .byte "/mnt/"
+task_disk_leaf: .res 22, 0
 task_disk_saved_request: .res 38, 0
 
 task_transfer_byte:     .byte $00

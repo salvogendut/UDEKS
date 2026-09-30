@@ -24,7 +24,9 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
   take seconds; that is an open limitation, not a claim of responsive graphics.
 - Read-only IEC mount/list/read and foreground disk execution are merged.
   Issue #20 now boots a disk-loaded shell, retaining bootfs recovery, with
-  positive manual feedback (platform unspecified). Script-driven startup, general storage and installable
+  positive manual feedback (platform unspecified). Bounded shell-run `RC`
+  startup and disk-only `free`/`df` are implemented on that branch with positive
+  manual acceptance (platform unspecified). General storage and installable
   services remain incomplete.
 
 Hardware feedback validates particular tested builds and interactions, not
@@ -59,7 +61,7 @@ mounts or applications must not require rebuilding the kernel.
 | Kernel and tasking | Cooperative two-task path works; general scheduling, IPC, and preemption due. |
 | Z80 secondary engine | Mailbox and xwave computation work; reusable operations and soak tests due. |
 | Graphics and input | Working shell/windows/apps; repaint latency and focused-window input remain open. |
-| Storage and applications | Disk execution merged and accepted on C128 + PI1541. Disk-loaded shell on #20 has positive manual feedback; shell-run startup scripts are next. |
+| Storage and applications | Disk execution merged and accepted on C128 + PI1541. Disk-loaded shell, bounded RC startup and standalone free/df accepted on #20; PR checkpoint authorized, review/merge next. |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
@@ -131,8 +133,13 @@ shell. Missing/invalid files fall back to bootfs. The first user-test candidate
 and source/recovery checks are described in [Boot 0.2](BOOT-STARTUP.md).
 The user reports that this candidate looks good; the manual-test platform was
 not specified. This branch is not yet merged.
-Next deliverable: bounded shell-run startup commands editable on disk.
-Neither startup scripts nor the final kernel-only distribution are complete.
+Current deliverable: bounded shell-run startup commands editable on disk,
+plus the requested standalone `free` and `df`. Keep `free`'s fixed-pool
+accounting explicit until a general allocator exists. The user now reports
+"looks ok to me" for this slice; record positive manual acceptance without
+assuming a platform. Commit/push/PR are authorized; review issue #20 for merge before pursuing
+milestone 3's remaining non-kernel program/service extraction. The final kernel-only distribution
+is not complete; do not divert into unrelated optimization.
 
 **Acceptance:** copy a known UDEX onto media, list it, launch it, observe its
 exit status, and launch it again without reboot or memory corruption. Repeat

@@ -101,15 +101,15 @@ physical C128 + PI1541 remains unqualified for this storage path.
 ## Native service checkpoint — 2026-09-30
 
 `iec_service.c` provides read-only mount/unmount, directory and file reads via
-the existing `$CF30`/`$FF16` request boundary (ABI 0.5). The service has its own
+the existing `$CF30`/`$FF16` request boundary (now ABI 0.6 with `STATFS`). The service has its own
 cc65 runtime, saves/restores caller zero page, and makes no KERNAL calls.
 
 | Runtime region | Owner |
 | --- | --- |
 | Bank 1 `$1200-$1FFF` | Service entry, sector-chain reader and C helpers |
 | Bank 1 `$8A00-$8FFF` | C mount/handle/request policy |
-| Bank 1 `$9A00-$9FFF` | IEC assembly driver; ush image+BSS must end below it |
-| Bank 1 `$E000-$E0FF` | Service BSS (111 bytes currently) |
+| Bank 1 `$E300-$E8FF` | IEC driver and C BAM capacity reader; ush stack begins at `$E900` |
+| Bank 1 `$E000-$E0FF` | Service BSS (122 bytes currently) |
 | Bank 1 `$E100-$E1FF` | Private C stack, top `$E200` |
 | Bank 0 `$C880-$C8FF` | 75-byte routing/overlay stub, after scheduler BSS |
 | Common `$F68A-$F6B3` | 42-byte temporary bank-switch code; below transient stack |

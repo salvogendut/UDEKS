@@ -12,11 +12,21 @@ The active worktree is `build/disk-shell-startup`, branch
 `boot-disk-shell-startup`, issue #20. PR #19 merged disk execution as `9ab1efd`
 after the user's 1986 and real-C128/PI1541 acceptance. The next candidate boots
 ordinary disk `USH` with bootfs recovery; see [Boot 0.2](docs/BOOT-STARTUP.md).
-Startup scripts remain the next feature, not implemented yet. The user now
-reports "it all looks good" for the new disk-shell candidate. Record positive
-manual acceptance without inferring the platform or repeating the same test
-request. Preserve the accepted disk-shell checkpoint before adding startup
-scripts; main stays at the accepted PR #19 baseline until merge approval.
+The accepted disk-shell checkpoint is `4b9bed5`. The new slice adds the C
+startup reader (`RC`, 255 bytes / 54-byte lines), full/recovery shell variants,
+bare-name disk fallback and standalone `free`/`df` using STATFS 0.6. The
+persistent allocation is now `$9000-$9FFF`; the IEC driver/BAM reader moved
+to bank-1 `$E300-$E8FF`, below the shell's `$E900-$EFF0` stack. Resident and
+graphics placements stay fixed. See [Boot 0.2](docs/BOOT-STARTUP.md) for limits
+and test commands. 913 host/evidence tests, VICE D64/D71, native 1986,
+recovery/compiled-SPAWN/shadow checks and clean parallel reproducibility pass;
+the exact candidate is in `bench/artifacts/2026-09-30-startup-sysinfo`.
+The user now reports "looks ok to me" for this startup/sysinfo candidate.
+Record positive manual acceptance; the platform and individual checks were
+not specified, so physical-C128 qualification of this slice remains unrecorded.
+Do not repeat the same generic test request. The user has authorized committing,
+pushing and opening the issue #20 PR. Review is the next gate; merging remains
+subject to separate approval. Main stays at the accepted PR #19 baseline.
 The bootstrap must preserve the still-live 42-byte scheduler activator at
 `$F68A` across storage calls. Kernel/shadow placements are unchanged.
 

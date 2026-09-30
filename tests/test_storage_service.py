@@ -60,9 +60,10 @@ class StorageService(unittest.TestCase):
             self.disk[1, first+i] = bytearray(link+part.ljust(254, b'\0'))
         self.sync()
 
-    def request(self, op, payload=b'', fd=0, count=None, flags=0):
+    def request(self, op, payload=b'', fd=0, count=None, flags=0, minor=5):
         self.r[:] = bytes(38)
         self.r[:6] = b'UTRQ\0\5'
+        self.r[5] = minor
         self.r[6:14] = (1, op, 73, fd, len(payload) if count is None else count, 0, 0, flags)
         self.r[14:14+len(payload)] = payload
         handled = self.lib.udeks_storage_dispatch()
@@ -265,3 +266,51 @@ class StorageService(unittest.TestCase):
         self.assertEqual(self.request(9, fd=4), (1, 128, 0, 5))
         self.byte('close_error').value = 0
         self.assertEqual(self.request(18, b'/mnt'), (1, 2, 0, 0))
+
+    def bam(self, dual=False):
+        bam = bytearray(256); bam[0:4] = bytes((18, 1, 65, 128 if dual else 0))
+        for track in range(1, 36):
+            count = 21 if track <= 17 else 19 if track <= 24 else 18 if track <= 30 else 17
+            bam[4*track] = count
+            if dual: bam[220+track] = count
+        self.disk[18, 0] = bam; self.sync()
+        return bam
+
+    def test_statfs_counts_both_formats_excluding_directory_tracks(self):
+        self.mount()
+        for dual, total in ((False, 664), (True, 1328)):
+            bam = self.bam(dual)
+            bam[4] -= 3
+            bam[72] = 0  # directory free sectors never counted
+            if dual: bam[221] -= 2
+            self.sync()
+            self.assertEqual(self.request(19, b'/mnt', minor=6), (1, 2, 8, 0))
+            self.assertEqual(bytes(self.r[14:22]), b'\0\1'+total.to_bytes(2, 'little')+
+                (total-3-2*dual).to_bytes(2, 'little')+b'\x08\x01')
+        self.assertEqual(self.request(18, b'/mnt'), (1, 2, 0, 0))
+
+    def test_statfs_validates_before_io_and_preserves_open_handle(self):
+        self.assertEqual(self.request(19, b'/mnt'), (1, 128, 0, 38))
+        self.assertEqual(self.request(19, b'/mnt', minor=6), (1, 128, 0, 2))
+        for args in (dict(fd=1), dict(flags=1), dict(count=3)):
+            self.assertEqual(self.request(19, b'/mnt', minor=6, **args), (1, 128, 0, 22))
+        self.assertEqual(self.byte('open_count').value, 0)
+        self.file(b'abc'); self.mount(); self.request(6, b'/mnt/HELLO')
+        before = self.word('position').value
+        self.assertEqual(self.request(19, b'/mnt', minor=6), (1, 128, 0, 16))
+        self.assertEqual(self.word('position').value, before)
+        self.assertEqual(self.read_all(), b'abc')
+
+    def test_statfs_corrupt_bam_and_io_errors_close_and_allow_retry(self):
+        self.mount()
+        for index, value in ((2, 66), (4, 22), (140, 18), (255, 18)):
+            self.bam(True)[index] = value; self.sync()
+            before = self.byte('close_count').value
+            self.assertEqual(self.request(19, b'/mnt', minor=6), (1, 128, 0, 5))
+            self.assertEqual(self.byte('close_count').value, before+1)
+        self.bam()
+        for field in ('command_error', 'talk_error', 'close_error', 'status_error'):
+            self.byte(field).value = 2
+            self.assertEqual(self.request(19, b'/mnt', minor=6), (1, 128, 0, 5))
+            self.byte(field).value = 0
+            self.assertEqual(self.request(19, b'/mnt', minor=6), (1, 2, 8, 0))

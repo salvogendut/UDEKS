@@ -10,4 +10,6 @@ uint8_t udeks_cbm_next(void); /* 1 entry, 0 end, 255 error */
 uint8_t udeks_cbm_select(void); /* current entry -> file; errno or zero */
 uint16_t udeks_cbm_read(void); /* data 0..255, 256 EOF, 512 error */
 uint8_t udeks_cbm_close(void);
+extern uint16_t udeks_cbm_total_blocks, udeks_cbm_free_blocks;
+uint8_t udeks_cbm_space(uint8_t device); /* closed on every return; 0 or EIO */
 #endif

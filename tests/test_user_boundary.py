@@ -70,7 +70,7 @@ class UserBoundaryTests(unittest.TestCase):
             self.assertIn(command, source)
         self.assertIn("CWD_KIND = CWD_ROOT", source)
         self.assertIn('CWD_KIND == CWD_BIN ? "/bin" : "/"', source)
-        self.assertIn("--entry ush=$(USER_USH_UDEX)", makefile)
+        self.assertIn("--entry ush=$(USER_RECOVERY_USH_UDEX)", makefile)
         self.assertIn("--flags 0x01", makefile)
         self.assertIn("app: start = $9000", config)
         self.assertIn("jsr task_bank_poll", init)

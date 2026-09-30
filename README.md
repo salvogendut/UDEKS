@@ -26,7 +26,7 @@ See [LICENSE](LICENSE).
 > UDEKS is an experimental kernel prototype in active bring-up. It has a
 > qualified native boot path, interactive console, dual-CPU worker protocol,
 > and initial graphical applications, but it is not yet a general-purpose
-> operating system: general filesystems, script-driven startup, process
+> operating system: general filesystems, process
 > isolation, and dynamic module loading remain future work.
 
 <p align="center">
@@ -106,7 +106,9 @@ See [LICENSE](LICENSE).
   [Try the disk-execution image](docs/STORAGE-0.2.md#try-it).
 - Boot 0.2 adds disk-first shell boot, with missing/invalid-shell recovery and
   temporary bootstrap mount cleanup. Changing only the DOS `USH` file changes
-  the running shell; startup-script execution is next, not implemented yet.
+  the running shell. The disk shell also runs a bounded ASCII `RC` startup
+  file; the default is comments only. After `mount 8 /mnt`, disk-loaded
+  `free` reports the fixed task-memory pool and `df` reports disk blocks.
   [Test the new boot candidate](docs/BOOT-STARTUP.md#test-it).
 
 ## Hardware model
@@ -169,9 +171,10 @@ user/                 Standalone program sources and user-side ABI headers
 `make boot` produces native-autoboot D64/D71 images with the resident 8502
 kernel, Z80 worker, transitional service bundle, recovery bootfs, and a
 standalone `USH` disk file. Init loads that shell into bank 1 before starting
-its task; other commands still resolve from bootfs or explicit `/mnt/NAME`
-paths. `xclock` and `xwave` are standalone UDEX images loaded from bootfs into
-retained slots. General task allocation, startup scripts and extracting the
+its task and running the disk's bounded `RC` startup file. Foreground names
+resolve from bootfs first, then mounted `/mnt`; explicit `/mnt/NAME` works too.
+Disk-only `FREE` and `DF` are included. `xclock` and `xwave` are standalone
+UDEX images loaded from bootfs into retained slots. General task allocation and extracting the
 remaining non-kernel services are still roadmap work.
 
 The generic retained-window cache is enabled by default in `make boot`, following
