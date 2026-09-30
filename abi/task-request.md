@@ -1,4 +1,4 @@
-# Bank-task request ABI 0.6
+# Bank-task request ABI 0.7
 
 Bank-1 8502 tasks exchange bounded requests with the resident kernel through a
 38-byte record in top common RAM. The task fills the record and calls `$FF16`.
@@ -9,14 +9,14 @@ ABI 0.3 keeps every 0.2 operation number and behavior unchanged and adds
 lifecycle operations `10`-`15`. `YIELD`, `EXIT`, immediate/nonblocking and
 blocking `WAITPID`, `SLEEP`, `CANCEL`, and `SPAWN` are implemented. Rebuilt
 0.3 clients may keep using the 0.2 operations unchanged, and
-the resident version check accepts minor `0` through `6`.
+the resident version check accepts minor `0` through `7`.
 ABI 0.4 adds non-consuming stdin readiness (`POLL`, operation 16). A 0.0–0.3
 request for operation 16 returns `ENOSYS`; an unsupported future minor returns
 `EPROTO`. Operations 1–15 retain their existing numbers and behavior.
 ABI 0.5 adds read-only IEC `MOUNT`/`UMOUNT` through a private bank-1 C service.
 Existing stream/directory clients continue to request their minimum ABI 0.4;
-`POLL` accepts 0.4 through 0.6. The startup shell uses 0.5; `df` uses 0.6
-for `STATFS`. No published entry address changes.
+`POLL` accepts 0.4 through 0.7. The current shell uses 0.7; `df` uses 0.6
+for `STATFS`. ABI 0.7 adds deferred numeric service control. No published entry address changes.
 
 ## Record
 
@@ -26,7 +26,7 @@ The record occupies `$F359-$F37E`:
 |---:|---:|---|
 | 0 | 4 | ASCII magic `UTRQ` |
 | 4 | 1 | ABI major (`0`) |
-| 5 | 1 | ABI minor (`6`; earlier compatible minors remain accepted) |
+| 5 | 1 | ABI minor (`7`; earlier compatible minors remain accepted) |
 | 6 | 1 | State |
 | 7 | 1 | Operation |
 | 8 | 1 | Sequence number |
@@ -62,13 +62,46 @@ States are idle (`0`), request (`1`), complete (`2`), and error (`$80`).
 | 17 | `MOUNT` | 0.5 | Mount IEC device 8–11 read-only at `/mnt`. |
 | 18 | `UMOUNT` | 0.5 | Unmount `/mnt` if no storage handle is open. |
 | 19 | `STATFS` | 0.6 | Read mounted CBM-DOS total/free block counts. |
+| 20 | `CONTROL` | 0.7 | Enqueue a root-session graphics/engine action. |
 
 `EXEC` (`3`) is not task creation and its meaning does not change: it remains
-the bounded command-line bridge for the resident compatibility shell. Real
+the bounded command-line bridge to the executable loader. There is no resident
+builtin-name table anymore: current `ush` owns builtins and graphics option
+parsing; old clients cannot depend on the removed resident builtin catalog. Real
 loader-backed task creation is `SPAWN` (`15`).
 
 After validating the protocol envelope, all other operation values return
 `ENOSYS` before operation-specific field checks.
+
+## Deferred root-session control (0.7)
+
+`CONTROL`: descriptor/flags `0`, count exactly `3`, payload `[target, action,
+background]`. Targets: desktop `1`, clock `2`, wave `3`, engine `4`.
+Actions: start `0`, stop `1`, self-test `2`. Desktop accepts start/stop;
+clock/wave accept start/stop; engine accepts only self-test. Background is
+`0` or `1`, and `1` is valid only for clock/wave start. Earlier minors return
+`ENOSYS`; invalid fields return `EINVAL`; an occupied queue, pending EXEC or
+foreground job returns `EBUSY`. Rejection changes neither queue nor reply.
+
+Acceptance returns complete/result `1`, meaning **queued**, not successfully
+started. Sequence is preserved. The assembly wrapper explicitly clears carry:
+set carry means scheduler suspension and must not leak out of a C helper.
+No bank/graphics/engine action runs on the request stack. Init's bank-0 session
+poll performs it after the caller yields and the task gateway has unwound.
+
+This is a serialized root-session interface, not general per-task IPC. The
+single completion mailbox reuses `$F3A0-$F3A4` as `[ready, target, action,
+background, result]`. It is safe to reuse because EXEC first copies command
+text privately. Producer publishes ready `$A5` last; `ush` snapshots the reply
+and clears ready before doing output. Ordinary stream requests do not touch it.
+Result `0` means success, otherwise it is the selected service's error code;
+`130` reports foreground interruption. WAIT reports foreground ownership;
+`ush` prints notices, waits if necessary, and owns prompt rearming, including
+suppression between RC lines. A later root command may replace the mailbox.
+Callers must serialize commands and consume completion before submitting again.
+
+Device/window/app services remain preloaded or retained as documented; this
+boundary does not claim general processes, memory protection or loadable drivers.
 
 ## Filesystem capacity (0.6)
 

@@ -65,9 +65,9 @@ def main():
             records.append(dict(command=text, loader=status.hex(), console=console))
             print('PASS', text, flush=True)
 
-        command('ls /bin', contains=('cowsay',))
         command('/mnt/DISKCOW hi', error=11)
         command('mount 8 /mnt')
+        command('ls /bin', contains=('mount', 'umount', 'ush'))
         command('/mnt/DISKCOW hello', contains=('hello', '^__^'))
         command('/mnt/DISKCOW again', contains=('again', '^__^'))
         command('/mnt/BADUDEX', error=4)
@@ -76,7 +76,7 @@ def main():
         command('/mnt/DISKCOW recovered', contains=('recovered', '^__^'))
         command('/mnt/ENTRY', exit_status=37)
         command('/mnt/LIMIT', exit_status=7)
-        command('cowsay bootfs', contains=('bootfs', '^__^'))
+        command('cowsay disk', contains=('disk', '^__^'))
         command('cat /mnt/HELLO', contains=('HELLO UDEKS',))
         command('xinit', error=None, contains=('VIC-II graphics active',))
         command('xclock &', error=None)
@@ -123,7 +123,7 @@ def main():
         command('/mnt/DISKCOW released', contains=('released', '^__^'))
         monitor_command(port, 'detach 8')
         command('/mnt/DISKCOW removed', error=13)
-        command('cowsay fallback', contains=('fallback', '^__^'))
+        # Mount helper is the bootfs recovery program; cowsay now needs disk.
         command('umount /mnt')
         monitor_command(port, f'attach "{args.disk.resolve()}" 8')
         command('mount 8 /mnt')

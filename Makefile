@@ -300,6 +300,10 @@ user-sources: $(USER_COWSAY_ASM) $(USER_DATE_ASM) $(USER_LS_ASM) $(USER_USH_ASM)
 		$(USER_FILESYSTEM_OBJ) $(USER_POLL_ENTRY_OBJ)
 
 user-programs: $(USER_BOOTFS) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX)
+user-programs: $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(BUILD_USER)/filetools.udx $(BUILD_USER)/sysinfo.udx $(BUILD_USER)/diagnostics.udx
+
+$(BUILD_8502)/shell.s: include/udeks/service_control.h include/udeks/task_request.h
+$(USER_USH_ASM) $(BUILD_USER)/ush-recovery.o: include/udeks/service_control.h include/udeks/task_request.h
 
 # Compile-only proof that the host-tested lifecycle modules build for cc65.
 task-state: $(BUILD_8502)/task_state.o
@@ -1906,7 +1910,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
 		tools/build_d71.py bench/iec-directory/hello.txt user/etc/rc $(USER_SYSINFO_UDEX) \
-		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX)
+		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX)
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
@@ -1932,6 +1936,9 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) \
 		--command COWSAY=$(USER_COWSAY_UDEX) --command DATE=$(USER_DATE_UDEX) \
 		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_FILETOOLS_UDEX) \
+		--command UNAME=$(USER_DIAGNOSTICS_UDEX) --command LSHW=$(USER_DIAGNOSTICS_UDEX) \
+		--command LSMOD=$(USER_DIAGNOSTICS_UDEX) --command LSCPU=$(USER_DIAGNOSTICS_UDEX) \
+		--command Z80CTL=$(USER_DIAGNOSTICS_UDEX) \
 		--d64-output $(BOOT_D64) $(BOOT_D71)
 
 $(TASK_EXIT_PROBE_D71) $(TASK_EXIT_PROBE_D64) &: $(STAGE0_BIN) \
@@ -2126,7 +2133,7 @@ $(TASK_CANCEL_PROBE_D71) $(TASK_CANCEL_PROBE_D64) &: $(STAGE0_BIN) \
 
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) \
-		$(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) \
+		$(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX) \
 		$(BOOT_DELIVERY_BIN) \
 		$(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) \
 		$(SCHEDULER_BIN) $(CAPABILITY_BIN) $(CAPABILITY_INSTALLER_BIN) \
@@ -2145,6 +2152,9 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) \
 		--command COWSAY=$(USER_COWSAY_UDEX) --command DATE=$(USER_DATE_UDEX) \
 		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_FILETOOLS_UDEX) \
+		--command UNAME=$(USER_DIAGNOSTICS_UDEX) --command LSHW=$(USER_DIAGNOSTICS_UDEX) \
+		--command LSMOD=$(USER_DIAGNOSTICS_UDEX) --command LSCPU=$(USER_DIAGNOSTICS_UDEX) \
+		--command Z80CTL=$(USER_DIAGNOSTICS_UDEX) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(PANIC_PROBE_CRT0_BIN) \
 		--probe $(PANIC_PROBE_PROBE_BIN) \

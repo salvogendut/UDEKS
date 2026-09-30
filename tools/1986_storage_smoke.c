@@ -146,14 +146,14 @@ int main(int argc, char **argv) {
             "shell was not loaded from boot-device disk");
     idle();
     unsigned shell_before = byte(0xf3d8);
-    text("uname -a\n");
+    text("help\n");
     wait_byte(0xf3d8, (shell_before+1) & 255, "shell builtin was not accepted");
     idle();
-    require(console_contains("UDEKS 0.1.0 c128 8502"), "disk shell uname failed");
-    puts("PASS native disk shell source=1 error=0 device=8, uname works");
+    require(console_contains("Recovery: mount umount"), "disk shell help failed");
+    puts("PASS native disk shell source=1 error=0 device=8, help works");
 #endif
-    storage_command("ls /bin", 0);
     storage_command("mount 8 /mnt", 0);
+    storage_command("ls /bin", 0);
     storage_command("ls /mnt", 0);
 #ifdef UDEKS_SYSINFO_SMOKE
     storage_command("free", 0);
@@ -190,10 +190,10 @@ int main(int argc, char **argv) {
 #endif
     storage_command("cat /mnt/hello", 0);
     storage_command("umount /mnt", 0);
-    storage_command("ls /bin", 0);
+    command("echo recovery alive"); idle();
     require(drive_attach_disk(&machine->drive, NULL) == 0, "remove disk");
     storage_command("mount 8 /mnt", 1);
-    storage_command("ls /bin", 0);
+    command("echo recovery alive"); idle();
     require(drive_attach_disk(&machine->drive, argv[2]) == 0, "reinsert disk");
     storage_command("mount 8 /mnt", 0);
     storage_command("cat /mnt/hello", 0);

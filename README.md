@@ -75,17 +75,20 @@ See [LICENSE](LICENSE).
 - The current statically linked services are transitional. ADR 0007 freezes a
   smaller resident-core boundary; new commands such as `cowsay` live under
   `user/` and must arrive through the executable-loader path.
-- A transitional init service owns the root session. Commands absent from the
-  builtin table are resolved by leaf name through the read-only `/bin` bootfs;
-  `cowsay`, `date`, and `ls` are transient programs launched through that path;
+- A transitional init service owns the root session. There is no resident
+  command catalog. `ush` owns shell builtins and graphics command parsing;
+  other names use the generic loader, searching `/bin` then mounted `/mnt`.
+  `cowsay`, `date`, `ls`, `cat`, `free`, `df` and the hardware/CPU diagnostics
+  are ordinary disk programs. Normal bootfs retains only mount/unmount and
+  recovery ush;
   `date` reads or sets the BASIC `TI`/`TI$`-compatible clock also used by
   `xclock`, while `ls`
   exercises the first Linux-shaped `open`/`getdents`/`stat`/`close` boundary.
   Init now first loads the ordinary disk file `USH` into bank 1, using the
   embedded `/bin/ush` as recovery. It runs through the public task/stream ABI,
-  owns terminal lines and runs `echo`, `help`,
-  and `uname` natively, forwarding commands still awaiting extraction through
-  a bounded compatibility request.
+  owns terminal lines, `cd`, `clear`, `echo`, `help` and `pwd`. Graphics and
+  Z80 controls cross a bounded numeric service request, deferred until the
+  bank-switched caller returns; CLI names/options/messages live outside the core.
   Task Request ABI 0.4 adds non-consuming stdin `POLL`: idle `ush` sleeps
   until a submitted line is readable. A compiled-C probe qualifies finite and
   infinite waits, wake/response ownership and stack preservation on both disk
@@ -173,12 +176,14 @@ kernel, Z80 worker, transitional service bundle, recovery bootfs, and a
 standalone `USH` disk file. Init loads that shell into bank 1 before starting
 its task and running the disk's bounded `RC` startup file. Foreground names
 resolve from bootfs first, then mounted `/mnt`; explicit `/mnt/NAME` works too.
-Disk-only `FREE`, `DF`, `XCLOCK` and `XWAVE` are included. After `mount 8 /mnt`,
+Mount before using disk utilities such as `ls`, `date` and `uname`. After `mount 8 /mnt`,
 `xclock &` and `xwave &` load the graphical UDEX files into retained slots;
 there are no normal bootfs copies of either app. See
 [disk-loaded graphics](docs/DISK-GRAPHICS.md) for testing and limits.
 General task allocation and extracting the
 remaining non-kernel services are still roadmap work.
+See [command extraction and the current test sequence](docs/COMMAND-EXTRACTION.md)
+for the disk/shell/recovery inventory. This is not yet kernel-only boot.
 
 The generic retained-window cache is enabled by default in `make boot`, following
 emulator qualification and real-hardware input/RESTORE acceptance. The prior

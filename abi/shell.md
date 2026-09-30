@@ -3,10 +3,12 @@
 The root shell is a persistent bank-1 `/bin/ush` task owned and polled by init.
 The terminal owns keyboard editing and publishes one bounded, NUL-terminated
 line. `ush` reads it through the task-request ABI, implements `cd`, `echo`,
-`help`, `pwd`, and `uname` natively, writes through descriptors 1 and 2, and requests the next
-prompt. Commands not yet extracted cross a bounded compatibility-exec request
-to the resident dispatcher; foreground jobs are observed through an explicit
-wait request.
+`help`, `pwd`, and `clear` natively, writes through descriptors 1 and 2, and
+requests the next prompt. It parses `xinit`/`xclock`/`xwave` options and sends
+numeric CONTROL requests; app implementations are disk files. Other commands
+cross a bounded compatibility EXEC to the generic loader. There is no resident
+command-name registry. Foreground ownership is observed through WAIT; ush
+consumes numeric completion notices and rearms its own prompt.
 
 The command-facing conventions intentionally resemble a small Unix shell:
 handlers receive `argc`/`argv`, return zero for success and nonzero for
@@ -28,18 +30,24 @@ limits are errors reported on standard error rather than reasons to fail the
 service.
 
 Names absent from the builtin registry are searched as executable leaf names
-in the bootfs mounted at `/bin`. A match is validated as UDEX and run in the
+in the bootfs mounted at `/bin`, then on mounted `/mnt`. Explicit `/mnt/NAME`
+works too. Normal bootfs has only mount, umount and recovery ush. A match is validated as UDEX and run in the
 transient task slot. The loader saves and restores that complete slot around a
 synchronous command, so utilities such as `date` and `cowsay` remain usable
 while the background `xclock` client owns its normal image there. A missing
 name reports `Unknown command`. This lookup path is generic—there is no
 resident `cowsay` or `date` command record.
 
-The current native and compatibility command set contains:
+Eight names are handled by ush: cd, clear, echo, help, pwd and the three
+graphics launch/control forms. Thirteen program names are disk-backed:
+cowsay, date, ls, cat, free, df, uname, lshw, lsmod, lscpu, z80ctl, xclock,
+xwave (the last two have shell launch syntax and disk implementations).
+Mount/umount share the small bootfs recovery helper. Disk `USH` is the shell
+program itself, not another transient utility. The current command set includes:
 
 | Command | Behavior |
 |---|---|
-| `help` | List registered commands and summaries. |
+| `help` | List shell, disk and recovery command names. |
 | `clear` | Clear and home the retained root console. |
 | `echo` | Write its arguments separated by spaces. |
 | `date` | Read time, or set the shared clock with `HHMMSS`, `HH:MM:SS`, or `-s`. |
@@ -58,7 +66,7 @@ follows the conventional Unix utility-plus-subcommand shape; it does not expose
 raw MMU or mailbox access to the command layer.
 
 The provisional `SHLL` diagnostic record occupies 24 bytes at `$F170`. It
-contains format/state/error bytes, the command count, last argument count and
+contains format/state/error bytes, resident command count (now zero), last argument count and
 command/result identifiers, 16-bit poll, command, unknown-command, and
 parse-error counters, the foreground job identifier, background-job count,
 and interrupt count. The compiler-neutral task-request ABI is documented in

@@ -41,8 +41,15 @@ def main():
             before = byte(port, 0xF3D8)
             type_command(port, queue, text, deadline)
             sp.wait_for_byte(port, 0xF3D8, (before+1)&255, deadline)
-            sp.wait_for_byte(port, slots+1, 4, deadline)
-            sp.wait_for_byte(port, slots+2, 2, deadline)
+            try:
+                sp.wait_for_byte(port, slots+1, 4, deadline)
+                sp.wait_for_byte(port, slots+2, 2, deadline)
+            except TimeoutError:
+                sp.capture_blocks(port, [(work/'failed-common.bin', 0xf000, 0xffff, 'kernel'),
+                    (work/'failed-slots.bin', slots, slots+63, 'kernel'),
+                    (work/'failed-console.bin', 0xc00, 0x1157, 'kernel'),
+                    (work/'failed-ush.bin', 0x9000, 0x9fff, 'worker')])
+                raise
             data = sp.capture_blocks(port, [(work/'console.bin', 0xc00, 0x1157, 'kernel')])[0]
             console = '\n'.join(data[i:i+64].decode('ascii', errors='replace').rstrip() for i in range(0, 21*65, 65))
             if data[-1] != 1 or any(item not in console for item in expected): raise AssertionError(text+'\n'+console)
@@ -61,6 +68,14 @@ def main():
         command('/mnt/CAT /mnt/HELLO', ('HELLO UDEKS',))
         command('/mnt/LS /bin', ('mount', 'umount', 'ush'))
         command('cat /mnt/NOFILE', ('cat: No such file or directory',))
+        command('uname -a', ('UDEKS 0.1.0 c128 8502',))
+        command('/mnt/LSHW', ('Video:', 'Expansion:'))
+        command('lsmod', ('Modules:', 'resident'))
+        command('lscpu', ('8502: resident executive', 'stock timing'))
+        command('z80ctl status', ('State: ready', 'Transactions:'))
+        command('z80ctl test', ('Z80 self-test: OK',))
+        command('xinit nonsense', ('usage:',))
+        command('xinit', ('VIC-II graphics active',))
         command('xclock &', ('xclock started in background',))
         command('xwave &', ('xwave started in background',))
         sp.wait_for_byte(port, 0xF27A, 21, time.monotonic()+90)
@@ -68,6 +83,12 @@ def main():
         command('ls /mnt', ('COWSAY', 'CAT'))
         command('cat /mnt/HELLO', ('HELLO UDEKS',))
         if byte(port, 0xf225) != 3 or byte(port, 0xf265) != 3: raise AssertionError('apps lost')
+        command('z80ctl test', ('Z80 self-test: OK',))
+        command('xwave -q', ('xwave stopped',))
+        command('xclock -q', ('xclock stopped',))
+        command('xinit -q', ('VIC-II graphics stopped',))
+        command('xclock &', ('xclock started in background',))
+        command('xwave &', ('xwave started in background',))
         command('umount /mnt', ())
         command('cowsay unavailable', ('Unknown command: cowsay',))
         command('echo recovery alive', ('recovery alive',))

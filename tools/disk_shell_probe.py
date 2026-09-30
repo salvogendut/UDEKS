@@ -60,12 +60,12 @@ def main():
                     raise AssertionError(f'{variant} {text}: command failed')
                 commands.append(dict(command=text, console=console))
 
-            command('uname -a', 'UDEKS '+version+' c128 8502', builtin=True)
+            command('help', (version+'ery' if version.startswith('disk') else 'Recovery')+': mount umount', builtin=True)
             # A successful mount proves the bootstrap mount was released.
             command('mount 8 /mnt', 'UDEKS:')
             command('cat /mnt/HELLO', 'HELLO UDEKS')
             command('umount /mnt', 'UDEKS:')
-            command('cowsay recovered', '^__^')
+            command('echo recovered', 'recovered', builtin=True)
             results.append(dict(variant=variant, source=source, error=error,
                 disk_sha256=hashlib.sha256(disk.read_bytes()).hexdigest(), commands=commands))
             print(f'PASS {variant}: source={source}, error={error}, version={version}, mount released, commands work', flush=True)

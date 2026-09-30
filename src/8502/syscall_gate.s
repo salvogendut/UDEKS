@@ -18,6 +18,7 @@
         .import _udeks_root_terminal_prompt
         .import _udeks_shell_command_line
         .import _udeks_shell_foreground_job
+        .import _udeks_service_control_request
         .import _udeks_bootfs_request
         .export _udeks_time_sync_ti
         .import pusha
@@ -100,6 +101,28 @@ _udeks_syscall_clock_set_gate:
         .include "app_gateway.s"
 
         .segment "CODE"
+task_extended_request:
+        lda TREQ_OPERATION
+        cmp #20
+        bne :+
+        jsr _udeks_service_control_request
+        ; C set means suspend to the native scheduler, not a C return flag.
+        ; Control only enqueues work and must always return synchronously.
+        lda #0
+        ldx #0
+        clc
+        rts
+:
+        jmp $c880
+
+task_exec_pending:
+        ; Text is now private; release the shared input/reply mailbox.
+        lda #$00
+        sta TASK_COMMAND
+        lda #$01
+        sta SHELL_PENDING_EXEC
+        jmp task_finish_ok
+
 clock_set_runtime:
         cmp #$18
         bcs clock_set_invalid
@@ -261,7 +284,7 @@ task_validate_signature:
         dex
         bpl task_validate_signature
         lda TREQ_BASE+$05
-        cmp #$07
+        cmp #$08
         bcs task_protocol_trampoline
         lda TREQ_STATE
         cmp #TREQ_REQUEST
@@ -289,7 +312,7 @@ task_check_prompt:
         bne task_request_fallback
         jmp task_prompt
 task_request_fallback:
-        jmp $c880                   ; nonresident storage, then bootfs/lifecycle
+        jmp task_extended_request  ; service control, storage, bootfs/lifecycle
 task_protocol_trampoline:
         jmp task_protocol_error
 
@@ -358,9 +381,7 @@ task_copy_command:
         ; cannot safely resume through that bank-switched path. The ordinary
         ; bank-0 shell poll consumes the copied command on this same service
         ; pass. Report foreground/wait so ush does not emit a premature prompt.
-        lda #$01
-        sta SHELL_PENDING_EXEC
-        bne task_finish_ok
+        jmp task_exec_pending
 
 task_wait:
         lda _udeks_shell_foreground_job

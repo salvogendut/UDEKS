@@ -1,0 +1,174 @@
+{
+  "drive": "1541",
+  "disk_sha256": "62c810a2d02aeb0e4ceb5d1693c615390f0bad5b340cb18129d24e5996c0b699",
+  "runs": [
+    {
+      "variant": "diskA",
+      "source": 1,
+      "error": 0,
+      "disk_sha256": "ce8effefc02b2a0a3c3f55dad1dbf75487c3404097452d3ae77993f432326d75",
+      "commands": [
+        {
+          "command": "help",
+          "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\ndiskAery: mount umount\nUDEKS:~>"
+        },
+        {
+          "command": "mount 8 /mnt",
+          "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\ndiskAery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cat /mnt/HELLO",
+          "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\ndiskAery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+        },
+        {
+          "command": "umount /mnt",
+          "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\ndiskAery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "echo recovered",
+          "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\ndiskAery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> echo recovered\nrecovered\nUDEKS:~>"
+        }
+      ]
+    },
+    {
+      "variant": "diskB",
+      "source": 1,
+      "error": 0,
+      "disk_sha256": "dcda3d74ccda8c74b2bdf47ba84745561fbe3b837f26c4e3af86fc6983399d99",
+      "commands": [
+        {
+          "command": "help",
+          "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\ndiskBery: mount umount\nUDEKS:~>"
+        },
+        {
+          "command": "mount 8 /mnt",
+          "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\ndiskBery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cat /mnt/HELLO",
+          "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\ndiskBery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+        },
+        {
+          "command": "umount /mnt",
+          "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\ndiskBery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "echo recovered",
+          "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\ndiskBery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> echo recovered\nrecovered\nUDEKS:~>"
+        }
+      ]
+    },
+    {
+      "variant": "missing",
+      "source": 2,
+      "error": 11,
+      "disk_sha256": "c49373c68419ef49effca774f18f7c09635b920293b92e64550d1124c1e23e6f",
+      "commands": [
+        {
+          "command": "help",
+          "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~>"
+        },
+        {
+          "command": "mount 8 /mnt",
+          "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cat /mnt/HELLO",
+          "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+        },
+        {
+          "command": "umount /mnt",
+          "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "echo recovered",
+          "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> echo recovered\nrecovered\nUDEKS:~>"
+        }
+      ]
+    },
+    {
+      "variant": "bad",
+      "source": 2,
+      "error": 4,
+      "disk_sha256": "d73de2d663f98e0a0e44edc2571cad52140c744e87ac598c8a455957248f582b",
+      "commands": [
+        {
+          "command": "help",
+          "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~>"
+        },
+        {
+          "command": "mount 8 /mnt",
+          "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cat /mnt/HELLO",
+          "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+        },
+        {
+          "command": "umount /mnt",
+          "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "echo recovered",
+          "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> echo recovered\nrecovered\nUDEKS:~>"
+        }
+      ]
+    },
+    {
+      "variant": "entry",
+      "source": 2,
+      "error": 10,
+      "disk_sha256": "e514e97abb0305b0b408b1d78ba9a538b0579f8c4c6582481af3e169d1c7370c",
+      "commands": [
+        {
+          "command": "help",
+          "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~>"
+        },
+        {
+          "command": "mount 8 /mnt",
+          "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cat /mnt/HELLO",
+          "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+        },
+        {
+          "command": "umount /mnt",
+          "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "echo recovered",
+          "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> echo recovered\nrecovered\nUDEKS:~>"
+        }
+      ]
+    },
+    {
+      "variant": "flags",
+      "source": 2,
+      "error": 7,
+      "disk_sha256": "14255f0e50f6dbbc22e985bd44d624017e677e5198e036f8b073f1ea1f6c3a0a",
+      "commands": [
+        {
+          "command": "help",
+          "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~>"
+        },
+        {
+          "command": "mount 8 /mnt",
+          "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cat /mnt/HELLO",
+          "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+        },
+        {
+          "command": "umount /mnt",
+          "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "echo recovered",
+          "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> echo recovered\nrecovered\nUDEKS:~>"
+        }
+      ]
+    }
+  ]
+}

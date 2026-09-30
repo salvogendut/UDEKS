@@ -96,8 +96,8 @@ def main():
         command('cat /mnt/HELLO', ('HELLO UDEKS',))
         command('ls /mnt', ('FREE', 'DF', 'USH'))
         command('umount /mnt')
-        command('cowsay OK', ('^__^', 'OK'))
-        command('uname -a', ('UDEKS 0.1.0 c128 8502',), builtin=True)
+        command('echo recovery OK', ('recovery OK',), builtin=True)
+        command('help', ('Recovery: mount umount',), builtin=True)
         driver = (ROOT/'build/storage/driver.bin').read_bytes()
         # Driver is code only. A shell-stack overrun into it is observable.
         live = sp.capture_blocks(port, [(work/'driver-after.bin', 0xE300, 0xE300+len(driver)-1, 'worker')])[0]

@@ -1,5 +1,13 @@
 # Scheduler placement spike
 
+Current follow-up (2026-09-30, issue #24): command extraction leaves an unused
+gap before VICSHADOW. The shadow is now pinned to its established boot/cache
+address `$A1E0-$C11F`, still exactly 8,000 bytes. The audit permits a nonnegative
+pre-shadow gap but rejects overlap, shadow drift, padding and gateway changes.
+The historical sequential-reclaim steps below explain how that layout was
+reached; they do not require moving the current frozen delivery addresses when
+resident code shrinks. Current measurements and evidence: [command extraction](COMMAND-EXTRACTION.md).
+
 This is the Tasking 0.1 placement spike required before resident lifecycle
 handlers are integrated. It measures the current resident map, identifies
 boot-only and transitional material that can be reclaimed, and proposes the

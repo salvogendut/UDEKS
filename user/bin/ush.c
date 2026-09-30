@@ -2,6 +2,7 @@
 #include "udeks/program.h"
 #include "udeks/memory.h"
 #include "udeks/task_request.h"
+#include "udeks/service_control.h"
 #ifndef UDEKS_RECOVERY
 #include "udeks/startup.h"
 static unsigned char startup_active;
@@ -20,6 +21,30 @@ static unsigned char started;
 static unsigned char waiting_foreground;
 static unsigned char line_length;
 static unsigned char line[LINE_CAPACITY + 1u];
+extern unsigned char submit_request(unsigned char, unsigned char, unsigned char);
+#define PAYLOAD ((volatile unsigned char *)(UDEKS_TASK_REQUEST_BASE + UDEKS_TREQ_PAYLOAD))
+#define REPLY ((volatile unsigned char *)UDEKS_CONTROL_REPLY_BASE)
+
+static void service_notice(void)
+{
+    unsigned char target, action, background, result;
+    if (REPLY[0] != UDEKS_CONTROL_REPLY_READY) return;
+    target = REPLY[1]; action = REPLY[2]; background = REPLY[3]; result = REPLY[4];
+    REPLY[0] = 0;
+    if (result == UDEKS_CONTROL_INTERRUPTED) {
+        udeks_write(1, (const unsigned char *)"Interrupted\n"); return;
+    }
+    if (target == UDEKS_CONTROL_DESKTOP) {
+        udeks_write(1, (const unsigned char *)(result ? "xinit: failed\n" :
+            action ? "VIC-II graphics stopped\n" : "VIC-II graphics active on 40-column display\n"));
+    } else if (target == UDEKS_CONTROL_ENGINE) {
+        udeks_write(1, (const unsigned char *)(result ? "Z80 self-test: failed\n" : "Z80 self-test: OK\n"));
+    } else {
+        udeks_write(1, (const unsigned char *)(target == UDEKS_CONTROL_CLOCK ? "xclock" : "xwave"));
+        udeks_write(1, (const unsigned char *)(result ? ": request failed\n" : action ? " stopped\n" :
+            background ? " started in background\n" : " running; Ctrl+C stops it\n"));
+    }
+}
 
 static void write_line(const unsigned char *text)
 {
@@ -74,6 +99,7 @@ static void dispatch_line(void)
     unsigned char command;
     unsigned char rest;
     unsigned char result;
+    unsigned char target;
 
     ++USH_COMMANDS;
     command = skip_space(0);
@@ -96,27 +122,41 @@ static void dispatch_line(void)
         return;
     }
 
-    rest = command_end(command, (const unsigned char *)"uname");
-    if (rest != 0xFFu) {
-        rest = skip_space(rest);
-        if (line[rest] == 0) {
-            write_line((const unsigned char *)"UDEKS");
-            finish_command();
-            return;
-        }
-        if (text_equal(rest, (const unsigned char *)"-a")) {
-            write_line((const unsigned char *)"UDEKS 0.1.0 c128 8502");
-            finish_command();
-            return;
-        }
-    }
-
     rest = command_end(command, (const unsigned char *)"help");
     if (rest != 0xFFu && line[skip_space(rest)] == 0) {
-        write_line((const unsigned char *)"cat cd cowsay date df echo free help ls mount pwd uname");
+        write_line((const unsigned char *)"cd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount");
         finish_command();
         return;
     }
+
+    rest = command_end(command, (const unsigned char *)"clear");
+    if (rest != 0xFFu && line[skip_space(rest)] == 0) {
+        udeks_write_byte(1, '\f');
+        finish_command();
+        return;
+    }
+
+    target = UDEKS_CONTROL_DESKTOP;
+    rest = command_end(command, (const unsigned char *)"xinit");
+    if (rest == 0xFFu) {
+        target = UDEKS_CONTROL_CLOCK;
+        rest = command_end(command, (const unsigned char *)"xclock");
+    }
+    if (rest == 0xFFu) {
+        target = UDEKS_CONTROL_WAVE;
+        rest = command_end(command, (const unsigned char *)"xwave");
+    }
+    if (rest != 0xFFu) {
+        rest = skip_space(rest);
+        PAYLOAD[0] = target; PAYLOAD[1] = 0; PAYLOAD[2] = 0;
+        if (text_equal(rest, (const unsigned char *)"-q")) PAYLOAD[1] = UDEKS_CONTROL_STOP;
+        else if (target != UDEKS_CONTROL_DESKTOP && text_equal(rest, (const unsigned char *)"&")) PAYLOAD[2] = 1;
+        else if (line[rest]) {
+            write_line((const unsigned char *)"usage: xinit [-q]; xclock/xwave [-q | &]");
+            finish_command(); return;
+        }
+        result = submit_request(UDEKS_TREQ_OP_CONTROL, 0, UDEKS_CONTROL_COUNT);
+    } else {
 
     rest = command_end(command, (const unsigned char *)"pwd");
     if (rest != 0xFFu && line[skip_space(rest)] == 0) {
@@ -149,6 +189,7 @@ static void dispatch_line(void)
     }
 
     result = udeks_exec_line(line, line_length);
+    }
     line_length = 0;
     line[0] = 0;
     if (result == UDEKS_TREQ_EXEC_FOREGROUND) {
@@ -194,11 +235,13 @@ unsigned char udeks_ush_poll(void)
         return UDEKS_EXIT_SUCCESS;
     }
     if (waiting_foreground != 0) {
+        service_notice();
         count = udeks_wait_foreground();
         if (count == UDEKS_IO_ERROR || count != 0) {
             return UDEKS_EXIT_SUCCESS;
         }
         waiting_foreground = 0;
+        finish_command();
         return UDEKS_EXIT_SUCCESS;
     }
 

@@ -1,0 +1,216 @@
+{
+  "drive": "1541",
+  "disk_sha256": "d4205fa8a156fc09ec870e9247a97bf891e1f406fc176e6ca3b8e6ea71d90faf",
+  "commands": [
+    {
+      "command": "/mnt/DISKCOW hi",
+      "loader": "5441534b018b0bff650e800102cfe2ff55444558000101010090650e80010090",
+      "console": "\nINITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> /mnt/DISKCOW hi\nUnknown command: /mnt/DISKCOW\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000fd02000003cfe2ff55444558000101000002fd0200000002",
+      "console": "INITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> /mnt/DISKCOW hi\nUnknown command: /mnt/DISKCOW\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "ls /bin",
+      "loader": "5441534b01030000c009400002cfe2ff55444558000101000002c00940000002",
+      "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> /mnt/DISKCOW hi\nUnknown command: /mnt/DISKCOW\nUDEKS:~> mount 8 /mnt\nUDEKS:~> ls /bin\nmount\numount\nush\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DISKCOW hello",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> /mnt/DISKCOW hi\nUnknown command: /mnt/DISKCOW\nUDEKS:~> mount 8 /mnt\nUDEKS:~> ls /bin\nmount\numount\nush\nUDEKS:~> /mnt/DISKCOW hello\n _______\n< hello >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DISKCOW again",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "umount\nush\nUDEKS:~> /mnt/DISKCOW hello\n _______\n< hello >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/DISKCOW again\n _______\n< again >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/BADUDEX",
+      "loader": "5441534b01840400a007000001cfe2ff4e4f54204120554445582046494c450a",
+      "console": "UDEKS:~> /mnt/DISKCOW hello\n _______\n< hello >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/DISKCOW again\n _______\n< again >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/BADUDEX\n/mnt/BADUDEX: loader error\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/SHORT",
+      "loader": "5441534b01890900a007000001cfe2ff55444558000101000002a00700000002",
+      "console": "< hello >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/DISKCOW again\n _______\n< again >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/BADUDEX\n/mnt/BADUDEX: loader error\nUDEKS:~> /mnt/SHORT\n/mnt/SHORT: loader error\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/NOFILE",
+      "loader": "5441534b018b0b00a007000001cfe2ff55444558000101000002a00700000002",
+      "console": "        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/DISKCOW again\n _______\n< again >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/BADUDEX\n/mnt/BADUDEX: loader error\nUDEKS:~> /mnt/SHORT\n/mnt/SHORT: loader error\nUDEKS:~> /mnt/NOFILE\nUnknown command: /mnt/NOFILE\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DISKCOW recovered",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/BADUDEX\n/mnt/BADUDEX: loader error\nUDEKS:~> /mnt/SHORT\n/mnt/SHORT: loader error\nUDEKS:~> /mnt/NOFILE\nUnknown command: /mnt/NOFILE\nUDEKS:~> /mnt/DISKCOW recovered\n ___________\n< recovered >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/ENTRY",
+      "loader": "5441534b010300251400040001cfe2ff55444558000101000002140004000202",
+      "console": "         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/BADUDEX\n/mnt/BADUDEX: loader error\nUDEKS:~> /mnt/SHORT\n/mnt/SHORT: loader error\nUDEKS:~> /mnt/NOFILE\nUnknown command: /mnt/NOFILE\nUDEKS:~> /mnt/DISKCOW recovered\n ___________\n< recovered >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/ENTRY\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/LIMIT",
+      "loader": "5441534b01030007000a000001cfe2ff55444558000101000002000a00000002",
+      "console": "            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/BADUDEX\n/mnt/BADUDEX: loader error\nUDEKS:~> /mnt/SHORT\n/mnt/SHORT: loader error\nUDEKS:~> /mnt/NOFILE\nUnknown command: /mnt/NOFILE\nUDEKS:~> /mnt/DISKCOW recovered\n ___________\n< recovered >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/ENTRY\nUDEKS:~> /mnt/LIMIT\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay disk",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "UDEKS:~> /mnt/DISKCOW recovered\n ___________\n< recovered >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/ENTRY\nUDEKS:~> /mnt/LIMIT\nUDEKS:~> cowsay disk\n ______\n< disk >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/HELLO",
+      "loader": "5441534b01030000c009400002cfe2ff55444558000101000002c00940000002",
+      "console": "< recovered >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/ENTRY\nUDEKS:~> /mnt/LIMIT\nUDEKS:~> cowsay disk\n ______\n< disk >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "command": "xinit",
+      "loader": "5441534b01030000c009400002cfe2ff55444558000101000002c00940000002",
+      "console": "        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/ENTRY\nUDEKS:~> /mnt/LIMIT\nUDEKS:~> cowsay disk\n ______\n< disk >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "loader": "5441534b01000000c6090d0002cfe2ff55444558000101020002c6090d000002",
+      "console": "            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/ENTRY\nUDEKS:~> /mnt/LIMIT\nUDEKS:~> cowsay disk\n ______\n< disk >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DISKCOW graphics",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> /mnt/DISKCOW graphics\n __________\n< graphics >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01000000bf06250202cfe2ff55444558000101020012bf0625020012",
+      "console": "            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> /mnt/DISKCOW graphics\n __________\n< graphics >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DISKCOW both",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "UDEKS:~> /mnt/DISKCOW graphics\n __________\n< graphics >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> /mnt/DISKCOW both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000fd02000002cfe2ff55444558000101000002fd0200000002",
+      "console": " __________\n< graphics >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> /mnt/DISKCOW both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DISKCOW absent",
+      "loader": "5441534b018b0b00fd02000002cfe2ff55444558000101000002fd0200000002",
+      "console": " ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> /mnt/DISKCOW both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> /mnt/DISKCOW absent\nUnknown command: /mnt/DISKCOW\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000fd02000003cfe2ff55444558000101000002fd0200000002",
+      "console": "        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> /mnt/DISKCOW both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> /mnt/DISKCOW absent\nUnknown command: /mnt/DISKCOW\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DISKCOW remount",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> /mnt/DISKCOW absent\nUnknown command: /mnt/DISKCOW\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/DISKCOW remount\n _________\n< remount >\n ---------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000fd02000002cfe2ff55444558000101000002fd0200000002",
+      "console": " ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> /mnt/DISKCOW absent\nUnknown command: /mnt/DISKCOW\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/DISKCOW remount\n _________\n< remount >\n ---------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000fd02000003cfe2ff55444558000101000002fd0200000002",
+      "console": "        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> /mnt/DISKCOW absent\nUnknown command: /mnt/DISKCOW\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/DISKCOW remount\n _________\n< remount >\n ---------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/MAGIC",
+      "loader": "5441534b01840400fd02000001cfe2ff00444558000101000002a00700000002",
+      "console": "            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> /mnt/DISKCOW absent\nUnknown command: /mnt/DISKCOW\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/DISKCOW remount\n _________\n< remount >\n ---------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/MAGIC\n/mnt/MAGIC: loader error\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/VERSION",
+      "loader": "5441534b01850500fd02000001cfe2ff55444558010101000002a00700000002",
+      "console": "                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> /mnt/DISKCOW absent\nUnknown command: /mnt/DISKCOW\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/DISKCOW remount\n _________\n< remount >\n ---------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/MAGIC\n/mnt/MAGIC: loader error\nUDEKS:~> /mnt/VERSION\n/mnt/VERSION: loader error\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/CPU",
+      "loader": "5441534b01860600fd02000001cfe2ff55444558000102000002a00700000002",
+      "console": "UDEKS:~> /mnt/DISKCOW absent\nUnknown command: /mnt/DISKCOW\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/DISKCOW remount\n _________\n< remount >\n ---------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/MAGIC\n/mnt/MAGIC: loader error\nUDEKS:~> /mnt/VERSION\n/mnt/VERSION: loader error\nUDEKS:~> /mnt/CPU\n/mnt/CPU: loader error\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/FLAGS",
+      "loader": "5441534b01870700fd02000001cfe2ff55444558000101020002a00700000002",
+      "console": "UDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/DISKCOW remount\n _________\n< remount >\n ---------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/MAGIC\n/mnt/MAGIC: loader error\nUDEKS:~> /mnt/VERSION\n/mnt/VERSION: loader error\nUDEKS:~> /mnt/CPU\n/mnt/CPU: loader error\nUDEKS:~> /mnt/FLAGS\n/mnt/FLAGS: loader error\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/LOAD",
+      "loader": "5441534b01880800fd02000001cfe2ff55444558000101000003a00700000002",
+      "console": " _________\n< remount >\n ---------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/MAGIC\n/mnt/MAGIC: loader error\nUDEKS:~> /mnt/VERSION\n/mnt/VERSION: loader error\nUDEKS:~> /mnt/CPU\n/mnt/CPU: loader error\nUDEKS:~> /mnt/FLAGS\n/mnt/FLAGS: loader error\nUDEKS:~> /mnt/LOAD\n/mnt/LOAD: loader error\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/ENTRY",
+      "loader": "5441534b018a0a00a007000001cfe2ff55444558000101000002a00700000001",
+      "console": " ---------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/MAGIC\n/mnt/MAGIC: loader error\nUDEKS:~> /mnt/VERSION\n/mnt/VERSION: loader error\nUDEKS:~> /mnt/CPU\n/mnt/CPU: loader error\nUDEKS:~> /mnt/FLAGS\n/mnt/FLAGS: loader error\nUDEKS:~> /mnt/LOAD\n/mnt/LOAD: loader error\nUDEKS:~> /mnt/ENTRY\n/mnt/ENTRY: loader error\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/TRAIL",
+      "loader": "5441534b01890900a007000001cfe2ff55444558000101000002a00700000002",
+      "console": "         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/MAGIC\n/mnt/MAGIC: loader error\nUDEKS:~> /mnt/VERSION\n/mnt/VERSION: loader error\nUDEKS:~> /mnt/CPU\n/mnt/CPU: loader error\nUDEKS:~> /mnt/FLAGS\n/mnt/FLAGS: loader error\nUDEKS:~> /mnt/LOAD\n/mnt/LOAD: loader error\nUDEKS:~> /mnt/ENTRY\n/mnt/ENTRY: loader error\nUDEKS:~> /mnt/TRAIL\n/mnt/TRAIL: loader error\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/SIZE",
+      "loader": "5441534b01890900a007000001cfe2ff55444558000101000002a00700000002",
+      "console": "                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/MAGIC\n/mnt/MAGIC: loader error\nUDEKS:~> /mnt/VERSION\n/mnt/VERSION: loader error\nUDEKS:~> /mnt/CPU\n/mnt/CPU: loader error\nUDEKS:~> /mnt/FLAGS\n/mnt/FLAGS: loader error\nUDEKS:~> /mnt/LOAD\n/mnt/LOAD: loader error\nUDEKS:~> /mnt/ENTRY\n/mnt/ENTRY: loader error\nUDEKS:~> /mnt/TRAIL\n/mnt/TRAIL: loader error\nUDEKS:~> /mnt/SIZE\n/mnt/SIZE: loader error\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000fd02000002cfe2ff55444558000101000002fd0200000002",
+      "console": "                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/MAGIC\n/mnt/MAGIC: loader error\nUDEKS:~> /mnt/VERSION\n/mnt/VERSION: loader error\nUDEKS:~> /mnt/CPU\n/mnt/CPU: loader error\nUDEKS:~> /mnt/FLAGS\n/mnt/FLAGS: loader error\nUDEKS:~> /mnt/LOAD\n/mnt/LOAD: loader error\nUDEKS:~> /mnt/ENTRY\n/mnt/ENTRY: loader error\nUDEKS:~> /mnt/TRAIL\n/mnt/TRAIL: loader error\nUDEKS:~> /mnt/SIZE\n/mnt/SIZE: loader error\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000fd02000003cfe2ff55444558000101000002fd0200000002",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/MAGIC\n/mnt/MAGIC: loader error\nUDEKS:~> /mnt/VERSION\n/mnt/VERSION: loader error\nUDEKS:~> /mnt/CPU\n/mnt/CPU: loader error\nUDEKS:~> /mnt/FLAGS\n/mnt/FLAGS: loader error\nUDEKS:~> /mnt/LOAD\n/mnt/LOAD: loader error\nUDEKS:~> /mnt/ENTRY\n/mnt/ENTRY: loader error\nUDEKS:~> /mnt/TRAIL\n/mnt/TRAIL: loader error\nUDEKS:~> /mnt/SIZE\n/mnt/SIZE: loader error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DISKCOW final",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "/mnt/FLAGS: loader error\nUDEKS:~> /mnt/LOAD\n/mnt/LOAD: loader error\nUDEKS:~> /mnt/ENTRY\n/mnt/ENTRY: loader error\nUDEKS:~> /mnt/TRAIL\n/mnt/TRAIL: loader error\nUDEKS:~> /mnt/SIZE\n/mnt/SIZE: loader error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/DISKCOW final\n _______\n< final >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DISKCOW busy",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "/mnt/LOAD: loader error\nUDEKS:~> /mnt/ENTRY\n/mnt/ENTRY: loader error\nUDEKS:~> /mnt/TRAIL\n/mnt/TRAIL: loader error\nUDEKS:~> /mnt/SIZE\n/mnt/SIZE: loader error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/DISKCOW final\n _______\n< final >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/DISKCOW busy\n/mnt/DISKCOW: task slot busy\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DISKCOW busy",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "/mnt/ENTRY: loader error\nUDEKS:~> /mnt/TRAIL\n/mnt/TRAIL: loader error\nUDEKS:~> /mnt/SIZE\n/mnt/SIZE: loader error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/DISKCOW final\n _______\n< final >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/DISKCOW busy\n/mnt/DISKCOW: task slot busy\nUDEKS:~> /mnt/DISKCOW busy\n/mnt/DISKCOW: task slot busy\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DISKCOW released",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "< final >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/DISKCOW busy\n/mnt/DISKCOW: task slot busy\nUDEKS:~> /mnt/DISKCOW busy\n/mnt/DISKCOW: task slot busy\nUDEKS:~> /mnt/DISKCOW released\n __________\n< released >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DISKCOW removed",
+      "loader": "5441534b018d0d00a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/DISKCOW busy\n/mnt/DISKCOW: task slot busy\nUDEKS:~> /mnt/DISKCOW busy\n/mnt/DISKCOW: task slot busy\nUDEKS:~> /mnt/DISKCOW released\n __________\n< released >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/DISKCOW removed\n/mnt/DISKCOW: loader error\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000fd02000002cfe2ff55444558000101000002fd0200000002",
+      "console": "         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/DISKCOW busy\n/mnt/DISKCOW: task slot busy\nUDEKS:~> /mnt/DISKCOW busy\n/mnt/DISKCOW: task slot busy\nUDEKS:~> /mnt/DISKCOW released\n __________\n< released >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/DISKCOW removed\n/mnt/DISKCOW: loader error\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000fd02000003cfe2ff55444558000101000002fd0200000002",
+      "console": "            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/DISKCOW busy\n/mnt/DISKCOW: task slot busy\nUDEKS:~> /mnt/DISKCOW busy\n/mnt/DISKCOW: task slot busy\nUDEKS:~> /mnt/DISKCOW released\n __________\n< released >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/DISKCOW removed\n/mnt/DISKCOW: loader error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DISKCOW restored",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "< released >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/DISKCOW removed\n/mnt/DISKCOW: loader error\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> /mnt/DISKCOW restored\n __________\n< restored >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    }
+  ]
+}

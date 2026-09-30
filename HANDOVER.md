@@ -8,6 +8,35 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 ## Current feature handover — 2026-09-30
 
+Current worktree: `build/disk-commands`, branch `boot-disk-commands`, issue #24.
+The user authorized three steps in sequence: merge graphics (#23, now merged
+as `2c88e07`), move everyday utilities to disk (checkpoint `d42073c`), remove
+resident command policy (current slice). See [command extraction](docs/COMMAND-EXTRACTION.md).
+The resident catalog is gone. Eight names are handled by disk ush, including
+numeric graphics launch/control; thirteen program names are disk-backed.
+Normal bootfs has only mount/umount and recovery ush. UTRQ 0.7 op 20 queues
+numeric service work; the bank-0 poll executes it after the request stack unwinds.
+Its ASM wrapper MUST clear carry on synchronous return (set carry suspends the
+native caller). ush owns completion text and prompts; generic EXEC/job ownership
+remains a compatibility mechanism, not a command registry.
+
+VICSHADOW is pinned at the previously qualified `$A1E0-$C11F` with exactly
+8,000 bytes. Extraction leaves 3,071 unused bytes before it, not a new heap.
+Full ush image is 3,685 bytes plus 384 reserved BSS (27 bytes left in its 4 KiB
+reservation); recovery bootfs is 3,797 bytes. Do not grow shell features without
+measuring its image+BSS bound. All old fixed gateways and UAPP zero-page entries
+remain asserted. Build in my-distrobox; use gh there. Never run `make clean`
+at the root because build contains active worktrees. Use an isolated copied
+source directory for clean-build proof. Do not modify the sibling emulator.
+Manual acceptance of the new command-extraction candidate is not yet recorded.
+VICE D64/D71 + recovery, native 1986 input/windows, disk-exec rejection,
+managed-app failures, disk-shell replacement, RC startup, compiled SPAWN and
+shadow checks pass. Isolated clean parallel builds reproduce all disks exactly.
+Exact bytes/results live in `bench/{artifacts,results}/2026-09-30-disk-commands`.
+Use that candidate for the next user test, not an earlier root build image.
+
+The paragraphs below are earlier checkpoints, not the active worktree.
+
 Active worktree: `build/disk-graphics`, branch `storage-disk-graphics`,
 issue [#22](https://github.com/salvogendut/UDEKS/issues/22), based on merged
 PR #21 (`ea14666`). Disk-only managed `xclock`/`xwave` is implemented;

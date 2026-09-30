@@ -28,10 +28,28 @@ FROZEN_RANGES = {
 def layout_maps(normal, panic):
     expected = {name: (start, end, end - start + 1)
                 for name, (start, end) in FROZEN_RANGES.items()}
+    # Command extraction may shrink ordinary resident code/data, HIGHBSS and
+    # the request implementation. Cache/staging/public gate addresses may not
+    # move. Require normal/panic parity and prove each flexible reservation.
+    flexible = {'CODE', 'RODATA', 'DATA', 'BSS', 'HIGHBSS', 'TASKREQUEST'}
+    actual = map_segments(normal)
     for label, text in (('normal', normal), ('panic', panic)):
-        if map_segments(text) != expected:
+        current = map_segments(text)
+        if current.keys() != expected.keys() or current != actual or any(
+                current[name] != bounds for name, bounds in expected.items()
+                if name not in flexible):
             raise ValueError('frozen cache integration layout changed: ' + label)
-    return expected
+        cursor = 0x2006
+        for name in ('CODE', 'RODATA', 'DATA', 'BSS'):
+            start, end, size = current[name]
+            if start != cursor or size <= 0 or end != start + size - 1 or end >= 0xa1e0:
+                raise ValueError('resident command region exceeds reservation: ' + name)
+            cursor = end + 1
+        for name, start, limit in (('HIGHBSS', 0xe1b8, 0xe2e2), ('TASKREQUEST', 0xf800, 0xf909)):
+            low, end, size = current[name]
+            if low != start or size <= 0 or end != low + size - 1 or end >= limit:
+                raise ValueError('resident reservation changed: ' + name)
+    return actual
 
 
 def identity(module):

@@ -65,8 +65,8 @@ class PollResidentTests(unittest.TestCase):
         self.assertIn("jmp incsp2", ownership)
         shell = self.text("src/services/shell/shell.c")
         self.assertIn("udeks_shell_read_line(", shell)
-        self.assertIn("STATUS_PENDING_EXEC", shell)
-        self.assertIn("foreground_job != JOB_NONE", shell)
+        self.assertIn("if (S(23))", shell)
+        self.assertIn("if (foreground)", shell)
 
     def test_ush_waits_before_reading(self):
         source = self.text("user/bin/ush.c")

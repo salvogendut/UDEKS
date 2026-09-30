@@ -47,10 +47,16 @@ def build_fixture(image, variant):
     elif variant == 'flags':
         result[offsets[7]] = 0
     elif variant in ('diskA', 'diskB'):
-        marker = b'UDEKS 0.1.0 c128 8502'
+        # Help lives in disk ush; uname is now a separate disk program. Keep
+        # the historical marker fallback for archived fixture/test images.
+        marker = b'Recovery: mount umount'
+        replacement = variant.encode()+b'ery: mount umount'
+        if marker not in payload:
+            marker = b'UDEKS 0.1.0 c128 8502'
+            replacement = b'UDEKS '+variant.encode()+b' c128 8502'
         if payload.count(marker) != 1:
             raise ValueError('shell version marker must occur exactly once')
-        changed = payload.replace(marker, b'UDEKS '+variant.encode()+b' c128 8502')
+        changed = payload.replace(marker, replacement)
         for p, value in zip(offsets, changed, strict=True):
             result[p] = value
     else:

@@ -23,9 +23,9 @@ class ShellSourceTests(unittest.TestCase):
         self.assertIn("jmp _udeks_shell_start", descriptor)
         self.assertIn("jmp _udeks_shell_poll", descriptor)
 
-    def test_shell_uses_registry_dispatch_and_rearms_terminal_prompt(self):
+    def test_session_has_no_command_catalog_and_defers_service_work(self):
         source = (ROOT / "src/services/shell/shell.c").read_text(encoding="utf-8")
-        self.assertIn("static const struct shell_command commands[]", source)
+        self.assertNotIn("struct shell_command", source)
         self.assertIn("udeks_shell_read_line(", source)
         self.assertIn("udeks_root_terminal_prompt()", source)
         for command in (
@@ -41,11 +41,11 @@ class ShellSourceTests(unittest.TestCase):
             "xclock",
             "xwave",
         ):
-            self.assertIn(f'*)"{command}"', source)
-        self.assertIn("static unsigned char argument_count;", source)
-        self.assertIn("result = commands[index].handler();", source)
-        self.assertIn("UDEKS_STDOUT", source)
-        self.assertIn("UDEKS_STDERR", source)
+            self.assertNotIn(f'*)"{command}"', source)
+        request = source.split('void udeks_service_control_request(void)')[1].split('static void control_reply')[0]
+        self.assertNotIn('udeks_z80_submit(', request)
+        self.assertNotIn('udeks_vic_graphics_initialize(', request)
+        self.assertIn('queued_target = R[14]', request)
         self.assertIn("udeks_z80_submit", source)
         self.assertIn("udeks_vic_graphics_initialize", source)
         self.assertIn("udeks_vic_graphics_shutdown", source)
@@ -53,12 +53,12 @@ class ShellSourceTests(unittest.TestCase):
         self.assertIn("udeks_xclock_stop", source)
         self.assertIn("udeks_xwave_start", source)
         self.assertIn("udeks_xwave_stop", source)
-        self.assertIn("launch_background", source)
-        self.assertIn("publish_background_jobs", source)
-        self.assertIn('*)"&"', source)
+        self.assertIn("queued_background", source)
+        self.assertIn("publish_jobs", source)
+        self.assertNotIn('*)"&"', source)
         self.assertIn("foreground_job", source)
         self.assertIn("udeks_shell_interrupt_foreground", source)
-        self.assertIn('*)"-q"', source)
+        self.assertNotIn('*)"-q"', source)
 
     def test_external_commands_use_generic_bootfs_loader(self):
         source = (ROOT / "src/services/shell/shell.c").read_text(
@@ -66,7 +66,7 @@ class ShellSourceTests(unittest.TestCase):
         )
         self.assertIn("UDEKS_TASK_LOADER_ENTRY", source)
         self.assertIn("UDEKS_TASK_NOT_FOUND", source)
-        self.assertIn('*)": task slot busy"', source)
+        self.assertIn(': task slot busy\\n', source)
         self.assertIn('*)"Unknown command: "', source)
         self.assertNotIn("command_cowsay", source)
 

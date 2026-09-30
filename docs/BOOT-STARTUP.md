@@ -65,8 +65,8 @@ are under `bench/artifacts/2026-09-30-disk-shell`.
 Cold boot the new image, then try:
 
 ```text
-uname -a
 mount 8 /mnt
+uname -a
 ls /mnt
 cat /mnt/HELLO
 /mnt/DISKCOW hello
@@ -87,9 +87,10 @@ python3 tools/disk_shell_fixture.py build/boot/udeks.d64 diskA build/disk-shell/
 python3 tools/disk_shell_fixture.py build/boot/udeks.d64 diskB build/disk-shell/B.d64
 ```
 
-Cold boot each and run `uname -a`: only the disk shell's version text changes
-to `diskA` or `diskB`. Variants `missing`, `bad`, `entry`, and `flags` exercise
-bootfs recovery and return the original `0.1.0` shell. These tools create new
+Cold boot each and run `help`: only the disk shell's `Recovery` label changes
+to `diskAery` or `diskBery`. (The historical probe changed uname; uname is now
+a standalone disk utility.) Variants `missing`, `bad`, `entry`, and `flags` exercise
+bootfs recovery and return the original help text. These tools create new
 images and refuse to overwrite the input. Do not edit the raw autoboot sectors.
 
 ## Accepted disk-shell checkpoint
