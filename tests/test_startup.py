@@ -40,13 +40,13 @@ class Startup(unittest.TestCase):
     def test_crlf_empty_lines_and_final_line(self):
         self.assertEqual(self.start(b'\r\n# comment\n\necho ready\r\nmount 8 /mnt'), 1)
         self.assertEqual(self.lines(), [b'# comment', b'echo ready', b'mount 8 /mnt'])
-        self.assertEqual((self.calls()[9], self.calls()[18]), (1, 1))
+        self.assertEqual((self.calls()[9], self.calls()[18]), (1, 0))
 
     def test_file_and_line_limits_are_exact(self):
         for text, result in ((b'', 0), (b'X'*54, 1), (b'X'*55, 255),
                              (b'\n'*254+b'X', 1), (b'\n'*255+b'X', 255)):
             self.setUp(); self.assertEqual(self.start(text), result)
-            self.assertEqual((self.calls()[9], self.calls()[18]), (1, 1))
+            self.assertEqual((self.calls()[9], self.calls()[18]), (1, 0))
             if result == 255: self.assertEqual(self.lines(), [])
 
     def test_invalid_later_line_prevents_any_execution(self):
@@ -56,8 +56,8 @@ class Startup(unittest.TestCase):
         self.assertEqual(self.start(b'\techo\tok'), 1)
 
     def test_absent_script_is_silent_and_errors_release_handles(self):
-        for op, error, expected, closed, unmounted in ((6, 2, 0, 0, 1), (6, 5, 255, 0, 1),
-                (1, 5, 255, 1, 1), (9, 5, 255, 1, 1), (18, 5, 255, 1, 1), (17, 5, 255, 0, 0)):
+        for op, error, expected, closed, unmounted in ((6, 2, 0, 0, 0), (6, 5, 255, 0, 0),
+                (1, 5, 255, 1, 0), (9, 5, 255, 1, 0)):
             self.setUp()
             c.c_uint8.in_dll(self.lib, 'test_fail_op').value = op
             c.c_uint8.in_dll(self.lib, 'test_error').value = error
@@ -65,9 +65,10 @@ class Startup(unittest.TestCase):
             self.assertEqual(self.lines(), [])
             self.assertEqual((self.calls()[9], self.calls()[18]), (closed, unmounted))
 
-    def test_default_script_mounts_device_8_without_starting_graphics(self):
+    def test_default_script_leaves_root_mounted_and_data_mount_available(self):
         text = (ROOT/'user/etc/rc').read_bytes()
         self.assertLessEqual(len(text), 255)
         self.assertEqual(self.start(text), 1)
         commands = [line for line in self.lines() if not line.lstrip().startswith(b'#')]
-        self.assertEqual(commands, [b'mount 8 /mnt'])
+        self.assertEqual(commands, [])
+        self.assertEqual((self.calls()[17], self.calls()[18]), (0, 0))

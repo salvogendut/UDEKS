@@ -5,7 +5,9 @@ from __future__ import annotations
 
 ROUTER = 0xC880
 BOOTFS_BASE = 0xA000
-BOOTFS_LIMIT = 0xD100
+BOOTFS_LIMIT = 0xB000
+POLICY_BASE = 0xB000
+POLICY_SIZE = 0x2000
 DRIVER_BASE = 0xE300
 SECONDARY_LIMIT = 0xE900
 USH_BSS = 0x170
@@ -30,7 +32,7 @@ def wrap_storage(payload: bytes, constants: str, module: bytes,
         raise ValueError('invalid $1200 storage module')
     if not lookup or len(lookup) > 0x600 or lookup[3:9] != b'ULKP\0\1':
         raise ValueError('loader lookup exceeds $1A00-$1FFF')
-    if not policy or len(policy) > 0x600 or not driver or len(driver) > 0x600:
+    if not policy or len(policy) > POLICY_SIZE or not driver or len(driver) > 0x600:
         raise ValueError('storage policy/driver exceeds its bank-1 hole')
     if not ush or len(ush) + USH_BSS > 0x1000:
         raise ValueError('ush reaches bootfs at $A000')
@@ -40,7 +42,7 @@ def wrap_storage(payload: bytes, constants: str, module: bytes,
     limit = SECONDARY_LIMIT
     image = bytearray(limit - load)
     for address, data in ((load, module), (0x1A00, lookup), (start, payload[2:]),
-                          (0x8A00, policy), (DRIVER_BASE, driver)):
+                          (POLICY_BASE, policy), (DRIVER_BASE, driver)):
         image[address-load:address-load+len(data)] = data
     # Keep SCHEDULER_OVERLAY_END as the USOV source end: activation uses it.
     constants += (f'SECONDARY_PAYLOAD_LOAD = ${load:04x}\n'
@@ -58,7 +60,7 @@ def install_bootfs(payload: bytes, bootfs: bytes) -> bytes:
     if any(payload[offset:end]):
         raise ValueError('secondary bootfs reservation is not empty')
     if len(bootfs) < 16 or bootfs[:6] != b'UBFS\0\1' or len(bootfs) > BOOTFS_LIMIT-BOOTFS_BASE:
-        raise ValueError('secondary bootfs has invalid header or exceeds $A000-$D0FF')
+        raise ValueError('secondary bootfs has invalid header or exceeds $A000-$AFFF')
     if int.from_bytes(bootfs[12:14], 'little') != len(bootfs):
         raise ValueError('secondary bootfs size does not match header')
     return payload[:offset] + bootfs.ljust(BOOTFS_LIMIT-BOOTFS_BASE, b'\0') + payload[end:]

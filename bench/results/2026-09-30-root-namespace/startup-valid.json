@@ -1,0 +1,47 @@
+{
+  "variant": "valid",
+  "drive": "1541",
+  "disk_sha256": "32dec3da28d7807b4c9806a5e555485696ea56013cc5363ef36ad8aaa32d97a1",
+  "total": 664,
+  "free": 103,
+  "boot_console": "8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\necho RC-START\nRC-START\nmount 8 /mnt\nmount: /mnt ready (read-only)\nxinit\nVIC-II graphics active\nxclock &\nxclock started &\necho RC-END\nRC-END\nUDEKS:~>",
+  "driver_intact": true,
+  "commands": [
+    {
+      "command": "free",
+      "console": "\nWELCOME TO UDEKS.\n\nUDEKS:~>\necho RC-START\nRC-START\nmount 8 /mnt\nmount: /mnt ready (read-only)\nxinit\nVIC-II graphics active\nxclock &\nxclock started &\necho RC-END\nRC-END\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~>"
+    },
+    {
+      "command": "df",
+      "console": "echo RC-START\nRC-START\nmount 8 /mnt\nmount: /mnt ready (read-only)\nxinit\nVIC-II graphics active\nxclock &\nxclock started &\necho RC-END\nRC-END\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         561   103        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~>"
+    },
+    {
+      "command": "/bin/df /mnt",
+      "console": "xinit\nVIC-II graphics active\nxclock &\nxclock started &\necho RC-END\nRC-END\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         561   103        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> /bin/df /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         561   103        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~>"
+    },
+    {
+      "command": "df /bad",
+      "console": "xclock &\nxclock started &\necho RC-END\nRC-END\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         561   103        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> /bin/df /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         561   103        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> df /bad\nusage: df [/|/mnt]\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/HELLO",
+      "console": "echo RC-END\nRC-END\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         561   103        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> /bin/df /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         561   103        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> df /bad\nusage: df [/|/mnt]\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "command": "ls /mnt",
+      "console": "UDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nUSH.BIN\nRC.ETC\nFREE.BIN\nDF.BIN\nXCLOCK.BIN\nXWAVE.BIN\nCOWSAY.BIN\nDATE.BIN\nLS.BIN\nCAT.BIN\nUNAME.BIN\nLSHW.BIN\nLSMOD.BIN\nLSCPU.BIN\nZ80CTL.BIN\nMOUNT.BIN\nUMOUNT.BIN\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "console": "SCHEDOVR\nHELLO\nUSH.BIN\nRC.ETC\nFREE.BIN\nDF.BIN\nXCLOCK.BIN\nXWAVE.BIN\nCOWSAY.BIN\nDATE.BIN\nLS.BIN\nCAT.BIN\nUNAME.BIN\nLSHW.BIN\nLSMOD.BIN\nLSCPU.BIN\nZ80CTL.BIN\nMOUNT.BIN\nUMOUNT.BIN\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "echo recovery OK",
+      "console": "USH.BIN\nRC.ETC\nFREE.BIN\nDF.BIN\nXCLOCK.BIN\nXWAVE.BIN\nCOWSAY.BIN\nDATE.BIN\nLS.BIN\nCAT.BIN\nUNAME.BIN\nLSHW.BIN\nLSMOD.BIN\nLSCPU.BIN\nZ80CTL.BIN\nMOUNT.BIN\nUMOUNT.BIN\nUDEKS:~> umount /mnt\nUDEKS:~> echo recovery OK\nrecovery OK\nUDEKS:~>"
+    },
+    {
+      "command": "help",
+      "console": "XCLOCK.BIN\nXWAVE.BIN\nCOWSAY.BIN\nDATE.BIN\nLS.BIN\nCAT.BIN\nUNAME.BIN\nLSHW.BIN\nLSMOD.BIN\nLSCPU.BIN\nZ80CTL.BIN\nMOUNT.BIN\nUMOUNT.BIN\nUDEKS:~> umount /mnt\nUDEKS:~> echo recovery OK\nrecovery OK\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~>"
+    }
+  ]
+}

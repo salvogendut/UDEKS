@@ -28,7 +28,7 @@ class UserBoundaryTests(unittest.TestCase):
         )
         self.assertIn("user-sources: $(USER_COWSAY_ASM)", makefile)
         self.assertIn("user-programs: $(USER_BOOTFS)", makefile)
-        self.assertIn("--entry cowsay=$(USER_COWSAY_UDEX)", makefile)
+        self.assertIn("--command COWSAY=$(USER_COWSAY_UDEX)", makefile)
 
     def test_cowsay_has_no_hosted_runtime_dependency(self):
         source = (ROOT / "user/bin/cowsay.c").read_text()
@@ -51,7 +51,7 @@ class UserBoundaryTests(unittest.TestCase):
         self.assertIn("udeks_clock_set(hour, minute, second)", source)
         self.assertIn("HHMMSS", source)
         self.assertNotIn('*)"date"', shell)
-        self.assertIn("--entry date=$(USER_DATE_UDEX)", makefile)
+        self.assertIn("--command DATE=$(USER_DATE_UDEX)", makefile)
 
     def test_minimal_ush_is_a_separate_persistent_user_image(self):
         source = (ROOT / "user/bin/ush.c").read_text()
@@ -69,7 +69,8 @@ class UserBoundaryTests(unittest.TestCase):
         for command in ('*)"cd"', '*)"echo"', '*)"help"', '*)"pwd"', '*)"clear"', '*)"xinit"', '*)"xclock"', '*)"xwave"'):
             self.assertIn(command, source)
         self.assertIn("CWD_KIND = CWD_ROOT", source)
-        self.assertIn('CWD_KIND == CWD_BIN ? "/bin" : "/"', source)
+        self.assertIn("submit_request(UDEKS_TREQ_OP_GETCWD, 0, 0)", source)
+        self.assertIn("submit_request(UDEKS_TREQ_OP_CHDIR, 0, result)", source)
         self.assertIn("--entry ush=$(USER_RECOVERY_USH_UDEX)", makefile)
         self.assertIn("--flags 0x01", makefile)
         self.assertIn("app: start = $9000", config)

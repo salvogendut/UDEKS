@@ -1,3 +1,4 @@
 # UDEKS startup: one command per line; 255 bytes max.
-# Default command disk; edit the device if needed.
-mount 8 /mnt
+# Device 8 is already the system root.
+# /mnt is free for another volume.
+# Optional data disk: mount 9 /mnt

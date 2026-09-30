@@ -41,17 +41,18 @@ deduplicates byte-identical payloads (currently `mount` and `umount`, whose
 program selects its operation from argv[0]); entries remain separate and
 sorted. Bootfs is immutable, so shared extents do not introduce writable aliases.
 
-The native-boot image admits at most `$3100` bytes. The secondary `SCHEDOVR`
-file delivers bootfs directly into bank-1 `$A000-$D0FF`, separate from bank-0
+The native-boot image admits at most `$1000` bytes. The secondary `SCHEDOVR`
+file delivers bootfs directly into bank-1 `$A000-$AFFF`, separate from bank-0
 kernel memory at the same logical addresses. It no longer uses the former
 split Z80/shadow staging container. The packer validates the empty destination,
 header and total size before insertion; stage 1 checks the secondary load end.
-The current image uses 12,535 of 12,544 bytes; further programs need a packaging
-decision, not unchecked growth into the task context pages at `$D100`.
-The packer sorts directory entries and the loader resolves `ush`,
-`xclock`, and `xwave` by name, so directory ordering does not change init or
-managed-application contracts.
+The current recovery image uses 3,957 of 4,096 bytes. Namespace policy owns
+`$B000-$CFFF`; further recovery programs require a packaging decision, not
+unchecked growth. Normal bootfs holds only `mount`, `umount`, and recovery
+`ush`; graphics apps and normal utilities are ordinary disk .BIN files.
+The packer sorts entries and the loader resolves names, never entry order.
 
 Bootfs is a bootstrap filesystem backend, not the permanent on-disk format.
-The future VFS resolver will search `/bin` through the mounted storage
-filesystem first and may use bootfs as the early-boot fallback.
+The live resolver searches system `/bin` on disk. A failed root/shell bootstrap
+explicitly releases the root mount and selects bootfs recovery. It never
+silently substitutes a data-disk program for a missing system command.

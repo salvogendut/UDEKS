@@ -29,6 +29,7 @@ def main():
     parser.add_argument('--disk-graphics', action='store_true', help='native managed-app load, window interaction and cancellation')
     parser.add_argument('--drag-regression', action='store_true', help='reported utility/implicit-desktop/repeated-clock-drag sequence')
     parser.add_argument('--boot-mounted', action='store_true', help='drag regression relies on default RC mount, never mounts manually')
+    parser.add_argument('--root-namespace', action='store_true', help='system root, cwd, data alias and native window regression')
     args = parser.parse_args()
     if args.boot_mounted and not args.drag_regression:
         parser.error('--boot-mounted requires --drag-regression')
@@ -44,6 +45,8 @@ def main():
                     *(['-DUDEKS_DISK_GRAPHICS_SMOKE'] if args.disk_graphics else []),
                     *(['-DUDEKS_DRAG_REGRESSION', '-DUDEKS_DISK_GRAPHICS_SMOKE'] if args.drag_regression else []),
                     *(['-DUDEKS_BOOT_MOUNT_SMOKE'] if args.boot_mounted else []),
+                    *(['-DUDEKS_ROOT_NAMESPACE_SMOKE', '-DUDEKS_DRAG_REGRESSION',
+                       '-DUDEKS_DISK_GRAPHICS_SMOKE', '-DUDEKS_BOOT_MOUNT_SMOKE'] if args.root_namespace else []),
                     str(ROOT/'tools/1986_storage_smoke.c'),
                     *map(str, smoke.emulator_sources(emulator)), *flags, '-lm', '-o', str(binary)], check=True)
     disk = work/('test'+args.disk.suffix)
@@ -67,6 +70,7 @@ def main():
         'disk_shell': args.disk_shell, 'sysinfo': args.sysinfo, 'disk_graphics': args.disk_graphics,
         'drag_regression': args.drag_regression,
         'boot_mounted': args.boot_mounted,
+        'root_namespace': args.root_namespace,
     }, indent=2)+'\n')
     raise SystemExit(result.returncode)
 

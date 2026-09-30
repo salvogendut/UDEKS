@@ -39,6 +39,7 @@ make boot       # build build/boot/udeks.d71 for native C128 autoboot
 make panic-probe  # build a non-release D71 that injects descriptor failure
 make placement-check  # verify the real linker-map placement budget (reference container)
 make task-poll-policy  # cc65 compile-only event-wait reference policy; not linked
+make filesystem-policy  # compile the root/suffix resolver also used by the live service
 make framebuffer-assets  # pack the 64x64 XPM as a 512-byte VDC bitmap
 make user-sources  # compile staged user programs separately from the kernel
 make user-programs  # link and package standalone UDEX programs
@@ -63,16 +64,40 @@ managed graphical `xclock` and `xwave` images at bank-0 `$0200` and `$1200`,
 wrapping each as UDEX. None resolves private moving kernel symbols; graphical
 apps use a fixed managed-app entry table. The same target creates
 `build/user/bootfs.img` for the remaining transitional commands and recovery
-shell. `make boot` installs the graphical UDEX files as ordinary DOS `XCLOCK`
-and `XWAVE`, not bootfs entries. The
+shell. `make boot` installs the graphical UDEX files as ordinary DOS `XCLOCK.BIN`
+and `XWAVE.BIN`, not bootfs entries. The
 standalone `date` reads or sets the shared TI-compatible clock, so `xclock`
 observes the same time. After stage
 1 delivers the services, init asks the common-RAM loader to validate and
-install disk `USH`, with bootfs recovery. Commands absent from the shell's native table
+install disk `USH.BIN` through system `/bin/ush`, with bootfs recovery. Commands absent from the shell's native table
 use the same resolver through its transient entry point. That path swaps the
 first task slot, supplies a private C stack and cc65 zero page, runs the
 program, and restores the slot on exit. Runtime qualification in both
 emulators and on hardware remains required before this milestone is closed.
+
+### Root namespace candidate (#26)
+
+Build in `build/root-filesystem` on `storage-root-namespace`, not an old main
+build. Device 8 backs `/`; `/mnt` starts free. `/etc/rc` is `RC.ETC` on disk.
+Policy uses bank-1 `$B000-$CFFF`; bootfs is bounded to `$A000-$AFFF`. See
+[filesystem contract](../abi/filesystem.md) for limits and the current test image.
+Run these VICE checks from the host after the container build:
+
+```sh
+python3 tools/root_namespace_probe.py --output build/root-namespace/vice-1541
+python3 tools/root_namespace_probe.py --disk build/boot/udeks.d71 --drive 1571 --output build/root-namespace/vice-1571
+python3 tools/root_namespace_probe.py --recovery --output build/root-namespace/recovery
+python3 tools/startup_probe.py --variant valid --output build/root-namespace/startup-valid
+```
+
+Also run startup variants `invalid` and `missing`. For native 1986 input and
+window dragging, run `tools/1986_storage_smoke_build.py --root-namespace
+--emulator /path/to/1986 --roms /path/to/1986/roms --output build/root-namespace/1986`
+inside my-distrobox (SDL3). Probes use disposable disk copies and close their
+own sessions. Do not run `make clean` above repository worktrees; use an
+isolated source copy for a fresh parallel-build check.
+
+### Development PRG
 
 The 8502 artifacts are a raw resident image and a development PRG that loads
 from `$0200` (boot-only capability service in application slot 1, probe page

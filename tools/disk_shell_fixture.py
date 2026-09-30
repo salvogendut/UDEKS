@@ -11,7 +11,7 @@ def shell_file(image):
     directory = sector_offset(18, 1)
     entries = [directory+2+32*i for i in range(8)]
     matches = [p for p in entries if image[p] == 0x81 and
-               image[p+3:p+19].rstrip(b'\xa0') == b'USH']
+               image[p+3:p+19].rstrip(b'\xa0') in (b'USH', b'USH.BIN')]
     if len(matches) != 1:
         raise ValueError('expected exactly one closed SEQ USH in the first directory sector')
     entry = matches[0]

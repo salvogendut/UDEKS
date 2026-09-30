@@ -8,14 +8,16 @@ at `$4000-$7FFF`. Each physical bank reserves `$E2E2-$E2FF` for its own saved
 `$02-$1F` cc65 zero-page image. Selecting the MMU profile therefore selects the
 context without consuming common RAM.
 
-Storage reserves bank-1 `$1200-$1FFF`, `$8A00-$8FFF`, `$E300-$E8FF`,
-and `$E000-$E1FF` for its separately linked C service and private stack. These
+Storage reserves bank-1 `$1200-$1FFF`, `$B000-$CFFF`, `$E300-$E8FF`,
+and `$E000-$E1FF` for its separately linked C service and private stack. State
+is bounded to `$E000-$E17F`, leaving at least 128 software-stack bytes. These
 do not overlap the task-2 `$0C00-$11FF` stack, retained cache, or ush stack.
 Boot 0.2 expands persistent image+BSS to `$1000` bytes at `$9000`, ending
 before bootfs at `$A000`. Its software stack is now `$E900-$EFF0`; bank-0's
 resident stack is unchanged. The IEC driver moved to `$E300` to make room
 for the shell's C startup reader. Ordinary/managed task images still have
-the `$0A00` limit. See [the storage placement](../docs/STORAGE-0.1.md).
+the `$0A00` limit. Recovery bootfs is limited to `$A000-$AFFF`; the old
+`$8A00-$8FFF` policy hole is unused. See [the current storage placement](filesystem.md#placement-and-qualification).
 
 The `none` runtime places its two-byte software-stack pointer at zero-page
 `$02-$03`. Because the saved context begins with zero page `$02`, context

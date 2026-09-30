@@ -46,7 +46,7 @@
 
 /* Bank-1 bootfs image and the first transient task-slot backup. */
 #define UDEKS_BOOTFS_BASE             0xA000u
-#define UDEKS_BOOTFS_LIMIT            0xD100u
+#define UDEKS_BOOTFS_LIMIT            0xB000u
 #define UDEKS_USH_BASE                0x9000u
 #define UDEKS_USH_LIMIT               0xA000u
 #define UDEKS_USH_STACK_BOTTOM        0xE900u

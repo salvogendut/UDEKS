@@ -15,7 +15,7 @@ class DiskCommands(unittest.TestCase):
         validate_command(exe)
         image = build_image(b'CBM\0\x1c\0\xd4'+bytes(25), b'', b'', b'', commands=(('COWSAY', exe), ('DATE', exe)))
         for view in (image, d64_compatibility_image(image)):
-            _, offsets = dos_file(view, 'COWSAY')
+            _, offsets = dos_file(view, 'COWSAY.BIN')
             self.assertEqual(bytes(view[p] for p in offsets), exe)
         for bad in (exe[:-1], exe+b'x', bytes(17)):
             with self.assertRaises(ValueError): validate_command(bad)

@@ -1,4 +1,4 @@
-# Bank-task request ABI 0.7
+# Bank-task request ABI 0.8
 
 Bank-1 8502 tasks exchange bounded requests with the resident kernel through a
 38-byte record in top common RAM. The task fills the record and calls `$FF16`.
@@ -9,14 +9,15 @@ ABI 0.3 keeps every 0.2 operation number and behavior unchanged and adds
 lifecycle operations `10`-`15`. `YIELD`, `EXIT`, immediate/nonblocking and
 blocking `WAITPID`, `SLEEP`, `CANCEL`, and `SPAWN` are implemented. Rebuilt
 0.3 clients may keep using the 0.2 operations unchanged, and
-the resident version check accepts minor `0` through `7`.
+the resident version check accepts minor `0` through `8`.
 ABI 0.4 adds non-consuming stdin readiness (`POLL`, operation 16). A 0.0–0.3
 request for operation 16 returns `ENOSYS`; an unsupported future minor returns
 `EPROTO`. Operations 1–15 retain their existing numbers and behavior.
 ABI 0.5 adds read-only IEC `MOUNT`/`UMOUNT` through a private bank-1 C service.
 Existing stream/directory clients continue to request their minimum ABI 0.4;
-`POLL` accepts 0.4 through 0.7. The current shell uses 0.7; `df` uses 0.6
-for `STATFS`. ABI 0.7 adds deferred numeric service control. No published entry address changes.
+`POLL` accepts 0.4 through 0.8. The current shell uses 0.8; `df` uses 0.6
+for `STATFS`. ABI 0.7 adds deferred numeric service control; 0.8 adds root
+namespace routing and working-directory operations. No published entry address changes.
 
 ## Record
 
@@ -26,7 +27,7 @@ The record occupies `$F359-$F37E`:
 |---:|---:|---|
 | 0 | 4 | ASCII magic `UTRQ` |
 | 4 | 1 | ABI major (`0`) |
-| 5 | 1 | ABI minor (`7`; earlier compatible minors remain accepted) |
+| 5 | 1 | ABI minor (`8`; earlier compatible minors remain accepted) |
 | 6 | 1 | State |
 | 7 | 1 | Operation |
 | 8 | 1 | Sequence number |
@@ -63,6 +64,8 @@ States are idle (`0`), request (`1`), complete (`2`), and error (`$80`).
 | 18 | `UMOUNT` | 0.5 | Unmount `/mnt` if no storage handle is open. |
 | 19 | `STATFS` | 0.6 | Read mounted CBM-DOS total/free block counts. |
 | 20 | `CONTROL` | 0.7 | Enqueue a root-session graphics/engine action. |
+| 21 | `CHDIR` | 0.8 | Validate and change the root session's working directory. |
+| 22 | `GETCWD` | 0.8 | Return the root session's absolute working directory. |
 
 `EXEC` (`3`) is not task creation and its meaning does not change: it remains
 the bounded command-line bridge to the executable loader. There is no resident
@@ -72,6 +75,44 @@ loader-backed task creation is `SPAWN` (`15`).
 
 After validating the protocol envelope, all other operation values return
 `ENOSYS` before operation-specific field checks.
+
+## System-root namespace (0.8)
+
+The [filesystem contract](filesystem.md#root-namespace-contract-26) now applies
+to the live service. The system disk (default device 8) backs `/`, `/bin`,
+and `/etc`; a separate data volume may occupy `/mnt`. Bootfs is used only by
+the explicit recovery path. Bare command names search system `/bin`, never
+data media. Directory lookup rejects ambiguity with `EEXIST` rather than
+choosing the first entry. The older 0.5 section below describes the original
+wire shapes; its `/mnt`-only route and first-match policy are superseded here.
+
+`CHDIR`: descriptor/flags zero, count 1–23, ASCII path with a NUL at
+payload[count]. Success returns result zero after checking the directory and
+mount; rejection leaves cwd unchanged. `GETCWD`: descriptor/flags/count zero;
+returns canonical `/`, `/bin`, `/etc`, or `/mnt`, with result excluding the
+trailing NUL. Earlier minors return `ENOSYS`; malformed fields return `EINVAL`.
+Cwd is still a shared root-session token, not isolated per-process state.
+
+`OPEN`/`STAT` accept normalized absolute or cwd-relative paths with the same
+count/NUL convention. Descriptor `2` on `OPEN` (0.8 only) means a UDEX
+candidate: `.SH` and `.ETC` are rejected with `ENOEXEC`, directories with
+`EISDIR`; the executable loader still validates the actual header/size/slot.
+Ordinary read and directory opens retain descriptors 0 and 1. `.SH` files
+are readable/listable; no general script interpreter is advertised yet.
+
+`STATFS` retains its 0.6 counted, non-NUL-required payload and response, but
+accepts any of the four directory paths (including relative spellings).
+Leaves are `EINVAL`. The path selects the owning system/data device. Missing
+mounts are `ENODEV` for 0.8 clients; earlier clients retain `ENOENT`.
+
+The bootstrap alone can `MOUNT` a device at `/` (count 2: unit then slash),
+or release it with `UMOUNT /` (count 1) after a failed shell load. Both require
+0.8 and boot-source state zero. Once a disk/recovery shell is selected, root
+mount/unmount returns `EBUSY`. This is a boot-state guard, not memory protection.
+Data mount shapes remain unchanged. A handle owns its mount until CLOSE;
+cwd in `/mnt` or a data handle blocks its unmount. A root handle does not block
+removing an unused data mount. Mount probes and STATFS cannot interrupt an
+open handle. File STAT still returns `ENOSYS` (no invented byte sizes).
 
 ## Deferred root-session control (0.7)
 
@@ -311,6 +352,7 @@ released, and child exit publishes the response only when the parent resumes.
 | 11 | `EAGAIN` | `READ` would-block |
 | 12 | `ENOMEM` | `SPAWN` |
 | 16 | `EBUSY` | resource already owned |
+| 17 | `EEXIST` | ambiguous folded filename or virtual-directory collision |
 | 20 | `ENOTDIR` | filesystem operations |
 | 22 | `EINVAL` | malformed counts, flags, ids, or ranges |
 | 24 | `EMFILE` | filesystem descriptor exhaustion |

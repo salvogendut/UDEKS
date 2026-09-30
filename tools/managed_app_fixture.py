@@ -14,7 +14,9 @@ def dos_file(image, name):
         seen.add(pos)
         for n in range(8):
             entry = pos+2+32*n
-            if image[entry] == 0x81 and image[entry+3:entry+19].rstrip(b'\xa0') == name.encode():
+            # Accept archived unsuffixed evidence as well as #26 system files.
+            names = (name.encode(), (name+'.BIN').encode())
+            if image[entry] == 0x81 and image[entry+3:entry+19].rstrip(b'\xa0') in names:
                 entries.append(entry)
         track, sector = image[pos:pos+2]
     if len(entries) != 1:

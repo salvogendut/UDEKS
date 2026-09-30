@@ -1,5 +1,39 @@
 # Disk shell and startup policy (Boot 0.2)
 
+## Root namespace candidate (#26)
+
+The current branch supersedes the historical mount/name details below:
+device 8 backs `/` before shell loading, `USH.BIN` maps to `/bin/ush`, and
+`RC.ETC` maps to `/etc/rc`. `/mnt` is initially free. Missing/bad shell loading
+releases root and enters the small bootfs recovery shell. Only `/etc/rc`
+auto-runs; general `.SH` execution is deferred under issue #27.
+
+Use the preserved [D64](../bench/artifacts/2026-09-30-root-namespace/udeks.d64)
+or [D71](../bench/artifacts/2026-09-30-root-namespace/udeks.d71). Cold-boot this
+image, not a still-running previous session, then try:
+
+```text
+pwd
+ls /bin
+cd /etc
+cat rc
+cd /
+df
+xclock &
+xwave &
+cowsay hello
+```
+
+Move the windows and confirm console input still works. With another standard
+CBM DOS disk on device 9, try `mount 9 /mnt`, `ls /mnt`, `cat /mnt/NAME`,
+then `umount /mnt` and `cowsay still-here`. If you `cd /mnt`, return with
+`cd /` before unmounting. The test data disk in the same artifact directory
+contains `HELLO`. System commands must remain available after data unmount.
+The user accepts this candidate's functional test (latest platform unspecified).
+Full contract and limits:
+[filesystem ABI](../abi/filesystem.md). The rest of this document records the
+earlier Boot 0.2 checkpoint, not the current namespace.
+
 Issue [#20](https://github.com/salvogendut/UDEKS/issues/20), branch
 `boot-disk-shell-startup`. This follows foreground disk execution, merged in
 PR #19 after positive manual 1986 and C128/PI1541 testing.

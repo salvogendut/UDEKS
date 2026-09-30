@@ -16,7 +16,12 @@ unsigned char submit_request(unsigned char op, unsigned char fd, unsigned char c
     (void)fd;
     ++test_calls[op];
     if (op == test_fail_op) { udeks_errno = test_error; return 255; }
-    if (op == 6) return 4;
+    if (op == 6) {
+        if (fd || count != 7 || memcmp(startup_request+14, "/etc/rc", 8)) {
+            udeks_errno = 22; return 255;
+        }
+        return 4;
+    }
     if (op != 1) return 0;
     n = test_length-test_cursor;
     if (n > count) n = count;

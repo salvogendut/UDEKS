@@ -94,7 +94,7 @@ class FileTools(unittest.TestCase):
         self.assertEqual(self.invoke('ls', '-l', '/mnt'), 0)
         self.assertEqual((c.c_char*24).in_dll(self.lib, 'test_stat_path').value, b'/mnt/HELLO')
         self.assertEqual(self.output(), b'-r-x 12 HELLO\n')
-        for cwd, expected in ((0, b'/'), (1, b'/bin')):
+        for cwd, expected in ((0, b'.'), (1, b'.'), (2, b'.'), (3, b'.')):
             self.setUp(); c.c_uint8.in_dll(self.lib, 'filetools_cwd').value = cwd
             self.assertEqual(self.invoke('ls'), 0)
             self.assertEqual((c.c_char*24).in_dll(self.lib, 'test_open_path').value, expected)

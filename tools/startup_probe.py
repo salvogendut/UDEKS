@@ -21,7 +21,7 @@ def fixture(image, script):
     image = bytearray(image)
     for slot in range(8):
         entry = sector_offset(18, 1)+2+32*slot
-        if image[entry+3:entry+19].rstrip(b'\xa0') != b'RC': continue
+        if image[entry+3:entry+19].rstrip(b'\xa0') not in (b'RC', b'RC.ETC'): continue
         if script is None: image[entry] = 0
         else:
             if len(script) > 254: raise ValueError('fixture requires one sector')
@@ -83,10 +83,9 @@ def main():
             records.append(dict(command=text, console=output))
             print('PASS', text, flush=True)
 
-        if args.variant in ('missing', 'invalid'): command('mount 8 /mnt')
         if args.variant == 'default':
             if 'mount: failed' in boot: raise AssertionError(boot)
-            if 'mount: /mnt ready (read-only)' not in boot: raise AssertionError(boot)
+            command('df /mnt', ('not mounted',), 1)
             command('xclock &', ('xclock started &',), builtin=True)
             sp.wait_for_byte(port, 0xF225, 3, time.monotonic()+30)
             command('xwave &', ('xwave started &',), builtin=True)
@@ -98,8 +97,9 @@ def main():
         available = sum(bam[4*t] for t in range(1, 36) if t != 18)
         if bam[3] & 128: available += sum(bam[220+t] for t in range(1, 36) if t != 18)
         command('df', (f'{total}         {total-available}   {available}', 'Read-only mount'))
-        command('/mnt/DF /mnt', (f'{total}         {total-available}   {available}',))
-        command('df /bad', ('usage: df [/mnt]',), 1)
+        if args.variant != 'valid': command('mount 8 /mnt')
+        command('/bin/df /mnt', (f'{total}         {total-available}   {available}',))
+        command('df /bad', ('usage: df [/|/mnt]',), 1)
         command('cat /mnt/HELLO', ('HELLO UDEKS',))
         command('ls /mnt', ('FREE', 'DF', 'USH'))
         if args.variant == 'default':

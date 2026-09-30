@@ -2,15 +2,17 @@
 #include <stdint.h>
 #include "udeks/iec_slow.h"
 uint8_t udeks_storage_request[38];
+uint8_t udeks_storage_cwd, udeks_storage_boot_source;
 uint8_t test_open_error, test_close_error, test_open_count, test_close_count;
 uint8_t udeks_iec_filename[16], udeks_iec_filename_length;
 uint8_t test_dos_error, test_status_bad, test_status_error, test_talk_error;
 uint8_t test_tracks[32], test_numbers[32], test_command_error;
+uint8_t test_units[32], test_device;
 uint16_t test_sectors[8192], test_fail_at, test_position;
 static uint8_t status_mode, status_position, selected, missing;
 uint8_t udeks_iec_prepare_file(uint8_t device)
 {
-    (void)device;
+    test_device = device;
     ++test_open_count;
     status_mode = missing = 0;
     return test_open_error;
@@ -21,7 +23,8 @@ uint8_t udeks_iec_command(void)
     track = (udeks_iec_filename[7]-'0')*10 + udeks_iec_filename[8]-'0';
     sector = (udeks_iec_filename[10]-'0')*10 + udeks_iec_filename[11]-'0';
     for (selected = 0; selected < 32; ++selected)
-        if (test_tracks[selected] == track && test_numbers[selected] == sector) break;
+        if ((!test_units[selected] || test_units[selected] == test_device) &&
+            test_tracks[selected] == track && test_numbers[selected] == sector) break;
     missing = selected == 32;
     test_position = 0;
     return test_command_error;

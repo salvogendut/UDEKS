@@ -24,8 +24,11 @@ class TaskRequestAbiTests(unittest.TestCase):
     def test_lifecycle_operations_and_layouts_are_frozen(self):
         values = self.defines("include/udeks/task_request.h")
 
-        self.assertEqual(values["UDEKS_TASK_REQUEST_ABI_MINOR"], 7)
+        self.assertEqual(values["UDEKS_TASK_REQUEST_ABI_MINOR"], 8)
         self.assertEqual(values["UDEKS_TREQ_OP_CONTROL"], 20)
+        self.assertEqual(values["UDEKS_TREQ_OP_CHDIR"], 21)
+        self.assertEqual(values["UDEKS_TREQ_OP_GETCWD"], 22)
+        self.assertEqual(values["UDEKS_TREQ_OPEN_EXEC"], 2)
         self.assertEqual(values["UDEKS_TREQ_OP_STATFS"], 19)
         self.assertEqual(values["UDEKS_STATFS_SIZE"], 8)
         self.assertEqual(values["UDEKS_TREQ_OP_MOUNT"], 17)
@@ -93,7 +96,7 @@ class TaskRequestAbiTests(unittest.TestCase):
             ROOT / "src/services/filesystem/bootfs_request.s"
         ).read_text().lower()
 
-        self.assertIn("cmp #$08", dispatcher)
+        self.assertIn("cmp #$09", dispatcher)
         self.assertIn("cmp #$0a", dispatcher)
         self.assertIn("task_request_fallback:", dispatcher)
         self.assertIn("jmp $c880", dispatcher)

@@ -1,5 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 STORAGE_BUILD := build/storage
+.PHONY: filesystem-policy
+# Compile/measure the #26 namespace contract without changing the boot image.
+filesystem-policy: $(STORAGE_BUILD)/fs_namespace.o
+$(STORAGE_BUILD)/fs_namespace.o: src/services/filesystem/fs_namespace.c include/udeks/fs_namespace.h include/udeks/task_request.h | $(STORAGE_BUILD)
+	$(CL65) $(CFLAGS_8502) --static-locals --code-name STORAGECODE -c -o $@ $<
 .PHONY: iec-eof-reference
 iec-eof-reference: $(BUILD_IEC_DIRECTORY)/kernal-eof.prg
 $(BUILD_IEC_DIRECTORY)/kernal-eof.o: bench/iec-directory/kernal-eof.s | $(BUILD_IEC_DIRECTORY)
@@ -8,7 +13,7 @@ $(BUILD_IEC_DIRECTORY)/kernal-eof.bin: $(BUILD_IEC_DIRECTORY)/kernal-eof.o cfg/8
 	$(LD65) -C cfg/8502-iec-directory.cfg -o $@ $<
 $(BUILD_IEC_DIRECTORY)/kernal-eof.prg: $(BUILD_IEC_DIRECTORY)/kernal-eof.bin
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
-STORAGE_OBJECTS := $(addprefix $(STORAGE_BUILD)/,iec_entry.o iec_service.o cbm_file.o iec_slow.o)
+STORAGE_OBJECTS := $(addprefix $(STORAGE_BUILD)/,iec_entry.o iec_service.o fs_namespace.o cbm_file.o iec_slow.o)
 USER_MOUNT_BIN := $(BUILD_USER)/mount.bin
 USER_MOUNT_UDEX := $(BUILD_USER)/mount.udx
 USER_FILETOOLS_BIN := $(BUILD_USER)/filetools.bin

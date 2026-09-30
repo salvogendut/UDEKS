@@ -40,7 +40,7 @@
 #define UDEKS_TREQ_PAYLOAD               14u
 
 #define UDEKS_TASK_REQUEST_ABI_MAJOR     0u
-#define UDEKS_TASK_REQUEST_ABI_MINOR     7u
+#define UDEKS_TASK_REQUEST_ABI_MINOR     8u
 
 #define UDEKS_TREQ_STATE_IDLE            0u
 #define UDEKS_TREQ_STATE_REQUEST         1u
@@ -75,16 +75,23 @@
 #define UDEKS_TREQ_POLL_TIMEOUT_MAX    600u
 #define UDEKS_TREQ_POLL_FOREVER     0xFFFFu
 
-/* ABI 0.5: one read-only IEC mount. MOUNT: device byte + literal "/mnt";
+/* ABI 0.5: read-only data mount. MOUNT: device byte + literal "/mnt";
  * UMOUNT: literal "/mnt". Descriptor and flags are zero for both. */
 #define UDEKS_TREQ_OP_MOUNT             17u
 #define UDEKS_TREQ_OP_UMOUNT            18u
 
-/* ABI 0.6: read-only filesystem capacity, literal /mnt, count 4, fd/flags 0.
+/* ABI 0.6: read-only filesystem capacity; counted path, fd/flags 0.
+ * 0.8 routing also accepts root/system directories.
  * Eight response bytes: LE block size, total blocks, free blocks, unit, flags. */
 #define UDEKS_TREQ_OP_STATFS            19u
 /* ABI 0.7: deferred root-session service control; see service_control.h. */
 #define UDEKS_TREQ_OP_CONTROL           20u
+/* ABI 0.8: CHDIR counted NUL-terminated path; GETCWD count zero, fd/flags
+ * zero. Root-session cwd is shared, not yet per-process state. */
+#define UDEKS_TREQ_OP_CHDIR             21u
+#define UDEKS_TREQ_OP_GETCWD            22u
+/* OPEN descriptor 2 requests a UDEX candidate, not a script/config file. */
+#define UDEKS_TREQ_OPEN_EXEC             2u
 #define UDEKS_STATFS_SIZE               8u
 #define UDEKS_STATFS_BLOCK_SIZE         0u
 #define UDEKS_STATFS_TOTAL              2u
@@ -139,6 +146,7 @@
 #define UDEKS_TREQ_EAGAIN                11u
 #define UDEKS_TREQ_ENOMEM                12u
 #define UDEKS_TREQ_EBUSY                 16u
+#define UDEKS_TREQ_EEXIST                17u
 #define UDEKS_TREQ_ENODEV                19u
 #define UDEKS_TREQ_ENOTDIR               20u
 #define UDEKS_TREQ_EISDIR                21u

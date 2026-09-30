@@ -75,8 +75,9 @@ It stages into a FREE bank-1 task-2 allocation and checks exact file length,
 entry and allocation before replacing live bank-0 APP1. SPAWN still uses bootfs.
 See [implementation and limits](../docs/STORAGE-0.2.md).
 
-Managed first-use loads resolve `xclock` as `/mnt/XCLOCK` (bank-0 `$0200`)
-and `xwave` as `/mnt/XWAVE` (bank-0 `$1200`); they do not fall back to bootfs.
+Managed first-use loads resolve `xclock` as `/bin/xclock` (bank-0 `$0200`)
+and `xwave` as `/bin/xwave` (bank-0 `$1200`), backed by `XCLOCK.BIN` and
+`XWAVE.BIN` on the system disk; they do not fall back to bootfs or data media.
 Both require flags `$02`, load and entry equal to the requested slot base,
 image+BSS <= `$0A00`, exact file length, and six absolute JMP entries whose
 targets are inside the image after the 18-byte table. Validation finishes
@@ -86,9 +87,12 @@ stay installed for polling and subsequent restarts until reboot; this is not
 general dynamic linking, unloading, or isolation from hostile machine code.
 See [managed disk delivery](../docs/DISK-GRAPHICS.md).
 
-Boot 0.2 also allows init's persistent load to read `/mnt/USH` before child
+Init's persistent load reads `/bin/ush` (`USH.BIN`) before child
 tasks exist. It requires flag `$01`, load and entry `$9000`, and the same
 `$1000` image+BSS bound. The fixed scheduler entry cannot currently honor an
-offset entry for persistent tasks, so the loader rejects it. Init temporarily
-mounts the boot device, releases the mount after loading, and uses bootfs on
-failure; no new public syscall is introduced. See [boot policy](../docs/BOOT-STARTUP.md).
+offset entry for persistent tasks, so the loader rejects it. Init mounts the
+boot device as root and retains that mount on success, releasing it for bootfs
+recovery on failure. UTRQ 0.8 OPEN descriptor 2 rejects `.SH`/`.ETC` candidates
+before image loading; all UDEX checks still apply. Normal bare commands search
+system `/bin`; explicit paths use the filesystem's cwd resolver. SPAWN's
+bootfs-only child path is unchanged. See [boot policy](../docs/BOOT-STARTUP.md).

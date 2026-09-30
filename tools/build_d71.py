@@ -837,23 +837,23 @@ def build_image(
     if ush:
         # Raw UDEX, not a KERNAL PRG: the persistent loader validates the
         # header before copying it into bank 1. Bootfs keeps a recovery copy.
-        install_prg_file(image, "USH", ush, file_type=0x81)
+        install_prg_file(image, "USH.BIN", ush, file_type=0x81)
     if rc is not None:
-        install_prg_file(image, "RC", rc, file_type=0x81)
+        install_prg_file(image, "RC.ETC", rc, file_type=0x81)
     if sysinfo:
-        install_prg_file(image, "FREE", sysinfo, file_type=0x81)
-        install_prg_file(image, "DF", sysinfo, file_type=0x81)
+        install_prg_file(image, "FREE.BIN", sysinfo, file_type=0x81)
+        install_prg_file(image, "DF.BIN", sysinfo, file_type=0x81)
     for name, executable, base in (("XCLOCK", xclock, 0x0200), ("XWAVE", xwave, 0x1200)):
         if executable:
             validate_managed_app(executable, base)
-            install_prg_file(image, name, executable, file_type=0x81)
+            install_prg_file(image, name+'.BIN', executable, file_type=0x81)
     names = {'SCHEDOVR', 'USH', 'RC', 'HELLO', 'FREE', 'DF', 'XCLOCK', 'XWAVE'}
     for name, executable in commands:
-        if name in names or not name or len(name) > 16 or any(c not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-' for c in name):
+        if name in names or not name or len(name) > 12 or any(c not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-' for c in name):
             raise ValueError('invalid or duplicate disk command name')
         names.add(name)
         validate_command(executable)
-        install_prg_file(image, name, executable, file_type=0x81)
+        install_prg_file(image, name+'.BIN', executable, file_type=0x81)
     return bytes(image)
 
 

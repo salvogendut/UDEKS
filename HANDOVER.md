@@ -8,6 +8,70 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 ## Current feature handover — 2026-09-30
 
+Issue [#26](https://github.com/salvogendut/UDEKS/issues/26), branch
+`storage-root-namespace`, worktree `build/root-filesystem`, based on merged
+PR #25 (`d13a5c2`). Root-namespace runtime integration is implemented.
+Main and historical release images are unchanged. The user reports
+"everything runs beautifully"; the namespace implementation is committed and
+pushed as `95aa2cc`, with PR #28 open. The user now authorizes merging after
+recording the decision to defer scripting. This is functional acceptance;
+the latest feedback does not identify the test platform.
+
+The system disk (default device 8; bootstrap honors a valid boot-device byte)
+now backs `/`. Physical `USH.BIN` -> `/bin/ush`, `RC.ETC` -> `/etc/rc`,
+and program `NAME.BIN` -> `/bin/name`. Startup no longer mounts `/mnt`.
+`mount 9 /mnt` attaches independent raw data media; unmounting it leaves
+system commands available. No fallback search for commands on data media.
+Missing/bad disk shell releases bootstrap root and enters bootfs recovery.
+
+`fs_namespace.c` is linked into the bank-1 C service. UTRQ 0.8 adds CHDIR,
+GETCWD, and OPEN descriptor 2 (UDEX candidate; reject script/config). Cwd is
+still shared root-session state, not isolated per process. Paths accept
+relative names, dot/dotdot, and repeated slash. Full-directory scans detect
+folded-name/BIN-vs-SH ambiguity; no first-entry winner or persistent index.
+.SH files are listable/readable, but not executable yet. Only designated
+/etc/rc auto-runs, through the existing bounded startup interpreter.
+
+Placement: recovery bootfs now $A000-$AFFF (4 KiB), filesystem policy
+$B000-$CFFF (8 KiB), service state $E000-$E17F. Old $8A00 policy hole stays
+unused. At least 128 bytes remain below service C stack top $E200; driver
+$E300-$E8FF and shell stack $E900-$EFF0 stay put. Link/packer/bootfs lookup
+limits agree. Do not reuse the old bootfs capacity for fixture programs:
+EXIT/WAITPID fixture bootfs now contains just its actual probe shell.
+Public gateway addresses, UAPP runtime, and window/cache placements unchanged.
+
+Qualification tooling: `tools/root_namespace_probe.py` checks real ush on
+true-drive VICE D64/1541 and D71/1571 with a separate device-9 disk and a
+missing-shell recovery variant. `tools/startup_probe.py` accepts RC.ETC and
+checks valid/invalid/missing startup. `tools/1986_storage_smoke_build.py
+--root-namespace` checks native keyboard paths plus 12 clock drags and a wave
+drag; that single-drive harness uses a device-8 alias, so independent device-9
+coverage belongs to VICE. Preserve exact images/results under
+`bench/{artifacts,results}/2026-09-30-root-namespace`.
+
+Final checkpoint: 997 host tests and all preserved checksums pass;
+container placement-check passes. Both VICE formats, separate device 9,
+missing-shell recovery, all three RC variants, typed BASIC BOOT, compiled-C
+SPAWN/EXIT/WAITPID, shadow/VIC equality, and native 1986 input/dragging pass.
+A fresh parallel build reproduces D64/D71 byte-for-byte. D64 SHA-256 starts
+`e959e62f`, D71 `5985e1d3`. No VICE processes remain. Preserved images and
+evidence are unchanged by the subsequent documentation-only priority update.
+
+Latest decision: reserve `.SH` and defer general script execution in issue #27.
+The existing RC command runner stays; no scripting implementation was added.
+Branch `shell-bounded-scripts` / worktree `build/shell-scripts` is a clean,
+unused branch at `95aa2cc`, not active work. Do not resume it automatically.
+
+Next: select one existing non-kernel service, define its disk image,
+load/start/stop/dependency contract, and extract it without breaking the minimal
+boot/read recovery path. This is independent of general scripting, four-task
+scheduling, preemption, storage writes and graphics optimization. Keep the
+accepted namespace PR focused; service extraction gets its own work branch.
+The visible [roadmap](docs/ROADMAP.md) remains the priority authority.
+Build/use gh in my-distrobox. Never clean root build: it contains worktrees.
+
+## Previous feature: command extraction (#24, merged as PR #25)
+
 Final issue #24 review: the user accepted the default-mount image and explicitly
 authorized fixing the remaining presentation errors and merging. The banner
 now uses stage-1 measurements of the actual bank-1 UIEC/UBFS 0.1 headers,
