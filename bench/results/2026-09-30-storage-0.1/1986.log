@@ -1,0 +1,339 @@
+PC=CE23 drive=EAB9 jam=0 speed=1 CIA2=07/3F bus=110 via=02/1A request=00/00/00 exit=0
+PC=E3B7 drive=F961 jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E4AE drive=E9C6 jam=0 speed=0 CIA2=47/3F bus=101 via=0D/1A request=00/00/00 exit=0
+PC=E4A8 drive=E9B7 jam=0 speed=0 CIA2=47/3F bus=101 via=0C/1A request=00/00/00 exit=0
+PC=E4AE drive=FEF3 jam=0 speed=0 CIA2=47/3F bus=110 via=07/1A request=00/00/00 exit=0
+PC=E56F drive=F918 jam=0 speed=0 CIA2=27/3F bus=100 via=0D/1A request=00/00/00 exit=0
+PC=E4A5 drive=E9A4 jam=0 speed=0 CIA2=47/3F bus=101 via=0D/1A request=00/00/00 exit=0
+PC=F690 drive=EC2D jam=0 speed=0 CIA2=C7/3F bus=111 via=00/1A request=01/0A/00 exit=0
+command ls /bin: PC=2F37 drive=EC2D jam=0 speed=0 CIA2=C7/3F bus=111 via=00/1A request=00/10/00 exit=0
+GEORAM : NOT PRESENT                                      [ -- ]
+8502 EXECUTIVE : 1 MHZ                                    [ OK ]
+Z80 WORKER : READY                                        [ OK ]
+STORAGE SERVICES : DEFERRED                               [ -- ]
+FILESYSTEM SERVICES : DEFERRED                            [ -- ]
+                                                                
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~>                                                        
+command mount 8 /mnt: PC=70F3 drive=EC14 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+8502 EXECUTIVE : 1 MHZ                                    [ OK ]
+Z80 WORKER : READY                                        [ OK ]
+STORAGE SERVICES : DEFERRED                               [ -- ]
+FILESYSTEM SERVICES : DEFERRED                            [ -- ]
+                                                                
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~>                                                        
+command ls /mnt: PC=5EB8 drive=EC3C jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~> ls /mnt                                                
+SCHEDOVR                                                        
+HELLO                                                           
+EMPTY                                                           
+ONE                                                             
+UDEKS:~>                                                        
+command cat /mnt/hello: PC=9193 drive=EC17 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~> ls /mnt                                                
+SCHEDOVR                                                        
+HELLO                                                           
+EMPTY                                                           
+ONE                                                             
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~>                                                        
+command cat /mnt/empty: PC=9016 drive=EC2B jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+                                                                
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~> ls /mnt                                                
+SCHEDOVR                                                        
+HELLO                                                           
+EMPTY                                                           
+ONE                                                             
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> cat /mnt/empty                                         
+UDEKS:~>                                                        
+command cat /mnt/one: PC=C427 drive=EC5E jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~> ls /mnt                                                
+SCHEDOVR                                                        
+HELLO                                                           
+EMPTY                                                           
+ONE                                                             
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> cat /mnt/empty                                         
+UDEKS:~> cat /mnt/one                                           
+X                                                               
+UDEKS:~>                                                        
+command cat /mnt/nofile: PC=5EEB drive=EC14 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=1
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~> ls /mnt                                                
+SCHEDOVR                                                        
+HELLO                                                           
+EMPTY                                                           
+ONE                                                             
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> cat /mnt/empty                                         
+UDEKS:~> cat /mnt/one                                           
+X                                                               
+UDEKS:~> cat /mnt/nofile                                        
+cat: No such file or directory                                  
+UDEKS:~>                                                        
+command cat /mnt/hello: PC=2E1A drive=EC98 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~> ls /mnt                                                
+SCHEDOVR                                                        
+HELLO                                                           
+EMPTY                                                           
+ONE                                                             
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> cat /mnt/empty                                         
+UDEKS:~> cat /mnt/one                                           
+X                                                               
+UDEKS:~> cat /mnt/nofile                                        
+cat: No such file or directory                                  
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~>                                                        
+command umount /mnt: PC=5F84 drive=EC2B jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~> ls /mnt                                                
+SCHEDOVR                                                        
+HELLO                                                           
+EMPTY                                                           
+ONE                                                             
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> cat /mnt/empty                                         
+UDEKS:~> cat /mnt/one                                           
+X                                                               
+UDEKS:~> cat /mnt/nofile                                        
+cat: No such file or directory                                  
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> umount /mnt                                            
+UDEKS:~>                                                        
+command ls /bin: PC=6086 drive=EC12 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> cat /mnt/empty                                         
+UDEKS:~> cat /mnt/one                                           
+X                                                               
+UDEKS:~> cat /mnt/nofile                                        
+cat: No such file or directory                                  
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> umount /mnt                                            
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~>                                                        
+command mount 8 /mnt: PC=2A48 drive=EC2B jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=1
+UDEKS:~> cat /mnt/empty                                         
+UDEKS:~> cat /mnt/one                                           
+X                                                               
+UDEKS:~> cat /mnt/nofile                                        
+cat: No such file or directory                                  
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> umount /mnt                                            
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+mount: failed                                                   
+UDEKS:~>                                                        
+command ls /bin: PC=9179 drive=EC72 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+mount: failed                                                   
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~>                                                        
+command mount 8 /mnt: PC=5F8C drive=EC2D jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+mount: failed                                                   
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~>                                                        
+command cat /mnt/hello: PC=2230 drive=EC3C jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+mount: failed                                                   
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~>                                                        
+command umount /mnt: PC=8FF7 drive=EC2D jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+mount: failed                                                   
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> umount /mnt                                            
+UDEKS:~>                                                        
+PASS native 1986 raw-IEC mount/list/tiny-file/error/media-recovery/unmount

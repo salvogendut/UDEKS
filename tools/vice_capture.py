@@ -221,6 +221,8 @@ def capture(args: argparse.Namespace) -> None:
         raise SystemExit("state offset must lie inside the result block")
     if args.screenshot_delay < 0:
         raise SystemExit("screenshot delay must be non-negative")
+    if args.poll_delay < 0:
+        raise SystemExit("poll delay must be non-negative")
 
     work = Path("build/vice").resolve()
     work.mkdir(parents=True, exist_ok=True)
@@ -395,6 +397,10 @@ def capture(args: argparse.Namespace) -> None:
             monitor_command(
                 port, f"keybuf {quote_monitor_text(args.followup_keybuf)}"
             )
+        if args.poll_delay:
+            # Timing-sensitive bus probes must finish their byte handshakes
+            # before the first remote-monitor memory read pauses emulation.
+            time.sleep(args.poll_delay)
         state = None
         last_error: Exception | None = None
         while time.monotonic() < deadline:
@@ -587,6 +593,10 @@ def main() -> None:
              "images that start below the BASIC launcher",
     )
     parser.add_argument("--timeout", type=float, default=20.0)
+    parser.add_argument(
+        "--poll-delay", type=float, default=0.0,
+        help="wait before first result poll (for timing-sensitive bus probes)",
+    )
     parser.add_argument(
         "--screenshot",
         type=Path,

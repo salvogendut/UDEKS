@@ -5,6 +5,11 @@
         .import _udeks_root_terminal_poll
         .export _udeks_root_terminal_service_descriptor
 
+        ; The newline-safe prompt saves six CODE bytes. Keep the qualified
+        ; resident/shadow boundary fixed; this is reserved space, not executed.
+        .segment "CODE"
+        .res 6, $ea
+
         .segment "RODATA"
 _udeks_root_terminal_service_descriptor:
         .byte 'U', 'S', 'V', 'C'

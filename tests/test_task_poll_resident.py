@@ -23,7 +23,6 @@ class PollResidentTests(unittest.TestCase):
         public = defines("include/udeks/task_request.h")
         policy = defines("include/udeks/task_poll_policy.h")
         for reference, actual in (
-            ("ABI_MINOR", "UDEKS_TASK_REQUEST_ABI_MINOR"),
             ("OPERATION", "UDEKS_TREQ_OP_POLL"),
             ("COUNT", "UDEKS_TREQ_POLL_COUNT"),
             ("READABLE", "UDEKS_TREQ_POLL_READABLE"),
@@ -31,6 +30,8 @@ class PollResidentTests(unittest.TestCase):
             ("FOREVER", "UDEKS_TREQ_POLL_FOREVER"),
         ):
             self.assertEqual(policy["UDEKS_POLL_POLICY_" + reference], public[actual])
+        self.assertEqual(policy["UDEKS_POLL_POLICY_ABI_MINOR"], 4)
+        self.assertGreaterEqual(public["UDEKS_TASK_REQUEST_ABI_MINOR"], 4)
 
     def test_private_helpers_are_address_asserted(self):
         source = self.text("src/scheduler/task_yield_handler.s")

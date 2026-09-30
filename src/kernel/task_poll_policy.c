@@ -15,7 +15,7 @@ unsigned char udeks_poll_policy_validate(
         request[UDEKS_TREQ_MAGIC2] != 'R' ||
         request[UDEKS_TREQ_MAGIC3] != 'Q' ||
         request[UDEKS_TREQ_MAJOR] != UDEKS_POLL_POLICY_ABI_MAJOR ||
-        request[UDEKS_TREQ_MINOR] > UDEKS_POLL_POLICY_ABI_MINOR ||
+        request[UDEKS_TREQ_MINOR] > UDEKS_TASK_REQUEST_ABI_MINOR ||
         request[UDEKS_TREQ_STATE] != UDEKS_TREQ_STATE_REQUEST) {
         return UDEKS_TREQ_EPROTO;
     }

@@ -31,6 +31,17 @@ class BuildBootfsTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "duplicate"):
             build_bootfs([("ush", b"one"), ("ush", b"two")])
 
+    def test_identical_read_only_payloads_have_distinct_names_shared_extent(self):
+        data = b'shared command image'
+        image = build_bootfs([('umount', data), ('mount', data)],
+                            max_size=HEADER_SIZE+2*ENTRY_SIZE+len(data))
+        first, second = HEADER_SIZE, HEADER_SIZE+ENTRY_SIZE
+        self.assertEqual(image[first+2:first+6], image[second+2:second+6])
+        self.assertEqual(image[first+8:first+13], b'mount')
+        self.assertEqual(image[second+8:second+14], b'umount')
+        self.assertEqual(image[HEADER_SIZE+2*ENTRY_SIZE:], data)
+        self.assertEqual(image, build_bootfs([('mount', data), ('umount', data)]))
+
     def test_rejects_paths_in_leaf_names(self):
         with self.assertRaisesRegex(ValueError, "unsupported"):
             build_bootfs([("/bin/ush", b"shell")])

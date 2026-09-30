@@ -24,7 +24,9 @@ class TaskRequestAbiTests(unittest.TestCase):
     def test_lifecycle_operations_and_layouts_are_frozen(self):
         values = self.defines("include/udeks/task_request.h")
 
-        self.assertEqual(values["UDEKS_TASK_REQUEST_ABI_MINOR"], 4)
+        self.assertEqual(values["UDEKS_TASK_REQUEST_ABI_MINOR"], 5)
+        self.assertEqual(values["UDEKS_TREQ_OP_MOUNT"], 17)
+        self.assertEqual(values["UDEKS_TREQ_OP_UMOUNT"], 18)
         # 0.2 operation numbers and behavior are preserved.
         self.assertEqual(values["UDEKS_TREQ_OP_READ"], 1)
         self.assertEqual(values["UDEKS_TREQ_OP_WRITE"], 2)
@@ -88,10 +90,12 @@ class TaskRequestAbiTests(unittest.TestCase):
             ROOT / "src/services/filesystem/bootfs_request.s"
         ).read_text().lower()
 
-        self.assertIn("cmp #$05", dispatcher)
+        self.assertIn("cmp #$06", dispatcher)
         self.assertIn("cmp #$0a", dispatcher)
         self.assertIn("task_request_fallback:", dispatcher)
-        self.assertIn("jmp _udeks_bootfs_request", dispatcher)
+        self.assertIn("jmp $c880", dispatcher)
+        router = (ROOT / "src/services/filesystem/iec_router.s").read_text().lower()
+        self.assertIn("jmp $f3ef", router)
         self.assertIn("cmp #op_yield", bootfs)
         self.assertIn("request_lifecycle:", bootfs)
         self.assertIn("cmp #op_yield", bootfs)

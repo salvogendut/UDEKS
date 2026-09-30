@@ -36,10 +36,19 @@ because this format represents exactly one mounted directory. Entries are
 sorted by name and duplicates are rejected. The loader validates all bounds
 before interpreting a file as UDEX.
 
-The current native-boot image admits at most `$2DBB` bytes inside a `$3100`-byte
-relocation reservation. Stage 1 gathers its split staging image into bank-1
-`$A000-$D0FF`, separate from bank-0 kernel memory at the same logical
-addresses. The packer sorts directory entries and the loader resolves `ush`,
+Different names may reference an identical complete file extent. The packer
+deduplicates byte-identical payloads (currently `mount` and `umount`, whose
+program selects its operation from argv[0]); entries remain separate and
+sorted. Bootfs is immutable, so shared extents do not introduce writable aliases.
+
+The native-boot image admits at most `$3100` bytes. The secondary `SCHEDOVR`
+file delivers bootfs directly into bank-1 `$A000-$D0FF`, separate from bank-0
+kernel memory at the same logical addresses. It no longer uses the former
+split Z80/shadow staging container. The packer validates the empty destination,
+header and total size before insertion; stage 1 checks the secondary load end.
+The current image uses 12,535 of 12,544 bytes; further programs need a packaging
+decision, not unchecked growth into the task context pages at `$D100`.
+The packer sorts directory entries and the loader resolves `ush`,
 `xclock`, and `xwave` by name, so directory ordering does not change init or
 managed-application contracts.
 

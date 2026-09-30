@@ -22,7 +22,8 @@ static unsigned char submit(
     REQUEST(UDEKS_TREQ_MAGIC2) = 'R';
     REQUEST(UDEKS_TREQ_MAGIC3) = 'Q';
     REQUEST(UDEKS_TREQ_MAJOR) = UDEKS_TASK_REQUEST_ABI_MAJOR;
-    REQUEST(UDEKS_TREQ_MINOR) = UDEKS_TASK_REQUEST_ABI_MINOR;
+    /* These directory wrappers require no operations newer than ABI 0.4. */
+    REQUEST(UDEKS_TREQ_MINOR) = 4u;
     REQUEST(UDEKS_TREQ_OPERATION) = operation;
     REQUEST(UDEKS_TREQ_SEQUENCE) = sequence;
     REQUEST(UDEKS_TREQ_DESCRIPTOR) = descriptor;

@@ -103,13 +103,17 @@ class PollPolicyTests(unittest.TestCase):
             with self.subTest(timeout=timeout):
                 self.validate(self.request(timeout), 0, timeout=timeout)
 
-    def test_only_proposed_minor_can_use_poll(self):
+    def test_poll_accepts_compatible_minors(self):
+        for minor in (4, 5):
+            request = self.request(FOREVER)
+            request[5] = minor
+            self.validate(request, 0, timeout=FOREVER)
         for minor in range(4):
             request = self.request()
             request[5] = minor
             request[9] = 255
             self.validate(request, ENOSYS, caller=255)
-        for minor in (5, 255):
+        for minor in (6, 255):
             request = self.request()
             request[5] = minor
             self.validate(request, EPROTO)
@@ -236,10 +240,10 @@ class PollPolicyTests(unittest.TestCase):
 class PollPolicyBoundaryTests(unittest.TestCase):
     def test_resident_operation_is_advertised(self):
         header = (ROOT / "include/udeks/task_request.h").read_text()
-        self.assertRegex(header, r"#define UDEKS_TASK_REQUEST_ABI_MINOR\s+4u")
+        self.assertRegex(header, r"#define UDEKS_TASK_REQUEST_ABI_MINOR\s+5u")
         self.assertRegex(header, r"#define UDEKS_TREQ_OP_POLL\s+16u")
         source = (ROOT / "src/8502/syscall_gate.s").read_text()
-        self.assertIn("lda TREQ_BASE+$05\n        cmp #$05", source)
+        self.assertIn("lda TREQ_BASE+$05\n        cmp #$06", source)
 
     def test_policy_is_compile_only_and_does_not_mutate_or_consume(self):
         source = (ROOT / "src/kernel/task_poll_policy.c").read_text()

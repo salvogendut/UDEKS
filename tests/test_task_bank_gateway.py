@@ -65,18 +65,14 @@ class TaskBankGatewayTests(unittest.TestCase):
         self.assertIn("task_gate_destination = $ff05", scheduler)
         self.assertIn("task_gate_size = $c0", scheduler)
 
-    def test_stage1_relocates_bootfs_and_installs_runtime_loader(self):
+    def test_stage1_keeps_secondary_bootfs_and_installs_runtime_loader(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
         task_header = (ROOT / "include/udeks/task.h").read_text().lower()
 
-        self.assertIn("lda $2300,y", stage1)
-        self.assertIn("bootfs_destination:\n        sta $0300,y", stage1)
-        self.assertIn("lda #$23\n        sta bootfs_source+2", stage1)
-        self.assertIn("lda #$a0\n        sta bootfs_destination+2", stage1)
-        self.assertIn("ldx #$1d", stage1)
-        self.assertIn("lda $af00,y", stage1)
-        self.assertIn("sta $bd00,y", stage1)
-        self.assertIn("ldx #$14", stage1)
+        self.assertNotIn("relocate_bootfs_page:", stage1)
+        self.assertNotIn("relocate_bootfs_tail_page:", stage1)
+        self.assertIn("schedovr already delivered bootfs", stage1)
+        self.assertIn("--secondary-bootfs", (ROOT / "Makefile").read_text())
         self.assertIn("lda $bfbb,y", stage1)
         self.assertIn("sta $e300,y", stage1)
         self.assertNotIn("lda $0c2a", stage1)

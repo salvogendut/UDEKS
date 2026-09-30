@@ -261,7 +261,7 @@ task_validate_signature:
         dex
         bpl task_validate_signature
         lda TREQ_BASE+$05
-        cmp #$05
+        cmp #$06
         bcs task_protocol_trampoline
         lda TREQ_STATE
         cmp #TREQ_REQUEST
@@ -289,14 +289,14 @@ task_check_prompt:
         bne task_request_fallback
         jmp task_prompt
 task_request_fallback:
-        jmp _udeks_bootfs_request
+        jmp $c880                   ; nonresident storage, then bootfs/lifecycle
 task_protocol_trampoline:
         jmp task_protocol_error
 
 task_read:
         lda TREQ_DESCRIPTOR
         beq task_read_descriptor_ok
-        jmp task_bad_descriptor
+        jmp $c880                   ; storage descriptor or bootfs EBADF
 task_read_descriptor_ok:
         lda TREQ_COUNT
         cmp #$19

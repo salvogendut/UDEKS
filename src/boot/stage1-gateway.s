@@ -295,62 +295,10 @@ checksum_high_matches:
         lda destination_sum_high
         sta BOOT_CHAIN_DEST_SUM+1
 
-        ; Relocate the first 7.25 KiB of bootfs from the unused tail of the
-        ; Z80 staging window to its permanent bank-1 $A000 home.
-        lda #$23
-        sta bootfs_source+2
-        sta bootfs_clear+2
-        lda #$a0
-        sta bootfs_destination+2
-        ldx #$1d
-relocate_bootfs_page:
-        ldy #$00
-relocate_bootfs_byte:
-bootfs_source:
-        lda $2300,y
-bootfs_destination:
-        sta $0300,y
-        lda #$00
-bootfs_clear:
-        sta $2300,y
-        iny
-        bne relocate_bootfs_byte
-        inc bootfs_source+2
-        inc bootfs_destination+2
-        inc bootfs_clear+2
-        dex
-        bne relocate_bootfs_page
-
-        ; Relocate the remaining 5 KiB from the former bank-0 application
-        ; staging area. This gives bootfs one contiguous $A000-$D0FF extent.
-        lda #$af
-        sta bootfs_tail_source+2
-        lda #$bd
-        sta bootfs_tail_destination+2
-        ldx #$14
-relocate_bootfs_tail_page:
-        ldy #$00
-relocate_bootfs_tail_byte:
-        lda #$00
-        sta MMU_LCR_KERNEL_FLAT
-bootfs_tail_source:
-        lda $af00,y
-        sta transfer_byte
-        lda #$00
-        sta MMU_LCR_WORKER_FLAT
-        lda transfer_byte
-bootfs_tail_destination:
-        sta $bd00,y
-        iny
-        bne relocate_bootfs_tail_byte
-        inc bootfs_tail_source+2
-        inc bootfs_tail_destination+2
-        dex
-        bne relocate_bootfs_tail_page
-
-        ; The compact high-memory module occupies the otherwise unused tail
-        ; of bootfs staging. Install its fixed $344-byte reservation before
-        ; the VIC shadow staging range is cleared.
+        ; SCHEDOVR already delivered bootfs to bank-1 $A000-$D0FF. Do not
+        ; overwrite it from legacy Z80/shadow staging. Those old containers
+        ; are no longer a limit on command packaging.
+        ; The high-memory module still uses its fixed bank-0 staging slot.
         lda #$00
         sta MMU_LCR_KERNEL_FLAT
         lda #$bb

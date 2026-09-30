@@ -6,6 +6,47 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
+## Current feature handover — 2026-09-30
+
+The active worktree is `build/storage-iec-read-only`, branch
+`storage-0.1-iec-read-only`, issue #15. Storage 0.1 is the priority in
+[the roadmap](docs/ROADMAP.md). The native IEC C service now links separately,
+boots through secondary delivery, and serves mount/directory/file-read/unmount requests.
+See [STORAGE-0.1.md](docs/STORAGE-0.1.md) for placements and live probes.
+`mount 8 /mnt`, `ls /mnt`, `cat /mnt/HELLO`, and `umount /mnt` pass through the normal
+shell on VICE true-drive 1541/D64 and 1571/D71, including error returns,
+remount, bootfs fallback, and xclock/xwave-active listings. The shell probe
+feeds keyboard events including Return: directly seeding the submitted-line
+record skips the terminal newline and falsely breaks silent commands.
+
+Bootfs now arrives directly in bank 1 through `SCHEDOVR`, not the old
+11,708-byte staging container. `ls`/`cat`/`mount`/`umount` share one immutable multicall
+UDEX extent; all previous programs remain. Runtime bootfs is still bounded
+to `$A000-$D0FF`: 12,307 of 12,544 bytes used. The recovered bank-0 staging space is not extra
+runtime bootfs space. Keep resident and graphics allocations fixed.
+
+The previous 1986 failure was a backend-selection issue: `real_disk_drive=1`
+requires a full quit/reopen in sibling revision `3979786`, not just reset.
+The user confirmed mount/list after restarting. The new raw-IEC harness also
+passes native boot, keyboard mount/list/cat/missing-file/unmount without
+modifying emulator sources. Runtime storage does not use KERNAL disk traps.
+
+Next: physical C128/PI1541 qualification of the preserved test disk, then
+merge PR #17. `cbm_file.c` replaces the runtime formatted-directory/DOS-file
+stream with read-only U1 sector reads: exact byte counts now pass for 0, 1, 2,
+24, 255 and 515 bytes, including a one-byte final sector. The old failure also
+reproduces with stock KERNAL; the isolated reference remains in the suite.
+VICE 1541/D64 and 1571/D71 pass removal mid-read, sticky EIO, absent-media
+failure, replacement media, caller context and unchanged bitmap. Immediate
+remount requires one retry in the debugger test; keyboard tests recover with
+graphics active. 1986 passes empty/one-byte/error/eject/reinsert keyboard tests.
+885 host tests pass; placement, panic build and shadow gates pass. Exact test
+disks/results are in `bench/{artifacts,results}/2026-09-30-storage-0.1`.
+Always unmount before swapping media; no automatic media-generation detector
+or physical-device qualification is claimed. Storage 0.2 may branch from this
+candidate while hardware testing is pending; do not merge Storage 0.1 early.
+Do not expand benchmarks or optimize IEC before completing this feature.
+
 ## Historical Tasking 0.1 decision
 
 The next milestone is **Tasking 0.1**. Do not add another application or grow

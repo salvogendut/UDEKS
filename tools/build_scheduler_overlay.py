@@ -42,6 +42,7 @@ def build_overlay(
     switch_tail: bytes = b"",
     yield_handler: bytes = b"",
     vectors: bytes = b"",
+    storage_router: bytes = b"",
 ) -> tuple[bytes, str]:
     segments = map_segments(map_text)
     if "SCHEDULER" not in segments or "CODE" not in segments or "BSS" not in segments:
@@ -75,6 +76,9 @@ def build_overlay(
             raise ValueError("scheduler page does not retain six zero vector bytes")
         page = page[:-len(vectors)] + vectors
     installed_tail = tail
+    if storage_router:
+        from build_storage import install_router
+        installed_tail = install_router(tail, code_start, bss_end, storage_router)
     if yield_handler:
         handler_offset = HANDLER_ADDRESS - code_start
         if len(installed_tail) > handler_offset:
@@ -170,6 +174,8 @@ def main() -> None:
     parser.add_argument("--activation-vectors", type=Path)
     parser.add_argument("--window-cache", type=Path,
                         help="prepend the linked cache and relocate temporary scheduler sources")
+    parser.add_argument("--storage", type=Path, help="directory containing the linked IEC service")
+    parser.add_argument("--ush", type=Path, help="ush image for storage placement validation")
     args = parser.parse_args()
     try:
         payload, constants = build_overlay(
@@ -180,10 +186,19 @@ def main() -> None:
             b"" if args.activation_tail is None else args.activation_tail.read_bytes(),
             b"" if args.activation_yield_handler is None else args.activation_yield_handler.read_bytes(),
             b"" if args.activation_vectors is None else args.activation_vectors.read_bytes(),
+            b"" if args.storage is None else (args.storage / "router.bin").read_bytes(),
         )
         if args.window_cache is not None:
             from build_window_cache import wrap_scheduler
             payload, constants = wrap_scheduler(payload, constants, args.window_cache.read_bytes())
+        if args.storage is not None:
+            if args.ush is None:
+                raise ValueError('storage requires the ush image for overlap validation')
+            from build_storage import wrap_storage
+            payload, constants = wrap_storage(payload, constants,
+                (args.storage / 'module.bin').read_bytes(),
+                (args.storage / 'policy.bin').read_bytes(),
+                (args.storage / 'driver.bin').read_bytes(), args.ush.read_bytes())
     except ValueError as error:
         raise SystemExit(f"cannot build scheduler overlay: {error}") from error
     args.output.parent.mkdir(parents=True, exist_ok=True)

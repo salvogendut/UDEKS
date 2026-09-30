@@ -26,8 +26,8 @@ See [LICENSE](LICENSE).
 > UDEKS is an experimental kernel prototype in active bring-up. It has a
 > qualified native boot path, interactive console, dual-CPU worker protocol,
 > and initial graphical applications, but it is not yet a general-purpose
-> operating system: storage, filesystems, process isolation, and dynamic module
-> loading remain future work.
+> operating system: general filesystems, disk-backed program loading, process
+> isolation, and dynamic module loading remain future work.
 
 <p align="center">
   <img src="screenshot/udeks-boot.png" alt="UDEKS native C128 boot console running in the 1986 emulator" width="640">
@@ -90,6 +90,14 @@ See [LICENSE](LICENSE).
   infinite waits, wake/response ownership and stack preservation on both disk
   formats in VICE. Independent 1986 machine-input typing/history, dragging and
   foreground Ctrl+C also pass; manual input/performance and hardware gates remain open.
+- Storage 0.1 now includes `mount 8 /mnt`, `ls /mnt`, `cat /mnt/HELLO`,
+  and `umount /mnt`. Native images ship the `HELLO` text file. A separate C
+  service uses native slow IEC with no runtime
+  KERNAL calls; VICE true-drive 1541/D64 and 1571/D71 tests pass, including
+  listings with both graphical apps active. `/bin` remains the bootfs fallback.
+  The 1986 raw-IEC keyboard workflow also passes. Tiny-file EOF, media-change
+  recovery, and physical PI1541 qualification remain open. See
+  [storage tests and limits](docs/STORAGE-0.1.md#interactive-file-checkpoint--2026-09-30).
 
 ## Hardware model
 

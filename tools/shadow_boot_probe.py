@@ -102,8 +102,17 @@ def context_binding_start(map_path: Path) -> int:
 
 def scheduler_installed_tail(path: Path) -> bytes:
     image = path.read_bytes()
-    if len(image) < 22 or image[:2] != b"\x00\x50" or image[2:6] != b"USOV":
-        raise ValueError("scheduler payload lacks its $5000/USOV envelope")
+    load = int.from_bytes(image[:2], "little")
+    # The secondary envelope may also deliver cache/storage at lower addresses.
+    # Locate the header only at its two defined source addresses, not by an
+    # unconstrained magic search through code or cached pixels.
+    headers = [2 + address - load for address in (0x5000, 0x6000)
+               if address >= load and image[2+address-load:8+address-load] == b"USOV\x00\x03"]
+    if len(headers) != 1:
+        raise ValueError("scheduler payload lacks an unambiguous USOV 0.3 header")
+    image = b"\x00\x50" + image[headers[0]:]
+    if len(image) < 22:
+        raise ValueError("scheduler payload has a truncated header")
     page_size = int.from_bytes(image[10:12], "little")
     tail_size = int.from_bytes(image[14:16], "little")
     start = 2 + 20 + page_size
@@ -413,7 +422,7 @@ def write_kernel_blocks(port: int, writes: list[tuple[int, bytes]]) -> None:
 
 
 def launch_vice(
-    d71: Path, port: int, flatpak_id: str
+    d71: Path, port: int, flatpak_id: str, extra_args: tuple[str, ...] = ()
 ) -> tuple[subprocess.Popen, int]:
     command = [
         "flatpak",
@@ -429,6 +438,7 @@ def launch_vice(
         "-remotemonitor",
         "-remotemonitoraddress",
         f"ip4://127.0.0.1:{port}",
+        *extra_args,
         "-8",
         str(d71),
     ]

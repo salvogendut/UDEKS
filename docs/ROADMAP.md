@@ -29,6 +29,27 @@ Hardware feedback validates particular tested builds and interactions, not
 every C128 model, expansion, disk format, or failure path. `1986` and VICE are
 independent emulator gates; neither substitutes for physical testing.
 
+## Target boot and application model
+
+The intended end state is **kernel first, then the shell**. Everything outside
+the proper kernel—including applications and non-kernel service programs—must
+be a standalone disk-loadable executable, not a permanent component of the
+boot image. Bootfs and today's preloaded service/application bundles are
+transitional mechanisms, not the final system distribution model.
+
+Provide a shell-run startup script (provisionally `/etc/rc`) to perform mounts
+and launch the desired services or applications. Keep startup policy in that
+script and user space, not hard-coded in the kernel; graphical startup should
+be optional. Define the minimal bootstrap read/load path needed to reach the
+shell and its script before ordinary mounts exist, without using that need to
+justify retaining unrelated services or applications in the kernel.
+
+The acceptance target is a cold boot into a disk-loaded shell, followed by
+script-driven initialization and on-demand program loading. Changing startup
+mounts or applications must not require rebuilding the kernel.
+
+## Roadmap position
+
 | Roadmap area | Position |
 | --- | --- |
 | Foundation and CPU choice | Established; independently pinned toolchain still due. |
@@ -42,6 +63,19 @@ independent emulator gates; neither substitutes for physical testing.
 ## Next endeavours, in order
 
 ### 1. Storage 0.1: read files from an external disk
+
+**Current checkpoint (2026-09-30):** `mount 8 /mnt`, `ls /mnt`,
+`cat /mnt/HELLO`, and `umount /mnt` are implemented. Normal disk images
+include `HELLO`; all previous commands remain, with `ls`/`cat`/`mount`/`umount`
+sharing one nonresident C executable. VICE shell tests cover errors and
+graphics-active use; the 1986 raw-IEC keyboard workflow passes too. The user
+has separately confirmed the earlier mount/list slice after restarting 1986.
+The byte-counted sector reader now passes tiny-file EOF and media-error/recovery
+checks in VICE and the keyboard workflow in 1986; 885 host tests pass.
+**Next: physical C128 + PI1541 qualification**, then merge PR #17. The exact
+hardware test disks are preserved in `bench/artifacts/2026-09-30-storage-0.1`.
+This is not full Storage 0.1 acceptance until that hardware result is recorded.
+See [the hardware checklist](STORAGE-0.1.md#hardware-checklist).
 
 Deliver the smallest useful vertical slice through a **C storage service**,
 without moving device policy into the resident kernel. Define bank-aware
@@ -57,7 +91,8 @@ disk writes, a new filesystem format, or relocatable executables prerequisites.
 `cat` can display a file from that media, and error/no-device/media
 change paths return control to the shell. Qualify D64/D71 in `1986` and VICE,
 then read from PI1541 on a physical C128 without breaking graphics, input,
-boot, or the Z80 worker.
+boot, or the Z80 worker. The implementation sequence and current gate are in
+[Storage 0.1](STORAGE-0.1.md).
 
 ### 2. Storage 0.2: launch a program from disk
 
@@ -67,6 +102,11 @@ ownership rules, exit/wait behavior, and bootfs fallback. Add per-process
 `chdir`/`getcwd` only when paths are represented consistently across both
 sources. Consider writes and a native filesystem format *after* read and
 launch are reliable.
+
+Then use this loading path for the shell itself and introduce the startup
+script described above. Retire preloaded application bundles as their
+disk-backed replacements become usable; extract the remaining non-kernel
+services under milestone 3 rather than treating them as permanent residents.
 
 **Acceptance:** copy a known UDEX onto media, list it, launch it, observe its
 exit status, and launch it again without reboot or memory corruption. Repeat

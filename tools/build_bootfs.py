@@ -47,7 +47,9 @@ def build_bootfs(entries: list[tuple[str, bytes]], max_size: int = DEFAULT_MAX_S
             raise ValueError(f"bootfs entry {name.decode('ascii')} is empty")
 
     data_offset = HEADER_SIZE + len(normalized) * ENTRY_SIZE
-    total_size = data_offset + sum(len(data) for _, data in normalized)
+    # Immutable aliases may share the exact same payload (e.g. mount/umount).
+    # Keep distinct directory entries and deduplicate complete files only.
+    total_size = data_offset + sum(len(data) for data in dict.fromkeys(data for _, data in normalized))
     if total_size > max_size or total_size > 0xFFFF:
         raise ValueError("bootfs image exceeds its configured size")
 
@@ -59,15 +61,18 @@ def build_bootfs(entries: list[tuple[str, bytes]], max_size: int = DEFAULT_MAX_S
     image[12:14] = total_size.to_bytes(2, "little")
 
     cursor = data_offset
+    offsets: dict[bytes, int] = {}
     for index, (name, data) in enumerate(normalized):
+        if data not in offsets:
+            offsets[data] = cursor
+            image[cursor : cursor + len(data)] = data
+            cursor += len(data)
         entry = HEADER_SIZE + index * ENTRY_SIZE
         image[entry] = ENTRY_EXECUTABLE
         image[entry + 1] = len(name)
-        image[entry + 2 : entry + 4] = cursor.to_bytes(2, "little")
+        image[entry + 2 : entry + 4] = offsets[data].to_bytes(2, "little")
         image[entry + 4 : entry + 6] = len(data).to_bytes(2, "little")
         image[entry + 8 : entry + 8 + len(name)] = name
-        image[cursor : cursor + len(data)] = data
-        cursor += len(data)
     return bytes(image)
 
 

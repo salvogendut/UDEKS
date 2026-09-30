@@ -181,7 +181,7 @@ publish_done:
 _udeks_task_poll_request:
         lda TREQ_MINOR
         cmp #$04
-        jne poll_unsupported
+        jcc poll_unsupported         ; later compatible minors also support POLL
         lda _udeks_lifecycle_current_private
         jeq poll_missing
         cmp #TASK_COUNT+1
