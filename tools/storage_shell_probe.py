@@ -36,17 +36,29 @@ def keyboard_queue_address(map_text, assembly):
     return segment_bounds(map_text, 'BSS')[0] + int(offset[1], 16)
 
 
+def wait_keyboard_queue(port, queue, deadline):
+    # This queue is bank-0 RAM, not common RAM. A plain monitor m can sample
+    # bank 1 while a service is active and falsely report an empty queue.
+    path = ROOT/'build/vice'/f'keyboard-queue-{port}.bin'
+    path.parent.mkdir(parents=True, exist_ok=True)
+    while time.monotonic() < deadline:
+        if sp.capture_blocks(port, [(path, queue+66, queue+66, 'kernel')])[0] == b'\0':
+            return
+        time.sleep(0.01)
+    raise TimeoutError('keyboard event queue did not drain')
+
+
 def type_command(port, queue, text, deadline):
     # Use PRESS events, including Return, through the normal terminal/editor.
     # Submitted-record injection skips submit_line()'s newline and causes
     # silent commands to append a second prompt to the existing one.
     payload = text.encode('ascii') + b'\n'
-    if len(payload) > 16:
-        raise ValueError('command exceeds one keyboard queue batch')
-    sp.wait_for_byte(port, queue+66, 0, deadline)
-    events = b''.join(bytes((1, 1 if c == 10 else 0xff, c, 0)) for c in payload)
-    sp.write_kernel_blocks(port, [(queue, events),
-        (queue+64, bytes((len(payload) % 16, 0, len(payload))))])
+    for start in range(0, len(payload), 16):
+        batch = payload[start:start+16]
+        wait_keyboard_queue(port, queue, deadline)
+        events = b''.join(bytes((1, 1 if c == 10 else 0xff, c, 0)) for c in batch)
+        sp.write_kernel_blocks(port, [(queue, events),
+            (queue+64, bytes((len(batch) % 16, 0, len(batch))))])
 
 
 def main():

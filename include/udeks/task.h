@@ -32,8 +32,12 @@
 #define UDEKS_TASK_BAD_ENTRY             10u
 #define UDEKS_TASK_NOT_FOUND              11u
 #define UDEKS_TASK_BAD_BOOTFS             12u
+#define UDEKS_TASK_IO_ERROR               13u
 
-typedef unsigned char (*udeks_task_loader_entry)(
+/* $0103 rejects compatibility execution while a native child owns APP1.
+ * Unlike normal errors it leaves that child's common launcher untouched. */
+#define UDEKS_TASK_SLOT_OWNED             0x0103u
+typedef unsigned int (*udeks_task_loader_entry)(
     unsigned char count, unsigned char **arguments);
 
 #endif

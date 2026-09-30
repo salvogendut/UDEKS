@@ -5,7 +5,7 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'tools'))
-from storage_shell_probe import keyboard_queue_address, type_command
+from storage_shell_probe import keyboard_queue_address, type_command, wait_keyboard_queue
 
 MAP = '''keyboard.o:
     BSS               Offs=00007F  Size=000047  Align=00001  Fill=0000
@@ -30,10 +30,10 @@ class StorageShellProbe(unittest.TestCase):
                 keyboard_queue_address(text, asm)
 
     def test_commands_use_terminal_return_event_without_cpu_takeover(self):
-        with patch('storage_shell_probe.sp.wait_for_byte') as wait, \
+        with patch('storage_shell_probe.wait_keyboard_queue') as wait, \
              patch('storage_shell_probe.sp.write_kernel_blocks') as write:
             type_command(1234, 0x9FA7, 'mount 8 /mnt', 20)
-        wait.assert_called_once_with(1234, 0x9FE9, 0, 20)
+        wait.assert_called_once_with(1234, 0x9FA7, 20)
         port, writes = write.call_args.args
         self.assertEqual(port, 1234)
         self.assertEqual(len(writes), 2)
@@ -44,10 +44,18 @@ class StorageShellProbe(unittest.TestCase):
         self.assertEqual(writes[1], (0x9FE7, bytes((13, 0, 13))))
 
     def test_queue_capacity_includes_return_and_wraps_head(self):
-        with patch('storage_shell_probe.sp.wait_for_byte'), \
+        with patch('storage_shell_probe.wait_keyboard_queue'), \
              patch('storage_shell_probe.sp.write_kernel_blocks') as write:
             type_command(1234, 0x9000, 'x'*15, 20)
             self.assertEqual(write.call_args.args[1][-1], (0x9040, bytes((0, 0, 16))))
-            with self.assertRaises(ValueError):
-                type_command(1234, 0x9000, 'x'*16, 20)
-            self.assertEqual(write.call_count, 1)
+            type_command(1234, 0x9000, 'x'*16, 20)
+            self.assertEqual(write.call_count, 3)
+            self.assertEqual(write.call_args.args[1][-1], (0x9040, bytes((1, 0, 1))))
+            self.assertEqual(write.call_args.args[1][0][1], bytes((1, 1, 10, 0)))
+
+    def test_queue_drain_reads_explicit_kernel_bank(self):
+        with patch('storage_shell_probe.sp.capture_blocks', return_value=[b'\0']) as capture, \
+             patch('storage_shell_probe.time.monotonic', return_value=1):
+            wait_keyboard_queue(1234, 0x9FA7, 2)
+        block = capture.call_args.args[1][0]
+        self.assertEqual(block[1:], (0x9FE9, 0x9FE9, 'kernel'))

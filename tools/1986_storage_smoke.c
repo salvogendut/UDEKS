@@ -22,7 +22,7 @@ static void diagnostic(void) {
     fflush(stdout);
 }
 
-static void storage_command(const char *line, unsigned expected_exit) {
+static void storage_result(const char *line, unsigned expected_exit, unsigned error) {
     idle();
     unsigned before = byte(0xf17e);
     for (const char *p = line; *p; ++p) {
@@ -32,13 +32,18 @@ static void storage_command(const char *line, unsigned expected_exit) {
         else { char letter[2] = {*p, 0}; text(letter); }
     }
     key(SDL_SCANCODE_RETURN);
-    wait_byte(0xf17e, (before + 1) & 255, "resident command not complete");
+    if (error) wait_byte(0xf17a, error, "loader rejection missing");
+    else wait_byte(0xf17e, (before + 1) & 255, "resident command not complete");
     idle();
     printf("command %s: ", line); diagnostic();
     for (unsigned row = 0; row < 21; ++row)
         printf("%.*s\n", 64, (char *)&machine->mem.ram[0xc00 + row * 65]);
-    require(byte(0xf285) == 3 && byte(0xf287) == expected_exit,
-            "unexpected command exit status");
+    require(byte(0xf286) == error && byte(0xf285) == (error ? 0x80 | error : 3),
+            "unexpected loader status");
+    if (!error) require(byte(0xf287) == expected_exit, "unexpected command exit status");
+}
+static void storage_command(const char *line, unsigned expected_exit) {
+    storage_result(line, expected_exit, 0);
 }
 
 int main(int argc, char **argv) {
@@ -70,12 +75,28 @@ int main(int argc, char **argv) {
     storage_command("ls /bin", 0);
     storage_command("mount 8 /mnt", 0);
     storage_command("ls /mnt", 0);
+#ifdef UDEKS_DISK_EXEC_SMOKE
+    storage_command("/mnt/diskcow hello", 0);
+    require(console_contains("hello") && console_contains("^__^"), "disk cow missing");
+    storage_command("/mnt/diskcow again", 0);
+    require(console_contains("again"), "disk arguments lost");
+    storage_result("/mnt/badudex", 0, 4);
+    storage_result("/mnt/short", 0, 9);
+    storage_result("/mnt/nofile", 0, 11);
+    storage_command("/mnt/entry", 37);
+    storage_command("/mnt/limit", 7);
+    storage_command("/mnt/diskcow recovered", 0);
+    require(console_contains("recovered"), "disk recovery failed");
+    storage_command("cowsay bootfs", 0);
+    require(console_contains("bootfs"), "bootfs fallback failed");
+#else
     storage_command("cat /mnt/hello", 0);
     require(console_contains("HELLO UDEKS"), "file contents missing");
     storage_command("cat /mnt/empty", 0);
     storage_command("cat /mnt/one", 0);
     require(console_contains("X"), "one-byte file missing");
     storage_command("cat /mnt/nofile", 1);
+#endif
     storage_command("cat /mnt/hello", 0);
     storage_command("umount /mnt", 0);
     storage_command("ls /bin", 0);
@@ -89,7 +110,11 @@ int main(int argc, char **argv) {
     storage_command("umount /mnt", 0);
     require(snapshot_save(machine, snapshot_path) == SNAPSHOT_OK, "save evidence");
     require(drive_attach_disk(&machine->drive, NULL) == 0, "detach disk copy");
+#ifdef UDEKS_DISK_EXEC_SMOKE
+    puts("PASS native 1986 raw-IEC disk execution/argv/entry/BSS/limit/rejection/recovery/bootfs");
+#else
     puts("PASS native 1986 raw-IEC mount/list/tiny-file/error/media-recovery/unmount");
+#endif
     free(machine);
     return 0;
 }

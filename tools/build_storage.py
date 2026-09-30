@@ -17,13 +17,16 @@ def install_router(tail: bytes, start: int, bss_end: int, router: bytes) -> byte
 
 
 def wrap_storage(payload: bytes, constants: str, module: bytes,
-                 policy: bytes, driver: bytes, ush: bytes) -> tuple[bytes, str]:
+                 policy: bytes, driver: bytes, ush: bytes,
+                 lookup: bytes) -> tuple[bytes, str]:
     start = int.from_bytes(payload[:2], 'little')
     end = start + len(payload) - 2
     if start not in (0x4200, 0x5000) or end > 0x8000:
         raise ValueError('unexpected cache/scheduler envelope')
-    if not module or len(module) > 0xE00 or module[3:9] != b'UIEC\x00\x01':
+    if not module or len(module) > 0x800 or module[3:9] != b'UIEC\x00\x01':
         raise ValueError('invalid $1200 storage module')
+    if not lookup or len(lookup) > 0x600 or lookup[3:9] != b'ULKP\0\1':
+        raise ValueError('loader lookup exceeds $1A00-$1FFF')
     if not policy or len(policy) > 0x600 or not driver or len(driver) > 0x600:
         raise ValueError('storage policy/driver exceeds its bank-1 hole')
     # ush's UDEX reserves $50 BSS bytes after the image (not just linked BSS).
@@ -34,7 +37,7 @@ def wrap_storage(payload: bytes, constants: str, module: bytes,
     # bootfs (normal or a test-specific ush) without changing LOAD bounds.
     limit = BOOTFS_LIMIT
     image = bytearray(limit - load)
-    for address, data in ((load, module), (start, payload[2:]),
+    for address, data in ((load, module), (0x1A00, lookup), (start, payload[2:]),
                           (0x8A00, policy), (0x9A00, driver)):
         image[address-load:address-load+len(data)] = data
     # Keep SCHEDULER_OVERLAY_END as the USOV source end: activation uses it.

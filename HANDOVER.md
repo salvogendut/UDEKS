@@ -9,15 +9,17 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 ## Current feature handover — 2026-09-30
 
 The active development worktree is now `build/storage-disk-exec`, branch
-`storage-0.2-disk-exec`, issue #18. Its first disk-only positive/negative fixtures
-build with `make disk-exec-image`; disk launch is not wired yet. Continue with
-the loader handoff in [Storage 0.2](docs/STORAGE-0.2.md), preserving the existing
-validator, task ownership and fixed common-RAM limits. The issue records the
-user-visible `/mnt/DISKCOW hello` acceptance target.
+`storage-0.2-disk-exec`, issue #18. PR #17 was merged by user authorization
+(`92a2e36`); physical Storage 0.1 results are still unrecorded. Foreground
+`/mnt/DISKCOW hello` now runs from disk, with failure/ownership checks and
+bootfs retained. Build the user-test disks with `make disk-exec-image`.
+See [Storage 0.2](docs/STORAGE-0.2.md) for placement, test coverage and limits.
+Next is user acceptance, then the disk-loaded shell/startup-script slice;
+do not branch into optimization. The older hardware candidate is unchanged.
 
 The unchanged hardware candidate remains in `build/storage-iec-read-only`, branch
-`storage-0.1-iec-read-only`, issue #15. Storage 0.1 is the priority in
-[the roadmap](docs/ROADMAP.md). The native IEC C service now links separately,
+`storage-0.1-iec-read-only`, issue #15. Storage 0.2 is now the priority in
+[the roadmap](docs/ROADMAP.md). The native IEC C service links separately,
 boots through secondary delivery, and serves mount/directory/file-read/unmount requests.
 See [STORAGE-0.1.md](docs/STORAGE-0.1.md) for placements and live probes.
 `mount 8 /mnt`, `ls /mnt`, `cat /mnt/HELLO`, and `umount /mnt` pass through the normal
@@ -38,8 +40,8 @@ The user confirmed mount/list after restarting. The new raw-IEC harness also
 passes native boot, keyboard mount/list/cat/missing-file/unmount without
 modifying emulator sources. Runtime storage does not use KERNAL disk traps.
 
-Next: physical C128/PI1541 qualification of the preserved test disk, then
-merge PR #17. `cbm_file.c` replaces the runtime formatted-directory/DOS-file
+Physical C128/PI1541 qualification of the preserved test disk remains open
+after the authorized merge. `cbm_file.c` replaces the runtime formatted-directory/DOS-file
 stream with read-only U1 sector reads: exact byte counts now pass for 0, 1, 2,
 24, 255 and 515 bytes, including a one-byte final sector. The old failure also
 reproduces with stock KERNAL; the isolated reference remains in the suite.
@@ -50,8 +52,8 @@ graphics active. 1986 passes empty/one-byte/error/eject/reinsert keyboard tests.
 885 host tests pass; placement, panic build and shadow gates pass. Exact test
 disks/results are in `bench/{artifacts,results}/2026-09-30-storage-0.1`.
 Always unmount before swapping media; no automatic media-generation detector
-or physical-device qualification is claimed. Storage 0.2 may branch from this
-candidate while hardware testing is pending; do not merge Storage 0.1 early.
+or physical-device qualification is claimed. Storage 0.2 is based on the
+authorized merge while the hardware record remains pending.
 Do not expand benchmarks or optimize IEC before completing this feature.
 
 ## Historical Tasking 0.1 decision

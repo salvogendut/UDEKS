@@ -26,7 +26,7 @@ See [LICENSE](LICENSE).
 > UDEKS is an experimental kernel prototype in active bring-up. It has a
 > qualified native boot path, interactive console, dual-CPU worker protocol,
 > and initial graphical applications, but it is not yet a general-purpose
-> operating system: general filesystems, disk-backed program loading, process
+> operating system: general filesystems, disk-loaded startup, process
 > isolation, and dynamic module loading remain future work.
 
 <p align="center">
@@ -95,9 +95,13 @@ See [LICENSE](LICENSE).
   service uses native slow IEC with no runtime
   KERNAL calls; VICE true-drive 1541/D64 and 1571/D71 tests pass, including
   listings with both graphical apps active. `/bin` remains the bootfs fallback.
-  The 1986 raw-IEC keyboard workflow also passes. Tiny-file EOF, media-change
-  recovery, and physical PI1541 qualification remain open. See
+  The 1986 raw-IEC keyboard workflow, tiny-file EOF and media-change recovery
+  tests also pass; physical PI1541 qualification remains unrecorded. See
   [storage tests and limits](docs/STORAGE-0.1.md#interactive-file-checkpoint--2026-09-30).
+- Storage 0.2 adds explicit-path foreground execution: `/mnt/DISKCOW hello`
+  loads an ordinary UDEX from disk, with bounds/header/EOF validation and
+  bootfs fallback retained. VICE D64/D71 and native 1986 tests pass.
+  [Try the disk-execution image](docs/STORAGE-0.2.md#try-it).
 
 ## Hardware model
 
