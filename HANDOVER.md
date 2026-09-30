@@ -8,7 +8,17 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 ## Current feature handover — 2026-09-30
 
-The active worktree is `build/disk-shell-startup`, branch
+Active worktree: `build/disk-graphics`, branch `storage-disk-graphics`,
+issue [#22](https://github.com/salvogendut/UDEKS/issues/22), based on merged
+PR #21 (`ea14666`). The next feature is disk-loaded managed `xclock` and
+`xwave`, followed by removal of their normal bootfs copies. Preserve rendering
+and existing app lifecycle; do not turn this into an optimization milestone.
+The managed loader must validate the requested slot and callback table before
+copying, and reject live-child staging conflicts before mutating its launcher.
+Use the existing read/validate/copy path and fixed ABI gates. The roadmap
+records the acceptance target; earlier exact test images remain untouched.
+
+Previous accepted worktree: `build/disk-shell-startup`, branch
 `boot-disk-shell-startup`, issue #20. PR #19 merged disk execution as `9ab1efd`
 after the user's 1986 and real-C128/PI1541 acceptance. The next candidate boots
 ordinary disk `USH` with bootfs recovery; see [Boot 0.2](docs/BOOT-STARTUP.md).
@@ -25,8 +35,8 @@ The user now reports "looks ok to me" for this startup/sysinfo candidate.
 Record positive manual acceptance; the platform and individual checks were
 not specified, so physical-C128 qualification of this slice remains unrecorded.
 Do not repeat the same generic test request. The user has authorized committing,
-pushing and opening the issue #20 PR. Review is the next gate; merging remains
-subject to separate approval. Main stays at the accepted PR #19 baseline.
+pushing and opening the issue #20 PR, then explicitly authorized merging.
+PR #21 is merged; main is at `ea14666`.
 The bootstrap must preserve the still-live 42-byte scheduler activator at
 `$F68A` across storage calls. Kernel/shadow placements are unchanged.
 

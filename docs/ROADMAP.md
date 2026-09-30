@@ -23,9 +23,9 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
   positive real-hardware feedback. Window release/background repair can still
   take seconds; that is an open limitation, not a claim of responsive graphics.
 - Read-only IEC mount/list/read and foreground disk execution are merged.
-  Issue #20 now boots a disk-loaded shell, retaining bootfs recovery, with
+  Merged PR #21 (issue #20) boots a disk-loaded shell, retaining bootfs recovery, with
   positive manual feedback (platform unspecified). Bounded shell-run `RC`
-  startup and disk-only `free`/`df` are implemented on that branch with positive
+  startup and disk-only `free`/`df` are merged with positive
   manual acceptance (platform unspecified). General storage and installable
   services remain incomplete.
 
@@ -61,7 +61,7 @@ mounts or applications must not require rebuilding the kernel.
 | Kernel and tasking | Cooperative two-task path works; general scheduling, IPC, and preemption due. |
 | Z80 secondary engine | Mailbox and xwave computation work; reusable operations and soak tests due. |
 | Graphics and input | Working shell/windows/apps; repaint latency and focused-window input remain open. |
-| Storage and applications | Disk execution merged and accepted on C128 + PI1541. Disk-loaded shell, bounded RC startup and standalone free/df accepted on #20; PR checkpoint authorized, review/merge next. |
+| Storage and applications | PR #21 merged disk-loaded shell, RC startup and free/df. Issue #22 now moves xclock/xwave from bootfs to disk-only delivery. |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
@@ -132,12 +132,12 @@ file first, closes/unmounts its bootstrap access, then starts the persistent
 shell. Missing/invalid files fall back to bootfs. The first user-test candidate
 and source/recovery checks are described in [Boot 0.2](BOOT-STARTUP.md).
 The user reports that this candidate looks good; the manual-test platform was
-not specified. This branch is not yet merged.
+not specified. **Merged:** PR #21 (`ea14666`).
 Current deliverable: bounded shell-run startup commands editable on disk,
 plus the requested standalone `free` and `df`. Keep `free`'s fixed-pool
 accounting explicit until a general allocator exists. The user now reports
 "looks ok to me" for this slice; record positive manual acceptance without
-assuming a platform. Commit/push/PR are authorized; review issue #20 for merge before pursuing
+assuming a platform. Continue retiring bundled applications before pursuing
 milestone 3's remaining non-kernel program/service extraction. The final kernel-only distribution
 is not complete; do not divert into unrelated optimization.
 
@@ -146,6 +146,15 @@ exit status, and launch it again without reboot or memory corruption. Repeat
 with a malformed image and a removed/unavailable device.
 
 ### 3. Tasking and service boundaries 0.2
+
+**Immediate extraction slice:** issue [#22](https://github.com/salvogendut/UDEKS/issues/22),
+branch `storage-disk-graphics`: load `xclock`, then `xwave`, from ordinary
+disk UDEX files and remove their normal bootfs payloads. Preserve existing
+fixed slots, windows and foreground/background lifecycle. Reject a file
+aimed at the other app's slot and never stage over a live native child.
+Accept when both disk-only apps coexist, stop/restart and remain interactive,
+and missing/malformed files leave the console and running peer intact.
+No rendering or IEC optimization belongs in this slice.
 
 Generalize the current two-task allocation to at least four C tasks, add a
 bounded message/handle mechanism, and move console, input, graphics, and
