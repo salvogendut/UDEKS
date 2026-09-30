@@ -8,6 +8,30 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 ## Current feature handover — 2026-09-30
 
+The user requested an issue and branch for a disk-backed root namespace.
+Issue [#26](https://github.com/salvogendut/UDEKS/issues/26) is open; branch
+`storage-root-namespace`, worktree `build/root-filesystem`, based on merged
+PR #25 (`d13a5c2`). This checkpoint is planning only; no runtime changes.
+Main and the preserved command-release test images remain unchanged.
+
+Next work: define and host-test the bounded mount/path contract, then integrate
+system disk at `/` (default device 8), virtual `/bin` and `/etc/rc` over flat
+standard CBM DOS files, and a separate data mount at `/mnt`. Keep bootfs recovery
+and an explicit bootstrap route to the shell/RC; system commands must not be
+loaded from arbitrary data media. Make cwd, file operations, executable lookup
+and df agree. See the visible active milestone in [ROADMAP.md](docs/ROADMAP.md)
+and issue #26 for acceptance and non-goals.
+
+Do not merely replace `mount 8 /mnt` with `mount 8 /`: the current service and
+loader hard-code `/mnt`, while bootfs synthesizes `/` and `/bin`. No root mount
+is implemented yet. Measure memory placement before growing ush (five bytes
+spare), keep policy in C service/user code, and preserve fixed gateway bounds.
+Build/use gh in my-distrobox. Never clean root build: it contains worktrees.
+No service extraction, extra tasks, filesystem writes or graphics optimization
+in this slice. Prompt for hardware testing at the first usable checkpoint.
+
+## Previous feature: command extraction (#24, merged as PR #25)
+
 Final issue #24 review: the user accepted the default-mount image and explicitly
 authorized fixing the remaining presentation errors and merging. The banner
 now uses stage-1 measurements of the actual bank-1 UIEC/UBFS 0.1 headers,

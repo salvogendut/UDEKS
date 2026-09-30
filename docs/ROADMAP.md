@@ -13,8 +13,14 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
-**Completed feature, merge authorized:** [#24 — disk utilities and command/service separation](COMMAND-EXTRACTION.md),
-branch `boot-disk-commands`. Disk graphics merged as PR #23. Everyday utilities
+**Active milestone:** [#26 — system root and coherent filesystem namespace](https://github.com/salvogendut/UDEKS/issues/26),
+branch `storage-root-namespace`, worktree `build/root-filesystem`.
+Make the system disk back `/`, expose programs at `/bin` and startup policy
+at `/etc/rc`, and reserve `/mnt` for additional/data media. This is planned,
+not implemented: the working release still mounts device 8 at `/mnt`.
+
+**Completed and merged:** [#24 — disk utilities and command/service separation](COMMAND-EXTRACTION.md),
+PR #25 at `d13a5c2`. Disk graphics merged as PR #23. Everyday utilities
 and diagnostics now load from disk; the resident command catalog is removed.
 **Functional retest accepted:** after repairing the boot probe's corruption of
 graphics code at `$8000`, the user confirms the diagnostic disk boots on 1986
@@ -24,7 +30,8 @@ At the user's request, default RC now mounts device 8 at `/mnt` automatically.
 The finishing corrections are implemented: specific app-launch errors,
 measured IEC/bootfs header status, a real mount-success message, and normal
 boot progress enabled to match the accepted diagnostic setting.
-Next: extract the first independent service; no graphics optimization detour.
+Next: root/mount/path resolution, then the first independent disk-loaded
+service; no graphics optimization detour.
 
 - Native D64/D71 boot, an 8502 executive, a bounded Z80 worker, a VDC root
   console, and an independent VIC-IIe graphical display are working.
@@ -74,10 +81,39 @@ mounts or applications must not require rebuilding the kernel.
 | Kernel and tasking | Cooperative two-task path works; general scheduling, IPC, and preemption due. |
 | Z80 secondary engine | Mailbox and xwave computation work; reusable operations and soak tests due. |
 | Graphics and input | Working shell/windows/apps; repaint latency and focused-window input remain open. |
-| Storage and applications | Disk shell, RC and disk-only graphics merged (#21/#23). Issue #24 accepted and finishing fixes qualified; merge authorized. Next: disk-loaded service lifecycle. |
+| Storage and applications | Disk shell, RC, graphics and disk commands merged (#21/#23/#25). Active #26: disk-backed root and coherent namespace; disk-loaded service lifecycle follows. |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
+
+### Active: system root and namespace (#26)
+
+Replace the fixed `/mnt`-only storage route with a bounded mount/path contract.
+The system volume (default device 8) backs `/`; a separate volume can occupy
+`/mnt` without taking away system commands. Standard D64/D71 disks stay flat
+CBM DOS: `/bin` and `/etc/rc` initially need explicit virtual mappings to
+ordinary disk filenames, not a new disk format. Keep bootstrap/recovery
+bootfs available, with deliberate lookup precedence and failure behavior.
+
+1. Specify namespace, DOS-name translation, mount/handle ownership and recovery;
+   host-test a pure path resolver, including relative paths, `.` and `..`.
+2. Integrate root selection and disk-shell bootstrap, then route cwd, file
+   operations, command/app lookup and `df` consistently. Root access must be
+   available before reading `/etc/rc`; the script configures later mounts.
+3. Demonstrate a separate data mount and preserve exact test disks. Qualify
+   cold boot, missing media/programs, recovery and graphics-active use in
+   VICE/1986; request a short hardware test at the first usable checkpoint.
+
+**Acceptance:** boot to a disk-backed `/`, list/run `/bin` programs, read
+`/etc/rc`, and mount/list/read/unmount a standard data disk at `/mnt` using
+commands from the system volume. `cd`, `pwd`, `ls`, `cat`, `df` and program
+lookup must agree. Invalid requests must leave live state intact.
+
+Measure placement before implementation: ush has only five bytes spare in
+its fixed slot. Keep filesystem policy in C services/user space, preserve
+public gates and recovery, and explicitly migrate old `/mnt/NAME` paths.
+No writes, graphics optimization, expanded tasking or service extraction in
+this slice. The sections below retain the broader milestone sequence/history.
 
 ### 1. Storage 0.1: read files from an external disk
 
@@ -176,19 +212,19 @@ cancellation, console use and restart. See [candidate and short test sequence](D
 **Merged:** PR #23 (`2c88e07`) by user authorization; manual hardware acceptance
 of that exact candidate remains unrecorded.
 
-**Current slice:** issue [#24](https://github.com/salvogendut/UDEKS/issues/24),
+**Merged as PR #25:** issue [#24](https://github.com/salvogendut/UDEKS/issues/24),
 branch `boot-disk-commands`: COWSAY/DATE/LS/CAT and UNAME/LSHW/LSMOD/LSCPU/Z80CTL
 are ordinary disk files, alongside FREE/DF/XCLOCK/XWAVE. Recovery bootfs retains
 only mount/unmount and ush. Disk ush owns builtin policy and graphics syntax;
 numeric deferred requests replace the resident builtin registry. See
 [the test sequence and remaining limitations](COMMAND-EXTRACTION.md).
 
-**Next concrete deliverable after acceptance:** choose one existing non-kernel
+**After root/namespace issue #26:** choose one existing non-kernel
 service, define its load/start/stop and dependency contract, and load its ordinary
 disk image on demand without rebuilding the kernel. Preserve a boot/read recovery
-path. This is separate from expanding task capacity below. Also track separation
-of the system command source from a data mount: today disk utilities must be
-present on `/mnt`; one mount is not yet a general multi-volume command path.
+path. This is separate from expanding task capacity below. Issue #26 first
+separates the system command source from a data mount: today disk utilities
+must be present on `/mnt`; that limitation is not the intended final layout.
 
 Generalize the current two-task allocation to at least four C tasks, add a
 bounded message/handle mechanism, and move console, input, graphics, and
