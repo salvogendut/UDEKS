@@ -1,0 +1,4 @@
+python3 tools/shadow_boot_probe.py --vic-compare
+shadow $A1E0-$C11F cleared (8000 bytes); reclaimed tail $C120-$CEFF contains the 3179-byte installed scheduler tail; $CD8B-$CDBC matches its 50-byte preimage
+bank-0 shadow matches bank-1 $6000-$7F3F (8000 bytes)
+shadow probe OK

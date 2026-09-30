@@ -10,13 +10,21 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 Active worktree: `build/disk-graphics`, branch `storage-disk-graphics`,
 issue [#22](https://github.com/salvogendut/UDEKS/issues/22), based on merged
-PR #21 (`ea14666`). The next feature is disk-loaded managed `xclock` and
-`xwave`, followed by removal of their normal bootfs copies. Preserve rendering
-and existing app lifecycle; do not turn this into an optimization milestone.
-The managed loader must validate the requested slot and callback table before
-copying, and reject live-child staging conflicts before mutating its launcher.
-Use the existing read/validate/copy path and fixed ABI gates. The roadmap
-records the acceptance target; earlier exact test images remain untouched.
+PR #21 (`ea14666`). Disk-only managed `xclock`/`xwave` is implemented;
+normal bootfs contains neither image. Use `mount 8 /mnt` before first launch;
+stopping retains loaded code until reboot. The existing fixed slots and
+rendering are unchanged. The shared validator locks the requested slot and
+six JMP callbacks, rejects live-child staging conflicts before touching its
+launcher, and fixes a pre-existing error-return Z-flag bug exposed by missing
+files. VICE D64/D71, native 1986 raw-IEC mouse/keyboard, disk-exec, RC-startup,
+compiled SPAWN and clean-parallel-build regressions pass. The shadow gate is
+updated to mount before launching the disk clock. See [Disk graphics](docs/DISK-GRAPHICS.md)
+and the exact `2026-09-30-disk-graphics` artifacts/results. Manual acceptance
+is unrecorded; do not infer hardware qualification. The user now explicitly
+authorizes the sequence: review/merge this slice, move everyday utilities to
+disk, then retire the resident command dispatcher. Continue on a fresh issue
+and branch after merge. No rendering optimization. Earlier exact test images
+are untouched.
 
 Previous accepted worktree: `build/disk-shell-startup`, branch
 `boot-disk-shell-startup`, issue #20. PR #19 merged disk execution as `9ab1efd`

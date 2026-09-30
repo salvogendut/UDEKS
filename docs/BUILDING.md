@@ -62,12 +62,13 @@ programs for the first loader-owned slot, `ush` at bank-1 `$9000`, and the
 managed graphical `xclock` and `xwave` images at bank-0 `$0200` and `$1200`,
 wrapping each as UDEX. None resolves private moving kernel symbols; graphical
 apps use a fixed managed-app entry table. The same target creates
-`build/user/bootfs.img`, installs all six UDEX files, and `make boot` mounts
-that bounded image as the early `/bin`. The
+`build/user/bootfs.img` for the remaining transitional commands and recovery
+shell. `make boot` installs the graphical UDEX files as ordinary DOS `XCLOCK`
+and `XWAVE`, not bootfs entries. The
 standalone `date` reads or sets the shared TI-compatible clock, so `xclock`
 observes the same time. After stage
-1 relocates bootfs, init asks the common-RAM loader to resolve, validate, and
-allocate `/bin/ush` at runtime. Commands absent from the shell's native table
+1 delivers the services, init asks the common-RAM loader to validate and
+install disk `USH`, with bootfs recovery. Commands absent from the shell's native table
 use the same resolver through its transient entry point. That path swaps the
 first task slot, supplies a private C stack and cc65 zero page, runs the
 program, and restores the slot on exit. Runtime qualification in both
@@ -150,8 +151,8 @@ statically linked into one bootstrap kernel payload even though each has an
 independent descriptor and lifecycle. Disk-loadable modules require the later
 allocator, filesystem, and executable loader milestones.
 
-The two initial graphical applications are emitted as separate UDEX images in
-bootfs and loaded on first invocation into fixed, retained low-memory slots at
+The two initial graphical applications are emitted as ordinary disk UDEX files
+and loaded on first invocation (after `mount 8 /mnt`) into fixed, retained low-memory slots at
 `$0200-$0BFF` and `$1200-$1BFF`. This removes their code and state from the
 resident `$2000` kernel range while keeping lifecycle polling bounded. These
 fixed slots are transitional rather than general process address spaces. New

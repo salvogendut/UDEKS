@@ -1,0 +1,294 @@
+{
+  "disk_sha256": "04050e53267bba3b31c9b4b6db6c1316aec53747ecba5277e390cf36ef68cdf9",
+  "first": "xclock",
+  "drive": "1541",
+  "faults": true,
+  "bootfs_names": [
+    "cat",
+    "cowsay",
+    "date",
+    "ls",
+    "mount",
+    "umount",
+    "ush"
+  ],
+  "code_matches_disk": true,
+  "retained_restart_without_media": true,
+  "commands": [
+    {
+      "command": "xinit",
+      "loader": "5441534b010000ff7c0b80010000ffff554445580001010100907c0b80010090",
+      "console": "\nINITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "loader": "5441534b018b0bff7c0b80010000ffff78636c6f636b010100907c0b80010090",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "loader": "5441534b01000000c6090d0003cfe2ff55444558000101020002c6090d000002",
+      "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "REU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018b0b00ba09400003cfe2ff78776176650101000002ba0940000002",
+      "console": "8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "Z80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "STORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01840400ba09400003cfe2ff00444558000101020012bf0625020012",
+      "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "\nWELCOME TO UDEKS.\n\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01850500ba09400003cfe2ff55444558000201020012bf0625020012",
+      "console": "\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "VIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01860600ba09400003cfe2ff55444558000102020012bf0625020012",
+      "console": "xclock: start failed\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> mount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xclock &\nxclock started in background\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01870700ba09400003cfe2ff55444558000101000012bf0625020012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01880800ba09400003cfe2ff55444558000101020002bf0625020002",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018a0a00bf06250203cfe2ff55444558000101020012bf0625020112",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01890900000a400003cfe2ff55444558000101020012000a25020012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01890900bf06ffff03cfe2ff55444558000101020012bf06ffff0012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018a0a00bf06250203cfe2ff55444558000101020012bf0625020012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018a0a00bf06250203cfe2ff55444558000101020012bf0625020012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018a0a00bf06250203cfe2ff55444558000101020012bf0625020012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b018a0a00bf06250203cfe2ff55444558000101020012bf0625020012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01030000ba09400003cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01000000bf06250203cfe2ff55444558000101020012bf0625020012",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay both",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "UDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "xwave -q",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> umount /mnt\nUDEKS:~> mount 8 /mnt\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xwave &\nxwave: start failed\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "loader": "5441534b01030000ba09400002cfe2ff55444558000101000002ba0940000002",
+      "console": "UDEKS:~> xwave &\nxwave started in background\nUDEKS:~> cowsay both\n ______\n< both >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay alive",
+      "loader": "5441534b01030000a007000002cfe2ff55444558000101000002a00700000002",
+      "console": "                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> cowsay alive\n _______\n< alive >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    }
+  ]
+}

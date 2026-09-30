@@ -624,6 +624,23 @@ def validate_ush(bootfs: bytes, executable: bytes) -> None:
     validate_persistent_shell(bootfs[file_offset:file_offset+file_size])
 
 
+def validate_managed_app(executable: bytes, base: int) -> None:
+    """Fixed-slot managed UDEX and all six entry veneers, before packaging."""
+    if (len(executable) < 34 or executable[:4] != b'UDEX' or
+            executable[4] != 0 or executable[5] > 1 or executable[6:8] != b'\x01\x02'):
+        raise ValueError('invalid managed UDEX header or callback table')
+    load, size, bss, entry = (int.from_bytes(executable[n:n+2], 'little')
+                              for n in (8, 10, 12, 14))
+    if base not in (0x0200, 0x1200) or load != base or entry != base:
+        raise ValueError('managed application targets the wrong slot or entry')
+    if len(executable) != 16+size or size < 18 or size+bss > 0x0A00:
+        raise ValueError('managed application size exceeds its slot or file')
+    for n in range(16, 34, 3):
+        target = int.from_bytes(executable[n+1:n+3], 'little')
+        if executable[n] != 0x4c or not base+18 <= target < base+size:
+            raise ValueError('managed callback must JMP inside its own image')
+
+
 def install_task_loader(kernel: bytearray, loader: bytes) -> None:
     if len(loader) > TASK_LOADER_STAGING_SIZE:
         raise ValueError(
@@ -699,6 +716,8 @@ def build_image(
     hello: bytes | None = None,
     rc: bytes | None = None,
     sysinfo: bytes = b"",
+    xclock: bytes = b"",
+    xwave: bytes = b"",
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -811,6 +830,10 @@ def build_image(
     if sysinfo:
         install_prg_file(image, "FREE", sysinfo, file_type=0x81)
         install_prg_file(image, "DF", sysinfo, file_type=0x81)
+    for name, executable, base in (("XCLOCK", xclock, 0x0200), ("XWAVE", xwave, 0x1200)):
+        if executable:
+            validate_managed_app(executable, base)
+            install_prg_file(image, name, executable, file_type=0x81)
     return bytes(image)
 
 
@@ -847,6 +870,8 @@ def main() -> None:
     parser.add_argument("--hello", type=Path, help="include a raw SEQ HELLO file for cat")
     parser.add_argument("--rc", type=Path, help="optional ASCII shell startup file")
     parser.add_argument("--sysinfo", type=Path, help="standalone FREE/DF multicall UDEX")
+    parser.add_argument("--xclock", type=Path, help="disk-only managed XCLOCK UDEX")
+    parser.add_argument("--xwave", type=Path, help="disk-only managed XWAVE UDEX")
     parser.add_argument(
         "--d64-output",
         type=Path,
@@ -885,6 +910,8 @@ def main() -> None:
             None if args.hello is None else args.hello.read_bytes(),
             None if args.rc is None else args.rc.read_bytes(),
             b"" if args.sysinfo is None else args.sysinfo.read_bytes(),
+            b"" if args.xclock is None else args.xclock.read_bytes(),
+            b"" if args.xwave is None else args.xwave.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

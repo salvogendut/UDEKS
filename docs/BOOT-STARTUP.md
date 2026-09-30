@@ -32,8 +32,8 @@ entry both `$9000`, and image+BSS at most `$1000`. Entry is fixed by today's
 scheduler; another in-image entry is rejected instead of silently ignored.
 Exact file length, image bounds and BSS are checked before installation.
 Boot-only loading owns bank-1 APP1 staging before a child can exist. Managed
-apps and SPAWN still resolve from bootfs; they have not become disk-loaded
-merely because the shell has.
+apps now load from mounted disk on first use; SPAWN still resolves bootfs.
+See [disk-loaded graphics](DISK-GRAPHICS.md) for their separate ownership gate.
 
 ## Placement and lifetime
 
@@ -41,8 +41,9 @@ No resident kernel, VIC shadow, app-slot, or published syscall address moves.
 The loader's existing bank-1 validation extension also contains the small
 bootstrap selection routine. A private gate at `$FE80` handles bank changes;
 it is not a new user syscall. The emitted common loader occupies 1,496 of
-1,520 bytes, including padding; the lookup/bootstrap image occupies 964 of
-1,536 bytes at `$1A00`. Linker assertions enforce both limits.
+1,520 bytes, including padding; the lookup/bootstrap reservation is
+1,536 bytes at `$1A00`. Linker assertions enforce both limits; current managed
+loader changes and qualification are in [Disk graphics](DISK-GRAPHICS.md).
 
 The first live test caught an important lifetime overlap: boot presentation
 leaves the 42-byte scheduler activator at `$F68A`, while the storage router

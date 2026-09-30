@@ -44,10 +44,13 @@ bounded interactive update, so handing it to the Z80 would cost more than it
 saves. `xwave` remains the first application intended to demonstrate measured
 Z80 computation with 8502 plotting.
 
-`xclock` is a standalone UDEX image in bootfs. A small resident managed-app
-service loads it into the `$0200-$0BFF` slot on first invocation and calls its
+`xclock` is a standalone disk-only UDEX file, `XCLOCK`. After `mount 8 /mnt`,
+a small resident managed-app service loads it into the `$0200-$0BFF` slot on
+first invocation and calls its
 fixed lifecycle entry table thereafter. Its implementation and private state
 are no longer linked into the resident kernel image.
+Stopping retains the loaded image for restart; replacing the file takes
+effect after reboot. See [delivery and testing](DISK-GRAPHICS.md).
 
 ## Delivery gates
 

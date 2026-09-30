@@ -4,6 +4,11 @@
 labor visible. It opens a managed VIC-IIe bitmap window and renders a radial
 sinc surface, `z = sin(r) / r`, as a two-axis isometric wireframe.
 
+The standalone `XWAVE` UDEX is now an ordinary disk file, loaded into retained
+bank-0 `$1200-$1BFF` on first invocation after `mount 8 /mnt`. No normal
+bootfs copy remains. Its drawing algorithm and worker protocol are unchanged;
+see [disk delivery and testing](DISK-GRAPHICS.md).
+
 The visual concept was requested from the RAINBIOS `pcsurf-bbc-msx.bbc`
 example, whose comments trace it to an older PC-SURF BASIC program. That file
 also states that its source repository declares no license. UDEKS therefore

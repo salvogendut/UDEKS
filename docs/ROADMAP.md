@@ -61,7 +61,7 @@ mounts or applications must not require rebuilding the kernel.
 | Kernel and tasking | Cooperative two-task path works; general scheduling, IPC, and preemption due. |
 | Z80 secondary engine | Mailbox and xwave computation work; reusable operations and soak tests due. |
 | Graphics and input | Working shell/windows/apps; repaint latency and focused-window input remain open. |
-| Storage and applications | PR #21 merged disk-loaded shell, RC startup and free/df. Issue #22 now moves xclock/xwave from bootfs to disk-only delivery. |
+| Storage and applications | Disk shell, RC startup and free/df merged. Issue #22 disk-only xclock/xwave is emulator-qualified; manual acceptance pending. |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
@@ -155,6 +155,15 @@ aimed at the other app's slot and never stage over a live native child.
 Accept when both disk-only apps coexist, stop/restart and remain interactive,
 and missing/malformed files leave the console and running peer intact.
 No rendering or IEC optimization belongs in this slice.
+
+**Testable checkpoint (2026-09-30):** both graphical files are disk-only;
+their normal bootfs copies are removed. VICE D64/D71 validates both launch
+orders and failed-load isolation; native 1986 validates window interaction,
+cancellation, console use and restart. See [candidate and short test sequence](DISK-GRAPHICS.md).
+The user has now authorized review/merge and continuation; manual hardware
+acceptance of this exact candidate remains unrecorded. Next, extract remaining
+bundled user commands before choosing the first independently loadable service;
+do not expand this slice into rendering optimization or general task allocation.
 
 Generalize the current two-task allocation to at least four C tasks, add a
 bounded message/handle mechanism, and move console, input, graphics, and
