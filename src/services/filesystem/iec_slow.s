@@ -7,15 +7,20 @@
 ; The output buffer is inverted: 1 pulls a serial line low. Inputs PA6/7
 ; read 1 when CLK/DATA are released. The protocol follows the original C128
 ; serial routine's slow-path handshakes, but all line waits are bounded.
+; A receive byte masks IRQs from first CLK release through DATA acknowledge.
 
         .setcpu "6502"
         .export _udeks_iec_open_directory
+        .export _udeks_iec_open_file
+        .export _udeks_iec_filename
+        .export _udeks_iec_filename_length
         .export _udeks_iec_read_byte
         .export _udeks_iec_close
         .export _udeks_iec_probe_phase
         .export _udeks_iec_probe_subphase
         .export _udeks_iec_probe_bus
         .export _udeks_iec_probe_lines
+        .export _udeks_iec_probe_bits
 
 CIA2_PRA       = $dd00
 CIA2_DDRA      = $dd02
@@ -34,9 +39,14 @@ IEC_BAD_STATE  = $04
         .segment "BSS"
 iec_lines:      .res 1
 iec_device:     .res 1
+iec_secondary:  .res 1
 iec_open:       .res 1
+_udeks_iec_filename_length: .res 1
+_udeks_iec_filename: .res 16
+iec_name_index: .res 1
 iec_value:      .res 1
 iec_eoi:        .res 1
+_udeks_iec_probe_bits:
 iec_bits:       .res 1
 iec_status:     .res 1
 iec_busy_rounds: .res 1
@@ -259,6 +269,38 @@ attention:
 
 ; A=device (8..11). No KERNAL calls and no resident state mutation.
 _udeks_iec_open_directory:
+        pha
+        lda iec_open
+        bne @already_open
+        ldx #$00
+        stx iec_secondary
+        pla
+        jmp open_common
+@already_open:
+        pla
+        lda #IEC_BAD_STATE
+        rts
+
+; A=device, with a caller-filled PETSCII filename. Channel 2 is independent
+; of the command channel and works for both PRG and SEQ file reads.
+_udeks_iec_open_file:
+        pha
+        lda _udeks_iec_filename_length
+        beq @bad_name
+        cmp #$11
+        bcs @bad_name
+        lda iec_open
+        bne @bad_name
+        lda #$02
+        sta iec_secondary
+        pla
+        jmp open_common
+@bad_name:
+        pla
+        lda #IEC_BAD_STATE
+        rts
+
+open_common:
         cmp #$08
         bcs @at_least_8
         lda #IEC_BAD_STATE
@@ -295,18 +337,45 @@ _udeks_iec_open_directory:
         ora #$20              ; LISTEN
         clc
         jsr send_byte
-        bne @failed
+        beq :+
+        jmp @failed
+:
         inc _udeks_iec_probe_phase
-        lda #$f0              ; OPEN secondary channel 0
+        lda iec_secondary
+        ora #$f0              ; OPEN secondary channel
         clc
         jsr send_byte
-        bne @failed
+        beq :+
+        jmp @failed
+:
         inc _udeks_iec_probe_phase
         jsr atn_high
+        lda iec_secondary
+        bne @file_name
         lda #$24              ; "$"
         sec                   ; last filename byte carries EOI
         jsr send_byte
         bne @failed
+        jmp @name_done
+@file_name:
+        lda #$00
+        sta iec_name_index
+@name_loop:
+        ldx iec_name_index
+        lda _udeks_iec_filename,x
+        inx
+        cpx _udeks_iec_filename_length
+        beq @last_name_byte
+        clc
+        jsr send_byte
+        bne @failed
+        inc iec_name_index
+        bne @name_loop
+@last_name_byte:
+        sec
+        jsr send_byte
+        bne @failed
+@name_done:
         inc _udeks_iec_probe_phase
         jsr attention
         lda #$3f              ; UNLISTEN
@@ -325,7 +394,8 @@ _udeks_iec_open_directory:
         jsr send_byte
         bne @failed
         inc _udeks_iec_probe_phase
-        lda #$60              ; secondary channel 0
+        lda iec_secondary
+        ora #$60              ; selected secondary channel
         clc
         jsr send_byte
         bne @failed
@@ -361,6 +431,10 @@ _udeks_iec_read_byte:
         sta iec_eoi
         lda #$10
         sta _udeks_iec_probe_subphase
+        ; C128 KERNAL ACPTR masks IRQs from the first clock release through
+        ; the final DATA acknowledgement, not just during the eight bits.
+        php
+        sei
         jsr clock_high
         jsr wait_clock_high_start
         bcc @start_ok
@@ -394,21 +468,18 @@ _udeks_iec_read_byte:
         sta iec_bits
         lda #$12
         sta _udeks_iec_probe_subphase
-        php
-        sei
 @next: ldx #$40
 @high_outer:
         ldy #$00
-@high: bit CIA2_PRA
-        bvs @sample
+@high: lda CIA2_PRA
+        asl a                 ; sample CLK and DATA atomically (N and C)
+        bmi @sample
         dey
         bne @high
         dex
         bne @high_outer
         jmp @bit_timeout
 @sample:
-        lda CIA2_PRA
-        asl a                 ; DATA IN -> carry
         ror iec_value
         ldx #$40
 @low_outer:
@@ -423,7 +494,6 @@ _udeks_iec_read_byte:
 @low_seen:
         dec iec_bits
         bne @next
-        plp
         jsr data_low         ; byte accepted
         lda iec_eoi
         beq @return
@@ -432,9 +502,9 @@ _udeks_iec_read_byte:
 @return:
         lda iec_value
         ldx iec_eoi
+        plp
         rts
 @bit_timeout:
-        plp
 @timeout:
         lda CIA2_PRA
         sta _udeks_iec_probe_bus
@@ -447,6 +517,7 @@ _udeks_iec_read_byte:
         sta SPEED_REG
         lda #$00
         ldx #IEC_TIMEOUT
+        plp
         rts
 
 _udeks_iec_close:
@@ -468,7 +539,8 @@ _udeks_iec_close:
         clc
         jsr send_byte
         bne @failed
-        lda #$e0              ; CLOSE channel 0
+        lda iec_secondary
+        ora #$e0              ; CLOSE selected channel
         clc
         jsr send_byte
         bne @failed

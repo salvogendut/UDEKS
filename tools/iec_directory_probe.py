@@ -55,7 +55,19 @@ def validate_no_device(data: bytes) -> None:
         raise ValueError('absent-device path changed VIC bank selection')
 
 
-def capture(name: str, expected_state: int, *vice_args: str) -> bytes:
+def validate_file(data: bytes, source: bytes) -> None:
+    if len(data) != 0x200 or data[:6] != b'\x02\x00\x00\x00\x20\x00':
+        raise ValueError(f'named-file open/read/close failed: {data[:16].hex()}')
+    if data[10] & 1 != 1 or data[11] & 1 != 0 or data[12] != data[10]:
+        raise ValueError('named-file read did not restore CPU speed')
+    if data[13] != 0 or data[14] != data[15]:
+        raise ValueError('named-file read left bus driven or changed VIC bank')
+    if data[0x100:0x120] != source[:32]:
+        raise ValueError('named-file bytes differ from the on-disk PRG')
+
+
+def capture(name: str, expected_state: int, *vice_args: str,
+            file_mode: bool = False) -> bytes:
     result = ARTIFACTS / f'{name}.raw'
     command = [
         'python3', 'tools/vice_capture.py', str(PROGRAM), str(result),
@@ -64,6 +76,8 @@ def capture(name: str, expected_state: int, *vice_args: str) -> bytes:
         '--complete-value', hex(expected_state), '--timeout', '60',
         '--poll-delay', '10', '--capture-incomplete', '--flatpak-id', VICE,
     ]
+    if file_mode:
+        command.extend(('--poke', '0x3110=1'))
     command.extend(f'--vice-arg={arg}' for arg in vice_args)
     run(*command)
     return result.read_bytes()
@@ -88,10 +102,15 @@ def main() -> None:
         streams.append(validate_directory(data))
     if streams[0] != streams[1]:
         raise ValueError('1571 and 1541 directory bytes differ')
+    for drive in (1571, 1541):
+        data = capture(f'vice-file-{drive}', 2, '-drive8truedrive',
+                       '-drive8type', str(drive), '-8', str(DISK),
+                       file_mode=True)
+        validate_file(data, PROGRAM.read_bytes())
     validate_no_device(capture('vice-no-device', 0x80,
                                '-drive8type', '0'))
-    print(f'native IEC probe OK: {len(streams[0])} directory bytes on '
-          '1571 and 1541; absent device returns NO_DEVICE')
+    print(f'native IEC probe OK: {len(streams[0])} directory bytes and '
+          '32 named-file bytes on 1571 and 1541; absent device returns NO_DEVICE')
 
 
 if __name__ == '__main__':

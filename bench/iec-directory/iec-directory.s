@@ -5,12 +5,16 @@
 ; first 256 directory bytes at $3200. State 2 is complete, $80 is failure.
         .setcpu "6502"
         .import _udeks_iec_open_directory
+        .import _udeks_iec_open_file
+        .import _udeks_iec_filename
+        .import _udeks_iec_filename_length
         .import _udeks_iec_read_byte
         .import _udeks_iec_close
         .import _udeks_iec_probe_phase
         .import _udeks_iec_probe_subphase
         .import _udeks_iec_probe_bus
         .import _udeks_iec_probe_lines
+        .import _udeks_iec_probe_bits
 
 RESULT  = $3100
 
@@ -40,7 +44,22 @@ entry:
         sta RESULT+4
         sta RESULT+5
         lda #$08
+        ldx RESULT+16             ; pre-poked mode: 0=directory, 1=file
+        beq @directory
+        ldx #$07
+@copy_name:
+        lda test_name,x
+        sta _udeks_iec_filename,x
+        dex
+        bpl @copy_name
+        lda #$08
+        sta _udeks_iec_filename_length
+        lda #$08
+        jsr _udeks_iec_open_file
+        jmp @opened
+@directory:
         jsr _udeks_iec_open_directory
+@opened:
         sta RESULT+1
         lda _udeks_iec_probe_phase
         sta RESULT+6
@@ -69,6 +88,12 @@ write_byte:
 @counted:
         cpx #$01
         beq close
+        lda RESULT+16
+        beq @directory_limit
+        lda RESULT+4
+        cmp #$20                  ; named-file sample is a bounded 32 bytes
+        beq close
+@directory_limit:
         lda RESULT+5
         cmp #$01
         bne read_next
@@ -91,6 +116,8 @@ close:
 read_failed:
         lda _udeks_iec_probe_subphase
         sta RESULT+7
+        lda _udeks_iec_probe_bits
+        sta RESULT+17
         lda _udeks_iec_probe_bus
         sta RESULT+8
         lda _udeks_iec_probe_lines
@@ -109,3 +136,6 @@ failed:
         sta RESULT
 halt:
         jmp halt
+
+test_name:
+        .byte $d4,$c5,$d3,$d4,$d0,$d2,$cf,$c7 ; TESTPROG on the disk

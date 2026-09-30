@@ -50,21 +50,35 @@ resident-kernel code.
 ## Native IEC transport qualification
 
 `src/services/filesystem/iec_slow.s` implements a private 8502 slow-serial
-transport for directory channel 0 on devices 8–11. It uses no KERNAL
+transport for directory channel 0 and named-file channel 2 on devices 8–11.
+The file operation accepts a service-owned 1–16-byte PETSCII filename and
+uses the same bounded `READ`/`CLOSE` operations. It uses no KERNAL
 vectors: line writes preserve CIA2's live VIC bank bits; waits are finite;
-IRQs are masked only around one byte's bit edges; and a transaction selects
-1 MHz, then restores the prior CPU speed and releases ATN/CLK/DATA on close
+receive-byte IRQ masking covers the entire clock/data handshake; and each
+transaction selects 1 MHz, then restores the prior CPU speed and releases
+ATN/CLK/DATA on close
 or failure. A future storage service must serialize ownership of CIA2 and
 the CPU-speed register before linking this transport into UDEKS.
 
 `make iec-probe` builds this same transport into a standalone raw-load PRG.
 `make iec-vice-probe` creates a **non-autoboot** D64 in `build/`, reads its
 directory through VICE true-drive 1571 and 1541 models, compares the exact
-96-byte streams, and checks that an absent device returns `NO_DEVICE` with
+96-byte streams, reads and compares the first 32 bytes of a named on-disk PRG
+through channel 2, and checks that an absent device returns `NO_DEVICE` with
 the bus released and CPU speed restored. The probe forces 2 MHz before open
 to prove the transport's 1 MHz selection and restoration. The first live
 VICE 1571 directory capture is also a host decoder regression fixture.
 These are line-level runs, not VICE's KERNAL disk traps.
+The named-file probe intentionally stops before a sector boundary: sustained
+multi-sector reads and file EOI need a separate qualification gate before
+`cat` can rely on them. An earlier receiver intermittently timed out after
+4–5 bits of a byte on the 1541 model. Longer waits did not fix it; masking
+IRQs for the complete receive handshake, matching the
+[original C128 KERNAL serial routine](https://github.com/mist64/cbmsrc/blob/master/KERNAL_C128_05/serial.src),
+passed three independent complete VICE runs on both drive models. The decoder
+retains the live bit counter at result offset 17 on read failure. This
+qualifies only the bounded 32-byte file sample, not a complete file, real
+hardware, or the `/mnt` request path.
 Build the PRG in the reference container with
 `distrobox enter my-distrobox -- make iec-probe`, then run
 `make iec-vice-probe` on the host with the VICE Flatpak installed.
