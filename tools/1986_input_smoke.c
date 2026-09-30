@@ -70,7 +70,9 @@ static void text(const char *value) {
         else if (*value == ' ') key(SDL_SCANCODE_SPACE);
         else if (*value == '\n') key(SDL_SCANCODE_RETURN);
         else if (*value == '\b') key(SDL_SCANCODE_BACKSPACE);
-        else if (*value == '-') key(SDL_SCANCODE_MINUS);
+        /* 1986's positional mapping puts C128 '-' on host Equals (5,3).
+         * Host Minus is C128 '+' (5,0), not a text-mode minus injection. */
+        else if (*value == '-') key(SDL_SCANCODE_EQUALS);
         else if (*value == '&') {
             /* Native Shift+6, the same matrix binding as 1986 paste.c. */
             kbd_set(&machine->kbd, KBD_SHIFT_ROW, KBD_SHIFT_COL, true);

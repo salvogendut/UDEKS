@@ -73,8 +73,10 @@ class MemoryMapTests(unittest.TestCase):
     def test_persistent_shell_and_root_directory_state_are_bounded(self):
         memory = self.memory
         self.assertEqual(
-            memory["UDEKS_USH_LIMIT"] - memory["UDEKS_USH_BASE"], 0x0A00
+            memory["UDEKS_USH_LIMIT"] - memory["UDEKS_USH_BASE"], 0x1000
         )
+        self.assertEqual(memory["UDEKS_USH_LIMIT"], memory["UDEKS_BOOTFS_BASE"])
+        self.assertEqual(memory["UDEKS_USH_STACK_BOTTOM"], 0xE900)
         self.assertGreaterEqual(
             memory["UDEKS_ROOT_CWD_KIND"], memory["UDEKS_COMMON_BASE"]
         )

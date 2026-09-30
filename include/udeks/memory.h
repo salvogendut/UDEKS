@@ -48,7 +48,8 @@
 #define UDEKS_BOOTFS_BASE             0xA000u
 #define UDEKS_BOOTFS_LIMIT            0xD100u
 #define UDEKS_USH_BASE                0x9000u
-#define UDEKS_USH_LIMIT               0x9A00u
+#define UDEKS_USH_LIMIT               0xA000u
+#define UDEKS_USH_STACK_BOTTOM        0xE900u
 #define UDEKS_TASK_BACKUP_BASE        0x8000u
 #define UDEKS_TASK_BACKUP_LIMIT       0x8A00u
 
@@ -60,6 +61,7 @@
 #define UDEKS_BOOT_STATUS_SIZE        16u
 #define UDEKS_BOOT_CHAIN_BASE         0xF050u
 #define UDEKS_BOOT_CHAIN_SIZE         24u
+#define UDEKS_BOOT_CHAIN_DEVICE       20u
 #define UDEKS_ROOT_CWD_KIND           0xF2A6u
 #define UDEKS_BOOT_GATEWAY_BASE       0xF700u
 #define UDEKS_GATEWAY_BASE            0xF800u

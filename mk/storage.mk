@@ -13,6 +13,15 @@ USER_MOUNT_BIN := $(BUILD_USER)/mount.bin
 USER_MOUNT_UDEX := $(BUILD_USER)/mount.udx
 USER_FILETOOLS_BIN := $(BUILD_USER)/filetools.bin
 USER_FILETOOLS_UDEX := $(BUILD_USER)/filetools.udx
+USER_SYSINFO_UDEX := $(BUILD_USER)/sysinfo.udx
+$(BUILD_USER)/sysinfo.o: user/bin/sysinfo.c user/include/udeks/program.h include/udeks/task_request.h include/udeks/task_state.h include/udeks/capability.h | $(BUILD_USER)
+	$(CL65) $(CFLAGS_8502) --static-locals -I user/include -c -o $@ $<
+$(BUILD_USER)/sysinfo_request.o: user/lib/file_request.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -D UDEKS_FILE_REQUEST_MINOR=6 -o $@ $<
+$(BUILD_USER)/sysinfo.bin: $(USER_ENTRY_OBJ) $(USER_SYSCALL_OBJ) $(BUILD_USER)/sysinfo.o $(BUILD_USER)/sysinfo_request.o cfg/8502-user-app1.cfg
+	$(CL65) -t none -C cfg/8502-user-app1.cfg -m $(BUILD_USER)/sysinfo.map -o $@ $(filter %.o,$^)
+$(USER_SYSINFO_UDEX): $(BUILD_USER)/sysinfo.bin tools/build_udex.py
+	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 --bss-size 0x0040 $< $@
 .PHONY: filetools
 filetools: $(USER_FILETOOLS_UDEX)
 $(BUILD_USER)/filetools.o: user/bin/filetools.c user/include/udeks/program.h include/udeks/task_request.h | $(BUILD_USER)

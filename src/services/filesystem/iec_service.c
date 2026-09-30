@@ -126,6 +126,20 @@ uint8_t udeks_storage_dispatch(void)
     op = R[UDEKS_TREQ_OPERATION];
     count = R[UDEKS_TREQ_COUNT];
     fd = R[UDEKS_TREQ_DESCRIPTOR];
+    if (op == UDEKS_TREQ_OP_STATFS) {
+        if (R[UDEKS_TREQ_MINOR] < 6u) return reply(UDEKS_TREQ_ENOSYS, 0);
+        if (R[UDEKS_TREQ_FLAGS] || fd || count != 4u || !mount_path(count))
+            return reply(UDEKS_TREQ_EINVAL, 0);
+        if (!mounted) return reply(UDEKS_TREQ_ENOENT, 0);
+        if (opened) return reply(UDEKS_TREQ_EBUSY, 0);
+        status = udeks_cbm_space(device);
+        if (status) return reply(status, 0);
+        P[0] = 0; P[1] = 1;
+        P[2] = udeks_cbm_total_blocks; P[3] = udeks_cbm_total_blocks >> 8;
+        P[4] = udeks_cbm_free_blocks; P[5] = udeks_cbm_free_blocks >> 8;
+        P[6] = device; P[7] = UDEKS_STATFS_READ_ONLY;
+        return reply(0, UDEKS_STATFS_SIZE);
+    }
     if (op == UDEKS_TREQ_OP_READ && fd != FD)
         return reply(UDEKS_TREQ_EBADF, 0u);
     if (op == UDEKS_TREQ_OP_MOUNT || op == UDEKS_TREQ_OP_UMOUNT) {

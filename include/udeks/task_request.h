@@ -14,6 +14,11 @@
 #define UDEKS_USH_STATUS_MAGIC0          2u
 #define UDEKS_USH_STATUS_MAGIC1          3u
 #define UDEKS_USH_STATUS_MAGIC2          4u
+/* Bootstrap source diagnostic; not reset by the loaded shell. */
+#define UDEKS_USH_BOOT_SOURCE            5u /* 1 disk, 2 bootfs, 3 resident fallback */
+#define UDEKS_USH_BOOT_ERROR             6u /* disk attempt: UDEKS_TASK_* error */
+#define UDEKS_USH_BOOT_DEVICE            7u /* IEC unit used by bootstrap */
+#define UDEKS_USH_STARTUP_STATE          8u /* 1 running RC, 2 finished/skipped */
 
 #define UDEKS_USH_STATE_STARTING         0u
 #define UDEKS_USH_STATE_READY            0xA5u
@@ -35,7 +40,7 @@
 #define UDEKS_TREQ_PAYLOAD               14u
 
 #define UDEKS_TASK_REQUEST_ABI_MAJOR     0u
-#define UDEKS_TASK_REQUEST_ABI_MINOR     5u
+#define UDEKS_TASK_REQUEST_ABI_MINOR     6u
 
 #define UDEKS_TREQ_STATE_IDLE            0u
 #define UDEKS_TREQ_STATE_REQUEST         1u
@@ -74,6 +79,17 @@
  * UMOUNT: literal "/mnt". Descriptor and flags are zero for both. */
 #define UDEKS_TREQ_OP_MOUNT             17u
 #define UDEKS_TREQ_OP_UMOUNT            18u
+
+/* ABI 0.6: read-only filesystem capacity, literal /mnt, count 4, fd/flags 0.
+ * Eight response bytes: LE block size, total blocks, free blocks, unit, flags. */
+#define UDEKS_TREQ_OP_STATFS            19u
+#define UDEKS_STATFS_SIZE               8u
+#define UDEKS_STATFS_BLOCK_SIZE         0u
+#define UDEKS_STATFS_TOTAL              2u
+#define UDEKS_STATFS_FREE               4u
+#define UDEKS_STATFS_DEVICE             6u
+#define UDEKS_STATFS_FLAGS              7u
+#define UDEKS_STATFS_READ_ONLY          1u
 
 #define UDEKS_TREQ_EXEC_COMPLETE         0u
 #define UDEKS_TREQ_EXEC_FOREGROUND       1u

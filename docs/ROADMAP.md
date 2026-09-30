@@ -22,9 +22,12 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 - The generic retained window cache is enabled in normal builds and has
   positive real-hardware feedback. Window release/background repair can still
   take seconds; that is an open limitation, not a claim of responsive graphics.
-- Bootfs remains the bootstrap fallback. Read-only IEC mount/list/read works;
-  issue #18 adds the first explicit-path disk-execution slice. General storage,
-  disk-loaded shell/startup policy and installable services remain incomplete.
+- Read-only IEC mount/list/read and foreground disk execution are merged.
+  Issue #20 now boots a disk-loaded shell, retaining bootfs recovery, with
+  positive manual feedback (platform unspecified). Bounded shell-run `RC`
+  startup and disk-only `free`/`df` are implemented on that branch with positive
+  manual acceptance (platform unspecified). General storage and installable
+  services remain incomplete.
 
 Hardware feedback validates particular tested builds and interactions, not
 every C128 model, expansion, disk format, or failure path. `1986` and VICE are
@@ -58,7 +61,7 @@ mounts or applications must not require rebuilding the kernel.
 | Kernel and tasking | Cooperative two-task path works; general scheduling, IPC, and preemption due. |
 | Z80 secondary engine | Mailbox and xwave computation work; reusable operations and soak tests due. |
 | Graphics and input | Working shell/windows/apps; repaint latency and focused-window input remain open. |
-| Storage and applications | Read-only IEC merged; foreground disk execution accepted in 1986 and on C128 + PI1541. Disk-loaded shell/startup is next. |
+| Storage and applications | Disk execution merged and accepted on C128 + PI1541. Disk-loaded shell, bounded RC startup and standalone free/df accepted on #20; PR checkpoint authorized, review/merge next. |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
@@ -107,8 +110,7 @@ preserves arguments/exit, and can be run repeatedly. VICE D64/D71 and native
 The preserved Storage 0.1 hardware candidate is unchanged.
 The user subsequently confirmed the tests passed on a real C128 with PI1541
 and authorized continuation, completing this slice's manual acceptance gate.
-**Next:** merge the foreground disk-execution slice and move to disk-loaded
-shell/startup policy. This is not exhaustive model/device/failure-path qualification.
+**Merged:** PR #19 (`9ab1efd`). This is not exhaustive model/device/failure-path qualification.
 Do not divert this milestone into loader or graphics optimization.
 See [Storage 0.2](STORAGE-0.2.md) for the short implementation/acceptance plan.
 
@@ -123,6 +125,21 @@ Then use this loading path for the shell itself and introduce the startup
 script described above. Retire preloaded application bundles as their
 disk-backed replacements become usable; extract the remaining non-kernel
 services under milestone 3 rather than treating them as permanent residents.
+
+**Active follow-through:** issue [#20](https://github.com/salvogendut/UDEKS/issues/20),
+branch `boot-disk-shell-startup`. Normal boot now tries the ordinary DOS `USH`
+file first, closes/unmounts its bootstrap access, then starts the persistent
+shell. Missing/invalid files fall back to bootfs. The first user-test candidate
+and source/recovery checks are described in [Boot 0.2](BOOT-STARTUP.md).
+The user reports that this candidate looks good; the manual-test platform was
+not specified. This branch is not yet merged.
+Current deliverable: bounded shell-run startup commands editable on disk,
+plus the requested standalone `free` and `df`. Keep `free`'s fixed-pool
+accounting explicit until a general allocator exists. The user now reports
+"looks ok to me" for this slice; record positive manual acceptance without
+assuming a platform. Commit/push/PR are authorized; review issue #20 for merge before pursuing
+milestone 3's remaining non-kernel program/service extraction. The final kernel-only distribution
+is not complete; do not divert into unrelated optimization.
 
 **Acceptance:** copy a known UDEX onto media, list it, launch it, observe its
 exit status, and launch it again without reboot or memory corruption. Repeat

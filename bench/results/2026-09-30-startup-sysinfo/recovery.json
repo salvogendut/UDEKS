@@ -1,0 +1,174 @@
+{
+  "drive": "1541",
+  "disk_sha256": "7f2a1f87c662162792e723150e055c964433e962ec6f2b05a97ba602ae21536e",
+  "runs": [
+    {
+      "variant": "diskA",
+      "source": 1,
+      "error": 0,
+      "disk_sha256": "48f6a65004c07f403046de7aaf298d016b3d22a2155f00f9017ecd35154fa41a",
+      "commands": [
+        {
+          "command": "uname -a",
+          "console": "\nINITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS diskA c128 8502\nUDEKS:~>"
+        },
+        {
+          "command": "mount 8 /mnt",
+          "console": "INITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS diskA c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cat /mnt/HELLO",
+          "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS diskA c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+        },
+        {
+          "command": "umount /mnt",
+          "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS diskA c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cowsay recovered",
+          "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS diskA c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> cowsay recovered\n ___________\n< recovered >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+        }
+      ]
+    },
+    {
+      "variant": "diskB",
+      "source": 1,
+      "error": 0,
+      "disk_sha256": "e843de875496fc353fb4039064c1edd75d3438ab88d629b22c4fca1bf799737d",
+      "commands": [
+        {
+          "command": "uname -a",
+          "console": "\nINITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS diskB c128 8502\nUDEKS:~>"
+        },
+        {
+          "command": "mount 8 /mnt",
+          "console": "INITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS diskB c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cat /mnt/HELLO",
+          "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS diskB c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+        },
+        {
+          "command": "umount /mnt",
+          "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS diskB c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cowsay recovered",
+          "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS diskB c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> cowsay recovered\n ___________\n< recovered >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+        }
+      ]
+    },
+    {
+      "variant": "missing",
+      "source": 2,
+      "error": 11,
+      "disk_sha256": "844a6d6a28bce14524edd484a9df5aaefa30ba015469bebab2a155421922f435",
+      "commands": [
+        {
+          "command": "uname -a",
+          "console": "\nINITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~>"
+        },
+        {
+          "command": "mount 8 /mnt",
+          "console": "INITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cat /mnt/HELLO",
+          "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+        },
+        {
+          "command": "umount /mnt",
+          "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cowsay recovered",
+          "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> cowsay recovered\n ___________\n< recovered >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+        }
+      ]
+    },
+    {
+      "variant": "bad",
+      "source": 2,
+      "error": 4,
+      "disk_sha256": "0355af86171e6ab4795bda6797523f358b3423d7a13239b608b7e7e6a8314936",
+      "commands": [
+        {
+          "command": "uname -a",
+          "console": "\nINITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~>"
+        },
+        {
+          "command": "mount 8 /mnt",
+          "console": "INITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cat /mnt/HELLO",
+          "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+        },
+        {
+          "command": "umount /mnt",
+          "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cowsay recovered",
+          "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> cowsay recovered\n ___________\n< recovered >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+        }
+      ]
+    },
+    {
+      "variant": "entry",
+      "source": 2,
+      "error": 10,
+      "disk_sha256": "0569cfb9bf29b2c39639a03cb7d0cf73f7ff48407c39cca5431f7a13520856f5",
+      "commands": [
+        {
+          "command": "uname -a",
+          "console": "\nINITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~>"
+        },
+        {
+          "command": "mount 8 /mnt",
+          "console": "INITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cat /mnt/HELLO",
+          "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+        },
+        {
+          "command": "umount /mnt",
+          "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cowsay recovered",
+          "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> cowsay recovered\n ___________\n< recovered >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+        }
+      ]
+    },
+    {
+      "variant": "flags",
+      "source": 2,
+      "error": 7,
+      "disk_sha256": "0571f91b3fba977df59d8dd911ada83ee53048aeb182e1c0ce0268fb1a06eb9b",
+      "commands": [
+        {
+          "command": "uname -a",
+          "console": "\nINITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~>"
+        },
+        {
+          "command": "mount 8 /mnt",
+          "console": "INITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cat /mnt/HELLO",
+          "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+        },
+        {
+          "command": "umount /mnt",
+          "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>"
+        },
+        {
+          "command": "cowsay recovered",
+          "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> cowsay recovered\n ___________\n< recovered >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+        }
+      ]
+    }
+  ]
+}

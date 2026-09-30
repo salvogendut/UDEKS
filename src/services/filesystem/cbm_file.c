@@ -142,3 +142,43 @@ uint16_t udeks_cbm_read(void)
     --remaining;
     return (uint8_t)value;
 }
+
+/* The first BAM holds free counts for both sides on a 1571. Stream it,
+ * excluding the two directory tracks just as CBM DOS BLOCKS FREE does. */
+uint16_t udeks_cbm_total_blocks, udeks_cbm_free_blocks;
+#ifdef __CC65__
+#pragma code-name(push, "IECCODE")
+#endif
+uint8_t udeks_cbm_space(uint8_t device)
+{
+    uint8_t i, zone, limit, bad, dual;
+    uint16_t value;
+    udeks_cbm_total_blocks = udeks_cbm_free_blocks = 0;
+    if (udeks_cbm_begin(device)) return UDEKS_TREQ_EIO;
+    track = 18; sector = 0;
+    bad = read_sector(); dual = 0;
+    if (!bad) {
+        i = 2;
+        do {
+            value = udeks_iec_read_byte();
+            if (value > 511u || (value > 255u && i != 255u)) { bad = 1; break; }
+            if (i == 2u && (uint8_t)value != 0x41u) bad = 1;
+            if (i == 3u) dual = (uint8_t)value & 0x80u;
+            zone = 0;
+            if (i >= 4u && i <= 140u && !(i & 3u)) zone = i / 4u;
+            if (dual && i >= 221u) zone = i - 220u;
+            if (zone) {
+                limit = zone <= 17u ? 21u : zone <= 24u ? 19u : zone <= 30u ? 18u : 17u;
+                if ((uint8_t)value > limit) bad = 1;
+                if (zone != 18u) udeks_cbm_free_blocks += (uint8_t)value;
+            }
+        } while (++i);
+    }
+    if (udeks_cbm_close()) bad = 1;
+    if (bad) return UDEKS_TREQ_EIO;
+    udeks_cbm_total_blocks = dual ? 1328u : 664u;
+    return 0;
+}
+#ifdef __CC65__
+#pragma code-name(pop)
+#endif

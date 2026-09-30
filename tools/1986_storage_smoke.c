@@ -72,9 +72,32 @@ int main(int argc, char **argv) {
     }
     diagnostic();
     require(byte(0xf3d9) == 0xa5, "native raw-IEC boot failed");
+#ifdef UDEKS_SYSINFO_SMOKE
+    wait_byte(0xf3e0, 2, "startup script did not finish");
+    require(!console_contains("RC failed"), "default startup script failed");
+#endif
+#ifdef UDEKS_DISK_SHELL_SMOKE
+    require(byte(0xf3dd) == 1 && byte(0xf3de) == 0 && byte(0xf3df) == 8,
+            "shell was not loaded from boot-device disk");
+    idle();
+    unsigned shell_before = byte(0xf3d8);
+    text("uname -a\n");
+    wait_byte(0xf3d8, (shell_before+1) & 255, "shell builtin was not accepted");
+    idle();
+    require(console_contains("UDEKS 0.1.0 c128 8502"), "disk shell uname failed");
+    puts("PASS native disk shell source=1 error=0 device=8, uname works");
+#endif
     storage_command("ls /bin", 0);
     storage_command("mount 8 /mnt", 0);
     storage_command("ls /mnt", 0);
+#ifdef UDEKS_SYSINFO_SMOKE
+    storage_command("free", 0);
+    require(console_contains("total 2560  used 0  free 2560"), "free accounting missing");
+    storage_command("df", 0);
+    require(console_contains("iec8") && console_contains("Read-only mount"), "df output missing");
+    storage_command("df /bad", 1);
+    require(console_contains("usage: df [/mnt]"), "df usage missing");
+#endif
 #ifdef UDEKS_DISK_EXEC_SMOKE
     storage_command("/mnt/diskcow hello", 0);
     require(console_contains("hello") && console_contains("^__^"), "disk cow missing");

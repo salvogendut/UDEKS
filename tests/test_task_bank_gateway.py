@@ -133,7 +133,8 @@ class TaskBankGatewayTests(unittest.TestCase):
         self.assertIn("sta task_allocation_hi", validation)
         self.assertIn("cmp task_file_size_lo", validation)
         self.assertIn("cmp task_file_size_hi", validation)
-        self.assertIn("cmp #$0a", validation)
+        self.assertIn("ldx #$0a", validation)
+        self.assertIn("ldx #$10", validation)
 
     def test_transient_slot_is_saved_even_while_xclock_is_active(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()

@@ -1,4 +1,4 @@
-# Bank-task request ABI 0.5
+# Bank-task request ABI 0.6
 
 Bank-1 8502 tasks exchange bounded requests with the resident kernel through a
 38-byte record in top common RAM. The task fills the record and calls `$FF16`.
@@ -9,13 +9,14 @@ ABI 0.3 keeps every 0.2 operation number and behavior unchanged and adds
 lifecycle operations `10`-`15`. `YIELD`, `EXIT`, immediate/nonblocking and
 blocking `WAITPID`, `SLEEP`, `CANCEL`, and `SPAWN` are implemented. Rebuilt
 0.3 clients may keep using the 0.2 operations unchanged, and
-the resident version check accepts minor `0` through `5`.
+the resident version check accepts minor `0` through `6`.
 ABI 0.4 adds non-consuming stdin readiness (`POLL`, operation 16). A 0.0–0.3
 request for operation 16 returns `ENOSYS`; an unsupported future minor returns
 `EPROTO`. Operations 1–15 retain their existing numbers and behavior.
 ABI 0.5 adds read-only IEC `MOUNT`/`UMOUNT` through a private bank-1 C service.
 Existing stream/directory clients continue to request their minimum ABI 0.4;
-`POLL` accepts both 0.4 and 0.5. No published entry address changes.
+`POLL` accepts 0.4 through 0.6. The startup shell uses 0.5; `df` uses 0.6
+for `STATFS`. No published entry address changes.
 
 ## Record
 
@@ -25,7 +26,7 @@ The record occupies `$F359-$F37E`:
 |---:|---:|---|
 | 0 | 4 | ASCII magic `UTRQ` |
 | 4 | 1 | ABI major (`0`) |
-| 5 | 1 | ABI minor (`5`; earlier compatible minors remain accepted) |
+| 5 | 1 | ABI minor (`6`; earlier compatible minors remain accepted) |
 | 6 | 1 | State |
 | 7 | 1 | Operation |
 | 8 | 1 | Sequence number |
@@ -60,6 +61,7 @@ States are idle (`0`), request (`1`), complete (`2`), and error (`$80`).
 | 16 | `POLL` | 0.4 | Wait for stdin readability without consuming input. |
 | 17 | `MOUNT` | 0.5 | Mount IEC device 8–11 read-only at `/mnt`. |
 | 18 | `UMOUNT` | 0.5 | Unmount `/mnt` if no storage handle is open. |
+| 19 | `STATFS` | 0.6 | Read mounted CBM-DOS total/free block counts. |
 
 `EXEC` (`3`) is not task creation and its meaning does not change: it remains
 the bounded command-line bridge for the resident compatibility shell. Real
@@ -67,6 +69,23 @@ loader-backed task creation is `SPAWN` (`15`).
 
 After validating the protocol envelope, all other operation values return
 `ENOSYS` before operation-specific field checks.
+
+## Filesystem capacity (0.6)
+
+`STATFS`: descriptor/flags `0`, count `4`, payload `['/', 'm', 'n', 't']`.
+Like MOUNT/UMOUNT, no terminating NUL is required. Older minors return
+`ENOSYS`; invalid fields return `EINVAL`, no mount `ENOENT`, an open storage
+handle `EBUSY`, and media/invalid-BAM errors `EIO`. Validation precedes I/O,
+and the temporary channel is closed before returning. Existing handles are
+never consumed or closed by a rejected request.
+
+Success returns eight bytes (`result = 8`): little-endian 16-bit block size
+(256), total data blocks (664 single-sided / 1328 double-sided), free data
+blocks, then device and flags (bit 0 read-only; other bits zero). Counts come
+from track 18/sector 0's CBM-DOS BAM, including second-side counts for a D71.
+Directory tracks 18 and 53 are excluded, matching DOS free-block accounting.
+These are allocation blocks, not payload bytes (linked file sectors reserve
+two link bytes). No write support, filesystem repair, or media caching is implied.
 
 ## Read-only IEC mount (0.5)
 

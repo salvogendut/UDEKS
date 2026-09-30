@@ -6,10 +6,12 @@ implementation stays small enough for a stock C128.
 
 ## Current transition
 
-The production image now packages a minimal persistent `ush.udx` in the
-read-only `/bin` bootfs. Init resolves it by name through the common-RAM UDEX
-loader, which validates and allocates it at bank-1 `$9000`; init then invokes
-one bounded poll on every service pass. `ush` now owns submitted terminal
+The production image packages persistent `ush.udx` as the ordinary DOS file
+`USH` and retains a recovery copy in read-only `/bin` bootfs. Init tries disk
+first through the common-RAM UDEX loader, validates it at bank-1 `$9000`,
+releases the temporary mount, then starts the cooperative shell task.
+See [disk boot, recovery and the next startup-script step](BOOT-STARTUP.md).
+`ush` now owns submitted terminal
 lines and implements `cd`, `echo`, `help`, `pwd`, and `uname` natively through
 the public stream ABI. Commands not yet extracted cross a bounded
 compatibility-exec request, so existing graphical commands and standalone
@@ -22,6 +24,8 @@ The common-RAM diagnostic block at `$F3D8-$F3E7` exposes the dispatched
 command counter at offset 0 and shell state at offset 1. The byte sequence
 `A5 55 53 48` at offsets 1 through 4 (`$A5`, `USH`) means that `ush` has
 completed its first poll and is ready to accept submitted input.
+Offsets 5–7 record bootstrap source (1 disk, 2 bootfs, 3 resident fallback),
+disk-attempt loader error, and IEC device; the shell does not overwrite them.
 
 This is deliberately called a transition, not a completed user-space shell.
 The resident implementation still calls private terminal, graphics, window,

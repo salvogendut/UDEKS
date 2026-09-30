@@ -1,0 +1,51 @@
+{
+  "variant": "missing",
+  "drive": "1541",
+  "disk_sha256": "9f5cc493bd397db79188a8077eb243a946bbfdee4f640f03526a00d14971f5cc",
+  "total": 664,
+  "free": 206,
+  "boot_console": "UDEKS - UNIFIED DUAL ENGINE EXECUTIVE KERNEL SYSTEM\nV0.1.0  (C) 2026\n\nINITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>",
+  "driver_intact": true,
+  "commands": [
+    {
+      "command": "mount 8 /mnt",
+      "console": "V0.1.0  (C) 2026\n\nINITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "free",
+      "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount 8 /mnt\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~>"
+    },
+    {
+      "command": "df",
+      "console": "8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount 8 /mnt\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         458   206        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DF /mnt",
+      "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount 8 /mnt\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         458   206        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> /mnt/DF /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         458   206        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~>"
+    },
+    {
+      "command": "df /bad",
+      "console": "\nWELCOME TO UDEKS.\n\nUDEKS:~> mount 8 /mnt\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         458   206        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> /mnt/DF /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         458   206        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> df /bad\nusage: df [/mnt]\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/HELLO",
+      "console": "\nUDEKS:~> mount 8 /mnt\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         458   206        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> /mnt/DF /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         458   206        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> df /bad\nusage: df [/mnt]\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "command": "ls /mnt",
+      "console": "Fixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         458   206        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> /mnt/DF /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         458   206        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> df /bad\nusage: df [/mnt]\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nUSH\nFREE\nDF\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "console": "General heap: not implemented; swap: none.\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         458   206        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> /mnt/DF /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         458   206        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> df /bad\nusage: df [/mnt]\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nUSH\nFREE\nDF\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay OK",
+      "console": "UDEKS:~> df /bad\nusage: df [/mnt]\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nUSH\nFREE\nDF\nUDEKS:~> umount /mnt\nUDEKS:~> cowsay OK\n ____\n< OK >\n ----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "uname -a",
+      "console": "UDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nUSH\nFREE\nDF\nUDEKS:~> umount /mnt\nUDEKS:~> cowsay OK\n ____\n< OK >\n ----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~>"
+    }
+  ]
+}

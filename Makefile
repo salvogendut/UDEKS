@@ -190,6 +190,7 @@ USER_LS_BIN := $(BUILD_USER)/ls.bin
 USER_LS_UDEX := $(BUILD_USER)/ls.udx
 USER_USH_BIN := $(BUILD_USER)/ush.bin
 USER_USH_UDEX := $(BUILD_USER)/ush.udx
+USER_RECOVERY_USH_UDEX := $(BUILD_USER)/ush-recovery.udx
 USER_EXIT_PROBE_OBJ := $(BUILD_USER)/task-exit-probe.o
 USER_EXIT_PROBE_BIN := $(BUILD_USER)/task-exit-probe.bin
 USER_EXIT_PROBE_UDEX := $(BUILD_USER)/task-exit-probe.udx
@@ -554,8 +555,8 @@ $(USER_POLL_ENTRY_OBJ): user/lib/poll_entry.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
 
 $(USER_USH_ASM): user/bin/ush.c user/include/udeks/program.h \
-		include/udeks/memory.h include/udeks/task_request.h | $(BUILD_USER)
-	$(CC65) $(CFLAGS_8502) -I user/include -I include -o $@ $<
+		user/include/udeks/startup.h include/udeks/memory.h include/udeks/task_request.h | $(BUILD_USER)
+	$(CC65) $(CFLAGS_8502) --static-locals -I user/include -I include -o $@ $<
 
 $(USER_USH_OBJ): $(USER_USH_ASM) | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
@@ -588,11 +589,27 @@ $(USER_LS_UDEX): $(USER_LS_BIN) tools/build_udex.py
 		--entry-address 0x0200 $< $@
 
 $(USER_USH_BIN): $(USER_POLL_ENTRY_OBJ) $(USER_TASK_STREAM_OBJ) \
-		$(USER_USH_OBJ) cfg/8502-user-bank1.cfg
+		$(USER_USH_OBJ) $(BUILD_USER)/startup.o $(BUILD_USER)/ush_bounds.o cfg/8502-user-bank1.cfg
 	$(CL65) -t none --cpu 6502 -C cfg/8502-user-bank1.cfg \
 		-m $(BUILD_USER)/ush.map -o $@ $(filter %.o,$^)
 
 $(USER_USH_UDEX): $(USER_USH_BIN) tools/build_udex.py
+	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x9000 \
+		--entry-address 0x9000 --bss-size 0x0180 --flags 0x01 $< $@
+
+$(BUILD_USER)/startup.o: user/lib/startup.c user/include/udeks/startup.h include/udeks/task_request.h user/include/udeks/program.h | $(BUILD_USER)
+	$(CL65) $(CFLAGS_8502) --static-locals -I user/include -c -o $@ $<
+$(BUILD_USER)/ush_bounds.o: user/lib/ush_bounds.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -D UDEKS_USH_BSS=384 -o $@ $<
+$(BUILD_USER)/ush_recovery_bounds.o: user/lib/ush_bounds.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -D UDEKS_USH_BSS=80 -o $@ $<
+$(BUILD_USER)/ush-recovery.o: user/bin/ush.c include/udeks/task_request.h user/include/udeks/program.h | $(BUILD_USER)
+	$(CL65) $(CFLAGS_8502) -D UDEKS_RECOVERY -I user/include -c -o $@ $<
+$(BUILD_USER)/ush-recovery.bin: $(USER_POLL_ENTRY_OBJ) $(USER_TASK_STREAM_OBJ) \
+		$(BUILD_USER)/ush-recovery.o $(BUILD_USER)/ush_recovery_bounds.o cfg/8502-user-bank1.cfg
+	$(CL65) -t none --cpu 6502 -C cfg/8502-user-bank1.cfg \
+		-m $(BUILD_USER)/ush-recovery.map -o $@ $(filter %.o,$^)
+$(USER_RECOVERY_USH_UDEX): $(BUILD_USER)/ush-recovery.bin tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x9000 \
 		--entry-address 0x9000 --bss-size 0x0050 --flags 0x01 $< $@
 
@@ -768,14 +785,14 @@ $(USER_XWAVE_UDEX): $(USER_XWAVE_BIN) tools/build_udex.py
 		--entry-address 0x1200 --bss-size 0x0225 --flags 0x02 $< $@
 
 $(USER_BOOTFS): $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) \
-		$(USER_USH_UDEX) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) \
+		$(USER_RECOVERY_USH_UDEX) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) \
 		tools/build_bootfs.py
 	$(PYTHON) tools/build_bootfs.py --max-size 0x3100 \
 		--entry cowsay=$(USER_COWSAY_UDEX) \
 		--entry date=$(USER_DATE_UDEX) \
 		--entry ls=$(USER_FILETOOLS_UDEX) --entry cat=$(USER_FILETOOLS_UDEX) \
 		--entry mount=$(USER_FILETOOLS_UDEX) --entry umount=$(USER_FILETOOLS_UDEX) \
-		--entry ush=$(USER_USH_UDEX) \
+		--entry ush=$(USER_RECOVERY_USH_UDEX) \
 		--entry xclock=$(USER_XCLOCK_UDEX) \
 		--entry xwave=$(USER_XWAVE_UDEX) $@
 
@@ -1893,7 +1910,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
-		tools/build_d71.py bench/iec-directory/hello.txt
+		tools/build_d71.py bench/iec-directory/hello.txt user/etc/rc $(USER_SYSINFO_UDEX)
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
@@ -1915,6 +1932,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--bootfs-request-service $(BOOTFS_REQUEST_SERVICE_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) \
 		--hello bench/iec-directory/hello.txt \
+		--rc user/etc/rc --sysinfo $(USER_SYSINFO_UDEX) \
 		--d64-output $(BOOT_D64) $(BOOT_D71)
 
 $(TASK_EXIT_PROBE_D71) $(TASK_EXIT_PROBE_D64) &: $(STAGE0_BIN) \
@@ -2146,7 +2164,8 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 
 check:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
-	$(PYTHON) -m py_compile tools/build_storage.py tools/storage_service_probe.py tools/storage_shell_probe.py tools/iec_eof_reference.py tools/disk_exec_fixture.py tools/disk_exec_probe.py tools/gen_disk_loader_bindings.py tools/1986_storage_smoke_build.py
+	$(PYTHON) -m py_compile tools/startup_probe.py
+	$(PYTHON) -m py_compile tools/build_storage.py tools/storage_service_probe.py tools/storage_shell_probe.py tools/iec_eof_reference.py tools/disk_exec_fixture.py tools/disk_exec_probe.py tools/gen_disk_loader_bindings.py tools/1986_storage_smoke_build.py tools/disk_shell_fixture.py tools/disk_shell_probe.py
 	$(PYTHON) -m py_compile tools/ihx_to_bin.py tools/bin_to_prg.py \
 		tools/bench_decode.py tools/irq_probe_decode.py \
 		tools/irq_service_decode.py tools/context_decode.py \

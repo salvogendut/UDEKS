@@ -46,6 +46,7 @@ from build_d71 import (
     d64_compatibility_image,
     sector_offset,
     install_prg_file,
+    validate_persistent_shell,
 )
 from build_bootfs import build_bootfs
 
@@ -69,6 +70,15 @@ def bootfs_with_ush(executable: bytes) -> bytes:
 
 
 class BuildD71Tests(unittest.TestCase):
+    def test_ush_is_a_separate_raw_udex_on_both_formats(self):
+        from disk_shell_fixture import shell_file
+        program = ush_executable()
+        image = build_image(stage0(), b'', b'', b'',
+                            bootfs=bootfs_with_ush(program), ush=program)
+        for view in (image, d64_compatibility_image(image)):
+            _, offsets = shell_file(view)
+            self.assertEqual(bytes(view[p] for p in offsets), program)
+
     def test_hello_is_raw_seq_without_prg_load_address_on_both_formats(self):
         data = b'HELLO UDEKS\n'
         image = build_image(stage0(), b'', b'', b'', hello=data)
@@ -98,12 +108,41 @@ class BuildD71Tests(unittest.TestCase):
         self.assertEqual(len(image), 349696)
         self.assertEqual(image[sector_offset(18, 1) : sector_offset(18, 1) + 2], b"\x00\xff")
 
+    def test_directory_expands_without_overwriting_existing_files(self):
+        image = bytearray(blank_d71())
+        for n in range(17): install_prg_file(image, f'FILE{n}', bytes((n,)), file_type=0x81)
+        seen, names = set(), []
+        sector = 1
+        while sector:
+            self.assertNotIn(sector, seen); seen.add(sector)
+            directory = sector_offset(18, sector)
+            for slot in range(8):
+                entry = directory+2+slot*32
+                if not image[entry]: continue
+                names.append(image[entry+3:entry+19].rstrip(b'\xa0').decode())
+                data = sector_offset(image[entry+1], image[entry+2])
+                self.assertEqual(image[data:data+3], bytes((0, 2, len(names)-1)))
+            sector = image[directory+1] if image[directory] else 0
+        self.assertEqual(names, [f'FILE{n}' for n in range(17)])
+        self.assertEqual(len(seen), 3)
+
+    def test_cyclic_full_directory_rejected_without_mutation(self):
+        image = bytearray(blank_d71())
+        for n in range(8): install_prg_file(image, str(n), b'x')
+        directory = sector_offset(18, 1)
+        image[directory:directory+2] = b'\x12\x01'
+        before = bytes(image)
+        with self.assertRaisesRegex(ValueError, 'cyclic'): install_prg_file(image, 'NO', b'x')
+        self.assertEqual(image, before)
+
     def test_d64_compatibility_image_is_standard_first_side(self):
         image = build_image(stage0(), b"", b"", b"")
         d64 = d64_compatibility_image(image)
         self.assertEqual(len(d64), D64_SIZE)
         self.assertEqual(d64[:4], b"CBM\x00")
-        self.assertEqual(d64, image[:D64_SIZE])
+        expected = bytearray(image[:D64_SIZE])
+        expected[sector_offset(18, 0)+3] &= 0x7f
+        self.assertEqual(d64, expected)
 
     def test_d64_compatibility_image_rejects_nonstandard_source(self):
         with self.assertRaisesRegex(ValueError, "standard D71"):
@@ -133,9 +172,9 @@ class BuildD71Tests(unittest.TestCase):
             int.from_bytes(image[directory + 28 : directory + 30], "little"),
             blocks,
         )
-        self.assertEqual(
-            bytes(image[:D64_SIZE]), d64_compatibility_image(bytes(image))
-        )
+        expected = bytearray(image[:D64_SIZE])
+        expected[sector_offset(18, 0)+3] &= 0x7f
+        self.assertEqual(expected, d64_compatibility_image(bytes(image)))
 
     def test_native_payload_round_trips_from_sequential_sectors(self):
         first = b"stage-one"
@@ -213,9 +252,8 @@ class BuildD71Tests(unittest.TestCase):
 
     def test_rejects_oversize_ush_allocation(self):
         executable = ush_executable(bytes(USH_ALLOCATION_SIZE), bss_size=1)
-        with self.assertRaisesRegex(ValueError, "2560-byte"):
-            build_image(stage0(), b"", b"", b"",
-                        bootfs=bootfs_with_ush(executable), ush=executable)
+        with self.assertRaisesRegex(ValueError, "4096-byte"):
+            validate_persistent_shell(executable)
 
     def test_task_request_gateway_is_staged_in_vic_shadow(self):
         gateway = b"request-gateway"
