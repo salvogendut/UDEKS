@@ -1,4 +1,4 @@
-# Bank-task request ABI 0.4
+# Bank-task request ABI 0.5
 
 Bank-1 8502 tasks exchange bounded requests with the resident kernel through a
 38-byte record in top common RAM. The task fills the record and calls `$FF16`.
@@ -9,10 +9,13 @@ ABI 0.3 keeps every 0.2 operation number and behavior unchanged and adds
 lifecycle operations `10`-`15`. `YIELD`, `EXIT`, immediate/nonblocking and
 blocking `WAITPID`, `SLEEP`, `CANCEL`, and `SPAWN` are implemented. Rebuilt
 0.3 clients may keep using the 0.2 operations unchanged, and
-the resident version check accepts minor `0`, `1`, `2`, `3`, and `4`.
+the resident version check accepts minor `0` through `5`.
 ABI 0.4 adds non-consuming stdin readiness (`POLL`, operation 16). A 0.0–0.3
 request for operation 16 returns `ENOSYS`; an unsupported future minor returns
 `EPROTO`. Operations 1–15 retain their existing numbers and behavior.
+ABI 0.5 adds read-only IEC `MOUNT`/`UMOUNT` through a private bank-1 C service.
+Existing stream/directory clients continue to request their minimum ABI 0.4;
+`POLL` accepts both 0.4 and 0.5. No published entry address changes.
 
 ## Record
 
@@ -22,7 +25,7 @@ The record occupies `$F359-$F37E`:
 |---:|---:|---|
 | 0 | 4 | ASCII magic `UTRQ` |
 | 4 | 1 | ABI major (`0`) |
-| 5 | 1 | ABI minor (`4`) |
+| 5 | 1 | ABI minor (`5`; earlier compatible minors remain accepted) |
 | 6 | 1 | State |
 | 7 | 1 | Operation |
 | 8 | 1 | Sequence number |
@@ -55,6 +58,8 @@ States are idle (`0`), request (`1`), complete (`2`), and error (`$80`).
 | 14 | `CANCEL` | 0.3 | Terminate another task. |
 | 15 | `SPAWN` | 0.3 | Load and create a new task. |
 | 16 | `POLL` | 0.4 | Wait for stdin readability without consuming input. |
+| 17 | `MOUNT` | 0.5 | Mount IEC device 8–11 read-only at `/mnt`. |
+| 18 | `UMOUNT` | 0.5 | Unmount `/mnt` if no storage handle is open. |
 
 `EXEC` (`3`) is not task creation and its meaning does not change: it remains
 the bounded command-line bridge for the resident compatibility shell. Real
@@ -62,6 +67,51 @@ loader-backed task creation is `SPAWN` (`15`).
 
 After validating the protocol envelope, all other operation values return
 `ENOSYS` before operation-specific field checks.
+
+## Read-only IEC mount (0.5)
+
+`MOUNT`: descriptor/flags `0`, count `5`, payload `[device, '/', 'm', 'n', 't']`.
+`UMOUNT`: descriptor/flags `0`, count `4`, payload `['/', 'm', 'n', 't']`.
+Neither payload has a terminator. Earlier minors return `ENOSYS`. Success is
+complete/result `0`; invalid fields are `EINVAL`. Duplicate mount or unmount
+with an open handle is `EBUSY`; unmount without a mount is `ENOENT`.
+An empty bus can report `ENODEV`; address-specific timeouts on a bus with
+another drive report `EIO`. A failed mount never publishes the mount.
+
+`OPEN /mnt` returns the single storage descriptor `4`; bootfs retains `3`.
+Paths include the existing trailing NUL outside count. `GETDENTS` accepts
+18–24 bytes and returns the existing type/name-length/name record, or zero at
+end. It converts the two PETSCII uppercase ranges to console ASCII. `STAT
+/mnt` returns a directory with size zero. `READ` on this directory returns
+`EISDIR`; other invalid non-stdio descriptors return `EBADF`. Close is required
+even after EOF or an I/O error. File `STAT` below `/mnt/` returns `ENOSYS`;
+the service does not invent byte lengths from directory block counts. `/mnt-other` is not routed
+to the mount. Other paths, bootfs handles, and lifecycle operations retain the
+existing fallback. The shared record's sequence is preserved on every reply.
+
+`OPEN /mnt/NAME` with descriptor `O_RDONLY` (`0`) opens a named file on that
+same descriptor `4`. Names are 1–16 ASCII letters, digits, spaces, `.`, `-`,
+or `_`; ASCII lowercase folds to uppercase. Try the low PETSCII uppercase
+range first, retry the high range only after DOS status `62` (file not found).
+DOS commands, wildcards, embedded NULs and nested paths are rejected with
+`EINVAL`. This is a deliberately restricted filename mapping, not a complete
+PETSCII namespace. `O_DIRECTORY` on a file returns `ENOTDIR`.
+
+`READ` on descriptor `4` accepts counts 0–24. A zero count consumes nothing;
+otherwise result is the explicit number of bytes in payload, including NULs
+and the byte carrying EOI. After EOI, later reads return zero. A transport
+failure after some bytes returns those bytes first, then `EIO` on the next
+read; an immediate failure returns `EIO`. Failed opens publish no handle:
+DOS `62` maps to `ENOENT`, other DOS/status/transport failures to `EIO`.
+`GETDENTS` on a file is `ENOTDIR`. Always `CLOSE`, including after errors.
+The current adapter exposes the DOS byte stream; zero/one-byte files have an
+outstanding EOF discrepancy on the qualified 1541 ROM path, documented with
+a strict reproducer in [Storage 0.1](../docs/STORAGE-0.1.md#remaining-gates).
+
+This initial single-handle service is synchronous and IRQ-masked per request,
+with finite transport waits and a 256-byte directory decoding budget. It does
+not schedule, yield, call KERNAL, or call window code while its bank is mapped.
+It is not yet per-process descriptor ownership or cancellation-aware I/O.
 
 ## Flags
 

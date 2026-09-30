@@ -5,7 +5,8 @@
 #include "udeks/compiler.h"
 
 /* Private, single-owner storage-service transport. The service must call this
- * only with the kernel-I/O MMU profile; no KERNAL vectors are used. */
+ * only with an I/O-visible MMU profile (kernel or worker); no KERNAL
+ * vectors are used. The bank-1 service owns its private transport state. */
 #define UDEKS_IEC_OK       0u
 #define UDEKS_IEC_EOI      1u
 #define UDEKS_IEC_TIMEOUT  2u
@@ -22,6 +23,13 @@ uint8_t UDEKS_FASTCALL udeks_iec_open_directory(uint8_t device);
 extern uint8_t udeks_iec_filename[16];
 extern uint8_t udeks_iec_filename_length;
 uint8_t UDEKS_FASTCALL udeks_iec_open_file(uint8_t device);
+/* Checked file open: prepare, TALK status 15, consume status, UNTALK, TALK 2.
+ * CLOSE ends the entire transaction, including speed restoration, on failure.
+ * The caller must serialize all steps; no second channel owner is allowed. */
+uint8_t UDEKS_FASTCALL udeks_iec_prepare_file(uint8_t device);
+uint8_t udeks_iec_open_status(void);
+uint8_t udeks_iec_untalk(void);
+uint8_t udeks_iec_talk_file(void);
 /* Low byte is data; high byte is OK, EOI, TIMEOUT, or BAD_STATE. The EOI
  * byte itself is valid and must be consumed before closing the channel. */
 uint16_t udeks_iec_read_byte(void);

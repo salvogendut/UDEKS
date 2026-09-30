@@ -120,12 +120,15 @@ static unsigned char submit_line(void)
 
 unsigned char udeks_root_terminal_prompt(void)
 {
+    /* Command output is a byte stream, not necessarily newline terminated.
+     * Start the fixed-width editor on its own row without altering stdout. */
+    if (udeks_root_console_cursor_column() != 0) {
+        udeks_root_console_write('\n');
+    }
     udeks_root_console_write_string(prompt);
     input_column = udeks_root_console_cursor_column();
     input_row = udeks_root_console_cursor_row();
-    if ((unsigned int)input_column + INPUT_FIELD_WIDTH >
-            UDEKS_ROOT_CONSOLE_COLUMNS ||
-        udeks_root_console_set_cursor(input_column, input_row, 1) !=
+    if (udeks_root_console_set_cursor(input_column, input_row, 1) !=
             UDEKS_ROOT_CONSOLE_OK) {
         return UDEKS_ROOT_TERMINAL_RENDER;
     }

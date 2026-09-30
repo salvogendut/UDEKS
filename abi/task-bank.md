@@ -8,6 +8,13 @@ at `$4000-$7FFF`. Each physical bank reserves `$E2E2-$E2FF` for its own saved
 `$02-$1F` cc65 zero-page image. Selecting the MMU profile therefore selects the
 context without consuming common RAM.
 
+Storage 0.1 reserves bank-1 `$1200-$1FFF`, `$8A00-$8FFF`, `$9A00-$9FFF`,
+and `$E000-$E1FF` for its separately linked C service and private stack. These
+do not overlap the task-2 `$0C00-$11FF` stack, retained cache, or ush stack.
+The existing loader already bounds persistent image+BSS to `$0A00` bytes at
+`$9000`; the secondary packager checks the same limit before placing storage
+at `$9A00`. See [the storage placement](../docs/STORAGE-0.1.md).
+
 The `none` runtime places its two-byte software-stack pointer at zero-page
 `$02-$03`. Because the saved context begins with zero page `$02`, context
 bytes 0 and 1 must be initialized to `$EFF0`. This offset is an executable ABI

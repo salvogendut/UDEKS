@@ -69,6 +69,22 @@ def bootfs_with_ush(executable: bytes) -> bytes:
 
 
 class BuildD71Tests(unittest.TestCase):
+    def test_hello_is_raw_seq_without_prg_load_address_on_both_formats(self):
+        data = b'HELLO UDEKS\n'
+        image = build_image(stage0(), b'', b'', b'', hello=data)
+        for view in (image, d64_compatibility_image(image)):
+            entry = sector_offset(18, 1) + 2
+            self.assertEqual(view[entry], 0x81)
+            self.assertEqual(view[entry+3:entry+8], b'HELLO')
+            offset = sector_offset(view[entry+1], view[entry+2])
+            self.assertEqual(view[offset:offset+2], bytes((0, len(data)+1)))
+            self.assertEqual(view[offset+2:offset+2+len(data)], data)
+
+    def test_rejects_empty_seq_and_unsupported_file_type(self):
+        for content, file_type in ((b'', 0x81), (b'x', 0x83)):
+            with self.assertRaises(ValueError):
+                install_prg_file(blank_d71(), 'BAD', content, file_type=file_type)
+
     def test_blank_image_has_standard_size_and_directory(self):
         image = blank_d71()
         self.assertEqual(len(image), 349696)

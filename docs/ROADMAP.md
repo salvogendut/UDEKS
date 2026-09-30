@@ -43,6 +43,16 @@ independent emulator gates; neither substitutes for physical testing.
 
 ### 1. Storage 0.1: read files from an external disk
 
+**Current checkpoint (2026-09-30):** `mount 8 /mnt`, `ls /mnt`,
+`cat /mnt/HELLO`, and `umount /mnt` are implemented. Normal disk images
+include `HELLO`; all previous commands remain, with `ls`/`cat`/`mount`/`umount`
+sharing one nonresident C executable. VICE shell tests cover errors and
+graphics-active use; the 1986 raw-IEC keyboard workflow passes too. The user
+has separately confirmed the earlier mount/list slice after restarting 1986.
+**Next: test this file-reading image**, then close the tiny-file EOF and
+media-change/recovery gates and qualify physical C128 + PI1541. This is not
+full Storage 0.1 acceptance. See [the test instructions](STORAGE-0.1.md#interactive-file-checkpoint--2026-09-30).
+
 Deliver the smallest useful vertical slice through a **C storage service**,
 without moving device policy into the resident kernel. Define bank-aware
 buffer ownership and a mount/handle contract, implement baseline IEC access

@@ -158,10 +158,12 @@ def sector_is_free(image: bytes, track: int, sector: int) -> bool:
     return bool(image[entry + 1 + sector // 8] & (1 << (sector & 7)))
 
 
-def install_prg_file(image: bytearray, name: str, data: bytes) -> None:
-    """Install one closed PRG on side one so the D64 view also contains it."""
+def install_prg_file(image: bytearray, name: str, data: bytes, *, file_type: int = 0x82) -> None:
+    """Install a closed PRG (or raw-byte SEQ) on side one, also visible in D64."""
+    if file_type not in (0x81, 0x82):
+        raise ValueError("disk file must be closed SEQ or PRG")
     if not data:
-        raise ValueError("disk PRG is empty")
+        raise ValueError("disk PRG/SEQ is empty")
     try:
         encoded = name.upper().encode("ascii")
     except UnicodeEncodeError as error:
@@ -205,7 +207,7 @@ def install_prg_file(image: bytearray, name: str, data: bytes) -> None:
         image[offset + 2 : offset + 2 + len(chunk)] = chunk
         mark_used(image, track, sector)
 
-    image[entry] = 0x82
+    image[entry] = file_type
     image[entry + 1] = available[0][0]
     image[entry + 2] = available[0][1]
     image[entry + 3 : entry + 19] = encoded.ljust(16, b"\xa0")
@@ -665,6 +667,8 @@ def build_image(
     scheduler_overlay: bytes = b"",
     scheduler_tail_installer: bytes = b"",
     busy_sprite: bytes = b"",
+    secondary_bootfs: bool = False,
+    hello: bytes | None = None,
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -685,7 +689,11 @@ def build_image(
     staged_z80 = bytearray(z80.ljust(Z80_SIZE, b"\x00"))
     install_probe(staged_kernel, probe)
     install_crt0(staged_kernel, crt0)
-    install_bootfs(staged_z80, staged_kernel, bootfs)
+    if secondary_bootfs:
+        from build_storage import install_bootfs as install_secondary_bootfs
+        scheduler_overlay = install_secondary_bootfs(scheduler_overlay, bootfs)
+    else:
+        install_bootfs(staged_z80, staged_kernel, bootfs)
     install_module(staged_kernel, module)
     validate_ush(bootfs, ush)
     install_task_request_gateway(staged_kernel, task_request_gateway)
@@ -762,6 +770,8 @@ def build_image(
         install_prg_file(
             image, SCHEDULER_OVERLAY_NAME, scheduler_overlay
         )
+    if hello is not None:
+        install_prg_file(image, "HELLO", hello, file_type=0x81)
     return bytes(image)
 
 
@@ -787,12 +797,15 @@ def main() -> None:
     parser.add_argument("--map", type=Path, required=True)
     parser.add_argument("--z80", type=Path, required=True)
     parser.add_argument("--bootfs", type=Path)
+    parser.add_argument("--secondary-bootfs", action="store_true",
+                        help="deliver bootfs directly in bank 1 via SCHEDOVR")
     parser.add_argument("--module", type=Path)
     parser.add_argument("--task-loader", type=Path)
     parser.add_argument("--task-bank-gateway", type=Path)
     parser.add_argument("--task-request-gateway", type=Path)
     parser.add_argument("--bootfs-request-service", type=Path)
     parser.add_argument("--ush", type=Path)
+    parser.add_argument("--hello", type=Path, help="include a raw SEQ HELLO file for cat")
     parser.add_argument(
         "--d64-output",
         type=Path,
@@ -827,6 +840,8 @@ def main() -> None:
             args.scheduler_overlay.read_bytes(),
             args.scheduler_tail_installer.read_bytes(),
             args.busy_sprite.read_bytes(),
+            args.secondary_bootfs,
+            None if args.hello is None else args.hello.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

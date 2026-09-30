@@ -35,7 +35,7 @@
 #define UDEKS_TREQ_PAYLOAD               14u
 
 #define UDEKS_TASK_REQUEST_ABI_MAJOR     0u
-#define UDEKS_TASK_REQUEST_ABI_MINOR     4u
+#define UDEKS_TASK_REQUEST_ABI_MINOR     5u
 
 #define UDEKS_TREQ_STATE_IDLE            0u
 #define UDEKS_TREQ_STATE_REQUEST         1u
@@ -69,6 +69,11 @@
 #define UDEKS_TREQ_POLL_READABLE         1u
 #define UDEKS_TREQ_POLL_TIMEOUT_MAX    600u
 #define UDEKS_TREQ_POLL_FOREVER     0xFFFFu
+
+/* ABI 0.5: one read-only IEC mount. MOUNT: device byte + literal "/mnt";
+ * UMOUNT: literal "/mnt". Descriptor and flags are zero for both. */
+#define UDEKS_TREQ_OP_MOUNT             17u
+#define UDEKS_TREQ_OP_UMOUNT            18u
 
 #define UDEKS_TREQ_EXEC_COMPLETE         0u
 #define UDEKS_TREQ_EXEC_FOREGROUND       1u
@@ -116,7 +121,9 @@
 #define UDEKS_TREQ_EAGAIN                11u
 #define UDEKS_TREQ_ENOMEM                12u
 #define UDEKS_TREQ_EBUSY                 16u
+#define UDEKS_TREQ_ENODEV                19u
 #define UDEKS_TREQ_ENOTDIR               20u
+#define UDEKS_TREQ_EISDIR                21u
 #define UDEKS_TREQ_EINVAL                22u
 #define UDEKS_TREQ_EMFILE                 24u
 #define UDEKS_TREQ_ENOSYS                38u

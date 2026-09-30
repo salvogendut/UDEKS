@@ -6,6 +6,40 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
+## Current feature handover — 2026-09-30
+
+The active worktree is `build/storage-iec-read-only`, branch
+`storage-0.1-iec-read-only`, issue #15. Storage 0.1 is the priority in
+[the roadmap](docs/ROADMAP.md). The native IEC C service now links separately,
+boots through secondary delivery, and serves mount/directory/file-read/unmount requests.
+See [STORAGE-0.1.md](docs/STORAGE-0.1.md) for placements and live probes.
+`mount 8 /mnt`, `ls /mnt`, `cat /mnt/HELLO`, and `umount /mnt` pass through the normal
+shell on VICE true-drive 1541/D64 and 1571/D71, including error returns,
+remount, bootfs fallback, and xclock/xwave-active listings. The shell probe
+feeds keyboard events including Return: directly seeding the submitted-line
+record skips the terminal newline and falsely breaks silent commands.
+
+Bootfs now arrives directly in bank 1 through `SCHEDOVR`, not the old
+11,708-byte staging container. `ls`/`cat`/`mount`/`umount` share one immutable multicall
+UDEX extent; all previous programs remain. Runtime bootfs is still bounded
+to `$A000-$D0FF`: 12,307 of 12,544 bytes used. The recovered bank-0 staging space is not extra
+runtime bootfs space. Keep resident and graphics allocations fixed.
+
+The previous 1986 failure was a backend-selection issue: `real_disk_drive=1`
+requires a full quit/reopen in sibling revision `3979786`, not just reset.
+The user confirmed mount/list after restarting. The new raw-IEC harness also
+passes native boot, keyboard mount/list/cat/missing-file/unmount without
+modifying emulator sources. Runtime storage does not use KERNAL disk traps.
+
+Next: user test of the new file-reading image; resolve tiny-file EOF, test
+media changes/recovery, and complete C128/PI1541 qualification. Exact VICE
+reads pass for 2, 24 and 515 bytes, including NULs and a sector boundary.
+`storage_service_probe.py --tiny-files` deliberately remains a strict failing
+reproducer for the one-byte DOS stream discrepancy; do not silently trim
+bytes or call the entire feature qualified. Empty-file semantics are also
+unqualified. See the storage document for evidence and the DOS source clue.
+Do not expand benchmarks or optimize IEC before completing this feature.
+
 ## Historical Tasking 0.1 decision
 
 The next milestone is **Tasking 0.1**. Do not add another application or grow

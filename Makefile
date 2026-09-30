@@ -233,6 +233,7 @@ USER_XWAVE_UDEX := $(BUILD_USER)/xwave.udx
 USER_BOOTFS := $(BUILD_USER)/bootfs.img
 
 include mk/window-cache.mk
+include mk/storage.mk
 
 .PHONY: all 8502 z80 z80-asm bench bench-8502 bench-z80 bench-irq \
 	bench-irq-8502 bench-irq-z80 bench-irq-service \
@@ -757,13 +758,14 @@ $(USER_XWAVE_UDEX): $(USER_XWAVE_BIN) tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x1200 \
 		--entry-address 0x1200 --bss-size 0x0225 --flags 0x02 $< $@
 
-$(USER_BOOTFS): $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_LS_UDEX) \
+$(USER_BOOTFS): $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) \
 		$(USER_USH_UDEX) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) \
 		tools/build_bootfs.py
-	$(PYTHON) tools/build_bootfs.py --max-size 0x2DBC \
+	$(PYTHON) tools/build_bootfs.py --max-size 0x3100 \
 		--entry cowsay=$(USER_COWSAY_UDEX) \
 		--entry date=$(USER_DATE_UDEX) \
-		--entry ls=$(USER_LS_UDEX) \
+		--entry ls=$(USER_FILETOOLS_UDEX) --entry cat=$(USER_FILETOOLS_UDEX) \
+		--entry mount=$(USER_FILETOOLS_UDEX) --entry umount=$(USER_FILETOOLS_UDEX) \
 		--entry ush=$(USER_USH_UDEX) \
 		--entry xclock=$(USER_XCLOCK_UDEX) \
 		--entry xwave=$(USER_XWAVE_UDEX) $@
@@ -1385,7 +1387,8 @@ $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS) &: \
 		--activation-context-map $(TASK_CONTEXT_MAP) \
 		--activation-tail $(TASK_SWITCH_TAIL_BIN) \
 		--activation-yield-handler $(TASK_YIELD_HANDLER_BIN) \
-		--activation-vectors $(TASK_CONTEXT_VECTORS_BIN) $(WINDOW_CACHE_OVERLAY_FLAGS)
+		--activation-vectors $(TASK_CONTEXT_VECTORS_BIN) $(WINDOW_CACHE_OVERLAY_FLAGS) \
+		--storage $(STORAGE_BUILD) --ush $(USER_USH_BIN)
 
 $(TASK_SWITCH_ACTIVATION_OBJ): src/boot/task-switch-activation.s \
 		$(SCHEDULER_OVERLAY_CONSTANTS) | $(BUILD_BOOT)
@@ -1878,13 +1881,13 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
-		tools/build_d71.py
+		tools/build_d71.py bench/iec-directory/hello.txt
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(CRT0_BIN) --probe $(PROBE_BIN) \
 		--map $(KERNEL_MAP) \
-		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) \
+		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) --secondary-bootfs \
 		--scheduler-tail-installer $(SCHEDULER_TAIL_INSTALLER_BIN) \
 		--busy-sprite $(VIC_BUSY_SPRITE_BIN) \
 		--capability $(CAPABILITY_BIN) \
@@ -1899,6 +1902,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--task-request-gateway $(TASK_REQUEST_GATE_BIN) \
 		--bootfs-request-service $(BOOTFS_REQUEST_SERVICE_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) \
+		--hello bench/iec-directory/hello.txt \
 		--d64-output $(BOOT_D64) $(BOOT_D71)
 
 $(TASK_EXIT_PROBE_D71) $(TASK_EXIT_PROBE_D64) &: $(STAGE0_BIN) \
@@ -1917,7 +1921,7 @@ $(TASK_EXIT_PROBE_D71) $(TASK_EXIT_PROBE_D64) &: $(STAGE0_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(CRT0_BIN) --probe $(PROBE_BIN) \
 		--map $(KERNEL_MAP) \
-		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) \
+		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) --secondary-bootfs \
 		--scheduler-tail-installer $(SCHEDULER_TAIL_INSTALLER_BIN) \
 		--busy-sprite $(VIC_BUSY_SPRITE_BIN) \
 		--capability $(CAPABILITY_BIN) \
@@ -1949,7 +1953,7 @@ $(TASK_WAITPID_PROBE_D71) $(TASK_WAITPID_PROBE_D64) &: $(STAGE0_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(CRT0_BIN) --probe $(PROBE_BIN) \
 		--map $(KERNEL_MAP) \
-		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) \
+		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) --secondary-bootfs \
 		--scheduler-tail-installer $(SCHEDULER_TAIL_INSTALLER_BIN) \
 		--busy-sprite $(VIC_BUSY_SPRITE_BIN) \
 		--capability $(CAPABILITY_BIN) \
@@ -1981,7 +1985,7 @@ $(TASK_SPAWN_PROBE_D71) $(TASK_SPAWN_PROBE_D64) &: $(STAGE0_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(CRT0_BIN) --probe $(PROBE_BIN) \
 		--map $(KERNEL_MAP) \
-		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) \
+		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) --secondary-bootfs \
 		--scheduler-tail-installer $(SCHEDULER_TAIL_INSTALLER_BIN) \
 		--busy-sprite $(VIC_BUSY_SPRITE_BIN) \
 		--capability $(CAPABILITY_BIN) \
@@ -2013,7 +2017,7 @@ $(TASK_SLEEP_PROBE_D71) $(TASK_SLEEP_PROBE_D64) &: $(STAGE0_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(CRT0_BIN) --probe $(PROBE_BIN) \
 		--map $(KERNEL_MAP) \
-		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) \
+		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) --secondary-bootfs \
 		--scheduler-tail-installer $(SCHEDULER_TAIL_INSTALLER_BIN) \
 		--busy-sprite $(VIC_BUSY_SPRITE_BIN) \
 		--capability $(CAPABILITY_BIN) \
@@ -2044,7 +2048,7 @@ $(TASK_POLL_PROBE_D71) $(TASK_POLL_PROBE_D64) &: $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(CRT0_BIN) --probe $(PROBE_BIN) --map $(KERNEL_MAP) \
-		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) \
+		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) --secondary-bootfs \
 		--scheduler-tail-installer $(SCHEDULER_TAIL_INSTALLER_BIN) \
 		--busy-sprite $(VIC_BUSY_SPRITE_BIN) \
 		--capability $(CAPABILITY_BIN) \
@@ -2075,7 +2079,7 @@ $(TASK_CANCEL_PROBE_D71) $(TASK_CANCEL_PROBE_D64) &: $(STAGE0_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(CRT0_BIN) --probe $(PROBE_BIN) \
 		--map $(KERNEL_MAP) \
-		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) \
+		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) --secondary-bootfs \
 		--scheduler-tail-installer $(SCHEDULER_TAIL_INSTALLER_BIN) \
 		--busy-sprite $(VIC_BUSY_SPRITE_BIN) \
 		--capability $(CAPABILITY_BIN) \
@@ -2111,7 +2115,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--crt0 $(PANIC_PROBE_CRT0_BIN) \
 		--probe $(PANIC_PROBE_PROBE_BIN) \
 		--map $(PANIC_PROBE_MAP) \
-		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) \
+		--scheduler-overlay $(SCHEDULER_OVERLAY_PAYLOAD) --secondary-bootfs \
 		--scheduler-tail-installer $(SCHEDULER_TAIL_INSTALLER_BIN) \
 		--busy-sprite $(VIC_BUSY_SPRITE_BIN) \
 		--capability $(CAPABILITY_BIN) \
@@ -2130,6 +2134,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 
 check:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
+	$(PYTHON) -m py_compile tools/build_storage.py tools/storage_service_probe.py tools/storage_shell_probe.py
 	$(PYTHON) -m py_compile tools/ihx_to_bin.py tools/bin_to_prg.py \
 		tools/bench_decode.py tools/irq_probe_decode.py \
 		tools/irq_service_decode.py tools/context_decode.py \

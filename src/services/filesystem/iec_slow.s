@@ -12,6 +12,8 @@
         .setcpu "6502"
         .export _udeks_iec_open_directory
         .export _udeks_iec_open_file
+        .export _udeks_iec_prepare_file, _udeks_iec_open_status
+        .export _udeks_iec_talk_file, _udeks_iec_untalk
         .export _udeks_iec_filename
         .export _udeks_iec_filename_length
         .export _udeks_iec_read_byte
@@ -41,6 +43,8 @@ iec_lines:      .res 1
 iec_device:     .res 1
 iec_secondary:  .res 1
 iec_open:       .res 1
+iec_pending:    .res 1       ; prepared channel 2 survives UNTALK/status reads
+iec_defer:      .res 1
 _udeks_iec_filename_length: .res 1
 _udeks_iec_filename: .res 16
 iec_name_index: .res 1
@@ -56,7 +60,11 @@ _udeks_iec_probe_subphase: .res 1
 _udeks_iec_probe_bus: .res 1
 _udeks_iec_probe_lines: .res 1
 
+        .ifdef UDEKS_STORAGE_MODULE
+        .segment "IECCODE"
+        .else
         .segment "CODE"
+        .endif
 
 ; Only our three IEC output bits change. The read/modify/write is atomic
 ; against the VIC graphics gateway's own protected DD00 bank selection.
@@ -261,6 +269,11 @@ send_byte:
 ; Start an ATN command sequence. Keep CLK low until the first command byte;
 ; this is the same slow-serial initial posture as the C128 KERNAL.
 attention:
+        ; Recovery may follow a timeout which already restored 2 MHz.
+        ; Re-enter slow-serial timing without replacing the saved caller speed.
+        lda SPEED_REG
+        and #$fe
+        sta SPEED_REG
         jsr clock_low
         jsr data_high
         jsr atn_low
@@ -284,6 +297,13 @@ _udeks_iec_open_directory:
 ; A=device, with a caller-filled PETSCII filename. Channel 2 is independent
 ; of the command channel and works for both PRG and SEQ file reads.
 _udeks_iec_open_file:
+        ldx #0
+        stx iec_defer
+        jmp prepare_file
+_udeks_iec_prepare_file:
+        ldx #1
+        stx iec_defer
+prepare_file:
         pha
         lda _udeks_iec_filename_length
         beq @bad_name
@@ -387,14 +407,49 @@ open_common:
         ; A listener needs to observe a released bus between command phases.
         ; The stock C128 release path leaves a settling gap before next ATN.
         jsr delay_1ms
+        lda iec_secondary
+        beq @start_talk
+        lda #1
+        sta iec_pending
+        lda iec_defer
+        beq @start_talk
+        lda #IEC_OK
+        rts
+@start_talk:
+        lda iec_secondary
+        jmp talk_channel
+@timeout:
+        lda #IEC_TIMEOUT
+@failed:
+        sta iec_status
+        jsr release_bus
+        lda iec_saved_speed
+        sta SPEED_REG
+        lda iec_status
+        rts
+
+; The status stream is read while file channel 2 stays open, before TALK 2.
+; DOS status interpretation is C policy, not part of this electrical driver.
+_udeks_iec_open_status:
+        lda #15
+        bne talk_channel
+_udeks_iec_talk_file:
+        lda #2
+talk_channel:
+        pha
         jsr attention
         lda iec_device
         ora #$40              ; TALK
         clc
         jsr send_byte
-        bne @failed
+        beq :+
+        tax
+        pla
+        txa
+        jmp @failed
+:
         inc _udeks_iec_probe_phase
-        lda iec_secondary
+        pla
         ora #$60              ; selected secondary channel
         clc
         jsr send_byte
@@ -522,11 +577,13 @@ _udeks_iec_read_byte:
 
 _udeks_iec_close:
         lda iec_open
+        ora iec_pending
         bne @active
         lda #IEC_BAD_STATE
         rts
 @active: lda #$00
         sta iec_open
+        sta iec_pending
         jsr attention
         lda #$5f              ; UNTALK
         clc
@@ -553,5 +610,18 @@ _udeks_iec_close:
         jsr release_bus
         lda iec_saved_speed
         sta SPEED_REG
+        lda iec_status
+        rts
+
+; End TALK without closing the prepared file or restoring transaction speed.
+_udeks_iec_untalk:
+        lda #0
+        sta iec_open
+        jsr attention
+        lda #$5f
+        clc
+        jsr send_byte
+        sta iec_status
+        jsr release_command
         lda iec_status
         rts

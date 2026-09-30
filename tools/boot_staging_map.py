@@ -111,7 +111,8 @@ class StagedRegion:
 
 
 def staged_regions(
-    emitted: dict[str, int], shadow_start: int | None = None
+    emitted: dict[str, int], shadow_start: int | None = None,
+    secondary_bootfs: bool = False,
 ) -> list[StagedRegion]:
     """Staging regions with the installer's actual copied lengths."""
     emitted = dict(emitted)
@@ -187,6 +188,8 @@ def staged_regions(
             "load..stage1",
         ),
     ]
+    if secondary_bootfs:
+        regions = [region for region in regions if region.name != "bootfs tail staging"]
     delivery_size = emitted.get("boot_delivery", 0)
     if delivery_size:
         if shadow_start is None:
@@ -396,6 +399,7 @@ def analyze(
     map_text: str,
     stage0: bytes,
     emitted: dict[str, int],
+    secondary_bootfs: bool = False,
 ) -> dict[str, object]:
     shadow_start, shadow_end = shadow_bounds(map_text)
     probe_start, probe_end = segment_bounds(map_text, "PROBECODE")
@@ -403,7 +407,7 @@ def analyze(
     emitted = dict(emitted)
     emitted["probe"] = probe_end - probe_start + 1
     emitted["crt0"] = startup_end - startup_start + 1
-    regions = staged_regions(emitted, shadow_start)
+    regions = staged_regions(emitted, shadow_start, secondary_bootfs)
     holes = free_holes(shadow_start, stage0_end(stage0), regions)
     sizes = object_sizes(map_text)
     largest = max((end - start + 1 for _, start, end in holes), default=0)
@@ -454,12 +458,15 @@ def main() -> None:
         "--stage0", type=Path, default=ROOT / "build/boot/stage0.bin"
     )
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--legacy-bootfs", action="store_true",
+                        help="audit an older split-staging build, not current secondary delivery")
     args = parser.parse_args()
     try:
         result = analyze(
             args.map.read_text(encoding="utf-8"),
             args.stage0.read_bytes(),
             artifact_sizes(ROOT),
+            secondary_bootfs=not args.legacy_bootfs,
         )
     except (OSError, ValueError) as error:
         raise SystemExit(f"boot staging map failed: {error}") from error
