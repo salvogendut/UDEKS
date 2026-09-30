@@ -13,8 +13,12 @@ Issue [#26](https://github.com/salvogendut/UDEKS/issues/26), branch
 PR #25 (`d13a5c2`). Root-namespace runtime integration is implemented.
 Main and historical release images are unchanged. The user reports
 "everything runs beautifully"; the namespace implementation is committed and
-pushed as `95aa2cc`, with PR #28 open. The user now authorizes merging after
-recording the decision to defer scripting. This is functional acceptance;
+pushed as `95aa2cc`; PR #28 merged as `b138b61` after recording the decision
+to defer scripting. Published D64/D71 snapshots and checksums now live at
+`build/udeks.d64`, `build/udeks.d71`, and `build/SHA256SUMS`. Fresh builds stay
+under `build/boot/`; `make publish-boot` explicitly refreshes the snapshots.
+README links to the categorized `docs/README.md` index instead of a flat
+historical document list. This is functional acceptance;
 the latest feedback does not identify the test platform.
 
 The system disk (default device 8; bootstrap honors a valid boot-device byte)

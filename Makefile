@@ -252,7 +252,7 @@ $(BUILD_DIR)/disk-exec/test.d71: $(BOOT_D71) $(USER_COWSAY_UDEX) tools/disk_exec
 	bench-context-switch-c \
 	bench-kernel bench-kernel-8502 \
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
-	boot panic-probe framebuffer-assets user-sources user-programs \
+	boot publish-boot panic-probe framebuffer-assets user-sources user-programs \
 	task-state task-policy task-poll-policy task-scheduler task-switch-tail task-switch-activation scheduler-overlay placement-check \
 	placement-check-guard graphics-cache-placement \
 	shadow-probe capability-probe boot-console-probe task-yield-probe \
@@ -264,6 +264,13 @@ $(BUILD_DIR)/disk-exec/test.d71: $(BOOT_D71) $(USER_COWSAY_UDEX) tools/disk_exec
 all: 8502 z80 z80-asm
 
 boot: $(BOOT_D71) $(BOOT_D64)
+
+# Explicit publication: normal and experimental boot builds leave the
+# checked-in, qualified snapshots untouched.
+publish-boot: boot
+	cp $(BOOT_D64) $(BUILD_DIR)/udeks.d64
+	cp $(BOOT_D71) $(BUILD_DIR)/udeks.d71
+	cd $(BUILD_DIR) && sha256sum udeks.d64 udeks.d71 > SHA256SUMS
 
 # Standalone native-bus qualification, deliberately not linked into the
 # resident kernel before its storage-service placement is frozen.
@@ -2307,7 +2314,8 @@ clean:
 	@test "$(abspath $(BUILD_DIR))" = "$(abspath build)" || { \
 		echo "refusing to remove unexpected BUILD_DIR=$(BUILD_DIR)" >&2; exit 1; \
 	}
-	rm -rf -- $(BUILD_DIR)
+	@echo "Removing compiler outputs; preserving published disks and unrelated build directories."
+	rm -rf -- build/8502 build/z80 build/boot build/assets build/user build/storage build/window-cache build/bench
 
 help:
 	@printf '%s\n' \
@@ -2315,7 +2323,8 @@ help:
 		'make 8502       Build the freestanding 8502 scaffold' \
 		'make z80        Build the SDCC Z80 worker scaffold' \
 		'make z80-asm    Build the standalone RASM smoke image' \
-		'make boot       Build the native autoboot D71 image' \
+		'make boot       Build the native autoboot D64/D71 images in build/boot' \
+		'make publish-boot  Refresh the checked-in build/udeks.d64/.d71 and checksums' \
 		'make panic-probe  Build the bad-descriptor panic qualification D71' \
 		'make framebuffer-assets  Pack the VDC boot-splash source artwork' \
 		'make user-sources  Compile staged user-program C sources' \
@@ -2345,4 +2354,4 @@ help:
 		'make bench-memory-map  Build the native MMU profile/relocation probe' \
 		'make check      Run host-side tests' \
 		'make doctor     Report missing build tools' \
-		'make clean      Remove generated build artifacts'
+		'make clean      Remove compiler outputs; preserve published disks and worktrees'

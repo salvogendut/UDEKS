@@ -1,4 +1,9 @@
-/build/
+# Only the published boot images and their metadata belong in Git.
+/build/*
+!/build/udeks.d64
+!/build/udeks.d71
+!/build/SHA256SUMS
+!/build/README.md
 /dist/
 /.cache/
 __pycache__/

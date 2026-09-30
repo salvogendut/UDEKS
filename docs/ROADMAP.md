@@ -19,10 +19,11 @@ preloaded copy with an ordinary disk image. Keep bootstrap/recovery working;
 do not make a scripting language or expanded task capacity prerequisites.
 
 **Accepted baseline:** [#26 — system root and coherent filesystem namespace](https://github.com/salvogendut/UDEKS/issues/26),
-[PR #28](https://github.com/salvogendut/UDEKS/pull/28). Device 8 backs `/`,
+[PR #28](https://github.com/salvogendut/UDEKS/pull/28), merged as `b138b61`. Device 8 backs `/`,
 programs live under `/bin`, startup policy is `/etc/rc`, and `/mnt` is free
 for data media. Emulator qualification is recorded below; the user accepts
-the functional test (latest platform unspecified) and authorizes merging.
+the functional test (latest platform unspecified). Downloadable snapshots
+and checksums are available in [build/](../build/README.md).
 
 **Deferred by user decision:** general `.SH` execution
 ([#27](https://github.com/salvogendut/UDEKS/issues/27)). Keep the suffix reserved
