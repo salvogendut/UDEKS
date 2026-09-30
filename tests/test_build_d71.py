@@ -69,6 +69,15 @@ def bootfs_with_ush(executable: bytes) -> bytes:
 
 
 class BuildD71Tests(unittest.TestCase):
+    def test_ush_is_a_separate_raw_udex_on_both_formats(self):
+        from disk_shell_fixture import shell_file
+        program = ush_executable()
+        image = build_image(stage0(), b'', b'', b'',
+                            bootfs=bootfs_with_ush(program), ush=program)
+        for view in (image, d64_compatibility_image(image)):
+            _, offsets = shell_file(view)
+            self.assertEqual(bytes(view[p] for p in offsets), program)
+
     def test_hello_is_raw_seq_without_prg_load_address_on_both_formats(self):
         data = b'HELLO UDEKS\n'
         image = build_image(stage0(), b'', b'', b'', hello=data)

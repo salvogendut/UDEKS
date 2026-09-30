@@ -1,0 +1,450 @@
+PC=FF74 drive=EAB7 jam=0 speed=1 CIA2=07/3F bus=110 via=02/1A request=00/00/00 exit=0
+PC=E36E drive=E6E3 jam=0 speed=0 CIA2=C7/3F bus=111 via=00/1A request=00/00/00 exit=0
+PC=E49D drive=E9B3 jam=0 speed=0 CIA2=47/3F bus=111 via=04/1A request=00/00/00 exit=0
+PC=E3B7 drive=F565 jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E4A3 drive=FEF7 jam=0 speed=0 CIA2=47/3F bus=110 via=07/1A request=00/00/00 exit=0
+PC=E465 drive=EA5B jam=0 speed=0 CIA2=47/3F bus=101 via=08/1A request=00/00/00 exit=0
+PC=E4A8 drive=E979 jam=0 speed=0 CIA2=47/3F bus=110 via=07/1A request=00/00/00 exit=0
+PC=FF13 drive=EC2D jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=02/0A/00 exit=0
+PASS native disk shell source=1 error=0 device=8, uname works
+command ls /bin: PC=8FAA drive=EC34 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+Z80 WORKER : READY                                        [ OK ]
+STORAGE SERVICES : DEFERRED                               [ -- ]
+FILESYSTEM SERVICES : DEFERRED                            [ -- ]
+                                                                
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~> uname -a                                               
+UDEKS 0.1.0 c128 8502                                           
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~>                                                        
+command mount 8 /mnt: PC=2E8B drive=EC14 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+STORAGE SERVICES : DEFERRED                               [ -- ]
+FILESYSTEM SERVICES : DEFERRED                            [ -- ]
+                                                                
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~> uname -a                                               
+UDEKS 0.1.0 c128 8502                                           
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~>                                                        
+command ls /mnt: PC=C6C0 drive=EC19 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~> ls /mnt                                                
+SCHEDOVR                                                        
+HELLO                                                           
+USH                                                             
+DISKCOW                                                         
+BADUDEX                                                         
+SHORT                                                           
+ENTRY                                                           
+LIMIT                                                           
+UDEKS:~>                                                        
+command /mnt/diskcow hello: PC=8FF7 drive=EC2B jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~> ls /mnt                                                
+SCHEDOVR                                                        
+HELLO                                                           
+USH                                                             
+DISKCOW                                                         
+BADUDEX                                                         
+SHORT                                                           
+ENTRY                                                           
+LIMIT                                                           
+UDEKS:~> /mnt/diskcow hello                                     
+ _______                                                        
+< hello >                                                       
+ -------                                                        
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~>                                                        
+command /mnt/diskcow again: PC=2E7D drive=EC34 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+ENTRY                                                           
+LIMIT                                                           
+UDEKS:~> /mnt/diskcow hello                                     
+ _______                                                        
+< hello >                                                       
+ -------                                                        
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> /mnt/diskcow again                                     
+ _______                                                        
+< again >                                                       
+ -------                                                        
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~>                                                        
+command /mnt/badudex: PC=2A5A drive=EC3E jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+UDEKS:~> /mnt/diskcow hello                                     
+ _______                                                        
+< hello >                                                       
+ -------                                                        
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> /mnt/diskcow again                                     
+ _______                                                        
+< again >                                                       
+ -------                                                        
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> /mnt/badudex                                           
+/mnt/badudex: loader error                                      
+UDEKS:~>                                                        
+command /mnt/short: PC=5F8F drive=EC4D jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+< hello >                                                       
+ -------                                                        
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> /mnt/diskcow again                                     
+ _______                                                        
+< again >                                                       
+ -------                                                        
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> /mnt/badudex                                           
+/mnt/badudex: loader error                                      
+UDEKS:~> /mnt/short                                             
+/mnt/short: loader error                                        
+UDEKS:~>                                                        
+command /mnt/nofile: PC=5EA9 drive=EC34 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> /mnt/diskcow again                                     
+ _______                                                        
+< again >                                                       
+ -------                                                        
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> /mnt/badudex                                           
+/mnt/badudex: loader error                                      
+UDEKS:~> /mnt/short                                             
+/mnt/short: loader error                                        
+UDEKS:~> /mnt/nofile                                            
+Unknown command: /mnt/nofile                                    
+UDEKS:~>                                                        
+command /mnt/entry: PC=9183 drive=EC12 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=37
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> /mnt/diskcow again                                     
+ _______                                                        
+< again >                                                       
+ -------                                                        
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> /mnt/badudex                                           
+/mnt/badudex: loader error                                      
+UDEKS:~> /mnt/short                                             
+/mnt/short: loader error                                        
+UDEKS:~> /mnt/nofile                                            
+Unknown command: /mnt/nofile                                    
+UDEKS:~> /mnt/entry                                             
+UDEKS:~>                                                        
+command /mnt/limit: PC=C245 drive=EC17 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=7
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> /mnt/diskcow again                                     
+ _______                                                        
+< again >                                                       
+ -------                                                        
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> /mnt/badudex                                           
+/mnt/badudex: loader error                                      
+UDEKS:~> /mnt/short                                             
+/mnt/short: loader error                                        
+UDEKS:~> /mnt/nofile                                            
+Unknown command: /mnt/nofile                                    
+UDEKS:~> /mnt/entry                                             
+UDEKS:~> /mnt/limit                                             
+UDEKS:~>                                                        
+command /mnt/diskcow recovered: PC=5F19 drive=EC12 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> /mnt/badudex                                           
+/mnt/badudex: loader error                                      
+UDEKS:~> /mnt/short                                             
+/mnt/short: loader error                                        
+UDEKS:~> /mnt/nofile                                            
+Unknown command: /mnt/nofile                                    
+UDEKS:~> /mnt/entry                                             
+UDEKS:~> /mnt/limit                                             
+UDEKS:~> /mnt/diskcow recovered                                 
+ ___________                                                    
+< recovered >                                                   
+ -----------                                                    
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~>                                                        
+command cowsay bootfs: PC=2A4B drive=EC72 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+UDEKS:~> /mnt/entry                                             
+UDEKS:~> /mnt/limit                                             
+UDEKS:~> /mnt/diskcow recovered                                 
+ ___________                                                    
+< recovered >                                                   
+ -----------                                                    
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> cowsay bootfs                                          
+ ________                                                       
+< bootfs >                                                      
+ --------                                                       
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~>                                                        
+command cat /mnt/hello: PC=917B drive=EC0E jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+UDEKS:~> /mnt/diskcow recovered                                 
+ ___________                                                    
+< recovered >                                                   
+ -----------                                                    
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> cowsay bootfs                                          
+ ________                                                       
+< bootfs >                                                      
+ --------                                                       
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~>                                                        
+command umount /mnt: PC=9183 drive=EC31 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+ ___________                                                    
+< recovered >                                                   
+ -----------                                                    
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> cowsay bootfs                                          
+ ________                                                       
+< bootfs >                                                      
+ --------                                                       
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> umount /mnt                                            
+UDEKS:~>                                                        
+command ls /bin: PC=C242 drive=EC72 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+< bootfs >                                                      
+ --------                                                       
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> umount /mnt                                            
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~>                                                        
+command mount 8 /mnt: PC=2A3C drive=EC12 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=1
+        \   ^__^                                                
+         \  (oo)\_______                                        
+            (__)\       )\/\                                    
+                ||----w |                                       
+                ||     ||                                       
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> umount /mnt                                            
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+mount: failed                                                   
+UDEKS:~>                                                        
+command ls /bin: PC=6079 drive=EC2B jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+mount: failed                                                   
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~>                                                        
+command mount 8 /mnt: PC=6DE8 drive=EC14 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+mount: failed                                                   
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~>                                                        
+command cat /mnt/hello: PC=5EA4 drive=EC12 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+mount: failed                                                   
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~>                                                        
+command umount /mnt: PC=C6C0 drive=EC42 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+mount: failed                                                   
+UDEKS:~> ls /bin                                                
+cat                                                             
+cowsay                                                          
+date                                                            
+ls                                                              
+mount                                                           
+umount                                                          
+ush                                                             
+xclock                                                          
+xwave                                                           
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~> cat /mnt/hello                                         
+HELLO UDEKS                                                     
+UDEKS:~> umount /mnt                                            
+UDEKS:~>                                                        
+PASS native 1986 raw-IEC disk execution/argv/entry/BSS/limit/rejection/recovery/bootfs

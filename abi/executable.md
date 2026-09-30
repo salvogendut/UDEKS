@@ -72,5 +72,12 @@ The Storage 0.2 foreground loader accepts explicit `/mnt/NAME` for ordinary
 8502 UDEX images only (flags zero, load `$0200`, image+BSS <= `$0A00`). The
 DOS file is the exact UDEX byte stream, without a Commodore PRG load prefix.
 It stages into a FREE bank-1 task-2 allocation and checks exact file length,
-entry and allocation before replacing live bank-0 APP1. Persistent, managed
-and SPAWN loads remain bootfs-only. See [implementation and limits](../docs/STORAGE-0.2.md).
+entry and allocation before replacing live bank-0 APP1. Managed and SPAWN
+loads remain bootfs-only. See [implementation and limits](../docs/STORAGE-0.2.md).
+
+Boot 0.2 also allows init's persistent load to read `/mnt/USH` before child
+tasks exist. It requires flag `$01`, load and entry `$9000`, and the same
+`$0A00` image+BSS bound. The fixed scheduler entry cannot currently honor an
+offset entry for persistent tasks, so the loader rejects it. Init temporarily
+mounts the boot device, releases the mount after loading, and uses bootfs on
+failure; no new public syscall is introduced. See [boot policy](../docs/BOOT-STARTUP.md).

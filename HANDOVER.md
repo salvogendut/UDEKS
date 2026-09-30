@@ -8,7 +8,19 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 ## Current feature handover — 2026-09-30
 
-The active development worktree is now `build/storage-disk-exec`, branch
+The active worktree is `build/disk-shell-startup`, branch
+`boot-disk-shell-startup`, issue #20. PR #19 merged disk execution as `9ab1efd`
+after the user's 1986 and real-C128/PI1541 acceptance. The next candidate boots
+ordinary disk `USH` with bootfs recovery; see [Boot 0.2](docs/BOOT-STARTUP.md).
+Startup scripts remain the next feature, not implemented yet. The user now
+reports "it all looks good" for the new disk-shell candidate. Record positive
+manual acceptance without inferring the platform or repeating the same test
+request. Preserve the accepted disk-shell checkpoint before adding startup
+scripts; main stays at the accepted PR #19 baseline until merge approval.
+The bootstrap must preserve the still-live 42-byte scheduler activator at
+`$F68A` across storage calls. Kernel/shadow placements are unchanged.
+
+The previous accepted worktree is `build/storage-disk-exec`, branch
 `storage-0.2-disk-exec`, issue #18. PR #17 was merged by user authorization
 (`92a2e36`); physical Storage 0.1 results are still unrecorded. Foreground
 `/mnt/DISKCOW hello` now runs from disk, with failure/ownership checks and
@@ -18,8 +30,8 @@ The user now reports all suggested tests passed under 1986 after checkpoint
 `f0a9065`, followed by successful testing on real C128 + PI1541 and permission
 to continue. The requested manual hardware gate is complete; do not ask for
 the same acceptance again or infer exhaustive device/error-path coverage.
-Next: merge this slice, then disk-loaded shell/startup scripts; do not branch
-into optimization.
+This slice is now merged; continue disk-loaded shell/startup scripts, not
+optimization.
 The older hardware candidate is unchanged.
 
 The unchanged hardware candidate remains in `build/storage-iec-read-only`, branch

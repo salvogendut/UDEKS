@@ -12,7 +12,7 @@
 _udeks_shell_read_line = $c90f
 
 TASK_BANK_POLL          = $ff13
-PERSISTENT_LOAD         = $f910
+PERSISTENT_LOAD         = $fe80          ; private disk-first bootstrap entry
 LIFECYCLE_BOOTSTRAP     = $1c1e
 TASK_STATE              = $f285
 USH_STATE               = $f3d9

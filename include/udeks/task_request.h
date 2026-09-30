@@ -14,6 +14,10 @@
 #define UDEKS_USH_STATUS_MAGIC0          2u
 #define UDEKS_USH_STATUS_MAGIC1          3u
 #define UDEKS_USH_STATUS_MAGIC2          4u
+/* Bootstrap source diagnostic; not reset by the loaded shell. */
+#define UDEKS_USH_BOOT_SOURCE            5u /* 1 disk, 2 bootfs, 3 resident fallback */
+#define UDEKS_USH_BOOT_ERROR             6u /* disk attempt: UDEKS_TASK_* error */
+#define UDEKS_USH_BOOT_DEVICE            7u /* IEC unit used by bootstrap */
 
 #define UDEKS_USH_STATE_STARTING         0u
 #define UDEKS_USH_STATE_READY            0xA5u

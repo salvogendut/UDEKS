@@ -772,6 +772,10 @@ def build_image(
         )
     if hello is not None:
         install_prg_file(image, "HELLO", hello, file_type=0x81)
+    if ush:
+        # Raw UDEX, not a KERNAL PRG: the persistent loader validates the
+        # header before copying it into bank 1. Bootfs keeps a recovery copy.
+        install_prg_file(image, "USH", ush, file_type=0x81)
     return bytes(image)
 
 

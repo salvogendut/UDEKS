@@ -183,6 +183,10 @@ scheduler_install_end:
         .segment "CODE"
 
 gateway_start:
+        ; SETLFS for SCHEDOVR retained the actual boot unit in KERNAL $BA.
+        ; Capture it before retiring KERNAL; stage 0 has no spare bytes.
+        lda $ba
+        sta BOOT_CHAIN+20
         ; Confirm that the two nominal banks are physically distinct.
         lda #$00
         sta MMU_LCR_KERNEL_FLAT
@@ -630,7 +634,10 @@ task_disk_name_load:
         cmp #'/'
         bne task_bootfs_name
         lda task_load_mode
-        bne task_bootfs_name         ; only ordinary foreground disk programs
+        beq :+
+        cmp #1                      ; persistent bootstrap shell also uses disk
+        bne task_bootfs_name
+:
         jmp task_disk_open
 task_bootfs_name:
         ldy #$00
@@ -1005,7 +1012,20 @@ task_file_size_valid:
 :
 
 task_check_entry:
-        ; entry offset = entry - $0200 and must be below image size.
+        ; Persistent context entry is currently fixed at $9000. Reject a
+        ; different (even in-image) entry instead of silently ignoring it.
+        lda task_load_mode
+        cmp #1
+        bne task_check_entry_offset
+        lda TASK_HEADER+14
+        bne task_persistent_entry_bad
+        lda TASK_HEADER+15
+        cmp #$90
+        beq task_check_entry_offset
+task_persistent_entry_bad:
+        jmp task_bad_entry
+task_check_entry_offset:
+        ; entry offset = entry - load base and must be below image size.
         sec
         lda TASK_HEADER+14
         sbc #$00
@@ -1481,6 +1501,154 @@ task_file_size_lo:      .byte $00
 task_file_size_hi:      .byte $00
 task_load_mode:         .byte $00
 task_saved_zp:          .res $1e, $00
+; Storage requests reuse $F68A, where boot presentation left the one-shot
+; scheduler activator. Preserve that still-live image until init installs it.
+BOOT_ACTIVATION_SIZE = 42
+boot_saved_activation:  .res BOOT_ACTIVATION_SIZE, 0
 
 task_loader_end:
-        .assert task_loader_end <= $ff00, error, "task loader crosses MMU register hole"
+        .assert task_loader_end <= $fe80, error, "task loader reaches boot init gate"
+
+; Private bootstrap gate. The C mount/file policy remains in the storage
+; service; this mechanism only selects the initial persistent shell source.
+; F910/F913/F916/F919 and every public request gate remain unchanged.
+        .segment "BOOTINIT"
+boot_shell_entry:
+        .assert boot_shell_entry = $fe80, error, "boot shell gate moved"
+        php
+        sei
+        ldx #BOOT_ACTIVATION_SIZE-1
+boot_shell_save_activation:
+        lda $f68a,x
+        sta boot_saved_activation,x
+        dex
+        bpl boot_shell_save_activation
+        lda #0
+        sta MMU_LCR_WORKER_FLAT
+        ldx #5
+boot_shell_identity:
+        lda task_lookup_bootfs+3,x
+        cmp task_lookup_signature,x
+        bne boot_shell_missing
+        dex
+        bpl boot_shell_identity
+        jsr boot_shell_policy
+boot_shell_return:
+        sta MMU_LCR_KERNEL_IO
+        tay
+        ldx #BOOT_ACTIVATION_SIZE-1
+boot_shell_restore_activation:
+        lda boot_saved_activation,x
+        sta $f68a,x
+        dex
+        bpl boot_shell_restore_activation
+        tya
+        plp
+        cmp #0                      ; init tests Z after the call
+        rts
+boot_shell_missing:
+        lda #3
+        sta BOOT_SHELL_SOURCE
+        lda #TASK_BAD_BOOTFS
+        sta BOOT_SHELL_ERROR
+        lda #1
+        bne boot_shell_return
+boot_shell_request:
+        sta MMU_LCR_KERNEL_IO
+        jsr task_disk_request
+        lda DISK_REQUEST+12
+        sta MMU_LCR_WORKER_FLAT
+        rts
+boot_shell_load:
+        sta MMU_LCR_KERNEL_IO
+        jsr task_load_persistent
+        sta MMU_LCR_WORKER_FLAT
+        rts
+boot_shell_disk_name: .byte "/mnt/USH", 0
+boot_shell_fallback_name: .byte "ush", 0
+        .assert * <= $ff00, error, "boot shell gate crosses MMU register hole"
+
+        .segment "TASKLOOKUP"
+BOOT_SHELL_SOURCE = $f3dd
+BOOT_SHELL_ERROR = $f3de
+BOOT_SHELL_DEVICE = $f3df
+boot_shell_policy:
+        lda #0
+        sta BOOT_SHELL_SOURCE
+        sta BOOT_SHELL_ERROR
+        ldx #37
+boot_shell_clear_request:
+        sta DISK_REQUEST,x
+        dex
+        bpl boot_shell_clear_request
+        ldx #5
+boot_shell_signature:
+        lda task_disk_signature,x
+        sta DISK_REQUEST,x
+        dex
+        bpl boot_shell_signature
+        lda BOOT_CHAIN+20
+        cmp #8
+        bcc boot_shell_default_device
+        cmp #12
+        bcc boot_shell_device_ready
+boot_shell_default_device:
+        lda #8
+boot_shell_device_ready:
+        sta BOOT_SHELL_DEVICE
+        sta DISK_PAYLOAD
+        ldx #3
+boot_shell_mount_path:
+        lda task_disk_mount,x
+        sta DISK_PAYLOAD+1,x
+        dex
+        bpl boot_shell_mount_path
+        lda #5
+        sta DISK_REQUEST+10
+        lda #17                     ; temporary mount, before any task runs
+        jsr boot_shell_request
+        beq boot_shell_mounted
+        lda #TASK_IO_ERROR
+        sta BOOT_SHELL_ERROR
+        bne boot_shell_fallback
+boot_shell_mounted:
+        lda #<boot_shell_disk_name
+        ldx #>boot_shell_disk_name
+        jsr boot_shell_load
+        lda TASK_ERROR
+        sta BOOT_SHELL_ERROR
+        ; The loader closes its file and restores our request. Drop the
+        ; temporary mount so later startup/user policy owns normal mounts.
+        ldx #3
+boot_shell_unmount_path:
+        lda task_disk_mount,x
+        sta DISK_PAYLOAD,x
+        dex
+        bpl boot_shell_unmount_path
+        lda #4
+        sta DISK_REQUEST+10
+        lda #18
+        jsr boot_shell_request
+        beq :+
+        lda #TASK_IO_ERROR
+        sta BOOT_SHELL_ERROR
+:
+        lda BOOT_SHELL_ERROR
+        bne boot_shell_fallback
+        lda #1
+        sta BOOT_SHELL_SOURCE
+        lda #0
+        tax
+        rts
+boot_shell_fallback:
+        lda #2
+        sta BOOT_SHELL_SOURCE
+        lda #<boot_shell_fallback_name
+        ldx #>boot_shell_fallback_name
+        jsr boot_shell_load
+        cmp #0
+        beq boot_shell_complete
+        ldx #3
+        stx BOOT_SHELL_SOURCE
+boot_shell_complete:
+        rts

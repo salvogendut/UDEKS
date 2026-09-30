@@ -26,7 +26,7 @@ See [LICENSE](LICENSE).
 > UDEKS is an experimental kernel prototype in active bring-up. It has a
 > qualified native boot path, interactive console, dual-CPU worker protocol,
 > and initial graphical applications, but it is not yet a general-purpose
-> operating system: general filesystems, disk-loaded startup, process
+> operating system: general filesystems, script-driven startup, process
 > isolation, and dynamic module loading remain future work.
 
 <p align="center">
@@ -81,8 +81,9 @@ See [LICENSE](LICENSE).
   `date` reads or sets the BASIC `TI`/`TI$`-compatible clock also used by
   `xclock`, while `ls`
   exercises the first Linux-shaped `open`/`getdents`/`stat`/`close` boundary.
-  A `/bin/ush` is also loaded in bank 1 and cooperatively polled through the
-  public task/stream ABI. It now owns terminal lines and runs `echo`, `help`,
+  Init now first loads the ordinary disk file `USH` into bank 1, using the
+  embedded `/bin/ush` as recovery. It runs through the public task/stream ABI,
+  owns terminal lines and runs `echo`, `help`,
   and `uname` natively, forwarding commands still awaiting extraction through
   a bounded compatibility request.
   Task Request ABI 0.4 adds non-consuming stdin `POLL`: idle `ush` sleeps
@@ -103,6 +104,10 @@ See [LICENSE](LICENSE).
   bootfs fallback retained. VICE D64/D71 and native 1986 tests pass; the user
   also confirmed successful manual tests in 1986 and on a real C128 + PI1541.
   [Try the disk-execution image](docs/STORAGE-0.2.md#try-it).
+- Boot 0.2 adds disk-first shell boot, with missing/invalid-shell recovery and
+  temporary bootstrap mount cleanup. Changing only the DOS `USH` file changes
+  the running shell; startup-script execution is next, not implemented yet.
+  [Test the new boot candidate](docs/BOOT-STARTUP.md#test-it).
 
 ## Hardware model
 
@@ -161,14 +166,13 @@ tools/                Deterministic build utilities
 user/                 Standalone program sources and user-side ABI headers
 ```
 
-`make boot` produces a native-autoboot D71 containing the resident 8502 kernel,
-the Z80 worker, two transitional fixed-size graphical application images, and
-a read-only boot filesystem. The UDEX loader resolves standalone programs from
-that filesystem: transient commands such as `cowsay` are reclaimed on exit,
-while init allocates the persistent `/bin/ush` task in bank 1. General process
-address spaces, disk-backed filesystems, and loader-managed graphical programs
-remain future work. The memory map remains provisional until its
-physical-hardware gates pass.
+`make boot` produces native-autoboot D64/D71 images with the resident 8502
+kernel, Z80 worker, transitional service bundle, recovery bootfs, and a
+standalone `USH` disk file. Init loads that shell into bank 1 before starting
+its task; other commands still resolve from bootfs or explicit `/mnt/NAME`
+paths. `xclock` and `xwave` are standalone UDEX images loaded from bootfs into
+retained slots. General task allocation, startup scripts and extracting the
+remaining non-kernel services are still roadmap work.
 
 The generic retained-window cache is enabled by default in `make boot`, following
 emulator qualification and real-hardware input/RESTORE acceptance. The prior
