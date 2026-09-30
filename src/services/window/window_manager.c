@@ -2,6 +2,7 @@
 #include "udeks/pointer.h"
 #include "udeks/vic_graphics.h"
 #include "udeks/window.h"
+#include "udeks/window_service.h"
 
 #define STATUS_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_WINDOW_STATUS_BASE + (offset)))
@@ -87,6 +88,12 @@ static struct udeks_window *window_by_handle(unsigned char handle)
         return 0;
     }
     return &windows[handle - 1u];
+}
+
+unsigned char __fastcall__ udeks_window_owner(unsigned char handle)
+{
+    struct udeks_window *window = window_by_handle(handle);
+    return window == 0 ? UDEKS_WINDOW_NONE : window->owner;
 }
 
 static void publish_state(void)
@@ -610,8 +617,9 @@ unsigned char udeks_window_create(
     unsigned char index;
     struct udeks_window *window;
 
-    if (width < 16u || height <= UDEKS_WINDOW_TITLE_HEIGHT + 4u ||
-        x + width > UDEKS_VIC_WIDTH ||
+    if (width < 16u || width > UDEKS_VIC_WIDTH ||
+        height <= UDEKS_WINDOW_TITLE_HEIGHT + 4u ||
+        x > UDEKS_VIC_WIDTH - width ||
         (unsigned int)y + height > UDEKS_VIC_HEIGHT ||
         surface != UDEKS_WINDOW_SURFACE_BITMAP) {
         return UDEKS_WINDOW_NONE;

@@ -255,7 +255,7 @@ $(BUILD_DIR)/disk-exec/test.d71: $(BOOT_D71) $(USER_COWSAY_UDEX) tools/disk_exec
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
 	boot publish-boot panic-probe framebuffer-assets user-sources user-programs \
 	task-state task-policy task-poll-policy task-scheduler task-switch-tail task-switch-activation scheduler-overlay placement-check \
-	placement-check-guard graphics-cache-placement \
+	placement-check-guard graphics-cache-placement graphics-apps-check \
 	shadow-probe capability-probe boot-console-probe task-yield-probe \
 	task-exit-probe task-waitpid-probe task-spawn-loader-probe task-spawn-probe \
 	task-sleep-probe task-cancel-probe task-poll-probe \
@@ -336,6 +336,11 @@ placement-check: placement-check-guard scheduler-overlay task-switch-tail \
 		$(KERNEL_BIN) $(BOOT_DELIVERY_BIN) \
 		$(BUILD_8502)/vic_graphics_transport.o
 	$(PYTHON) tools/placement_audit.py --verify
+
+# Feasibility gate only: this does not enable bank-1 graphical execution.
+graphics-apps-check: placement-check-guard boot $(PANIC_PROBE_KERNEL_BIN)
+	$(PYTHON) tools/graphics_app_layout.py --build $(BUILD_DIR) \
+		--output $(BUILD_DIR)/four-apps/layout.json
 
 placement-check-guard:
 	@command -v od65 >/dev/null 2>&1 || { \
@@ -882,7 +887,7 @@ $(BUILD_8502)/root_console.s: src/services/window/root_console.c \
 
 $(BUILD_8502)/window_manager.s: $(WINDOW_MANAGER_SOURCE) \
 		include/udeks/pointer.h include/udeks/vic_graphics.h \
-		include/udeks/window.h | $(BUILD_8502)
+		include/udeks/window.h include/udeks/window_service.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $(WINDOW_MANAGER_SOURCE)
 
 $(BUILD_8502)/boot_console.s: src/services/window/boot_console.c \

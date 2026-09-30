@@ -6,9 +6,29 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current feature handover — 2026-09-30
+## Current feature handover — 2026-10-01
 
-Current working branch: `app-xcalc`, created from main `debf430` at the
+**2026-10-01:** calculator committed/pushed as `5cd34f9` on `app-xcalc` after
+user acceptance; not merged. Current branch is `graphics-four-apps`, based
+on that commit, issue #30. The user explicitly prioritizes four graphical
+applications before the next service extraction. The plan is in
+docs/DISK-GRAPHICS.md and docs/ROADMAP.md. Do not count four window descriptors
+as four loaded apps: the runtime still has the accepted two-slot limit.
+The first increment adds an actual-build placement gate and tests four owner
+descriptors in both manager variants. A private owner query supports the next
+banked router, and create rejects wrapping horizontal geometry. No public
+UAPP version or vector changes. Bank-1 delivery/routing is not implemented.
+Qualification for this first increment: 1,024 host tests, container
+graphics-apps-check + placement-check, and a fresh VICE D64 calculator/clock/
+wave/console regression pass. The geometry fix/owner query use 57 resident
+bytes; 651 remain before LOWBSS. Proposed bank-1 calculator allocation has
+581 bytes beyond the old calculator image+BSS, not a promise that the new
+client library will fit. Live regression records are in
+build/four-apps/vice-regression; measured layout with input hashes is
+build/four-apps/layout.json. This is not a four-app manual-test candidate;
+the next implementation is the bounded banked loader/request/event path.
+
+Calculator checkpoint: branch `app-xcalc`, created from main `debf430` at the
 user's request for the next graphical app. Mouse-only standalone calculator:
 pure C fixed-point model + VIC UI, UAPP 0.4 bounded client-click pointer,
 fixed-size window opt-out, control target 5 and shared managed slot ownership.
@@ -17,7 +37,7 @@ so xcalc can occupy $0200-$11FF; xclock and xcalc are mutually exclusive.
 Bank-1 native APP1/stack and fixed shadow/gates are unchanged. Calculator
 image is 3,993 bytes + 34 BSS; all arithmetic runtime is in that disk image.
 Use build/boot images for testing; do not republish the accepted main snapshots
-until this candidate is accepted. General service extraction remains next.
+until publication is explicitly refreshed. Service extraction follows #30.
 Do not mistake the namespace checkpoint below for the current branch.
 
 Qualification: VICE true-drive D64/1541 and D71/1571 pass disk loading,

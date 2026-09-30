@@ -4,6 +4,69 @@ The initial extraction checkpoint below is historical. For current namespace
 and calculator usage see [Calculator addition](#calculator-addition-branch-app-xcalc)
 and [the roadmap](ROADMAP.md).
 
+## Four-application support (#30)
+
+Current work: [issue #30](https://github.com/salvogendut/UDEKS/issues/30),
+branch `graphics-four-apps`, based on accepted calculator commit `5cd34f9`.
+**Not yet available:** the runtime still permits clock or calculator in slot 1,
+with wave in slot 2. The four-entry window registry does not allocate app RAM.
+
+The proposed bounded transition keeps clock/wave in bank 0 and introduces
+two bank-1 graphical clients. It does not page whole programs through the
+calculator's execution address on every poll or paint. Candidate reservations:
+
+| Client | Image + BSS | Private software stack reservation | Relocated CPU pages |
+| --- | --- | --- | --- |
+| Clock (existing) | bank 0 `$0200-$0BFF` | Existing resident managed-call stack | Existing kernel pages |
+| Wave (existing) | bank 0 `$1200-$1BFF` | Existing resident managed-call stack | Existing kernel pages |
+| Calculator (proposed) | bank 1 `$2300-$34FF` (4,608 bytes) | `$8A00-$8CFF` | `$D500-$D6FF` |
+| Fourth client (proposed) | bank 1 `$3500-$3FFF` (2,816 bytes) | `$8D00-$8FFF` | `$D700-$D8FF` |
+
+The new stack reservations must include their own guards/context needs; they
+are not a measured 768-byte usable-stack guarantee. The boot-only data left
+in the Z80 padded container is disposable only after native boot has consumed
+it. The current Z80 code is 663 bytes at `$2000-$2296`, with no data allocation.
+This proposal narrows its old 8 KiB growth reservation; future code/data growth
+into either client allocation must fail the build, not silently corrupt an app.
+Existing foreground commands, shell, storage policy, cache and native task
+pages are not repurposed. Native task IDs and window owners must be explicitly
+bound, not assumed interchangeable.
+
+Run `distrobox enter my-distrobox -- make -j8 graphics-apps-check placement-check`.
+The gate reads real maps and UDEX images, verifies Z80 HEX against its padded
+binary, checks physical-bank overlaps (including zero-page/hardware stacks),
+and emits `build/four-apps/layout.json` with input hashes. Existing xcalc uses
+4,027 image+BSS bytes, leaving 581 in the proposed allocation for its changed
+client bindings. This is an input to a new link, **not** proof that those
+bindings fit. Resident bridge headroom is also reported; exceeding either
+budget requires a placement revision. The accepted calculator disks remain
+preserved in `bench/artifacts/2026-09-30-xcalc`.
+
+Implementation sequence:
+
+1. **Implemented:** placement gate and four-owner manager regression. A fifth
+   window leaves the four descriptors unchanged; invalid/wrapping coordinates
+   reject before mutation. Focus/click/drag/close dispatch and handle reuse
+   are tested in both real C manager variants. The private resident owner query
+   is not a public UAPP extension. These tests run four windows, not four apps.
+2. **Next:** bounded bank-aware delivery and graphics request/event routing.
+   Marshal coordinates, geometry, titles and input; never store a foreign-bank
+   title pointer or execute a foreign-bank paint/close pointer directly.
+   Banked clients need explicit repaint/input/close events and owner-checked
+   drawing. Establish correct compositing of overlapping clients, including
+   partial/hidden damage; do not publish a cross-bank begin/end-paint lease
+   that lets another app draw before its owner has finished. Closing or failed
+   loading must retire events/windows before releasing an allocation.
+3. Relink xcalc, supply a separate fourth test executable, and integrate shell
+   foreground/background control and the running-app panel. Gate with four
+   concurrent apps, independent state after repeated focus/drag/reload,
+   atomic invalid/fifth-load rejection, console commands and targeted Ctrl+C.
+   Test both disk formats in VICE, native input in 1986, then physical C128.
+
+This is bounded four-client support, not arbitrary-size executables, general
+dynamic relocation or memory protection from hostile machine code. No
+xwave algorithm or generic rendering optimization is bundled into this work.
+
 Issue [#22](https://github.com/salvogendut/UDEKS/issues/22), branch
 `storage-disk-graphics`, follows merged PR #21. Normal D64/D71 images contain
 closed SEQ `XCLOCK` and `XWAVE` files: raw UDEX bytes without a PRG prefix.
