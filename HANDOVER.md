@@ -8,7 +8,14 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 ## Current feature handover — 2026-09-30
 
-The active worktree is `build/storage-iec-read-only`, branch
+The active development worktree is now `build/storage-disk-exec`, branch
+`storage-0.2-disk-exec`, issue #18. Its first disk-only positive/negative fixtures
+build with `make disk-exec-image`; disk launch is not wired yet. Continue with
+the loader handoff in [Storage 0.2](docs/STORAGE-0.2.md), preserving the existing
+validator, task ownership and fixed common-RAM limits. The issue records the
+user-visible `/mnt/DISKCOW hello` acceptance target.
+
+The unchanged hardware candidate remains in `build/storage-iec-read-only`, branch
 `storage-0.1-iec-read-only`, issue #15. Storage 0.1 is the priority in
 [the roadmap](docs/ROADMAP.md). The native IEC C service now links separately,
 boots through secondary delivery, and serves mount/directory/file-read/unmount requests.

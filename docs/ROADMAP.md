@@ -96,6 +96,12 @@ boot, or the Z80 worker. The implementation sequence and current gate are in
 
 ### 2. Storage 0.2: launch a program from disk
 
+**Started:** issue [#18](https://github.com/salvogendut/UDEKS/issues/18), branch
+`storage-0.2-disk-exec`, separately from the Storage 0.1 hardware candidate.
+The first disk-only executable and rejection fixtures are packaged; connecting
+them to the loader is next. Disk execution is **not implemented yet**.
+See [Storage 0.2](STORAGE-0.2.md) for the short implementation/acceptance plan.
+
 Use the same mount and stream contract to resolve and load a fixed-address
 UDEX program from external media. Preserve the existing image validator,
 ownership rules, exit/wait behavior, and bootfs fallback. Add per-process

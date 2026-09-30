@@ -235,6 +235,14 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 include mk/window-cache.mk
 include mk/storage.mk
 
+# Storage 0.2 positive/negative files live on DOS media, never in bootfs.
+.PHONY: disk-exec-image
+disk-exec-image: $(BUILD_DIR)/disk-exec/test.d64 $(BUILD_DIR)/disk-exec/test.d71
+$(BUILD_DIR)/disk-exec/test.d64: $(BOOT_D64) $(USER_COWSAY_UDEX) tools/disk_exec_fixture.py tools/build_d71.py tools/build_udex.py
+	$(PYTHON) tools/disk_exec_fixture.py $(BOOT_D64) $(USER_COWSAY_UDEX) $@
+$(BUILD_DIR)/disk-exec/test.d71: $(BOOT_D71) $(USER_COWSAY_UDEX) tools/disk_exec_fixture.py tools/build_d71.py tools/build_udex.py
+	$(PYTHON) tools/disk_exec_fixture.py $(BOOT_D71) $(USER_COWSAY_UDEX) $@
+
 .PHONY: all 8502 z80 z80-asm bench bench-8502 bench-z80 bench-irq \
 	bench-irq-8502 bench-irq-z80 bench-irq-service \
 	bench-irq-service-8502 bench-irq-service-z80 bench-context \
@@ -2134,7 +2142,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 
 check:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
-	$(PYTHON) -m py_compile tools/build_storage.py tools/storage_service_probe.py tools/storage_shell_probe.py tools/iec_eof_reference.py
+	$(PYTHON) -m py_compile tools/build_storage.py tools/storage_service_probe.py tools/storage_shell_probe.py tools/iec_eof_reference.py tools/disk_exec_fixture.py
 	$(PYTHON) -m py_compile tools/ihx_to_bin.py tools/bin_to_prg.py \
 		tools/bench_decode.py tools/irq_probe_decode.py \
 		tools/irq_service_decode.py tools/context_decode.py \
