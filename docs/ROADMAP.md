@@ -13,6 +13,19 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
+**Completed feature, merge authorized:** [#24 — disk utilities and command/service separation](COMMAND-EXTRACTION.md),
+branch `boot-disk-commands`. Disk graphics merged as PR #23. Everyday utilities
+and diagnostics now load from disk; the resident command catalog is removed.
+**Functional retest accepted:** after repairing the boot probe's corruption of
+graphics code at `$8000`, the user confirms the diagnostic disk boots on 1986
+and C128 + Pi1541, and apps/windows work after mounting. The earlier hardware
+hang's cause is unproven; the accepted diagnostic variant has boot messages on.
+At the user's request, default RC now mounts device 8 at `/mnt` automatically.
+The finishing corrections are implemented: specific app-launch errors,
+measured IEC/bootfs header status, a real mount-success message, and normal
+boot progress enabled to match the accepted diagnostic setting.
+Next: extract the first independent service; no graphics optimization detour.
+
 - Native D64/D71 boot, an 8502 executive, a bounded Z80 worker, a VDC root
   console, and an independent VIC-IIe graphical display are working.
 - `/bin/ush`, bootfs, fixed-address UDEX loading, basic Unix-like streams and
@@ -61,7 +74,7 @@ mounts or applications must not require rebuilding the kernel.
 | Kernel and tasking | Cooperative two-task path works; general scheduling, IPC, and preemption due. |
 | Z80 secondary engine | Mailbox and xwave computation work; reusable operations and soak tests due. |
 | Graphics and input | Working shell/windows/apps; repaint latency and focused-window input remain open. |
-| Storage and applications | Disk shell, RC startup and free/df merged. Issue #22 disk-only xclock/xwave is emulator-qualified; manual acceptance pending. |
+| Storage and applications | Disk shell, RC and disk-only graphics merged (#21/#23). Issue #24 accepted and finishing fixes qualified; merge authorized. Next: disk-loaded service lifecycle. |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
@@ -160,10 +173,22 @@ No rendering or IEC optimization belongs in this slice.
 their normal bootfs copies are removed. VICE D64/D71 validates both launch
 orders and failed-load isolation; native 1986 validates window interaction,
 cancellation, console use and restart. See [candidate and short test sequence](DISK-GRAPHICS.md).
-The user has now authorized review/merge and continuation; manual hardware
-acceptance of this exact candidate remains unrecorded. Next, extract remaining
-bundled user commands before choosing the first independently loadable service;
-do not expand this slice into rendering optimization or general task allocation.
+**Merged:** PR #23 (`2c88e07`) by user authorization; manual hardware acceptance
+of that exact candidate remains unrecorded.
+
+**Current slice:** issue [#24](https://github.com/salvogendut/UDEKS/issues/24),
+branch `boot-disk-commands`: COWSAY/DATE/LS/CAT and UNAME/LSHW/LSMOD/LSCPU/Z80CTL
+are ordinary disk files, alongside FREE/DF/XCLOCK/XWAVE. Recovery bootfs retains
+only mount/unmount and ush. Disk ush owns builtin policy and graphics syntax;
+numeric deferred requests replace the resident builtin registry. See
+[the test sequence and remaining limitations](COMMAND-EXTRACTION.md).
+
+**Next concrete deliverable after acceptance:** choose one existing non-kernel
+service, define its load/start/stop and dependency contract, and load its ordinary
+disk image on demand without rebuilding the kernel. Preserve a boot/read recovery
+path. This is separate from expanding task capacity below. Also track separation
+of the system command source from a data mount: today disk utilities must be
+present on `/mnt`; one mount is not yet a general multi-volume command path.
 
 Generalize the current two-task allocation to at least four C tasks, add a
 bounded message/handle mechanism, and move console, input, graphics, and

@@ -27,7 +27,11 @@ def main():
     parser.add_argument('--disk-shell', action='store_true', help='require disk-first shell boot and uname')
     parser.add_argument('--sysinfo', action='store_true', help='check startup completion and standalone free/df')
     parser.add_argument('--disk-graphics', action='store_true', help='native managed-app load, window interaction and cancellation')
+    parser.add_argument('--drag-regression', action='store_true', help='reported utility/implicit-desktop/repeated-clock-drag sequence')
+    parser.add_argument('--boot-mounted', action='store_true', help='drag regression relies on default RC mount, never mounts manually')
     args = parser.parse_args()
+    if args.boot_mounted and not args.drag_regression:
+        parser.error('--boot-mounted requires --drag-regression')
     work = args.output.resolve()
     work.mkdir(parents=True, exist_ok=True)
     binary = work/'smoke'
@@ -38,6 +42,8 @@ def main():
                     *(['-DUDEKS_DISK_SHELL_SMOKE'] if args.disk_shell else []),
                     *(['-DUDEKS_SYSINFO_SMOKE'] if args.sysinfo else []),
                     *(['-DUDEKS_DISK_GRAPHICS_SMOKE'] if args.disk_graphics else []),
+                    *(['-DUDEKS_DRAG_REGRESSION', '-DUDEKS_DISK_GRAPHICS_SMOKE'] if args.drag_regression else []),
+                    *(['-DUDEKS_BOOT_MOUNT_SMOKE'] if args.boot_mounted else []),
                     str(ROOT/'tools/1986_storage_smoke.c'),
                     *map(str, smoke.emulator_sources(emulator)), *flags, '-lm', '-o', str(binary)], check=True)
     disk = work/('test'+args.disk.suffix)
@@ -59,6 +65,8 @@ def main():
             ['git', '-C', str(emulator), 'rev-parse', 'HEAD'], text=True).strip(),
         'exit_status': result.returncode, 'raw_iec': True, 'disk_exec': args.disk_exec,
         'disk_shell': args.disk_shell, 'sysinfo': args.sysinfo, 'disk_graphics': args.disk_graphics,
+        'drag_regression': args.drag_regression,
+        'boot_mounted': args.boot_mounted,
     }, indent=2)+'\n')
     raise SystemExit(result.returncode)
 

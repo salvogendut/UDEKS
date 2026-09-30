@@ -40,7 +40,7 @@
 #define UDEKS_TREQ_PAYLOAD               14u
 
 #define UDEKS_TASK_REQUEST_ABI_MAJOR     0u
-#define UDEKS_TASK_REQUEST_ABI_MINOR     6u
+#define UDEKS_TASK_REQUEST_ABI_MINOR     7u
 
 #define UDEKS_TREQ_STATE_IDLE            0u
 #define UDEKS_TREQ_STATE_REQUEST         1u
@@ -83,6 +83,8 @@
 /* ABI 0.6: read-only filesystem capacity, literal /mnt, count 4, fd/flags 0.
  * Eight response bytes: LE block size, total blocks, free blocks, unit, flags. */
 #define UDEKS_TREQ_OP_STATFS            19u
+/* ABI 0.7: deferred root-session service control; see service_control.h. */
+#define UDEKS_TREQ_OP_CONTROL           20u
 #define UDEKS_STATFS_SIZE               8u
 #define UDEKS_STATFS_BLOCK_SIZE         0u
 #define UDEKS_STATFS_TOTAL              2u

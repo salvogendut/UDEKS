@@ -35,8 +35,8 @@ class BootConsoleRelocationContractTests(unittest.TestCase):
         self.assertIn(".export absolute\nabsolute = $2345", source)
         self.assertIn(".exportzp sp\nsp = $0006", source)
         self.assertIn("_udeks_boot_console_build = $1600", source)
-        self.assertIn("__CODE_SIZE__ = $038f", source)
-        self.assertIn("__RODATA_SIZE__ = $021b", source)
+        self.assertIn("__CODE_SIZE__ = $03ab", source)
+        self.assertIn("__RODATA_SIZE__ = $01ff", source)
         self.assertIn("__BSS_SIZE__ = $0000", source)
 
     def test_installer_copies_exact_image_and_checks_sum(self):

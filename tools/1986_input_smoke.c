@@ -67,6 +67,8 @@ static void key(SDL_Scancode code) {
 static void text(const char *value) {
     for (; *value; ++value) {
         if (*value >= 'a' && *value <= 'z') key(SDL_SCANCODE_A + *value - 'a');
+        else if (*value >= '1' && *value <= '9') key(SDL_SCANCODE_1 + *value - '1');
+        else if (*value == '0') key(SDL_SCANCODE_0);
         else if (*value == ' ') key(SDL_SCANCODE_SPACE);
         else if (*value == '\n') key(SDL_SCANCODE_RETURN);
         else if (*value == '\b') key(SDL_SCANCODE_BACKSPACE);

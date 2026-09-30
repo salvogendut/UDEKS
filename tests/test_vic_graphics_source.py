@@ -132,7 +132,7 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertNotIn("for (column", fill)
         self.assertIn("VICSHADOW:", config)
         shadow = config.split("VICSHADOW:", 1)[1].split(";", 1)[0]
-        self.assertNotIn("start", shadow)
+        self.assertIn("start = $A1E0", shadow)
 
     def test_display_module_does_not_drive_window_or_application_policy(self):
         source = (ROOT / "src/services/display/vic_graphics.c").read_text(

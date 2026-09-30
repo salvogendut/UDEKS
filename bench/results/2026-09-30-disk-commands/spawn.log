@@ -1,0 +1,3 @@
+udeks-task-spawn-probe.d64: booting SPAWN parent
+udeks-task-spawn-probe.d64: two SPAWN -> compiled task 2 cycles, normal return -> EXIT(37), blocking WAITPID reaped/resumed sequences $44/$66
+task-SPAWN probe OK

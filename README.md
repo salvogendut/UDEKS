@@ -54,7 +54,15 @@ See [LICENSE](LICENSE).
 - A native-autoboot D71 starts the assembly-oriented 8502 microkernel, its
   modular services, a loader-managed boot filesystem, and the stock-timing Z80
   worker. Standalone disk-only `xclock` and `xwave` UDEX images are loaded into
-  retained application slots on first invocation after `mount 8 /mnt`.
+  retained application slots on first invocation. The default startup script
+  mounts device 8 at `/mnt` automatically.
+- Boot messages reflect the measured hardware capabilities and Z80 state.
+  The IEC-driver and bootfs lines check the loaded bank-1 headers; `[ -- ]`
+  means that header did not match, not that the feature is deferred. These
+  are presence/version checks, not full integrity or disk-access tests.
+  `mount: /mnt ready (read-only)` appears only after the startup mount has
+  successfully read the media. Secondary-load progress is visible on normal
+  boot disks, matching the setting used in the successful C128/Pi1541 retest.
 - The VDC hosts a retained black-on-yellow root console with mixed-case input,
   bounded command history, Unix-like standard streams, Bash-like command
   names, foreground `Ctrl+C`, and background jobs launched with `&`.
@@ -75,17 +83,20 @@ See [LICENSE](LICENSE).
 - The current statically linked services are transitional. ADR 0007 freezes a
   smaller resident-core boundary; new commands such as `cowsay` live under
   `user/` and must arrive through the executable-loader path.
-- A transitional init service owns the root session. Commands absent from the
-  builtin table are resolved by leaf name through the read-only `/bin` bootfs;
-  `cowsay`, `date`, and `ls` are transient programs launched through that path;
+- A transitional init service owns the root session. There is no resident
+  command catalog. `ush` owns shell builtins and graphics command parsing;
+  other names use the generic loader, searching `/bin` then mounted `/mnt`.
+  `cowsay`, `date`, `ls`, `cat`, `free`, `df` and the hardware/CPU diagnostics
+  are ordinary disk programs. Normal bootfs retains only mount/unmount and
+  recovery ush;
   `date` reads or sets the BASIC `TI`/`TI$`-compatible clock also used by
   `xclock`, while `ls`
   exercises the first Linux-shaped `open`/`getdents`/`stat`/`close` boundary.
   Init now first loads the ordinary disk file `USH` into bank 1, using the
   embedded `/bin/ush` as recovery. It runs through the public task/stream ABI,
-  owns terminal lines and runs `echo`, `help`,
-  and `uname` natively, forwarding commands still awaiting extraction through
-  a bounded compatibility request.
+  owns terminal lines, `cd`, `clear`, `echo`, `help` and `pwd`. Graphics and
+  Z80 controls cross a bounded numeric service request, deferred until the
+  bank-switched caller returns; CLI names/options/messages live outside the core.
   Task Request ABI 0.4 adds non-consuming stdin `POLL`: idle `ush` sleeps
   until a submitted line is readable. A compiled-C probe qualifies finite and
   infinite waits, wake/response ownership and stack preservation on both disk
@@ -97,7 +108,8 @@ See [LICENSE](LICENSE).
   KERNAL calls; VICE true-drive 1541/D64 and 1571/D71 tests pass, including
   listings with both graphical apps active. `/bin` remains the bootfs fallback.
   The 1986 raw-IEC keyboard workflow, tiny-file EOF and media-change recovery
-  tests also pass; physical PI1541 qualification remains unrecorded. See
+  tests also pass. The user has confirmed the command/disk-graphics workflow
+  on C128 + Pi1541; exhaustive physical media-fault coverage is not claimed. See
   [storage tests and limits](docs/STORAGE-0.1.md#interactive-file-checkpoint--2026-09-30).
 - Storage 0.2 adds explicit-path foreground execution: `/mnt/DISKCOW hello`
   loads an ordinary UDEX from disk, with bounds/header/EOF validation and
@@ -107,7 +119,7 @@ See [LICENSE](LICENSE).
 - Boot 0.2 adds disk-first shell boot, with missing/invalid-shell recovery and
   temporary bootstrap mount cleanup. Changing only the DOS `USH` file changes
   the running shell. The disk shell also runs a bounded ASCII `RC` startup
-  file; the default is comments only. After `mount 8 /mnt`, disk-loaded
+  file; the default runs `mount 8 /mnt`. Disk-loaded
   `free` reports the fixed task-memory pool and `df` reports disk blocks.
   [Test the new boot candidate](docs/BOOT-STARTUP.md#test-it).
 
@@ -173,12 +185,15 @@ kernel, Z80 worker, transitional service bundle, recovery bootfs, and a
 standalone `USH` disk file. Init loads that shell into bank 1 before starting
 its task and running the disk's bounded `RC` startup file. Foreground names
 resolve from bootfs first, then mounted `/mnt`; explicit `/mnt/NAME` works too.
-Disk-only `FREE`, `DF`, `XCLOCK` and `XWAVE` are included. After `mount 8 /mnt`,
+The default `RC` mounts device 8 at `/mnt`, so disk utilities such as `ls`,
+`date` and `uname` work immediately after boot. Likewise,
 `xclock &` and `xwave &` load the graphical UDEX files into retained slots;
 there are no normal bootfs copies of either app. See
 [disk-loaded graphics](docs/DISK-GRAPHICS.md) for testing and limits.
 General task allocation and extracting the
 remaining non-kernel services are still roadmap work.
+See [command extraction and the current test sequence](docs/COMMAND-EXTRACTION.md)
+for the disk/shell/recovery inventory. This is not yet kernel-only boot.
 
 The generic retained-window cache is enabled by default in `make boot`, following
 emulator qualification and real-hardware input/RESTORE acceptance. The prior

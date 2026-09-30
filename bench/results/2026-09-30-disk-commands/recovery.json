@@ -1,0 +1,159 @@
+{
+  "drive": "1571",
+  "recovery": true,
+  "disk_sha256": "3cb775615c8df0e4e007627d420016b77885afb48bda15d9e3b97880582707cc",
+  "commands": [
+    {
+      "command": "cowsay unavailable",
+      "console": "\nINITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cowsay unavailable\nUnknown command: cowsay\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "console": "INITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cowsay unavailable\nUnknown command: cowsay\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "ls /bin",
+      "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cowsay unavailable\nUnknown command: cowsay\nUDEKS:~> mount 8 /mnt\nUDEKS:~> ls /bin\nmount\numount\nush\nUDEKS:~>"
+    },
+    {
+      "command": "ls /mnt",
+      "console": "mount\numount\nush\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nRC\nFREE\nDF\nXCLOCK\nXWAVE\nCOWSAY\nDATE\nLS\nCAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay disk",
+      "console": "XCLOCK\nXWAVE\nCOWSAY\nDATE\nLS\nCAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~> cowsay disk\n ______\n< disk >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/COWSAY explicit",
+      "console": "LSCPU\nZ80CTL\nUDEKS:~> cowsay disk\n ______\n< disk >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/COWSAY explicit\n __________\n< explicit >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "date 123456",
+      "console": "UDEKS:~> cowsay disk\n ______\n< disk >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/COWSAY explicit\n __________\n< explicit >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> date 123456\n12:34:56\nUDEKS:~>"
+    },
+    {
+      "command": "date",
+      "console": "< disk >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/COWSAY explicit\n __________\n< explicit >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> date 123456\n12:34:56\nUDEKS:~> date\n12:35:02\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DATE 010203",
+      "console": "        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/COWSAY explicit\n __________\n< explicit >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> date 123456\n12:34:56\nUDEKS:~> date\n12:35:02\nUDEKS:~> /mnt/DATE 010203\n01:02:03\nUDEKS:~>"
+    },
+    {
+      "command": "date",
+      "console": "            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> /mnt/COWSAY explicit\n __________\n< explicit >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> date 123456\n12:34:56\nUDEKS:~> date\n12:35:02\nUDEKS:~> /mnt/DATE 010203\n01:02:03\nUDEKS:~> date\n01:02:10\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/HELLO",
+      "console": "                ||     ||\nUDEKS:~> /mnt/COWSAY explicit\n __________\n< explicit >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> date 123456\n12:34:56\nUDEKS:~> date\n12:35:02\nUDEKS:~> /mnt/DATE 010203\n01:02:03\nUDEKS:~> date\n01:02:10\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/CAT /mnt/HELLO",
+      "console": " __________\n< explicit >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> date 123456\n12:34:56\nUDEKS:~> date\n12:35:02\nUDEKS:~> /mnt/DATE 010203\n01:02:03\nUDEKS:~> date\n01:02:10\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> /mnt/CAT /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/LS /bin",
+      "console": "         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> date 123456\n12:34:56\nUDEKS:~> date\n12:35:02\nUDEKS:~> /mnt/DATE 010203\n01:02:03\nUDEKS:~> date\n01:02:10\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> /mnt/CAT /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> /mnt/LS /bin\nmount\numount\nush\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/NOFILE",
+      "console": "                ||----w |\n                ||     ||\nUDEKS:~> date 123456\n12:34:56\nUDEKS:~> date\n12:35:02\nUDEKS:~> /mnt/DATE 010203\n01:02:03\nUDEKS:~> date\n01:02:10\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> /mnt/CAT /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> /mnt/LS /bin\nmount\numount\nush\nUDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~>"
+    },
+    {
+      "command": "uname -a",
+      "console": "UDEKS:~> date 123456\n12:34:56\nUDEKS:~> date\n12:35:02\nUDEKS:~> /mnt/DATE 010203\n01:02:03\nUDEKS:~> date\n01:02:10\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> /mnt/CAT /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> /mnt/LS /bin\nmount\numount\nush\nUDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/LSHW",
+      "console": "12:35:02\nUDEKS:~> /mnt/DATE 010203\n01:02:03\nUDEKS:~> date\n01:02:10\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> /mnt/CAT /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> /mnt/LS /bin\nmount\numount\nush\nUDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> /mnt/LSHW\nVideo: PAL, VDC 8568, 64 KB\nExpansion: REU absent, GeoRAM absent\nUDEKS:~>"
+    },
+    {
+      "command": "lsmod",
+      "console": "UDEKS:~> date\n01:02:10\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> /mnt/CAT /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> /mnt/LS /bin\nmount\numount\nush\nUDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> /mnt/LSHW\nVideo: PAL, VDC 8568, 64 KB\nExpansion: REU absent, GeoRAM absent\nUDEKS:~> lsmod\nModules: 11/11 resident\nPoll passes: 3552\nUDEKS:~>"
+    },
+    {
+      "command": "lscpu",
+      "console": "HELLO UDEKS\nUDEKS:~> /mnt/CAT /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> /mnt/LS /bin\nmount\numount\nush\nUDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> /mnt/LSHW\nVideo: PAL, VDC 8568, 64 KB\nExpansion: REU absent, GeoRAM absent\nUDEKS:~> lsmod\nModules: 11/11 resident\nPoll passes: 3552\nUDEKS:~> lscpu\n8502: resident executive\nZ80: bounded worker; ready (stock timing)\nUDEKS:~>"
+    },
+    {
+      "command": "z80ctl status",
+      "console": "UDEKS:~> /mnt/LS /bin\nmount\numount\nush\nUDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> /mnt/LSHW\nVideo: PAL, VDC 8568, 64 KB\nExpansion: REU absent, GeoRAM absent\nUDEKS:~> lsmod\nModules: 11/11 resident\nPoll passes: 3552\nUDEKS:~> lscpu\n8502: resident executive\nZ80: bounded worker; ready (stock timing)\nUDEKS:~> z80ctl status\nState: ready\nTransactions: 1\nUDEKS:~>"
+    },
+    {
+      "command": "z80ctl test",
+      "console": "umount\nush\nUDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> /mnt/LSHW\nVideo: PAL, VDC 8568, 64 KB\nExpansion: REU absent, GeoRAM absent\nUDEKS:~> lsmod\nModules: 11/11 resident\nPoll passes: 3552\nUDEKS:~> lscpu\n8502: resident executive\nZ80: bounded worker; ready (stock timing)\nUDEKS:~> z80ctl status\nState: ready\nTransactions: 1\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~>"
+    },
+    {
+      "command": "xinit nonsense",
+      "console": "UDEKS:~> cat /mnt/NOFILE\ncat: No such file or directory\nUDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> /mnt/LSHW\nVideo: PAL, VDC 8568, 64 KB\nExpansion: REU absent, GeoRAM absent\nUDEKS:~> lsmod\nModules: 11/11 resident\nPoll passes: 3552\nUDEKS:~> lscpu\n8502: resident executive\nZ80: bounded worker; ready (stock timing)\nUDEKS:~> z80ctl status\nState: ready\nTransactions: 1\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~> xinit nonsense\nusage: xinit [-q]; xclock/xwave [-q | &]\nUDEKS:~>"
+    },
+    {
+      "command": "xinit",
+      "console": "UDEKS:~> uname -a\nUDEKS 0.1.0 c128 8502\nUDEKS:~> /mnt/LSHW\nVideo: PAL, VDC 8568, 64 KB\nExpansion: REU absent, GeoRAM absent\nUDEKS:~> lsmod\nModules: 11/11 resident\nPoll passes: 3552\nUDEKS:~> lscpu\n8502: resident executive\nZ80: bounded worker; ready (stock timing)\nUDEKS:~> z80ctl status\nState: ready\nTransactions: 1\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~> xinit nonsense\nusage: xinit [-q]; xclock/xwave [-q | &]\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "console": "UDEKS:~> /mnt/LSHW\nVideo: PAL, VDC 8568, 64 KB\nExpansion: REU absent, GeoRAM absent\nUDEKS:~> lsmod\nModules: 11/11 resident\nPoll passes: 3552\nUDEKS:~> lscpu\n8502: resident executive\nZ80: bounded worker; ready (stock timing)\nUDEKS:~> z80ctl status\nState: ready\nTransactions: 1\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~> xinit nonsense\nusage: xinit [-q]; xclock/xwave [-q | &]\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "console": "Expansion: REU absent, GeoRAM absent\nUDEKS:~> lsmod\nModules: 11/11 resident\nPoll passes: 3552\nUDEKS:~> lscpu\n8502: resident executive\nZ80: bounded worker; ready (stock timing)\nUDEKS:~> z80ctl status\nState: ready\nTransactions: 1\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~> xinit nonsense\nusage: xinit [-q]; xclock/xwave [-q | &]\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay together",
+      "console": "Transactions: 1\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~> xinit nonsense\nusage: xinit [-q]; xclock/xwave [-q | &]\nUDEKS:~> xinit\nVIC-II graphics active on 40-column display\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> cowsay together\n __________\n< together >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "ls /mnt",
+      "console": "            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nRC\nFREE\nDF\nXCLOCK\nXWAVE\nCOWSAY\nDATE\nLS\nCAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/HELLO",
+      "console": "                ||     ||\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nRC\nFREE\nDF\nXCLOCK\nXWAVE\nCOWSAY\nDATE\nLS\nCAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "command": "z80ctl test",
+      "console": "SCHEDOVR\nHELLO\nRC\nFREE\nDF\nXCLOCK\nXWAVE\nCOWSAY\nDATE\nLS\nCAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~>"
+    },
+    {
+      "command": "xwave -q",
+      "console": "RC\nFREE\nDF\nXCLOCK\nXWAVE\nCOWSAY\nDATE\nLS\nCAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "console": "DF\nXCLOCK\nXWAVE\nCOWSAY\nDATE\nLS\nCAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xinit -q",
+      "console": "XWAVE\nCOWSAY\nDATE\nLS\nCAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "console": "DATE\nLS\nCAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "console": "CAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "console": "UNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay unavailable",
+      "console": "LSMOD\nLSCPU\nZ80CTL\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> umount /mnt\nUDEKS:~> cowsay unavailable\nUnknown command: cowsay\nUDEKS:~>"
+    },
+    {
+      "command": "echo recovery alive",
+      "console": "Z80CTL\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> umount /mnt\nUDEKS:~> cowsay unavailable\nUnknown command: cowsay\nUDEKS:~> echo recovery alive\nrecovery alive\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "console": "UDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> z80ctl test\nZ80 self-test: OK\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> umount /mnt\nUDEKS:~> cowsay unavailable\nUnknown command: cowsay\nUDEKS:~> echo recovery alive\nrecovery alive\nUDEKS:~> mount 8 /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay recovered",
+      "console": "VIC-II graphics stopped\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> umount /mnt\nUDEKS:~> cowsay unavailable\nUnknown command: cowsay\nUDEKS:~> echo recovery alive\nrecovery alive\nUDEKS:~> mount 8 /mnt\nUDEKS:~> cowsay recovered\n ___________\n< recovered >\n -----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    }
+  ]
+}

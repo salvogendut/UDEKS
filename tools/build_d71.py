@@ -624,6 +624,18 @@ def validate_ush(bootfs: bytes, executable: bytes) -> None:
     validate_persistent_shell(bootfs[file_offset:file_offset+file_size])
 
 
+def validate_command(executable: bytes) -> None:
+    """Ordinary APP1 executable, independent of a particular utility name."""
+    if (len(executable) < 17 or executable[:4] != b'UDEX' or
+            executable[4] != 0 or executable[5] > 1 or executable[6:8] != b'\x01\0'):
+        raise ValueError('invalid ordinary command header')
+    load, size, bss, entry = (int.from_bytes(executable[n:n+2], 'little') for n in (8, 10, 12, 14))
+    if load != 0x0200 or not size or len(executable) != 16+size or size+bss > 0x0a00:
+        raise ValueError('command exceeds APP1 or file bounds')
+    if not load <= entry < load+size:
+        raise ValueError('command entry outside image')
+
+
 def validate_managed_app(executable: bytes, base: int) -> None:
     """Fixed-slot managed UDEX and all six entry veneers, before packaging."""
     if (len(executable) < 34 or executable[:4] != b'UDEX' or
@@ -718,6 +730,7 @@ def build_image(
     sysinfo: bytes = b"",
     xclock: bytes = b"",
     xwave: bytes = b"",
+    commands: tuple[tuple[str, bytes], ...] = (),
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -834,6 +847,13 @@ def build_image(
         if executable:
             validate_managed_app(executable, base)
             install_prg_file(image, name, executable, file_type=0x81)
+    names = {'SCHEDOVR', 'USH', 'RC', 'HELLO', 'FREE', 'DF', 'XCLOCK', 'XWAVE'}
+    for name, executable in commands:
+        if name in names or not name or len(name) > 16 or any(c not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-' for c in name):
+            raise ValueError('invalid or duplicate disk command name')
+        names.add(name)
+        validate_command(executable)
+        install_prg_file(image, name, executable, file_type=0x81)
     return bytes(image)
 
 
@@ -872,6 +892,8 @@ def main() -> None:
     parser.add_argument("--sysinfo", type=Path, help="standalone FREE/DF multicall UDEX")
     parser.add_argument("--xclock", type=Path, help="disk-only managed XCLOCK UDEX")
     parser.add_argument("--xwave", type=Path, help="disk-only managed XWAVE UDEX")
+    from build_bootfs import parse_entry
+    parser.add_argument("--command", action="append", type=parse_entry, default=[], metavar="NAME=UDEX")
     parser.add_argument(
         "--d64-output",
         type=Path,
@@ -912,6 +934,7 @@ def main() -> None:
             b"" if args.sysinfo is None else args.sysinfo.read_bytes(),
             b"" if args.xclock is None else args.xclock.read_bytes(),
             b"" if args.xwave is None else args.xwave.read_bytes(),
+            tuple((name, path.read_bytes()) for name, path in args.command),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

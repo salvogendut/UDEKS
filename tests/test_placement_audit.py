@@ -154,8 +154,17 @@ class PlacementAuditTests(unittest.TestCase):
         self.assertEqual(result["kernel_gap"], 0x100)
         failures = verify(result)
         self.assertTrue(
-            any("sequentially" in failure for failure in failures)
+            any("frozen boot-delivery address" in failure for failure in failures)
         )
+
+    def test_command_reclaim_is_free_gap_not_shadow_padding(self):
+        # Change the BSS end and size without moving the frozen shadow.
+        reclaimed = FIXTURE.replace('BSS                   002352  00A1DF  007E8E',
+                                   'BSS                   002352  00A0DF  007D8E')
+        result = audit(reclaimed, OBJECT_DUMP)
+        self.assertEqual(result['kernel_gap'], 256)
+        self.assertEqual(result['vic_shadow_padding'], 0)
+        self.assertEqual(verify(result), [])
 
     def test_startup_outside_bootcrt_fails_verification(self):
         map_text = FIXTURE.replace(
@@ -277,12 +286,12 @@ class PlacementVerifyTests(unittest.TestCase):
 
 
 class PlacementContractTests(unittest.TestCase):
-    def test_shadow_segment_is_sequential_at_its_bitmap_size(self):
+    def test_shadow_preserves_staging_base_and_bitmap_size(self):
         self.assertEqual(vic_bitmap_size(), 8000)
         config = (ROOT / "cfg/8502-bootstrap.cfg").read_text(encoding="utf-8")
         clause = config.split("VICSHADOW:", 1)[1].split(";", 1)[0]
         self.assertIn("load = KERNEL", clause)
-        self.assertNotIn("start", clause)
+        self.assertIn("start = $A1E0", clause)
         source = (ROOT / "src/services/display/vic_graphics.c").read_text(
             encoding="utf-8"
         )

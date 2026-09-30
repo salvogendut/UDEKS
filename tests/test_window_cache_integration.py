@@ -105,6 +105,18 @@ class WindowCacheIntegrationTests(unittest.TestCase):
             with self.assertRaises(ValueError): layout_maps(text, panic)
             with self.assertRaises(ValueError): layout_maps(normal, text)
 
+    def test_command_reclaim_does_not_relax_public_reservations(self):
+        reference = ROOT / 'bench/artifacts/2026-09-29-window-drag-start/inputs/build/window-drag-start/repo/build/8502'
+        normal = (reference/'udeks-8502.map').read_text()
+        for before, after in (('00E2E1  00012A', '00E2E2  00012B'),
+                              ('00F904  000105', '00F909  00010A'),
+                              ('00A1DF  0002B8', '00A1E0  0002B9')):
+            damaged = normal.replace(before, after)
+            self.assertNotEqual(normal, damaged)
+            with self.assertRaises(ValueError): layout_maps(damaged, damaged)
+        moved = normal.replace('00E2E1  00012A', '00E2E0  000129')
+        with self.assertRaises(ValueError): layout_maps(normal, moved)
+
     def test_runtime_probe_normalizes_only_qualified_live_operands_and_scratch(self):
         module = (PROOF / 'module.bin').read_bytes()
         slot = bytearray(module.ljust(0x1010, b'\0') + identity(module))

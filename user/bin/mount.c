@@ -15,7 +15,7 @@ unsigned char udeks_program_main(unsigned char argc, unsigned char **argv)
     while (*arg) { if (*arg++ == '/') name = arg; }
     op = UDEKS_TREQ_OP_MOUNT;
     offset = 1;
-    if (name[0] == 'u') { op = UDEKS_TREQ_OP_UMOUNT; offset = 0; }
+    if ((name[0] | 32u) == 'u') { op = UDEKS_TREQ_OP_UMOUNT; offset = 0; }
     if (argc != offset+2u || strcmp((const char *)argv[argc-1], "/mnt"))
         goto usage;
     device = 0;
@@ -31,7 +31,11 @@ unsigned char udeks_program_main(unsigned char argc, unsigned char **argv)
         }
         if (device < 8u || device > 11u) goto usage;
     }
-    if (!udeks_mount_request(device, op)) return 0;
+    if (!udeks_mount_request(device, op)) {
+        if (op == UDEKS_TREQ_OP_MOUNT)
+            udeks_write(UDEKS_STDOUT, (const unsigned char *)"mount: /mnt ready (read-only)\n");
+        return 0;
+    }
     udeks_write(UDEKS_STDERR, (const unsigned char *)"mount: failed\n");
     return 1;
 usage:

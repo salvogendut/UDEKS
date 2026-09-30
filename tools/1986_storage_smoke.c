@@ -107,6 +107,56 @@ static void disk_graphics(void) {
     require(byte(0xf11b) == 0, "lifecycle canary failure");
     puts("PASS disk graphics: load both, drag/resize clock, Ctrl+C wave, drag/focus, console, stop/restart");
 }
+#ifdef UDEKS_DRAG_REGRESSION
+static void window_border(unsigned x, unsigned y, unsigned width, unsigned height) {
+    unsigned missing = 0;
+    for (unsigned yy = y; yy < y+height; ++yy)
+        for (unsigned xx = x; xx < x+width; ++xx) {
+            if (xx != x && xx != x+width-1 && yy != y && yy != y+height-1) continue;
+            unsigned offset = (yy/8)*320 + (xx/8)*8 + (yy%8);
+            if (!(byte(0x16000+offset) & (128 >> (xx%8)))) ++missing;
+        }
+    printf("border %u,%u %ux%u: %u missing pixels\n", x, y, width, height, missing);
+    fflush(stdout);
+    require(!missing, "focused window border was clipped or lost");
+}
+
+static void drag_regression(void) {
+#ifdef UDEKS_BOOT_MOUNT_SMOKE
+    wait_byte(0xf3e0, 2, "default startup did not finish");
+    require(!console_contains("mount: failed"), "default startup mount failed");
+#else
+    storage_command("mount 8 /mnt", 0);
+#endif
+    storage_command("uname -a", 0);
+    command("z80ctl test"); idle();
+    require(console_contains("Z80 self-test: OK"), "engine control did not finish");
+    command("xclock &"); idle();
+    require(byte(0xf225) == 3, "implicit desktop clock did not start");
+    for (unsigned i = 0; i < 12; ++i) {
+        unsigned x = byte(0xf228), y = byte(0xf229);
+        unsigned next_x = (i * 37 + 24) % 176;
+        unsigned next_y = (i * 17 + 16) % 96;
+        printf("drag %u from %u,%u to %u,%u clip-code=$%02X\n",
+               i, x, y, next_x, next_y, byte(0x8000)); fflush(stdout);
+        window_gesture(x+22, y+46, next_x+22, next_y+46);
+        require(abs((int)byte(0xf228) - (int)next_x) <= 1 &&
+                abs((int)byte(0xf229) - (int)next_y) <= 1,
+                "clock geometry did not follow drag");
+        window_border(byte(0xf228), byte(0xf229), byte(0xf22a), byte(0xf22b));
+    }
+    command("xwave &"); idle();
+    wait_byte(0xf27a, 21, "wave did not finish after clock drags");
+    require(byte(0xf246) == 2, "both windows must exist");
+    window_border(byte(0xf274), byte(0xf275), byte(0xf276), byte(0xf277));
+    window_gesture(byte(0xf274)+22, byte(0xf275)+46, 42, 66);
+    window_border(byte(0xf274), byte(0xf275), byte(0xf276), byte(0xf277));
+    command("cowsay hello"); idle();
+    require(console_contains("hello") && console_contains("^__^"), "console after drags failed");
+    require(snapshot_save(machine, snapshot_path) == SNAPSHOT_OK, "save drag regression evidence");
+    puts("PASS reported sequence: implicit desktop, repeated clock drag, wave drag, cowsay");
+}
+#endif
 #endif
 
 int main(int argc, char **argv) {
@@ -137,6 +187,11 @@ int main(int argc, char **argv) {
     }
     diagnostic();
     require(byte(0xf3d9) == 0xa5, "native raw-IEC boot failed");
+#ifdef UDEKS_DRAG_REGRESSION
+    drag_regression();
+    free(machine);
+    return 0;
+#endif
 #ifdef UDEKS_SYSINFO_SMOKE
     wait_byte(0xf3e0, 2, "startup script did not finish");
     require(!console_contains("RC failed"), "default startup script failed");
@@ -146,14 +201,18 @@ int main(int argc, char **argv) {
             "shell was not loaded from boot-device disk");
     idle();
     unsigned shell_before = byte(0xf3d8);
-    text("uname -a\n");
+    text("help\n");
     wait_byte(0xf3d8, (shell_before+1) & 255, "shell builtin was not accepted");
     idle();
-    require(console_contains("UDEKS 0.1.0 c128 8502"), "disk shell uname failed");
-    puts("PASS native disk shell source=1 error=0 device=8, uname works");
+    require(console_contains("Recovery: mount umount"), "disk shell help failed");
+    puts("PASS native disk shell source=1 error=0 device=8, help works");
 #endif
-    storage_command("ls /bin", 0);
+    /* The normal RC now owns this mount. Keep explicit mount tests below
+     * independent of the default policy, after proving RC completed. */
+    wait_byte(0xf3e0, 2, "startup did not finish");
+    storage_command("umount /mnt", 0);
     storage_command("mount 8 /mnt", 0);
+    storage_command("ls /bin", 0);
     storage_command("ls /mnt", 0);
 #ifdef UDEKS_SYSINFO_SMOKE
     storage_command("free", 0);
@@ -190,10 +249,10 @@ int main(int argc, char **argv) {
 #endif
     storage_command("cat /mnt/hello", 0);
     storage_command("umount /mnt", 0);
-    storage_command("ls /bin", 0);
+    command("echo recovery alive"); idle();
     require(drive_attach_disk(&machine->drive, NULL) == 0, "remove disk");
     storage_command("mount 8 /mnt", 1);
-    storage_command("ls /bin", 0);
+    command("echo recovery alive"); idle();
     require(drive_attach_disk(&machine->drive, argv[2]) == 0, "reinsert disk");
     storage_command("mount 8 /mnt", 0);
     storage_command("cat /mnt/hello", 0);

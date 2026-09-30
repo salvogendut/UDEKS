@@ -59,3 +59,15 @@ class MountCommand(unittest.TestCase):
         self.assertEqual(self.invoke('mount', '8', '/mnt'), 1)
         self.assertEqual(self.value('descriptor').value, 2)
         self.assertIn(b'failed', (c.c_char*80).in_dll(self.lib, 'test_message').value)
+
+    def test_only_a_successful_mount_reports_ready(self):
+        self.assertEqual(self.invoke('mount', '8', '/mnt'), 0)
+        self.assertEqual(self.value('descriptor').value, 1)
+        self.assertEqual((c.c_char*80).in_dll(self.lib, 'test_message').value,
+                         b'mount: /mnt ready (read-only)\n')
+        self.setUp()
+        self.assertEqual(self.invoke('umount', '/mnt'), 0)
+        self.assertEqual((c.c_char*80).in_dll(self.lib, 'test_message').value, b'')
+        self.value('error').value = 5
+        self.assertEqual(self.invoke('mount', '8', '/mnt'), 1)
+        self.assertNotIn(b'ready', (c.c_char*80).in_dll(self.lib, 'test_message').value)

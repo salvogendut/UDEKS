@@ -8,7 +8,7 @@ BOOTFS_BASE = 0xA000
 BOOTFS_LIMIT = 0xD100
 DRIVER_BASE = 0xE300
 SECONDARY_LIMIT = 0xE900
-USH_BSS = 0x180
+USH_BSS = 0x170
 
 
 def install_router(tail: bytes, start: int, bss_end: int, router: bytes) -> bytes:

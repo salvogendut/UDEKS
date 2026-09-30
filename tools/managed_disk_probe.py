@@ -49,9 +49,9 @@ def main():
         def command(text, contains=None, loader_error=None):
             deadline = time.monotonic()+90
             sp.wait_for_byte(port, slots+1, 4, deadline)
-            before = byte(port, 0xF17E)
+            before = byte(port, 0xF3D8)
             type_command(port, queue, text, deadline)
-            sp.wait_for_byte(port, 0xF17E, (before+1)&255, deadline)
+            sp.wait_for_byte(port, 0xF3D8, (before+1)&255, deadline)
             sp.wait_for_byte(port, slots+1, 4, deadline)
             sp.wait_for_byte(port, slots+2, 2, deadline)
             cells = capture('console', 0x0C00, 0x558)
@@ -65,22 +65,33 @@ def main():
             records.append(dict(command=text, loader=status.hex(), console=console))
             print('PASS', text, flush=True)
 
+        command('umount /mnt')  # Explicit setup for the missing-mount case.
         command('xinit', 'VIC-II graphics active')
-        command(first+' &', first+': start failed', 11)
+        command(first+' -q', first+': not ready')
+        command(first+' &', first+': not found; check /mnt', 11)
         command('mount 8 /mnt')
         command(first+' &', loader_error=0)
         sp.wait_for_byte(port, states[first], 3, time.monotonic()+30)
+        command(first+' &', first+': already running')
         if first == 'xwave': sp.wait_for_byte(port, 0xF27A, 21, time.monotonic()+60)
         peer = capture('peer-before', bases[first], len(programs[first])-16)
         if peer != programs[first][16:]: raise AssertionError('loaded image differs from disk')
         target = capture('target-before', bases[second], 0xA00)
         if args.faults:
+            monitor_command(port, 'detach 8')
+            command(second+' &', second+': I/O error', 13)
+            if capture('io-peer', bases[first], len(peer)) != peer or capture('io-target', bases[second], len(target)) != target:
+                raise AssertionError('I/O failure mutated app slots')
+            command('umount /mnt')
+            monitor_command(port, f'attach "{disk}" 8')
+            command('mount 8 /mnt')
             for variant, error in ERRORS.items():
                 command('umount /mnt')
                 bad = work/(variant+disk.suffix); bad.write_bytes(fixture(image, second.upper(), variant))
                 monitor_command(port, f'attach "{bad}" 8')
                 command('mount 8 /mnt')
-                command(second+' &', second+': start failed', error)
+                message = 'not found; check /mnt' if error == 11 else 'I/O error' if error == 13 else 'bad program'
+                command(second+' &', second+': '+message, error)
                 if capture('peer-after', bases[first], len(peer)) != peer or capture('target-after', bases[second], len(target)) != target:
                     raise AssertionError(variant+': rejected load mutated live slots')
                 if byte(port, states[first]) != 3: raise AssertionError('peer stopped')
@@ -92,7 +103,7 @@ def main():
             child = capture('owned-child', 0x0200, 0x1000, 'worker')
             for state in (5, 6):
                 sp.write_kernel_blocks(port, [(slots+9, bytes((state,)))])
-                command(second+' &', second+': start failed')
+                command(second+' &', second+': slot busy')
                 if capture('after-launcher', 0xF280, 32) != launcher or capture('after-child', 0x0200, 0x1000, 'worker') != child:
                     raise AssertionError('busy load overwrote child storage/launcher')
             sp.write_kernel_blocks(port, [(slots+9, b'\0')])
@@ -110,7 +121,7 @@ def main():
             sp.wait_for_byte(port, states[name], 2, time.monotonic()+30)
             command(name+' &')
             sp.wait_for_byte(port, states[name], 3, time.monotonic()+30)
-        command('cowsay alive', '^__^')
+        command('echo recovery alive', 'recovery alive')
         if byte(port, 0xF11B): raise AssertionError('lifecycle canary failure')
         (work/'result.json').write_text(json.dumps(dict(disk_sha256=hashlib.sha256(image).hexdigest(),
             first=first, drive=args.drive, faults=args.faults, bootfs_names=[n.decode() for n in names],

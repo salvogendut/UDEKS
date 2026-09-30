@@ -341,10 +341,10 @@ def verify(result: dict[str, object]) -> list[str]:
             f"VICSHADOW reserves {result['vic_shadow_padding']} padding bytes "
             "beyond UDEKS_VIC_BITMAP_SIZE; link it at its bitmap size"
         )
-    if result["kernel_gap"] != 0:
+    if result["kernel_gap"] < 0:
         failures.append(
             f"VICSHADOW starts {result['kernel_gap']} bytes after BSS; "
-            "link it sequentially"
+            "resident code must not overlap the frozen shadow/staging region"
         )
     if result["vic_shadow_start"] != BOOT_DELIVERY_ADDRESS:
         failures.append(

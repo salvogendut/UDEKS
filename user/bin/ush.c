@@ -2,6 +2,7 @@
 #include "udeks/program.h"
 #include "udeks/memory.h"
 #include "udeks/task_request.h"
+#include "udeks/service_control.h"
 #ifndef UDEKS_RECOVERY
 #include "udeks/startup.h"
 static unsigned char startup_active;
@@ -20,6 +21,46 @@ static unsigned char started;
 static unsigned char waiting_foreground;
 static unsigned char line_length;
 static unsigned char line[LINE_CAPACITY + 1u];
+extern unsigned char submit_request(unsigned char, unsigned char, unsigned char);
+#define PAYLOAD ((volatile unsigned char *)(UDEKS_TASK_REQUEST_BASE + UDEKS_TREQ_PAYLOAD))
+#define REPLY(n) (*(volatile unsigned char *)(UDEKS_CONTROL_REPLY_BASE + (n)))
+
+static const unsigned char * const app_errors[] = {
+    (const unsigned char *)"",
+    (const unsigned char *)": not ready\n",
+    (const unsigned char *)": already running\n",
+    (const unsigned char *)": not found; check /mnt\n",
+    (const unsigned char *)": slot busy\n",
+    (const unsigned char *)": bad program\n",
+    (const unsigned char *)": I/O error\n"
+};
+
+static void service_notice(void)
+{
+    unsigned char result;
+    const unsigned char *message;
+    if (REPLY(0) != UDEKS_CONTROL_REPLY_READY) return;
+    result = REPLY(4);
+    /* Console writes do not replace this mailbox; no new command is issued
+     * while its completion is being consumed. */
+    REPLY(0) = 0;
+    if (result == UDEKS_CONTROL_INTERRUPTED) {
+        message = (const unsigned char *)"Interrupted\n";
+    } else if (REPLY(1) == UDEKS_CONTROL_DESKTOP) {
+        message = (const unsigned char *)(result ? "xinit: failed\n" :
+            REPLY(2) ? "VIC-II graphics stopped\n" : "VIC-II graphics active\n");
+    } else if (REPLY(1) == UDEKS_CONTROL_ENGINE) {
+        message = (const unsigned char *)(result ? "Z80 self-test: failed\n" : "Z80 self-test: OK\n");
+    } else {
+        udeks_write(1, (const unsigned char *)(REPLY(1) == UDEKS_CONTROL_CLOCK ? "xclock" : "xwave"));
+        if (result) {
+            if (result > UDEKS_CONTROL_DISK_ERROR) result = UDEKS_CONTROL_NOT_READY;
+            message = app_errors[result];
+        } else message = (const unsigned char *)(REPLY(2) ? " stopped\n" :
+            REPLY(3) ? " started &\n" : " running (Ctrl+C stops)\n");
+    }
+    udeks_write(1, message);
+}
 
 static void write_line(const unsigned char *text)
 {
@@ -74,6 +115,7 @@ static void dispatch_line(void)
     unsigned char command;
     unsigned char rest;
     unsigned char result;
+    unsigned char target;
 
     ++USH_COMMANDS;
     command = skip_space(0);
@@ -96,27 +138,41 @@ static void dispatch_line(void)
         return;
     }
 
-    rest = command_end(command, (const unsigned char *)"uname");
-    if (rest != 0xFFu) {
-        rest = skip_space(rest);
-        if (line[rest] == 0) {
-            write_line((const unsigned char *)"UDEKS");
-            finish_command();
-            return;
-        }
-        if (text_equal(rest, (const unsigned char *)"-a")) {
-            write_line((const unsigned char *)"UDEKS 0.1.0 c128 8502");
-            finish_command();
-            return;
-        }
-    }
-
     rest = command_end(command, (const unsigned char *)"help");
     if (rest != 0xFFu && line[skip_space(rest)] == 0) {
-        write_line((const unsigned char *)"cat cd cowsay date df echo free help ls mount pwd uname");
+        write_line((const unsigned char *)"cd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount");
         finish_command();
         return;
     }
+
+    rest = command_end(command, (const unsigned char *)"clear");
+    if (rest != 0xFFu && line[skip_space(rest)] == 0) {
+        udeks_write_byte(1, '\f');
+        finish_command();
+        return;
+    }
+
+    target = UDEKS_CONTROL_DESKTOP;
+    rest = command_end(command, (const unsigned char *)"xinit");
+    if (rest == 0xFFu) {
+        target = UDEKS_CONTROL_CLOCK;
+        rest = command_end(command, (const unsigned char *)"xclock");
+    }
+    if (rest == 0xFFu) {
+        target = UDEKS_CONTROL_WAVE;
+        rest = command_end(command, (const unsigned char *)"xwave");
+    }
+    if (rest != 0xFFu) {
+        rest = skip_space(rest);
+        PAYLOAD[0] = target; PAYLOAD[1] = 0; PAYLOAD[2] = 0;
+        if (text_equal(rest, (const unsigned char *)"-q")) PAYLOAD[1] = UDEKS_CONTROL_STOP;
+        else if (target != UDEKS_CONTROL_DESKTOP && text_equal(rest, (const unsigned char *)"&")) PAYLOAD[2] = 1;
+        else if (line[rest]) {
+            write_line((const unsigned char *)"xinit [-q]; xclock/xwave [-q|&]");
+            finish_command(); return;
+        }
+        result = submit_request(UDEKS_TREQ_OP_CONTROL, 0, UDEKS_CONTROL_COUNT);
+    } else {
 
     rest = command_end(command, (const unsigned char *)"pwd");
     if (rest != 0xFFu && line[skip_space(rest)] == 0) {
@@ -149,6 +205,7 @@ static void dispatch_line(void)
     }
 
     result = udeks_exec_line(line, line_length);
+    }
     line_length = 0;
     line[0] = 0;
     if (result == UDEKS_TREQ_EXEC_FOREGROUND) {
@@ -156,7 +213,7 @@ static void dispatch_line(void)
         return;
     }
     if (result == UDEKS_IO_ERROR) {
-        write_line((const unsigned char *)"ush: exec failed");
+        write_line((const unsigned char *)"ush: failed");
     }
 #ifndef UDEKS_RECOVERY
     if (!startup_active)
@@ -185,7 +242,7 @@ unsigned char udeks_ush_poll(void)
             startup_active = udeks_startup_begin(USH_STATUS(UDEKS_USH_BOOT_DEVICE));
             if (startup_active == UDEKS_IO_ERROR) {
                 startup_active = 0;
-                write_line((const unsigned char *)"ush: RC failed; startup skipped");
+                write_line((const unsigned char *)"ush: RC failed");
                 udeks_prompt();
             }
         }
@@ -194,11 +251,13 @@ unsigned char udeks_ush_poll(void)
         return UDEKS_EXIT_SUCCESS;
     }
     if (waiting_foreground != 0) {
+        service_notice();
         count = udeks_wait_foreground();
         if (count == UDEKS_IO_ERROR || count != 0) {
             return UDEKS_EXIT_SUCCESS;
         }
         waiting_foreground = 0;
+        finish_command();
         return UDEKS_EXIT_SUCCESS;
     }
 

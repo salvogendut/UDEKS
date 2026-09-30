@@ -223,9 +223,9 @@ snapshot. It does not use KERNAL traps or certify physical drive behavior.
   are not implemented. `ls -l /mnt` prints `?` for unknown sizes rather than
   accidentally looking up a namesake in bootfs.
 - The driver is synchronous and IRQ-masked; disk I/O can pause input/graphics.
-  There is no write support or storage cancellation yet. The boot banner's
-  historical `STORAGE/FILESYSTEM SERVICES: DEFERRED` wording is also still due
-  for correction; runtime commands, not that banner, describe this checkpoint.
+  There is no write support or storage cancellation yet. The later issue #24
+  release replaces the historical `DEFERRED` banner with measured IEC/bootfs
+  header checks and reports successful media mounting separately.
 
 **Merge update (2026-09-30):** PR #17 merged by explicit user authorization
 as `92a2e36`. Physical C128 + PI1541 qualification is still unrecorded;

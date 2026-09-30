@@ -1,0 +1,69 @@
+PC=FF74 drive=EAB7 jam=0 speed=1 CIA2=07/3F bus=110 via=02/1A request=00/00/00 exit=0
+PC=E3BC drive=D5A8 jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E4B1 drive=E97D jam=0 speed=0 CIA2=47/3F bus=110 via=07/1A request=00/00/00 exit=0
+PC=E3AE drive=F4D4 jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E4B0 drive=E96C jam=0 speed=0 CIA2=47/3F bus=101 via=0D/1A request=00/00/00 exit=0
+PC=E4AE drive=E95F jam=0 speed=0 CIA2=47/3F bus=101 via=0D/1A request=00/00/00 exit=0
+PC=E496 drive=E961 jam=0 speed=0 CIA2=47/3F bus=101 via=08/1A request=00/00/00 exit=0
+PC=9B80 drive=EC3C jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=02/12/00 exit=0
+command mount 8 /mnt: PC=895C drive=EC17 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+V0.1.0  (C) 2026                                                
+                                                                
+INITIALIZING SYSTEM HARDWARE ...                          [ OK ]
+DETECTING MEMORY ...                                      [ OK ]
+BASE RAM : 128 KB                                         [ OK ]
+VDC RAM : 64 KB                                           [ OK ]
+INITIALIZING CONSOLE ...                                  [ OK ]
+VIDEO : PAL / VDC 8568                                    [ OK ]
+REU : NOT PRESENT                                         [ -- ]
+GEORAM : NOT PRESENT                                      [ -- ]
+8502 EXECUTIVE : 1 MHZ                                    [ OK ]
+Z80 WORKER : READY                                        [ OK ]
+STORAGE SERVICES : DEFERRED                               [ -- ]
+FILESYSTEM SERVICES : DEFERRED                            [ -- ]
+                                                                
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~>                                                        
+command uname -a: PC=8A5A drive=EC45 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+INITIALIZING SYSTEM HARDWARE ...                          [ OK ]
+DETECTING MEMORY ...                                      [ OK ]
+BASE RAM : 128 KB                                         [ OK ]
+VDC RAM : 64 KB                                           [ OK ]
+INITIALIZING CONSOLE ...                                  [ OK ]
+VIDEO : PAL / VDC 8568                                    [ OK ]
+REU : NOT PRESENT                                         [ -- ]
+GEORAM : NOT PRESENT                                      [ -- ]
+8502 EXECUTIVE : 1 MHZ                                    [ OK ]
+Z80 WORKER : READY                                        [ OK ]
+STORAGE SERVICES : DEFERRED                               [ -- ]
+FILESYSTEM SERVICES : DEFERRED                            [ -- ]
+                                                                
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~> mount 8 /mnt                                           
+UDEKS:~> uname -a                                               
+UDEKS 0.1.0 c128 8502                                           
+UDEKS:~>                                                        
+command: z80ctl test -> accepted (Return release=565 frames)
+command: xclock & -> accepted (Return release=650 frames)
+drag 0 from 124,61 to 24,16 clip-code=$A0
+border 24,15 72x77: 294 missing pixels
+FAIL: focused window border was clipped or lost (frame 20849, PC $C23F, request 00/10/00)
+trace PC=$8A18 drag=0 buttons=0 moves=13 finishes=1
+trace PC=$5F6C drag=0 buttons=0 moves=13 finishes=1
+trace PC=$C247 drag=0 buttons=0 moves=13 finishes=1
+trace PC=$626C drag=0 buttons=0 moves=13 finishes=1
+trace PC=$8AA5 drag=0 buttons=0 moves=13 finishes=1
+trace PC=$8A18 drag=0 buttons=0 moves=13 finishes=1
+trace PC=$5F6C drag=0 buttons=0 moves=13 finishes=1
+trace PC=$C247 drag=0 buttons=0 moves=13 finishes=1
+trace PC=$6257 drag=0 buttons=0 moves=13 finishes=1
+trace PC=$88C3 drag=0 buttons=0 moves=13 finishes=1
+trace PC=$8AC9 drag=0 buttons=0 moves=13 finishes=1
+trace PC=$5F5E drag=0 buttons=0 moves=13 finishes=1

@@ -300,6 +300,10 @@ user-sources: $(USER_COWSAY_ASM) $(USER_DATE_ASM) $(USER_LS_ASM) $(USER_USH_ASM)
 		$(USER_FILESYSTEM_OBJ) $(USER_POLL_ENTRY_OBJ)
 
 user-programs: $(USER_BOOTFS) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX)
+user-programs: $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(BUILD_USER)/filetools.udx $(BUILD_USER)/sysinfo.udx $(BUILD_USER)/diagnostics.udx
+
+$(BUILD_8502)/shell.s: include/udeks/service_control.h include/udeks/task_request.h
+$(USER_USH_ASM) $(BUILD_USER)/ush-recovery.o: include/udeks/service_control.h include/udeks/task_request.h
 
 # Compile-only proof that the host-tested lifecycle modules build for cc65.
 task-state: $(BUILD_8502)/task_state.o
@@ -593,14 +597,14 @@ $(USER_USH_BIN): $(USER_POLL_ENTRY_OBJ) $(USER_TASK_STREAM_OBJ) \
 	$(CL65) -t none --cpu 6502 -C cfg/8502-user-bank1.cfg \
 		-m $(BUILD_USER)/ush.map -o $@ $(filter %.o,$^)
 
-$(USER_USH_UDEX): $(USER_USH_BIN) tools/build_udex.py
+$(USER_USH_UDEX): $(USER_USH_BIN) tools/build_udex.py Makefile
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x9000 \
-		--entry-address 0x9000 --bss-size 0x0180 --flags 0x01 $< $@
+		--entry-address 0x9000 --bss-size 0x0170 --flags 0x01 $< $@
 
 $(BUILD_USER)/startup.o: user/lib/startup.c user/include/udeks/startup.h include/udeks/task_request.h user/include/udeks/program.h | $(BUILD_USER)
 	$(CL65) $(CFLAGS_8502) --static-locals -I user/include -c -o $@ $<
-$(BUILD_USER)/ush_bounds.o: user/lib/ush_bounds.s | $(BUILD_USER)
-	$(CA65) --cpu 6502 -D UDEKS_USH_BSS=384 -o $@ $<
+$(BUILD_USER)/ush_bounds.o: user/lib/ush_bounds.s Makefile | $(BUILD_USER)
+	$(CA65) --cpu 6502 -D UDEKS_USH_BSS=368 -o $@ $<
 $(BUILD_USER)/ush_recovery_bounds.o: user/lib/ush_bounds.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -D UDEKS_USH_BSS=80 -o $@ $<
 $(BUILD_USER)/ush-recovery.o: user/bin/ush.c include/udeks/task_request.h user/include/udeks/program.h | $(BUILD_USER)
@@ -784,14 +788,11 @@ $(USER_XWAVE_UDEX): $(USER_XWAVE_BIN) tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x1200 \
 		--entry-address 0x1200 --bss-size 0x0225 --flags 0x02 $< $@
 
-$(USER_BOOTFS): $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) \
+$(USER_BOOTFS): $(USER_MOUNT_UDEX) \
 		$(USER_RECOVERY_USH_UDEX) \
 		tools/build_bootfs.py Makefile
 	$(PYTHON) tools/build_bootfs.py --max-size 0x3100 \
-		--entry cowsay=$(USER_COWSAY_UDEX) \
-		--entry date=$(USER_DATE_UDEX) \
-		--entry ls=$(USER_FILETOOLS_UDEX) --entry cat=$(USER_FILETOOLS_UDEX) \
-		--entry mount=$(USER_FILETOOLS_UDEX) --entry umount=$(USER_FILETOOLS_UDEX) \
+		--entry mount=$(USER_MOUNT_UDEX) --entry umount=$(USER_MOUNT_UDEX) \
 		--entry ush=$(USER_RECOVERY_USH_UDEX) $@
 
 $(VDC_SPLASH_BIN): assets/udekspipe-64.xpm tools/xpm_to_vdc.py | $(BUILD_ASSETS)
@@ -871,7 +872,8 @@ $(BUILD_8502)/window_manager.s: $(WINDOW_MANAGER_SOURCE) \
 
 $(BUILD_8502)/boot_console.s: src/services/window/boot_console.c \
 		include/udeks/boot_console.h include/udeks/capability.h \
-		include/udeks/root_console.h include/udeks/z80_worker.h | $(BUILD_8502)
+		include/udeks/root_console.h include/udeks/z80_worker.h \
+		include/udeks/memory.h | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/keyboard.s: src/services/input/keyboard.c \
@@ -1909,7 +1911,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
 		tools/build_d71.py bench/iec-directory/hello.txt user/etc/rc $(USER_SYSINFO_UDEX) \
-		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX)
+		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX)
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
@@ -1933,6 +1935,11 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--hello bench/iec-directory/hello.txt \
 		--rc user/etc/rc --sysinfo $(USER_SYSINFO_UDEX) \
 		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) \
+		--command COWSAY=$(USER_COWSAY_UDEX) --command DATE=$(USER_DATE_UDEX) \
+		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_FILETOOLS_UDEX) \
+		--command UNAME=$(USER_DIAGNOSTICS_UDEX) --command LSHW=$(USER_DIAGNOSTICS_UDEX) \
+		--command LSMOD=$(USER_DIAGNOSTICS_UDEX) --command LSCPU=$(USER_DIAGNOSTICS_UDEX) \
+		--command Z80CTL=$(USER_DIAGNOSTICS_UDEX) \
 		--d64-output $(BOOT_D64) $(BOOT_D71)
 
 $(TASK_EXIT_PROBE_D71) $(TASK_EXIT_PROBE_D64) &: $(STAGE0_BIN) \
@@ -2127,6 +2134,7 @@ $(TASK_CANCEL_PROBE_D71) $(TASK_CANCEL_PROBE_D64) &: $(STAGE0_BIN) \
 
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) \
+		$(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX) \
 		$(BOOT_DELIVERY_BIN) \
 		$(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) \
 		$(SCHEDULER_BIN) $(CAPABILITY_BIN) $(CAPABILITY_INSTALLER_BIN) \
@@ -2143,6 +2151,11 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(PANIC_PROBE_KERNEL_BIN) \
 		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) \
+		--command COWSAY=$(USER_COWSAY_UDEX) --command DATE=$(USER_DATE_UDEX) \
+		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_FILETOOLS_UDEX) \
+		--command UNAME=$(USER_DIAGNOSTICS_UDEX) --command LSHW=$(USER_DIAGNOSTICS_UDEX) \
+		--command LSMOD=$(USER_DIAGNOSTICS_UDEX) --command LSCPU=$(USER_DIAGNOSTICS_UDEX) \
+		--command Z80CTL=$(USER_DIAGNOSTICS_UDEX) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
 		--crt0 $(PANIC_PROBE_CRT0_BIN) \
 		--probe $(PANIC_PROBE_PROBE_BIN) \
@@ -2168,6 +2181,7 @@ check:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
 	$(PYTHON) -m py_compile tools/managed_app_fixture.py tools/managed_disk_probe.py
 	$(PYTHON) -m py_compile tools/startup_probe.py
+	$(PYTHON) -m py_compile tools/boot_entry_probe.py tools/boot_diagnostic.py tools/boot_banner_probe.py
 	$(PYTHON) -m py_compile tools/build_storage.py tools/storage_service_probe.py tools/storage_shell_probe.py tools/iec_eof_reference.py tools/disk_exec_fixture.py tools/disk_exec_probe.py tools/gen_disk_loader_bindings.py tools/1986_storage_smoke_build.py tools/disk_shell_fixture.py tools/disk_shell_probe.py
 	$(PYTHON) -m py_compile tools/ihx_to_bin.py tools/bin_to_prg.py \
 		tools/bench_decode.py tools/irq_probe_decode.py \

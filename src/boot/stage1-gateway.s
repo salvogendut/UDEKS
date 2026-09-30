@@ -18,6 +18,13 @@ MMU_LCR_KERNEL_FLAT     = $ff02
 MMU_LCR_WORKER_FLAT     = $ff04
 BUSY_SPRITE_SOURCE      = $0bc0
 VIC_BUSY_TEMPLATE       = $4140
+        ; Private scratch before crt0/service startup, in both physical banks.
+        ; Bank 0's root-console BSS and bank 1's task pages are initialized
+        ; later. This lies below BOTH loaded payloads ($1C00 / $1200), outside
+        ; relocated pages zero/one and outside the common top 4 KiB.
+        ; Never probe $8000: it contains resident kernel code in bank 0.
+BANK_PROBE_SCRATCH       = $1000
+        .assert BANK_PROBE_SCRATCH >= $0200 .and BANK_PROBE_SCRATCH < $1200, error, "bank probe overlaps payload or architectural pages"
 
         ; This installer remains below $F800 while it replaces the boot-time
         ; code above it with permanent common-RAM services.
@@ -191,17 +198,17 @@ gateway_start:
         lda #$00
         sta MMU_LCR_KERNEL_FLAT
         lda #$a0
-        sta $8000
+        sta BANK_PROBE_SCRATCH
         sta MMU_LCR_WORKER_FLAT
         lda #$a1
-        sta $8000
-        cmp $8000
+        sta BANK_PROBE_SCRATCH
+        cmp BANK_PROBE_SCRATCH
         beq bank1_ready
         jmp bank1_failure
 bank1_ready:
         lda #$00
         sta MMU_LCR_KERNEL_FLAT
-        lda $8000
+        lda BANK_PROBE_SCRATCH
         cmp #$a0
         beq bank0_ready
         jmp bank0_failure
@@ -299,6 +306,31 @@ checksum_high_matches:
         sta BOOT_CHAIN_DEST_SUM
         lda destination_sum_high
         sta BOOT_CHAIN_DEST_SUM+1
+
+        ; Read the actual bank-1 images while that bank is still mapped.
+        ; These are header-presence checks, NOT a disk mount or write test.
+        ; Publish explicit results even after a warm reset (no stale OKs).
+        ldx #$00
+        stx BOOT_CHAIN+21
+        stx BOOT_CHAIN+22
+        ldy #$05
+check_storage_header:
+        lda $1203,y
+        cmp storage_identity,y
+        bne storage_checked
+        dey
+        bpl check_storage_header
+        inc BOOT_CHAIN+21
+storage_checked:
+        ldy #$05
+check_bootfs_header:
+        lda $a000,y
+        cmp bootfs_identity,y
+        bne bootfs_checked
+        dey
+        bpl check_bootfs_header
+        inc BOOT_CHAIN+22
+bootfs_checked:
 
         ; SCHEDOVR already delivered bootfs to bank-1 $A000-$D0FF. Do not
         ; overwrite it from legacy Z80/shadow staging. Those old containers
@@ -404,6 +436,9 @@ capability_installed:
         ; The protected $F700 installer can now replace this executing
         ; $F800-$F9FF boot code without stack-page relocation.
         jmp final_install
+
+storage_identity: .byte "UIEC", 0, 1
+bootfs_identity:  .byte "UBFS", 0, 1
 
 bank1_failure:
         lda #$02

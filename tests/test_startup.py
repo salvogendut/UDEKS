@@ -65,8 +65,9 @@ class Startup(unittest.TestCase):
             self.assertEqual(self.lines(), [])
             self.assertEqual((self.calls()[9], self.calls()[18]), (closed, unmounted))
 
-    def test_default_script_fits_and_contains_only_comments(self):
+    def test_default_script_mounts_device_8_without_starting_graphics(self):
         text = (ROOT/'user/etc/rc').read_bytes()
         self.assertLessEqual(len(text), 255)
         self.assertEqual(self.start(text), 1)
-        self.assertTrue(all(line.startswith(b'#') for line in self.lines()))
+        commands = [line for line in self.lines() if not line.lstrip().startswith(b'#')]
+        self.assertEqual(commands, [b'mount 8 /mnt'])

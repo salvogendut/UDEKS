@@ -2,15 +2,16 @@
 #include "udeks/boot_console.h"
 #include "udeks/capability.h"
 #include "udeks/root_console.h"
+#include "udeks/memory.h"
 #include "udeks/z80_worker.h"
 
 #define STATUS_COLUMN 58u
 
 static const unsigned char text_title[] =
     "UDEKS - UNIFIED DUAL ENGINE EXECUTIVE KERNEL SYSTEM";
-static const unsigned char text_version[] = "V0.1.0  (C) 2026";
+static const unsigned char text_version[] = "V0.1.0 (C)2026";
 static const unsigned char text_hardware[] =
-    "INITIALIZING SYSTEM HARDWARE ...";
+    "INITIALIZING HARDWARE ...";
 static const unsigned char text_memory[] = "DETECTING MEMORY ...";
 static const unsigned char text_base_ram[] = "BASE RAM : 128 KB";
 static const unsigned char text_vdc_ram_16k[] = "VDC RAM : 16 KB";
@@ -27,8 +28,10 @@ static const unsigned char text_georam_no[] = "GEORAM : NOT PRESENT";
 static const unsigned char text_8502[] = "8502 EXECUTIVE : 1 MHZ";
 static const unsigned char text_z80_ready[] = "Z80 WORKER : READY";
 static const unsigned char text_z80_offline[] = "Z80 WORKER : OFFLINE";
-static const unsigned char text_storage[] = "STORAGE SERVICES : DEFERRED";
-static const unsigned char text_filesystem[] = "FILESYSTEM SERVICES : DEFERRED";
+/* Stage 1 checked these headers in the actual bank-1 payload. Disk access
+ * is tested separately by RC's mount; neither line claims writable media. */
+static const unsigned char text_storage[] = "IEC DRIVER HEADER ...";
+static const unsigned char text_filesystem[] = "BOOTFS HEADER ...";
 static const unsigned char text_ready[] = "SYSTEM READY.";
 static const unsigned char text_welcome[] = "WELCOME TO UDEKS.";
 static const unsigned char text_prompt[] = "UDEKS:~>";
@@ -102,9 +105,13 @@ unsigned char udeks_boot_console_build(void)
             worker[5] == UDEKS_Z80_WORKER_READY ?
                 text_status_ok : text_status_deferred) !=
             UDEKS_ROOT_CONSOLE_OK ||
-        write_status_line(13, text_storage, text_status_deferred) !=
+        write_status_line(13, text_storage,
+            *(volatile unsigned char *)(UDEKS_BOOT_CHAIN_BASE + UDEKS_BOOT_CHAIN_IEC_HEADER) == 1 ?
+                text_status_ok : text_status_deferred) !=
             UDEKS_ROOT_CONSOLE_OK ||
-        write_status_line(14, text_filesystem, text_status_deferred) !=
+        write_status_line(14, text_filesystem,
+            *(volatile unsigned char *)(UDEKS_BOOT_CHAIN_BASE + UDEKS_BOOT_CHAIN_BOOTFS_HEADER) == 1 ?
+                text_status_ok : text_status_deferred) !=
             UDEKS_ROOT_CONSOLE_OK ||
         write_line(16, text_ready) != UDEKS_ROOT_CONSOLE_OK ||
         write_line(18, text_welcome) != UDEKS_ROOT_CONSOLE_OK ||

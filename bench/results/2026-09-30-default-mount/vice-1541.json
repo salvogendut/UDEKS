@@ -1,0 +1,63 @@
+{
+  "variant": "default",
+  "drive": "1541",
+  "disk_sha256": "4fe13bfc93b3254426e5c9ebec0bf18eb6c84ceb225c17fe6294d856e3fb91eb",
+  "total": 664,
+  "free": 113,
+  "boot_console": "\nINITIALIZING SYSTEM HARDWARE ...                          [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nUDEKS:~>",
+  "driver_intact": true,
+  "commands": [
+    {
+      "command": "xclock &",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~>"
+    },
+    {
+      "command": "free",
+      "console": "Z80 WORKER : READY                                        [ OK ]\nSTORAGE SERVICES : DEFERRED                               [ -- ]\nFILESYSTEM SERVICES : DEFERRED                            [ -- ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~>"
+    },
+    {
+      "command": "df",
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nmount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         551   113        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/DF /mnt",
+      "console": "UDEKS:~>\nmount 8 /mnt\nUDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         551   113        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> /mnt/DF /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         551   113        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~>"
+    },
+    {
+      "command": "df /bad",
+      "console": "UDEKS:~> xclock &\nxclock started in background\nUDEKS:~> xwave &\nxwave started in background\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         551   113        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> /mnt/DF /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         551   113        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> df /bad\nusage: df [/mnt]\nUDEKS:~>"
+    },
+    {
+      "command": "cat /mnt/HELLO",
+      "console": "UDEKS:~> xwave &\nxwave started in background\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         551   113        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> /mnt/DF /mnt\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         551   113        /mnt\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> df /bad\nusage: df [/mnt]\nUDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "command": "ls /mnt",
+      "console": "UDEKS:~> cat /mnt/HELLO\nHELLO UDEKS\nUDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nUSH\nRC\nFREE\nDF\nXCLOCK\nXWAVE\nCOWSAY\nDATE\nLS\nCAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~>"
+    },
+    {
+      "command": "xwave -q",
+      "console": "UDEKS:~> ls /mnt\nSCHEDOVR\nHELLO\nUSH\nRC\nFREE\nDF\nXCLOCK\nXWAVE\nCOWSAY\nDATE\nLS\nCAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "console": "HELLO\nUSH\nRC\nFREE\nDF\nXCLOCK\nXWAVE\nCOWSAY\nDATE\nLS\nCAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~>"
+    },
+    {
+      "command": "umount /mnt",
+      "console": "USH\nRC\nFREE\nDF\nXCLOCK\nXWAVE\nCOWSAY\nDATE\nLS\nCAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> umount /mnt\nUDEKS:~>"
+    },
+    {
+      "command": "echo recovery OK",
+      "console": "FREE\nDF\nXCLOCK\nXWAVE\nCOWSAY\nDATE\nLS\nCAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> umount /mnt\nUDEKS:~> echo recovery OK\nrecovery OK\nUDEKS:~>"
+    },
+    {
+      "command": "help",
+      "console": "COWSAY\nDATE\nLS\nCAT\nUNAME\nLSHW\nLSMOD\nLSCPU\nZ80CTL\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> umount /mnt\nUDEKS:~> echo recovery OK\nrecovery OK\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~>"
+    }
+  ]
+}

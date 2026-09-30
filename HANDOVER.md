@@ -8,6 +8,86 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 ## Current feature handover — 2026-09-30
 
+Final issue #24 review: the user accepted the default-mount image and explicitly
+authorized fixing the remaining presentation errors and merging. The banner
+now uses stage-1 measurements of the actual bank-1 UIEC/UBFS 0.1 headers,
+published at boot-chain offsets 21/22 (1 match, 0 mismatch). It says HEADER,
+not operational/mounted: these checks do not validate the whole service image.
+Successful runtime mount prints `mount: /mnt ready (read-only)` only after
+reading media. No writable filesystem or automatic drive enumeration is claimed.
+Normal boot now uses SETMSG $FF, matching the hardware-accepted diagnostic
+setting. The earlier hang remains unexplained; do not claim a proven timing fix.
+The app wrapper preserves loader errors; ush distinguishes absent/unmounted
+program, busy slot, bad image, I/O failure, not-ready and already-running.
+Only an actual loader failure reads TASK_ERROR; native-child busy returns
+directly without trusting that child's stale launcher. Presentation stays in ush.
+Final shell is 3,723 bytes + 368 BSS reservation (360 used), 5 bytes spare in
+its 4 KiB slot. Link/UDEX/storage checks agree. Bootfs is 3,906 bytes.
+Boot-console remains exactly 1,450 bytes (939 CODE + 511 RODATA); high-module
+and all fixed gateway/shadow/cache placements remain unchanged. Start wrappers
+use ordinary service CODE with their old high-module footprint reserved.
+Release evidence is in `bench/{artifacts,results}/2026-09-30-command-release`.
+The checkpoint paragraphs below retain their old sizes/error TODOs and quiet
+boot setting; they no longer describe the release. Next roadmap feature: load
+the first independent non-kernel service from disk, not graphics optimization.
+
+Current worktree: `build/disk-commands`, branch `boot-disk-commands`, issue #24.
+The user authorized three steps in sequence: merge graphics (#23, now merged
+as `2c88e07`), move everyday utilities to disk (checkpoint `d42073c`), remove
+resident command policy (current slice). See [command extraction](docs/COMMAND-EXTRACTION.md).
+The resident catalog is gone. Eight names are handled by disk ush, including
+numeric graphics launch/control; thirteen program names are disk-backed.
+Normal bootfs has only mount/umount and recovery ush. UTRQ 0.7 op 20 queues
+numeric service work; the bank-0 poll executes it after the request stack unwinds.
+Its ASM wrapper MUST clear carry on synchronous return (set carry suspends the
+native caller). ush owns completion text and prompts; generic EXEC/job ownership
+remains a compatibility mechanism, not a command registry.
+
+VICSHADOW is pinned at the previously qualified `$A1E0-$C11F` with exactly
+8,000 bytes. Extraction leaves 3,071 unused bytes before it, not a new heap.
+Full ush image is 3,685 bytes plus 384 reserved BSS (27 bytes left in its 4 KiB
+reservation); recovery bootfs is 3,797 bytes. Do not grow shell features without
+measuring its image+BSS bound. All old fixed gateways and UAPP zero-page entries
+remain asserted. Build in my-distrobox; use gh there. Never run `make clean`
+at the root because build contains active worktrees. Use an isolated copied
+source directory for clean-build proof. Do not modify the sibling emulator.
+Manual acceptance initially FAILED for the preserved command-extraction candidate:
+the user reports clock drags becoming unusable / wave chrome missing in 1986,
+and a cold typed BOOT on C128 + Pi1541 stopping at BOOTING UDEKS (reported
+around 22 blocks). Both used the exact archived disk, not an older root build.
+The boot bank probe destructively wrote `$A0` to bank-0 `$8000`,
+now an operand in `udeks_vic_bitmap_set_clip` (linked `$06`). The fix moves
+the destructive probe to boot-only `$1000` scratch in both banks. An enhanced
+native 1986 test reproduces 294 missing clock-border pixels after one drag
+on the old image; the fixed image passes 12 drags, wave launch/drag and cowsay,
+including 14 pixel-exact border checks. Keep this visual assertion: the older
+movement-counter-only test falsely passed the damaged image.
+Exact fixed disks/results: `bench/{artifacts,results}/2026-09-30-bank-probe-fix`.
+The user subsequently confirms the diagnostic D64 boots in 1986 and on real
+C128 + Pi1541 (around 23 tracks, not blocks). The later app launch error was
+a forgotten mount; after mounting, the user confirms the apps/windows work.
+That completes the requested functional retest, not an explanation of the
+earlier hardware hang: the accepted diagnostic D64 enables SETMSG messages,
+whereas normal D64 stays quiet. Preserve both variants and this distinction.
+
+The user now explicitly requests device 8 mounted at `/mnt` by default.
+`user/etc/rc` enables that line; no kernel/shell/application binary changes.
+Current normal disks differ from the bank-probe-fix disks only in RC's one
+sector (62 changed bytes). Recovery still skips RC and requires manual mount.
+New tests must prove direct app launches without manual mount and retain
+explicit unmount setup for negative tests. Missing-mount `request failed`
+wording remains a separate pre-merge polish item, not fixed by this policy.
+No new commit/push/merge authorization was given with this change.
+VICE D64/D71 + recovery, native 1986 input/windows, disk-exec rejection,
+managed-app failures, disk-shell replacement, RC startup, compiled SPAWN and
+shadow checks pass. Isolated clean parallel builds reproduce all disks exactly.
+Exact bytes/results live in `bench/{artifacts,results}/2026-09-30-disk-commands`.
+The original candidate remains preserved as failing evidence; current test
+disks are in `bench/artifacts/2026-09-30-default-mount`, including a diagnostic
+variant retaining the boot messages from the user's successful hardware test.
+
+The paragraphs below are earlier checkpoints, not the active worktree.
+
 Active worktree: `build/disk-graphics`, branch `storage-disk-graphics`,
 issue [#22](https://github.com/salvogendut/UDEKS/issues/22), based on merged
 PR #21 (`ea14666`). Disk-only managed `xclock`/`xwave` is implemented;

@@ -24,7 +24,8 @@ class TaskRequestAbiTests(unittest.TestCase):
     def test_lifecycle_operations_and_layouts_are_frozen(self):
         values = self.defines("include/udeks/task_request.h")
 
-        self.assertEqual(values["UDEKS_TASK_REQUEST_ABI_MINOR"], 6)
+        self.assertEqual(values["UDEKS_TASK_REQUEST_ABI_MINOR"], 7)
+        self.assertEqual(values["UDEKS_TREQ_OP_CONTROL"], 20)
         self.assertEqual(values["UDEKS_TREQ_OP_STATFS"], 19)
         self.assertEqual(values["UDEKS_STATFS_SIZE"], 8)
         self.assertEqual(values["UDEKS_TREQ_OP_MOUNT"], 17)
@@ -92,7 +93,7 @@ class TaskRequestAbiTests(unittest.TestCase):
             ROOT / "src/services/filesystem/bootfs_request.s"
         ).read_text().lower()
 
-        self.assertIn("cmp #$07", dispatcher)
+        self.assertIn("cmp #$08", dispatcher)
         self.assertIn("cmp #$0a", dispatcher)
         self.assertIn("task_request_fallback:", dispatcher)
         self.assertIn("jmp $c880", dispatcher)
@@ -183,8 +184,8 @@ class TaskRequestAbiTests(unittest.TestCase):
         self.assertNotIn("jsr _udeks_shell_dispatch_line", dispatcher)
         self.assertIn("sta shell_pending_exec", dispatcher)
         shell = (ROOT / "src/services/shell/shell.c").read_text().lower()
-        self.assertIn("status_pending_exec", shell)
-        self.assertIn("result = udeks_shell_dispatch_line();", shell)
+        self.assertIn("if (s(23))", shell)
+        self.assertIn("udeks_shell_dispatch_line();", shell)
         self.assertIn("jsr _udeks_root_terminal_prompt", dispatcher)
 
     def test_task_stream_wrapper_has_no_resident_private_imports(self):

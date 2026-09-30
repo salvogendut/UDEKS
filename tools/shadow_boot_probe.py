@@ -675,7 +675,7 @@ def probe(args: argparse.Namespace) -> None:
 
         if args.vic_compare:
             # Graphical images are ordinary disk files, not bootfs payloads.
-            # Wait for ush and mount through its normal command path first.
+            # Wait for ush's default RC to finish mounting device 8 first.
             from storage_shell_probe import keyboard_queue_address, type_command
             from task_waitpid_probe import scheduler_symbols
             root = Path(__file__).resolve().parents[1]
@@ -684,10 +684,6 @@ def probe(args: argparse.Namespace) -> None:
                                            (root / 'build/8502/keyboard.s').read_text())
             mount_deadline = time.monotonic() + args.timeout
             wait_for_byte(port, 0xF3E0, 2, mount_deadline)
-            wait_for_byte(port, slots + 1, 4, mount_deadline)
-            before = parse_monitor_byte(monitor_command(port, 'm f17e f17e'), 0xF17E)
-            type_command(port, queue, 'mount 8 /mnt', mount_deadline)
-            wait_for_byte(port, 0xF17E, (before + 1) & 255, mount_deadline)
             wait_for_byte(port, slots + 1, 4, mount_deadline)
             vic_deadline = time.monotonic() + args.timeout
             type_command(port, queue, 'xinit', vic_deadline)
