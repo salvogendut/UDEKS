@@ -2285,6 +2285,7 @@ check:
 		tools/panic_decode.py tools/capability_decode.py \
 		tools/framebuffer_decode.py tools/clock_decode.py tools/xpm_to_vdc.py \
 		tools/xpm_to_vdc_text.py tools/png_to_vic_sprite.py \
+		tools/png_to_cbm.py \
 		tools/keyboard_decode.py \
 		tools/root_terminal_decode.py \
 		tools/z80_worker_decode.py \
