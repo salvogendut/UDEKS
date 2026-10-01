@@ -1,0 +1,28 @@
+PC=FF74 drive=EAB7 jam=0 speed=1 CIA2=07/3F bus=110 via=02/1A request=00/00/00 exit=0
+PC=E3B4 drive=D5C4 jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E49D drive=FEF6 jam=0 speed=0 CIA2=47/3F bus=110 via=07/1A request=00/00/00 exit=0
+PC=E3B7 drive=F55D jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E4A2 drive=E9AE jam=0 speed=0 CIA2=47/3F bus=110 via=07/1A request=00/00/00 exit=0
+PC=E4AE drive=E9C0 jam=0 speed=0 CIA2=47/3F bus=101 via=0D/1A request=00/00/00 exit=0
+PC=E459 drive=E9C0 jam=0 speed=0 CIA2=27/3F bus=110 via=05/1A request=00/00/00 exit=0
+PC=E4B8 drive=EA0B jam=0 speed=0 CIA2=9F/3F bus=001 via=91/1A request=01/06/00 exit=0
+command: xcalc & -> accepted (Return release=1050 frames)
+calculator 1.25+2.75= => 400 (expected 400)
+calculator C7.5/2.5= => 300 (expected 300)
+calculator C5+N.25= => 475 (expected 475)
+calculator C12*3= => 3600 (expected 3600)
+calculator C2+3= => 500 (expected 500)
+command: echo calculator alive -> accepted (Return release=157 frames)
+command: xclock & -> accepted (Return release=102 frames)
+calculator C4+5= => 900 (expected 900)
+command: xwave & -> accepted (Return release=639 frames)
+command: xwave -q -> accepted (Return release=124 frames)
+calculator C3.5*2= => 700 (expected 700)
+command: xcalc -q -> accepted (Return release=128 frames)
+command: xclock & -> accepted (Return release=777 frames)
+command: xcalc & -> accepted (Return release=160 frames)
+command: xclock -q -> accepted (Return release=119 frames)
+command: xcalc -> accepted (Return release=1086 frames)
+command: xcalc & -> accepted (Return release=216 frames)
+calculator C1.25+2.75= => 400 (expected 400)
+PASS xcalc: native mouse arithmetic, drag, console, slot conflicts, wave coexistence, restart, Ctrl+C

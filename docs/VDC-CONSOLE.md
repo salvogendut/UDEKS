@@ -25,9 +25,9 @@ bit 7 while uppercase cells retain the primary set, so one row can display
 mixed case without switching the console-wide character generator.
 
 The lower logo rail contains a bordered `RUNNING` panel. It lists `xinit`,
-`xclock`, and `xwave` only while their lifecycle records report active or
+`xclock`, `xwave`, and `xcalc` only while their lifecycle records report active or
 running state, and displays `none` otherwise. The console poll compares a
-three-bit mask and touches VDC memory only when that mask changes; ordinary
+four-bit mask and touches VDC memory only when that mask changes; ordinary
 service passes therefore add no display traffic.
 
 Record format 2 changes the system-owned palette to the UDEKS default: black
@@ -45,7 +45,9 @@ python3 tools/vdc_console_decode.py run.vsf
 ```
 
 Byte 19 contains the running-app mask (`xinit=$01`, `xclock=$02`,
-`xwave=$04`), and bytes 20–21 count panel redraws.
+`xwave=$04`, `xcalc=$08`), and bytes 20–21 count panel redraws.
+Clock and calculator are mutually exclusive, so the existing three app rows
+still suffice alongside xinit and xwave.
 
 This is currently a polled service. The retained model already provides
 scrolling and terminal controls; IRQ-safe serialization, output queues, and

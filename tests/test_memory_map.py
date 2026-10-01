@@ -37,14 +37,15 @@ class MemoryMapTests(unittest.TestCase):
         memory = self.memory
         self.assertLess(memory["UDEKS_BOOT_SECTOR_BASE"], memory["UDEKS_BOOTSTRAP_BASE"])
         self.assertEqual(
-            memory["UDEKS_RECLAIMED_STATE_BASE"],
+            memory["UDEKS_APP1_LIMIT"],
             memory["UDEKS_BOOT_SECTOR_BASE"] + 0x100,
         )
         self.assertEqual(
-            memory["UDEKS_RECLAIMED_STATE_LIMIT"],
+            memory["UDEKS_XCALC_LIMIT"],
             memory["UDEKS_APP2_BASE"],
         )
-        self.assertEqual(memory["UDEKS_APP1_LIMIT"], memory["UDEKS_RECLAIMED_STATE_BASE"])
+        self.assertEqual(memory["UDEKS_RECLAIMED_STATE_BASE"], 0x9b00)
+        self.assertEqual(memory["UDEKS_RECLAIMED_STATE_LIMIT"], 0xa100)
         self.assertEqual(memory["UDEKS_APP2_LIMIT"], memory["UDEKS_BOOTSTRAP_BASE"])
         self.assertLess(memory["UDEKS_BOOTSTRAP_BASE"], memory["UDEKS_KERNEL_BASE"])
         self.assertLess(memory["UDEKS_KERNEL_BASE"], memory["UDEKS_KERNEL_LIMIT"])

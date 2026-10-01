@@ -6,7 +6,7 @@ unsigned int test_output_length, test_error_length;
 void test_reset(void)
 {
     test_output_length = test_error_length = test_calls = sysinfo_error = 0;
-    memcpy(sysinfo_tasks, "UTSK\0\1\1", 7); sysinfo_tasks[9] = 1;
+    memcpy(sysinfo_tasks, "UTSK\0\2\1", 7); sysinfo_tasks[9] = 1; sysinfo_tasks[15] = 0;
     sysinfo_capability[10] = 64;
 }
 unsigned char file_request(unsigned char op, unsigned char fd, unsigned char count)

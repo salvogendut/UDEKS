@@ -55,6 +55,34 @@ class StorageDelivery(unittest.TestCase):
         self.assertEqual(len(result), len(payload))
         with self.assertRaises(ValueError): install_bootfs(result, fs)
 
+    def test_banked_loader_uses_only_reserved_secondary_padding(self):
+        baseline, constants = self.wrap()
+        loader = b'\x4c\x09\xd9BLOD\0\1' + bytes(0x700-9)
+        image, new_constants = self.wrap(banked_loader=loader)
+        offset = 2+0xD900-0x1200
+        self.assertEqual(image[:offset], baseline[:offset])
+        self.assertEqual(image[offset:offset+0x700], loader)
+        self.assertEqual(image[offset+0x700:], baseline[offset+0x700:])
+        self.assertEqual(len(image), len(baseline))
+        self.assertEqual(constants, new_constants)
+        for bad in (loader+b'\0', b'bad', b'\0'+loader[1:],
+                    loader[:3]+b'FAIL'+loader[7:]):
+            with self.assertRaises(ValueError): self.wrap(banked_loader=bad)
+
+    def test_graphics_delivery_cannot_overwrite_policy_or_retained_images(self):
+        baseline, _ = self.wrap()
+        module = b'G'*0x600
+        image, _ = self.wrap(banked_graphics=module)
+        offset = 2+0xc700-0x1200
+        self.assertEqual(image[:offset], baseline[:offset])
+        self.assertEqual(image[offset:offset+0x600], module)
+        self.assertEqual(image[offset+0x600:], baseline[offset+0x600:])
+        self.assertEqual(image[offset+0x600:offset+0x900], bytes(0x300))
+        for changes in ({'banked_graphics':module[:-1]},
+                        {'banked_graphics':module+b'G'},
+                        {'banked_graphics':module,'policy':b'P'*0x1701}):
+            with self.assertRaises(ValueError): self.wrap(**changes)
+
     def test_secondary_bootfs_rejects_overflow_and_malformed_inputs(self):
         payload, _ = self.wrap()
         fs = build_bootfs([('ush', b'program')])

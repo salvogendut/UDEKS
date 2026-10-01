@@ -36,8 +36,14 @@ class Sysinfo(unittest.TestCase):
         self.assertIn('not total unused physical RAM', self.output())
         self.setUp()
         (c.c_uint8*16).in_dll(self.lib, 'sysinfo_tasks')[9] = 2
+        (c.c_uint8*16).in_dll(self.lib, 'sysinfo_tasks')[15] = 6
         self.assertEqual(self.invoke('free'), 0)
         self.assertIn('total 2560  used 2560  free 0', self.output())
+
+    def test_graphical_tasks_do_not_occupy_the_foreground_pool(self):
+        (c.c_uint8*16).in_dll(self.lib, 'sysinfo_tasks')[9] = 3
+        self.assertEqual(self.invoke('free'), 0)
+        self.assertIn('total 2560  used 0  free 2560', self.output())
     def test_df_uses_statfs_and_reports_blocks(self):
         (c.c_uint8*8).in_dll(self.lib, 'test_result')[:] = b'\0\1\x98\2\x64\0\x08\1'
         self.assertEqual(self.invoke('df'), 0)

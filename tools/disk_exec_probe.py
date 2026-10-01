@@ -10,6 +10,7 @@ import time
 
 from storage_shell_probe import sp, byte, keyboard_queue_address, type_command
 from task_waitpid_probe import scheduler_symbols
+from storage_shell_probe import console_address
 from vice_capture import choose_port, monitor_command
 from build_d71 import blank_d71, d64_compatibility_image
 from disk_exec_fixture import negative_fixture
@@ -49,7 +50,7 @@ def main():
             sp.wait_for_byte(port, slots+1, 4, deadline)
             sp.wait_for_byte(port, slots+2, 2, deadline)
             cells, status = sp.capture_blocks(port, [
-                (work/'console.bin', 0x0C00, 0x1157, 'kernel'),
+                (work/'console.bin', console_address(), console_address()+0x557, 'kernel'),
                 (work/'loader.bin', 0xF280, 0xF29F, 'kernel')])
             console = '\n'.join(cells[i:i+64].decode('ascii', errors='replace').rstrip()
                                 for i in range(0, 21*65, 65))
@@ -137,7 +138,7 @@ def main():
         print(monitor_command(port, 'r').decode(errors='replace'), flush=True)
         print(monitor_command(port, 'm f280 f29f').decode(errors='replace'), flush=True)
         print(monitor_command(port, 'm f359 f37e').decode(errors='replace'), flush=True)
-        sp.capture_blocks(port, [(work/'failure-console.bin', 0x0C00, 0x1157, 'kernel'),
+        sp.capture_blocks(port, [(work/'failure-console.bin', console_address(), console_address()+0x557, 'kernel'),
                                 (work/'failure-loader.bin', 0xf910, 0xfeff, 'kernel')])
         raise
     finally:

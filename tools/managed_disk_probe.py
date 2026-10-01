@@ -11,6 +11,7 @@ import time
 from managed_app_fixture import dos_file, fixture, ERRORS
 from storage_shell_probe import sp, byte, keyboard_queue_address, type_command
 from task_waitpid_probe import scheduler_symbols
+from storage_shell_probe import console_address
 from vice_capture import choose_port, monitor_command
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -54,7 +55,7 @@ def main():
             sp.wait_for_byte(port, 0xF3D8, (before+1)&255, deadline)
             sp.wait_for_byte(port, slots+1, 4, deadline)
             sp.wait_for_byte(port, slots+2, 2, deadline)
-            cells = capture('console', 0x0C00, 0x558)
+            cells = capture('console', console_address(), 0x558)
             console = '\n'.join(cells[i:i+64].decode('ascii', errors='replace').rstrip()
                                 for i in range(0, 21*65, 65))
             if cells[-1] != 1 or (contains and contains not in console):
@@ -129,7 +130,7 @@ def main():
     except Exception:
         print(monitor_command(port, 'r').decode(errors='replace'), flush=True)
         sp.capture_blocks(port, [(work/'failure-status.bin', 0xf110, 0xf3ef, 'kernel'),
-                                (work/'failure-console.bin', 0x0c00, 0x1157, 'kernel'),
+                                (work/'failure-console.bin', console_address(), console_address()+0x557, 'kernel'),
                                 (work/'failure-stack.bin', 0x0000, 0x01ff, 'kernel'),
                                 (work/'failure-slots.bin', slots, slots+15, 'kernel')])
         raise

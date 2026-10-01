@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Private native clients: actual bounds supplied by the qualification builder.
+MEMORY {
+    ZP: start = $0002, size = $001E, type = rw, file = "";
+    APP: start = @BASE@, size = @SIZE@, type = rw, file = %O;
+}
+SEGMENTS {
+    ZEROPAGE: load = ZP, type = zp, optional = yes;
+    STARTUP: load = APP, type = ro;
+    CODE: load = APP, type = ro;
+    RODATA: load = APP, type = ro, optional = yes;
+    DATA: load = APP, type = rw, optional = yes;
+    BSS: load = APP, type = bss, define = yes;
+}

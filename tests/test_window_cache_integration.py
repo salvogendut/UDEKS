@@ -97,24 +97,27 @@ class WindowCacheIntegrationTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
 
     def test_packaging_guard_rejects_shadow_drift_missing_segment_and_panic_mismatch(self):
-        reference = ROOT / 'bench/artifacts/2026-09-29-window-drag-start/inputs/build/window-drag-start/repo/build/8502'
+        reference = ROOT / 'bench/artifacts/2026-09-30-root-namespace'
         normal = (reference / 'udeks-8502.map').read_text()
-        panic = (reference / 'udeks-8502-panic-probe.map').read_text()
+        # Model the explicit state relocation on the last accepted map.
+        normal = normal.replace('000C00  0011FC', '009B00  00A0FC')
+        panic = normal
         self.assertEqual(layout_maps(normal, panic)['VICSHADOW'], (0xa1e0, 0xc11f, 8000))
         for text in (normal.replace('00A1E0', '00A1E1'), normal.replace('VICSHADOW', 'MISSING')):
             with self.assertRaises(ValueError): layout_maps(text, panic)
             with self.assertRaises(ValueError): layout_maps(normal, text)
 
     def test_command_reclaim_does_not_relax_public_reservations(self):
-        reference = ROOT / 'bench/artifacts/2026-09-29-window-drag-start/inputs/build/window-drag-start/repo/build/8502'
-        normal = (reference/'udeks-8502.map').read_text()
-        for before, after in (('00E2E1  00012A', '00E2E2  00012B'),
-                              ('00F904  000105', '00F909  00010A'),
-                              ('00A1DF  0002B8', '00A1E0  0002B9')):
+        reference = ROOT / 'bench/artifacts/2026-09-30-root-namespace'
+        normal = (reference/'udeks-8502.map').read_text().replace('000C00  0011FC','009B00  00A0FC')
+        layout_maps(normal,normal)  # Establish a valid control for every mutation.
+        for before, after in (('00E2DF  000128', '00E2E2  00012B'),
+                              ('00F900  000101', '00F909  00010A'),
+                              ('009637  0002BA', '009B00  000783')):
             damaged = normal.replace(before, after)
             self.assertNotEqual(normal, damaged)
             with self.assertRaises(ValueError): layout_maps(damaged, damaged)
-        moved = normal.replace('00E2E1  00012A', '00E2E0  000129')
+        moved = normal.replace('00E2DF  000128', '00E2DE  000127')
         with self.assertRaises(ValueError): layout_maps(normal, moved)
 
     def test_runtime_probe_normalizes_only_qualified_live_operands_and_scratch(self):

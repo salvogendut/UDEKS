@@ -381,7 +381,7 @@ void udeks_lifecycle_publish(unsigned char *record)
     record[UDEKS_UTSK_SWITCHES_HI] = (unsigned char)(switches >> 8);
     record[UDEKS_UTSK_LAST_EVENT] =
         udeks_lifecycle_last_event_private;
-    record[UDEKS_UTSK_RESERVED] = 0;
+    record[UDEKS_UTSK_CHILD_STATE] = udeks_lifecycle_slots_private[TASK_SLOT_STRIDE + TASK_SLOT_STATE];
 }
 #ifdef __CC65__
 #pragma code-name(pop)

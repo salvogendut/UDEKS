@@ -159,7 +159,7 @@ class LifecycleBehaviorTests(unittest.TestCase):
         self.assertEqual(self.state.udeks_lifecycle_canary_failures(), 0)
         record = self.publish()
         self.assertEqual(record[:4], b"UTSK")
-        self.assertEqual(record[4:6], b"\x00\x01")
+        self.assertEqual(record[4:6], b"\x00\x02")
         self.assertEqual(record[6], 1)
         self.assertEqual(record[15], 0)
 

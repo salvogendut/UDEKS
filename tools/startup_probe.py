@@ -11,6 +11,7 @@ import time
 from build_d71 import sector_offset
 from storage_shell_probe import sp, byte, keyboard_queue_address, type_command
 from task_waitpid_probe import scheduler_symbols
+from storage_shell_probe import console_address
 from vice_capture import choose_port, monitor_command
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -55,7 +56,7 @@ def main():
         sp.wait_for_byte(port, 0xF3E0, 2, time.monotonic()+210)
         sp.wait_for_byte(port, slots+1, 4, time.monotonic()+30)
         def console(name):
-            cells = sp.capture_blocks(port, [(work/(name+'.bin'), 0x0C00, 0x1157, 'kernel')])[0]
+            cells = sp.capture_blocks(port, [(work/(name+'.bin'), console_address(), console_address()+0x557, 'kernel')])[0]
             if cells[-1] != 1: raise AssertionError('input cursor missing')
             return '\n'.join(cells[i:i+64].decode('ascii', errors='replace').rstrip()
                              for i in range(0, 21*65, 65))
@@ -119,7 +120,7 @@ def main():
         print('PASS startup', args.variant, 'driver intact, df', available, '/', total, flush=True)
     except Exception:
         print(monitor_command(port, 'r').decode(errors='replace'), flush=True)
-        sp.capture_blocks(port, [(work/'failure-console.bin', 0x0C00, 0x1157, 'kernel'),
+        sp.capture_blocks(port, [(work/'failure-console.bin', console_address(), console_address()+0x557, 'kernel'),
                                 (work/'failure-status.bin', 0xF110, 0xF3EF, 'kernel')])
         raise
     finally:

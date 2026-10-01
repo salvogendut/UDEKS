@@ -50,9 +50,16 @@ class TaskStateDecodeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "not UTSK"):
             parse_result(block)
         block = valid_record()
-        block[5] = 2
-        with self.assertRaisesRegex(ValueError, "ABI 0.2"):
+        block[5] = 3
+        with self.assertRaisesRegex(ValueError, "ABI 0.3"):
             parse_result(block)
+
+    def test_02_reports_actual_child_ownership(self):
+        for state in range(7):
+            block=valid_record(); block[5]=2; block[15]=state
+            self.assertEqual(parse_result(block)['child_state'],state)
+        block[15]=7
+        with self.assertRaises(ValueError): parse_result(block)
 
     def test_rejects_uninitialized_and_failed_tables(self):
         block = valid_record()

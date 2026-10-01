@@ -10,6 +10,8 @@
         .import _udeks_vdc_block_address
         .import _udeks_vdc_block_length
         .import _udeks_vdc_text_assets
+        .import _udeks_xcalc_is_running
+        .import _udeks_xdraw_is_running
 
 CONSOLE_STATUS  = $f070
 VIC_STATUS      = $f1b0
@@ -26,15 +28,17 @@ panel_mask:     .res 1
 panel_slot:     .res 1
 
         .segment "MODULERODATA"
-panel_screen_lo: .byte <$04b1, <$0501, <$0551, <$05a1, <$05f1, <$0641, <$0691
-panel_screen_hi: .byte >$04b1, >$0501, >$0551, >$05a1, >$05f1, >$0641, >$0691
-panel_attr_lo:   .byte <$0cb1, <$0d01, <$0d51, <$0da1, <$0df1, <$0e41, <$0e91
-panel_attr_hi:   .byte >$0cb1, >$0d01, >$0d51, >$0da1, >$0df1, >$0e41, >$0e91
+panel_screen_lo: .byte <$04b1, <$0501, <$0551, <$05a1, <$05f1, <$0641, <$0691, <$06e1, <$0731
+panel_screen_hi: .byte >$04b1, >$0501, >$0551, >$05a1, >$05f1, >$0641, >$0691, >$06e1, >$0731
+panel_attr_lo:   .byte <$0cb1, <$0d01, <$0d51, <$0da1, <$0df1, <$0e41, <$0e91, <$0ee1, <$0f31
+panel_attr_hi:   .byte >$0cb1, >$0d01, >$0d51, >$0da1, >$0df1, >$0e41, >$0e91, >$0ee1, >$0f31
 panel_title:     .byte 18,21,14,14,9,14,7,0
 panel_none:      .byte 14,15,14,5,0
 panel_xinit:     .byte 24,9,14,9,20,0
 panel_xclock:    .byte 24,3,12,15,3,11,0
 panel_xwave:     .byte 24,23,1,22,5,0
+panel_xcalc:     .byte 24,3,1,12,3,0
+panel_xdraw:     .byte 24,4,18,1,23,0
 
         .segment "MODULECODE"
 _udeks_console_app_panel_initialize:
@@ -43,6 +47,18 @@ _udeks_console_app_panel_initialize:
         jmp _udeks_console_poll
 
 _udeks_console_poll:
+        jsr _udeks_xdraw_is_running
+        asl a
+        asl a
+        asl a
+        asl a
+        sta panel_mask
+        jsr _udeks_xcalc_is_running
+        asl a
+        asl a
+        asl a
+        ora panel_mask
+        sta panel_mask
         lda #$00
         ldx VIC_STATUS+5
         cpx #$03
@@ -59,6 +75,7 @@ _udeks_console_poll:
         bne :+
         ora #$04
 :
+        ora panel_mask
         cmp APP_MASK
         bne panel_changed
         lda #$00
@@ -66,12 +83,16 @@ _udeks_console_poll:
 panel_changed:
         sta panel_mask
         jsr panel_draw_edges
-        bne panel_error
+        beq :+
+        jmp panel_error
+:
         lda #<panel_title
         ldx #>panel_title
         ldy #$01
         jsr panel_draw_text
-        bne panel_error
+        beq :+
+        jmp panel_error
+:
 
         lda #$00
         sta panel_slot
@@ -99,6 +120,22 @@ panel_changed:
         jsr panel_draw_app
         bne panel_error
 :
+        lda panel_mask
+        and #$08
+        beq :+
+        lda #<panel_xcalc
+        ldx #>panel_xcalc
+        jsr panel_draw_app
+        bne panel_error
+:
+        lda panel_mask
+        and #$10
+        beq :+
+        lda #<panel_xdraw
+        ldx #>panel_xdraw
+        jsr panel_draw_app
+        bne panel_error
+:
         lda panel_slot
         bne panel_clear_remaining
         lda #<panel_none
@@ -107,7 +144,7 @@ panel_changed:
         bne panel_error
 panel_clear_remaining:
         lda panel_slot
-        cmp #$03
+        cmp #$05
         bcs panel_draw_spacer
         lda #$00
         tax
@@ -116,7 +153,7 @@ panel_clear_remaining:
 panel_draw_spacer:
         lda #$00
         tax
-        ldy #$05
+        ldy #$07
         jsr panel_draw_text
         bne panel_error
         lda panel_mask
@@ -175,7 +212,7 @@ panel_text_ready:
         lda panel_row
         cmp #$02
         bcc panel_attr_ready
-        cmp #$05
+        cmp #$07
         bcs panel_attr_ready
         lda #$80
         ldx #$09
@@ -207,7 +244,7 @@ panel_draw_edges:
         sta panel_buffer
         lda _udeks_vdc_text_assets+13
         sta panel_buffer+10
-        ldx #$06
+        ldx #$08
         jsr panel_write_screen
 panel_edges_done:
         rts

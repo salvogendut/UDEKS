@@ -6,6 +6,7 @@
         .setcpu "6502"
         .include "capability-delivery.inc"
         .include "disk-loader-bindings.inc"
+        .export banked_access
 
 BOOT_CHAIN              = $f050
 BOOT_CHAIN_STATE        = BOOT_CHAIN + 12
@@ -525,6 +526,12 @@ task_managed_loader_entry:
         jmp task_load_managed
 task_spawn_loader_entry:
         .assert task_spawn_loader_entry = $f919, error, "spawn loader entry moved"
+        jmp task_spawn_load
+        .assert * = $f91c, error, "private banked loader gate moved"
+        jmp banked_load_gate
+        jmp banked_io_gate          ; $F91F, worker-flat -> storage -> worker-flat
+        jmp banked_state_gate       ; $F922, private loader-owned byte transfer
+task_spawn_load:
         ; The lifecycle handler passes a zero-padded name in common RAM.
         ; Copy an ordinary UDEX into bank-1 APP1 but do not enter it.
         pha
@@ -967,6 +974,8 @@ task_disk_leaf_start:
 ; Managed callers use fixed names and retain fixed bank-0 slots. The disk
 ; header is not permitted to choose the other application's destination.
 task_managed_name:
+        lda #$0a
+        sta task_managed_limit
         lda task_name_length
         cmp #6
         beq task_managed_clock
@@ -976,10 +985,22 @@ task_managed_name:
 :
         lda TASK_HEADER,x
         cmp task_managed_wave_name,x
-        bne task_managed_unknown
+        bne task_managed_calc
         dex
         bpl :-
         lda #$12
+        bne task_managed_named
+task_managed_calc:
+        ldx #4
+:
+        lda TASK_HEADER,x
+        cmp task_managed_calc_name,x
+        bne task_managed_unknown
+        dex
+        bpl :-
+        lda #$10
+        sta task_managed_limit
+        lda #$02
         bne task_managed_named
 task_managed_clock:
         ldx #5
@@ -997,6 +1018,8 @@ task_managed_unknown:
         jmp task_not_found
 task_managed_clock_name: .byte "xclock"
 task_managed_wave_name:  .byte "xwave"
+task_managed_calc_name:  .byte "xcalc"
+task_managed_limit:      .byte 0
 task_managed_base:       .byte 0
 
         .segment "TASKLOADER"
@@ -1135,6 +1158,10 @@ task_file_size_valid:
 :
         ldx #$0a
         lda task_load_mode
+        cmp #2
+        bne :+
+        ldx task_managed_limit
+:
         cmp #1
         bne :+
         ldx #$10                    ; persistent ush ends before bootfs
@@ -1591,6 +1618,12 @@ task_disk_byte:
         lda task_load_mode
         cmp #1
         beq task_disk_persistent_room
+        cmp #2
+        bne :+
+        lda task_managed_limit
+        cmp #$10
+        beq task_disk_persistent_room
+:
         lda task_disk_store+2
         cmp #$0c
         bne task_disk_room
@@ -1705,7 +1738,36 @@ task_saved_zp:          .res $1e, $00
 ; Storage requests reuse $F68A, where boot presentation left the one-shot
 ; scheduler activator. Preserve that still-live image until init installs it.
 BOOT_ACTIVATION_SIZE = 42
-boot_saved_activation:  .res BOOT_ACTIVATION_SIZE, 0
+; Boot-only scratch: after probes, before any managed application owns slot 1.
+; Retired once boot_shell_return restores the activation image. Never used by
+; the loader again; xcalc is free to overwrite $0C00 after service startup.
+boot_saved_activation = $0c00
+
+banked_load_gate:
+        php
+        sei
+        pha
+        sta MMU_LCR_WORKER_FLAT
+        ldx #5
+banked_identity:
+        lda $d903,x
+        cmp banked_signature,x
+        bne banked_missing
+        dex
+        bpl banked_identity
+        pla
+        jsr $d900
+        jmp banked_return
+banked_missing:
+        pla
+        lda #5                      ; EIO: secondary absent/corrupt
+banked_return:
+        sta MMU_LCR_KERNEL_IO
+        plp
+        ldx #0
+        cmp #0
+        rts
+banked_signature: .byte "BLOD",0,1
 
 task_loader_end:
         .assert task_loader_end <= $fe80, error, "task loader reaches boot init gate"
@@ -1767,6 +1829,19 @@ boot_shell_load:
         rts
 boot_shell_disk_name: .byte "/bin/ush", 0
 boot_shell_fallback_name: .byte "ush", 0
+banked_io_gate:
+        sta MMU_LCR_KERNEL_IO
+        jsr $c880
+        sta MMU_LCR_WORKER_FLAT
+        rts
+banked_state_gate:
+        sta MMU_LCR_KERNEL_IO
+banked_access:
+        ; Private loader-owned byte transfer. The IRQ-masked bank-1 module
+        ; patches LDA/STA abs,X and its address from verified link bindings.
+        lda DISK_LOADER_CHILD_STATE-8,x
+        sta MMU_LCR_WORKER_FLAT
+        rts
         .assert * <= $ff00, error, "boot shell gate crosses MMU register hole"
 
         .segment "TASKLOOKUP"

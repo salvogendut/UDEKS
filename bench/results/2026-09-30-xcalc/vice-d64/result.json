@@ -1,0 +1,173 @@
+{
+  "disk_sha256": "598833c00b587afd159b0900c43be778904826d0a4cd336a034e671f73540b2e",
+  "drive": "1541",
+  "click_method": "injected WM queue; native input covered in 1986",
+  "image_matches_disk": true,
+  "shadow_matches_bitmap": true,
+  "records": [
+    {
+      "command": "xcalc &",
+      "console": "\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "Z80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "BOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "WELCOME TO UDEKS.\n\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "expression": "1.25+2.75=",
+      "hundredths": 400
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "expression": "C7.5/2.5=",
+      "hundredths": 300
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "expression": "C5+N.25=",
+      "hundredths": 475
+    },
+    {
+      "command": "xclock &",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> xclock &\nxclock: slot busy\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> xclock &\nxclock: slot busy\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay calculator",
+      "console": "clicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> xclock &\nxclock: slot busy\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay calculator\n ____________\n< calculator >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "xwave -q",
+      "console": "clicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> xclock &\nxclock: slot busy\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay calculator\n ____________\n< calculator >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xcalc -q",
+      "console": "clicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> xclock &\nxclock: slot busy\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay calculator\n ____________\n< calculator >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "console": "clicked\nUDEKS:~> xclock &\nxclock: slot busy\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay calculator\n ____________\n< calculator >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~>"
+    },
+    {
+      "command": "xcalc &",
+      "console": "xclock: slot busy\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay calculator\n ____________\n< calculator >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xcalc &\nxcalc: slot busy\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "console": "xwave started &\nUDEKS:~> cowsay calculator\n ____________\n< calculator >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xcalc &\nxcalc: slot busy\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xcalc &",
+      "console": " ____________\n< calculator >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xcalc &\nxcalc: slot busy\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~>"
+    },
+    {
+      "command": "echo console still alive",
+      "console": " ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xcalc &\nxcalc: slot busy\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo console still alive\nconsole still alive\nUDEKS:~>"
+    }
+  ]
+}

@@ -15,8 +15,10 @@ do not overlap the task-2 `$0C00-$11FF` stack, retained cache, or ush stack.
 Boot 0.2 expands persistent image+BSS to `$1000` bytes at `$9000`, ending
 before bootfs at `$A000`. Its software stack is now `$E900-$EFF0`; bank-0's
 resident stack is unchanged. The IEC driver moved to `$E300` to make room
-for the shell's C startup reader. Ordinary/managed task images still have
-the `$0A00` limit. Recovery bootfs is limited to `$A000-$AFFF`; the old
+for the shell's C startup reader. Ordinary tasks and xclock/xwave still have
+the `$0A00` limit. The bank-0 xcalc managed image has a name-specific 4 KiB
+slot-1 allocation; it never expands the native bank-1 child allocation or stack.
+Recovery bootfs is limited to `$A000-$AFFF`; the old
 `$8A00-$8FFF` policy hole is unused. See [the current storage placement](filesystem.md#placement-and-qualification).
 
 The `none` runtime places its two-byte software-stack pointer at zero-page

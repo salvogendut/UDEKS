@@ -6,6 +6,8 @@
 #define UDEKS_CONTROL_CLOCK   2u
 #define UDEKS_CONTROL_WAVE    3u
 #define UDEKS_CONTROL_ENGINE  4u
+#define UDEKS_CONTROL_CALC    5u
+#define UDEKS_CONTROL_DRAW    6u
 #define UDEKS_CONTROL_START   0u
 #define UDEKS_CONTROL_STOP    1u
 #define UDEKS_CONTROL_TEST    2u
@@ -30,7 +32,7 @@
 static unsigned char udeks_control_valid(unsigned char target,
     unsigned char action, unsigned char background)
 {
-    if (target < UDEKS_CONTROL_DESKTOP || target > UDEKS_CONTROL_ENGINE ||
+    if (target < UDEKS_CONTROL_DESKTOP || target > UDEKS_CONTROL_DRAW ||
         background > 1u) return 0;
     if (target == UDEKS_CONTROL_ENGINE)
         return action == UDEKS_CONTROL_TEST && !background;

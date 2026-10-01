@@ -13,7 +13,22 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
-**Next milestone: the first disk-loaded non-kernel service.** Define one
+**Current user-selected feature: four simultaneous graphical applications**,
+[#30](https://github.com/salvogendut/UDEKS/issues/30), branch `graphics-four-apps`.
+The calculator is accepted (platform unspecified), committed and pushed as
+`5cd34f9` on `app-xcalc`; it is not merged into main yet. Fresh builds on
+`graphics-four-apps` now run **xclock + xwave + xcalc + xdraw together**:
+calculator and drawing have independent bank-1 allocations and an owner-checked
+drawing/input bridge, with shell and running-panel integration.
+See [scope and acceptance](DISK-GRAPHICS.md#four-application-support-30).
+Two additional independently linked C tasks now execute from bank 1, with
+private runtimes/stacks and working yield, sleep, exit and reload. Both disk
+formats pass four-app VICE launch/close/reload and malformed/fifth-image rejection.
+Native 1986 D64 mouse/keyboard input also passes. The four-app candidate is ready
+for user testing on physical C128; exact images/results are preserved in
+`bench/{artifacts,results}/2026-10-01-four-apps`.
+
+**After #30: the first disk-loaded non-kernel service.** Define one
 existing service's load/start/stop and dependency contract, then replace its
 preloaded copy with an ordinary disk image. Keep bootstrap/recovery working;
 do not make a scripting language or expanded task capacity prerequisites.
@@ -44,8 +59,8 @@ with bootstrap root mounting and an initially unmounted `/mnt`.
 The finishing corrections are implemented: specific app-launch errors,
 measured IEC/bootfs header status, a real mount-success message, and normal
 boot progress enabled to match the accepted diagnostic setting.
-Next: the first independent disk-loaded service; no scripting or graphics
-optimization detour.
+Four-app capacity is the current user-selected feature; service extraction
+follows. Neither requires a scripting or graphics-optimization detour.
 
 - Native D64/D71 boot, an 8502 executive, a bounded Z80 worker, a VDC root
   console, and an independent VIC-IIe graphical display are working.
@@ -92,15 +107,33 @@ mounts or applications must not require rebuilding the kernel.
 | --- | --- |
 | Foundation and CPU choice | Established; independently pinned toolchain still due. |
 | Machine bring-up and dual displays | Working baseline; broader hardware/memory qualification due. |
-| Kernel and tasking | Cooperative two-task path works; general scheduling, IPC, and preemption due. |
+| Kernel and tasking | Cooperative root/command tasks plus two bounded banked task allocations; general allocation, IPC, and preemption due. |
 | Z80 secondary engine | Mailbox and xwave computation work; reusable operations and soak tests due. |
-| Graphics and input | Working shell/windows/apps; repaint latency and focused-window input remain open. |
+| Graphics and input | Calculator accepted on app-xcalc; four-app capacity is active work (#30). Repaint latency and focused-window keyboard input remain open. |
 | Storage and applications | Disk shell, RC, graphics and disk commands (#21/#23/#25); root namespace accepted (#26/PR #28). Next: first disk-loaded service lifecycle. General scripting deferred (#27). |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
 
-### Next: one disk-loaded non-kernel service
+### Now: four graphical applications (#30)
+
+1. **Placement gate implemented:** measure existing images, reserve independent
+   bank-1 image/stack/context areas without taking shell, command or display
+   memory. Check the actual normal/panic/Z80/service maps. Four-window host
+   tests cover ownership, clicks, focus, dragging, capacity rejection and reuse.
+   This does not yet enable four-app loading.
+2. **Delivery, native execution and graphics bridge implemented:** two extra
+   task allocations have independent runtimes/stacks; owner-bound retained
+   drawing and click/close requests keep foreign pointers out of the compositor.
+    Calculator and drawing run in bank 1 beside clock/wave.
+3. **Implemented and emulator-qualified:** separate `XDRAW.BIN`, shell/panel
+   lifecycle integration, four-app independent close/reload, invalid/fifth-image
+   rejection, console use and targeted Ctrl+C. Both VICE disk formats and native
+   1986 D64 input pass; a clean parallel build is byte-identical.
+4. **Next gate:** user/physical-C128 acceptance of the four-app candidate.
+   Service extraction follows #30 acceptance.
+
+### After #30: one disk-loaded non-kernel service
 
 1. Select one existing service and inventory its dependencies, fixed entry
    points and memory lifetime. Record which minimal boot/read path must stay
@@ -115,6 +148,20 @@ mounts or applications must not require rebuilding the kernel.
 service without rebuilding the kernel; failure leaves a usable recovery path.
 Do not couple this slice to four-task scheduling, preemption, general shell
 scripting, filesystem writes or performance tuning.
+
+### Application-capacity target: four simultaneous graphical apps
+
+The historical fixed loader permitted xclock **or** xcalc in slot 1, alongside
+xwave in slot 2. The feature branch now places xcalc and xdraw in separate bank-1
+allocations, using all four window descriptors for independently loaded apps.
+
+Define application placement/loading with explicit image, state, stack and
+callback ownership before expanding capacity. Acceptance: xclock, xcalc,
+xwave and an independent fourth executable remain live on the same screen,
+can be focused/dragged, and close/reload independently while the VDC console
+works. A four-window demo inside one program is not this acceptance test.
+Rejected loads must leave existing apps intact. Keep this feature separate
+from xwave-specific optimization and subsequent service extraction.
 
 ### Completed: system root and namespace (#26)
 

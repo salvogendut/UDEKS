@@ -1,4 +1,4 @@
-# VIC-IIe window manager 0.3
+# VIC-IIe window manager / UAPP 0.4
 
 The first UDEKS graphical window manager owns VIC-IIe bitmap-window policy.
 Applications register bounded descriptors and repaint callbacks; they do not
@@ -56,6 +56,23 @@ The window manager is service class `9`, instance `0`, with its own start,
 poll, and stop lifecycle. The VIC-IIe display service does not call its poll
 routine or know about window clients.
 
+## Client clicks and fixed-size windows (UAPP 0.4)
+
+The manager routes each primary-button press edge to the topmost hit window.
+Title dragging, close and resize gestures do not generate client clicks.
+`udeks_window_take_click(handle)` consumes the pending event only for its
+focused owner; wrong handles cannot consume it. Coordinates are relative to
+the window origin, including the title height. A held button does not repeat.
+The one-event mailbox retains a click until consumed or superseded by a new
+press; destroy/reset invalidates it, including before handle reuse. Copy the
+borrowed record before returning to the service loop. This is intentionally
+a bounded click API, not a general event queue or focused keyboard routing.
+
+`UDEKS_WINDOW_FLAG_FIXED_SIZE` (0x10) suppresses the resize grip and gestures.
+Old clients without this flag retain their existing resizable behavior.
+xcalc uses it for its initial 104x133 layout; dragging and close remain active.
+The VDC console retains keyboard input, including foreground Ctrl+C.
+
 ## Explicit image completion (UAPP 0.3)
 
 `udeks_window_image_complete(handle)` returns `OK` only for a live, visible,
@@ -66,14 +83,13 @@ does not imply completion of an incremental renderer.
 
 A successful `begin_paint` and any intersecting compositor repaint withdraw
 completion before changing pixels. Creation masks application flags to the
-four defined public bits so clients cannot forge the private completion bit;
+four stored public bits (plus the fixed-size option) so clients cannot forge the private completion bit;
 handle reuse, reset and closure discard the old descriptor. Newly raised,
 previously obscured windows pass through damage repaint before eligibility.
 
-This increment publishes the completion seam only. It does **not** enable
-capture, cached dragging, or expose the application's private render state.
-The bank-1 cache module and bounded continuations are still qualification
-work. Existing moved-window redraw remains the fallback.
+The original increment published the completion seam only. Normal builds now
+enable the bank-1 retained cache; application private state is not exposed.
+Existing moved-window redraw remains the fallback.
 
 ## Diagnostic record
 
@@ -101,3 +117,56 @@ The 32-byte `WMGR` record begins at `$F240`:
 | 26–27 | 2 | Drags completed |
 | 28–29 | 2 | Graphical close-box requests |
 | 30–31 | 2 | Damage-composition passes |
+
+## Banked clients (UTRQ 0.9)
+
+Banked ordinary UDEX programs do not call UAPP's resident paint functions or
+register foreign-bank callbacks. They submit operation 23 through the existing
+`$FF16` request boundary: descriptor/flags zero, count 24. Unused payload bytes
+are ignored; clients should clear them. Each registered task owns at most one
+window. The service derives the task from the scheduler, binds owners `$83/$84`
+to tasks 3/4, and copies titles into its own storage.
+
+| Payload | Request | Successful result |
+| --- | --- | --- |
+| `1, x-lo, x-hi, y, width, height, flags, title[8]` | CREATE | Window handle in result byte |
+| `2, handle, pointer-lo, pointer-hi, count` | PRESENT | Result 0 |
+| `3, handle` | EVENT | Result 4, payload `state, x-lo, x-hi, y` |
+| `4, handle` | CLOSE | Result 0 |
+
+CREATE currently requires FIXED_SIZE (`$10`), with optional MOVABLE (`$02`)
+and CLOSABLE (`$04`) only. Geometry passes the existing window-manager bounds
+checks. Titles are eight bytes plus a private terminator. EVENT is nonblocking:
+state 0 means closed, 1 alive/no click, 3 alive with a consumed client click.
+Click coordinates are relative to the whole window. There is no keyboard or
+resize event yet; clients sleep/yield between polls. An already-closing owner
+gets state 0, never another window's events.
+
+PRESENT takes at most 48 eight-byte commands from **inside the caller's own
+image+BSS reservation**. Commands use window-relative byte coordinates:
+
+| Opcode | Remaining seven bytes | Meaning |
+| --- | --- | --- |
+| 0 | `x,y,width,height,color,unused,unused` | Filled rectangle |
+| 1 | `x,y,x2,y2,color,unused,unused` | Line |
+| 2 | `x,y,row0,row1,row2,row3,row4` | 3×5 glyph, doubled pixels; low three bits per row |
+
+Colors are black (0) or yellow (7). The complete list is validated before
+commit; a rejected update leaves the old retained list and window unchanged.
+The service copies the commands into private bank-1 buffers (`$CD00-$CE7F`
+and `$CE80-$CFFF`) and repaints through the compositor's client/damage clip.
+Future moves, raises or partial uncovering replay that copy at the current
+window origin, without running the client or trusting a client buffer again.
+Zero commands clears the retained content. There is no cross-task begin/end
+painting lease and no app-specific calculator renderer in the service.
+
+Unknown suboperations, bad ranges/counts/flags and foreign handles are `EINVAL`;
+CREATE failure is `ENOMEM`. Earlier request minors or a service not yet installed
+are `ENOSYS`. Completion preserves the request sequence; clients must not depend
+on unreturned payload bytes (used as transfer scratch).
+
+Closing retires the window immediately, then the client observes EVENT=0 and
+exits. The service retires any remaining window before reaping an exited task.
+It never frees a live task. Root-session `xcalc -q`, `xdraw -q` and foreground Ctrl+C use
+this same graceful close path. A noncooperating native program is not protected
+or forcibly terminated by this interface; these are trusted cooperative apps.

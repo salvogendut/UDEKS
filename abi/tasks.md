@@ -167,7 +167,7 @@ move the VIC-IIe shadow without its own boot-chain validation.
 |---:|---:|---|
 | 0 | 4 | ASCII magic `UTSK` |
 | 4 | 1 | ABI major (`0`) |
-| 5 | 1 | ABI minor (`1`) |
+| 5 | 1 | Diagnostic ABI minor (`2`; lifecycle ABI remains 0.1) |
 | 6 | 1 | State: `0` uninitialized, `1` ready, `$80 | code` internal failure |
 | 7 | 1 | Current running task id; `0` when none |
 | 8 | 1 | Runnable count (`RUNNABLE` plus `RUNNING`) |
@@ -176,12 +176,14 @@ move the VIC-IIe shadow without its own boot-chain validation.
 | 11 | 1 | Canary failures since reset |
 | 12 | 2 | Completed dispatches, little-endian |
 | 14 | 1 | Last accepted event value; `0` before the first transition |
-| 15 | 1 | Reserved; zero |
+| 15 | 1 | Foreground command task 2 state (`FREE` through `ZOMBIE`, 0–6) |
 
 Published counts are derived from the table, not stored separately. The
 decoder rejects a ready record whose runnable count exceeds its defined count,
-whose defined count exceeds the table capacity, or whose reserved byte is
-nonzero.
+whose defined count exceeds the table capacity, or whose child state is invalid.
+It still decodes preserved 0.1 records, where byte 15 must be zero. The `free`
+command uses byte 15 rather than the number of defined tasks: graphical tasks
+3/4 do not own the foreground-command allocation.
 
 `create` never increments the dispatch counter. `DISPATCH` increments it only
 when it moves a task other than the current one into `RUNNING`; redispatching

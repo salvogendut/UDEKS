@@ -49,13 +49,13 @@ unsigned char udeks_program_main(unsigned char argc, unsigned char **argv)
     if ((name[0] | 32u) == 'f') {
         if (argc != 1) return fail("usage: free\n");
         if (T[0] != 'U' || T[1] != 'T' || T[2] != 'S' || T[3] != 'K' ||
-            T[4] || T[5] != 1 || T[6] != UDEKS_LIFECYCLE_READY)
+            T[4] || T[5] != 2 || T[6] != UDEKS_LIFECYCLE_READY)
             return fail("free: memory accounting unavailable\n");
         out("CPU RAM: 128 KiB; VDC RAM: "); number(H[10]); out(" KiB (video only)\n");
         /* Current scheduler has one child image slot, not a general heap.
          * Zombies retain their allocation until reaped. Do not count the
          * eight lifecycle table entries as eight physical image slots. */
-        available = T[UDEKS_UTSK_DEFINED] == 1u ? 2560u : 0u;
+        available = T[UDEKS_UTSK_CHILD_STATE] == UDEKS_LIFECYCLE_STATE_FREE ? 2560u : 0u;
         out("Native child image pool (bytes):\n  total 2560  used ");
         number(2560u-available); out("  free "); number(available);
         out("\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\n");

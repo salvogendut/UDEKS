@@ -1,4 +1,4 @@
-# Bank-task request ABI 0.8
+# Bank-task request ABI 0.9
 
 Bank-1 8502 tasks exchange bounded requests with the resident kernel through a
 38-byte record in top common RAM. The task fills the record and calls `$FF16`.
@@ -9,15 +9,17 @@ ABI 0.3 keeps every 0.2 operation number and behavior unchanged and adds
 lifecycle operations `10`-`15`. `YIELD`, `EXIT`, immediate/nonblocking and
 blocking `WAITPID`, `SLEEP`, `CANCEL`, and `SPAWN` are implemented. Rebuilt
 0.3 clients may keep using the 0.2 operations unchanged, and
-the resident version check accepts minor `0` through `8`.
+the resident version check accepts minor `0` through `9`.
 ABI 0.4 adds non-consuming stdin readiness (`POLL`, operation 16). A 0.0–0.3
 request for operation 16 returns `ENOSYS`; an unsupported future minor returns
 `EPROTO`. Operations 1–15 retain their existing numbers and behavior.
 ABI 0.5 adds read-only IEC `MOUNT`/`UMOUNT` through a private bank-1 C service.
 Existing stream/directory clients continue to request their minimum ABI 0.4;
-`POLL` accepts 0.4 through 0.8. The current shell uses 0.8; `df` uses 0.6
+`POLL` accepts 0.4 through 0.9. The current shell uses 0.8; `df` uses 0.6
 for `STATFS`. ABI 0.7 adds deferred numeric service control; 0.8 adds root
 namespace routing and working-directory operations. No published entry address changes.
+ABI 0.9 adds owner-bound retained drawing and click/close delivery for banked
+clients (`GRAPHICS`). UAPP 0.4 remains unchanged for the legacy bank-0 apps.
 
 ## Record
 
@@ -27,7 +29,7 @@ The record occupies `$F359-$F37E`:
 |---:|---:|---|
 | 0 | 4 | ASCII magic `UTRQ` |
 | 4 | 1 | ABI major (`0`) |
-| 5 | 1 | ABI minor (`8`; earlier compatible minors remain accepted) |
+| 5 | 1 | ABI minor (`9`; earlier compatible minors remain accepted) |
 | 6 | 1 | State |
 | 7 | 1 | Operation |
 | 8 | 1 | Sequence number |
@@ -66,6 +68,7 @@ States are idle (`0`), request (`1`), complete (`2`), and error (`$80`).
 | 20 | `CONTROL` | 0.7 | Enqueue a root-session graphics/engine action. |
 | 21 | `CHDIR` | 0.8 | Validate and change the root session's working directory. |
 | 22 | `GETCWD` | 0.8 | Return the root session's absolute working directory. |
+| 23 | `GRAPHICS` | 0.9 | Create/present/poll/close an owned banked-client window. |
 
 `EXEC` (`3`) is not task creation and its meaning does not change: it remains
 the bounded command-line bridge to the executable loader. There is no resident
@@ -75,6 +78,16 @@ loader-backed task creation is `SPAWN` (`15`).
 
 After validating the protocol envelope, all other operation values return
 `ENOSYS` before operation-specific field checks.
+
+## Banked graphics (0.9)
+
+Operation 23 uses descriptor/flags zero and count exactly 24; the payload
+selects CREATE, PRESENT, EVENT or CLOSE. See [the complete graphics contract](window.md#banked-clients-utrq-09)
+below the window API. Requests finish synchronously; no painting lease crosses
+a scheduling boundary. Earlier minors or an uninstalled graphics module return
+`ENOSYS`; invalid fields, ownership or unregistered callers return `EINVAL`.
+The original sequence number is retained. Kernel-private raw bank-copy helpers
+are not exposed through this operation.
 
 ## System-root namespace (0.8)
 
@@ -117,10 +130,11 @@ open handle. File STAT still returns `ENOSYS` (no invented byte sizes).
 ## Deferred root-session control (0.7)
 
 `CONTROL`: descriptor/flags `0`, count exactly `3`, payload `[target, action,
-background]`. Targets: desktop `1`, clock `2`, wave `3`, engine `4`.
+background]`. Targets: desktop `1`, clock `2`, wave `3`, engine `4`, calculator
+`5`, drawing `6` (the latter two added by the calculator/four-app increments).
 Actions: start `0`, stop `1`, self-test `2`. Desktop accepts start/stop;
-clock/wave accept start/stop; engine accepts only self-test. Background is
-`0` or `1`, and `1` is valid only for clock/wave start. Earlier minors return
+all four apps accept start/stop; engine accepts only self-test. Background is
+`0` or `1`, and `1` is valid only for an app start. Earlier minors return
 `ENOSYS`; invalid fields return `EINVAL`; an occupied queue, pending EXEC or
 foreground job returns `EBUSY`. Rejection changes neither queue nor reply.
 

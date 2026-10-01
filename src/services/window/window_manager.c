@@ -2,6 +2,7 @@
 #include "udeks/pointer.h"
 #include "udeks/vic_graphics.h"
 #include "udeks/window.h"
+#include "udeks/window_service.h"
 
 #define STATUS_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_WINDOW_STATUS_BASE + (offset)))
@@ -49,6 +50,17 @@ static unsigned int damage_right;
 static unsigned char damage_bottom;
 #pragma bss-name(pop)
 
+static unsigned char click_handle;
+static struct udeks_window_click pending_click;
+
+const struct udeks_window_click * __fastcall__ udeks_window_take_click(unsigned char handle)
+{
+    if (!handle || handle != click_handle || handle != focused_handle || dragging_handle)
+        return 0;
+    click_handle = 0;
+    return &pending_click;
+}
+
 static const unsigned char title_glyphs[26][5] = {
     {2, 5, 7, 5, 5}, {6, 5, 6, 5, 6}, {3, 4, 4, 4, 3},
     {6, 5, 5, 5, 6}, {7, 4, 6, 4, 7}, {7, 4, 6, 4, 4},
@@ -76,6 +88,12 @@ static struct udeks_window *window_by_handle(unsigned char handle)
         return 0;
     }
     return &windows[handle - 1u];
+}
+
+unsigned char __fastcall__ udeks_window_owner(unsigned char handle)
+{
+    struct udeks_window *window = window_by_handle(handle);
+    return window == 0 ? UDEKS_WINDOW_NONE : window->owner;
 }
 
 static void publish_state(void)
@@ -577,6 +595,7 @@ void udeks_window_manager_reset(void)
     }
     active_count = 0;
     focused_handle = UDEKS_WINDOW_NONE;
+    click_handle = 0;
     dragging_handle = UDEKS_WINDOW_NONE;
     drag_mode = 0;
     previous_buttons = 0;
@@ -598,8 +617,9 @@ unsigned char udeks_window_create(
     unsigned char index;
     struct udeks_window *window;
 
-    if (width < 16u || height <= UDEKS_WINDOW_TITLE_HEIGHT + 4u ||
-        x + width > UDEKS_VIC_WIDTH ||
+    if (width < 16u || width > UDEKS_VIC_WIDTH ||
+        height <= UDEKS_WINDOW_TITLE_HEIGHT + 4u ||
+        x > UDEKS_VIC_WIDTH - width ||
         (unsigned int)y + height > UDEKS_VIC_HEIGHT ||
         surface != UDEKS_WINDOW_SURFACE_BITMAP) {
         return UDEKS_WINDOW_NONE;
@@ -618,6 +638,7 @@ unsigned char udeks_window_create(
     window->surface = surface;
     window->flags = (unsigned char)((flags & 0x0Fu) | UDEKS_WINDOW_FLAG_VISIBLE |
         UDEKS_WINDOW_FLAG_RESIZABLE);
+    if (flags & UDEKS_WINDOW_FLAG_FIXED_SIZE) window->flags &= ~UDEKS_WINDOW_FLAG_RESIZABLE;
     window->x = x;
     window->y = y;
     window->width = width;
@@ -664,6 +685,7 @@ unsigned char udeks_window_destroy(unsigned char handle)
         }
     }
     focused_handle = top_window();
+    click_handle = 0;
     compose_damage(UDEKS_WINDOW_NONE);
     increment_counter(18u);
     publish_state();
@@ -734,6 +756,7 @@ unsigned char udeks_window_manager_poll(void)
     buttons = udeks_pointer_buttons();
     pressed = (unsigned char)(buttons & ACTION_BUTTONS);
     if (pressed != 0 && previous_buttons == 0) {
+        click_handle = 0;
         handle = top_window_at(pointer_x, pointer_y);
         window = window_by_handle(handle);
         if (window != 0) {
@@ -751,9 +774,18 @@ unsigned char udeks_window_manager_poll(void)
                     handle, pointer_x, pointer_y, DRAG_RESIZE);
             } else if (title_hit(pointer_x, pointer_y, window) != 0) {
                 begin_drag(handle, pointer_x, pointer_y, DRAG_MOVE);
-            } else if (raised != 0) {
-                damage_set(window);
-                compose_damage(UDEKS_WINDOW_NONE);
+            } else {
+                if (pointer_x > window->x && pointer_x < window->x + window->width - 1u &&
+                    pointer_y >= window->y + UDEKS_WINDOW_TITLE_HEIGHT &&
+                    pointer_y < window->y + window->height - 1u) {
+                    pending_click.x = pointer_x - window->x;
+                    pending_click.y = pointer_y - window->y;
+                    click_handle = handle;
+                }
+                if (raised != 0) {
+                    damage_set(window);
+                    compose_damage(UDEKS_WINDOW_NONE);
+                }
             }
         } else {
             focused_handle = UDEKS_WINDOW_NONE;

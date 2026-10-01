@@ -15,6 +15,7 @@
 #include "udeks/window.h"
 #include "udeks/xclock.h"
 #include "udeks/xwave.h"
+#include "udeks/banked_graphics.h"
 
 extern unsigned char udeks_shell_read_line(unsigned char *, unsigned char);
 #ifdef UDEKS_SESSION_HOST_TEST
@@ -45,12 +46,27 @@ static void increment(unsigned char offset)
     if (++S(offset) == 0) ++S(offset + 1u);
 }
 
+static unsigned char app_running(unsigned char bit)
+{
+    return bit == 1 ? udeks_xclock_is_running() : bit == 2 ? udeks_xwave_is_running() :
+        udeks_banked_graphics_running(bit >> 3);
+}
+
+static unsigned char app_stop(unsigned char bit)
+{
+    return bit == 1 ? udeks_xclock_stop() : bit == 2 ? udeks_xwave_stop() :
+        udeks_banked_graphics_stop(bit >> 3);
+}
+
 static void publish_jobs(void)
 {
-    if (!udeks_xclock_is_running()) background_jobs &= ~1u;
-    if (!udeks_xwave_is_running()) background_jobs &= ~2u;
+    unsigned char bit, count=0;
+    for (bit=1;bit<16;bit<<=1) {
+        if (!app_running(bit)) background_jobs &= ~bit;
+        if (background_jobs & bit) ++count;
+    }
     S(20) = foreground;
-    S(21) = (background_jobs & 1u) + ((background_jobs >> 1) & 1u);
+    S(21) = count;
 }
 
 /* Validate completely before changing the queue or mailbox. */
@@ -90,20 +106,22 @@ static void run_control(void)
         if (!result && worker_result) result = 1;
     } else if (queued_target == UDEKS_CONTROL_DESKTOP) {
         if (queued_action == UDEKS_CONTROL_STOP) {
-            if (udeks_xclock_is_running()) udeks_xclock_stop();
-            if (udeks_xwave_is_running()) udeks_xwave_stop();
+            for (bit=1;bit<16;bit<<=1) if (app_running(bit)) app_stop(bit);
             foreground = background_jobs = 0;
             udeks_window_manager_reset();
             result = udeks_vic_graphics_shutdown();
         } else result = udeks_vic_graphics_initialize();
     } else {
-        bit = queued_target == UDEKS_CONTROL_CLOCK ? 1u : 2u;
+        bit = queued_target == UDEKS_CONTROL_CLOCK ? 1u :
+            queued_target == UDEKS_CONTROL_WAVE ? 2u :
+            queued_target == UDEKS_CONTROL_CALC ? 4u : 8u;
         if (queued_action == UDEKS_CONTROL_STOP) {
-            result = bit == 1 ? udeks_xclock_stop() : udeks_xwave_stop();
+            result = app_stop(bit);
             if (!result) background_jobs &= ~bit;
         } else {
             if (!udeks_vic_graphics_is_active()) result = udeks_vic_graphics_initialize();
-            if (!result) result = bit == 1 ? udeks_xclock_start() : udeks_xwave_start();
+            if (!result) result = bit == 1 ? udeks_xclock_start() : bit == 2 ? udeks_xwave_start() :
+                udeks_banked_graphics_start(bit >> 3);
             if (!result) {
                 if (queued_background) background_jobs |= bit;
                 else foreground = bit;
@@ -166,8 +184,7 @@ unsigned char udeks_shell_poll(void)
     increment(12);
     publish_jobs();
     if (foreground) {
-        if ((foreground == 1 && udeks_xclock_is_running()) ||
-            (foreground == 2 && udeks_xwave_is_running())) return 0;
+        if (app_running(foreground)) return 0;
         foreground = 0;
         S(20) = 0;
         if (!USH_READY) udeks_root_terminal_prompt();
@@ -186,10 +203,10 @@ unsigned char udeks_shell_poll(void)
 unsigned char udeks_shell_interrupt_foreground(void)
 {
     unsigned char stopped = 0;
-    if (foreground == 1) stopped = udeks_xclock_stop() == 0;
-    else if (foreground == 2) stopped = udeks_xwave_stop() == 0;
+    if (foreground) stopped = app_stop(foreground) == 0;
     if (stopped) {
-        control_reply(foreground + 1u, UDEKS_CONTROL_STOP, 0, UDEKS_CONTROL_INTERRUPTED);
+        control_reply(foreground == 8 ? UDEKS_CONTROL_DRAW : foreground + 1u,
+            UDEKS_CONTROL_STOP, 0, UDEKS_CONTROL_INTERRUPTED);
         ++S(22);
     }
     return stopped;

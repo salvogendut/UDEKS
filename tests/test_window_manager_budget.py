@@ -176,7 +176,8 @@ int main(void) {
         report=json.loads((directory / 'build-report.json').read_text())
         self.assertEqual((report['remaining_padding'],report['remaining_before_manager_delivery']),(502,261))
         self.assertNotIn('flow.o',modules)
-        self.assertEqual((ROOT / 'src/services/window/window_manager.c').read_text(),variant(BASE.read_text(),'lean'))
+        # Verify the preserved optimization, not today's feature-extended manager.
+        self.assertEqual((directory / 'src/services/window/window_manager.c').read_text(),variant(BASE.read_text(),'lean'))
         expected={'sp':6,'sreg':8,'regsave':10,'ptr1':14,'ptr2':16,'ptr3':18,'ptr4':20,
             'tmp1':22,'tmp2':23,'tmp3':24,'tmp4':25,'regbank':26}
         exports=map_exports(text)

@@ -1,6 +1,6 @@
 # UDEKS executable format 0.1
 
-The managed-app call table at `$CF50` now advertises UAPP 0.3, 53 three-byte
+The managed-app call table at `$CF50` now advertises UAPP 0.4, 53 three-byte
 vectors. All 51 UAPP 0.1 vectors and runtime zero-page addresses are unchanged.
 The appended `$CFF9` `udeks_window_begin_paint(handle)` validates a topmost,
 non-dragged window and clips drawing to its interior; `$CFFC`
@@ -11,12 +11,20 @@ require UAPP 0.2; old managed images remain compatible with the new kernel.
 
 UAPP 0.3 uses header bytes `$CF58-$CF59` for an optional little-endian
 fastcall entry pointer to `udeks_window_image_complete(handle)`. The remaining
-six reserved bytes stay zero. No vector is appended at `$D000` (I/O). A client
+bytes were reserved in 0.3. No vector is appended at `$D000` (I/O). A client
 must verify major 0 and minor at least 3 before reading/calling that pointer;
 the library returns `UDEKS_WINDOW_INVALID` on older kernels. Completion is
 an explicit, idempotent assertion of a whole rendered image, not a pixel-copy
 operation. See [window contract](window.md). Current xwave opts in after all
 21 rows are plotted; its existing rendering still works on UAPP 0.2.
+
+UAPP 0.4 adds a fastcall entry pointer at `$CF5A-$CF5B` for
+`udeks_window_take_click(handle)`; the last four header bytes stay zero.
+The helper checks major 0/minor >=4 and returns NULL on older kernels. A
+successful call returns a borrowed three-byte record (16-bit x, 8-bit y),
+window-relative client-click coordinates, valid until the next manager poll.
+No keyboard ownership changes. Existing JMP entries and runtime zero page
+are unchanged. See [window contract](window.md).
 
 UDEKS executables use a compiler-neutral 16-byte header followed immediately
 by a flat linked image. Multi-byte fields are little-endian. Format 0.1 is a
@@ -86,6 +94,36 @@ bank-1 staging; STOPPED and ZOMBIE also retain ownership. Successful images
 stay installed for polling and subsequent restarts until reboot; this is not
 general dynamic linking, unloading, or isolation from hostile machine code.
 See [managed disk delivery](../docs/DISK-GRAPHICS.md).
+
+The historical `app-xcalc` build made `xcalc` an exception to the managed allocation size:
+`/bin/xcalc` / `XCALC.BIN` uses bank-0 `$0200-$11FF` (4 KiB) and shares
+slot 1 exclusively with xclock. Its disk stream, including header, had to fit
+the 4 KiB bank-1 loader staging area; image+BSS must fit the 4 KiB destination.
+Native bank-1 ordinary APP1 remains `$0200-$0BFF`; its software stack and
+all old image bounds remain unchanged. The loader derives the extended bound
+from the exact requested name, never from an untrusted header. The manager
+rejects replacement of a running peer, and retires stopped poll callbacks
+before loading the other image. Init failure leaves no callable slot.
+Bank-0 console/input LOWBSS moved to `$9B00-$A0FC` (reservation to `$A0FF`),
+with a link assertion keeping resident code/data below `$9B00`. VIC shadow,
+common gates, native task stacks and bank-1 services have not moved.
+
+The four-app development branch replaces that calculator path with a **private native bank-1 admission
+path** for ordinary flag-0 UDEX images at `$2300` (4,608-byte allocation) and
+`$3500` (2,816 bytes). The header plus image must fit staging; image plus BSS
+must fit the allocation. Entry may be anywhere inside the image. Each client
+links its own runtime and uses a private relocated zero page, hardware stack
+and software stack. Initial entry receives argc 0 / argv NULL; return becomes
+EXIT through `$FF16`. This is not a new public SPAWN or UAPP contract, and
+does not allow bank-1 code to call the old bank-0 UAPP vectors. Managed flag-2
+images remain load-only on this path. Current `XCALC.BIN` is flag 0, load/entry
+`$2300`, image 3,912 bytes plus 412 BSS, with its own cc65 runtime and private
+stack. It uses owner-checked UTRQ 0.9 graphics requests, never UAPP callbacks.
+`XDRAW.BIN` independently loads/enters at `$3500`, with 1,477 image + 354 BSS
+bytes and the second private runtime/stack/context allocation.
+Clock and wave remain managed bank-0 images. The freed `$0C00-$11FF` portion
+of the old calculator allocation now holds the lazily installed graphics service.
+See [execution and current limits](../docs/DISK-GRAPHICS.md#four-application-support-30).
 
 Init's persistent load reads `/bin/ush` (`USH.BIN`) before child
 tasks exist. It requires flag `$01`, load and entry `$9000`, and the same

@@ -69,10 +69,10 @@ class XwaveSourceTests(unittest.TestCase):
         )
         self.assertIn(".addr _udeks_managed_apps_service_descriptor", table)
         self.assertIn(".byte $0a, $00", descriptor)
-        self.assertIn("XCLOCK          = $0200", manager)
-        self.assertIn("XWAVE           = $1200", manager)
-        self.assertIn("MANAGED_LOADER  = $f916", manager)
-        self.assertGreaterEqual(manager.count("cmp #$00"), 4)
+        self.assertIn("XCLOCK=$0200", manager)
+        self.assertIn("XWAVE=$1200", manager)
+        self.assertIn("MANAGED_LOADER=$f916", manager)
+        self.assertGreaterEqual(manager.count("cmp #0"), 4)
         self.assertFalse((ROOT / "src/services/app/managed_apps.c").exists())
 
 

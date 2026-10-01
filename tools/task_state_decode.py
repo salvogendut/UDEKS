@@ -22,16 +22,18 @@ def parse_result(data: bytes) -> dict[str, int]:
     block = data[:RESULT_SIZE]
     if block[:4] != b"UTSK":
         raise ValueError("task-state magic is not UTSK")
-    if block[4] != 0 or block[5] != 1:
+    if block[4] != 0 or block[5] not in (1,2):
         raise ValueError(
-            f"unexpected task ABI {block[4]}.{block[5]}; expected 0.1"
+            f"unexpected task ABI {block[4]}.{block[5]}; expected 0.1 or 0.2"
         )
     if block[6] != 1:
         if block[6] & 0x80:
             raise ValueError(f"task table failed with code {block[6] & 0x7F}")
         raise ValueError("task table is uninitialized")
-    if block[15] != 0:
+    if block[5] == 1 and block[15] != 0:
         raise ValueError(f"reserved task-state byte is {block[15]:#04x}")
+    if block[5] == 2 and block[15] > 6:
+        raise ValueError('invalid child allocation state')
     if block[9] > MAX_TASKS:
         raise ValueError(
             f"defined count {block[9]} exceeds the table capacity {MAX_TASKS}"
@@ -56,6 +58,7 @@ def parse_result(data: bytes) -> dict[str, int]:
         "switches": block[12] | (block[13] << 8),
         "last_event": block[14],
         "reserved": block[15],
+        "child_state": block[15] if block[5] == 2 else None,
     }
 
 

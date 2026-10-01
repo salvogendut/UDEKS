@@ -21,6 +21,9 @@
         .import _udeks_z80_submit
         .import _udeks_window_begin_paint, _udeks_window_end_paint
         .import _udeks_window_image_complete
+        .import _udeks_window_take_click
+        .import __BSS_RUN__, __BSS_SIZE__
+        .assert __BSS_RUN__+__BSS_SIZE__ <= $9b00, error, "resident reaches relocated input/console state"
 
         .import addeqysp, addysp, aslax2
         .import decsp1, decsp2, decsp3, decsp4, decsp5, decsp6, decsp7, decsp8
@@ -53,12 +56,13 @@
 _udeks_app_gateway:
         .assert _udeks_app_gateway = $cf50, error, "app gateway moved"
         .byte 'U', 'A', 'P', 'P'
-        .byte $00, $03
+        .byte $00, $04
         .byte $35, $03
         ; Optional fastcall completion entry, version-gated by new clients.
         ; All 53 original JMP vectors remain at their published addresses.
         .addr _udeks_window_image_complete
-        .res 6, $00
+        .addr _udeks_window_take_click
+        .res 4, $00
 
         jmp _udeks_time_now
         jmp _udeks_vic_bitmap_fill

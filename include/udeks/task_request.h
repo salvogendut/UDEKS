@@ -40,7 +40,7 @@
 #define UDEKS_TREQ_PAYLOAD               14u
 
 #define UDEKS_TASK_REQUEST_ABI_MAJOR     0u
-#define UDEKS_TASK_REQUEST_ABI_MINOR     8u
+#define UDEKS_TASK_REQUEST_ABI_MINOR     9u
 
 #define UDEKS_TREQ_STATE_IDLE            0u
 #define UDEKS_TREQ_STATE_REQUEST         1u
@@ -90,6 +90,8 @@
  * zero. Root-session cwd is shared, not yet per-process state. */
 #define UDEKS_TREQ_OP_CHDIR             21u
 #define UDEKS_TREQ_OP_GETCWD            22u
+/* ABI 0.9: owner-bound retained graphics; see banked_graphics.h. */
+#define UDEKS_TREQ_OP_GRAPHICS          23u
 /* OPEN descriptor 2 requests a UDEX candidate, not a script/config file. */
 #define UDEKS_TREQ_OPEN_EXEC             2u
 #define UDEKS_STATFS_SIZE               8u

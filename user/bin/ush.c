@@ -34,6 +34,12 @@ static const unsigned char * const app_errors[] = {
     (const unsigned char *)": bad program\n",
     (const unsigned char *)": I/O error\n"
 };
+/* Control IDs skip the engine self-test (4). Keep names/syntax on disk. */
+static const unsigned char * const app_names[] = {
+    (const unsigned char *)"xinit", (const unsigned char *)"xclock",
+    (const unsigned char *)"xwave", (const unsigned char *)"xcalc",
+    (const unsigned char *)"xdraw"
+};
 
 static void service_notice(void)
 {
@@ -52,7 +58,7 @@ static void service_notice(void)
     } else if (REPLY(1) == UDEKS_CONTROL_ENGINE) {
         message = (const unsigned char *)(result ? "Z80 self-test: failed\n" : "Z80 self-test: OK\n");
     } else {
-        udeks_write(1, (const unsigned char *)(REPLY(1) == UDEKS_CONTROL_CLOCK ? "xclock" : "xwave"));
+        udeks_write(1, app_names[REPLY(1) < 4 ? REPLY(1)-1 : REPLY(1)-2]);
         if (result) {
             if (result > UDEKS_CONTROL_DISK_ERROR) result = UDEKS_CONTROL_NOT_READY;
             message = app_errors[result];
@@ -140,7 +146,7 @@ static void dispatch_line(void)
 
     rest = command_end(command, (const unsigned char *)"help");
     if (rest != 0xFFu && line[skip_space(rest)] == 0) {
-        write_line((const unsigned char *)"cd clear echo help pwd xinit xclock xwave\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount");
+        write_line((const unsigned char *)"cd clear echo help pwd xinit xclock xwave xcalc xdraw\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount");
         finish_command();
         return;
     }
@@ -152,23 +158,18 @@ static void dispatch_line(void)
         return;
     }
 
-    target = UDEKS_CONTROL_DESKTOP;
-    rest = command_end(command, (const unsigned char *)"xinit");
-    if (rest == 0xFFu) {
-        target = UDEKS_CONTROL_CLOCK;
-        rest = command_end(command, (const unsigned char *)"xclock");
+    for (target=0;target<5;++target) {
+        rest = command_end(command, app_names[target]);
+        if (rest != 0xFFu) break;
     }
-    if (rest == 0xFFu) {
-        target = UDEKS_CONTROL_WAVE;
-        rest = command_end(command, (const unsigned char *)"xwave");
-    }
+    target += target < 3 ? 1 : 2;
     if (rest != 0xFFu) {
         rest = skip_space(rest);
         PAYLOAD[0] = target; PAYLOAD[1] = 0; PAYLOAD[2] = 0;
         if (text_equal(rest, (const unsigned char *)"-q")) PAYLOAD[1] = UDEKS_CONTROL_STOP;
         else if (target != UDEKS_CONTROL_DESKTOP && text_equal(rest, (const unsigned char *)"&")) PAYLOAD[2] = 1;
         else if (line[rest]) {
-            write_line((const unsigned char *)"xinit [-q]; xclock/xwave [-q|&]");
+            write_line((const unsigned char *)"xinit [-q]; xclock/xwave/xcalc/xdraw [-q|&]");
             finish_command(); return;
         }
         result = submit_request(UDEKS_TREQ_OP_CONTROL, 0, UDEKS_CONTROL_COUNT);

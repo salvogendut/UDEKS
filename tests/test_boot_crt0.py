@@ -108,7 +108,7 @@ class ZeroPageAbiTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn(".byte 'U', 'A', 'P', 'P'", gateway)
-        self.assertIn(".byte $00, $03", gateway)
+        self.assertIn(".byte $00, $04", gateway)
         self.assertIn(".byte $35, $03", gateway)
         self.assertIn("jmp _udeks_window_begin_paint", gateway)
         self.assertIn("jmp _udeks_window_end_paint", gateway)
@@ -142,7 +142,7 @@ class BootCrt0BuildTests(unittest.TestCase):
     def test_kernel_crt0_and_probe_share_one_linker_invocation(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
         self.assertIn(
-            "$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &:", makefile
+            "$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphics.bin &:", makefile
         )
         self.assertIn(
             "$$(cat $(CAPABILITY_FORCE_IMPORTS)) \\",

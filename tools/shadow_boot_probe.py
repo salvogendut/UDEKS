@@ -406,6 +406,13 @@ def inject_line(port: int, symbols: dict[str, int], text: str) -> None:
 
 def write_kernel_blocks(port: int, writes: list[tuple[int, bytes]]) -> None:
     """Atomically mutate bank-0 records, preserving the CPU's live MMU map."""
+    write_blocks(port, writes, 'kernel')
+
+
+def write_blocks(port: int, writes: list[tuple[int, bytes]], profile: str) -> None:
+    """Bounded writes in an explicit bank, in one paused monitor session."""
+    if profile not in ('kernel', 'worker'):
+        raise ValueError('unknown monitor write profile')
     for address, data in writes:
         if not data or address < 0 or address + len(data) > 0x10000:
             raise ValueError("monitor write must fit in 64 KiB")
@@ -428,15 +435,20 @@ def write_kernel_blocks(port: int, writes: list[tuple[int, bytes]]) -> None:
                 buffer += chunk
 
         live = parse_monitor_byte(run("m ff00 ff00", b":ff00"), 0xFF00)
-        run("> ff01 00")
+        run("> ff01 00" if profile == 'kernel' else "> ff04 00")
         for address, data in writes:
-            run(f"> {address:04x} " + data.hex(" "))
+            # VICE's monitor byte-list parser is not safe for arbitrarily long
+            # command lines. Keep each list small, still in this SAME paused
+            # session so a multi-write hook cannot be executed half-installed.
+            for offset in range(0, len(data), 32):
+                run(f"> {address+offset:04x} " + data[offset:offset+32].hex(" "))
         run(f"> ff00 {live:02x}")
         connection.sendall(b"x\n")
 
 
 def launch_vice(
-    d71: Path, port: int, flatpak_id: str, extra_args: tuple[str, ...] = ()
+    d71: Path, port: int, flatpak_id: str, extra_args: tuple[str, ...] = (),
+    *, log_path: Path | None = None,
 ) -> tuple[subprocess.Popen, int]:
     command = [
         "flatpak",
@@ -468,11 +480,19 @@ def launch_vice(
     os.close(slave_fd)
 
     def drain() -> None:
+        log = None
         try:
-            while os.read(master_fd, 4096):
-                pass
+            if log_path is not None:
+                log = log_path.open('wb')
+            while chunk := os.read(master_fd, 4096):
+                if log is not None:
+                    log.write(chunk)
+                    log.flush()
         except OSError:
             pass
+        finally:
+            if log is not None:
+                log.close()
 
     threading.Thread(target=drain, daemon=True).start()
     return process, master_fd

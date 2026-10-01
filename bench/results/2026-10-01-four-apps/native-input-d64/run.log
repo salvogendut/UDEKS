@@ -1,0 +1,31 @@
+PC=FF74 drive=EAB7 jam=0 speed=1 CIA2=07/3F bus=110 via=02/1A request=00/00/00 exit=0
+PC=E3B4 drive=D59C jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E4D0 drive=D127 jam=0 speed=0 CIA2=A7/3F bus=100 via=0D/1A request=00/00/00 exit=0
+PC=E3AE drive=F4DA jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E4A8 drive=E9A5 jam=0 speed=0 CIA2=47/3F bus=101 via=0D/1A request=00/00/00 exit=0
+PC=E4AB drive=E96C jam=0 speed=0 CIA2=47/3F bus=101 via=0D/1A request=00/00/00 exit=0
+PC=E4A0 drive=FEF6 jam=0 speed=0 CIA2=47/3F bus=110 via=07/1A request=00/00/00 exit=0
+PC=BBC5 drive=EC9B jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=01/06/00 exit=0
+command: xclock & -> accepted (Return release=842 frames)
+command: xwave & -> accepted (Return release=638 frames)
+command: xcalc & -> accepted (Return release=969 frames)
+calculator 1.25+2.75= => 400 (expected 400)
+command: xdraw & -> accepted (Return release=558 frames)
+command: xdraw & -> accepted (Return release=102 frames)
+command: cowsay four alive -> accepted (Return release=1104 frames)
+command: free -> accepted (Return release=102 frames)
+command: xdraw & -> accepted (Return release=1261 frames)
+command: xclock -q -> accepted (Return release=225 frames)
+command: xclock & -> accepted (Return release=483 frames)
+command: xwave -q -> accepted (Return release=268 frames)
+command: xwave & -> accepted (Return release=412 frames)
+command: xcalc -q -> accepted (Return release=296 frames)
+command: xcalc & -> accepted (Return release=974 frames)
+command: xdraw -q -> accepted (Return release=382 frames)
+command: xdraw & -> accepted (Return release=1220 frames)
+command: xdraw -q -> accepted (Return release=384 frames)
+command: xdraw -> accepted (Return release=558 frames)
+calculator C7.5/2.5= => 300 (expected 300)
+command: xdraw & -> accepted (Return release=559 frames)
+command: xinit -q -> accepted (Return release=103 frames)
+PASS four apps: native input, drawing, calculator, drag, panel, capacity, independent reload, Ctrl+C, shutdown, guards, bitmap
