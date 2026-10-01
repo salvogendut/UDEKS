@@ -27,15 +27,15 @@ unsigned char udeks_xclock_stop(void) { ++calls; clock_run=0; return 0; }
 unsigned char udeks_xwave_stop(void) { ++calls; wave_run=0; return 0; }
 unsigned char udeks_xclock_is_running(void) { return clock_run; }
 unsigned char udeks_xwave_is_running(void) { return wave_run; }
-unsigned char calc_run;
-unsigned char udeks_xcalc_start(void) { ++calls; ++starts; if (!app_result) calc_run=1; return app_result; }
-unsigned char udeks_xcalc_stop(void) { ++calls; calc_run=0; return 0; }
-unsigned char udeks_xcalc_is_running(void) { return calc_run; }
+unsigned char banked_run[2];
+unsigned char udeks_banked_graphics_start(unsigned char i) { ++calls; ++starts; if (!app_result) banked_run[i]=1; return app_result; }
+unsigned char udeks_banked_graphics_stop(unsigned char i) { ++calls; banked_run[i]=0; return 0; }
+unsigned char udeks_banked_graphics_running(unsigned char i) { return banked_run[i]; }
 unsigned char udeks_z80_submit(unsigned char op, unsigned int a, unsigned int b,
     unsigned int n, unsigned int *r) { ++calls; *r=0; return 0; }
 void reset(void) {
     memset(session_memory, 0, sizeof(session_memory));
-    active=clock_run=wave_run=calc_run=calls=starts=app_result=0;
+    active=clock_run=wave_run=banked_run[0]=banked_run[1]=calls=starts=app_result=0;
     udeks_shell_start(); session_memory[UDEKS_USH_STATUS_BASE+1]=UDEKS_USH_STATE_READY;
 }
 unsigned char valid(unsigned char t, unsigned char a, unsigned char b) { return udeks_control_valid(t,a,b); }
@@ -69,7 +69,8 @@ class ServiceControl(unittest.TestCase):
 
     def test_exact_operation_combinations(self):
         allowed = {(1,0,0),(1,1,0),(2,0,0),(2,0,1),(2,1,0),
-                   (3,0,0),(3,0,1),(3,1,0),(4,2,0),(5,0,0),(5,0,1),(5,1,0)}
+                   (3,0,0),(3,0,1),(3,1,0),(4,2,0),(5,0,0),(5,0,1),(5,1,0),
+                   (6,0,0),(6,0,1),(6,1,0)}
         for t in range(256):
             for a in range(4):
                 for b in range(3):
@@ -92,7 +93,7 @@ class ServiceControl(unittest.TestCase):
 
     def test_invalid_requests_leave_queue_and_reply_untouched(self):
         for options in ({'descriptor':1}, {'flags':1}, {'count':2}, {'count':4},
-                        {'target':0}, {'target':6}, {'action':9}, {'background':2},
+                        {'target':0}, {'target':7}, {'action':9}, {'background':2},
                         {'target':1, 'background':1}, {'action':1, 'background':1}):
             self.lib.reset()
             self.memory[0xf3a0:0xf3a5] = b'abcde'
@@ -134,8 +135,33 @@ class ServiceControl(unittest.TestCase):
         self.assertEqual(self.value('calls'), 1)
         self.assertEqual(bytes(self.memory[0xf3a0:0xf3a5]), bytes((165,4,2,0,0)))
 
+    def test_four_jobs_and_targeted_banked_interrupt(self):
+        banked = (ctypes.c_ubyte*2).in_dll(self.lib, 'banked_run')
+        for target in (2,3,5,6):
+            self.assertEqual(self.request(target=target), 0)
+            self.lib.udeks_shell_poll()
+        self.assertEqual(self.memory[0xf185], 4)
+        self.assertEqual(list(banked), [1,1])
+        self.assertEqual(self.request(target=6, action=1, background=0), 0)
+        self.lib.udeks_shell_poll()
+        self.assertEqual(self.memory[0xf185], 3)
+        self.assertEqual(self.request(target=6, background=0), 0)
+        self.lib.udeks_shell_poll()
+        self.assertEqual(self.memory[0xf184], 8)
+        self.assertEqual(self.lib.udeks_shell_interrupt_foreground(), 1)
+        self.assertEqual(bytes(self.memory[0xf3a0:0xf3a5]), bytes((165,6,1,0,130)))
+        self.assertEqual(list(banked), [1,0])
+        self.assertEqual((self.value('clock_run'),self.value('wave_run')), (1,1))
+        self.lib.udeks_shell_poll()
+        self.assertEqual(self.request(target=6), 0)
+        self.lib.udeks_shell_poll()
+        self.assertEqual(self.request(target=1, action=1, background=0), 0)
+        self.lib.udeks_shell_poll()
+        self.assertEqual(list(banked), [0,0])
+        self.assertEqual(self.memory[0xf185], 0)
+
     def test_managed_errors_are_preserved_without_claiming_a_running_job(self):
-        for target in (2, 3):
+        for target in (2, 3, 5, 6):
             for error in range(1, 7):
                 self.lib.reset()
                 ctypes.c_ubyte.in_dll(self.lib, 'app_result').value = error

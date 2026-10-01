@@ -1,0 +1,290 @@
+{
+  "disk_sha256": "c8851e1281d934236c769eb79434a47a0855ee957e78115a9dd85a27457f396f",
+  "loader_sha256": "b5ed7cbc8a4a537ca63fd6bfc6bf0ed40d7c8fea367b6672d12b8667b7a9e1b0",
+  "drive": "1571",
+  "load_only": true,
+  "records": [
+    {
+      "selector": 2,
+      "name": "harness",
+      "errno": 22,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 2,
+      "name": "invalid",
+      "errno": 22,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "load3",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 4,
+      "name": "load4",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "full3",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 131,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "load3",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 131,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "load3",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 131,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "load3",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 131,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "load3",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 132,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 4,
+      "name": "load4",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 132,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 4,
+      "name": "load4",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 131,
+      "name": "",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "short",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "trail",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "magic",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "minor",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "cpu",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "flags",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "load",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "entry",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "size",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "bss",
+      "errno": 12,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "opcode",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "vector",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "outside",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "over",
+      "errno": 12,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "absent",
+      "errno": 2,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 2,
+      "name": "load3",
+      "errno": 22,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 5,
+      "name": "load3",
+      "errno": 22,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "../bad",
+      "errno": 22,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "padding",
+      "errno": 22,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "full3",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 132,
+      "name": "",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 4,
+      "name": "full4",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    }
+  ],
+  "legacy_code_preserved": true,
+  "console_alive": true
+}

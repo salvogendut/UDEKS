@@ -8,6 +8,86 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 ## Current feature handover — 2026-10-01
 
+**Latest working-tree checkpoint: four independent graphical apps.** Clock,
+wave, banked calculator and new `XDRAW.BIN` now coexist on `graphics-four-apps`.
+Xdraw is a task-4 C executable at `$3500` (1,477 image + 354 BSS bytes) with
+its own 6×4 toggle grid, clear button, runtime, stack and retained command image.
+Shell control target 6 / foreground bit 8, both banked lifecycle indices,
+four-job accounting, and the desktop-plus-four-app running panel are integrated.
+Use fresh `build/boot/udeks.d64` / `.d71`, or the exact preserved candidates in
+`bench/artifacts/2026-10-01-four-apps`. Next gate: user/physical-C128 acceptance;
+service extraction follows #30. The user authorized committing and pushing this
+checkpoint; physical-hardware acceptance remains pending.
+
+Placement stays inside existing bounds: graphics CODE `$0C00-$11B8`, helper
+`$A100-$A1CE`, resident BSS through `$9AD2` (45 spare bytes), high module through
+`$E633` (16 spare bytes). Banked lifecycle state uses direct indexed byte arrays;
+stop/running helpers live in GRAPHICSHELP and constants in MODULERODATA.
+The loader/access module remains full at `$D900-$DFFF`. No stack or common-gate
+boundary changed. The shell has 53 bytes beyond its reserved image+BSS.
+
+Qualification: 1,056 host tests; both placement gates; VICE true-drive D64/1541
+and D71/1571 four-app drawing/arithmetic, independent close/reload, panel,
+console, targeted Ctrl+C, shutdown, guards and completed bitmap/shadow equality.
+Missing/malformed fourth images and a distinct `XEXTRA.BIN` fifth candidate
+are rejected without changing the live code/retained images. The rejection
+probe uses map-checked unused graphics padding plus the BSS/LOWBSS gap for a
+self-restoring poll hook, never the live `$0C00` module entry.
+
+Unmodified 1986 `81485cc7` passes D64 raw-IEC/native mouse and keyboard input.
+Fixed 150-frame button delays dropped clicks during synchronous repaint;
+the native harness now waits for WM sampled edges and a client sleep boundary.
+This remains slow graphics, not a responsiveness optimization. A clean copied
+source build (`build/four-apps/clean-four.153qmm91`) reproduces both disks,
+both banked clients, shell and service outputs byte-for-byte. Evidence:
+`bench/results/2026-10-01-four-apps`. Published root snapshots are unchanged.
+
+### Three-app checkpoint (superseded by the four-app candidate above)
+
+**Latest working-tree checkpoint: banked graphics bridge + independent calculator.**
+`graphics-four-apps` now has a three-app user-test candidate: clock, wave and
+calculator coexist. The next feature is a separate fourth graphical client
+with shell/panel/close/capacity-rejection qualification—not xwave tuning.
+Use fresh `build/boot/udeks.d64` / `.d71`; published root snapshots are unchanged.
+These changes and the preceding load/native-execution increments remain
+uncommitted. No merge or new physical-hardware acceptance is implied.
+
+UTRQ 0.9 op 23 marshals create/present/event/close, checks the registered task
+owner, copies titles and retains up to 48 generic eight-byte drawing commands
+per client. The compositor replays them under its existing clip with no foreign
+callbacks or cross-task paint leases. Arithmetic/layout/glyphs stay in the disk
+calculator. Close marks the client closing, destroys the window, then waits for
+cooperative EXIT before reap/release; a live task cannot be forcibly freed.
+Clock/wave remain legacy managed apps. Task 4 execution and a second retained
+buffer exist, but the fourth graphical launch path is not implemented yet.
+
+Actual placement: bank-0 graphics CODE `$0C00-$11C4`, helper `$A100-$A191`,
+resident BSS ends `$9AEC` (**19 bytes headroom**). Graphics output is 1,536
+bytes, delivered at bank-1 `$C700-$CCFF`, lazily installed after boot's `$0C00`
+scratch is dead. Retained images use `$CD00-$CFFF`; filesystem policy is bounded
+below `$C700`. Loader/access module fills `$D900-$DFFF` (**no headroom**).
+Calculator: native flag-0 UDEX, image 3,912 + BSS 412 bytes at `$2300`, leaving
+284 bytes in its 4,608-byte allocation; private stack/pages unchanged.
+UTSK diagnostic 0.2 byte 15 publishes task-2 state so `free` no longer mistakes
+a live graphical task for foreground-pool occupancy.
+
+The title marshal deliberately uses `memcpy`: an explicit loop compiled with
+cc65 `-Ors` left a cached `ptr1` used for subsequent payload reads. The live
+CREATE test caught invalid geometry; do not restore that loop without rechecking
+generated assembly and a boot test. `banked_loader_probe.py` now uses the **not
+yet installed** `$0C00` module region for its one-shot hook; every call checks
+the installation flag. Never use the old `$9900` scratch—it is live resident RAM.
+
+Qualification: host service ownership/atomicity/retained replay tests; VICE
+true-drive D64/1541 and D71/1571 three-window arithmetic, drag, close/reload,
+console, targeted Ctrl+C, shutdown, stack guards and bitmap/shadow equality.
+The VICE harness injects WM clicks/getters, not native mouse packets. A clean
+parallel build reproduces both disks, service output and calculator exactly.
+Evidence: `bench/{artifacts,results}/2026-10-01-banked-calculator`.
+Native 1986/physical-C128 feedback is the next user gate for this candidate.
+
+### Earlier checkpoints (superseded where noted above)
+
 **2026-10-01:** calculator committed/pushed as `5cd34f9` on `app-xcalc` after
 user acceptance; not merged. Current branch is `graphics-four-apps`, based
 on that commit, issue #30. The user explicitly prioritizes four graphical
@@ -17,7 +97,7 @@ as four loaded apps: the runtime still has the accepted two-slot limit.
 The first increment adds an actual-build placement gate and tests four owner
 descriptors in both manager variants. A private owner query supports the next
 banked router, and create rejects wrapping horizontal geometry. No public
-UAPP version or vector changes. Bank-1 delivery/routing is not implemented.
+UAPP version or vector changes.
 Qualification for this first increment: 1,024 host tests, container
 graphics-apps-check + placement-check, and a fresh VICE D64 calculator/clock/
 wave/console regression pass. The geometry fix/owner query use 57 resident
@@ -26,7 +106,57 @@ bytes; 651 remain before LOWBSS. Proposed bank-1 calculator allocation has
 client library will fit. Live regression records are in
 build/four-apps/vice-regression; measured layout with input hashes is
 build/four-apps/layout.json. This is not a four-app manual-test candidate;
-the next implementation is the bounded banked loader/request/event path.
+the next implementation was the bounded banked loader/request/event path.
+
+Delivery checkpoint (superseded by native execution below): bank-1 load-only module at `$D900-$DD07`,
+private kernel gate `$F91C`, two separately owned allocations at `$2300/$3500`.
+No resident C growth or public ABI change. Full-image validation precedes
+ownership publication; failed loads may dirty only the FREE target. Disk
+requests and kernel mapping survive. The 42-byte boot activation backup is
+now boot-only bank-0 `$0C00` scratch; TASKLOADER has 3 bytes and BOOTINIT 2 bytes
+left. Do not extend either without measuring/revising placement.
+`make banked-apps-probe` (host, after container build) exercises actual loading
+on D64/1541 and D71/1571. The test's large monitor writes exposed a VICE parser
+failure, even with an inert hook; `write_kernel_blocks` now splits byte lists
+into at most 32 bytes without resuming between chunks. The actual loader
+passes with that corrected harness. Current user app limit remains two:
+banked task contexts, marshalled owner-safe graphics/events, a relinked xcalc
+and fourth executable are the next implementation, not performance work.
+Qualification: 1,032 host tests, both placement gates, D64/1541 and D71/1571
+live loader tests, and the normal VICE calculator regression pass. A clean
+parallel build reproduces both disks exactly. Evidence and exact images are
+in bench/{artifacts,results}/2026-10-01-banked-loader. No new 1986 or physical
+hardware claim; all probe-owned VICE sessions are closed. Changes are not yet
+committed, and the published build/ root disk snapshots remain unchanged.
+
+Latest checkpoint (working tree): real C execution in bank-1 tasks 3/4.
+Loader now 1,635 bytes at `$D900-$DF62`, with unchanged resident C/headroom.
+Common TASKLOADER/BOOTINIT use 1,389/124 bytes. `gen_banked_bindings.py` derives
+the private lifecycle/context/wait addresses and common byte accessor from
+real maps; no new public ABI. `$43/$44` activates flags-0 images; `$C3/$C4`
+reaps only root-owned zombies. Release also clears context/wait snapshots,
+including after a public WAITPID. RUNNABLE is published last. Managed flags-2
+images remain load-only; do NOT invoke old UAPP pointers from bank 1.
+
+Each compiled client uses its own cc65 ZP/runtime, CPU pages, 672-byte usable
+software stack, guards and private return-to-EXIT trampoline. Both clients
+pass recursive C-local/stack preservation across YIELD/SLEEP, independent
+state, exit status, rejection, reap and fresh reload tests on VICE D64/1541
+and D71/1571 while legacy clock/wave and console commands remain usable.
+1,038 host tests pass. Clean parallel builds reproduce both disks and client UDEX images; both
+placement gates and the calculator arithmetic/window regression pass.
+Evidence: bench/{artifacts,results}/2026-10-01-banked-native. Reproduce via
+container `make -j8 boot graphics-apps-check placement-check banked-native-fixtures`,
+then host `make banked-native-probe`. Changes remain uncommitted. No new
+1986/C128 claim or published snapshot refresh.
+
+At that checkpoint the next work was owner-checked graphics requests/events, then relink calculator and a
+fourth client with shell/panel/close/Ctrl+C integration. This is still NOT the
+four-window user-test candidate. Before public integration fix `free`'s
+task-count heuristic: tasks 3/4 being live does not mean task 2 owns its pool.
+Live native cancellation/window retirement is not implemented by the private
+reaper (EBUSY intentionally); do not release a live task's resources. Probe
+guards do not imply an automatic runtime stack-overflow trap.
 
 Calculator checkpoint: branch `app-xcalc`, created from main `debf430` at the
 user's request for the next graphical app. Mouse-only standalone calculator:

@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Check a proposed four-graphics-app layout against actual build artifacts.
+"""Check the four-graphics-app layout against actual build artifacts.
 
-This is a placement gate, NOT a loader or proof of executable bank-1 apps.
-Current managed images still use bank-0 UAPP pointers. Bank-1 delivery,
-task contexts and a pointer-free graphics request/event interface remain due.
+This is a placement gate; live execution is qualified separately by the probes.
 All intervals are half-open physical-bank ranges; boot-only source padding
 is never treated as a permanent allocation.
 """
@@ -29,7 +27,7 @@ class Region:
     limit: int
 
 
-# Candidate ownership, not active allocations. The existing common-RAM,
+# Fixed banked allocations. The existing common-RAM,
 # native foreground child, shell and display/cache reservations stay intact.
 CANDIDATE = (
     Region('banked app 3 image+BSS', 1, 0x2300, 0x3500),
@@ -138,7 +136,8 @@ def baseline_regions(kernel, storage, worker):
     # Using complete reservations avoids treating slack in a running service
     # as an allocation. Validate the emitted map before accepting each bound.
     regions = [Region('kernel pages', 0, 0, 0x200),
-               Region('legacy managed slot 1', 0, 0x200, 0x1200),
+               Region('legacy clock slot', 0, 0x200, 0xC00),
+               Region('banked graphics service', 0, 0xC00, 0x1200),
                Region('legacy wave slot', 0, 0x1200, 0x1C00),
                Region('scheduler page', 0, 0x1C00, 0x2000),
                Region('resident and scheduler tail', 0, 0x2000, 0xD000),
@@ -151,7 +150,10 @@ def baseline_regions(kernel, storage, worker):
                Region('legacy foreground backup', 1, 0x8000, 0x8A00),
                Region('ush', 1, 0x9000, 0xA000),
                Region('recovery bootfs', 1, 0xA000, 0xB000),
-               Region('filesystem policy', 1, 0xB000, 0xD000),
+               Region('filesystem policy', 1, 0xB000, 0xC700),
+               Region('graphics service delivery', 1, 0xC700, 0xCD00),
+               Region('two retained command images', 1, 0xCD00, 0xD000),
+               Region('banked image loader', 1, 0xD900, 0xE000),
                Region('service state/context/driver and ush stack', 1, 0xE000, 0xF000)]
     allowed = {'ZEROPAGE', 'STARTUP', 'CODE', 'RODATA', 'DATA', 'BSS', 'STORAGECODE', 'IECCODE'}
     if storage.keys() != allowed:
@@ -159,7 +161,7 @@ def baseline_regions(kernel, storage, worker):
     for name, low, high in (
             ('STARTUP', 0x1200, 0x1A00), ('CODE', 0x1200, 0x1A00),
             ('RODATA', 0x1200, 0x1A00), ('DATA', 0x1200, 0x1A00),
-            ('BSS', 0xE000, 0xE180), ('STORAGECODE', 0xB000, 0xD000),
+            ('BSS', 0xE000, 0xE180), ('STORAGECODE', 0xB000, 0xC700),
             ('IECCODE', 0xE300, 0xE900)):
         start, end, size = storage[name]
         if not low <= start <= end < high or size != end - start + 1:
@@ -191,26 +193,53 @@ def audit(build):
                  (build / 'z80/udeks-z80.bin').read_bytes())
     if not 0 < (build / 'boot/task-lookup.bin').stat().st_size <= 0x600:
         raise ValueError('task lookup exceeds its reservation')
+    loader = (build / 'boot/banked-loader.bin').read_bytes()
+    segments = map_segments((build / 'boot/banked-loader.map').read_text())
+    if (loader[:1] != b'\x4c' or loader[3:9] != b'BLOD\0\1' or
+            not 9 < len(loader) <= 0x700 or
+            segments != {'CODE': (0xD900, 0xD900+len(loader)-1, len(loader))}):
+        raise ValueError('banked loader exceeds its reservation or identity/map differs')
+    for name,low,limit in (('GRAPHICSCODE',0xC00,0x1200),('GRAPHICSHELP',0xA100,0xA1E0)):
+        start,end,size=normal[name]
+        if not (start == low and size == end - start + 1 and end < limit):
+            raise ValueError('graphics module placement changed: '+name)
+    module=(build/'8502/banked-graphics.bin').read_bytes()
+    if len(module)!=0x600 or module != (build/'8502/banked-graphics-panic.bin').read_bytes():
+        raise ValueError('graphics module outputs differ or exceed reservation')
     apps = {name: managed_size((build / ('user/' + name + '.udx')).read_bytes())
-            for name in ('xclock', 'xwave', 'xcalc')}
+            for name in ('xclock', 'xwave')}
+    from build_d71 import validate_banked_app
+    for name,base,capacity in (('xcalc',0x2300,0x1200),('xdraw',0x3500,0xB00)):
+        program=(build/('user/'+name+'.udx')).read_bytes()
+        validate_banked_app(program,base,capacity)
+        load,image,bss,entry=(int.from_bytes(program[n:n+2],'little') for n in (8,10,12,14))
+        apps[name]=dict(load=load,image=image,bss=bss,allocation=image+bss)
     for name, load, capacity in (('xclock', 0x200, 0xA00), ('xwave', 0x1200, 0xA00),
-                                  ('xcalc', 0x200, 0x1000)):
+                                  ('xcalc', 0x2300, 0x1200), ('xdraw', 0x3500, 0xB00)):
         if apps[name]['load'] != load or apps[name]['allocation'] > capacity:
             raise ValueError('baseline app placement changed: ' + name)
     inputs = ['8502/udeks-8502.map', '8502/udeks-8502-panic-probe.map',
               'storage/module.map', 'z80/udeks-z80.map', 'z80/udeks-z80.bin', 'z80/udeks-z80.ihx',
-              'boot/task-lookup.bin'] + ['user/' + n + '.udx' for n in apps]
-    return dict(status='placement-only; NOT runnable four-app support',
+              'boot/task-lookup.bin', 'boot/banked-loader.bin',
+              'boot/banked-loader.map', '8502/banked-graphics.bin',
+              '8502/banked-graphics-panic.bin'] + ['user/' + n + '.udx' for n in apps]
+    return dict(status='four independent graphical executables; placement verified',
                 baseline_apps=apps,
                 proposed=[asdict(r) for r in CANDIDATE],
                 existing=[asdict(r) for r in regions],
                 calculator_current_allocation_spare=0x1200-apps['xcalc']['allocation'],
                 fourth_app_capacity=0xB00,
+                fourth_app_allocation_spare=0xB00-apps['xdraw']['allocation'],
                 private_stack_reservation_per_banked_app=0x300,
                 resident_bridge_headroom=0x9B00-normal['BSS'][1]-1,
                 source_sha256={p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
                                for p in ('include/udeks/memory.h', 'src/scheduler/task_context.s',
-                                         'src/scheduler/task_yield_handler.s', 'tools/graphics_app_layout.py')},
+                                         'src/scheduler/task_yield_handler.s', 'tools/graphics_app_layout.py',
+                                         'src/services/app/banked_loader.s', 'src/boot/stage1-gateway.s',
+                                         'src/services/window/banked_graphics.c',
+                                         'src/services/window/banked_access.s',
+                                          'user/bin/xcalc_native.c', 'user/bin/xdraw.c',
+                                          'user/lib/graphics_request.s')},
                 input_sha256={p: hashlib.sha256((build / p).read_bytes()).hexdigest() for p in inputs})
 
 

@@ -1,0 +1,531 @@
+Modules list:
+-------------
+native_graphics_entry.o:
+    STARTUP           Offs=000000  Size=000003  Align=00001  Fill=0000
+calc.o:
+    CODE              Offs=000000  Size=000545  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=00000E  Align=00001  Fill=0000
+xcalc-native.o:
+    CODE              Offs=000545  Size=000433  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000084  Align=00001  Fill=0000
+    BSS               Offs=00000E  Size=00018E  Align=00001  Fill=0000
+graphics_request.o:
+    CODE              Offs=000978  Size=000042  Align=00001  Fill=0000
+    RODATA            Offs=000084  Size=000006  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=0009BA  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=0009D6  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(along.o):
+    CODE              Offs=0009E4  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax2.o):
+    CODE              Offs=0009F1  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax3.o):
+    CODE              Offs=0009FC  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(axlong.o):
+    CODE              Offs=000A0A  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(bneg.o):
+    CODE              Offs=000A17  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decax2.o):
+    CODE              Offs=000A25  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decaxy.o):
+    CODE              Offs=000A2C  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=000A35  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=000A3E  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=000A4B  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp4.o):
+    CODE              Offs=000A58  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax1.o):
+    CODE              Offs=000A65  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax3.o):
+    CODE              Offs=000A6C  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax7.o):
+    CODE              Offs=000A71  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=000A76  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000A81  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000A88  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=000A9E  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000AA3  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=000AA8  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ladd.o):
+    CODE              Offs=000AAD  Size=000025  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(laddeqsp.o):
+    CODE              Offs=000AD2  Size=000023  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lbneg.o):
+    CODE              Offs=000AF5  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lcmp.o):
+    CODE              Offs=000B06  Size=00003B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=000B41  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldeaxysp.o):
+    CODE              Offs=000B4A  Size=000013  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldiv.o):
+    CODE              Offs=000B5D  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lge.o):
+    CODE              Offs=000B79  Size=000006  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lgt.o):
+    CODE              Offs=000B7F  Size=000006  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(linc.o):
+    CODE              Offs=000B85  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(llt.o):
+    CODE              Offs=000B96  Size=000006  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lmul.o):
+    CODE              Offs=000B9C  Size=00005C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lne.o):
+    CODE              Offs=000BF8  Size=000006  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lneg.o):
+    CODE              Offs=000BFE  Size=00001E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lpush.o):
+    CODE              Offs=000C1C  Size=000021  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lshelp.o):
+    CODE              Offs=000C3D  Size=000052  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lsub.o):
+    CODE              Offs=000C8F  Size=000027  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ltest.o):
+    CODE              Offs=000CB6  Size=00000F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ludiv.o):
+    CODE              Offs=000CC5  Size=00007A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(lumod.o):
+    CODE              Offs=000D3F  Size=000019  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=000D58  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=000D84  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax10.o):
+    CODE              Offs=000DBE  Size=000019  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax5.o):
+    CODE              Offs=000DD7  Size=000014  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000DEB  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000DF9  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000E0F  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000E29  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=000E3F  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(steaxsp.o):
+    CODE              Offs=000E4A  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=000E5F  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(udiv.o):
+    CODE              Offs=000E6C  Size=00004F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               002300  002302  000003  00001
+CODE                  002303  0031BD  000EBB  00001
+RODATA                0031BE  003247  00008A  00001
+BSS                   003248  0033E3  00019C  00001
+
+
+Exports list by name:
+---------------------
+_gfx_request              002C7B RLA    _gfx_sleep                002C87 RLA    
+_udeks_calc_error         00324C RLA    _udeks_calc_format        00253F RLA    
+_udeks_calc_key           002332 RLA    _udeks_calc_reset         002303 RLA    
+_udeks_calc_value         003248 RLA    _udeks_graphical_main     002B41 RLA    
+_udeks_program_entry      002300 RLA    addysp                    002CDA RLA    
+addysp1                   002CD9 RLA    aslax3                    002CFF RLA    
+aulong                    002CED RLA    axulong                   002D13 RLA    
+bnega                     002D1E RLA    bnegeax                   002DF8 RLA    
+boolge                    003072 RLA    boolgt                    003070 RLA    
+boollt                    00306A RLA    boolne                    00305B RLA    
+decax2                    002D28 RLA    decaxy                    002D2F RLA    
+decsp1                    002D38 RLA    decsp2                    002D41 RLA    
+decsp3                    002D4E RLA    decsp4                    002D5B RLA    
+getlop                    002FD9 RLA    incax1                    002D68 RLA    
+incax3                    002D6F RLA    incax7                    002D74 RLA    
+incaxy                    002D7B RLA    inceaxy                   002E88 RLA    
+incsp1                    002D84 RLA    incsp2                    002D93 RLA    
+incsp3                    002DA1 RLA    incsp4                    002DA6 RLA    
+incsp5                    002DAB RLA    laddeq0sp                 002DD5 RLA    
+ldaxysp                   002E46 RLA    ldeax0sp                  002E4D RLA    
+ldeaxysp                  002E4F RLA    mulax10                   0030C1 RLA    
+mulax5                    0030DA RLA    negeax                    002F01 RLA    
+poplsargs                 002F40 RLA    popptr1                   0030EE RLA    
+ptr1                      00000A RLZ    ptr2                      00000C RLZ    
+ptr3                      00000E RLZ    ptr4                      000010 RLZ    
+pusha                     003100 RLA    pusha0                    003114 RLA    
+pushax                    003116 RLA    pusheax                   002F28 RLA    
+regsave                   000006 RLZ    shlax2                    002CF4 RLA    
+sp                        000002 RLZ    sreg                      000004 RLZ    
+staspidx                  00312C RLA    staxysp                   003144 RLA    
+steax0sp                  00314D RLA    steaxysp                  00314F RLA    
+subysp                    003162 RLA    tmp1                      000012 RLZ    
+tmp2                      000013 RLZ    tmp3                      000014 RLZ    
+tmp4                      000015 RLZ    tosaddax                  002CBF RLA    
+tosaddeax                 002DB6 RLA    tosdiveax                 002E66 RLA    
+tosgeeax                  002E7C RLA    tosgteax                  002E82 RLA    
+toslcmp                   002E09 RLA    toslteax                  002E99 RLA    
+tosmul0ax                 002E9F RLA    tosmuleax                 002EA5 RLA    
+tosneeax                  002EFB RLA    tossubeax                 002F98 RLA    
+tosudiv0ax                002FC8 RLA    tosudiva0                 00316F RLA    
+tosumod0ax                003042 RLA    tosumula0                 003087 RLA    
+udiv32                    002FFD RLA    utsteax                   002FB9 RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+regsave                   000006 RLZ    ptr1                      00000A RLZ    
+ptr2                      00000C RLZ    ptr3                      00000E RLZ    
+ptr4                      000010 RLZ    tmp1                      000012 RLZ    
+tmp2                      000013 RLZ    tmp3                      000014 RLZ    
+tmp4                      000015 RLZ    _udeks_program_entry      002300 RLA    
+_udeks_calc_reset         002303 RLA    _udeks_calc_key           002332 RLA    
+_udeks_calc_format        00253F RLA    _udeks_graphical_main     002B41 RLA    
+_gfx_request              002C7B RLA    _gfx_sleep                002C87 RLA    
+tosaddax                  002CBF RLA    addysp1                   002CD9 RLA    
+addysp                    002CDA RLA    aulong                    002CED RLA    
+shlax2                    002CF4 RLA    aslax3                    002CFF RLA    
+axulong                   002D13 RLA    bnega                     002D1E RLA    
+decax2                    002D28 RLA    decaxy                    002D2F RLA    
+decsp1                    002D38 RLA    decsp2                    002D41 RLA    
+decsp3                    002D4E RLA    decsp4                    002D5B RLA    
+incax1                    002D68 RLA    incax3                    002D6F RLA    
+incax7                    002D74 RLA    incaxy                    002D7B RLA    
+incsp1                    002D84 RLA    incsp2                    002D93 RLA    
+incsp3                    002DA1 RLA    incsp4                    002DA6 RLA    
+incsp5                    002DAB RLA    tosaddeax                 002DB6 RLA    
+laddeq0sp                 002DD5 RLA    bnegeax                   002DF8 RLA    
+toslcmp                   002E09 RLA    ldaxysp                   002E46 RLA    
+ldeax0sp                  002E4D RLA    ldeaxysp                  002E4F RLA    
+tosdiveax                 002E66 RLA    tosgeeax                  002E7C RLA    
+tosgteax                  002E82 RLA    inceaxy                   002E88 RLA    
+toslteax                  002E99 RLA    tosmul0ax                 002E9F RLA    
+tosmuleax                 002EA5 RLA    tosneeax                  002EFB RLA    
+negeax                    002F01 RLA    pusheax                   002F28 RLA    
+poplsargs                 002F40 RLA    tossubeax                 002F98 RLA    
+utsteax                   002FB9 RLA    tosudiv0ax                002FC8 RLA    
+getlop                    002FD9 RLA    udiv32                    002FFD RLA    
+tosumod0ax                003042 RLA    boolne                    00305B RLA    
+boollt                    00306A RLA    boolgt                    003070 RLA    
+boolge                    003072 RLA    tosumula0                 003087 RLA    
+mulax10                   0030C1 RLA    mulax5                    0030DA RLA    
+popptr1                   0030EE RLA    pusha                     003100 RLA    
+pusha0                    003114 RLA    pushax                    003116 RLA    
+staspidx                  00312C RLA    staxysp                   003144 RLA    
+steax0sp                  00314D RLA    steaxysp                  00314F RLA    
+subysp                    003162 RLA    tosudiva0                 00316F RLA    
+_udeks_calc_value         003248 RLA    _udeks_calc_error         00324C RLA    
+
+
+
+Imports list:
+-------------
+_gfx_request (graphics_request.o):
+    xcalc-native.o            build/user/xcalc-native.s(16)
+_gfx_sleep (graphics_request.o):
+    xcalc-native.o            build/user/xcalc-native.s(17)
+_udeks_calc_error (calc.o):
+    [linker generated]       
+_udeks_calc_format (calc.o):
+    xcalc-native.o            build/user/xcalc-native.s(15)
+_udeks_calc_key (calc.o):
+    xcalc-native.o            build/user/xcalc-native.s(14)
+_udeks_calc_reset (calc.o):
+    xcalc-native.o            build/user/xcalc-native.s(13)
+_udeks_calc_value (calc.o):
+    [linker generated]       
+_udeks_graphical_main (xcalc-native.o):
+    native_graphics_entry.o   user/lib/native_graphics_entry.s(3)
+_udeks_program_entry (native_graphics_entry.o):
+    [linker generated]       
+addysp (addysp.o):
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+addysp1 (addysp.o):
+    ludiv.o                   runtime/ludiv.s(9)
+    lsub.o                    runtime/lsub.s(11)
+    lmul.o                    runtime/lmul.s(9)
+    ladd.o                    runtime/ladd.s(8)
+aslax3 (aslax3.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+    xcalc-native.o            build/user/xcalc-native.s(724)
+aulong (along.o):
+    calc.o                    build/user/calc.s(656)
+axulong (axlong.o):
+    calc.o                    build/user/calc.s(656)
+bnega (bneg.o):
+    calc.o                    build/user/calc.s(656)
+bnegeax (lbneg.o):
+    calc.o                    build/user/calc.s(656)
+boolge (makebool.o):
+    lge.o                     runtime/lge.s(8)
+boolgt (makebool.o):
+    lgt.o                     runtime/lgt.s(8)
+boollt (makebool.o):
+    llt.o                     runtime/llt.s(8)
+boolne (makebool.o):
+    lne.o                     runtime/lne.s(8)
+decax2 (decax2.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+decaxy (decaxy.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+    xcalc-native.o            build/user/xcalc-native.s(724)
+decsp1 (decsp1.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+    xcalc-native.o            build/user/xcalc-native.s(724)
+decsp2 (decsp2.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+decsp3 (decsp3.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+decsp4 (decsp4.o):
+    lpush.o                   runtime/lpush.s(12)
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+getlop (ludiv.o):
+    lumod.o                   runtime/lumod.s(9)
+    lshelp.o                  runtime/lshelp.s(11)
+incax1 (incax1.o):
+    calc.o                    build/user/calc.s(656)
+incax3 (incax3.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+incax7 (incax7.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+incaxy (incaxy.o):
+    incax7.o                  runtime/incax7.s(8)
+    incax3.o                  runtime/incax3.s(8)
+    xcalc-native.o            build/user/xcalc-native.s(724)
+    calc.o                    build/user/calc.s(656)
+inceaxy (linc.o):
+    calc.o                    build/user/calc.s(656)
+incsp1 (incsp1.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+    xcalc-native.o            build/user/xcalc-native.s(724)
+    calc.o                    build/user/calc.s(656)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+incsp3 (incsp3.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+incsp4 (incsp4.o):
+    lcmp.o                    runtime/lcmp.s(9)
+    xcalc-native.o            build/user/xcalc-native.s(724)
+incsp5 (incsp5.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+    calc.o                    build/user/calc.s(656)
+laddeq0sp (laddeqsp.o):
+    calc.o                    build/user/calc.s(656)
+ldaxysp (ldaxsp.o):
+    calc.o                    build/user/calc.s(656)
+ldeax0sp (ldeaxysp.o):
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+ldeaxysp (ldeaxysp.o):
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+mulax10 (mulax10.o):
+    calc.o                    build/user/calc.s(656)
+mulax5 (mulax5.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+negeax (lneg.o):
+    ldiv.o                    runtime/ldiv.s(11)
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+poplsargs (lshelp.o):
+    ldiv.o                    runtime/ldiv.s(11)
+popptr1 (popptr1.o):
+    udiv.o                    runtime/udiv.s(9)
+    mul8.o                    runtime/mul8.s(9)
+ptr1 (zeropage.o):
+    lcmp.o                    runtime/lcmp.s(10)
+    udiv.o                    runtime/udiv.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mulax5.o                  runtime/mulax5.s(9)
+    mulax10.o                 runtime/mulax10.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    ludiv.o                   runtime/ludiv.s(10)
+    lshelp.o                  runtime/lshelp.s(12)
+    lmul.o                    runtime/lmul.s(10)
+    ldiv.o                    runtime/ldiv.s(12)
+    xcalc-native.o            build/user/xcalc-native.s(11)
+    calc.o                    build/user/calc.s(11)
+ptr2 (zeropage.o):
+    lumod.o                   runtime/lumod.s(10)
+    ludiv.o                   runtime/ludiv.s(10)
+ptr3 (zeropage.o):
+    ludiv.o                   runtime/ludiv.s(10)
+    lshelp.o                  runtime/lshelp.s(12)
+    lmul.o                    runtime/lmul.s(10)
+ptr4 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    mul8.o                    runtime/mul8.s(10)
+    ludiv.o                   runtime/ludiv.s(10)
+    lshelp.o                  runtime/lshelp.s(12)
+    lmul.o                    runtime/lmul.s(10)
+    linc.o                    runtime/linc.s(8)
+pusha (pusha.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+    xcalc-native.o            build/user/xcalc-native.s(724)
+    xcalc-native.o            build/user/xcalc-native.s(724)
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+pusha0 (pushax.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+pushax (pushax.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+    xcalc-native.o            build/user/xcalc-native.s(724)
+    calc.o                    build/user/calc.s(656)
+pusheax (lpush.o):
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+regsave (zeropage.o):
+    calc.o                    build/user/calc.s(10)
+shlax2 (aslax2.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+sp (zeropage.o):
+    lcmp.o                    runtime/lcmp.s(10)
+    incsp2.o                  runtime/incsp2.s(8)
+    subysp.o                  runtime/subysp.s(9)
+    steaxsp.o                 runtime/steaxsp.s(8)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    ludiv.o                   runtime/ludiv.s(10)
+    lsub.o                    runtime/lsub.s(12)
+    lpush.o                   runtime/lpush.s(13)
+    lmul.o                    runtime/lmul.s(10)
+    ldeaxysp.o                runtime/ldeaxysp.s(12)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    laddeqsp.o                runtime/laddeqsp.s(8)
+    ladd.o                    runtime/ladd.s(9)
+    incsp1.o                  runtime/incsp1.s(8)
+    decsp4.o                  runtime/decsp4.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    add.o                     runtime/add.s(12)
+    xcalc-native.o            build/user/xcalc-native.s(10)
+    calc.o                    build/user/calc.s(10)
+sreg (zeropage.o):
+    lcmp.o                    runtime/lcmp.s(10)
+    udiv.o                    runtime/udiv.s(10)
+    steaxsp.o                 runtime/steaxsp.s(8)
+    lumod.o                   runtime/lumod.s(10)
+    ludiv.o                   runtime/ludiv.s(10)
+    ltest.o                   runtime/ltest.s(8)
+    lsub.o                    runtime/lsub.s(12)
+    lshelp.o                  runtime/lshelp.s(12)
+    lpush.o                   runtime/lpush.s(13)
+    lneg.o                    runtime/lneg.s(11)
+    lmul.o                    runtime/lmul.s(10)
+    linc.o                    runtime/linc.s(8)
+    ldiv.o                    runtime/ldiv.s(12)
+    ldeaxysp.o                runtime/ldeaxysp.s(12)
+    lbneg.o                   runtime/lbneg.s(8)
+    laddeqsp.o                runtime/laddeqsp.s(8)
+    ladd.o                    runtime/ladd.s(9)
+    axlong.o                  runtime/axlong.s(9)
+    along.o                   runtime/along.s(9)
+    calc.o                    build/user/calc.s(10)
+staspidx (staspidx.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+    xcalc-native.o            build/user/xcalc-native.s(724)
+    calc.o                    build/user/calc.s(656)
+staxysp (staxsp.o):
+    calc.o                    build/user/calc.s(656)
+steax0sp (steaxsp.o):
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+steaxysp (steaxsp.o):
+    calc.o                    build/user/calc.s(656)
+subysp (subysp.o):
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    ltest.o                   runtime/ltest.s(8)
+    lshelp.o                  runtime/lshelp.s(12)
+    ldiv.o                    runtime/ldiv.s(12)
+    lbneg.o                   runtime/lbneg.s(8)
+    ladd.o                    runtime/ladd.s(9)
+    incaxy.o                  runtime/incaxy.s(8)
+    decaxy.o                  runtime/decaxy.s(8)
+    aslax3.o                  runtime/aslax3.s(8)
+    aslax2.o                  runtime/aslax2.s(8)
+    add.o                     runtime/add.s(12)
+tmp2 (zeropage.o):
+    lshelp.o                  runtime/lshelp.s(12)
+    lmul.o                    runtime/lmul.s(10)
+    ldiv.o                    runtime/ldiv.s(12)
+tmp3 (zeropage.o):
+    lumod.o                   runtime/lumod.s(10)
+    ludiv.o                   runtime/ludiv.s(10)
+    lmul.o                    runtime/lmul.s(10)
+tmp4 (zeropage.o):
+    lumod.o                   runtime/lumod.s(10)
+    ludiv.o                   runtime/ludiv.s(10)
+    lmul.o                    runtime/lmul.s(10)
+tosaddax (add.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+tosaddeax (ladd.o):
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+tosdiveax (ldiv.o):
+    calc.o                    build/user/calc.s(656)
+tosgeeax (lge.o):
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+tosgteax (lgt.o):
+    calc.o                    build/user/calc.s(656)
+toslcmp (lcmp.o):
+    lne.o                     runtime/lne.s(8)
+    llt.o                     runtime/llt.s(8)
+    lgt.o                     runtime/lgt.s(8)
+    lge.o                     runtime/lge.s(8)
+toslteax (llt.o):
+    calc.o                    build/user/calc.s(656)
+tosmul0ax (lmul.o):
+    calc.o                    build/user/calc.s(656)
+    calc.o                    build/user/calc.s(656)
+tosmuleax (lmul.o):
+    calc.o                    build/user/calc.s(656)
+tosneeax (lne.o):
+    calc.o                    build/user/calc.s(656)
+tossubeax (lsub.o):
+    calc.o                    build/user/calc.s(656)
+tosudiv0ax (ludiv.o):
+    calc.o                    build/user/calc.s(656)
+tosudiva0 (udiv.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+tosumod0ax (lumod.o):
+    calc.o                    build/user/calc.s(656)
+tosumula0 (mul8.o):
+    xcalc-native.o            build/user/xcalc-native.s(724)
+udiv32 (ludiv.o):
+    lumod.o                   runtime/lumod.s(9)
+    ldiv.o                    runtime/ldiv.s(11)
+utsteax (ltest.o):
+    calc.o                    build/user/calc.s(656)
+

@@ -1,8 +1,11 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* Included by the native raw-IEC harness. All actions use emulated input. */
 static unsigned calc_x=108, calc_y=30;
+#ifndef UDEKS_CALC_BANK
+#define UDEKS_CALC_BANK 0
+#endif
 static long calc_value(void) {
-    unsigned long v=word(UDEKS_CALC_VALUE) | ((unsigned long)word(UDEKS_CALC_VALUE+2)<<16);
+    unsigned long v=word(UDEKS_CALC_BANK+UDEKS_CALC_VALUE) | ((unsigned long)word(UDEKS_CALC_BANK+UDEKS_CALC_VALUE+2)<<16);
     return (long)(int32_t)v;
 }
 static void calc_key(char keychar) {
@@ -10,9 +13,13 @@ static void calc_key(char keychar) {
     const char *p=strchr(keys,keychar);
     require(p != NULL, "unknown calculator key");
     unsigned index=p-keys;
+#if UDEKS_CALC_BANK
+    client_click(calc_x+14+(index%4)*25+12,calc_y+41+(index/4)*20+40,3);
+#else
     pointer_to(calc_x+14+(index%4)*25+12,calc_y+41+(index/4)*20+40);
     joyports_mouse_button(&machine->joyports,0,false,true);frames(150);
     joyports_mouse_button(&machine->joyports,0,false,false);frames(150);
+#endif
 }
 static void calc_expression(const char *keys,long expected) {
     for (const char *p=keys;*p;++p) calc_key(*p);
@@ -29,7 +36,7 @@ static void calculator_smoke(void) {
     calc_expression("C5+N.25=",475);
     calc_expression("C12*3=",3600);
     calc_key('C');calc_key('8');calc_key('/');calc_key('0');calc_key('=');
-    require(byte(UDEKS_CALC_ERROR)==1,"division by zero not reported");
+    require(byte(UDEKS_CALC_BANK+UDEKS_CALC_ERROR)==1,"division by zero not reported");
     calc_expression("C2+3=",500);
     command("echo calculator alive");idle();
     require(console_contains("calculator alive"),"mouse use broke console typing");

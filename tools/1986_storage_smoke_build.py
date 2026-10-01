@@ -32,6 +32,7 @@ def main():
     parser.add_argument('--boot-mounted', action='store_true', help='drag regression relies on default RC mount, never mounts manually')
     parser.add_argument('--root-namespace', action='store_true', help='system root, cwd, data alias and native window regression')
     parser.add_argument('--xcalc', action='store_true', help='native calculator mouse, arithmetic, console and app-slot checks')
+    parser.add_argument('--four-apps', action='store_true', help='four-app native input and independent lifecycle qualification')
     args = parser.parse_args()
     if args.boot_mounted and not args.drag_regression:
         parser.error('--boot-mounted requires --drag-regression')
@@ -43,12 +44,18 @@ def main():
     kernel_map = (ROOT/'build/8502/udeks-8502.map').read_text()
     console_base = int(re.search(r'^LOWBSS\s+([0-9A-Fa-f]+)',kernel_map,re.M)[1],16)
     calc_flags = []
-    if args.xcalc:
+    if args.xcalc or args.four_apps:
         calc_map = (ROOT/'build/user/xcalc.map').read_text()
         calc_flags = ['-DUDEKS_XCALC_SMOKE','-DUDEKS_DISK_GRAPHICS_SMOKE']
         for symbol, define in (('_udeks_calc_value','VALUE'),('_udeks_calc_error','ERROR')):
             address = re.search(r'\b'+symbol+r'\s+([0-9A-Fa-f]+)\s+RLA',calc_map)[1]
             calc_flags.append('-DUDEKS_CALC_'+define+'=0x'+address)
+        if (ROOT/'build/user/xcalc.udx').read_bytes()[7]==0:
+            calc_flags.append('-DUDEKS_CALC_BANK=0x10000')
+    if args.four_apps:
+        draw_map=(ROOT/'build/user/xdraw.map').read_text()
+        address=re.search(r'\b_udeks_xdraw_cells\s+([0-9A-Fa-f]+)\s+RLA',draw_map)[1]
+        calc_flags.extend(['-DUDEKS_FOUR_APPS_SMOKE','-DUDEKS_DRAW_CELLS=0x'+address])
     subprocess.run(['cc', '-std=gnu11', '-O2', '-I'+str(emulator/'src'),
                     '-DUDEKS_CONSOLE_BASE='+str(console_base), *calc_flags,
                     *(['-DUDEKS_DISK_EXEC_SMOKE'] if args.disk_exec else []),
@@ -84,6 +91,7 @@ def main():
         'boot_mounted': args.boot_mounted,
         'root_namespace': args.root_namespace,
         'xcalc': args.xcalc,
+        'four_apps': args.four_apps,
     }, indent=2)+'\n')
     raise SystemExit(result.returncode)
 

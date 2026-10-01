@@ -1,0 +1,139 @@
+Modules list:
+-------------
+entry.o:
+    CODE              Offs=000000  Size=00007F  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000006  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000012  Align=00001  Fill=0000
+native4.o:
+    CODE              Offs=00007F  Size=000171  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000007  Align=00001  Fill=0000
+    DATA              Offs=000000  Size=000004  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=0001F0  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=0001FE  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=00022C  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000231  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000247  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=000261  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=00026C  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               003500  003511  000012  00001
+CODE                  003512  00378A  000279  00001
+RODATA                00378B  003790  000006  00001
+DATA                  003791  003794  000004  00001
+BSS                   003795  00379B  000007  00001
+
+
+Exports list by name:
+---------------------
+_probe_control            003796 RLA    _probe_error              003797 RLA    
+_probe_low_sp             003791 RLA    _probe_operation          00379A RLA    
+_probe_progress           003798 RLA    _probe_ready              003795 RLA    
+_probe_request            003512 RLA    _probe_sequence           00379B RLA    
+_probe_value              003793 RLA    _udeks_program_entry      003502 RLA    
+_udeks_program_main       003689 RLA    addysp                    003703 RLA    
+incsp3                    00373E RLA    ptr1                      00000A RLZ    
+pusha                     003747 RLA    pusha0                    00375B RLA    
+pushax                    00375D RLA    sp                        000002 RLZ    
+sreg                      000004 RLZ    stax0sp                   003773 RLA    
+staxysp                   003775 RLA    subysp                    00377E RLA    
+tmp1                      000012 RLZ    tosicmp0                  003710 RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+ptr1                      00000A RLZ    tmp1                      000012 RLZ    
+_udeks_program_entry      003502 RLA    _probe_request            003512 RLA    
+_udeks_program_main       003689 RLA    addysp                    003703 RLA    
+tosicmp0                  003710 RLA    incsp3                    00373E RLA    
+pusha                     003747 RLA    pusha0                    00375B RLA    
+pushax                    00375D RLA    stax0sp                   003773 RLA    
+staxysp                   003775 RLA    subysp                    00377E RLA    
+_probe_low_sp             003791 RLA    _probe_value              003793 RLA    
+_probe_ready              003795 RLA    _probe_control            003796 RLA    
+_probe_error              003797 RLA    _probe_progress           003798 RLA    
+_probe_operation          00379A RLA    _probe_sequence           00379B RLA    
+
+
+
+Imports list:
+-------------
+_probe_control (native4.o):
+    [linker generated]       
+_probe_error (native4.o):
+    entry.o                   user/probes/banked_client_entry.s(5)
+    [linker generated]       
+_probe_low_sp (native4.o):
+    entry.o                   user/probes/banked_client_entry.s(5)
+    [linker generated]       
+_probe_operation (native4.o):
+    entry.o                   user/probes/banked_client_entry.s(5)
+_probe_progress (native4.o):
+    [linker generated]       
+_probe_ready (native4.o):
+    [linker generated]       
+_probe_request (entry.o):
+    native4.o                 /var/home/salvogendut/Dev/UDEKS/build/four-apps/native/native4.s(13)
+_probe_sequence (native4.o):
+    entry.o                   user/probes/banked_client_entry.s(5)
+_probe_value (native4.o):
+    [linker generated]       
+_udeks_program_entry (entry.o):
+    [linker generated]       
+_udeks_program_main (native4.o):
+    entry.o                   user/probes/banked_client_entry.s(4)
+addysp (addysp.o):
+    incsp3.o                  runtime/incsp3.s(8)
+    native4.o                 /var/home/salvogendut/Dev/UDEKS/build/four-apps/native/native4.s(258)
+incsp3 (incsp3.o):
+    native4.o                 /var/home/salvogendut/Dev/UDEKS/build/four-apps/native/native4.s(258)
+ptr1 (zeropage.o):
+    native4.o                 /var/home/salvogendut/Dev/UDEKS/build/four-apps/native/native4.s(11)
+    entry.o                   user/probes/banked_client_entry.s(6)
+pusha (pusha.o):
+    native4.o                 /var/home/salvogendut/Dev/UDEKS/build/four-apps/native/native4.s(258)
+    native4.o                 /var/home/salvogendut/Dev/UDEKS/build/four-apps/native/native4.s(258)
+    entry.o                   user/probes/banked_client_entry.s(4)
+pusha0 (pushax.o):
+    native4.o                 /var/home/salvogendut/Dev/UDEKS/build/four-apps/native/native4.s(258)
+pushax (pushax.o):
+    native4.o                 /var/home/salvogendut/Dev/UDEKS/build/four-apps/native/native4.s(258)
+    native4.o                 /var/home/salvogendut/Dev/UDEKS/build/four-apps/native/native4.s(258)
+sp (zeropage.o):
+    subysp.o                  runtime/subysp.s(9)
+    staxsp.o                  runtime/staxsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    addysp.o                  runtime/addysp.s(8)
+    native4.o                 /var/home/salvogendut/Dev/UDEKS/build/four-apps/native/native4.s(10)
+    entry.o                   user/probes/banked_client_entry.s(6)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+stax0sp (staxsp.o):
+    native4.o                 /var/home/salvogendut/Dev/UDEKS/build/four-apps/native/native4.s(258)
+staxysp (staxsp.o):
+    native4.o                 /var/home/salvogendut/Dev/UDEKS/build/four-apps/native/native4.s(258)
+subysp (subysp.o):
+    native4.o                 /var/home/salvogendut/Dev/UDEKS/build/four-apps/native/native4.s(258)
+tmp1 (zeropage.o):
+    entry.o                   user/probes/banked_client_entry.s(6)
+tosicmp0 (icmp.o):
+    native4.o                 /var/home/salvogendut/Dev/UDEKS/build/four-apps/native/native4.s(258)
+

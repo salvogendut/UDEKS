@@ -117,3 +117,56 @@ The 32-byte `WMGR` record begins at `$F240`:
 | 26–27 | 2 | Drags completed |
 | 28–29 | 2 | Graphical close-box requests |
 | 30–31 | 2 | Damage-composition passes |
+
+## Banked clients (UTRQ 0.9)
+
+Banked ordinary UDEX programs do not call UAPP's resident paint functions or
+register foreign-bank callbacks. They submit operation 23 through the existing
+`$FF16` request boundary: descriptor/flags zero, count 24. Unused payload bytes
+are ignored; clients should clear them. Each registered task owns at most one
+window. The service derives the task from the scheduler, binds owners `$83/$84`
+to tasks 3/4, and copies titles into its own storage.
+
+| Payload | Request | Successful result |
+| --- | --- | --- |
+| `1, x-lo, x-hi, y, width, height, flags, title[8]` | CREATE | Window handle in result byte |
+| `2, handle, pointer-lo, pointer-hi, count` | PRESENT | Result 0 |
+| `3, handle` | EVENT | Result 4, payload `state, x-lo, x-hi, y` |
+| `4, handle` | CLOSE | Result 0 |
+
+CREATE currently requires FIXED_SIZE (`$10`), with optional MOVABLE (`$02`)
+and CLOSABLE (`$04`) only. Geometry passes the existing window-manager bounds
+checks. Titles are eight bytes plus a private terminator. EVENT is nonblocking:
+state 0 means closed, 1 alive/no click, 3 alive with a consumed client click.
+Click coordinates are relative to the whole window. There is no keyboard or
+resize event yet; clients sleep/yield between polls. An already-closing owner
+gets state 0, never another window's events.
+
+PRESENT takes at most 48 eight-byte commands from **inside the caller's own
+image+BSS reservation**. Commands use window-relative byte coordinates:
+
+| Opcode | Remaining seven bytes | Meaning |
+| --- | --- | --- |
+| 0 | `x,y,width,height,color,unused,unused` | Filled rectangle |
+| 1 | `x,y,x2,y2,color,unused,unused` | Line |
+| 2 | `x,y,row0,row1,row2,row3,row4` | 3×5 glyph, doubled pixels; low three bits per row |
+
+Colors are black (0) or yellow (7). The complete list is validated before
+commit; a rejected update leaves the old retained list and window unchanged.
+The service copies the commands into private bank-1 buffers (`$CD00-$CE7F`
+and `$CE80-$CFFF`) and repaints through the compositor's client/damage clip.
+Future moves, raises or partial uncovering replay that copy at the current
+window origin, without running the client or trusting a client buffer again.
+Zero commands clears the retained content. There is no cross-task begin/end
+painting lease and no app-specific calculator renderer in the service.
+
+Unknown suboperations, bad ranges/counts/flags and foreign handles are `EINVAL`;
+CREATE failure is `ENOMEM`. Earlier request minors or a service not yet installed
+are `ENOSYS`. Completion preserves the request sequence; clients must not depend
+on unreturned payload bytes (used as transfer scratch).
+
+Closing retires the window immediately, then the client observes EVENT=0 and
+exits. The service retires any remaining window before reaping an exited task.
+It never frees a live task. Root-session `xcalc -q`, `xdraw -q` and foreground Ctrl+C use
+this same graceful close path. A noncooperating native program is not protected
+or forcibly terminated by this interface; these are trusted cooperative apps.

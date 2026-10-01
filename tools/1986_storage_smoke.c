@@ -65,8 +65,22 @@ static void window_gesture(unsigned x, unsigned y, unsigned dx, unsigned dy) {
     frames(500);
 }
 
+static void client_click(unsigned x,unsigned y,unsigned task) {
+    pointer_to(x,y);
+    joyports_mouse_button(&machine->joyports,0,false,true);
+    wait_byte(0xf24d,1,"WM did not sample client button press");
+    joyports_mouse_button(&machine->joyports,0,false,false);
+    wait_byte(0xf24d,0,"WM did not sample client button release");
+    /* Observe a service turn after release before moving the pointer again.
+     * Fixed press/release delays can miss edges during synchronous repaint. */
+    frames(20);
+    if(task) wait_byte(slots+(task-1)*8+1,4,"client did not return to sleep");
+}
 #ifdef UDEKS_XCALC_SMOKE
 #include "1986_xcalc_smoke.inc"
+#endif
+#ifdef UDEKS_FOUR_APPS_SMOKE
+#include "1986_four_apps_smoke.inc"
 #endif
 static void disk_graphics(void) {
     command("xinit"); idle();
@@ -195,6 +209,11 @@ int main(int argc, char **argv) {
     }
     diagnostic();
     require(byte(0xf3d9) == 0xa5, "native raw-IEC boot failed");
+#ifdef UDEKS_FOUR_APPS_SMOKE
+    four_apps_smoke();
+    free(machine);
+    return 0;
+#endif
 #ifdef UDEKS_XCALC_SMOKE
     calculator_smoke();
     free(machine);

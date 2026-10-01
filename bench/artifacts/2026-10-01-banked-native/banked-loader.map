@@ -1,0 +1,34 @@
+Modules list:
+-------------
+banked-loader.o:
+    CODE              Offs=000000  Size=000663  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+CODE                  00D900  00DF62  000663  00001
+
+
+Exports list by name:
+---------------------
+banked_end                00DF63 RLA    banked_headers            00DEED RLA    
+banked_owned              00DEEB RLA    
+
+
+Exports list by value:
+----------------------
+banked_owned              00DEEB RLA    banked_headers            00DEED RLA    
+banked_end                00DF63 RLA    
+
+
+Imports list:
+-------------
+banked_end (banked-loader.o):
+    [linker generated]       
+banked_headers (banked-loader.o):
+    [linker generated]       
+banked_owned (banked-loader.o):
+    [linker generated]       
+

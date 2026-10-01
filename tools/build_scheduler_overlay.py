@@ -177,6 +177,8 @@ def main() -> None:
     parser.add_argument("--storage", type=Path, help="directory containing the linked IEC service")
     parser.add_argument("--ush", type=Path, help="ush image for storage placement validation")
     parser.add_argument("--task-lookup", type=Path, help="linked bank-1 loader extension")
+    parser.add_argument("--banked-loader", type=Path, help="private bank-1 load-only service")
+    parser.add_argument("--banked-graphics", type=Path)
     args = parser.parse_args()
     try:
         payload, constants = build_overlay(
@@ -200,7 +202,9 @@ def main() -> None:
                 (args.storage / 'module.bin').read_bytes(),
                 (args.storage / 'policy.bin').read_bytes(),
                 (args.storage / 'driver.bin').read_bytes(), args.ush.read_bytes(),
-                args.task_lookup.read_bytes())
+                args.task_lookup.read_bytes(),
+                b'' if args.banked_loader is None else args.banked_loader.read_bytes(),
+                b'' if args.banked_graphics is None else args.banked_graphics.read_bytes())
     except ValueError as error:
         raise SystemExit(f"cannot build scheduler overlay: {error}") from error
     args.output.parent.mkdir(parents=True, exist_ok=True)

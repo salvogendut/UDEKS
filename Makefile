@@ -143,6 +143,8 @@ STAGE0_BIN := $(BUILD_BOOT)/stage0.bin
 STAGE1_GATEWAY_BIN := $(BUILD_BOOT)/stage1-gateway.bin
 TASK_LOADER_BIN := $(BUILD_BOOT)/task-loader.bin
 TASK_LOOKUP_BIN := $(BUILD_BOOT)/task-lookup.bin
+STAGE1_GATEWAY_MAP := $(BUILD_BOOT)/stage1-gateway.map
+BANKED_LOADER_BIN := $(BUILD_BOOT)/banked-loader.bin
 TASK_REQUEST_GATE_BIN := $(BUILD_BOOT)/task-request-gateway.bin
 BOOTFS_REQUEST_SERVICE_BIN := $(BUILD_BOOT)/bootfs-request-service.bin
 TASK_BANK_GATE_BIN := $(BUILD_BOOT)/task-bank-gateway.bin
@@ -228,6 +230,7 @@ USER_XCLOCK_ENTRY_OBJ := $(BUILD_USER)/xclock_entry.o
 USER_XCLOCK_BIN := $(BUILD_USER)/xclock.bin
 USER_XCLOCK_UDEX := $(BUILD_USER)/xclock.udx
 USER_XCALC_UDEX := $(BUILD_USER)/xcalc.udx
+USER_XDRAW_UDEX := $(BUILD_USER)/xdraw.udx
 USER_XWAVE_ASM := $(BUILD_USER)/xwave.s
 USER_XWAVE_OBJ := $(BUILD_USER)/xwave.o
 USER_XWAVE_ENTRY_OBJ := $(BUILD_USER)/xwave_entry.o
@@ -255,7 +258,7 @@ $(BUILD_DIR)/disk-exec/test.d71: $(BOOT_D71) $(USER_COWSAY_UDEX) tools/disk_exec
 	bench-kernel-z80 bench-handoff bench-offload bench-memory-map \
 	boot publish-boot panic-probe framebuffer-assets user-sources user-programs \
 	task-state task-policy task-poll-policy task-scheduler task-switch-tail task-switch-activation scheduler-overlay placement-check \
-	placement-check-guard graphics-cache-placement graphics-apps-check \
+	placement-check-guard graphics-cache-placement graphics-apps-check banked-apps-probe banked-native-fixtures banked-native-probe four-apps-probe \
 	shadow-probe capability-probe boot-console-probe task-yield-probe \
 	task-exit-probe task-waitpid-probe task-spawn-loader-probe task-spawn-probe \
 	task-sleep-probe task-cancel-probe task-poll-probe \
@@ -307,10 +310,10 @@ user-sources: $(USER_COWSAY_ASM) $(USER_DATE_ASM) $(USER_LS_ASM) $(USER_USH_ASM)
 		$(USER_XCLOCK_ASM) $(USER_XWAVE_ASM) $(USER_TASK_STREAM_OBJ) \
 		$(USER_FILESYSTEM_OBJ) $(USER_POLL_ENTRY_OBJ)
 
-user-programs: $(USER_BOOTFS) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX)
+user-programs: $(USER_BOOTFS) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX)
 user-programs: $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(BUILD_USER)/filetools.udx $(BUILD_USER)/sysinfo.udx $(BUILD_USER)/diagnostics.udx
 
-$(BUILD_8502)/shell.s: include/udeks/service_control.h include/udeks/task_request.h
+$(BUILD_8502)/shell.s: include/udeks/service_control.h include/udeks/task_request.h include/udeks/banked_graphics.h
 $(USER_USH_ASM) $(BUILD_USER)/ush-recovery.o: include/udeks/service_control.h include/udeks/task_request.h
 
 # Compile-only proof that the host-tested lifecycle modules build for cc65.
@@ -337,10 +340,34 @@ placement-check: placement-check-guard scheduler-overlay task-switch-tail \
 		$(BUILD_8502)/vic_graphics_transport.o
 	$(PYTHON) tools/placement_audit.py --verify
 
-# Feasibility gate only: this does not enable bank-1 graphical execution.
-graphics-apps-check: placement-check-guard boot $(PANIC_PROBE_KERNEL_BIN)
+# Actual-build placement gate: independent clients, bridge and retained lists.
+graphics-apps-check: placement-check-guard boot $(PANIC_PROBE_KERNEL_BIN) $(BUILD_BOOT)/banked-loader.map
 	$(PYTHON) tools/graphics_app_layout.py --build $(BUILD_DIR) \
 		--output $(BUILD_DIR)/four-apps/layout.json
+
+# Run from the host after the reference-container build (VICE is a Flatpak).
+banked-apps-probe: $(BOOT_D64) $(BOOT_D71) $(BUILD_BOOT)/banked-loader.map
+	$(PYTHON) tools/banked_loader_probe.py --disk $(BOOT_D64) --drive 1541 \
+		--output $(BUILD_DIR)/four-apps/banked-vice-1541
+	$(PYTHON) tools/banked_loader_probe.py --disk $(BOOT_D71) --drive 1571 \
+		--output $(BUILD_DIR)/four-apps/banked-vice-1571
+
+banked-native-fixtures: placement-check-guard
+	$(PYTHON) tools/build_banked_execution.py
+
+# Host after the reference-container build. Both true-drive formats.
+four-apps-probe: $(BOOT_D64) $(BOOT_D71)
+	$(PYTHON) tools/xcalc_probe.py --four-apps --disk $(BOOT_D64) --drive 1541 --output $(BUILD_DIR)/four-apps/four-d64
+	$(PYTHON) tools/xcalc_probe.py --four-apps --disk $(BOOT_D71) --drive 1571 --output $(BUILD_DIR)/four-apps/four-d71
+	$(PYTHON) tools/four_apps_rejection_probe.py --disk $(BOOT_D64) --drive 1541 --output $(BUILD_DIR)/four-apps/rejection-d64
+	$(PYTHON) tools/four_apps_rejection_probe.py --disk $(BOOT_D71) --drive 1571 --output $(BUILD_DIR)/four-apps/rejection-d71
+
+# Host, after `make boot banked-native-fixtures` in the reference container.
+banked-native-probe: $(BOOT_D64) $(BOOT_D71) $(BUILD_BOOT)/banked-loader.map
+	$(PYTHON) tools/banked_loader_probe.py --native --disk $(BOOT_D64) --drive 1541 \
+		--output $(BUILD_DIR)/four-apps/native-vice-d64
+	$(PYTHON) tools/banked_loader_probe.py --native --disk $(BOOT_D71) --drive 1571 \
+		--output $(BUILD_DIR)/four-apps/native-vice-d71
 
 placement-check-guard:
 	@command -v od65 >/dev/null 2>&1 || { \
@@ -783,10 +810,27 @@ $(BUILD_USER)/xcalc_imports.o: user/lib/xcalc_imports.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
 $(BUILD_USER)/window_click.o: user/lib/window_click.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
-$(BUILD_USER)/xcalc.bin: $(BUILD_USER)/xcalc_entry.o $(BUILD_USER)/calc.o $(BUILD_USER)/xcalc.o $(BUILD_USER)/window_click.o $(BUILD_USER)/xcalc_imports.o cfg/8502-xcalc.cfg
-	$(CL65) -t none --cpu 6502 -C cfg/8502-xcalc.cfg -u _udeks_calc_value -u _udeks_calc_error -m $(BUILD_USER)/xcalc.map -o $@ $(filter %.o,$^)
-$(USER_XCALC_UDEX): $(BUILD_USER)/xcalc.bin tools/build_udex.py
-	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 --bss-size 0x0022 --flags 0x02 $< $@
+$(BUILD_USER)/xcalc-native.s: user/bin/xcalc_native.c include/udeks/calc.h include/udeks/banked_graphics.h | $(BUILD_USER)
+	$(CC65) -t none --cpu 6502 --standard c99 -Os -I include -o $@ $<
+$(BUILD_USER)/xcalc-native.o: $(BUILD_USER)/xcalc-native.s
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_USER)/graphics_request.o: user/lib/graphics_request.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_USER)/native_graphics_entry.o: user/lib/native_graphics_entry.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_USER)/xcalc.bin $(BUILD_USER)/xcalc.map &: $(BUILD_USER)/native_graphics_entry.o $(BUILD_USER)/calc.o $(BUILD_USER)/xcalc-native.o $(BUILD_USER)/graphics_request.o cfg/8502-xcalc-native.cfg
+	$(CL65) -t none --cpu 6502 -C cfg/8502-xcalc-native.cfg -u _udeks_program_entry -u _udeks_calc_value -u _udeks_calc_error -m $(BUILD_USER)/xcalc.map -o $(BUILD_USER)/xcalc.bin $(filter %.o,$^)
+$(USER_XCALC_UDEX): $(BUILD_USER)/xcalc.bin $(BUILD_USER)/xcalc.map tools/pack_native.py tools/build_udex.py
+	$(PYTHON) tools/pack_native.py $(BUILD_USER)/xcalc.bin $(BUILD_USER)/xcalc.map $@
+
+$(BUILD_USER)/xdraw.s: user/bin/xdraw.c include/udeks/banked_graphics.h | $(BUILD_USER)
+	$(CC65) -t none --cpu 6502 --standard c99 -Os -I include -o $@ $<
+$(BUILD_USER)/xdraw.o: $(BUILD_USER)/xdraw.s
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_USER)/xdraw.bin $(BUILD_USER)/xdraw.map &: $(BUILD_USER)/native_graphics_entry.o $(BUILD_USER)/xdraw.o $(BUILD_USER)/graphics_request.o cfg/8502-xdraw-native.cfg
+	$(CL65) -t none --cpu 6502 -C cfg/8502-xdraw-native.cfg -u _udeks_program_entry -u _udeks_xdraw_cells -m $(BUILD_USER)/xdraw.map -o $(BUILD_USER)/xdraw.bin $(filter %.o,$^)
+$(USER_XDRAW_UDEX): $(BUILD_USER)/xdraw.bin $(BUILD_USER)/xdraw.map tools/pack_native.py tools/build_udex.py
+	$(PYTHON) tools/pack_native.py $(BUILD_USER)/xdraw.bin $(BUILD_USER)/xdraw.map $@
 
 $(USER_XWAVE_ASM): src/apps/xwave.c include/udeks/mailbox.h \
 		include/udeks/vic_graphics.h include/udeks/window.h \
@@ -1244,7 +1288,8 @@ $(BUILD_8502)/vic_pixel.o: src/services/display/vic_pixel.s | $(BUILD_8502)
 $(BUILD_8502)/vic_clear.o: src/services/display/vic_clear.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) &: \
+$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphics.bin &: \
+		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/banked_access.o \
 		$(BUILD_8502)/kernel_entry.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
@@ -1423,8 +1468,8 @@ $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS) &: \
 		$(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 		$(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_BIN) $(TASK_CONTEXT_MAP) \
 		$(TASK_CONTEXT_VECTORS_BIN) $(TASK_SWITCH_TAIL_BIN) \
-		$(TASK_YIELD_HANDLER_BIN) \
-		tools/build_scheduler_overlay.py tools/build_window_cache.py | $(BUILD_BOOT)
+		$(TASK_YIELD_HANDLER_BIN) $(BANKED_LOADER_BIN) $(BUILD_8502)/banked-graphics.bin \
+		tools/build_scheduler_overlay.py tools/build_window_cache.py tools/build_storage.py | $(BUILD_BOOT)
 	$(PYTHON) tools/build_scheduler_overlay.py \
 		$(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 		$(SCHEDULER_OVERLAY_MAP) $(SCHEDULER_OVERLAY_PAYLOAD) \
@@ -1434,7 +1479,8 @@ $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS) &: \
 		--activation-tail $(TASK_SWITCH_TAIL_BIN) \
 		--activation-yield-handler $(TASK_YIELD_HANDLER_BIN) \
 		--activation-vectors $(TASK_CONTEXT_VECTORS_BIN) $(WINDOW_CACHE_OVERLAY_FLAGS) \
-		--storage $(STORAGE_BUILD) --ush $(USER_USH_BIN) --task-lookup $(TASK_LOOKUP_BIN)
+		--storage $(STORAGE_BUILD) --ush $(USER_USH_BIN) --task-lookup $(TASK_LOOKUP_BIN) \
+		--banked-loader $(BANKED_LOADER_BIN) --banked-graphics $(BUILD_8502)/banked-graphics.bin
 
 $(TASK_SWITCH_ACTIVATION_OBJ): src/boot/task-switch-activation.s \
 		$(SCHEDULER_OVERLAY_CONSTANTS) | $(BUILD_BOOT)
@@ -1445,7 +1491,8 @@ $(TASK_SWITCH_ACTIVATION_BIN): $(TASK_SWITCH_ACTIVATION_OBJ) \
 	$(LD65) -C cfg/8502-task-switch-activation.cfg -o $@ $<
 
 $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
-		$(PANIC_PROBE_PROBE_BIN) $(PANIC_PROBE_MAP) &: \
+		$(PANIC_PROBE_PROBE_BIN) $(PANIC_PROBE_MAP) $(BUILD_8502)/banked-graphics-panic.bin &: \
+		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/banked_access.o \
 		$(BUILD_8502)/kernel_entry.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
@@ -1894,6 +1941,25 @@ $(MEMORY_MAP_PRG): $(MEMORY_MAP_LAUNCH_BIN) tools/bin_to_prg.py
 $(BUILD_BOOT)/stage0.o: src/boot/stage0.s | $(BUILD_BOOT)
 	$(CA65) --cpu 6502 -o $@ $<
 
+$(BUILD_BOOT)/banked-bindings.inc: $(STAGE1_GATEWAY_MAP) $(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_MAP) tools/gen_banked_bindings.py
+	$(PYTHON) tools/gen_banked_bindings.py $(STAGE1_GATEWAY_MAP) $(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_MAP) $@
+
+$(BUILD_8502)/banked_graphics.s: src/services/window/banked_graphics.c include/udeks/banked_graphics.h \
+		include/udeks/window.h include/udeks/window_service.h include/udeks/vic_graphics.h | $(BUILD_8502)
+	$(CC65) -t none --cpu 6502 --standard c99 -Ors -I include -o $@ $<
+$(BUILD_8502)/banked_graphics.o: $(BUILD_8502)/banked_graphics.s
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_8502)/banked_access.o: src/services/window/banked_access.s | $(BUILD_8502)
+	$(CA65) --cpu 6502 -o $@ $<
+
+$(BUILD_BOOT)/banked-loader.o: src/services/app/banked_loader.s $(BUILD_BOOT)/banked-bindings.inc | $(BUILD_BOOT)
+	$(CA65) --cpu 6502 -I $(BUILD_BOOT) -o $@ $<
+
+$(BANKED_LOADER_BIN) $(BUILD_BOOT)/banked-loader.map &: $(BUILD_BOOT)/banked-loader.o \
+		cfg/8502-banked-loader.cfg
+	$(LD65) -C cfg/8502-banked-loader.cfg -m $(BUILD_BOOT)/banked-loader.map \
+		-u banked_owned -u banked_headers -u banked_end -o $(BANKED_LOADER_BIN) $<
+
 $(STAGE0_BIN): $(BUILD_BOOT)/stage0.o cfg/8502-stage0.cfg
 	$(LD65) -C cfg/8502-stage0.cfg -o $@ $<
 
@@ -1904,10 +1970,10 @@ $(BUILD_BOOT)/stage1-gateway.o: src/boot/stage1-gateway.s \
 		$(CAPABILITY_CONSTANTS) $(BUILD_8502)/disk-loader-bindings.inc | $(BUILD_BOOT)
 	$(CA65) --cpu 6502 -I $(BUILD_8502) -o $@ $<
 
-$(STAGE1_GATEWAY_BIN) $(TASK_LOADER_BIN) $(TASK_LOOKUP_BIN) &: $(BUILD_BOOT)/stage1-gateway.o \
+$(STAGE1_GATEWAY_BIN) $(TASK_LOADER_BIN) $(TASK_LOOKUP_BIN) $(STAGE1_GATEWAY_MAP) &: $(BUILD_BOOT)/stage1-gateway.o \
 		cfg/8502-stage1-gateway.cfg
 	$(LD65) -C cfg/8502-stage1-gateway.cfg \
-		-o $(STAGE1_GATEWAY_BIN) $<
+		-m $(STAGE1_GATEWAY_MAP) -u banked_access -o $(STAGE1_GATEWAY_BIN) $<
 
 $(BUILD_BOOT)/stage1.o: src/boot/stage1.s $(STAGE1_GATEWAY_BIN) \
 		$(SCHEDULER_OVERLAY_CONSTANTS) | $(BUILD_BOOT)
@@ -1931,7 +1997,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
 		tools/build_d71.py bench/iec-directory/hello.txt user/etc/rc $(USER_SYSINFO_UDEX) \
-		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX)
+		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX)
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
@@ -1954,7 +2020,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) \
 		--hello bench/iec-directory/hello.txt \
 		--rc user/etc/rc --sysinfo $(USER_SYSINFO_UDEX) \
-		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) --xcalc $(USER_XCALC_UDEX) \
+		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) --xcalc $(USER_XCALC_UDEX) --xdraw $(USER_XDRAW_UDEX) \
 		--command COWSAY=$(USER_COWSAY_UDEX) --command DATE=$(USER_DATE_UDEX) \
 		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_FILETOOLS_UDEX) \
 		--command UNAME=$(USER_DIAGNOSTICS_UDEX) --command LSHW=$(USER_DIAGNOSTICS_UDEX) \
@@ -2200,8 +2266,9 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 check:
+	$(PYTHON) -m py_compile tools/banked_loader_probe.py tools/gen_banked_bindings.py tools/build_banked_execution.py
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
-	$(PYTHON) -m py_compile tools/xcalc_probe.py
+	$(PYTHON) -m py_compile tools/xcalc_probe.py tools/pack_native.py tools/four_apps_rejection_probe.py
 	$(PYTHON) -m py_compile tools/managed_app_fixture.py tools/managed_disk_probe.py
 	$(PYTHON) -m py_compile tools/startup_probe.py tools/root_namespace_probe.py
 	$(PYTHON) -m py_compile tools/boot_entry_probe.py tools/boot_diagnostic.py tools/boot_banner_probe.py

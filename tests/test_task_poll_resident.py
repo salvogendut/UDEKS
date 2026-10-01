@@ -136,6 +136,21 @@ class PollResidentTests(unittest.TestCase):
             sp.write_kernel_blocks(1, [(0xA000, b"\x01\x02")])
         self.assertEqual(connection.commands, [b"m ff00 ff00\n", b"> ff01 00\n",
                                               b"> a000 01 02\n", b"> ff00 7f\n", b"x\n"])
+        connection = Connection()
+        payload = bytes(range(256))+b'end'
+        with patch.object(sp.socket, "create_connection", return_value=connection):
+            sp.write_kernel_blocks(1, [(0x9900, payload)])
+        self.assertEqual(connection.commands[:2], [b'm ff00 ff00\n', b'> ff01 00\n'])
+        self.assertEqual(connection.commands[-2:], [b'> ff00 7f\n', b'x\n'])
+        blocks = connection.commands[2:-2]
+        self.assertEqual(len(blocks), 9)
+        decoded = bytearray()
+        for index, command in enumerate(blocks):
+            fields = command.split()
+            self.assertEqual(int(fields[1], 16), 0x9900+32*index)
+            self.assertLessEqual(len(fields)-2, 32)
+            decoded.extend(int(value, 16) for value in fields[2:])
+        self.assertEqual(decoded, payload)
 
 
 if __name__ == "__main__":

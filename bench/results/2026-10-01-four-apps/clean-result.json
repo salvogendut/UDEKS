@@ -1,0 +1,13 @@
+{
+  "source": "/var/home/salvogendut/Dev/UDEKS/build/four-apps/clean-four.153qmm91",
+  "command": "make -j8 boot graphics-apps-check placement-check",
+  "byte_identical": {
+    "boot/udeks.d64": "8e168cddd91d5f0f4571585ae16100accef4f24987fa33330065ff551419b56f",
+    "boot/udeks.d71": "fd6fa9731bc599aaa380dd0fa2a82fdb16dd907e2daa88aa5ce9dacded583a8c",
+    "user/xcalc.udx": "2dc94e831354f33e77b0585e753fc81ed74a142d6bb06420c181449badaacd4c",
+    "user/xdraw.udx": "92224f55fe320d249634d185592a3e66ab916d514ad37c9329580994a20ee17b",
+    "user/ush.udx": "497553598888ac589cf7b7d3b964404cf1683752b1a7b16721de4b10d3e27ab1",
+    "8502/banked-graphics.bin": "edece0359974b4faf717f05746a330bfdedb2157bf0b8403fb2e1ab0282bc7c0",
+    "boot/banked-loader.bin": "30d87c9976ce95ba411b27a8113b7c23bd359cdfff37f60f8ed1a22cbbc46c8b"
+  }
+}

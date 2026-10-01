@@ -95,9 +95,9 @@ stay installed for polling and subsequent restarts until reboot; this is not
 general dynamic linking, unloading, or isolation from hostile machine code.
 See [managed disk delivery](../docs/DISK-GRAPHICS.md).
 
-`xcalc` is the explicitly named exception to the managed allocation size:
+The historical `app-xcalc` build made `xcalc` an exception to the managed allocation size:
 `/bin/xcalc` / `XCALC.BIN` uses bank-0 `$0200-$11FF` (4 KiB) and shares
-slot 1 exclusively with xclock. Its disk stream, including header, must fit
+slot 1 exclusively with xclock. Its disk stream, including header, had to fit
 the 4 KiB bank-1 loader staging area; image+BSS must fit the 4 KiB destination.
 Native bank-1 ordinary APP1 remains `$0200-$0BFF`; its software stack and
 all old image bounds remain unchanged. The loader derives the extended bound
@@ -107,6 +107,23 @@ before loading the other image. Init failure leaves no callable slot.
 Bank-0 console/input LOWBSS moved to `$9B00-$A0FC` (reservation to `$A0FF`),
 with a link assertion keeping resident code/data below `$9B00`. VIC shadow,
 common gates, native task stacks and bank-1 services have not moved.
+
+The four-app development branch replaces that calculator path with a **private native bank-1 admission
+path** for ordinary flag-0 UDEX images at `$2300` (4,608-byte allocation) and
+`$3500` (2,816 bytes). The header plus image must fit staging; image plus BSS
+must fit the allocation. Entry may be anywhere inside the image. Each client
+links its own runtime and uses a private relocated zero page, hardware stack
+and software stack. Initial entry receives argc 0 / argv NULL; return becomes
+EXIT through `$FF16`. This is not a new public SPAWN or UAPP contract, and
+does not allow bank-1 code to call the old bank-0 UAPP vectors. Managed flag-2
+images remain load-only on this path. Current `XCALC.BIN` is flag 0, load/entry
+`$2300`, image 3,912 bytes plus 412 BSS, with its own cc65 runtime and private
+stack. It uses owner-checked UTRQ 0.9 graphics requests, never UAPP callbacks.
+`XDRAW.BIN` independently loads/enters at `$3500`, with 1,477 image + 354 BSS
+bytes and the second private runtime/stack/context allocation.
+Clock and wave remain managed bank-0 images. The freed `$0C00-$11FF` portion
+of the old calculator allocation now holds the lazily installed graphics service.
+See [execution and current limits](../docs/DISK-GRAPHICS.md#four-application-support-30).
 
 Init's persistent load reads `/bin/ush` (`USH.BIN`) before child
 tasks exist. It requires flag `$01`, load and entry `$9000`, and the same

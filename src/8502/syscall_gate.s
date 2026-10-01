@@ -19,6 +19,8 @@
         .import _udeks_shell_command_line
         .import _udeks_shell_foreground_job
         .import _udeks_service_control_request
+        .import _udeks_banked_graphics_request, _udeks_banked_graphics_installed
+        .import _udeks_bootfs_finish_error
         .import _udeks_bootfs_request
         .export _udeks_time_sync_ti
         .import pusha
@@ -103,6 +105,19 @@ _udeks_syscall_clock_set_gate:
         .segment "CODE"
 task_extended_request:
         lda TREQ_OPERATION
+        cmp #23
+        bne :+
+        lda _udeks_banked_graphics_installed
+        bne graphics_dispatch
+        lda #38
+        jmp _udeks_bootfs_finish_error
+graphics_dispatch:
+        jsr _udeks_banked_graphics_request
+        lda #0
+        tax
+        clc
+        rts
+:
         cmp #20
         bne :+
         jsr _udeks_service_control_request
@@ -284,7 +299,7 @@ task_validate_signature:
         dex
         bpl task_validate_signature
         lda TREQ_BASE+$05
-        cmp #$09
+        cmp #$0a
         bcs task_protocol_trampoline
         lda TREQ_STATE
         cmp #TREQ_REQUEST

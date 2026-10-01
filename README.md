@@ -64,12 +64,16 @@ of the VDC console. Mouse: port 1 (1351); joystick: port 2. Use `xclock -q`
 or `xwave -q` to stop a background app; `Ctrl+C` stops a foreground app.
 `xinit -q` shuts down the graphics display.
 
-On the calculator feature branch, freshly built images also support
-`xcalc &`: a mouse-operated decimal calculator. Stop xclock first
-(`xclock -q`); they share one application slot, while xwave can coexist.
-`xcalc -q` closes it. Console typing stays available. See
-[calculator scope and tests](docs/DISK-GRAPHICS.md#calculator-addition-branch-app-xcalc).
+On the `graphics-four-apps` feature branch, freshly built images also support
+`xcalc &` (decimal calculator) and `xdraw &` (click-to-toggle drawing grid).
+**All four graphical apps can run together**, with independent bank-1
+allocations for calculator and drawing. Click xdraw's C button to clear it;
+`xcalc -q` / `xdraw -q` close the respective app. See
+[four-app candidate and tests](docs/DISK-GRAPHICS.md#four-application-support-30).
 The published download snapshots above remain the accepted main build.
+Use `build/boot/udeks.d64` or `build/boot/udeks.d71` for this test candidate;
+VICE D64/D71 and native 1986 input checks pass; physical-C128 acceptance of
+this candidate is the next gate.
 
 `/mnt` starts free. To use a separate data disk on device 9:
 
@@ -108,7 +112,7 @@ this is not a claim that every model, peripheral or failure path is qualified.
 The target baseline is a stock 128 KiB C128 with 16 KiB VDC RAM; 64 KiB VDC,
 REU and GeoRAM are optional. PAL and NTSC remain targets.
 
-**Current feature:** qualify the standalone calculator. **Next architectural
+**Current feature:** qualify four simultaneous graphical apps. **Next architectural
 milestone:** extract the first non-kernel service into a disk-loaded program.
 General scripting, filesystem writes, broader tasking and optimization are
 separate roadmap work. The existing `/etc/rc` command runner is not a POSIX

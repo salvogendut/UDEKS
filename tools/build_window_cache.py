@@ -33,9 +33,17 @@ def layout_maps(normal, panic):
     # move. Require normal/panic parity and prove each flexible reservation.
     flexible = {'CODE', 'RODATA', 'DATA', 'BSS', 'HIGHBSS', 'TASKREQUEST', 'MODULECODE', 'MODULERODATA'}
     actual = map_segments(normal)
+    extra = {'GRAPHICSCODE', 'GRAPHICSHELP'} & actual.keys()
+    if extra and extra != {'GRAPHICSCODE', 'GRAPHICSHELP'}:
+        raise ValueError('incomplete banked graphics module layout')
+    for name, start, limit in (('GRAPHICSCODE',0x0c00,0x1200),('GRAPHICSHELP',0xa100,0xa1e0)):
+        if name in extra:
+            low,end,size = actual[name]
+            if low != start or not 0 < size == end-low+1 <= limit-low:
+                raise ValueError('banked graphics exceeds reservation: '+name)
     for label, text in (('normal', normal), ('panic', panic)):
         current = map_segments(text)
-        if current.keys() != expected.keys() or current != actual or any(
+        if current.keys() != expected.keys() | extra or current != actual or any(
                 current[name] != bounds for name, bounds in expected.items()
                 if name not in flexible):
             raise ValueError('frozen cache integration layout changed: ' + label)

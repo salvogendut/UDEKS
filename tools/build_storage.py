@@ -11,6 +11,8 @@ POLICY_SIZE = 0x2000
 DRIVER_BASE = 0xE300
 SECONDARY_LIMIT = 0xE900
 USH_BSS = 0x170
+BANKED_LOADER_BASE = 0xD900
+BANKED_LOADER_LIMIT = 0xE000
 
 
 def install_router(tail: bytes, start: int, bss_end: int, router: bytes) -> bytes:
@@ -23,7 +25,8 @@ def install_router(tail: bytes, start: int, bss_end: int, router: bytes) -> byte
 
 def wrap_storage(payload: bytes, constants: str, module: bytes,
                  policy: bytes, driver: bytes, ush: bytes,
-                 lookup: bytes) -> tuple[bytes, str]:
+                 lookup: bytes, banked_loader: bytes = b'',
+                 banked_graphics: bytes = b'') -> tuple[bytes, str]:
     start = int.from_bytes(payload[:2], 'little')
     end = start + len(payload) - 2
     if start not in (0x4200, 0x5000) or end > 0x8000:
@@ -44,6 +47,21 @@ def wrap_storage(payload: bytes, constants: str, module: bytes,
     for address, data in ((load, module), (0x1A00, lookup), (start, payload[2:]),
                           (POLICY_BASE, policy), (DRIVER_BASE, driver)):
         image[address-load:address-load+len(data)] = data
+    if banked_loader:
+        if (len(banked_loader) > BANKED_LOADER_LIMIT - BANKED_LOADER_BASE or
+                banked_loader[3:9] != b'BLOD\0\1' or banked_loader[0] != 0x4C):
+            raise ValueError('invalid banked loader at $D900-$DFFF')
+        first, last = BANKED_LOADER_BASE-load, BANKED_LOADER_LIMIT-load
+        if any(image[first:last]):
+            raise ValueError('banked loader reservation is occupied')
+        image[first:first+len(banked_loader)] = banked_loader
+    if banked_graphics:
+        if len(banked_graphics) != 0x600 or len(policy) > 0x1700:
+            raise ValueError('banked graphics requires $C700-$CFFF free from policy')
+        first, last = 0xC700-load, 0xD000-load
+        if any(image[first:last]):
+            raise ValueError('banked graphics staging/retained images overlap live data')
+        image[first:first+0x600] = banked_graphics
     # Keep SCHEDULER_OVERLAY_END as the USOV source end: activation uses it.
     constants += (f'SECONDARY_PAYLOAD_LOAD = ${load:04x}\n'
                   f'SECONDARY_PAYLOAD_END = ${limit:04x}\n')

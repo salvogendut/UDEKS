@@ -657,6 +657,16 @@ def validate_managed_app(executable: bytes, base: int, capacity: int = 0x0A00) -
             raise ValueError('managed callback must JMP inside its own image')
 
 
+def validate_banked_app(executable: bytes, base: int, capacity: int) -> None:
+    if len(executable) < 17 or executable[:8] != b'UDEX\0\1\1\0':
+        raise ValueError('invalid banked application header')
+    load, size, bss, entry = (int.from_bytes(executable[n:n+2], 'little')
+                              for n in (8, 10, 12, 14))
+    if (load != base or len(executable) != size+16 or len(executable) > capacity or
+            size+bss > capacity or not load <= entry < load+size):
+        raise ValueError('invalid banked application allocation/entry')
+
+
 def install_task_loader(kernel: bytearray, loader: bytes) -> None:
     if len(loader) > TASK_LOADER_STAGING_SIZE:
         raise ValueError(
@@ -736,6 +746,7 @@ def build_image(
     xwave: bytes = b"",
     commands: tuple[tuple[str, bytes], ...] = (),
     xcalc: bytes = b"",
+    xdraw: bytes = b"",
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -853,9 +864,15 @@ def build_image(
             validate_managed_app(executable, base)
             install_prg_file(image, name+'.BIN', executable, file_type=0x81)
     if xcalc:
-        validate_managed_app(xcalc, 0x0200, 0x1000)
+        if xcalc[7:8] == b'\x02':
+            validate_managed_app(xcalc, 0x0200, 0x1000)  # historical fixture disks
+        else:
+            validate_banked_app(xcalc, 0x2300, 0x1200)
         install_prg_file(image, "XCALC.BIN", xcalc, file_type=0x81)
-    names = {'SCHEDOVR', 'USH', 'RC', 'HELLO', 'FREE', 'DF', 'XCLOCK', 'XWAVE', 'XCALC'}
+    if xdraw:
+        validate_banked_app(xdraw, 0x3500, 0xB00)
+        install_prg_file(image, "XDRAW.BIN", xdraw, file_type=0x81)
+    names = {'SCHEDOVR', 'USH', 'RC', 'HELLO', 'FREE', 'DF', 'XCLOCK', 'XWAVE', 'XCALC', 'XDRAW'}
     for name, executable in commands:
         if name in names or not name or len(name) > 12 or any(c not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-' for c in name):
             raise ValueError('invalid or duplicate disk command name')
@@ -900,7 +917,8 @@ def main() -> None:
     parser.add_argument("--sysinfo", type=Path, help="standalone FREE/DF multicall UDEX")
     parser.add_argument("--xclock", type=Path, help="disk-only managed XCLOCK UDEX")
     parser.add_argument("--xwave", type=Path, help="disk-only managed XWAVE UDEX")
-    parser.add_argument("--xcalc", type=Path, help="disk-only managed XCALC UDEX")
+    parser.add_argument("--xcalc", type=Path, help="disk-only banked XCALC UDEX (legacy fixtures also accepted)")
+    parser.add_argument("--xdraw", type=Path, help="disk-only banked XDRAW UDEX")
     from build_bootfs import parse_entry
     parser.add_argument("--command", action="append", type=parse_entry, default=[], metavar="NAME=UDEX")
     parser.add_argument(
@@ -945,6 +963,7 @@ def main() -> None:
             b"" if args.xwave is None else args.xwave.read_bytes(),
             tuple((name, path.read_bytes()) for name, path in args.command),
             b"" if args.xcalc is None else args.xcalc.read_bytes(),
+            b"" if args.xdraw is None else args.xdraw.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error

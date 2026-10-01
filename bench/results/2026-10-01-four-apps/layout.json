@@ -1,0 +1,254 @@
+{
+  "status": "four independent graphical executables; placement verified",
+  "baseline_apps": {
+    "xclock": {
+      "load": 512,
+      "image": 2502,
+      "bss": 13,
+      "allocation": 2515
+    },
+    "xwave": {
+      "load": 4608,
+      "image": 1727,
+      "bss": 549,
+      "allocation": 2276
+    },
+    "xcalc": {
+      "load": 8960,
+      "image": 3912,
+      "bss": 412,
+      "allocation": 4324
+    },
+    "xdraw": {
+      "load": 13568,
+      "image": 1477,
+      "bss": 354,
+      "allocation": 1831
+    }
+  },
+  "proposed": [
+    {
+      "name": "banked app 3 image+BSS",
+      "bank": 1,
+      "start": 8960,
+      "limit": 13568
+    },
+    {
+      "name": "banked app 4 image+BSS",
+      "bank": 1,
+      "start": 13568,
+      "limit": 16384
+    },
+    {
+      "name": "app 3 software stack reservation",
+      "bank": 1,
+      "start": 35328,
+      "limit": 36096
+    },
+    {
+      "name": "app 4 software stack reservation",
+      "bank": 1,
+      "start": 36096,
+      "limit": 36864
+    },
+    {
+      "name": "app 3 relocated zero page/hardware stack",
+      "bank": 1,
+      "start": 54528,
+      "limit": 55040
+    },
+    {
+      "name": "app 4 relocated zero page/hardware stack",
+      "bank": 1,
+      "start": 55040,
+      "limit": 55552
+    }
+  ],
+  "existing": [
+    {
+      "name": "kernel pages",
+      "bank": 0,
+      "start": 0,
+      "limit": 512
+    },
+    {
+      "name": "legacy clock slot",
+      "bank": 0,
+      "start": 512,
+      "limit": 3072
+    },
+    {
+      "name": "banked graphics service",
+      "bank": 0,
+      "start": 3072,
+      "limit": 4608
+    },
+    {
+      "name": "legacy wave slot",
+      "bank": 0,
+      "start": 4608,
+      "limit": 7168
+    },
+    {
+      "name": "scheduler page",
+      "bank": 0,
+      "start": 7168,
+      "limit": 8192
+    },
+    {
+      "name": "resident and scheduler tail",
+      "bank": 0,
+      "start": 8192,
+      "limit": 53248
+    },
+    {
+      "name": "resident high state and C stack",
+      "bank": 0,
+      "start": 57344,
+      "limit": 61440
+    },
+    {
+      "name": "common RAM",
+      "bank": 0,
+      "start": 61440,
+      "limit": 65536
+    },
+    {
+      "name": "native child and disk staging/stack",
+      "bank": 1,
+      "start": 0,
+      "limit": 4608
+    },
+    {
+      "name": "storage module",
+      "bank": 1,
+      "start": 4608,
+      "limit": 6656
+    },
+    {
+      "name": "task lookup module",
+      "bank": 1,
+      "start": 6656,
+      "limit": 8192
+    },
+    {
+      "name": "display/cache/bitmap/sprite",
+      "bank": 1,
+      "start": 16384,
+      "limit": 32768
+    },
+    {
+      "name": "legacy foreground backup",
+      "bank": 1,
+      "start": 32768,
+      "limit": 35328
+    },
+    {
+      "name": "ush",
+      "bank": 1,
+      "start": 36864,
+      "limit": 40960
+    },
+    {
+      "name": "recovery bootfs",
+      "bank": 1,
+      "start": 40960,
+      "limit": 45056
+    },
+    {
+      "name": "filesystem policy",
+      "bank": 1,
+      "start": 45056,
+      "limit": 50944
+    },
+    {
+      "name": "graphics service delivery",
+      "bank": 1,
+      "start": 50944,
+      "limit": 52480
+    },
+    {
+      "name": "two retained command images",
+      "bank": 1,
+      "start": 52480,
+      "limit": 53248
+    },
+    {
+      "name": "banked image loader",
+      "bank": 1,
+      "start": 55552,
+      "limit": 57344
+    },
+    {
+      "name": "service state/context/driver and ush stack",
+      "bank": 1,
+      "start": 57344,
+      "limit": 61440
+    },
+    {
+      "name": "TASK zero page",
+      "bank": 1,
+      "start": 53504,
+      "limit": 53760
+    },
+    {
+      "name": "TASK hardware stack",
+      "bank": 1,
+      "start": 53760,
+      "limit": 54016
+    },
+    {
+      "name": "TASK2 zero page",
+      "bank": 1,
+      "start": 54016,
+      "limit": 54272
+    },
+    {
+      "name": "TASK2 hardware stack",
+      "bank": 1,
+      "start": 54272,
+      "limit": 54528
+    },
+    {
+      "name": "Z80 CODE",
+      "bank": 1,
+      "start": 8192,
+      "limit": 8855
+    }
+  ],
+  "calculator_current_allocation_spare": 284,
+  "fourth_app_capacity": 2816,
+  "fourth_app_allocation_spare": 985,
+  "private_stack_reservation_per_banked_app": 768,
+  "resident_bridge_headroom": 45,
+  "source_sha256": {
+    "include/udeks/memory.h": "ae2cbf11f7939dbbb3d9fb11261263b012b3e2a61d18d11b8ed235f2d7dd931f",
+    "src/scheduler/task_context.s": "7240bf5fb75522a051ee37fa0b6d1f0555b967950b49b6ddfe4be6845e4cf871",
+    "src/scheduler/task_yield_handler.s": "717a66034ecb8c7d6b0db4ab5b01ce3e98d9d662bbca4ffcdb8484d0a463c889",
+    "tools/graphics_app_layout.py": "454b24d4ea570af3c3eff667bbc7a73fc02788745c73a7137fe13a5f4b7e752a",
+    "src/services/app/banked_loader.s": "fd1c5ee2f7fabf869825e3dd3a9910a11f5945c34a0201e1992a7017e560733b",
+    "src/boot/stage1-gateway.s": "2ee80186e3e97272821485889121131b9037e062f835a0a22c941eb7f29b61fb",
+    "src/services/window/banked_graphics.c": "4595b0d7e77734a265fb10a5af109425ab9c9fb87b44a8414ce7c32158e70d06",
+    "src/services/window/banked_access.s": "d16544b241f7753138af64d4e3570f176411554e3db7bb3bd5dd7acde33530b3",
+    "user/bin/xcalc_native.c": "8c3dcd3f05d4eb8363d16c98e64a2cbd648ac1181ab87d483fdf44d862de1c7d",
+    "user/bin/xdraw.c": "d05224cff9d76984d06e0ff249e18adf30902749c745109705d50b529cd0e668",
+    "user/lib/graphics_request.s": "56056c9ffe63fd9c791bbbc002948a79a7eb832a2ae37fb88f60aae684675c3b"
+  },
+  "input_sha256": {
+    "8502/udeks-8502.map": "f832517681d99501d539a8bdc8183c854abeba9780a085ec8b08081461e6b3e4",
+    "8502/udeks-8502-panic-probe.map": "516d9ff01b4ea141b774a3118703d5bbd7c088ddd87fed3461dd5bf0ded2f1bc",
+    "storage/module.map": "69d61ead6b06a42adcefa05324248373862283b9e2911786a2e4a253fe1c76f6",
+    "z80/udeks-z80.map": "522aa699273bbcd3103e2cf42fe05f610d5743166fc6f22e6c9ba3e7cdb5b250",
+    "z80/udeks-z80.bin": "2e755ea96ae87507fd7c21199db117f99dbcbf223e58afd29d1613668469516f",
+    "z80/udeks-z80.ihx": "0425524e4393fedfb78dd60825b283ab03283e740f7defe3ca5d089acd89244e",
+    "boot/task-lookup.bin": "1c7854a3669eb282f7f762834655fcf8d05eb05b7bf0c90b874f08920c768151",
+    "boot/banked-loader.bin": "30d87c9976ce95ba411b27a8113b7c23bd359cdfff37f60f8ed1a22cbbc46c8b",
+    "boot/banked-loader.map": "bdf01f51ebda8cd5b46561751c342013eadc8279b72845245c6f28b6cb6e8435",
+    "8502/banked-graphics.bin": "edece0359974b4faf717f05746a330bfdedb2157bf0b8403fb2e1ab0282bc7c0",
+    "8502/banked-graphics-panic.bin": "edece0359974b4faf717f05746a330bfdedb2157bf0b8403fb2e1ab0282bc7c0",
+    "user/xclock.udx": "05096a9dc19fc6ca9ed634cb923b2eb9cae097170233c710e855048127d41b70",
+    "user/xwave.udx": "dff083060933ac00862b17797480c11b5aa19f9223a6e7ba51223ee70a8fbf90",
+    "user/xcalc.udx": "2dc94e831354f33e77b0585e753fc81ed74a142d6bb06420c181449badaacd4c",
+    "user/xdraw.udx": "92224f55fe320d249634d185592a3e66ab916d514ad37c9329580994a20ee17b"
+  }
+}

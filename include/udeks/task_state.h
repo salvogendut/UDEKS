@@ -13,7 +13,7 @@
 #define UDEKS_LIFECYCLE_STATUS_SIZE      16u
 
 #define UDEKS_LIFECYCLE_ABI_MAJOR        0u
-#define UDEKS_LIFECYCLE_ABI_MINOR        1u
+#define UDEKS_LIFECYCLE_ABI_MINOR        2u
 
 #define UDEKS_LIFECYCLE_MAX_TASKS        8u
 #define UDEKS_LIFECYCLE_ID_NONE          0u
@@ -80,6 +80,8 @@
 #define UDEKS_UTSK_SWITCHES_HI           13u
 #define UDEKS_UTSK_LAST_EVENT            14u
 #define UDEKS_UTSK_RESERVED              15u
+/* Diagnostic 0.2: physical foreground allocation owner, not table count. */
+#define UDEKS_UTSK_CHILD_STATE           15u
 
 /* Clears the table and counters. Returns UDEKS_LIFECYCLE_OK. */
 unsigned char udeks_lifecycle_reset(void);
