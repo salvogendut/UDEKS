@@ -64,16 +64,16 @@ of the VDC console. Mouse: port 1 (1351); joystick: port 2. Use `xclock -q`
 or `xwave -q` to stop a background app; `Ctrl+C` stops a foreground app.
 `xinit -q` shuts down the graphics display.
 
-On the `graphics-four-apps` feature branch, freshly built images also support
+Freshly built images also support
 `xcalc &` (decimal calculator) and `xdraw &` (click-to-toggle drawing grid).
 **All four graphical apps can run together**, with independent bank-1
 allocations for calculator and drawing. Click xdraw's C button to clear it;
 `xcalc -q` / `xdraw -q` close the respective app. See
 [four-app candidate and tests](docs/DISK-GRAPHICS.md#four-application-support-30).
 The published download snapshots above remain the accepted main build.
-Use `build/boot/udeks.d64` or `build/boot/udeks.d71` for this test candidate;
-VICE D64/D71 and native 1986 input checks pass; physical-C128 acceptance of
-this candidate is the next gate.
+Use `build/boot/udeks.d64` or `build/boot/udeks.d71` for this candidate;
+VICE D64/D71 and native 1986 input checks pass, and the user confirms that
+the four-app candidate works on real hardware.
 
 `/mnt` starts free. To use a separate data disk on device 9:
 
@@ -112,8 +112,9 @@ this is not a claim that every model, peripheral or failure path is qualified.
 The target baseline is a stock 128 KiB C128 with 16 KiB VDC RAM; 64 KiB VDC,
 REU and GeoRAM are optional. PAL and NTSC remain targets.
 
-**Current feature:** qualify four simultaneous graphical apps. **Next architectural
-milestone:** extract the first non-kernel service into a disk-loaded program.
+**Accepted feature:** four simultaneous graphical apps, including real-hardware
+feedback. **Next architectural milestone:** extract the first non-kernel service
+into a disk-loaded program.
 General scripting, filesystem writes, broader tasking and optimization are
 separate roadmap work. The existing `/etc/rc` command runner is not a POSIX
 `sh` or Bash implementation.

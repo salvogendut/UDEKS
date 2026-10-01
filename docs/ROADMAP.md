@@ -13,27 +13,27 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
-**Current user-selected feature: four simultaneous graphical applications**,
+**Accepted feature: four simultaneous graphical applications**,
 [#30](https://github.com/salvogendut/UDEKS/issues/30), branch `graphics-four-apps`.
-The calculator is accepted (platform unspecified), committed and pushed as
-`5cd34f9` on `app-xcalc`; it is not merged into main yet. Fresh builds on
-`graphics-four-apps` now run **xclock + xwave + xcalc + xdraw together**:
+The calculator originated in `5cd34f9` on `app-xcalc`; the combined checkpoint
+`c05a011` runs **xclock + xwave + xcalc + xdraw together**:
 calculator and drawing have independent bank-1 allocations and an owner-checked
 drawing/input bridge, with shell and running-panel integration.
 See [scope and acceptance](DISK-GRAPHICS.md#four-application-support-30).
 Two additional independently linked C tasks now execute from bank 1, with
 private runtimes/stacks and working yield, sleep, exit and reload. Both disk
 formats pass four-app VICE launch/close/reload and malformed/fifth-image rejection.
-Native 1986 D64 mouse/keyboard input also passes. The four-app candidate is ready
-for user testing on physical C128; exact images/results are preserved in
+Native 1986 D64 mouse/keyboard input also passes. The user reports "everything
+looks fine also on real HW" and authorizes merging, completing this feature's
+functional hardware acceptance gate. Exact images/results are preserved in
 `bench/{artifacts,results}/2026-10-01-four-apps`.
 
-**After #30: the first disk-loaded non-kernel service.** Define one
+**Next: the first disk-loaded non-kernel service.** Define one
 existing service's load/start/stop and dependency contract, then replace its
 preloaded copy with an ordinary disk image. Keep bootstrap/recovery working;
 do not make a scripting language or expanded task capacity prerequisites.
 
-**Accepted baseline:** [#26 — system root and coherent filesystem namespace](https://github.com/salvogendut/UDEKS/issues/26),
+**Earlier accepted baseline:** [#26 — system root and coherent filesystem namespace](https://github.com/salvogendut/UDEKS/issues/26),
 [PR #28](https://github.com/salvogendut/UDEKS/pull/28), merged as `b138b61`. Device 8 backs `/`,
 programs live under `/bin`, startup policy is `/etc/rc`, and `/mnt` is free
 for data media. Emulator qualification is recorded below; the user accepts
@@ -59,8 +59,8 @@ with bootstrap root mounting and an initially unmounted `/mnt`.
 The finishing corrections are implemented: specific app-launch errors,
 measured IEC/bootfs header status, a real mount-success message, and normal
 boot progress enabled to match the accepted diagnostic setting.
-Four-app capacity is the current user-selected feature; service extraction
-follows. Neither requires a scripting or graphics-optimization detour.
+Four-app capacity is accepted; service extraction follows. Neither requires
+a scripting or graphics-optimization detour.
 
 - Native D64/D71 boot, an 8502 executive, a bounded Z80 worker, a VDC root
   console, and an independent VIC-IIe graphical display are working.
@@ -109,13 +109,13 @@ mounts or applications must not require rebuilding the kernel.
 | Machine bring-up and dual displays | Working baseline; broader hardware/memory qualification due. |
 | Kernel and tasking | Cooperative root/command tasks plus two bounded banked task allocations; general allocation, IPC, and preemption due. |
 | Z80 secondary engine | Mailbox and xwave computation work; reusable operations and soak tests due. |
-| Graphics and input | Calculator accepted on app-xcalc; four-app capacity is active work (#30). Repaint latency and focused-window keyboard input remain open. |
+| Graphics and input | Four-app capacity accepted with real-hardware feedback (#30). Repaint latency and focused-window keyboard input remain open. |
 | Storage and applications | Disk shell, RC, graphics and disk commands (#21/#23/#25); root namespace accepted (#26/PR #28). Next: first disk-loaded service lifecycle. General scripting deferred (#27). |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
 
-### Now: four graphical applications (#30)
+### Accepted: four graphical applications (#30)
 
 1. **Placement gate implemented:** measure existing images, reserve independent
    bank-1 image/stack/context areas without taking shell, command or display
@@ -130,10 +130,10 @@ mounts or applications must not require rebuilding the kernel.
    lifecycle integration, four-app independent close/reload, invalid/fifth-image
    rejection, console use and targeted Ctrl+C. Both VICE disk formats and native
    1986 D64 input pass; a clean parallel build is byte-identical.
-4. **Next gate:** user/physical-C128 acceptance of the four-app candidate.
-   Service extraction follows #30 acceptance.
+4. **Accepted:** user confirms the candidate works on real hardware and
+   authorizes merging. Next: the disk-loaded service slice below.
 
-### After #30: one disk-loaded non-kernel service
+### Now: one disk-loaded non-kernel service
 
 1. Select one existing service and inventory its dependencies, fixed entry
    points and memory lifetime. Record which minimal boot/read path must stay

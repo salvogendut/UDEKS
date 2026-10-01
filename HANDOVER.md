@@ -8,16 +8,18 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 ## Current feature handover — 2026-10-01
 
-**Latest working-tree checkpoint: four independent graphical apps.** Clock,
+**Accepted checkpoint: four independent graphical apps (`c05a011`).** Clock,
 wave, banked calculator and new `XDRAW.BIN` now coexist on `graphics-four-apps`.
 Xdraw is a task-4 C executable at `$3500` (1,477 image + 354 BSS bytes) with
 its own 6×4 toggle grid, clear button, runtime, stack and retained command image.
 Shell control target 6 / foreground bit 8, both banked lifecycle indices,
 four-job accounting, and the desktop-plus-four-app running panel are integrated.
 Use fresh `build/boot/udeks.d64` / `.d71`, or the exact preserved candidates in
-`bench/artifacts/2026-10-01-four-apps`. Next gate: user/physical-C128 acceptance;
-service extraction follows #30. The user authorized committing and pushing this
-checkpoint; physical-hardware acceptance remains pending.
+`bench/artifacts/2026-10-01-four-apps`. The user reports "everything looks fine
+also on real HW" and authorizes merging. This completes the requested functional
+hardware acceptance gate for #30; the latest report does not specify the machine
+variant, drive, or disk format. The next feature is the first disk-loaded
+non-kernel service, as scoped in the roadmap.
 
 Placement stays inside existing bounds: graphics CODE `$0C00-$11B8`, helper
 `$A100-$A1CE`, resident BSS through `$9AD2` (45 spare bytes), high module through

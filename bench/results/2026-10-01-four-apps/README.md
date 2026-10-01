@@ -46,7 +46,8 @@ distrobox enter my-distrobox -- python3 tools/1986_storage_smoke_build.py \
 
 The native test disk adds unrelated EMPTY/ONE files via the shared storage
 harness; its separate hash is recorded. Emulator sources were not changed.
-Physical-C128 acceptance remains the next user gate.
+The user subsequently reports "everything looks fine also on real HW" and
+authorizes merging, completing the functional hardware acceptance gate.
 
 ## Build
 

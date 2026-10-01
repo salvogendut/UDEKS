@@ -6,9 +6,9 @@ and [the roadmap](ROADMAP.md).
 
 ## Four-application support (#30)
 
-Current work: [issue #30](https://github.com/salvogendut/UDEKS/issues/30),
-branch `graphics-four-apps`, based on accepted calculator commit `5cd34f9`.
-**Four-app test candidate:** `xclock &`, `xwave &`, `xcalc &`, and `xdraw &`
+Accepted work: [issue #30](https://github.com/salvogendut/UDEKS/issues/30),
+checkpoint `c05a011`, based on calculator commit `5cd34f9`.
+**Four-app candidate:** `xclock &`, `xwave &`, `xcalc &`, and `xdraw &`
 coexist. Calculator and drawing are separate ordinary native C tasks in bank 1,
 using the owner-bound graphics bridge. Shell foreground/background control,
 targeted Ctrl+C, desktop shutdown and the running-app panel cover all four.
@@ -65,7 +65,8 @@ Implementation sequence:
    6, foreground bit 8, and an expanded panel for desktop plus four apps. Four-app
    state/drag/close/reload, invalid/fifth-load rejection, console and Ctrl+C pass
    on both VICE disk formats; native 1986 D64 input passes too.
-4. **Next:** physical-C128/user acceptance of this candidate.
+4. **Accepted:** user confirms the candidate works on real hardware and
+   authorizes merging. Next: the disk-loaded service slice.
 
 This is bounded four-client support, not arbitrary-size executables, general
 dynamic relocation or memory protection from hostile machine code. No
@@ -94,8 +95,9 @@ background peers survive. `xinit -q` closes all four and shuts down the display.
 Calculator/drawing windows are fixed-size. Repaints remain slow; wait for a
 button action to finish before clicking the next one. The native harness waits
 for sampled press/release edges rather than assuming a fixed 150-frame delay.
-Please check this sequence on physical C128; this candidate has emulator
-qualification but no new physical-hardware acceptance yet.
+The user reports "everything looks fine also on real HW" and authorizes merging;
+this records the requested functional hardware acceptance gate. The report does
+not identify the machine variant, drive, or disk format.
 
 Arithmetic, glyphs, layout and button logic remain in `XCALC.BIN`; the grid and
 its state live in `XDRAW.BIN` (up to 41 drawing commands). The service
