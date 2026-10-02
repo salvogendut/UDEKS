@@ -170,6 +170,11 @@ static unsigned char screen_code(unsigned char value)
     if (value >= '@' && value <= '_') {
         return (unsigned char)(value - '@');
     }
+    /* PETSCII graphics ($C0-$DF) live at screen codes $40-$5F in the C128 font.
+ * The cow art needs the diagonal and line glyphs, which have no ASCII code. */
+    if (value >= 0xC0u && value <= 0xDFu) {
+        return (unsigned char)(value - 0x80u);
+    }
     return value;
 }
 

@@ -209,6 +209,30 @@ int main(int argc, char **argv) {
     }
     diagnostic();
     require(byte(0xf3d9) == 0xa5, "native raw-IEC boot failed");
+#ifdef UDEKS_COWSAY_ART
+    {
+        static const unsigned char want[] = {
+            0x20, 0x4D, 0x20, 0x20, 0x20, 0x1E, 0x40, 0x40, 0x1E };
+        unsigned found = 0, at = 0;
+        wait_byte(0xf3e0, 2, "startup did not finish");
+        command("cowsay hello"); idle();
+        for (unsigned i = 0; i + sizeof(want) <= 0x1000; ++i)
+            if (memcmp(machine->vdc.ram + i, want, sizeof(want)) == 0) {
+                found = 1; at = i; break;
+            }
+        printf("cow glyph run %s at VDC $%04X\n", found ? "FOUND" : "MISSING", at);
+        for (unsigned row = 0; row < 12; ++row) {
+            for (unsigned col = 0; col < 64; ++col)
+                printf("%02X ", machine->vdc.ram[row * 64u + col]);
+            printf("\n");
+        }
+        fflush(stdout);
+        require(found, "cow backslash/ear/line glyphs missing from VDC RAM");
+        require(snapshot_save(machine, snapshot_path) == SNAPSHOT_OK, "snapshot failed");
+    }
+    free(machine);
+    return 0;
+#endif
 #ifdef UDEKS_FOUR_APPS_SMOKE
     four_apps_smoke();
     free(machine);

@@ -95,24 +95,62 @@ static void write_message(
     }
 }
 
+/* PETSCII glyphs, because the C128 font has no ASCII backslash/underscore:
+ * $CD = diagonal (\), $5E = up arrow (^), $C0 = horizontal line (_),
+ * $C2 = vertical bar (|). The VDC console maps these to screen codes. */
+#define COW_BACKSLASH 0xCDu
+#define COW_UPARROW   0x5Eu
+#define COW_LINE      0xC0u
+#define COW_BAR       0xC2u
+
 static void write_cow(
     unsigned char thought, unsigned char eyes)
 {
     write_text(UDEKS_STDOUT, (const unsigned char *)" ");
-    write_byte(UDEKS_STDOUT, thought != 0 ? 'O' : '\\');
-    write_line(UDEKS_STDOUT, (const unsigned char *)"   ^__^");
-    write_text(UDEKS_STDOUT, (const unsigned char *)"  ");
-    write_byte(UDEKS_STDOUT, thought != 0 ? 'o' : '\\');
-    write_text(UDEKS_STDOUT, (const unsigned char *)"  (");
+    write_byte(UDEKS_STDOUT, thought != 0 ? 'O' : COW_BACKSLASH);
+    write_byte(UDEKS_STDOUT, ' ');
+    write_byte(UDEKS_STDOUT, ' ');
+    write_byte(UDEKS_STDOUT, ' ');
+    write_byte(UDEKS_STDOUT, COW_UPARROW);
+    write_byte(UDEKS_STDOUT, COW_LINE);
+    write_byte(UDEKS_STDOUT, COW_LINE);
+    write_byte(UDEKS_STDOUT, COW_UPARROW);
+    write_byte(UDEKS_STDOUT, '\n');
+    write_byte(UDEKS_STDOUT, ' ');
+    write_byte(UDEKS_STDOUT, ' ');
+    write_byte(UDEKS_STDOUT, thought != 0 ? 'o' : COW_BACKSLASH);
+    write_byte(UDEKS_STDOUT, ' ');
+    write_byte(UDEKS_STDOUT, ' ');
+    write_byte(UDEKS_STDOUT, '(');
     write_byte(UDEKS_STDOUT, eyes);
     write_byte(UDEKS_STDOUT, eyes);
-    write_line(UDEKS_STDOUT, (const unsigned char *)")\\_______");
-    write_line(UDEKS_STDOUT,
-        (const unsigned char *)"     (__)\\       )\\/\\");
-    write_line(UDEKS_STDOUT,
-        (const unsigned char *)"         ||----w |");
-    write_line(UDEKS_STDOUT,
-        (const unsigned char *)"         ||     ||");
+    write_byte(UDEKS_STDOUT, ')');
+    write_byte(UDEKS_STDOUT, COW_BACKSLASH);
+    write_repeat(COW_LINE, 7u);
+    write_byte(UDEKS_STDOUT, '\n');
+    write_text(UDEKS_STDOUT, (const unsigned char *)"     (");
+    write_byte(UDEKS_STDOUT, COW_LINE);
+    write_byte(UDEKS_STDOUT, COW_LINE);
+    write_text(UDEKS_STDOUT, (const unsigned char *)")");
+    write_byte(UDEKS_STDOUT, COW_BACKSLASH);
+    write_text(UDEKS_STDOUT, (const unsigned char *)"       )");
+    write_byte(UDEKS_STDOUT, COW_BACKSLASH);
+    write_byte(UDEKS_STDOUT, '/');
+    write_byte(UDEKS_STDOUT, COW_BACKSLASH);
+    write_byte(UDEKS_STDOUT, '\n');
+    write_text(UDEKS_STDOUT, (const unsigned char *)"         ");
+    write_byte(UDEKS_STDOUT, COW_BAR);
+    write_byte(UDEKS_STDOUT, COW_BAR);
+    write_text(UDEKS_STDOUT, (const unsigned char *)"----w ");
+    write_byte(UDEKS_STDOUT, COW_BAR);
+    write_byte(UDEKS_STDOUT, '\n');
+    write_text(UDEKS_STDOUT, (const unsigned char *)"         ");
+    write_byte(UDEKS_STDOUT, COW_BAR);
+    write_byte(UDEKS_STDOUT, COW_BAR);
+    write_text(UDEKS_STDOUT, (const unsigned char *)"     ");
+    write_byte(UDEKS_STDOUT, COW_BAR);
+    write_byte(UDEKS_STDOUT, COW_BAR);
+    write_byte(UDEKS_STDOUT, '\n');
 }
 
 unsigned char udeks_program_main(
@@ -172,7 +210,7 @@ unsigned char udeks_program_main(
     }
 
     write_byte(UDEKS_STDOUT, ' ');
-    write_repeat('_', length + 2u);
+    write_repeat(COW_LINE, length + 2u);
     write_byte(UDEKS_STDOUT, '\n');
     write_byte(UDEKS_STDOUT, thought != 0 ? '(' : '<');
     write_byte(UDEKS_STDOUT, ' ');

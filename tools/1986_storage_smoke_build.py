@@ -32,6 +32,7 @@ def main():
     parser.add_argument('--boot-mounted', action='store_true', help='drag regression relies on default RC mount, never mounts manually')
     parser.add_argument('--root-namespace', action='store_true', help='system root, cwd, data alias and native window regression')
     parser.add_argument('--xcalc', action='store_true', help='native calculator mouse, arithmetic, console and app-slot checks')
+    parser.add_argument('--cowsay-art', action='store_true', help='native cowsay PETSCII glyph render check')
     parser.add_argument('--four-apps', action='store_true', help='four-app native input and independent lifecycle qualification')
     args = parser.parse_args()
     if args.boot_mounted and not args.drag_regression:
@@ -64,6 +65,7 @@ def main():
                     *(['-DUDEKS_DISK_GRAPHICS_SMOKE'] if args.disk_graphics else []),
                     *(['-DUDEKS_DRAG_REGRESSION', '-DUDEKS_DISK_GRAPHICS_SMOKE'] if args.drag_regression else []),
                     *(['-DUDEKS_BOOT_MOUNT_SMOKE'] if args.boot_mounted else []),
+                    *(['-DUDEKS_COWSAY_ART'] if args.cowsay_art else []),
                     *(['-DUDEKS_ROOT_NAMESPACE_SMOKE', '-DUDEKS_DRAG_REGRESSION',
                        '-DUDEKS_DISK_GRAPHICS_SMOKE', '-DUDEKS_BOOT_MOUNT_SMOKE'] if args.root_namespace else []),
                     str(ROOT/'tools/1986_storage_smoke.c'),
@@ -80,11 +82,16 @@ def main():
             smoke.slot_address(ROOT/'build/8502/udeks-scheduler-overlay.map'), str(work/'result.vsf')],
             stdout=log, stderr=subprocess.STDOUT)
     print((work/'run.log').read_text())
+    try:
+        revision = subprocess.check_output(
+            ['git', '-C', str(emulator), 'rev-parse', 'HEAD'], text=True,
+            stderr=subprocess.DEVNULL).strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        revision = 'unknown'
     (work/'result.json').write_text(json.dumps({
         'disk_sha256': hashlib.sha256(args.disk.read_bytes()).hexdigest(),
         'test_disk_sha256': hashlib.sha256(disk.read_bytes()).hexdigest(),
-        'emulator_revision': subprocess.check_output(
-            ['git', '-C', str(emulator), 'rev-parse', 'HEAD'], text=True).strip(),
+        'emulator_revision': revision,
         'exit_status': result.returncode, 'raw_iec': True, 'disk_exec': args.disk_exec,
         'disk_shell': args.disk_shell, 'sysinfo': args.sysinfo, 'disk_graphics': args.disk_graphics,
         'drag_regression': args.drag_regression,
@@ -92,6 +99,7 @@ def main():
         'root_namespace': args.root_namespace,
         'xcalc': args.xcalc,
         'four_apps': args.four_apps,
+        'cowsay_art': args.cowsay_art,
     }, indent=2)+'\n')
     raise SystemExit(result.returncode)
 
