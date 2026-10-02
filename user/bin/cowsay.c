@@ -98,21 +98,21 @@ static void write_message(
 static void write_cow(
     unsigned char thought, unsigned char eyes)
 {
-    write_text(UDEKS_STDOUT, (const unsigned char *)"        ");
+    write_text(UDEKS_STDOUT, (const unsigned char *)" ");
     write_byte(UDEKS_STDOUT, thought != 0 ? 'O' : '\\');
     write_line(UDEKS_STDOUT, (const unsigned char *)"   ^__^");
-    write_text(UDEKS_STDOUT, (const unsigned char *)"         ");
+    write_text(UDEKS_STDOUT, (const unsigned char *)"  ");
     write_byte(UDEKS_STDOUT, thought != 0 ? 'o' : '\\');
     write_text(UDEKS_STDOUT, (const unsigned char *)"  (");
     write_byte(UDEKS_STDOUT, eyes);
     write_byte(UDEKS_STDOUT, eyes);
     write_line(UDEKS_STDOUT, (const unsigned char *)")\\_______");
     write_line(UDEKS_STDOUT,
-        (const unsigned char *)"            (__)\\       )\\/\\");
+        (const unsigned char *)"     (__)\\       )\\/\\");
     write_line(UDEKS_STDOUT,
-        (const unsigned char *)"                ||----w |");
+        (const unsigned char *)"         ||----w |");
     write_line(UDEKS_STDOUT,
-        (const unsigned char *)"                ||     ||");
+        (const unsigned char *)"         ||     ||");
 }
 
 unsigned char udeks_program_main(
