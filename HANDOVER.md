@@ -20,7 +20,7 @@ BSS, private recursive stack, yield/sleep, exit/reap/reload and rejection tests.
 Independent flat links match both installed images. Evidence is preserved in
 `bench/{artifacts,results}/2026-10-04-relocatable-apps`.
 
-Placement: loader CODE `$D900-$DFFA`; RELOC `$1880-$19ED`; ACCESS
+Placement at that checkpoint: loader CODE `$D900-$DFFA`; RELOC `$1880-$19ED`; ACCESS
 `$1F00-$1F69`. Storage/lookup reservations shrink to `$1880`/`$1F00`, enforced
 by link/build/map gates. Never use `$D100-$D4FF`: root/task-2 CPU pages own it.
 No core, public gate, runtime stack or app-slot relocation was required.
@@ -31,10 +31,37 @@ reproduces both disks and the new executable. Published root snapshots unchanged
 `additional-apps` / issue #32 remains a separate worktree with `.CBM` container
 and image conversion work (`6b61f5c`); do not overwrite or absorb it incidentally.
 Other active worktrees include console-sleep and fix/cowsay-output. The current
-root worktree was clean before creating this branch. Next: generic launch/instance
-handling and fitting-slot selection, then SDK support. The relocation probe uses
+root worktree was clean before creating this branch. The relocation probe uses
 the private loader, not a user-facing launch path. Do not claim name-table removal makes four heterogeneous
 native/managed slots interchangeable. Remeasure tight budgets before coding.
+
+### Generic background-launch checkpoint
+
+Following `fbdc72d`, this checkpoint implements unknown `name &` using
+private selector 0 for free-fitting native
+load/activation (task 3 then 4). The graphics service owns names and selected
+instance; the running panel reads bounded names. Legacy CONTROL stops verify
+the occupant's name, so `xcalc -q` cannot kill HELLO. Ordinary disk commands
+and clock/wave callbacks remain unchanged. New independent sample, installer
+and guide: `user/examples/xhello.c`, `tools/add_disk_apps.py`,
+`docs/GRAPHICAL-APPS-SDK.md`. Test `build/generic-apps/generic-demo.d64`/`.d71`.
+
+VICE D64/D71 ordinary-shell generic tests and old four-app VICE/native-1986
+input tests pass. Captures use WM injection for VICE, not native mouse input;
+1986 covers the old four apps, not yet HELLO. Physical confirmation pending.
+Exact artifacts/results: `bench/{artifacts,results}/2026-10-04-generic-launch`.
+1,081 host tests pass; an isolated clean parallel build reproduces nine outputs
+including both disks and HELLO.BIN. All test-owned VICE sessions are closed.
+Loader now `$D900-$DFFE`, ACCESS `$1F00-$1FEB`; GRAPHICSCODE through `$11F4`,
+GRAPHICSHELP through `$A1D7`, resident BSS through `$9AFE` (**one byte spare**),
+high module through `$E640` (three spare). No ownership boundaries moved.
+The VICE pointer harness now uses measured helper/shadow padding, never BSS.
+
+Next is foreground/name-based control and native-client migration, followed by
+clock/wave compatibility. Two generic native slots are an intermediate result.
+Keep generic launch background-only until that integration is implemented;
+close through the window or `xinit -q`, not generic `name -q`. Further resident
+growth needs a placement decision. Do not merge or refresh root snapshots here.
 
 ## Four-app checkpoint — 2026-10-01 (merged as PR #31)
 

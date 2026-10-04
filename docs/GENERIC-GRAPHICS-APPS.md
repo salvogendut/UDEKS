@@ -1,6 +1,6 @@
 # Generic disk-loaded graphical applications
 
-Status: step 1 implemented and VICE-qualified, 2026-10-04.
+Status: relocation and generic background launch implemented, 2026-10-04.
 [Issue #35](https://github.com/salvogendut/UDEKS/issues/35).
 Branch: `graphics-generic-apps`, based on merged
 PR #31 (`9af159b`). This is the next feature priority, before service extraction.
@@ -21,14 +21,15 @@ Full, malformed or incompatible loads must give a useful error without changing
 live peers. This remains a trusted cooperative system, not hardware protection
 against arbitrary machine code.
 
-## Why the current apps are special
+## Original coupling (being removed)
 
 - `user/bin/ush.c` recognizes app names and translates them to numeric control
   IDs in `include/udeks/service_control.h`.
-- `src/services/window/banked_graphics.c` selects `xcalc` or `xdraw` from a fixed
-  name table and binds them to native tasks 3/4.
-- `src/services/console/app_panel.s` has per-app labels and running queries;
-  `src/services/shell/shell.c` maintains app-specific job bits and dispatch.
+- The banked graphics service previously selected only `xcalc`/`xdraw` and
+  the running panel had fixed labels. Those paths now use generic admission
+  and per-instance names; the legacy named CONTROL adapters remain.
+- `src/services/shell/shell.c` still has compatibility job bits and foreground
+  controls. Unknown `name &` requests now take the automatic native loader.
 - Calculator and drawing link at bank-1 `$2300` and `$3500`, respectively.
   Absolute code/data references cannot simply be copied to a different base.
 - Clock and wave use legacy bank-0 callback modules, not the native task model.
@@ -38,7 +39,7 @@ The existing owner-checked UTRQ graphics interface, retained commands and privat
 task contexts are reusable. Allocation policy, loading, instance tracking and
 presentation belong to service/user code; do not move app policy into the kernel.
 
-## Current checkpoint: one executable, two placements
+## Relocation checkpoint (committed as `fbdc72d`)
 
 UDEX 0.2 carries a bounded page-relocation table generated from real ld65 o65
 records. The same compiled C file runs at bank-1 `$2300` and `$3500`, with
@@ -74,10 +75,35 @@ Exact images, captures and reproduction notes:
 `bench/{artifacts,results}/2026-10-04-relocatable-apps`. Existing historical
 evidence and published `build/udeks.*` snapshots are unchanged.
 
-**Next:** step 2, generic service-owned instance records and automatic fitting
-slot selection, then ordinary unknown-name shell dispatch. Do not add another
-per-app ID or call the two legacy callback slots generic. Clock/wave migration
-and independently installed graphics SDK acceptance remain step 3.
+## Current checkpoint: ordinary unknown-name background launch
+
+`name &` now resolves the disk executable, chooses a FREE fitting task 3/4
+allocation, activates it and publishes a service-owned instance name. The
+panel reads those names (nine display characters); close/EXIT frees the owner
+and another executable can reuse it. No new kernel, shell or panel app ID is
+needed. Duplicate instances are allowed; window/task identity controls events
+and retirement. Old `xcalc -q`/`xdraw -q` requests reject unrelated occupants.
+
+The independent 597-byte `HELLO.BIN` sample is installed as both HELLO and
+SECOND without rebuilding the OS. [Build/install/test guide](GRAPHICAL-APPS-SDK.md).
+Both VICE disk formats pass normal shell launch, independent state/clicks,
+drag/close/reuse, malformed and oversized image rejection, unchanged live
+peers, console use and desktop shutdown. The existing four-app VICE D64 and
+unmodified 1986 native-input regressions also pass; the latter is not a second
+emulator qualification of the new example. Exact candidate/evidence:
+`bench/{artifacts,results}/2026-10-04-generic-launch`.
+
+Current measured bytes: loader 1,791/1,792; access 236/256; relocation 366/384;
+graphics module 1,525/1,536; helper 216/224; high module three spare bytes;
+resident BSS ends `$9AFE` (one spare byte). No runtime stack, guard, CPU page
+or app allocation moved. Serialized root-service scratch is static to avoid
+extra persistent cc65 frames. The new metadata belongs to the graphics service.
+
+**Next:** generic foreground/name-based control and native-client migration,
+then explicit clock/wave compatibility. Bare generic commands, generic `-q`,
+arguments and all-four-slot interchangeability are not implemented. This
+background-launch checkpoint is testable, not completion of #35. Plan the
+next service placement before adding resident code.
 
 ## Implementation sequence
 

@@ -23,10 +23,16 @@ static struct {
     char title[2][9];
 } clients;
 unsigned char udeks_banked_graphics_installed;
+#pragma data-name(push, "GRAPHICSCODE")
+/* Initialized with the lazily installed module; read only for live clients. */
+unsigned char udeks_banked_graphics_selected=0;
+unsigned char udeks_banked_graphics_names[2][16]={{0}};
+#pragma data-name(pop)
+const unsigned char udeks_banked_legacy_names[2][6]={"xcalc","xdraw"};
 static unsigned int wx, ww;
 static unsigned char wy, wh;
 #pragma code-name(push, "GRAPHICSHELP")
-static unsigned int retained(unsigned char index) { return 0xcd00u + (unsigned int)index*384u; }
+static unsigned int retained(unsigned char index) { return index ? 0xce80u : 0xcd00u; }
 static void closed(unsigned char handle)
 {
     unsigned char i;
@@ -131,24 +137,29 @@ void udeks_banked_graphics_poll(void)
 }
 unsigned char __fastcall__ udeks_banked_graphics_start(unsigned char index)
 {
-    static const char names[2][16]={"xcalc","xdraw"};
-    unsigned char error;
     if(index>=2) return 4;
     if(clients.running[index]) return 4;
+    return udeks_banked_graphics_exec(index?udeks_banked_legacy_names[1]:udeks_banked_legacy_names[0]);
+}
+unsigned char udeks_banked_graphics_launch(void)
+{
+    /* Launch is serialized on the root poll, never a task callback. */
+    static unsigned char error;
     if(!udeks_banked_graphics_installed) {
         if(udeks_banked_call(0x10)) return 5;
         udeks_banked_graphics_installed=1;
     }
-    /* Load saves/restores all of UTRQ; build a private pathname request. */
-    R[10]=17; P[0]=5;
-    memcpy((void *)(P+1),names[index],16);
-    error=udeks_banked_call(3u+index);
-    if(!error) error=udeks_banked_call(0x43u+index);
-    if(error) { udeks_banked_call(0x83u+index); return error==2?3:error==16?4:error==5?6:5; }
-    clients.handle[index]=0;
-    clients.count[index]=0;
-    clients.closing[index]=0;
-    clients.running[index]=1;
+    error=udeks_banked_call(0);
+    if(error) return error==2?3:(error==16 || error==12)?4:error==5?6:5;
+    udeks_banked_graphics_selected=R[11]-3u;
+    memcpy(udeks_banked_graphics_names[udeks_banked_graphics_selected],(const void *)(P+1),16);
+    clients.handle[udeks_banked_graphics_selected]=0;
+    clients.count[udeks_banked_graphics_selected]=0;
+    clients.closing[udeks_banked_graphics_selected]=0;
+    clients.running[udeks_banked_graphics_selected]=1;
+#ifndef UDEKS_GRAPHICS_HOST_TEST
+    *(volatile unsigned char *)0xf083=0xff; /* invalidate running-panel names */
+#endif
     return 0;
 }
 #pragma code-name(push, "GRAPHICSHELP")

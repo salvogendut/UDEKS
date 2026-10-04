@@ -1,0 +1,108 @@
+Modules list:
+-------------
+entry.o:
+    STARTUP           Offs=000000  Size=000003  Align=00001  Fill=0000
+request.o:
+    CODE              Offs=000000  Size=000042  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000006  Align=00001  Fill=0000
+xhello.o:
+    CODE              Offs=000042  Size=00012E  Align=00001  Fill=0000
+    RODATA            Offs=000006  Size=000006  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000002  Align=00001  Fill=0000
+    DATA              Offs=000000  Size=000018  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=000170  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax7.o):
+    CODE              Offs=000179  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=00017E  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000189  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000190  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=0001A6  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=0001C0  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               001000  001002  000003  00001
+CODE                  001003  0011D8  0001D6  00001
+RODATA                0011D9  0011E4  00000C  00001
+DATA                  0011E5  0011FC  000018  00001
+BSS                   0011FD  0011FE  000002  00001
+
+
+Exports list by name:
+---------------------
+_gfx_request              001003 RLA    _gfx_sleep                00100F RLA    
+_hello_clicks             0011FD RLA    _udeks_graphical_main     001094 RLA    
+_udeks_program_entry      001000 RLA    decsp1                    001173 RLA    
+incax7                    00117C RLA    incaxy                    001183 RLA    
+incsp1                    00118C RLA    incsp2                    00119B RLA    
+ptr1                      00000A RLZ    pushax                    0011AD RLA    
+sp                        000002 RLZ    staspidx                  0011C3 RLA    
+tmp1                      000012 RLZ    
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    ptr1                      00000A RLZ    
+tmp1                      000012 RLZ    _udeks_program_entry      001000 RLA    
+_gfx_request              001003 RLA    _gfx_sleep                00100F RLA    
+_udeks_graphical_main     001094 RLA    decsp1                    001173 RLA    
+incax7                    00117C RLA    incaxy                    001183 RLA    
+incsp1                    00118C RLA    incsp2                    00119B RLA    
+pushax                    0011AD RLA    staspidx                  0011C3 RLA    
+_hello_clicks             0011FD RLA    
+
+
+Imports list:
+-------------
+_gfx_request (request.o):
+    xhello.o                  /var/home/salvogendut/Dev/UDEKS/build/generic-apps/example/xhello.s(13)
+_gfx_sleep (request.o):
+    xhello.o                  /var/home/salvogendut/Dev/UDEKS/build/generic-apps/example/xhello.s(14)
+_hello_clicks (xhello.o):
+    [linker generated]       
+_udeks_graphical_main (xhello.o):
+    entry.o                   user/lib/native_graphics_entry.s(3)
+_udeks_program_entry (entry.o):
+    [linker generated]       
+decsp1 (decsp1.o):
+    xhello.o                  /var/home/salvogendut/Dev/UDEKS/build/generic-apps/example/xhello.s(243)
+    xhello.o                  /var/home/salvogendut/Dev/UDEKS/build/generic-apps/example/xhello.s(243)
+incax7 (incax7.o):
+    xhello.o                  /var/home/salvogendut/Dev/UDEKS/build/generic-apps/example/xhello.s(243)
+incaxy (incaxy.o):
+    incax7.o                  runtime/incax7.s(8)
+incsp1 (incsp1.o):
+    xhello.o                  /var/home/salvogendut/Dev/UDEKS/build/generic-apps/example/xhello.s(243)
+    xhello.o                  /var/home/salvogendut/Dev/UDEKS/build/generic-apps/example/xhello.s(243)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+ptr1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    xhello.o                  /var/home/salvogendut/Dev/UDEKS/build/generic-apps/example/xhello.s(11)
+pushax (pushax.o):
+    xhello.o                  /var/home/salvogendut/Dev/UDEKS/build/generic-apps/example/xhello.s(243)
+sp (zeropage.o):
+    incsp2.o                  runtime/incsp2.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushax.o                  runtime/pushax.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    xhello.o                  /var/home/salvogendut/Dev/UDEKS/build/generic-apps/example/xhello.s(10)
+staspidx (staspidx.o):
+    xhello.o                  /var/home/salvogendut/Dev/UDEKS/build/generic-apps/example/xhello.s(243)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    incaxy.o                  runtime/incaxy.s(8)
+

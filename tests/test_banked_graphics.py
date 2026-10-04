@@ -157,7 +157,7 @@ class BankedGraphics(unittest.TestCase):
 
     def test_load_errors_preserve_peer_and_do_not_publish_client(self):
         self.assertEqual(self.lib.udeks_banked_graphics_start(0),0)
-        for error,result in ((2,3),(16,4),(8,5),(5,6)):
+        for error,result in ((2,3),(16,4),(12,4),(8,5),(5,6)):
             self.scalar('load_error',error)
             self.assertEqual(self.lib.udeks_banked_graphics_start(1),result)
             self.assertEqual(self.lib.udeks_banked_graphics_running(1),0)
@@ -165,3 +165,24 @@ class BankedGraphics(unittest.TestCase):
         self.scalar('load_error',0);self.scalar('activate_error',8)
         self.assertEqual(self.lib.udeks_banked_graphics_start(1),5)
         self.assertEqual(self.lib.udeks_banked_graphics_running(1),0)
+
+    def test_names_unknown_to_service_use_free_slots_and_are_copied(self):
+        launch=self.lib.udeks_banked_graphics_exec
+        launch.argtypes=[c.c_char_p]
+        names=(c.c_ubyte*32).in_dll(self.lib,'udeks_banked_graphics_names')
+        for index,name in enumerate((b'orbit',b'canvas_2')):
+            source=c.create_string_buffer(name)
+            self.assertEqual(launch(source),0)
+            source[0]=b'!'
+            self.assertEqual(self.scalar('selector'),3+index)
+            self.assertEqual(bytes(names[index*16:index*16+16]),name.ljust(16,b'\0'))
+        before=bytes(names)
+        self.assertEqual(launch(b'third'),4)
+        self.assertEqual(bytes(names),before)
+        self.assertEqual(launch(b'12345678901234567'),5)
+        self.assertEqual(bytes(names),before)
+        (c.c_ubyte*2).in_dll(self.lib,'test_state')[0]=6
+        self.lib.udeks_banked_graphics_poll()
+        self.assertEqual(launch(b'1234567890123456'),0)
+        self.assertEqual(bytes(names[:16]),b'1234567890123456')
+        self.assertEqual(bytes(names[16:]),before[16:])

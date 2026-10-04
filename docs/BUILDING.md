@@ -1,5 +1,9 @@
 # Building UDEKS
 
+To build/install a graphical program **without rebuilding the OS**, start with
+the [independent app example](GRAPHICAL-APPS-SDK.md). The recipe below builds
+the system itself; the example has its own `make graphical-example` target.
+
 ## Reference environment
 
 The validated development environment is the Fedora 44 `my-distrobox`

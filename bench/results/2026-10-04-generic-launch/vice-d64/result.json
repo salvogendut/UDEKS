@@ -1,0 +1,77 @@
+{
+  "drive": "1541",
+  "disk_sha256": "1a79acc36729fc2c69a7883fd4fffe5dba70ef483f2a5c910fa20ea24ebb3408",
+  "fixture_sha256": "1d520d0a9247463e1bc6cb44c25e123c5874174f7cf149d0185be76a0195cda4",
+  "program_sha256": "6062c16c3e9e58c1af3a04d8c5a573a63fea808e54c6c88c1beca88f80bdcb8b",
+  "unknown_names": true,
+  "automatic_slots": true,
+  "legacy_stop_safe": true,
+  "independent_input": true,
+  "drag_close_reuse": true,
+  "records": [
+    {
+      "command": "hello &",
+      "console": "V0.1.0 (C)2026\n\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> hello &\nUDEKS:~>"
+    },
+    {
+      "command": "badmagic &",
+      "console": "INITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> hello &\nUDEKS:~> badmagic &\nbadmagic: loader error\nUDEKS:~>"
+    },
+    {
+      "command": "badpatch &",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> hello &\nUDEKS:~> badmagic &\nbadmagic: loader error\nUDEKS:~> badpatch &\n"
+    },
+    {
+      "command": "absent &",
+      "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> hello &\nUDEKS:~> badmagic &\nbadmagic: loader error\nUDEKS:~> badpatch &\nbadpatch: loader error\nUDEKS:~> absent &\nUnknown command: absent\nUDEKS:~>"
+    },
+    {
+      "command": "large &",
+      "console": "REU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 E : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> hello &\nUDEKS:~> badmagic &\nbadmagic: loader error\nUDEKS:~> badpatch &\nbadpatch: loader error\nUDEKS:~> absent &\nUnknown command: absent\nUDEKS:~> large &\nlarge: task slot busy"
+    },
+    {
+      "command": "second &",
+      "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> hello &\nUDEKS:~> badmagic &\nbadmagic: loader error\nUDEKS:~> badpatch &\nbadpatch: loader error\nUDEKS:~> absent &\nUnknown command: absent\nUDEKS:~> large &\nlarge: task slot busy\nUDEKS:~> second &\nUDEKS:~>"
+    },
+    {
+      "command": "extra &",
+      "console": "Z80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> hello &\nUDEKS:~> badmagic &\nbadmagic: loader error\nUDEKS:~> badpatch &\nbadpatch: loader error\nUDEKS:~> absent &\nUnknown command: absent\nUDEKS:~> large &\nlarge: task slot busy\nUDEKS:~> second &\nUDEKS:~> extra &\nextra: task slot busy\nUDEKS:~>"
+    },
+    {
+      "command": "xcalc -q",
+      "console": "BOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> hello &\nUDEKS:~> badmagic &\nbadmagic: loader error\nUDEKS:~> badpatch &\nbadpatch: loader error\nUDEKS:~> absent &\nUnknown command: absent\nUDEKS:~> large &\nlarge: task slot busy\nUDEKS:~> second &\nUDEKS:~> extra &\nextra: task slot busy\nUDEKS:~> xcalc -q\nxcalc: not ready\nUDEKS:~>"
+    },
+    {
+      "command": "xdraw -q",
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> hello &\nUDEKS:~> badmagic &\nbadmagic: loader error\nUDEKS:~> badpatch &\nbadpatch: loader error\nUDEKS:~> absent &\nUnknown command: absent\nUDEKS:~> large &\nlarge: task slot busy\nUDEKS:~> second &\nUDEKS:~> extra &\nextra: task slot busy\nUDEKS:~> xcalc -q\nxcalc: not ready\nUDEKS:~> xdraw -q\nxdraw: not ready\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay generic alive",
+      "console": "\nWELCOME TO UDEKS.\n\nUDEKS:~> hello &\nUDEKS:~> badmagic &\nbadmagic: loader error\nUDEKS:~> badpatch &\nbadpatch: loader error\nUDEKS:~> absent &\nUnknown command: absent\nUDEKS:~> large &\nlarge: task slot busy\nUDEKS:~> second &\nUDEKS:~> extra &\nextra: task slot busy\nUDEKS:~> xcalc -q\nxcalc: not ready\nUDEKS:~> xdraw -q\nxdraw: not ready\nUDEKS:~> cowsay generic alive\n"
+    },
+    {
+      "command": "extra &",
+      "console": "Unknown command: absent\nUDEKS:~> large &\nlarge: task slot busy\nUDEKS:~> second &\nUDEKS:~> extra &\nextra: task slot busy\nUDEKS:~> xcalc -q\nxcalc: not ready\nUDEKS:~> xdraw -q\nxdraw: not ready\nUDEKS:~> cowsay generic alive\n _______________\n< generic alive >\n ---------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> extra &\nUDEKS:~>"
+    },
+    {
+      "command": "xinit -q",
+      "console": "large: task slot busy\nUDEKS:~> second &\nUDEKS:~> extra &\nextra: task slot busy\nUDEKS:~> xcalc -q\nxcalc: not ready\nUDEKS:~> xdraw -q\nxdraw: not ready\nUDEKS:~> cowsay generic alive\n _______________\n< generic alive >\n ---------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> extra &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~>"
+    },
+    {
+      "command": "large &",
+      "console": "UDEKS:~> second &\nUDEKS:~> extra &\nextra: task slot busy\nUDEKS:~> xcalc -q\nxcalc: not ready\nUDEKS:~> xdraw -q\nxdraw: not ready\nUDEKS:~> cowsay generic alive\n _______________\n< generic alive >\n ---------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> extra &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> large &\nUDEKS:~>"
+    },
+    {
+      "command": "second &",
+      "console": "UDEKS:~> extra &\nextra: task slot busy\nUDEKS:~> xcalc -q\nxcalc: not ready\nUDEKS:~> xdraw -q\nxdraw: not ready\nUDEKS:~> cowsay generic alive\n _______________\n< generic alive >\n ---------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> extra &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> large &\nUDEKS:~> second &\nUDEKS:~>"
+    },
+    {
+      "command": "xinit -q",
+      "console": "UDEKS:~> xcalc -q\nxcalc: not ready\nUDEKS:~> xdraw -q\nxdraw: not ready\nUDEKS:~> cowsay generic alive\n _______________\n< generic alive >\n ---------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> extra &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> large &\nUDEKS:~> second &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~>"
+    },
+    {
+      "command": "echo slots reusable",
+      "console": "UDEKS:~> xdraw -q\nxdraw: not ready\nUDEKS:~> cowsay generic alive\n _______________\n< generic alive >\n ---------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> extra &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> large &\nUDEKS:~> second &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> echo slots reusable\nslots reusable\nUDEKS:~>"
+    }
+  ]
+}

@@ -13,8 +13,18 @@
 unsigned char __fastcall__ udeks_banked_call(unsigned char selector);
 void __fastcall__ udeks_banked_read(unsigned int address);
 void __fastcall__ udeks_banked_write(unsigned int address);
-/* Private service selectors: 0 calculator/task 3, 1 drawing/task 4. */
+/* Legacy named CONTROL adapter only: 0 calculator, 1 drawing. New programs
+ * use generic exec below; they do not pick a task or get a resident app ID. */
 unsigned char __fastcall__ udeks_banked_graphics_start(unsigned char index);
+/* Request payload is length + zero-padded 16-byte basename. On success the
+ * service publishes selected (0/1) and owns a copy of the instance name. */
+unsigned char udeks_banked_graphics_launch(void);
+unsigned char __fastcall__ udeks_banked_graphics_exec(const unsigned char *name);
+/* Compatibility CONTROL 5/6 must match the instance name, never stop a
+ * different executable which happens to occupy the old calculator/draw slot. */
+unsigned char __fastcall__ udeks_banked_graphics_control_stop(unsigned char bit);
+extern unsigned char udeks_banked_graphics_selected;
+extern unsigned char udeks_banked_graphics_names[2][16]; /* bounded, zero padded */
 unsigned char __fastcall__ udeks_banked_graphics_stop(unsigned char index);
 unsigned char __fastcall__ udeks_banked_graphics_running(unsigned char index);
 void udeks_banked_graphics_poll(void);

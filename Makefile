@@ -265,7 +265,7 @@ $(BUILD_DIR)/disk-exec/test.d71: $(BOOT_D71) $(USER_COWSAY_UDEX) tools/disk_exec
 	task-exit-probe task-waitpid-probe task-spawn-loader-probe task-spawn-probe \
 	task-sleep-probe task-cancel-probe task-poll-probe \
 	iec-probe iec-vice-probe \
-	reloc-fixtures reloc-probe check doctor clean help
+	reloc-fixtures reloc-probe graphical-example generic-launch-probe check doctor clean help
 
 all: 8502 z80 z80-asm
 
@@ -359,6 +359,17 @@ banked-native-fixtures: placement-check-guard
 
 reloc-fixtures: placement-check-guard
 	$(PYTHON) tools/build_reloc_fixture.py
+
+# Independent example: no resident kernel link or app catalogue change.
+graphical-example: placement-check-guard
+	$(PYTHON) tools/build_graphical_example.py
+
+# Host, after building boot + graphical-example inside my-distrobox.
+generic-launch-probe: $(BOOT_D64) $(BOOT_D71)
+	$(PYTHON) tools/generic_launch_probe.py --disk $(BOOT_D64) --drive 1541 \
+		--output $(BUILD_DIR)/generic-apps/launch-d64
+	$(PYTHON) tools/generic_launch_probe.py --disk $(BOOT_D71) --drive 1571 \
+		--output $(BUILD_DIR)/generic-apps/launch-d71
 
 # Host, after the reference-container boot/fixture build.
 reloc-probe: $(BOOT_D64) $(BOOT_D71)
@@ -2282,6 +2293,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 check:
 	$(PYTHON) -m py_compile tools/banked_loader_probe.py tools/gen_banked_bindings.py tools/build_banked_execution.py
 	$(PYTHON) -m py_compile tools/o65_to_udex.py tools/build_reloc_fixture.py
+	$(PYTHON) -m py_compile tools/build_graphical_example.py tools/generic_launch_probe.py tools/add_disk_apps.py
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
 	$(PYTHON) -m py_compile tools/xcalc_probe.py tools/pack_native.py tools/four_apps_rejection_probe.py
 	$(PYTHON) -m py_compile tools/managed_app_fixture.py tools/managed_disk_probe.py

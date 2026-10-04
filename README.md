@@ -64,7 +64,7 @@ of the VDC console. Mouse: port 1 (1351); joystick: port 2. Use `xclock -q`
 or `xwave -q` to stop a background app; `Ctrl+C` stops a foreground app.
 `xinit -q` shuts down the graphics display.
 
-On the `graphics-four-apps` feature branch, freshly built images also support
+Since merged PR #31, freshly built images also support
 `xcalc &` (decimal calculator) and `xdraw &` (click-to-toggle drawing grid).
 **All four graphical apps can run together**, with independent bank-1
 allocations for calculator and drawing. Click xdraw's C button to clear it;
@@ -74,6 +74,12 @@ The published download snapshots above remain the accepted main build.
 Use `build/boot/udeks.d64` or `build/boot/udeks.d71` for this test candidate;
 VICE D64/D71 and native 1986 input checks pass; physical-C128 acceptance of
 this candidate is the next gate.
+
+On `graphics-generic-apps` (#35), an independently built `.BIN` can now launch
+as `name &` into either free compatible native slot, without an OS name-table
+entry. Try the [generic-app demo and build recipe](docs/GRAPHICAL-APPS-SDK.md).
+Generic foreground/control and migration of the legacy app paths are still
+pending; the published snapshots above have not been replaced.
 
 `/mnt` starts free. To use a separate data disk on device 9:
 

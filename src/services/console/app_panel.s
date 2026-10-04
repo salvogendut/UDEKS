@@ -10,8 +10,7 @@
         .import _udeks_vdc_block_address
         .import _udeks_vdc_block_length
         .import _udeks_vdc_text_assets
-        .import _udeks_xcalc_is_running
-        .import _udeks_xdraw_is_running
+        .import _udeks_banked_graphics_running, _udeks_banked_graphics_names
 
 CONSOLE_STATUS  = $f070
 VIC_STATUS      = $f1b0
@@ -37,8 +36,6 @@ panel_none:      .byte 14,15,14,5,0
 panel_xinit:     .byte 24,9,14,9,20,0
 panel_xclock:    .byte 24,3,12,15,3,11,0
 panel_xwave:     .byte 24,23,1,22,5,0
-panel_xcalc:     .byte 24,3,1,12,3,0
-panel_xdraw:     .byte 24,4,18,1,23,0
 
         .segment "MODULECODE"
 _udeks_console_app_panel_initialize:
@@ -47,13 +44,15 @@ _udeks_console_app_panel_initialize:
         jmp _udeks_console_poll
 
 _udeks_console_poll:
-        jsr _udeks_xdraw_is_running
+        lda #1
+        jsr _udeks_banked_graphics_running
         asl a
         asl a
         asl a
         asl a
         sta panel_mask
-        jsr _udeks_xcalc_is_running
+        lda #0
+        jsr _udeks_banked_graphics_running
         asl a
         asl a
         asl a
@@ -123,16 +122,16 @@ panel_changed:
         lda panel_mask
         and #$08
         beq :+
-        lda #<panel_xcalc
-        ldx #>panel_xcalc
+        lda #<_udeks_banked_graphics_names
+        ldx #>_udeks_banked_graphics_names
         jsr panel_draw_app
         bne panel_error
 :
         lda panel_mask
         and #$10
         beq :+
-        lda #<panel_xdraw
-        ldx #>panel_xdraw
+        lda #<(_udeks_banked_graphics_names+16)
+        ldx #>(_udeks_banked_graphics_names+16)
         jsr panel_draw_app
         bne panel_error
 :
@@ -195,6 +194,16 @@ panel_draw_text:
 panel_text_load:
         lda $ffff,y
         beq panel_text_ready
+        ; Instance basenames are ASCII, old static labels are screen codes.
+        cmp #'a'
+        bcc :+
+        and #$5f
+:       cmp #'A'
+        bcc :+
+        cmp #'Z'+1
+        bcs :+
+        and #$1f
+:
         sta panel_buffer+1,y
         iny
         cpy #$09

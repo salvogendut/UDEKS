@@ -23,8 +23,11 @@ See the [plan and acceptance criteria](GENERIC-GRAPHICS-APPS.md).
 Step 1 is implemented: one UDEX 0.2 compiled C binary relocates and executes
 in both native bank-1 allocations; VICE D64/D71, malformed-image rejection,
 independent state/stack/lifecycle and the existing four-app regression pass.
-Next is generic instance tracking and automatic slot selection/launch. The
-shell is still app-specific; the feature is **not yet complete**.
+Generic instance tracking and automatic `name &` launch now work in those two
+native slots, with dynamic panel names and an independently installed sample.
+See the [test/build recipe](GRAPHICAL-APPS-SDK.md). Next: generic foreground and
+control, native-client migration, then the legacy-slot compatibility model.
+The feature is **not yet complete**; physical testing of this increment is due.
 The exploratory `.CBM` work on `additional-apps` / #32 stays separate.
 
 **Merged baseline:** four graphical apps (#30), [PR #31](https://github.com/salvogendut/UDEKS/pull/31),
@@ -120,7 +123,7 @@ mounts or applications must not require rebuilding the kernel.
 | Machine bring-up and dual displays | Working baseline; broader hardware/memory qualification due. |
 | Kernel and tasking | Cooperative root/command tasks plus two bounded banked task allocations; general allocation, IPC, and preemption due. |
 | Z80 secondary engine | Mailbox and xwave computation work; reusable operations and soak tests due. |
-| Graphics and input | Four named apps merged (#31); generic slot-independent apps are next (#35). Repaint latency and focused-window keyboard input remain open. |
+| Graphics and input | Four named apps merged (#31); generic background launch in two native slots works (#35). Foreground/control, client migration and legacy-slot compatibility remain. Repaint latency and focused-window keyboard input remain open. |
 | Storage and applications | Disk shell, RC, graphics and disk commands (#21/#23/#25); root namespace accepted (#26/PR #28). Generic app loading precedes first disk-loaded service lifecycle. General scripting deferred (#27). |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 

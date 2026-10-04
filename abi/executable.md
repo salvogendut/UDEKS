@@ -127,9 +127,11 @@ See [execution and current limits](../docs/DISK-GRAPHICS.md#four-application-sup
 
 ## Page-relocatable native images (0.2, development)
 
-Issue #35 adds slot-independent execution to the private bank-1 loader. It does
-**not yet add generic shell launch, automatic slot selection, or a new public
-SPAWN operation**. Existing 0.0/0.1 fixed images retain their original rules;
+Issue #35 adds slot-independent execution to the private bank-1 loader.
+`name &` now selects a fitting free native allocation through the root-session
+service; there is **no new public SPAWN operation**. See the
+[independent graphical example](../docs/GRAPHICAL-APPS-SDK.md).
+Existing 0.0/0.1 fixed images retain their explicit-slot loading rules;
 other loaders continue to reject minor 2. Managed/persistent callbacks are not
 supported by this new format.
 
@@ -165,6 +167,22 @@ the unowned staging allocation; it must not publish ownership or touch a live
 peer. Successful installation copies the patched image, clears BSS and retains
 a normalized **fixed UDEX 0.1 header** with the actual load/entry addresses.
 Ownership is published last; native admission/return/EXIT are unchanged.
+
+Private selector `$00` at `$F91C` takes the existing length + padded 16-byte
+basename request, tries task 3 then task 4, and loads/adopts an ordinary native
+image. Successful admission returns the selected task in UTRQ result (byte 11);
+other request bytes survive. Occupied allocations are never released. A failed
+admission releases only the image acquired by that attempt. The caller is the
+serialized root poll, not an app or interrupt handler. The compatibility retry
+for another fixed base identifies native UDEX 0.1; generic new programs should
+use 0.2, not rely on automatic placement of historical minor-0 images.
+
+The graphics service owns a padded, bounded 16-byte instance basename for each
+native allocation; the running panel renders at most nine characters. Repeated
+background launches may create independent instances of the same executable.
+Window/task ownership, not the name, determines event delivery and cleanup.
+The old named CONTROL stop adapters reject unrelated occupants. Generic
+foreground launch and name-based stop are not implemented in this increment.
 
 Reproduce the compiled-C two-destination proof:
 

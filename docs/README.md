@@ -8,6 +8,7 @@ addresses or status claims do not override the current source and ABI.
 
 - [Roadmap](ROADMAP.md) — accepted features, limits and next priorities
 - [Generic graphical-app plan](GENERIC-GRAPHICS-APPS.md) — current feature (#35)
+- [Independent graphical app](GRAPHICAL-APPS-SDK.md) — build, install and test `name &`
 - [Architecture plan](PLAN.md) — the intended system and microkernel boundary
 - [Building and publishing](BUILDING.md) — toolchain, targets and disk snapshots
 - [Downloadable boot images](../build/README.md) — provenance, checksums and boot instructions

@@ -2,6 +2,8 @@
 ; Private bank-1 allocation and native context mechanism. No UAPP callbacks.
 ; Enter/leave via $F91C under kernel I/O; this image runs under worker FLAT.
 ; A=3/4 loads a padded basename from UTRQ (count=17, length + 16 bytes).
+; A=0 selects a free fitting allocation, loads and activates a native image;
+; success returns the selected task (3/4) in UTRQ result, errno in A.
 ; A=$43/$44 admits an ordinary (flags=0) image as native task 3/4.
 ; A=$83/$84 releases FREE, A=$C3/$C4 reaps a root-owned ZOMBIE and releases.
 ; Return A=errno, request preserved. Native return is EXIT through $FF16.
@@ -25,6 +27,8 @@ current_task:
         jmp MEMORY_GATE
 banked_entry:
         cld
+        tax
+        jeq auto_load
         cmp #$10
         jeq graphics_install
         cmp #$20
@@ -172,6 +176,79 @@ graphics_source:
         bne install_page
         lda #0
         rts
+; Allocation policy remains in this service, not in the context switcher.
+; Try descriptors in order, never release an allocation we did not acquire.
+; EBUSY/ENOMEM outrank a base mismatch in another slot. Missing files and
+; I/O/invalid requests stop immediately. The caller's request stays intact
+; except for RESULT on success, just as a selected-slot native admission.
+auto_load:
+        lda #3
+        sta auto_selector
+        lda #8
+        sta auto_error
+auto_next:
+        lda auto_selector
+        jsr banked_entry
+        bne auto_failed
+        lda auto_selector
+        ora #$40
+        jsr banked_entry
+        beq auto_success
+        pha
+        lda auto_selector
+        ora #$80
+        jsr banked_entry
+        pla
+auto_failed:
+        cmp #8
+        bne auto_resource
+        ; A relocatable/malformed image cannot become valid at another base.
+        ; Only a well-identified fixed image for the other slot is retried.
+        lda file_size+1
+        bne :+
+        lda file_size
+        cmp #17
+        bcc auto_bad
+:       ldx #7
+auto_fixed_check:
+        lda header,x
+        cmp auto_fixed_header,x
+        bne auto_bad
+        dex
+        bpl auto_fixed_check
+        lda header+8
+        bne auto_bad
+        lda header+9
+        cmp #$23
+        beq auto_continue
+        cmp #$35
+        beq auto_continue
+auto_bad:
+        lda #8
+        rts
+auto_resource:
+        cmp #12
+        beq auto_remember
+        cmp #16
+        bne auto_return
+auto_remember:
+        sta auto_error
+auto_continue:
+        inc auto_selector
+        lda auto_selector
+        cmp #5
+        bcc auto_next
+        lda auto_error
+auto_return:
+        rts
+auto_success:
+        lda auto_selector
+        sta REQUEST+11
+        lda #0
+        rts
+auto_selector: .byte 0
+auto_error: .byte 0
+auto_fixed_header: .byte "UDEX",0,1,1,0
         .assert * <= $2000, error, "banked access reaches Z80 code"
         .segment "CODE"
 invalid:
@@ -480,8 +557,7 @@ valid_image:
         cmp #2
         bne :+
         jsr relocation_apply
-        lda #1
-        sta header+5                ; installed view is fixed-address UDEX 0.1
+        dec header+5                ; installed view is fixed-address UDEX 0.1
 :       lda #0
         rts
 bad_image:
