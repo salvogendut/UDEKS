@@ -28,12 +28,34 @@ static unsigned int frame(unsigned char depth, unsigned int seed)
     return result;
 }
 
+#ifdef PROBE_RELOCATION
+/* Linker relocation must cover initialized data/function/BSS pointers, not
+ * just JSR operands. Numeric lookalikes and the common syscall address stay. */
+extern unsigned char probe_split_ok(void);
+static unsigned int (* volatile indirect_frame)(unsigned char, unsigned int) = frame;
+static volatile unsigned int * volatile value_pointer = &probe_value;
+static volatile unsigned int * volatile bss_pointer = &probe_progress;
+static const unsigned char text[] = "relocation";
+static const unsigned char * volatile text_pointer = text;
+static volatile unsigned int address_lookalike = 0x1234;
+#endif
+
 unsigned char udeks_program_main(unsigned char count, unsigned char **arguments)
 {
     if (count || arguments) return 0xfe;
+#ifdef PROBE_RELOCATION
+    if (probe_progress || probe_ready || probe_control || probe_error ||
+        *bss_pointer || *value_pointer != 3000 || text_pointer[3] != 'o' ||
+        address_lookalike != 0x1234 || !probe_split_ok()) return 0xfd;
+#endif
     probe_ready = 0xa5;
     while (!probe_control && !probe_error) {
+#ifdef PROBE_RELOCATION
+        if (indirect_frame(2u+(probe_progress&3u), *value_pointer) != *value_pointer ||
+            *bss_pointer != probe_progress || !probe_split_ok()) probe_error = 5;
+#else
         if (frame(2u+(probe_progress&3u), probe_value) != probe_value) probe_error = 3;
+#endif
         probe_value += CLIENT_TAG;
         ++probe_progress;
         probe_request(10);           /* ordinary cooperative YIELD */

@@ -178,6 +178,8 @@ def main() -> None:
     parser.add_argument("--ush", type=Path, help="ush image for storage placement validation")
     parser.add_argument("--task-lookup", type=Path, help="linked bank-1 loader extension")
     parser.add_argument("--banked-loader", type=Path, help="private bank-1 load-only service")
+    parser.add_argument("--banked-reloc", type=Path, help="private bank-1 UDEX relocation extension")
+    parser.add_argument("--banked-access", type=Path, help="private bank-1 access helpers")
     parser.add_argument("--banked-graphics", type=Path)
     args = parser.parse_args()
     try:
@@ -204,7 +206,9 @@ def main() -> None:
                 (args.storage / 'driver.bin').read_bytes(), args.ush.read_bytes(),
                 args.task_lookup.read_bytes(),
                 b'' if args.banked_loader is None else args.banked_loader.read_bytes(),
-                b'' if args.banked_graphics is None else args.banked_graphics.read_bytes())
+                b'' if args.banked_graphics is None else args.banked_graphics.read_bytes(),
+                b'' if args.banked_reloc is None else args.banked_reloc.read_bytes(),
+                b'' if args.banked_access is None else args.banked_access.read_bytes())
     except ValueError as error:
         raise SystemExit(f"cannot build scheduler overlay: {error}") from error
     args.output.parent.mkdir(parents=True, exist_ok=True)

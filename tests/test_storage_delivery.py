@@ -83,6 +83,31 @@ class StorageDelivery(unittest.TestCase):
                         {'banked_graphics':module,'policy':b'P'*0x1701}):
             with self.assertRaises(ValueError): self.wrap(**changes)
 
+    def test_relocator_and_access_only_fill_service_slack(self):
+        loader = b'\x4c\x09\xd9BLOD\0\1\x60'
+        reloc = b'\x4c\x89\x18BREL\0\1' + bytes(0x180-9)
+        access = b'\x4c\x09\x1fBACC\0\1' + bytes(0x100-9)
+        baseline, constants = self.wrap(banked_loader=loader)
+        image, updated = self.wrap(banked_loader=loader, banked_reloc=reloc,
+                                   banked_access=access)
+        expected = bytearray(baseline)
+        for address, blob in ((0x1880, reloc), (0x1f00, access)):
+            offset = 2 + address - 0x1200
+            expected[offset:offset+len(blob)] = blob
+        self.assertEqual(image, bytes(expected))
+        self.assertEqual(updated, constants)
+        self.assertEqual(image[2+0xd100-0x1200:2+0xd900-0x1200], bytes(0x800))
+        args = dict(banked_loader=loader, banked_reloc=reloc, banked_access=access)
+        for changes in ({'banked_reloc':b''}, {'banked_access':b''},
+                        {'banked_loader':b''}, {'banked_reloc':reloc+b'\0'},
+                        {'banked_access':access+b'\0'},
+                        {'banked_reloc':b'\0'+reloc[1:]},
+                        {'banked_access':access[:3]+b'FAIL'+access[7:]},
+                        {'module':baseline[2:11]+bytes(0x681-9)},
+                        {'lookup':b'\x4c\x09\x1aULKP\0\1'+bytes(0x501-9)}):
+            with self.subTest(changes=list(changes)):
+                with self.assertRaises(ValueError): self.wrap(**(args | changes))
+
     def test_secondary_bootfs_rejects_overflow_and_malformed_inputs(self):
         payload, _ = self.wrap()
         fs = build_bootfs([('ush', b'program')])

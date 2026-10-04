@@ -1,0 +1,526 @@
+{
+  "disk_sha256": "7b6425660f957a1761dedfdb33414f4deaccec8cbe8b474f20d63ae606133cd7",
+  "loader_sha256": "2f245f3e954fc92cc6366b457c39101ee645949ce36aaa8411112f2e6195229c",
+  "relocatable_same_file": true,
+  "relocatable_sha256": "4f4fd23cd22434e7074146471707d0a6bee2243a0b03701d995e7ec71b6cec28",
+  "drive": "1541",
+  "load_only": false,
+  "records": [
+    {
+      "selector": 2,
+      "name": "harness",
+      "errno": 22,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 2,
+      "name": "invalid",
+      "errno": 22,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "load3",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 4,
+      "name": "load4",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 67,
+      "name": "",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "load3",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 131,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "load3",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 131,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "load3",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 131,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "load3",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 131,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "load3",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 132,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 4,
+      "name": "load4",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 132,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 4,
+      "name": "load4",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 131,
+      "name": "",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "short",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "trail",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "magic",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "minor",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "cpu",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "flags",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "load",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "entry",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "size",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "bss",
+      "errno": 12,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "opcode",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "vector",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "outside",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "rcount",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "rpast",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "rdup",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "rorder",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "rbase",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "rentry",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "rflags",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "rshort",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "rtrail",
+      "errno": 8,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "absent",
+      "errno": 2,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 2,
+      "name": "load3",
+      "errno": 22,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 5,
+      "name": "load3",
+      "errno": 22,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "../bad",
+      "errno": 22,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "padding",
+      "errno": 22,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "load3",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 132,
+      "name": "",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 4,
+      "name": "load4",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 131,
+      "name": "",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 132,
+      "name": "",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "relocapp",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 67,
+      "name": "",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 4,
+      "name": "relocapp",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 68,
+      "name": "",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 67,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 131,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 195,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 68,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 132,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 196,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "native_task": 3,
+      "progress": 40,
+      "value": 3120,
+      "lowest_software_sp": 35909,
+      "exit_status": 43,
+      "guards_ok": true
+    },
+    {
+      "selector": 131,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "native_task": 4,
+      "progress": 52,
+      "value": 3156,
+      "lowest_software_sp": 36677,
+      "exit_status": 43,
+      "guards_ok": true
+    },
+    {
+      "selector": 132,
+      "name": "",
+      "errno": 16,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 195,
+      "name": "",
+      "errno": 22,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 195,
+      "name": "",
+      "errno": 22,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 195,
+      "name": "",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 196,
+      "name": "",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 3,
+      "name": "relocapp",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "selector": 67,
+      "name": "",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    },
+    {
+      "native_task": 3,
+      "progress": 37,
+      "value": 3111,
+      "lowest_software_sp": 35909,
+      "exit_status": 43,
+      "guards_ok": true
+    },
+    {
+      "selector": 195,
+      "name": "",
+      "errno": 0,
+      "request_preserved": true,
+      "kernel_map_restored": true
+    }
+  ],
+  "legacy_code_preserved": true,
+  "console_alive": true
+}

@@ -1,0 +1,17 @@
+{
+  "file_size": 1175,
+  "image_size": 963,
+  "bss_size": 7,
+  "destinations": [
+    {
+      "base": 8960,
+      "capacity": 4608,
+      "flat_link_matches": true
+    },
+    {
+      "base": 13568,
+      "capacity": 2816,
+      "flat_link_matches": true
+    }
+  ]
+}

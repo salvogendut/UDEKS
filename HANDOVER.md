@@ -6,7 +6,37 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current feature handover — 2026-10-01
+## Current feature handover — 2026-10-04
+
+User exploratory work exposed the limitation behind the four named apps:
+launch/control/panel paths are app-specific, and UDEX images use fixed link
+addresses. The new priority is generic graphical apps that select a free fitting
+slot without OS edits. Issue #35 and branch `graphics-generic-apps` start from
+merged main `9af159b` (PR #31). Plan: `docs/GENERIC-GRAPHICS-APPS.md`;
+roadmap now puts this before service extraction. Step 1 now implements bounded
+UDEX 0.2 page relocation from ld65 o65 records (not address scanning). A single
+real C image executes in both native bank-1 slots on VICE D64/D71, with pointer,
+BSS, private recursive stack, yield/sleep, exit/reap/reload and rejection tests.
+Independent flat links match both installed images. Evidence is preserved in
+`bench/{artifacts,results}/2026-10-04-relocatable-apps`.
+
+Placement: loader CODE `$D900-$DFFA`; RELOC `$1880-$19ED`; ACCESS
+`$1F00-$1F69`. Storage/lookup reservations shrink to `$1880`/`$1F00`, enforced
+by link/build/map gates. Never use `$D100-$D4FF`: root/task-2 CPU pages own it.
+No core, public gate, runtime stack or app-slot relocation was required.
+Normal four-app VICE D64 and unmodified 1986 native-input regression pass;
+1986 has not separately qualified the new relocatable C fixture. Clean parallel copied-source build
+reproduces both disks and the new executable. Published root snapshots unchanged.
+
+`additional-apps` / issue #32 remains a separate worktree with `.CBM` container
+and image conversion work (`6b61f5c`); do not overwrite or absorb it incidentally.
+Other active worktrees include console-sleep and fix/cowsay-output. The current
+root worktree was clean before creating this branch. Next: generic launch/instance
+handling and fitting-slot selection, then SDK support. The relocation probe uses
+the private loader, not a user-facing launch path. Do not claim name-table removal makes four heterogeneous
+native/managed slots interchangeable. Remeasure tight budgets before coding.
+
+## Four-app checkpoint — 2026-10-01 (merged as PR #31)
 
 **Latest working-tree checkpoint: four independent graphical apps.** Clock,
 wave, banked calculator and new `XDRAW.BIN` now coexist on `graphics-four-apps`.

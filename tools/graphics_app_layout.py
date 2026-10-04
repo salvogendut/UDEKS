@@ -144,8 +144,10 @@ def baseline_regions(kernel, storage, worker):
                Region('resident high state and C stack', 0, 0xE000, 0xF000),
                Region('common RAM', 0, 0xF000, 0x10000),
                Region('native child and disk staging/stack', 1, 0, 0x1200),
-               Region('storage module', 1, 0x1200, 0x1A00),
-               Region('task lookup module', 1, 0x1A00, 0x2000),
+               Region('storage module', 1, 0x1200, 0x1880),
+               Region('relocation module', 1, 0x1880, 0x1A00),
+               Region('task lookup module', 1, 0x1A00, 0x1F00),
+               Region('banked access module', 1, 0x1F00, 0x2000),
                Region('display/cache/bitmap/sprite', 1, 0x4000, 0x8000),
                Region('legacy foreground backup', 1, 0x8000, 0x8A00),
                Region('ush', 1, 0x9000, 0xA000),
@@ -159,8 +161,8 @@ def baseline_regions(kernel, storage, worker):
     if storage.keys() != allowed:
         raise ValueError('storage segments changed; review ownership')
     for name, low, high in (
-            ('STARTUP', 0x1200, 0x1A00), ('CODE', 0x1200, 0x1A00),
-            ('RODATA', 0x1200, 0x1A00), ('DATA', 0x1200, 0x1A00),
+            ('STARTUP', 0x1200, 0x1880), ('CODE', 0x1200, 0x1880),
+            ('RODATA', 0x1200, 0x1880), ('DATA', 0x1200, 0x1880),
             ('BSS', 0xE000, 0xE180), ('STORAGECODE', 0xB000, 0xC700),
             ('IECCODE', 0xE300, 0xE900)):
         start, end, size = storage[name]
@@ -191,14 +193,23 @@ def audit(build):
     disjoint(regions + list(CANDIDATE))
     worker_image(worker, read_ihx(build / 'z80/udeks-z80.ihx'),
                  (build / 'z80/udeks-z80.bin').read_bytes())
-    if not 0 < (build / 'boot/task-lookup.bin').stat().st_size <= 0x600:
+    if not 0 < (build / 'boot/task-lookup.bin').stat().st_size <= 0x500:
         raise ValueError('task lookup exceeds its reservation')
     loader = (build / 'boot/banked-loader.bin').read_bytes()
     segments = map_segments((build / 'boot/banked-loader.map').read_text())
     if (loader[:1] != b'\x4c' or loader[3:9] != b'BLOD\0\1' or
             not 9 < len(loader) <= 0x700 or
-            segments != {'CODE': (0xD900, 0xD900+len(loader)-1, len(loader))}):
+            segments.get('CODE') != (0xD900, 0xD900+len(loader)-1, len(loader))):
         raise ValueError('banked loader exceeds its reservation or identity/map differs')
+    if set(segments)!={'CODE','RELOC','ACCESS'}:
+        raise ValueError('banked loader segment set changed')
+    for name,address,capacity,filename,magic in (
+            ('RELOC',0x1880,0x180,'banked-reloc.bin',b'BREL\0\1'),
+            ('ACCESS',0x1f00,0x100,'banked-access.bin',b'BACC\0\1')):
+        blob=(build/('boot/'+filename)).read_bytes()
+        if (blob[:1]!=b'\x4c' or blob[3:9]!=magic or not 9<len(blob)<=capacity or
+                segments.get(name)!=(address,address+len(blob)-1,len(blob))):
+            raise ValueError('banked extension reservation or identity/map differs: '+name)
     for name,low,limit in (('GRAPHICSCODE',0xC00,0x1200),('GRAPHICSHELP',0xA100,0xA1E0)):
         start,end,size=normal[name]
         if not (start == low and size == end - start + 1 and end < limit):
@@ -221,7 +232,7 @@ def audit(build):
     inputs = ['8502/udeks-8502.map', '8502/udeks-8502-panic-probe.map',
               'storage/module.map', 'z80/udeks-z80.map', 'z80/udeks-z80.bin', 'z80/udeks-z80.ihx',
               'boot/task-lookup.bin', 'boot/banked-loader.bin',
-              'boot/banked-loader.map', '8502/banked-graphics.bin',
+              'boot/banked-loader.map', 'boot/banked-reloc.bin', 'boot/banked-access.bin', '8502/banked-graphics.bin',
               '8502/banked-graphics-panic.bin'] + ['user/' + n + '.udx' for n in apps]
     return dict(status='four independent graphical executables; placement verified',
                 baseline_apps=apps,

@@ -118,6 +118,9 @@ name_ok:
         cpx #16
         bne check_name
         jmp load_image
+        .segment "ACCESS"
+        jmp query_state
+        .byte "BACC",0,1
 query_state:
         lda slot
         asl
@@ -169,6 +172,8 @@ graphics_source:
         bne install_page
         lda #0
         rts
+        .assert * <= $2000, error, "banked access reaches Z80 code"
+        .segment "CODE"
 invalid:
         lda #22                     ; EINVAL
         rts
@@ -338,7 +343,7 @@ magic:  lda header,x
         dex
         bpl magic
         lda header+5
-        cmp #2
+        cmp #3
         jcs bad_image
         lda header+6
         cmp #1
@@ -349,9 +354,29 @@ magic:  lda header,x
         jne bad_image
 :       lda header+8
         jne bad_image
+        lda header+5
+        cmp #2
+        beq reloc_header
         lda header+9
         cmp base
         jne bad_image
+        jmp size_check
+reloc_header:
+        lda header+7
+        jne bad_image               ; 0.2 supports ordinary native images only
+        lda header+9
+        cmp #$10                    ; canonical link base $1000
+        jne bad_image
+        lda base
+        sec
+        sbc #$10
+        sta reloc_delta
+        clc
+        adc header+15
+        sta header+15               ; normalize entry in the private header
+        lda base
+        sta header+9
+size_check:
         ; Exact EOF (header+image), reject overflow and truncated/trailing data.
         clc
         lda header+10
@@ -360,11 +385,22 @@ magic:  lda header,x
         lda header+11
         adc #0
         jcs bad_image
+        ldx header+5
+        cpx #2
+        beq reloc_length
         cmp file_size+1
         jne bad_image
         lda allocation
         cmp file_size
         jne bad_image
+        jmp length_ok
+reloc_length:
+        sta reloc_table+1
+        lda allocation
+        sta reloc_table
+        jsr relocation_validate
+        jne bad_image
+length_ok:
         lda header+10
         ora header+11
         jeq bad_image
@@ -440,7 +476,13 @@ jump_ok:
         cpx #18
         bne jump_read
 valid_image:
-        lda #0
+        lda header+5
+        cmp #2
+        bne :+
+        jsr relocation_apply
+        lda #1
+        sta header+5                ; installed view is fixed-address UDEX 0.1
+:       lda #0
         rts
 bad_image:
         lda #8                      ; ENOEXEC
@@ -448,6 +490,158 @@ bad_image:
 no_memory:
         lda #12
         rts
+
+; Validate exact tail length and every sorted patch offset before touching
+; image bytes. rel_table is an offset from the staged file's page-aligned base.
+        .segment "RELOC"
+        jmp relocation_validate
+        .byte "BREL",0,1
+relocation_validate:
+        clc
+        lda reloc_table
+        adc #2
+        sta reloc_end
+        lda reloc_table+1
+        adc #0
+        jcs bad_image
+        sta reloc_end+1
+        cmp file_size+1
+        bcc :+
+        jne bad_image
+        lda file_size
+        cmp reloc_end
+        jcc bad_image
+:       jsr relocation_begin
+        jsr relocation_byte
+        sta reloc_count
+        jsr relocation_byte
+        sta reloc_count+1
+        lda reloc_count
+        asl
+        sta reloc_left
+        lda reloc_count+1
+        rol
+        jcs bad_image
+        sta reloc_left+1
+        clc
+        lda reloc_left
+        adc reloc_end
+        sta reloc_end
+        lda reloc_left+1
+        adc reloc_end+1
+        jcs bad_image
+        cmp file_size+1
+        jne bad_image
+        lda reloc_end
+        cmp file_size
+        jne bad_image
+        lda #0
+        sta reloc_have_previous
+        jsr relocation_count
+relocation_check:
+        jsr relocation_more
+        beq relocation_ok
+        jsr relocation_offset
+        lda reloc_offset+1
+        cmp header+11
+        bcc :+
+        jne bad_image
+        lda reloc_offset
+        cmp header+10
+        jcs bad_image
+:       lda reloc_have_previous
+        beq relocation_first
+        lda reloc_offset+1
+        cmp reloc_previous+1
+        jcc bad_image
+        bne relocation_first
+        lda reloc_previous
+        cmp reloc_offset
+        jcs bad_image
+relocation_first:
+        lda #1
+        sta reloc_have_previous
+        lda reloc_offset
+        sta reloc_previous
+        lda reloc_offset+1
+        sta reloc_previous+1
+        jmp relocation_check
+relocation_ok:
+        lda #0
+        rts
+
+relocation_apply:
+        jsr relocation_begin
+        jsr relocation_byte         ; count was checked by preflight
+        jsr relocation_byte
+        jsr relocation_count
+relocation_patch_loop:
+        jsr relocation_more
+        beq relocation_ok
+        jsr relocation_offset
+        clc
+        lda reloc_offset
+        adc #16                     ; image follows the staged UDEX header
+        sta relocation_patch+1
+        sta relocation_store+1
+        lda reloc_offset+1
+        adc base
+        sta relocation_patch+2
+        sta relocation_store+2
+relocation_patch:
+        lda $ffff
+        clc
+        adc reloc_delta
+relocation_store:
+        sta $ffff
+        jmp relocation_patch_loop
+relocation_begin:
+        lda reloc_table
+        sta relocation_byte+1
+        clc
+        lda reloc_table+1
+        adc base
+        sta relocation_byte+2
+        rts
+relocation_byte:
+        lda $ffff
+        inc relocation_byte+1
+        bne :+
+        inc relocation_byte+2
+:       rts
+relocation_count:
+        lda reloc_count
+        sta reloc_left
+        lda reloc_count+1
+        sta reloc_left+1
+        rts
+relocation_more:
+        lda reloc_left
+        ora reloc_left+1
+        beq :+
+        lda reloc_left
+        bne decrement_reloc
+        dec reloc_left+1
+decrement_reloc:
+        dec reloc_left
+        lda #1
+:       rts
+relocation_offset:
+        jsr relocation_byte
+        sta reloc_offset
+        jsr relocation_byte
+        sta reloc_offset+1
+        rts
+reloc_table: .word 0
+reloc_end: .word 0
+reloc_count: .word 0
+reloc_left: .word 0
+reloc_offset: .word 0
+reloc_previous: .word 0
+reloc_have_previous: .byte 0
+reloc_delta: .byte 0
+        .assert * <= $1a00, error, "relocator reaches task lookup"
+        .segment "CODE"
 install:
         lda #16
         sta source+1

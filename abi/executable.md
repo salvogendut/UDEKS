@@ -1,4 +1,4 @@
-# UDEKS executable format 0.1
+# UDEKS executable formats 0.1 and 0.2
 
 The managed-app call table at `$CF50` now advertises UAPP 0.4, 53 three-byte
 vectors. All 51 UAPP 0.1 vectors and runtime zero-page addresses are unchanged.
@@ -124,6 +124,61 @@ bytes and the second private runtime/stack/context allocation.
 Clock and wave remain managed bank-0 images. The freed `$0C00-$11FF` portion
 of the old calculator allocation now holds the lazily installed graphics service.
 See [execution and current limits](../docs/DISK-GRAPHICS.md#four-application-support-30).
+
+## Page-relocatable native images (0.2, development)
+
+Issue #35 adds slot-independent execution to the private bank-1 loader. It does
+**not yet add generic shell launch, automatic slot selection, or a new public
+SPAWN operation**. Existing 0.0/0.1 fixed images retain their original rules;
+other loaders continue to reject minor 2. Managed/persistent callbacks are not
+supported by this new format.
+
+The 16-byte header is unchanged except for minor **2** and the interpretation
+of load/entry: CPU must be 1, flags must be zero, and the canonical link base
+must be `$1000`. Entry is inside the canonical image. After the image comes a
+16-bit patch count, followed by that many **16-bit offsets of high bytes** in
+the emitted image. Offsets must be strictly increasing, unique and less than
+image size. The table must end exactly at EOF. There is no PRG load prefix.
+
+All supported destinations are page-aligned. The loader adds
+`(destination - $1000) / 256` modulo 256 to each specified high byte. Low bytes
+are unchanged. Text, read-only data, initialized data and following BSS move
+together; private runtime zero-page references and absolute hardware/common
+ABI addresses remain fixed. There is no symbol resolution at runtime. This is
+a trusted executable format, not a validator of arbitrary machine instructions.
+
+`cfg/8502-reloc-app.cfg` links a contiguous image using ld65's small 6502 o65
+format. `tools/o65_to_udex.py` consumes **linker-authored relocation records**:
+WORD references contribute their high byte; split HIGH references contribute
+their byte; LOW references require no patch for page-aligned moves. Absolute
+and zero-page targets stay fixed. Dynamic imports/exports, unsupported modes,
+noncontiguous segments, overlapping fixups and malformed streams are rejected.
+No byte-pattern scanning is used. Format guidance: [ld65 o65 configuration](https://cc65.github.io/doc/ld65.html)
+and [cc65's reference module loader](https://github.com/cc65/cc65/blob/master/libsrc/common/modload.s).
+
+Both the **whole file** (header, image and relocation table) and **image+BSS**
+must fit the selected allocation. The current destinations remain bank-1
+`$2300-$34FF` and `$3500-$3FFF`, with the existing private CPU pages and `$0300`
+software-stack reservations. Header, exact length, all patches, entry and
+allocation are validated before applying fixups. A rejection may dirty only
+the unowned staging allocation; it must not publish ownership or touch a live
+peer. Successful installation copies the patched image, clears BSS and retains
+a normalized **fixed UDEX 0.1 header** with the actual load/entry addresses.
+Ownership is published last; native admission/return/EXIT are unchanged.
+
+Reproduce the compiled-C two-destination proof:
+
+```sh
+distrobox enter my-distrobox -- make -j8 boot graphics-apps-check placement-check reloc-fixtures
+make reloc-probe
+```
+
+The probe builds one `relocapp.udx`, compares its relocation against independent
+flat links at both bases, then loads that **same disk file** into both tasks.
+Initialized function/data/BSS pointers, split address bytes, literal lookalikes,
+recursive live C frames, yield/sleep, independent state, exit and reload are
+checked. The probe calls the private loader at a normal service-poll boundary;
+it is not the eventual application SDK or a user-facing launcher.
 
 Init's persistent load reads `/bin/ush` (`USH.BIN`) before child
 tasks exist. It requires flag `$01`, load and entry `$9000`, and the same
