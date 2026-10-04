@@ -8,6 +8,26 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 ## Current feature handover — 2026-10-04
 
+Resize checkpoint committed/pushed as `378c033`. Following it, UTRQ 0.11
+WORKER (op 24) now lets an ordinary native program use the bounded Z80 without
+UAPP or graphical initialization. Result bytes are read-only borrowed common
+RAM at $F300, copied privately BEFORE any request/yield. Four-byte inputs,
+three-byte reply; per-kernel operand checks remain in the worker. No app-slot
+or common-gate placement changed. Worker-service code is compiled for size
+with private static locals (serialized, no IRQ entry); boot status uses a
+constant image and a tiny assembly counter transport replaces pointer-heavy C.
+The new handler remains C. Resident BSS ends $9AF7 (eight bytes spare).
+
+`make native-worker-probe-app` and `tools/native_worker_probe.py` exercise
+the real task API with two independently relocated console clients: all 525
+surface samples, the quantized 64-sample waveform, bounded errors, preserved
+request sequences, exact lease counts, private copies surviving legacy xwave,
+reap/reload, console input and stack guards. VICE D64/D81 passes; clock resize
+and four-window compatibility passes on VICE D71. The native worker API has
+not yet been separately tested on 1986 or physical hardware. Default clock/wave
+remain legacy; next is generic retained paths, NOT math tuning or removal of
+working four-app support. Evidence: `bench/{artifacts,results}/2026-10-04-native-worker`.
+
 Resize checkpoint: prior native-clock/panel/D81 work committed and pushed as
 `9f2e994`. User authorizes the resize work AND subsequent native-wave/four-slot
 cutover sequence on this branch. UTRQ 0.10 is now implemented: explicit sizing

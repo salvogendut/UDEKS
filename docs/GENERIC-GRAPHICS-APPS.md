@@ -133,7 +133,10 @@ clock and wave in today's two generic allocations would reduce concurrency.
    dimensions and reports current geometry without consuming pending clicks.
    The independent clock scales in both native slots; VICE all three formats
    and 1986 D64/D81 native input pass. No sizing policy or algorithm lives in
-   the window manager. Retained-wave and task-safe worker requests remain.
+   the window manager. **Worker portion implemented:** UTRQ 0.11 exposes
+   bounded NOP/sample/surface requests without UAPP calls or a desktop. Two
+   independently relocated console tasks copy results privately and coexist
+   with clock/wave. Generic retained-wave presentation remains.
 3. **Measure and realize four compatible native allocations.** Account for
    code/BSS, relocations, private CPU pages/stacks, retained images, storage,
    Z80 and console execution together. Reclaim legacy callback/backup resources

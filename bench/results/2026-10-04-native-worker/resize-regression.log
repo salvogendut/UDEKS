@@ -1,0 +1,15 @@
+PASS panel boot
+PASS nclock &
+PASS date 03:15:00
+PASS clock2
+PASS panel two-clocks
+PASS panel foreground-stopped
+PASS clock2 &
+PASS date 21:45:00
+PASS xclock &
+PASS xwave &
+PASS cowsay native clocks
+PASS panel four-apps
+PASS xinit -q
+PASS echo reusable
+PASS panel stopped

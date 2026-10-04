@@ -1,0 +1,13 @@
+PASS worker &
+PASS peer &
+PASS echo worker clients alive
+PASS client-0
+PASS client-1
+PASS xclock &
+PASS xwave &
+PASS cowsay worker API
+PASS after-legacy-0
+PASS after-legacy-1
+PASS worker &
+PASS xinit -q
+PASS echo worker cleanup passed

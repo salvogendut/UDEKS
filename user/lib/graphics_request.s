@@ -8,6 +8,15 @@ UDEKS_GFX_ABI = 9
         .export _udeks_graphics_record = $f359
         .export _udeks_time_snapshot = $f200
         .segment "CODE"
+        .if UDEKS_GFX_ABI >= 11
+        .export _worker_request
+        .export _udeks_worker_output = $f300
+_worker_request:
+        lda #4
+        sta $f363
+        lda #24
+        bne request
+        .endif
 _gfx_request:
         sta $f367
         lda #24

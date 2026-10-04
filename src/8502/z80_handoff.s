@@ -9,12 +9,26 @@
         .include "nmi-common.inc"
         .export _udeks_z80_prepare
         .export _udeks_z80_handoff
+        .export _udeks_worker_mailbox = $f000
+        .export _udeks_worker_status = $f190
+        .export _udeks_worker_boot_chain = $f050
+        .export _udeks_z80_increment_counter
 
 MMU_MODE                = $d505
 Z80_HANDOFF_GATEWAY     = $ffd0
 Z80_CONTINUATION        = $ffed
 
         .segment "CODE"
+; Serialized service-private counter update, A=low-byte offset (12 or 14).
+; Native indexed INC avoids a cc65 variable-pointer temporary. Never called
+; by an IRQ or a task directly; service policy remains in C.
+_udeks_z80_increment_counter:
+        tax
+        inc _udeks_worker_status,x
+        bne :+
+        inc _udeks_worker_status+1,x
+:       rts
+
 _udeks_z80_prepare:
         ldx #z80_gateway_end-z80_gateway-1
 copy_gateway:

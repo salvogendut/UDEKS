@@ -34,9 +34,11 @@ with 1581 directory/file/free-space support. See the
 [test/build recipe](GRAPHICAL-APPS-SDK.md) and [D81 notes](D81.md).
 Next: complete the user-selected **clock/wave native migration**. The independent
 clock and generic UTRQ 0.10 resize/geometry contract now work in both native
-allocations, qualified on VICE D64/D71/D81 and 1986 D64/D81. Remaining: a generic
-retained-wave representation, task-safe worker requests and a measured four-slot
-layout. Instance/name-based control and the
+allocations, qualified on VICE D64/D71/D81 and 1986 D64/D81. Task-safe bounded
+Z80 requests are now implemented as UTRQ 0.11; two ordinary native clients
+pass concurrent result/isolation/lifecycle tests on VICE D64/D81. Remaining:
+a generic retained-wave representation and a measured four-slot layout.
+Instance/name-based control and the
 other native-client migration remain part of the same feature. Native console scheduling/stdin is separate
 remaining work, not implied by the fixed console-command SDK.
 The feature is **not yet complete**; physical testing of this increment is due.

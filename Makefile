@@ -383,6 +383,15 @@ native-clock: placement-check-guard
 
 .PHONY: native-clock
 
+native-worker-probe-app: placement-check-guard
+	$(PYTHON) tools/build_graphical_example.py --source user/examples/worker_probe.c \
+		--name WORKER --output $(BUILD_DIR)/native-clients/worker --graphics-abi 11 \
+		--static-locals --capacity 2816 --export _worker_command --export _worker_state \
+		--export _worker_failure --export _worker_steps --export _worker_samples \
+		--export _worker_wave --export _worker_phase
+
+.PHONY: native-worker-probe-app
+
 native-clock-probe:
 	$(PYTHON) tools/native_clock_probe.py --disk $(BOOT_D64) --drive 1541 --output $(BUILD_DIR)/native-clients/vice-d64
 	$(PYTHON) tools/native_clock_probe.py --disk $(BOOT_D71) --drive 1571 --output $(BUILD_DIR)/native-clients/vice-d71
@@ -1037,7 +1046,8 @@ $(BUILD_8502)/shell.s: src/services/shell/shell.c \
 $(BUILD_8502)/z80_worker.s: src/services/engine/z80_worker.c \
 		include/udeks/mailbox.h include/udeks/memory.h \
 		include/udeks/vic_graphics.h include/udeks/z80_worker.h | $(BUILD_8502)
-	$(CC65) $(CFLAGS_8502) -o $@ $<
+	# Serialized/nonrecursive service; never entered concurrently or from IRQ.
+	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o $@ $<
 
 $(BUILD_8502)/vic_graphics.s: src/services/display/vic_graphics.c \
 		include/udeks/memory.h include/udeks/pointer.h \
@@ -1102,6 +1112,11 @@ $(BUILD_8502)/shell.o: $(BUILD_8502)/shell.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/z80_worker.o: $(BUILD_8502)/z80_worker.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
+$(BUILD_8502)/task_worker.s: src/services/engine/task_worker.c include/udeks/task_request.h include/udeks/mailbox.h include/udeks/z80_worker.h | $(BUILD_8502)
+	$(CC65) -t none --cpu 6502 --standard c99 -Os -I include -o $@ $<
+$(BUILD_8502)/task_worker.o: $(BUILD_8502)/task_worker.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/vic_graphics.o: $(BUILD_8502)/vic_graphics.s | $(BUILD_8502)
@@ -1378,7 +1393,7 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphi
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
 		$(BUILD_8502)/terminal_stream.o \
 		$(BUILD_8502)/shell_parser.o $(BUILD_8502)/shell.o \
-		$(BUILD_8502)/z80_worker.o \
+		$(BUILD_8502)/z80_worker.o $(BUILD_8502)/task_worker.o \
 		$(BUILD_8502)/vic_graphics.o \
 		$(BUILD_8502)/vic_span.o $(BUILD_8502)/vic_pixel.o \
 		$(BUILD_8502)/vic_clear.o \
@@ -1582,7 +1597,7 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(BUILD_8502)/line_editor.o $(BUILD_8502)/root_terminal.o \
 		$(BUILD_8502)/terminal_stream.o \
 		$(BUILD_8502)/shell_parser.o $(BUILD_8502)/shell.o \
-		$(BUILD_8502)/z80_worker.o \
+		$(BUILD_8502)/z80_worker.o $(BUILD_8502)/task_worker.o \
 		$(BUILD_8502)/vic_graphics.o \
 		$(BUILD_8502)/vic_span.o $(BUILD_8502)/vic_pixel.o \
 		$(BUILD_8502)/vic_clear.o \
@@ -2326,7 +2341,7 @@ check:
 	$(PYTHON) -m py_compile tools/o65_to_udex.py tools/build_reloc_fixture.py
 	$(PYTHON) -m py_compile tools/build_graphical_example.py tools/generic_launch_probe.py tools/add_disk_apps.py
 	$(PYTHON) -m py_compile tools/build_d81.py tools/build_console_example.py tools/console_apps_probe.py
-	$(PYTHON) -m py_compile tools/native_clock_probe.py
+	$(PYTHON) -m py_compile tools/native_clock_probe.py tools/native_worker_probe.py
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
 	$(PYTHON) -m py_compile tools/xcalc_probe.py tools/pack_native.py tools/four_apps_rejection_probe.py
 	$(PYTHON) -m py_compile tools/managed_app_fixture.py tools/managed_disk_probe.py

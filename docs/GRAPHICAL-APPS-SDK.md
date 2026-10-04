@@ -5,6 +5,27 @@ compiled file runs in either free compatible native allocation. This is an
 intermediate SDK: native arguments, name-based stop and
 migration of the four existing named clients are still pending.
 
+## Bounded Z80 requests (UTRQ 0.11)
+
+Independent native programs can now request the same bounded worker operations
+as the old wave demo, without importing bank-0 UAPP functions or opening a
+window. Build with `--graphics-abi 11`, include `worker.h`, fill the four-byte
+request and call `worker_request()`. Zero means success; other returns are
+errno values. [Exact arguments, results and lifetime](../abi/task-request.md#bounded-worker-011).
+
+For one surface row, set payload bytes to `5, row, 1, 25`. On success **copy
+the 25 bytes from `udeks_worker_output` into private memory before making any
+other request or yielding**. The shared scratch buffer is not a retained app
+image. Yield between rows to keep input and peers running; moving a window
+must reuse saved app data rather than resubmit computation.
+
+`make native-worker-probe-app` builds `user/examples/worker_probe.c`, a console-only
+qualification client, using the same independent native builder. Its monitor
+driver is `tools/native_worker_probe.py`; it is not an interactive end-user
+command. Two copies run in different allocations, check bounded errors and
+all surface samples, survive other users of the worker, then exit/reload.
+General background-console stdin/argument handling remains separate work.
+
 ## Try the candidate
 
 Cold-boot `build/generic-apps/apps-demo.d64` (or `.d71` / `.d81`). Device 8 is mounted
