@@ -129,6 +129,11 @@ clock and wave in today's two generic allocations would reduce concurrency.
    claim migration. Expose a bounded worker request through the task boundary
    instead of calling bank-0 UAPP/Z80 functions from a native task. Preserve
    height reuse on moves and the established dual-engine computation.
+   **Resize portion implemented:** UTRQ 0.10 acknowledges last-rendered
+   dimensions and reports current geometry without consuming pending clicks.
+   The independent clock scales in both native slots; VICE all three formats
+   and 1986 D64/D81 native input pass. No sizing policy or algorithm lives in
+   the window manager. Retained-wave and task-safe worker requests remain.
 3. **Measure and realize four compatible native allocations.** Account for
    code/BSS, relocations, private CPU pages/stacks, retained images, storage,
    Z80 and console execution together. Reclaim legacy callback/backup resources
@@ -144,9 +149,10 @@ clock and wave in today's two generic allocations would reduce concurrency.
 
 The native clock and its drawing model belong entirely to disk-program code.
 `make native-clock` does not link the kernel or change boot media. The first
-gate passes: both native slots on VICE D64/D71/D81 and unmodified 1986 D64
-native keyboard/1351 input. The [SDK test recipe](GRAPHICAL-APPS-SDK.md#native-clock-migration-candidate)
-keeps the fixed-size NCLOCK candidate separate from the production apps.
+gate and its resize extension pass: both native slots on VICE D64/D71/D81 and
+unmodified 1986 D64/D81 native keyboard/1351 input. The
+[SDK test recipe](GRAPHICAL-APPS-SDK.md#native-clock-migration-candidate)
+keeps NCLOCK separate from the production apps until full native migration.
 
 ### Original generic-loading sequence
 

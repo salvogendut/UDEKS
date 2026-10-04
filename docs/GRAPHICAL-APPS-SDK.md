@@ -95,13 +95,13 @@ retains a diagnostic symbol in the app's map, not a binding to the kernel.
 On branch `graphics-native-clients`, `make native-clock` builds an independent
 relocatable clock as **NCLOCK.BIN**. It shares no app callbacks, fixed task id or
 private runtime symbols with the resident system. Both generic slots accept
-the exact same 2,463-byte file (2,039 image + 351 BSS bytes; staging includes the
+the exact same 2,770-byte file (2,180 image + 369 BSS bytes; staging includes the
 relocation table). All face/tick/hand/digit calculations stay in the disk app;
 the existing graphics service retains 43 ordinary commands. The app reads the
-same common TIME snapshot as `date`, updates once per changed minute, and
+same common TIME snapshot as `date`, updates on a changed minute or size, and
 sleeps between event checks. It does not re-submit its image merely on a move.
 
-Test **`build/native-clients/native-clock-demo.d64`**, `.d71` or `.d81`:
+Test **`build/native-clients/resize-demo.d64`**, `.d71` or `.d81`:
 
 ```text
 nclock &
@@ -122,14 +122,18 @@ Both clocks should show 21:45; either close box retires that instance and its
 slot can be reused. `NCLOCK.BIN` and `CLOCK2.BIN` contain identical bytes. These
 are deliberately separate test filenames: **shipped `xclock`/`xwave` remain
 unchanged**, so there is no concurrency or resize regression in normal builds.
-The candidate uses the current **fixed-size** generic API, not yet the legacy
-clock's resizable window. No `nclock -q` support is implied.
+Drag each lower-right grip to resize it: the outline moves while contents are
+hidden, then the app scales its own face to the new size. UTRQ 0.10 reports
+owner-checked geometry events; the graphics service contains no clock model.
+No `nclock -q` support is implied.
 
 VICE D64/D71/D81 qualifies both slots, an independent drawing oracle, `date`,
-dragging, targeted Ctrl+C, reuse, console and four windows with the old apps.
-Unmodified 1986 D64 also passes native keyboard/1351 drag and close, time
-changes, cancellation/reuse and guards. Physical-C128 feedback is still due.
-Exact artifacts/results: `bench/{artifacts,results}/2026-10-04-native-clock`.
+dragging, independent growth/minimum/regrowth, targeted Ctrl+C, reuse, console
+and four windows with the old apps. Unmodified 1986 D64/1571 and D81/1581 also
+pass native keyboard/1351 resizing, drag/close, time, cancellation/reuse and
+guards. Physical-C128 feedback for resizing is still due. Exact artifacts/results:
+`bench/{artifacts,results}/2026-10-04-native-resize`. The earlier
+`2026-10-04-native-clock` archive preserves the fixed-size first candidate.
 
 Follow-up after manual 1986 feedback: the running-app panel's repeated-initial
 bug is fixed in fresh `build/native-clients/native-clock-demo.d64` / `.d71` /
@@ -150,9 +154,23 @@ distrobox enter my-distrobox -- python3 tools/1986_storage_smoke_build.py \
 
 The probe disks are `build/native-clients/vice-d64/native-clock.d64` (and
 corresponding D71/D81 paths). For manual packaging, install NCLOCK.BIN with
-`add_disk_apps.py` as above. Next gates are generic resize/retained-wave/worker
+`add_disk_apps.py` as above. Next gates are generic retained-wave/worker
 services and a measured four-native-allocation layout before default cutover;
 see the [migration plan](GENERIC-GRAPHICS-APPS.md#clockwave-migration-follow-up-2026-10-04).
+
+### Resizable app contract
+
+Build with `--graphics-abi 10`. CREATE chooses RESIZABLE (`$08`) or FIXED_SIZE
+(`$10`), plus optional MOVABLE/CLOSABLE. EVENT supplies the last drawn width
+(LE16) and height; its seven-byte reply contains state, optional click, and
+current dimensions. On state 2, rebuild your content, PRESENT it, and acknowledge
+that size in the next EVENT. A pending click is not consumed by a resize.
+See [the exact ABI](../abi/window.md#geometry-events-utrq-010). Default SDK builds
+remain at 0.9, preserving old fixed-size programs and their four-byte replies.
+
+The native clock build uses `--static-locals` (nonrecursive, task-private) and
+`--capacity 2816` to check both file and image+BSS against the smaller slot.
+These are optional SDK build choices, not a special clock loader path.
 
 ## Independent console commands
 

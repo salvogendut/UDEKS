@@ -1,0 +1,53 @@
+PC=FF74 drive=EAB7 jam=0 speed=1 CIA2=07/3F bus=110 via=02/1A request=00/00/00 exit=0
+PC=E3B7 drive=D59C jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E4AE drive=E979 jam=0 speed=0 CIA2=47/3F bus=111 via=04/1A request=00/00/00 exit=0
+PC=E3AE drive=F84F jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E464 drive=E9B3 jam=0 speed=0 CIA2=47/3F bus=111 via=05/1A request=00/00/00 exit=0
+PC=E4AB drive=E971 jam=0 speed=0 CIA2=47/3F bus=100 via=0E/1A request=00/00/00 exit=0
+PC=F2FE drive=F2C0 jam=0 speed=0 CIA2=A7/3F bus=100 via=0C/1A request=00/00/00 exit=0
+PC=E532 drive=E9E5 jam=0 speed=0 CIA2=07/3F bus=111 via=01/1A request=01/06/00 exit=0
+panel row 1: 12 15 0e 0e 09 0e 07 20 20 expected RUNNING
+panel row 2: 0e 0f 0e 05 20 20 20 20 20 expected NONE
+command: nclock & -> accepted (Return release=760 frames)
+panel row 2: 18 09 0e 09 14 20 20 20 20 expected xinit
+panel row 3: 0e 03 0c 0f 03 0b 20 20 20 expected nclock
+command: date 031500 -> accepted (Return release=572 frames)
+clock task 3: 03:15, presents 2
+command: clock2 -> accepted (Return release=1557 frames)
+panel row 4: 03 0c 0f 03 0b 32 20 20 20 expected clock2
+clock task 4: 03:15, presents 1
+clock task 4 geometry observed 126x130 expected 126x130
+clock task 4 geometry 126x130
+clock task 3 geometry observed 72x88 expected 72x88
+clock task 3 geometry 72x88
+clock task 4 geometry observed 48x49 expected 48x49
+clock task 4 geometry 48x49
+clock task 4 geometry observed 126x130 expected 126x130
+clock task 4 geometry 126x130
+clock task 3 geometry observed 180x140 expected 180x140
+clock task 3 geometry 180x140
+panel row 3: 0e 03 0c 0f 03 0b 20 20 20 expected nclock
+panel row 4: 20 20 20 20 20 20 20 20 20 expected 
+command: clock2 & -> accepted (Return release=814 frames)
+panel row 4: 03 0c 0f 03 0b 32 20 20 20 expected clock2
+command: date 214500 -> accepted (Return release=573 frames)
+clock task 3: 21:45, presents 13
+clock task 4: 21:45, presents 3
+command: clock2 & -> accepted (Return release=805 frames)
+command: xclock & -> accepted (Return release=103 frames)
+command: xwave & -> accepted (Return release=103 frames)
+panel row 2: 18 09 0e 09 14 20 20 20 20 expected xinit
+panel row 3: 18 03 0c 0f 03 0b 20 20 20 expected xclock
+panel row 4: 18 17 01 16 05 20 20 20 20 expected xwave
+panel row 5: 0e 03 0c 0f 03 0b 20 20 20 expected nclock
+panel row 6: 03 0c 0f 03 0b 32 20 20 20 expected clock2
+command: cowsay native clocks -> accepted (Return release=1129 frames)
+command: xinit -q -> accepted (Return release=360 frames)
+panel row 2: 0e 0f 0e 05 20 20 20 20 20 expected NONE
+panel row 3: 20 20 20 20 20 20 20 20 20 expected 
+panel row 4: 20 20 20 20 20 20 20 20 20 expected 
+panel row 5: 20 20 20 20 20 20 20 20 20 expected 
+panel row 6: 20 20 20 20 20 20 20 20 20 expected 
+PASS native clock: both slots, date, native drag/close, Ctrl+C, reload, four windows, console, guards, bitmap
+PASS running panel: header, complete names, digit suffix, updates, cleared rows, attributes
+PASS native resize: independent dimensions, minimum, regrow, native 1351 input

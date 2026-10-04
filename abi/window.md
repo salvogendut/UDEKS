@@ -24,7 +24,7 @@ as the compact range 1 through the active-window count, so repeated switching
 cannot wrap an ever-growing sequence number. Destroying a window recomposes
 its old rectangle and focuses the remaining top window.
 
-Every current application window is resizable. Two diagonal marks in its
+Resizable application windows show two diagonal marks in their
 lower-right corner identify a ten-by-ten-pixel resize grip. Pressing the grip
 hides the window contents and starts the same direct-to-VIC outline operation
 used for movement. The outline is constrained to the 320x200 surface and a
@@ -139,8 +139,43 @@ and CLOSABLE (`$04`) only. Geometry passes the existing window-manager bounds
 checks. Titles are eight bytes plus a private terminator. EVENT is nonblocking:
 state 0 means closed, 1 alive/no click, 3 alive with a consumed client click.
 Click coordinates are relative to the whole window. There is no keyboard or
-resize event yet; clients sleep/yield between polls. An already-closing owner
+resize event in 0.9; clients sleep/yield between polls. An already-closing owner
 gets state 0, never another window's events.
+
+### Geometry events (UTRQ 0.10)
+
+All envelope fields and operation numbers stay unchanged. CREATE accepts
+exactly one of FIXED_SIZE (`$10`) or RESIZABLE (`$08`), optionally combined with
+MOVABLE/CLOSABLE. A 0.9 request still rejects RESIZABLE. No callbacks or foreign
+code pointers are introduced. The existing manager's lower-right outline grip
+commits a size only on release, constrained to the display and its 48×48 drag
+minimum. CREATE uses the existing bounds; clients choose an appropriate initial
+size. A resized window may be wider than 255 pixels.
+
+EVENT input is `3, handle, last-width-lo, last-width-hi, last-height`, padded
+to the usual 24 bytes. The client supplies the geometry it last rendered;
+zero requests an initial size notification. The seven-byte reply is:
+
+`state, click-x-lo, click-x-hi, click-y, width-lo, width-hi, height`
+
+- `0`: closed; only state is valid.
+- `1`: live, geometry unchanged, no click.
+- `2`: live, dimensions differ from the client's acknowledgement.
+- `3`: live, dimensions unchanged, one consumed client click.
+
+Width/height are valid for every live response; click coordinates only for
+state 3. Geometry delivery takes precedence without consuming a pending click.
+Repeated polls with an old size repeat state 2; multiple intermediate resizes
+coalesce to the current size. Acknowledging it allows pending clicks through.
+No extra resident queue or lost one-shot notification is required. Moves and
+stacking alone do not generate a size change. Ownership checks precede either
+geometry lookup or input consumption. The closing owner sees state 0 before
+any lookup, and no freed window handle is dereferenced.
+
+Applications recompute content themselves and PRESENT an updated retained
+image. Until then the old image remains clipped to the new client rectangle.
+The service does not implement clock scaling or any other app-specific model.
+Old 0.9 executables retain their exact four-byte EVENT and fixed-size behavior.
 
 PRESENT takes at most 48 eight-byte commands from **inside the caller's own
 image+BSS reservation**. Commands use window-relative byte coordinates:

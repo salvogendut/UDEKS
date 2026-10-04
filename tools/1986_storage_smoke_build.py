@@ -70,7 +70,7 @@ def main():
     if args.native_clock:
         clock_map=map_exports((ROOT/'build/native-clients/clock/xclock_native.map').read_text())
         calc_flags=['-DUDEKS_NATIVE_CLOCK_SMOKE','-DUDEKS_DISK_GRAPHICS_SMOKE']
-        for name in ('commands','hour','minute','presents'):
+        for name in ('commands','hour','minute','presents','width','height'):
             offset=clock_map['_udeks_native_clock_'+name][0]-0x1000
             calc_flags.append('-DUDEKS_NATIVE_CLOCK_'+name.upper()+'='+str(offset))
     subprocess.run(['cc', '-std=gnu11', '-O2', '-I'+str(emulator/'src'),

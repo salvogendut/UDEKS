@@ -1,6 +1,12 @@
 ; SPDX-License-Identifier: GPL-3.0-or-later
         .setcpu "6502"
+        .ifndef UDEKS_GFX_ABI
+UDEKS_GFX_ABI = 9
+        .endif
         .export _gfx_request, _gfx_sleep
+        ; Absolute data bindings carry no storage or relocation into an app.
+        .export _udeks_graphics_record = $f359
+        .export _udeks_time_snapshot = $f200
         .segment "CODE"
 _gfx_request:
         sta $f367
@@ -33,4 +39,4 @@ copy:   lda signature,x
         ldx #0
         rts
         .segment "RODATA"
-signature: .byte "UTRQ",0,9
+signature: .byte "UTRQ",0,UDEKS_GFX_ABI

@@ -25,25 +25,27 @@ from xcalc_probe import bitmap_preview, pointer_test_scratch
 ROOT=Path(__file__).resolve().parents[1]
 
 
-def clock_commands(hour,minute):
+def clock_commands(hour,minute,width=72,height=88):
     """Independent geometric oracle for the 43 retained generic commands."""
+    center_x=width//2; center_y=16+(height-40)//2
+    radius=min((height-40)//2,(width-8)//2)
     def point(position,radius):
         sx=round(64*math.sin(position*math.pi/30))
         cy=round(64*math.cos(position*math.pi/30))
-        return (36+int(sx*radius/64),40-int(cy*radius/64))
+        return (center_x+int(sx*radius/64),center_y-int(cy*radius/64))
     commands=[]
     def line(start,end): commands.extend((1,*start,*end,0,0,0))
     position=0
     for i in range(24):
         next_position=(position+(3 if i&1 else 2))%60
-        line(point(position,24),point(next_position,24)); position=next_position
-    for position in range(0,60,5): line(point(position,24),point(position,21))
-    line((36,40),point((hour%12)*5+minute//12,12))
-    line((36,40),point(minute,18))
+        line(point(position,radius),point(next_position,radius)); position=next_position
+    for position in range(0,60,5): line(point(position,radius),point(position,radius-radius//8))
+    line((center_x,center_y),point((hour%12)*5+minute//12,radius//2))
+    line((center_x,center_y),point(minute,radius*3//4))
     glyphs=((7,5,5,5,7),(2,6,2,2,7),(7,1,7,4,7),(7,1,7,1,7),(5,5,7,1,1),
             (7,4,7,1,7),(7,4,7,5,7),(7,1,1,1,1),(7,5,7,5,7),(7,5,7,1,7),(0,2,0,2,0))
     for i,digit in enumerate((hour//10,hour%10,10,minute//10,minute%10)):
-        commands.extend((2,17+8*i,72,*glyphs[digit]))
+        commands.extend((2,center_x-19+8*i,height-16,*glyphs[digit]))
     return bytes(commands)
 
 
@@ -55,6 +57,8 @@ def main():
     args=parser.parse_args()
     work=args.output.resolve(); work.mkdir(parents=True,exist_ok=True)
     program=(ROOT/'build/native-clients/clock/NCLOCK.BIN').read_bytes()
+    if len(program)>0xb00 or sum(int.from_bytes(program[n:n+2],'little') for n in (10,12))>0xb00:
+        raise ValueError('native clock must fit BOTH image/BSS and file bounds of the smaller slot')
     image=add_apps(args.disk.read_bytes(),[('NCLOCK.BIN',program),('CLOCK2.BIN',program)])
     disk=work/('native-clock'+args.disk.suffix); disk.write_bytes(image)
     kernel_map=(ROOT/'build/8502/udeks-8502.map').read_text()
@@ -120,25 +124,28 @@ def main():
             if time.monotonic()>deadline: raise AssertionError((line,output))
             time.sleep(.1)
         records.append(dict(command=line,console=output)); print('PASS',line,flush=True)
-    def check_clock(slot,tag,hour=None,minute=None):
+    def check_clock(slot,tag,hour=None,minute=None,width=None,height=None):
         deadline=time.monotonic()+90
         while True:
-            commands,metadata,retained=sp.capture_blocks(port,[
+            commands,metadata,retained,geometry=sp.capture_blocks(port,[
                 (work/(tag+'-commands.bin'),app_address(slot,'commands'),app_address(slot,'commands')+343,'worker'),
                 (work/(tag+'-time.bin'),app_address(slot,'hour'),app_address(slot,'hour')+2,'worker'),
-                (work/(tag+'-retained.bin'),0xcd00+slot*384,0xcd00+slot*384+343,'worker')])
+                (work/(tag+'-retained.bin'),0xcd00+slot*384,0xcd00+slot*384+343,'worker'),
+                (work/(tag+'-geometry.bin'),app_address(slot,'width'),app_address(slot,'width')+2,'worker')])
             h,m,presents=metadata
-            if h<24 and m<60 and presents and (hour is None or (h,m)==(hour,minute)):
-                expected=clock_commands(h,m)
+            w=int.from_bytes(geometry[:2],'little'); ht=geometry[2]
+            if (h<24 and m<60 and presents and 48<=w<=320 and 48<=ht<=200 and
+                    (hour is None or (h,m)==(hour,minute)) and
+                    (width is None or (w,ht)==(width,height))):
+                expected=clock_commands(h,m,w,ht)
                 if commands==retained==expected: break
             if time.monotonic()>deadline:
-                raise AssertionError((tag,metadata.hex(),'clock commands differ from independent oracle',
-                    [(i,a,b) for i,(a,b) in enumerate(zip(commands,clock_commands(h%24,m%60))) if a!=b][:12]))
+                raise AssertionError((tag,metadata.hex(),geometry.hex(),'clock commands differ from independent oracle'))
             time.sleep(.1)
         expected=relocate_executable(program,(0x2300,0x3500)[slot],(0x1200,0xb00)[slot])[16:]
         if capture(tag+'-code',(0x2300,0x3500)[slot],len(expected),'worker')!=expected:
             raise AssertionError('loaded clock differs from relocated image')
-        records.append(dict(check=tag,slot=slot+3,hour=h,minute=m,presents=presents))
+        records.append(dict(check=tag,slot=slot+3,hour=h,minute=m,presents=presents,width=w,height=ht))
         return presents
     def pointer(x,y,buttons):
         if not pointer_original:
@@ -156,6 +163,14 @@ def main():
     def restore_pointer():
         if pointer_original:
             sp.write_kernel_blocks(port,pointer_original); pointer_original.clear()
+    def resize(handle,x,y,width,height,new_width,new_height):
+        pointer(x+width-3,y+height-3,0); sp.wait_for_byte(port,0xf24d,0,time.monotonic()+60)
+        pointer(x+width-3,y+height-3,1); sp.wait_for_byte(port,0xf248,handle,time.monotonic()+60)
+        pointer(x+new_width-1,y+new_height-1,1)
+        sp.wait_for_byte(port,0xf24c,new_width&255,time.monotonic()+60)
+        pointer(x+new_width-1,y+new_height-1,0)
+        sp.wait_for_byte(port,0xf248,0,time.monotonic()+60)
+        restore_pointer()
     def canvas(tag):
         deadline=time.monotonic()+90
         while True:
@@ -173,6 +188,7 @@ def main():
         legacy=capture('legacy-before',0xf220,32)
         command('nclock &')
         sp.wait_for_byte(port,0xf246,1,time.monotonic()+90)
+        first_handle=byte(port,0xf247)
         check_clock(0,'first-clock')
         command('date 03:15:00','03:15:00')
         check_clock(0,'first-set-time',3,15)
@@ -188,6 +204,16 @@ def main():
         pointer(32,55,0); sp.wait_for_byte(port,0xf248,0,time.monotonic()+60)
         restore_pointer()
         check_clock(0,'first-after-drag'); check_clock(1,'second-after-drag')
+        resize(handle,22,50,72,88,126,130)
+        check_clock(1,'second-enlarged',width=126,height=130)
+        check_clock(0,'first-unaffected',width=72,height=88)
+        resize(handle,22,50,126,130,48,48)
+        check_clock(1,'second-minimum',width=48,height=48)
+        resize(handle,22,50,48,48,126,130)
+        check_clock(1,'second-regrown',width=126,height=130)
+        resize(first_handle,124,50,72,88,180,140)
+        check_clock(0,'first-enlarged',width=180,height=140)
+        check_clock(1,'second-unaffected',width=126,height=130)
         canvas('two-native-clocks')
         # Ctrl+C retires only foreground task 4; the independent peer survives.
         sp.write_kernel_blocks(port,[(queue,bytes((1,0xff,3,2))),(queue+64,bytes((1,0,1)))])
@@ -222,7 +248,7 @@ def main():
             fixture_sha256=hashlib.sha256(image).hexdigest(),
             program_sha256=hashlib.sha256(program).hexdigest(),
             slots=[3,4],relocated_code=True,commands_oracle=True,date_updates=True,
-            drag=True,targeted_ctrl_c=True,reload=True,legacy_state_untouched=True,
+            drag=True,resize=True,targeted_ctrl_c=True,reload=True,legacy_state_untouched=True,
             four_app_compatibility=True,stack_guards=True,running_panel=True,records=records),indent=2)+'\n')
     finally:
         sp.terminate(proc,port); os.close(master)

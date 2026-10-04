@@ -13,9 +13,12 @@ extern unsigned char graphics_request[38];
 #define P (graphics_request+14)
 #define C (graphics_request+16)
 #else
-#define R ((volatile unsigned char *)0xf359)
-#define P ((volatile unsigned char *)0xf367)
-#define C ((volatile unsigned char *)0xf369)
+/* Absolute array binding lets cc65 use direct indexed accesses rather than
+ * repeatedly materializing pointer casts in zero page. No extra storage. */
+extern volatile unsigned char udeks_graphics_record[38];
+#define R udeks_graphics_record
+#define P (udeks_graphics_record+14)
+#define C (udeks_graphics_record+16)
 #endif
 /* Direct byte indexing keeps the two-client lifecycle within resident space. */
 static struct {
@@ -49,11 +52,11 @@ static void closed(unsigned char handle)
 #pragma code-name(pop)
 
 #pragma code-name(push, "GRAPHICSCODE")
+#pragma rodata-name(push, "GRAPHICSCODE")
 static void paint(unsigned char handle)
 {
     unsigned char i, row, bit, data, count, index;
-    unsigned int address, x;
-    unsigned int y;
+    unsigned int address, x, y;
     index = udeks_window_owner(handle)-0x83u;
     if (index >= 2) return;
     count = clients.count[index];
@@ -85,7 +88,8 @@ void udeks_banked_graphics_request(void)
     if(!clients.running[index]) goto done;
     op=P[0]; handle=P[1];
     if(op==UDEKS_GFX_CREATE) {
-        if(clients.handle[index] || clients.closing[index] || (P[6]&0xf9u)!=0x10u) goto done;
+        if(clients.handle[index] || clients.closing[index]) goto done;
+        if((P[6]&0xf9u)!=0x10u && (R[5]<10 || (P[6]&0xf9u)!=0x08u)) goto done;
         if(desktop()) { error=5; goto done; }
         /* Exactly eight title bytes, plus a service-owned terminator. */
         memcpy(clients.title[index],(const void *)(P+7),8);
@@ -95,7 +99,7 @@ void udeks_banked_graphics_request(void)
         clients.handle[index]=handle;
         R[11]=handle; error=handle?0:12;
     } else {
-        if(op==UDEKS_GFX_EVENT && clients.closing[index]) { P[0]=0; R[11]=4; error=0; goto done; }
+        if(op==UDEKS_GFX_EVENT && clients.closing[index]) { P[0]=0; R[11]=R[5]>=10?7:4; error=0; goto done; }
         if(!handle || handle!=clients.handle[index] || udeks_window_owner(handle)!=task+0x80u) goto done;
         if(op==UDEKS_GFX_PRESENT) {
             count=P[4]; source=P[2]|((unsigned int)P[3]<<8);
@@ -115,10 +119,19 @@ void udeks_banked_graphics_request(void)
             udeks_window_repaint(handle);
             R[11]=0; error=0;
         } else if(op==UDEKS_GFX_EVENT) {
+            R[11]=4; error=0;
+            if(R[5]>=10) {
+                source=P[2]|((unsigned int)P[3]<<8); count=P[4];
+                udeks_window_get_geometry(handle,&wx,&wy,&ww,&wh);
+                P[4]=ww; P[5]=ww>>8; P[6]=wh; R[11]=7;
+                /* Client acknowledges its last drawn size. Changes coalesce;
+                 * moves alone do not request new client rendering. A resize
+                 * never consumes a queued click. No per-client shadow state. */
+                if(source!=ww || count!=wh) { P[0]=2; goto done; }
+            }
             click=udeks_window_take_click(handle);
             P[0]=click?3:1;
             if(click) { P[1]=click->x; P[2]=click->x>>8; P[3]=click->y; }
-            R[11]=4; error=0;
         } else if(op==UDEKS_GFX_CLOSE) {
             udeks_window_destroy(handle); R[11]=0; error=0;
         }
@@ -127,6 +140,7 @@ done:
     R[12]=error; R[6]=error?0x80:2;
     if(error) R[11]=0;
 }
+#pragma rodata-name(pop)
 #pragma code-name(pop)
 
 /* Lifecycle glue stays in the ordinary resident segment. The renderer and

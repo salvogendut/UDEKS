@@ -376,8 +376,10 @@ console-example: placement-check-guard
 native-clock: placement-check-guard
 	$(PYTHON) tools/build_graphical_example.py --source user/bin/xclock_native.c \
 		--source user/lib/clock_face.c --name NCLOCK --output $(BUILD_DIR)/native-clients/clock \
+		--graphics-abi 10 --static-locals --capacity 2816 \
 		--export _udeks_native_clock_commands --export _udeks_native_clock_hour \
-		--export _udeks_native_clock_minute --export _udeks_native_clock_presents
+		--export _udeks_native_clock_minute --export _udeks_native_clock_presents \
+		--export _udeks_native_clock_width --export _udeks_native_clock_height
 
 .PHONY: native-clock
 

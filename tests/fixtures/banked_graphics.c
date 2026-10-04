@@ -13,6 +13,9 @@ static struct udeks_window_click pending;
 static unsigned char click_handle;
 static unsigned int origin_x;
 static unsigned char origin_y;
+static unsigned int widths[5];
+static unsigned char heights[5];
+unsigned char test_flags[5];
 
 void test_reset(void)
 {
@@ -21,6 +24,7 @@ void test_reset(void)
     memset(graphics_request,0,sizeof(graphics_request));
     memset(graphics_memory,0,sizeof(graphics_memory));
     memset(test_owner,0,sizeof(test_owner));
+    memset(widths,0,sizeof(widths));memset(heights,0,sizeof(heights));
     udeks_banked_graphics_installed=0;
     test_task=3; test_state[0]=test_state[1]=0; test_reap_busy=0;
     test_repaints=test_writes=test_draws=0; click_handle=0;
@@ -81,9 +85,10 @@ unsigned char udeks_window_create(unsigned char owner,unsigned char surface,unsi
     const unsigned char *title,udeks_window_paint_fn paint_fn,udeks_window_close_fn close_fn)
 {
     unsigned char h=owner-0x82;
-    (void)surface;(void)flags;(void)x;(void)y;(void)title;
+    (void)surface;(void)x;(void)y;(void)title;
     if(!width || !height || h>4) return 0;
     test_owner[h]=owner; painter[h]=paint_fn;closer[h]=close_fn;
+    widths[h]=width;heights[h]=height;test_flags[h]=flags;
     return h;
 }
 unsigned char udeks_window_destroy(unsigned char h)
@@ -97,7 +102,7 @@ unsigned char udeks_window_repaint(unsigned char h)
 unsigned char udeks_window_get_geometry(unsigned char h,unsigned int *x,unsigned char *y,
     unsigned int *w,unsigned char *height)
 {
-    (void)h;*x=origin_x;*y=origin_y;*w=104;*height=133;return 0;
+    *x=origin_x;*y=origin_y;*w=widths[h];*height=heights[h];return 0;
 }
 const struct udeks_window_click *udeks_window_take_click(unsigned char h)
 {
@@ -111,6 +116,10 @@ void test_click(unsigned char h,unsigned int x,unsigned char y)
 void test_move(unsigned char h,unsigned int x,unsigned char y)
 {
     origin_x=x;origin_y=y;udeks_window_repaint(h);
+}
+void test_resize(unsigned char h,unsigned int w,unsigned char height)
+{
+    widths[h]=w;heights[h]=height;
 }
 void udeks_vic_bitmap_fill(int x,int y,int w,int h,unsigned char color)
 {

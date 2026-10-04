@@ -1,0 +1,86 @@
+PASS xclock &
+PASS xwave &
+PASS xcalc &
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS arithmetic 1.25+2.75= 400
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS arithmetic C7.5/2.5= 300
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS echo clicked
+PASS arithmetic C5+N.25= 475
+PASS cowsay calculator
+PASS xdraw &
+PASS echo drawing
+PASS echo drawing
+PASS echo drawing
+PASS xdraw &
+PASS xcalc &
+PASS free
+PASS cowsay four alive
+PASS echo draw moved
+PASS echo draw closed
+PASS xdraw &
+PASS echo drawing
+PASS echo drawing
+PASS xclock -q
+PASS xclock &
+PASS xwave -q
+PASS xwave &
+PASS xcalc -q
+PASS xcalc &
+PASS echo drawing
+PASS echo drawing
+PASS echo drawing
+PASS echo drawing
+PASS echo drawing
+PASS echo drawing
+PASS echo drawing
+PASS echo drawing
+PASS xdraw -q
+PASS xdraw
+PASS echo draw interrupted
+PASS free
+PASS echo dragged
+PASS echo closed
+PASS xcalc &
+PASS drag/close/reload with two peers
+PASS xwave -q
+PASS xcalc -q
+PASS xclock -q
+PASS xclock &
+PASS xcalc &
+PASS xclock -q
+PASS xcalc -q
+PASS xcalc &
+PASS echo console still alive
+PASS xcalc -q
+PASS xclock &
+PASS xwave &
+PASS xcalc
+PASS echo cancelled
+PASS xcalc &
+PASS xdraw &
+PASS xinit -q

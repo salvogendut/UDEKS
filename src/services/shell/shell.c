@@ -160,14 +160,15 @@ unsigned char udeks_shell_dispatch_line(void)
     if (!count) return 0;
     for (i = 0; i < count; ++i) arguments[i] = udeks_shell_command_line + offsets[i];
     /* Fixed console programs retain argc/argv and synchronous execution.
-     * A minor-2 image is rejected by that loader before execution; one-word
-     * foreground commands can then enter the native, relocatable path. */
+     * A minor-2 image is rejected by that loader before execution. A native
+     * file can also exceed its smaller staging buffer before header parsing;
+     * the native loader then validates format/placement independently. */
     if (count==2 && arguments[1][0]=='&' && !arguments[1][1]) {
         count=0;                    /* native background, no app arguments */
     } else {
         result = LOAD(count, arguments)
             == UDEKS_TASK_SLOT_OWNED ? UDEKS_TASK_BUSY : task[UDEKS_TASK_ERROR_OFFSET];
-        if(result!=UDEKS_TASK_BAD_VERSION || count!=1) goto completed;
+        if((result!=UDEKS_TASK_BAD_VERSION && result!=UDEKS_TASK_BAD_SIZE) || count!=1) goto completed;
     }
     result=udeks_banked_graphics_exec(arguments[0]);
     if(!result) {

@@ -32,9 +32,11 @@ C commands have a build/install example, argc/argv, stdout/stderr and reload
 tests; their current loader remains synchronous. D81 is the third boot build,
 with 1581 directory/file/free-space support. See the
 [test/build recipe](GRAPHICAL-APPS-SDK.md) and [D81 notes](D81.md).
-Next: the user-selected **clock/wave native migration**, beginning with an
-independent clock candidate, then the generic resize/retained-render/worker
-contracts and a measured four-slot layout. Instance/name-based control and the
+Next: complete the user-selected **clock/wave native migration**. The independent
+clock and generic UTRQ 0.10 resize/geometry contract now work in both native
+allocations, qualified on VICE D64/D71/D81 and 1986 D64/D81. Remaining: a generic
+retained-wave representation, task-safe worker requests and a measured four-slot
+layout. Instance/name-based control and the
 other native-client migration remain part of the same feature. Native console scheduling/stdin is separate
 remaining work, not implied by the fixed console-command SDK.
 The feature is **not yet complete**; physical testing of this increment is due.

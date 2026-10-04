@@ -1,4 +1,5 @@
 ; SPDX-License-Identifier: GPL-3.0-or-later
+        .export _udeks_graphics_record = $f359
         .setcpu "6502"
         .export _udeks_banked_call, _udeks_banked_read, _udeks_banked_write
         .export _udeks_banked_graphics_exec

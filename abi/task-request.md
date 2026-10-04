@@ -1,4 +1,4 @@
-# Bank-task request ABI 0.9
+# Bank-task request ABI 0.10
 
 Bank-1 8502 tasks exchange bounded requests with the resident kernel through a
 38-byte record in top common RAM. The task fills the record and calls `$FF16`.
@@ -9,17 +9,21 @@ ABI 0.3 keeps every 0.2 operation number and behavior unchanged and adds
 lifecycle operations `10`-`15`. `YIELD`, `EXIT`, immediate/nonblocking and
 blocking `WAITPID`, `SLEEP`, `CANCEL`, and `SPAWN` are implemented. Rebuilt
 0.3 clients may keep using the 0.2 operations unchanged, and
-the resident version check accepts minor `0` through `9`.
+the resident version check accepts minor `0` through `10`.
 ABI 0.4 adds non-consuming stdin readiness (`POLL`, operation 16). A 0.0–0.3
 request for operation 16 returns `ENOSYS`; an unsupported future minor returns
 `EPROTO`. Operations 1–15 retain their existing numbers and behavior.
 ABI 0.5 adds read-only IEC `MOUNT`/`UMOUNT` through a private bank-1 C service.
 Existing stream/directory clients continue to request their minimum ABI 0.4;
-`POLL` accepts 0.4 through 0.9. The current shell uses 0.8; `df` uses 0.6
+`POLL` accepts 0.4 through 0.10. The current shell uses 0.8; `df` uses 0.6
 for `STATFS`. ABI 0.7 adds deferred numeric service control; 0.8 adds root
 namespace routing and working-directory operations. No published entry address changes.
 ABI 0.9 adds owner-bound retained drawing and click/close delivery for banked
 clients (`GRAPHICS`). UAPP 0.4 remains unchanged for the legacy bank-0 apps.
+ABI 0.10 extends GRAPHICS with opt-in resizable windows and acknowledged
+geometry events. The 0.9 fixed-size CREATE and four-byte EVENT reply remain
+unchanged; see [window ABI](window.md#geometry-events-utrq-010) for the
+complete contract. No operation number or public gate moves.
 
 ## Record
 
@@ -29,7 +33,7 @@ The record occupies `$F359-$F37E`:
 |---:|---:|---|
 | 0 | 4 | ASCII magic `UTRQ` |
 | 4 | 1 | ABI major (`0`) |
-| 5 | 1 | ABI minor (`9`; earlier compatible minors remain accepted) |
+| 5 | 1 | ABI minor (`10`; earlier compatible minors remain accepted) |
 | 6 | 1 | State |
 | 7 | 1 | Operation |
 | 8 | 1 | Sequence number |

@@ -17,6 +17,7 @@ static const unsigned char digits[11][5] = {
  * never the resident runtime or a shared application-status record. */
 static unsigned char *out;
 static unsigned char count;
+static unsigned char center_x, center_y, radius;
 
 static signed char component(unsigned char position, unsigned char radius)
 {
@@ -29,49 +30,55 @@ static signed char component(unsigned char position, unsigned char radius)
 
 static void point(unsigned char position, unsigned char radius)
 {
-    *out++=36+component(position,radius);
+    *out++=center_x+component(position,radius);
     position+=15;
     if(position>=60) position-=60;
-    *out++=40-component(position,radius);
+    *out++=center_y-component(position,radius);
 }
 
-static void edge(unsigned char position, unsigned char next, unsigned char radius)
+static void edge(unsigned char position, unsigned char next, unsigned char inner_radius)
 {
     *out++=1;
-    point(position,24);
-    point(next,radius);
+    point(position,radius);
+    point(next,inner_radius);
     out+=3;                         /* color and reserved bytes are zero */
 }
 
 static void hand(unsigned char position, unsigned char radius)
 {
-    *out++=1; *out++=36; *out++=40;
+    *out++=1; *out++=center_x; *out++=center_y;
     point(position,radius);
     out+=3;
 }
 
 unsigned char udeks_clock_face(unsigned char hour, unsigned char minute,
+                             unsigned int width, unsigned char height,
                              unsigned char *commands)
 {
-    unsigned int i;
-    unsigned char position,next,digit,row;
-    if(hour>23 || minute>59) return 0; /* atomic rejection of invalid time */
+    static unsigned int i;
+    static unsigned char position,next,digit,row;
+    if(hour>23 || minute>59 || width<48 || width>320 || height<48 || height>200)
+        return 0; /* atomic rejection of invalid time/geometry */
+    center_x=width/2u;
+    center_y=16u+(height-40u)/2u;
+    radius=(height-40u)/2u;
+    if(radius>(width-8u)/2u) radius=(width-8u)/2u;
     for(i=0;i<UDEKS_CLOCK_FACE_COMMANDS*8u;++i) commands[i]=0;
     out=commands;
     position=0;
     for(count=0;count<24;++count) {
         next=position+((count&1)?3:2);
         if(next==60) next=0;
-        edge(position,next,24);
+        edge(position,next,radius);
         position=next;
     }
-    for(position=0;position<60;position+=5) edge(position,position,21);
-    hand((hour%12u)*5u+minute/12u,12);
-    hand(minute,18);
+    for(position=0;position<60;position+=5) edge(position,position,radius-radius/8u);
+    hand((hour%12u)*5u+minute/12u,radius/2u);
+    hand(minute,(radius*3u)/4u);
     for(count=0;count<5;++count) {
         digit=count==0 ? hour/10u : count==1 ? hour%10u :
               count==2 ? 10u : count==3 ? minute/10u : minute%10u;
-        *out++=2; *out++=17+count*8u; *out++=72;
+        *out++=2; *out++=center_x-19u+count*8u; *out++=height-16u;
         for(row=0;row<5;++row) *out++=digits[digit][row];
     }
     return UDEKS_CLOCK_FACE_COMMANDS;

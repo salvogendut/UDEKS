@@ -150,13 +150,24 @@ class ServiceControl(unittest.TestCase):
 
     def test_other_loader_errors_and_native_arguments_do_not_fall_back(self):
         line=(ctypes.c_ubyte*55).in_dll(self.lib,'udeks_shell_command_line')
-        for error,count in ((11,1),(3,1),(4,1),(5,2)):
+        for error,count in ((11,1),(3,1),(4,1),(5,2),(9,2)):
             self.lib.reset()
             ctypes.c_ubyte.in_dll(self.lib,'token_count').value=count
             ctypes.c_ubyte.in_dll(self.lib,'load_error').value=error
             line[:10]=b'orbit\0arg\0'
             self.lib.udeks_shell_dispatch_line()
             self.assertEqual(self.value('starts'),0)
+
+    def test_native_image_larger_than_legacy_staging_uses_native_validation(self):
+        ctypes.c_ubyte.in_dll(self.lib,'token_count').value=1
+        ctypes.c_ubyte.in_dll(self.lib,'load_error').value=9
+        line=(ctypes.c_ubyte*55).in_dll(self.lib,'udeks_shell_command_line')
+        line[:6]=b'orbit\0'
+        self.lib.udeks_shell_dispatch_line()
+        self.lib.udeks_shell_poll()
+        self.assertEqual(self.value('starts'),1)
+        self.assertEqual(self.memory[0xf184],4)
+        self.assertEqual(self.lib.udeks_shell_interrupt_foreground(),1)
 
     def test_enqueue_has_no_graphics_or_engine_side_effects(self):
         self.assertEqual(self.request(), 0)

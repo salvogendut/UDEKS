@@ -9,6 +9,7 @@ import unittest
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'tools'))
 from native_clock_probe import clock_commands
+from build_graphical_example import check_capacity
 
 
 class ClockFace(unittest.TestCase):
@@ -21,6 +22,7 @@ class ClockFace(unittest.TestCase):
             '-o',str(lib)],check=True)
         cls.lib=ctypes.CDLL(str(lib))
         cls.lib.udeks_clock_face.argtypes=[ctypes.c_ubyte,ctypes.c_ubyte,
+                                          ctypes.c_uint,ctypes.c_ubyte,
                                           ctypes.POINTER(ctypes.c_ubyte)]
         cls.lib.udeks_clock_face.restype=ctypes.c_ubyte
 
@@ -28,10 +30,10 @@ class ClockFace(unittest.TestCase):
     def tearDownClass(cls):
         cls.tmp.cleanup()
 
-    def face(self,hour,minute):
+    def face(self,hour,minute,width=72,height=88):
         buf=(ctypes.c_ubyte*(43*8+2))(*([0xa5]*(43*8+2)))
         ptr=ctypes.cast(ctypes.byref(buf,1),ctypes.POINTER(ctypes.c_ubyte))
-        count=self.lib.udeks_clock_face(hour,minute,ptr)
+        count=self.lib.udeks_clock_face(hour,minute,width,height,ptr)
         self.assertEqual(buf[0],0xa5)
         self.assertEqual(buf[-1],0xa5)
         return count,bytes(buf)[1:-1]
@@ -79,8 +81,38 @@ class ClockFace(unittest.TestCase):
             self.assertEqual(count,0)
             self.assertEqual(cmd,bytes([0xa5])*(43*8))
 
+    def test_scaled_geometry_matches_oracle_and_stays_inside_client(self):
+        for width in (48,49,72,104,160,255,256,280,320):
+            for height in (48,49,88,120,170,200):
+                for hour,minute in ((0,0),(3,15),(6,30),(9,45),(23,59)):
+                    count,cmd=self.face(hour,minute,width,height)
+                    self.assertEqual(count,43)
+                    self.assertEqual(cmd,clock_commands(hour,minute,width,height))
+                    for offset in range(0,38*8,8):
+                        self.assertTrue(3<=cmd[offset+1]<width-3)
+                        self.assertTrue(15<=cmd[offset+2]<height-3)
+                        self.assertTrue(3<=cmd[offset+3]<width-3)
+                        self.assertTrue(15<=cmd[offset+4]<height-3)
+        self.assertNotEqual(self.face(3,15)[1],self.face(3,15,160,140)[1])
+
+    def test_invalid_geometry_is_rejected_atomically(self):
+        for width,height in ((0,88),(47,88),(321,88),(65535,88),(72,0),(72,47),(72,201)):
+            count,cmd=self.face(3,15,width,height)
+            self.assertEqual(count,0)
+            self.assertEqual(cmd,bytes([0xa5])*(43*8))
+
 
 class GraphicalBuilder(unittest.TestCase):
+    def test_capacity_checks_file_and_bss_independently(self):
+        image=bytearray(200)
+        image[10:12]=(180).to_bytes(2,'little')
+        image[12:14]=(50).to_bytes(2,'little')
+        check_capacity(image,230)
+        for capacity in (0,-1,199,229,65536):
+            with self.assertRaises(ValueError): check_capacity(image,capacity)
+        image[12:14]=bytes(2)
+        with self.assertRaises(ValueError): check_capacity(image,199)
+
     def test_rejects_invalid_names_and_duplicate_translation_units_before_build(self):
         for options in (['--name','../BAD'], ['--name','TOOLONGTOOLONG'],
                         ['--source','foo/x.c','--source','bar/x.c'],

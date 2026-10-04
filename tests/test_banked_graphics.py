@@ -93,6 +93,58 @@ class BankedGraphics(unittest.TestCase):
         self.create(4)
         self.assertEqual(self.scalar('init_calls'),2)  # never clear a live desktop
 
+    def test_resize_requires_new_minor_and_exactly_one_sizing_policy(self):
+        self.lib.test_admit(0)
+        payload=[1,10,0,10,72,88,0x0e]+list(b'CLOCK\0\0\0')
+        self.assertEqual(self.request(payload),22)
+        for flags in (0,6,0x18,0x1e,0x8e,0x0f):
+            payload[6]=flags
+            self.assertEqual(self.request(payload,**{'5':10}),22)
+        payload[6]=0x0e
+        self.assertEqual(self.request(payload,**{'5':10}),0)
+        self.assertEqual((c.c_ubyte*5).in_dll(self.lib,'test_flags')[self.r[11]],0x0e)
+
+    def geometry(self,handle,width,height):
+        return self.request([3,handle,width&255,width>>8,height],**{'5':10})
+
+    def test_geometry_is_owned_coalesced_and_does_not_consume_pending_click(self):
+        a=self.create();b=self.create(4)
+        self.lib.test_resize(a,280,170);self.lib.test_click(a,25,33)
+        self.assertEqual(self.geometry(a,104,133),22)
+        self.scalar('task',3)
+        for _ in range(2):
+            self.assertEqual(self.geometry(a,104,133),0)
+            self.assertEqual(self.r[11],7)
+            self.assertEqual(self.r[14],2)
+            self.assertEqual(bytes(self.r[18:21]),bytes((24,1,170)))
+        self.assertEqual(self.geometry(a,280,170),0)
+        self.assertEqual(bytes(self.r[14:21]),bytes((3,25,0,33,24,1,170)))
+        self.assertEqual(self.geometry(a,280,170),0)
+        self.assertEqual(self.r[14],1)
+        self.lib.test_move(a,10,20)
+        self.assertEqual(self.geometry(a,280,170),0)
+        self.assertEqual(self.r[14],1) # pure move does not ask the app to redraw
+        self.lib.test_resize(a,90,100);self.lib.test_resize(a,120,150)
+        self.assertEqual(self.geometry(a,280,170),0)
+        self.assertEqual(bytes(self.r[18:21]),bytes((120,0,150)))
+        self.scalar('task',4)
+        self.assertEqual(self.geometry(b,104,133),0)
+        self.assertEqual(self.r[14],1) # peer never resized
+
+    def test_old_events_and_closed_new_events_keep_their_contract(self):
+        a=self.create();self.lib.test_resize(a,140,150)
+        self.lib.test_click(a,5,20)
+        self.assertEqual(self.request([3,a]),0)
+        self.assertEqual(self.r[11],4)
+        self.assertEqual(bytes(self.r[14:18]),bytes((3,5,0,20)))
+        self.assertEqual(self.request([4,a]),0)
+        self.assertEqual(self.geometry(a,104,133),0)
+        self.assertEqual(self.r[11],7)
+        self.assertEqual(self.r[14],0)
+        self.assertEqual(self.request([3,a]),0)
+        self.assertEqual(self.r[11],4)
+        self.assertEqual(self.r[14],0)
+
     def test_present_rejects_bad_ranges_without_writes(self):
         h=self.create()
         for pointer,count in ((0x22ff,1),(0x3500,0),(0x34f9,1),(0xfffe,1),(0x2300,49)):

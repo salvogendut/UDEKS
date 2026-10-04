@@ -10,12 +10,23 @@ from o65_to_udex import pack_o65
 
 ROOT=Path(__file__).resolve().parents[1]
 
+def check_capacity(image,capacity):
+    if capacity is not None:
+        allocation=sum(int.from_bytes(image[n:n+2],'little') for n in (10,12))
+        if not 0<capacity<=65535 or max(len(image),allocation)>capacity:
+            raise ValueError('executable file or image+BSS exceeds the requested allocation')
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, default=ROOT/'build/generic-apps/example')
     parser.add_argument('--source', type=Path, action='append',
                         help='C translation unit; repeat for a multi-file program')
     parser.add_argument('--name', default='HELLO', help='portable disk basename')
+    parser.add_argument('--graphics-abi', type=int, choices=(9,10), default=9,
+                        help='minimum graphics request ABI; 10 enables resize events')
+    parser.add_argument('--static-locals', action='store_true',
+                        help='cc65 private static locals; only for nonrecursive programs')
+    parser.add_argument('--capacity',type=int,help='require both file and image+BSS to fit this many bytes')
     parser.add_argument('--export', action='append', default=[], dest='exports',
                         help='additional linker symbol to retain in the map')
     args=parser.parse_args()
@@ -33,6 +44,7 @@ def main():
     def run(*args): subprocess.run(args, cwd=ROOT, check=True)
     for label,source in zip(labels,sources):
         run('cc65','-t','none','--cpu','6502','--standard','c99','-Os',
+            *(['--static-locals'] if args.static_locals else []),
             '-I','include','-I','user/include',
             '-o',str(out/(label+'.s')),str(source.resolve()))
     objects=[]
@@ -40,13 +52,15 @@ def main():
                       ('request','user/lib/graphics_request.s'),
                       *((label,out/(label+'.s')) for label in labels)):
         obj=out/(name+'.o'); objects.append(str(obj))
-        run('ca65','--cpu','6502','-o',str(obj),str(path))
+        run('ca65','--cpu','6502','-D','UDEKS_GFX_ABI='+str(args.graphics_abi),
+            '-o',str(obj),str(path))
     stem=labels[0]
     options=[option for symbol in dict.fromkeys(exports) for option in ('-u',symbol)]
     run('cl65','-t','none','--cpu','6502','-C','cfg/8502-reloc-app.cfg',
         *options,'-m',str(out/(stem+'.map')),'-o',str(out/(stem+'.o65')),*objects)
     entry=map_exports((out/(stem+'.map')).read_text())['_udeks_program_entry'][0]
     image=pack_o65((out/(stem+'.o65')).read_bytes(), entry)
+    check_capacity(image,args.capacity)
     filename=args.name.upper()+'.BIN'
     (out/filename).write_bytes(image)
     print('Independent',filename+':',len(image),'bytes')

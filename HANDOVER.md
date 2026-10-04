@@ -8,6 +8,25 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 ## Current feature handover — 2026-10-04
 
+Resize checkpoint: prior native-clock/panel/D81 work committed and pushed as
+`9f2e994`. User authorizes the resize work AND subsequent native-wave/four-slot
+cutover sequence on this branch. UTRQ 0.10 is now implemented: explicit sizing
+flags and seven-byte EVENT (client-acknowledged dimensions, pending-click
+preservation). Version 0.9 remains byte-compatible. Native NCLOCK is 2,770 file /
+2,180 image / 369 BSS and fits both allocations. Pure C scaling is app-owned.
+Graphics uses an absolute common-record array binding to fit its old segment;
+no reservation moves. Foreground native fallback also handles the legacy
+staging-size rejection before the native loader's independent validation.
+
+Fresh `build/native-clients/resize-demo.{d64,d71,d81}`: grow/shrink/regrow both
+native clocks, date, drag, targeted Ctrl+C, close/reload and legacy coexistence.
+VICE three-format drawing oracle and code equality pass; unmodified 1986
+D64/1571 and D81/1581 native mouse/input pass. Exact evidence is preserved in
+`bench/{artifacts,results}/2026-10-04-native-resize`. Physical resize feedback
+remains due. Next: bounded generic retained paths and task-safe worker requests
+for native wave, then measured four-native allocations and default cutover.
+Do not remove old four-app support or call this entire migration complete.
+
 Panel/D81 follow-up: user reports the native clock works in 1986, but the app
 panel repeats each row's first character and D81 does not boot. Fixed the
 panel's anonymous backward branch (it jumped into case conversion instead of

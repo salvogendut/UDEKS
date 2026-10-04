@@ -55,6 +55,44 @@ static void native_clock_canvas(void) {
     require(!memcmp(machine->mem.ram+0xa1e0,machine->mem.ram+0x16000,8000),
             "native clock bitmap/shadow mismatch");
 }
+static void native_clock_geometry(unsigned slot,unsigned width,unsigned height) {
+    for(unsigned n=0;n<10000;++n) {
+        if(word(native_clock_address(slot,UDEKS_NATIVE_CLOCK_WIDTH))==width &&
+           byte(native_clock_address(slot,UDEKS_NATIVE_CLOCK_HEIGHT))==height &&
+           !memcmp(machine->mem.ram+native_clock_address(slot,UDEKS_NATIVE_CLOCK_COMMANDS),
+                   machine->mem.ram+0x1cd00+slot*384,344)) break;
+        frames(1);
+    }
+    printf("clock task %u geometry observed %ux%u expected %ux%u\n",slot+3,
+        word(native_clock_address(slot,UDEKS_NATIVE_CLOCK_WIDTH)),
+        byte(native_clock_address(slot,UDEKS_NATIVE_CLOCK_HEIGHT)),width,height);fflush(stdout);
+    require(word(native_clock_address(slot,UDEKS_NATIVE_CLOCK_WIDTH))==width &&
+            byte(native_clock_address(slot,UDEKS_NATIVE_CLOCK_HEIGHT))==height,
+            "native clock geometry not acknowledged");
+    native_clock_canvas();
+    printf("clock task %u geometry %ux%u\n",slot+3,width,height);fflush(stdout);
+}
+static void native_clock_resize(unsigned slot,unsigned x,unsigned y,unsigned width,unsigned height,
+                                unsigned new_width,unsigned new_height) {
+    pointer_to(x+width+9,y+height+37);
+    joyports_mouse_button(&machine->joyports,0,false,true);
+    for(unsigned n=0;n<10000 && !byte(0xf248);++n) frames(1);
+    require(byte(0xf248),"native resize did not start");
+    pointer_to(x+new_width+11,y+new_height+39);
+    /* Input and WM polls are separate: wait for the outline to sample the
+     * final mouse position before releasing, not just for the pointer to
+     * arrive. Allow the native 1351's documented one-pixel quantization. */
+    unsigned actual_width=word(0xf1d8)-12-word(0xf249)+1;
+    unsigned actual_height=byte(0xf1da)-40-byte(0xf24b)+1;
+    if(actual_width<48) actual_width=48;
+    if(actual_height<48) actual_height=48;
+    require(abs((int)actual_width-(int)new_width)<=1 &&
+            abs((int)actual_height-(int)new_height)<=1,"native pointer resize endpoint wrong");
+    wait_byte(0xf24c,actual_width,"outline did not sample resize endpoint");
+    joyports_mouse_button(&machine->joyports,0,false,false);
+    wait_byte(0xf248,0,"native resize did not finish");
+    native_clock_geometry(slot,actual_width,actual_height);
+}
 static void native_clock_smoke(void) {
     wait_byte(0xf3e0,2,"startup incomplete");
     native_clock_panel_row(1,"RUNNING");native_clock_panel_row(2,"NONE");
@@ -68,6 +106,13 @@ static void native_clock_smoke(void) {
     native_clock_time(1,3,15);
     window_gesture(146,96,44,96); /* second clock from 124,50 to 22,50 */
     native_clock_canvas();
+    /* Real 1351 gestures on the lower-right grip. Grow/shrink independently;
+     * move/resize coordinates include the hardware sprite bias (12,40). */
+    native_clock_resize(1,22,50,72,88,126,130);
+    native_clock_geometry(0,72,88);
+    native_clock_resize(1,22,50,126,130,48,48);
+    native_clock_resize(1,22,50,48,48,126,130);
+    native_clock_resize(0,124,50,72,88,180,140);
     c128_key_event(machine,SDL_SCANCODE_LCTRL,true);key(SDL_SCANCODE_C);
     c128_key_event(machine,SDL_SCANCODE_LCTRL,false);idle();
     wait_byte(0xf246,1,"Ctrl+C must leave the background peer");
@@ -105,4 +150,5 @@ static void native_clock_smoke(void) {
     require(!byte(0xf11b),"lifecycle canary failed");
     puts("PASS native clock: both slots, date, native drag/close, Ctrl+C, reload, four windows, console, guards, bitmap");
     puts("PASS running panel: header, complete names, digit suffix, updates, cleared rows, attributes");
+    puts("PASS native resize: independent dimensions, minimum, regrow, native 1351 input");
 }
