@@ -11,6 +11,10 @@ sys.path.insert(0,str(ROOT/'tools'))
 from native_wave_probe import wave_paths
 from native_worker_probe import expected_surface
 
+class Projection(c.Structure):
+    _fields_=[(n,c.c_uint) for n in ('width','used','previous_x','previous_y')]+[
+        (n,c.c_ubyte) for n in ('height','axis','strip','point','done')]
+
 
 class NativeWave(unittest.TestCase):
     @classmethod
@@ -21,6 +25,8 @@ class NativeWave(unittest.TestCase):
         cls.lib=c.CDLL(str(path))
         cls.lib.udeks_wave_paths.argtypes=[c.POINTER(c.c_byte),c.c_uint,c.c_ubyte,c.POINTER(c.c_ubyte)]
         cls.lib.udeks_wave_paths.restype=c.c_uint
+        cls.lib.udeks_wave_paths_begin.argtypes=[c.POINTER(Projection),c.c_uint,c.c_ubyte]
+        cls.lib.udeks_wave_paths_step.argtypes=[c.POINTER(Projection),c.POINTER(c.c_byte),c.POINTER(c.c_ubyte)]
 
     @classmethod
     def tearDownClass(cls): cls.tmp.cleanup()
@@ -57,3 +63,23 @@ class NativeWave(unittest.TestCase):
         self.assertEqual(source.count('worker_request()'),1)
         self.assertIn('else if(event==UDEKS_GFX_RESIZED)',source)
         self.assertIn('UDEKS_GFX_PATHS',source)
+        self.assertIn('gfx_yield();',source)
+
+    def test_projection_is_bounded_restartable_and_identical(self):
+        state=Projection(); buf=(c.c_ubyte*1128)()
+        samples=(c.c_byte*525).from_buffer_copy(expected_surface())
+        self.assertEqual(self.lib.udeks_wave_paths_begin(c.byref(state),256,146),1)
+        for _ in range(15): self.lib.udeks_wave_paths_step(c.byref(state),samples,buf)
+        self.assertFalse(state.done)
+        self.assertEqual(self.lib.udeks_wave_paths_begin(c.byref(state),72,88),1)
+        calls=0
+        while not state.done:
+            before=state.used
+            self.lib.udeks_wave_paths_step(c.byref(state),samples,buf)
+            # Four vertices, one or two strip headers, plus final padding.
+            self.assertLessEqual(state.used-before,16)
+            calls+=1
+        self.assertEqual(calls,137) # 548 points / four per cooperative slice
+        self.assertEqual(bytes(buf),wave_paths(72,88)[0])
+        self.assertEqual(self.lib.udeks_wave_paths_step(c.byref(state),samples,buf),1)
+        self.assertEqual(bytes(buf),wave_paths(72,88)[0])

@@ -60,10 +60,12 @@ static void closed(unsigned char handle)
 #pragma rodata-name(push, "GRAPHICSCODE")
 /* Launching a native console task must not switch on or clear the VIC.
  * Only CREATE asks for a desktop, after this module has been installed. */
+#pragma code-name(push, "GRAPHICSPATHS")
 static unsigned char desktop(void)
 {
     return udeks_vic_graphics_is_active()?0:udeks_vic_graphics_initialize();
 }
+#pragma code-name(pop)
 /* Runs exactly once after the base module copy. Preserve the pending launch
  * name: the private eight-byte transport borrows request payload bytes 0..9. */
 static void complete_install(void)
@@ -147,7 +149,9 @@ void udeks_banked_graphics_request(void)
                 /* Client acknowledges its last drawn size. Changes coalesce;
                  * moves alone do not request new client rendering. A resize
                  * never consumes a queued click. No per-client shadow state. */
-                if(source!=ww || count!=wh) { P[0]=2; goto done; }
+                if((source!=ww || count!=wh) && !udeks_window_is_dragging(handle)) {
+                    P[0]=2; goto done;
+                }
             }
             click=udeks_window_take_click(handle);
             P[0]=click?3:1;

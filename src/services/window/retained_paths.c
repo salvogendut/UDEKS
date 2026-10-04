@@ -21,10 +21,12 @@ static unsigned int cursor,remaining;
 static unsigned char byte_index,bad,draw;
 static int x,y,old_x,old_y;
 
+#pragma code-name(push, "CODE")
 unsigned int __fastcall__ udeks_retained_address(unsigned char index)
 {
     return index?0xcb00u:0xc600u;
 }
+#pragma code-name(pop)
 #pragma code-name(push, "GRAPHICSCODE")
 static unsigned char next_byte(void)
 {

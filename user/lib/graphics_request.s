@@ -4,6 +4,9 @@
 UDEKS_GFX_ABI = 9
         .endif
         .export _gfx_request, _gfx_sleep
+        .if UDEKS_GFX_ABI >= 12
+        .export _gfx_yield
+        .endif
         ; Absolute data bindings carry no storage or relocation into an app.
         .export _udeks_graphics_record = $f359
         .export _udeks_time_snapshot = $f200
@@ -30,6 +33,13 @@ _gfx_sleep:
         lda #0
         sta $f368
         lda #13
+        bne request
+        .if UDEKS_GFX_ABI >= 12
+_gfx_yield:
+        lda #0
+        sta $f363
+        lda #10
+        .endif
 request:
         sta $f360
         ldx #5

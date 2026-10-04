@@ -22,6 +22,8 @@ static unsigned char origin_y;
 static unsigned int widths[5];
 static unsigned char heights[5];
 unsigned char test_flags[5];
+unsigned char test_dragging;
+unsigned char udeks_window_is_dragging(unsigned char h) { return test_dragging==h; }
 
 void test_reset(void)
 {
@@ -36,7 +38,7 @@ void test_reset(void)
     memset(widths,0,sizeof(widths));memset(heights,0,sizeof(heights));
     udeks_banked_graphics_installed=0;
     test_task=3; test_state[0]=test_state[1]=0; test_reap_busy=0;
-    test_repaints=test_writes=test_draws=0; click_handle=0;
+    test_repaints=test_writes=test_draws=0; click_handle=test_dragging=0;
     test_load_error=test_activate_error=test_selector=0;
     test_active=test_init_calls=test_init_error=0;
     memset(test_path,0,sizeof(test_path));
@@ -121,6 +123,7 @@ unsigned char udeks_window_get_geometry(unsigned char h,unsigned int *x,unsigned
 }
 const struct udeks_window_click *udeks_window_take_click(unsigned char h)
 {
+    if(test_dragging) return 0;
     if(click_handle!=h) return 0;
     click_handle=0;return &pending;
 }

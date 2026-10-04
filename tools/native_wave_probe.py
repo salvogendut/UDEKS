@@ -183,9 +183,15 @@ def main():
         pointer(x,y,0); sp.wait_for_byte(port,0xf248,0,time.monotonic()+120)
         sp.write_kernel_blocks(port,patched); patched.clear()
     def resize(handle,x,y,w,h,nw,nh):
+        before=capture('resize-before',address('presents'),1)[0]
         pointer(x+w-3,y+h-3,0); sp.wait_for_byte(port,0xf24d,0,time.monotonic()+90)
         pointer(x+w-3,y+h-3,1); sp.wait_for_byte(port,0xf248,handle,time.monotonic()+90)
         pointer(x+nw-1,y+nh-1,1); sp.wait_for_byte(port,0xf24c,nw&255,time.monotonic()+90)
+        # Keep the outline held long enough for several task dispatches.
+        # Neither projection publication nor worker leases may advance.
+        time.sleep(.5)
+        if capture('resize-held',address('presents'),1)[0]!=before:
+            raise AssertionError('outline drag published wave geometry')
         release(x+nw-1,y+nh-1)
     def canvas(tag):
         deadline=time.monotonic()+120
@@ -224,9 +230,8 @@ def main():
         if verify('moved-wave',176,112)!=initial: raise AssertionError('move reprojected app geometry')
         if counter('engine-moved')!=after: raise AssertionError('move involved Z80')
         resize(handle,44,44,176,112,256,146)
-        # EVENT reports coalesced current geometry, including outline sizes
-        # observed while the resize is held. Intermediate sizes are legal.
-        if verify('resized-wave',256,146)<=initial: raise AssertionError('resize did not reproject')
+        if verify('resized-wave',256,146)!=initial+1:
+            raise AssertionError('resize must publish exactly once on release')
         if counter('engine-resized')!=after: raise AssertionError('resize recomputed the height field')
         resize(handle,44,44,256,146,48,48); verify('minimum-wave',48,48)
         resize(handle,44,44,48,48,176,112); verify('restored-wave',176,112)

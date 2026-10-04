@@ -207,7 +207,7 @@ def glyph_overlay_images(assets, paths, kernel, delivery):
 
 def glyph_overlay_entrypoints(segments,exports):
     start,end,_=segments['GRAPHICSPATHS']
-    for name in ('_udeks_retained_address','_udeks_retained_present','_udeks_retained_paths_paint'):
+    for name in ('_udeks_retained_present','_udeks_retained_paths_paint'):
         if name not in exports or not start<=exports[name][0]<=end:
             raise ValueError('paths entry is outside executable code: '+name)
 

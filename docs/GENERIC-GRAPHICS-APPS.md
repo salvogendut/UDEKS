@@ -162,6 +162,17 @@ keeps NCLOCK separate from the production apps until full native migration.
 
 ### Retained paths and native-wave checkpoint (2026-10-04)
 
+Resize follow-up: outline geometry no longer generates RESIZED events while
+the handle is held. NWAVE projects four vertices per cooperative YIELD and
+publishes only after rechecking the final size. A later resize restarts that
+private projection; partial streams never reach the service. The D64 VICE
+probe holds the outline, checks that no submission occurs, then requires
+exactly one submission on release. The complete grid/worker/clock/cleanup
+regression passes, as do 1,149 host tests and both placement gates. Evidence
+for this working checkpoint is in `build/native-clients/resize-release-vice-d64`.
+Dense retained rasterization on release is still synchronous; this does not
+claim a general renderer latency fix.
+
 `make native-wave` builds NWAVE.BIN without relinking the OS: 2,221 file bytes,
 1,741 image bytes and 1,681 BSS bytes. It fits the larger native allocation;
 it does not fit the smaller one. The generic loader makes that decision; there

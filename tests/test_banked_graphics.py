@@ -146,6 +146,19 @@ class BankedGraphics(unittest.TestCase):
         self.assertEqual(self.r[11],4)
         self.assertEqual(self.r[14],0)
 
+    def test_outline_sizes_do_not_trigger_resize_or_consume_a_click(self):
+        h=self.create(); self.scalar('dragging',h)
+        self.lib.test_click(h,25,33)
+        for w,hgt in ((140,150),(180,180),(240,170)):
+            self.lib.test_resize(h,w,hgt)
+            self.assertEqual(self.geometry(h,104,133),0)
+            self.assertEqual(self.r[14],1)
+        self.scalar('dragging',0)
+        self.assertEqual(self.geometry(h,104,133),0)
+        self.assertEqual(self.r[14],2)
+        self.assertEqual(self.geometry(h,240,170),0)
+        self.assertEqual(bytes(self.r[14:18]),bytes((3,25,0,33)))
+
     def test_present_rejects_bad_ranges_without_writes(self):
         h=self.create()
         for pointer,count in ((0x22ff,1),(0x3500,0),(0x34f9,1),(0xfffe,1),(0x2300,49)):

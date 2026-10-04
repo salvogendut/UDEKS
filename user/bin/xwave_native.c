@@ -8,6 +8,7 @@
 extern volatile unsigned char udeks_graphics_record[38];
 extern unsigned char __fastcall__ gfx_request(unsigned char operation);
 extern void gfx_sleep(void);
+extern void gfx_yield(void);
 #define R udeks_graphics_record
 #define P (udeks_graphics_record+14)
 signed char native_wave_samples[UDEKS_WAVE_SAMPLES];
@@ -16,6 +17,7 @@ unsigned char native_wave_rows,native_wave_presents,native_wave_failure;
 unsigned int native_wave_width;
 unsigned char native_wave_height;
 static unsigned char handle;
+static struct udeks_wave_projection projection;
 
 unsigned char udeks_graphical_main(void)
 {
@@ -42,13 +44,21 @@ unsigned char udeks_graphical_main(void)
                 native_wave_samples[(unsigned int)native_wave_rows*25u+i]=udeks_worker_output[i];
             ++native_wave_rows;
         } else if(event==UDEKS_GFX_RESIZED) {
-            if(udeks_wave_paths(native_wave_samples,width,height,native_wave_paths)!=UDEKS_WAVE_PATH_BYTES)
-                return 4;
-            P[1]=handle;
-            P[2]=(unsigned int)native_wave_paths; P[3]=(unsigned int)native_wave_paths>>8;
-            P[4]=UDEKS_WAVE_PATH_BYTES&255u; P[5]=UDEKS_WAVE_PATH_BYTES>>8;
-            if(gfx_request(UDEKS_GFX_PATHS)) { native_wave_failure=5; return 5; }
-            native_wave_width=width; native_wave_height=height; ++native_wave_presents;
+            if(width!=projection.width || height!=projection.height)
+                if(!udeks_wave_paths_begin(&projection,width,height)) return 4;
+            /* Recheck committed geometry on every iteration, including the
+             * one that publishes. A drag pauses work; a new size restarts it. */
+            if(projection.done) {
+                P[1]=handle;
+                P[2]=(unsigned int)native_wave_paths; P[3]=(unsigned int)native_wave_paths>>8;
+                P[4]=UDEKS_WAVE_PATH_BYTES&255u; P[5]=UDEKS_WAVE_PATH_BYTES>>8;
+                if(gfx_request(UDEKS_GFX_PATHS)) { native_wave_failure=5; return 5; }
+                native_wave_width=width; native_wave_height=height; ++native_wave_presents;
+            } else {
+                udeks_wave_paths_step(&projection,native_wave_samples,native_wave_paths);
+                gfx_yield();
+                continue;
+            }
         }
         gfx_sleep();
     }
