@@ -66,7 +66,7 @@ class UserBoundaryTests(unittest.TestCase):
         self.assertIn("udeks_wait_foreground", source)
         self.assertIn("udeks_prompt", source)
         self.assertIn("USH_STATE = UDEKS_USH_STATE_READY", source)
-        for command in ('*)"cd"', '*)"echo"', '*)"help"', '*)"pwd"', '*)"clear"', '*)"xinit"', '*)"xclock"', '*)"xwave"'):
+        for command in ('*)"cd"', '*)"echo"', '*)"help"', '*)"pwd"', '*)"clear"', '*)"xinit"'):
             self.assertIn(command, source)
         self.assertIn("CWD_KIND = CWD_ROOT", source)
         self.assertIn("submit_request(UDEKS_TREQ_OP_GETCWD, 0, 0)", source)

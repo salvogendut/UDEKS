@@ -657,6 +657,12 @@ def validate_managed_app(executable: bytes, base: int, capacity: int = 0x0A00) -
             raise ValueError('managed callback must JMP inside its own image')
 
 
+def validate_native_app(executable: bytes) -> None:
+    from native_app_layout import fitting_allocations
+    if not fitting_allocations(executable):
+        raise ValueError('native executable does not fit any allocation including its stack')
+
+
 def validate_banked_app(executable: bytes, base: int, capacity: int) -> None:
     if len(executable) < 17 or executable[:8] != b'UDEX\0\1\1\0':
         raise ValueError('invalid banked application header')
@@ -861,16 +867,24 @@ def build_image(
         install_prg_file(image, "DF.BIN", sysinfo, file_type=0x81)
     for name, executable, base in (("XCLOCK", xclock, 0x0200), ("XWAVE", xwave, 0x1200)):
         if executable:
-            validate_managed_app(executable, base)
+            if executable[5:6] == b'\x02':
+                validate_native_app(executable)
+            else:
+                validate_managed_app(executable, base) # archived fixture disks
             install_prg_file(image, name+'.BIN', executable, file_type=0x81)
     if xcalc:
-        if xcalc[7:8] == b'\x02':
+        if xcalc[5:6] == b'\x02':
+            validate_native_app(xcalc)
+        elif xcalc[7:8] == b'\x02':
             validate_managed_app(xcalc, 0x0200, 0x1000)  # historical fixture disks
         else:
             validate_banked_app(xcalc, 0x2300, 0x1200)
         install_prg_file(image, "XCALC.BIN", xcalc, file_type=0x81)
     if xdraw:
-        validate_banked_app(xdraw, 0x3500, 0xB00)
+        if xdraw[5:6] == b'\x02':
+            validate_native_app(xdraw)
+        else:
+            validate_banked_app(xdraw, 0x3500, 0xB00)
         install_prg_file(image, "XDRAW.BIN", xdraw, file_type=0x81)
     names = {'SCHEDOVR', 'USH', 'RC', 'HELLO', 'FREE', 'DF', 'XCLOCK', 'XWAVE', 'XCALC', 'XDRAW'}
     for name, executable in commands:

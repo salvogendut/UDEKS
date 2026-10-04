@@ -11,6 +11,7 @@
         .setcpu "6502"
         .macpack longbranch
         .include "banked-bindings.inc"
+        .include "native_layout.inc"
         .export banked_entry, banked_owned, banked_headers, banked_end
         .segment "CODE"
 REQUEST = $f359
@@ -41,7 +42,7 @@ banked_entry:
         and #$1f
         sec
         sbc #3
-        cmp #2
+        cmp #NATIVE_CLIENTS
         jcs invalid
         sta slot
         ; Both launcher child and selected native task must be FREE. Reap is
@@ -50,9 +51,8 @@ banked_entry:
         ldy #>(BANK0_SLOTS+1)
         jsr read_address
         lda selector
-        cmp #$63
-        jeq query_state
-        cmp #$64
+        and #$e0
+        cmp #$60
         jeq query_state
         ldx #8                      ; task 2 (state-base + slot stride)
         jsr MEMORY_GATE
@@ -172,7 +172,7 @@ graphics_source:
         inc graphics_source+2
         inc install_page+1
         lda install_page+1
-        cmp #$12
+        cmp #$13
         bne install_page
         lda #0
         rts
@@ -182,11 +182,14 @@ graphics_source:
 ; I/O/invalid requests stop immediately. The caller's request stays intact
 ; except for RESULT on success, just as a selected-slot native admission.
 auto_load:
-        lda #3
-        sta auto_selector
+        lda #0
+        sta auto_cursor
         lda #8
         sta auto_error
 auto_next:
+        ldx auto_cursor
+        lda auto_order,x
+        sta auto_selector
         lda auto_selector
         jsr banked_entry
         bne auto_failed
@@ -219,10 +222,12 @@ auto_fixed_check:
         lda header+8
         bne auto_bad
         lda header+9
-        cmp #$23
+        ldx #NATIVE_CLIENTS-1
+auto_fixed_base:
+        cmp bases,x
         beq auto_continue
-        cmp #$35
-        beq auto_continue
+        dex
+        bpl auto_fixed_base
 auto_bad:
         lda #8
         rts
@@ -234,9 +239,9 @@ auto_resource:
 auto_remember:
         sta auto_error
 auto_continue:
-        inc auto_selector
-        lda auto_selector
-        cmp #5
+        inc auto_cursor
+        lda auto_cursor
+        cmp #NATIVE_CLIENTS
         bcc auto_next
         lda auto_error
 auto_return:
@@ -247,6 +252,8 @@ auto_success:
         lda #0
         rts
 auto_selector: .byte 0
+auto_cursor: .byte 0
+auto_order: .byte 6,4,5,3
 auto_error: .byte 0
 auto_fixed_header: .byte "UDEX",0,1,1,0
         .assert * <= $2000, error, "banked access reaches Z80 code"
@@ -404,9 +411,6 @@ validate:
         jcc bad_image
 :       lda base
         sta header_read+2
-        sta jump_read+2
-        sta target_lo+2
-        sta target_hi+2
         ldx #15
 header_read:
         lda $ff00,x
@@ -426,10 +430,8 @@ magic:  lda header,x
         cmp #1
         jne bad_image
         lda header+7
-        beq :+
-        cmp #2                      ; retain old managed load-only validation
         jne bad_image
-:       lda header+8
+        lda header+8
         jne bad_image
         lda header+5
         cmp #2
@@ -491,7 +493,8 @@ length_ok:
         clc
         adc base
         jcs no_memory
-        cmp limit
+        ldx slot
+        cmp stack_pages,x           ; private stack is inside the allocation
         jcc allocation_ok
         jne no_memory
         lda allocation
@@ -511,47 +514,6 @@ allocation_ok:
         cmp header+10
         jcs bad_image
 entry_ok:
-        lda header+7
-        jeq valid_image
-        lda header+14
-        jne bad_image
-        lda header+15
-        cmp base
-        jne bad_image
-        lda header+11
-        bne :+
-        lda header+10
-        cmp #19
-        jcc bad_image
-:       ldx #0
-jump_read:
-        lda $ff10,x
-        cmp #$4c
-        jne bad_image
-target_lo:
-        lda $ff11,x
-        sta target
-target_hi:
-        lda $ff12,x
-        cmp base
-        jcc bad_image
-        bne :+
-        lda target
-        cmp #18
-        jcc bad_image
-        lda base
-:       cmp image_end_hi
-        bcc jump_ok
-        jne bad_image
-        lda target
-        cmp header+10
-        jcs bad_image
-jump_ok:
-        inx
-        inx
-        inx
-        cpx #18
-        bne jump_read
 valid_image:
         lda header+5
         cmp #2
@@ -832,20 +794,11 @@ activate:
         jeq invalid
         ldx slot
         lda zero_pages,x
-        sta clear_zero+2
         sta initial_context+7
-        clc
-        adc #1
-        sta clear_stack+2
+        lda hardware_pages,x
         sta initial_context+9
-        sta stack_marker+2
-        sta return_low+2
-        sta return_high+2
         lda stack_pages,x
         sta guard_low+2
-        clc
-        adc #2
-        sta stack_pointer+1
         sta guard_high+2
         sta exit_copy+2
         sta return_page
@@ -855,37 +808,20 @@ activate:
         sta return_signature+1
         lda #<($c0+return_stuck-return_code)
         sta return_stuck+1
-        lda zero_pages,x
-        sta stack_pointer_store+2
-        sta stack_pointer_high_store+2
-        ldy #0
-        tya
-clear_pages:
-clear_zero:  sta $d500,y
-clear_stack: sta $d600,y
-        iny
-        bne clear_pages
+        lda #<BANK0_PAGES_INIT
+        ldy #>BANK0_PAGES_INIT
+        jsr read_address
+        lda #$20                    ; JSR fixed private bank-0 initializer
+        sta BANK0_ACCESS
+        ldx slot
+        jsr MEMORY_GATE
         lda #$a5
-stack_marker: sta $d600
         ldy #15
 guards:
 guard_low: sta $8a00,y
 guard_high: sta $8cb0,y
         dey
         bpl guards
-        lda #$b0
-        ldy #2
-stack_pointer_store:
-        sta $d500,y
-        iny
-stack_pointer:
-        lda #$8c
-stack_pointer_high_store:
-        sta $d500,y
-        lda #$bf
-return_low: sta $d6fe
-        lda return_page
-return_high: sta $d6ff
         ldy #return_code_end-return_code-1
 copy_exit:
         lda return_code,y
@@ -1026,10 +962,10 @@ return_code_end:
 signature: .byte "UTRQ",0,8
 prefix: .byte "/bin/"
 udex: .byte "UDEX",0
-bases: .byte $23,$35
-limits: .byte $35,$40
-banked_owned: .byte 0,0
-banked_headers: .res 32,0
+bases: native_bases
+limits: native_limits
+banked_owned: .res NATIVE_CLIENTS,0
+banked_headers: .res 16*NATIVE_CLIENTS,0
 saved_request: .res 38,0
 header: .res 16,0
 selector: .byte 0
@@ -1040,14 +976,14 @@ limit: .byte 0
 file_size: .word 0
 allocation: .byte 0
 image_end_hi: .byte 0
-target: .byte 0
 remaining: .word 0
 slot_offset: .byte 0
 live_state: .byte 0
 return_page: .byte 0
-zero_pages: .byte $d5,$d7
-stack_pages: .byte $8a,$8d
-context_offsets: .byte 32,43
+zero_pages: native_zero_pages
+hardware_pages: native_hardware_pages
+stack_pages: native_stacks
+context_offsets: .byte 32,43,54,65
 initial_context: .byte 0,0,0,$24,$fd,0,0,$d5,1,$d6,1
 banked_end:
         .assert banked_end <= $e000, error, "banked loader reaches storage state"

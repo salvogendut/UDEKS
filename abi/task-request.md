@@ -171,6 +171,13 @@ open handle. File STAT still returns `ENOSYS` (no invented byte sizes).
 
 ## Deferred root-session control (0.7)
 
+Since the four-native-client cutover (2026-10-05), only desktop `1` and
+engine `4` are implemented. Application IDs `2`, `3`, `5`, `6` are retired
+and return `ENOSYS` without queuing or changing a live app. Generic `EXEC`
+launches a filename; the session owns instance jobs and name-based stop.
+The original numeric assignments below are retained for historical decoding,
+not as an alternate way to launch the new native applications.
+
 `CONTROL`: descriptor/flags `0`, count exactly `3`, payload `[target, action,
 background]`. Targets: desktop `1`, clock `2`, wave `3`, engine `4`, calculator
 `5`, drawing `6` (the latter two added by the calculator/four-app increments).

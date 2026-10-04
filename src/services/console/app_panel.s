@@ -1,6 +1,6 @@
 ; SPDX-License-Identifier: GPL-3.0-or-later
 ; Compact VDC running-application panel. Kept in the high-memory module so
-; APP1 and APP2 remain entirely available to loadable graphical programs.
+; Four native instance names remain data, never a resident application list.
 
         .setcpu "6502"
         .export _udeks_console_app_panel_initialize
@@ -14,8 +14,6 @@
 
 CONSOLE_STATUS  = $f070
 VIC_STATUS      = $f1b0
-XCLOCK_STATUS   = $f220
-XWAVE_STATUS    = $f260
 APP_MASK        = CONSOLE_STATUS+19
 APP_UPDATES_LO  = CONSOLE_STATUS+20
 APP_UPDATES_HI  = CONSOLE_STATUS+21
@@ -25,6 +23,7 @@ panel_buffer:   .res 11
 panel_row:      .res 1
 panel_mask:     .res 1
 panel_slot:     .res 1
+panel_client:   .res 1
 
         .segment "MODULERODATA"
 panel_screen_lo: .byte <$04b1, <$0501, <$0551, <$05a1, <$05f1, <$0641, <$0691, <$06e1, <$0731
@@ -34,8 +33,7 @@ panel_attr_hi:   .byte >$0cb1, >$0d01, >$0d51, >$0da1, >$0df1, >$0e41, >$0e91, >
 panel_title:     .byte 18,21,14,14,9,14,7,0
 panel_none:      .byte 14,15,14,5,0
 panel_xinit:     .byte 24,9,14,9,20,0
-panel_xclock:    .byte 24,3,12,15,3,11,0
-panel_xwave:     .byte 24,23,1,22,5,0
+panel_bits:      .byte 2,4,8,16
 
         .segment "MODULECODE"
 _udeks_console_app_panel_initialize:
@@ -44,35 +42,23 @@ _udeks_console_app_panel_initialize:
         jmp _udeks_console_poll
 
 _udeks_console_poll:
-        lda #1
-        jsr _udeks_banked_graphics_running
-        asl a
-        asl a
-        asl a
-        asl a
-        sta panel_mask
         lda #0
-        jsr _udeks_banked_graphics_running
-        asl a
-        asl a
-        asl a
-        ora panel_mask
         sta panel_mask
+        lda #3
+        sta panel_client
+panel_status_loop:
+        lda panel_client
+        jsr _udeks_banked_graphics_running
+        lsr a
+        rol panel_mask
+        dec panel_client
+        bpl panel_status_loop
+        asl panel_mask
         lda #$00
         ldx VIC_STATUS+5
         cpx #$03
         bne :+
         ora #$01
-:
-        ldx XCLOCK_STATUS+5
-        cpx #$03
-        bne :+
-        ora #$02
-:
-        ldx XWAVE_STATUS+5
-        cpx #$03
-        bne :+
-        ora #$04
 :
         ora panel_mask
         cmp APP_MASK
@@ -103,38 +89,31 @@ panel_changed:
         jsr panel_draw_app
         bne panel_error
 :
+        lda #0
+        sta panel_client
+panel_names_loop:
+        ldx panel_client
         lda panel_mask
-        and #$02
-        beq :+
-        lda #<panel_xclock
-        ldx #>panel_xclock
-        jsr panel_draw_app
-        bne panel_error
-:
-        lda panel_mask
-        and #$04
-        beq :+
-        lda #<panel_xwave
-        ldx #>panel_xwave
-        jsr panel_draw_app
-        bne panel_error
-:
-        lda panel_mask
-        and #$08
-        beq :+
-        lda #<_udeks_banked_graphics_names
+        and panel_bits,x
+        beq panel_next_name
+        txa
+        asl a
+        asl a
+        asl a
+        asl a
+        clc
+        adc #<_udeks_banked_graphics_names
         ldx #>_udeks_banked_graphics_names
+        bcc :+
+        inx
+:
         jsr panel_draw_app
         bne panel_error
-:
-        lda panel_mask
-        and #$10
-        beq :+
-        lda #<(_udeks_banked_graphics_names+16)
-        ldx #>(_udeks_banked_graphics_names+16)
-        jsr panel_draw_app
-        bne panel_error
-:
+panel_next_name:
+        inc panel_client
+        lda panel_client
+        cmp #4
+        bcc panel_names_loop
         lda panel_slot
         bne panel_clear_remaining
         lda #<panel_none

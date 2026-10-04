@@ -6,7 +6,77 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current feature handover — 2026-10-04
+## Four-native-slot cutover — 2026-10-05
+
+Implemented on `graphics-native-clients`: **all four shipped graphical apps are
+ordinary relocatable disk programs**, with no app-name routing in ush, the
+resident session, loader or running panel. `name &` picks the smallest FREE
+compatible allocation; `name` owns the foreground and Ctrl+C closes only that
+instance. `name -q` cooperatively stops the first matching live instance.
+Repeated names are permitted. The retired named CONTROL app operations now
+return ENOSYS; the old managed loader entry rejects flag-2 loads.
+
+| Task | Bank-1 allocation | Image + BSS maximum | ZP / hardware-stack pages |
+| --- | --- | ---: | --- |
+| 3 | $2300–$34FF | 4,352 bytes | $D5 / $D6 |
+| 4 | $3500–$3FFF | 2,560 bytes | $D7 / $D8 |
+| 5 | $8000–$8FFF | 3,840 bytes | $D0 / $E2 |
+| 6 | $C600–$CFFF | 2,304 bytes | $00 / $01 |
+
+Admission order is 6, 4, 5, 3, based only on capacity. The complete file,
+including relocation metadata, must fit the allocation. Its final page is
+reserved after installation: 16-byte lower guard, **160-byte private C stack**,
+16-byte upper guard and private exit trampoline. Image+BSS and graphics source
+pointers may not enter that page. Stack depth is a real SDK limit, not hardware
+protection. All four contexts use the accepted scheduler and frozen gates;
+the MMU initializer preserves the 8502 port at $00/$01.
+
+Removing the legacy callbacks frees the bank-1 foreground backup and old
+external C stacks. Both graphical service modules are copied out of bank-1
+$C600–$D0EF before *any* native client is admitted; their installed flag is
+never reset. Only then may task 6 and task 5's zero page reuse that delivery
+area. The temporary bootstrap context at $E2E2 has already been retired by
+scheduler activation before task 5 uses its hardware-stack page. Bank-1
+physical pages $00/$01 are otherwise unused after boot; foreground task 2
+still starts at $0200 and uses its separate relocated CPU pages.
+
+Retained images now share **2,304 bytes in bank 0 at $1300–$1BFF**, packed in
+slot order. Replacement/close compacts the pool; malformed or over-capacity
+updates leave all live images unchanged. PRESENT stays at most 384 bytes;
+PATHS stays at most 1,280 bytes per image, but four maximum-sized path images
+cannot coexist. Pool exhaustion returns ENOMEM. The normal four-app set fits.
+The base graphics service occupies $0C00–$12FF; the existing 1,008-byte retired
+VDC glyph-source overlay is unchanged. Console commands, recovery bootfs,
+filesystem, cache, VIC bitmap and Z80 code retain distinct ownership.
+
+Wave resize now waits for outline release and projects four vertices per
+cooperative yield. The app caches all 525 heights and retains all 524 edges:
+moves/raises replay service data; resize never resubmits the Z80 height job.
+Dense geometry repaint is still synchronous, not a new pixel-blit guarantee.
+
+VICE D64/1541, D71/1571 and D81/1581 pass the bundled four apps, calculator
+arithmetic, drawing input, clock/time oracle, full wave path/sample oracle,
+held-outline/no-duplicate resize, exact worker leases, console use, fifth-app
+rejection, shutdown and reload. Four renamed copies of the same independently
+built HELLO binary also run simultaneously, each with independent input,
+guarded stacks and names; malformed loads preserve peers and freed slots
+accept another name. These are injected VICE WM events; native mouse and
+physical-C128 confirmation are separate gates. Unmodified 1986 revision
+`81485cc7` also passes raw-IEC D64/1571 boot, actual keyboard/1351 drag and
+resize, calculator/drawing input, held-outline/worker reuse, independent reload,
+foreground Ctrl+C, canvas equality and all four private stack guards.
+Physical-C128 confirmation remains due. Test the fresh
+`build/boot/udeks.d64`, `.d71` or `.d81`; published `build/udeks.*` snapshots
+remain unchanged. Reproduce with `make four-native-probe` after the container
+build and `make graphical-example`.
+
+Qualification is complete: 1,158 host tests; actual-map placement gates;
+byte-identical isolated parallel build; VICE all three formats and 1986 native
+input. Preserved evidence: `bench/{artifacts,results}/2026-10-05-four-native`.
+Next: user physical-C128 test, then review/merge #35; after that, the first
+disk-loaded non-kernel service. No published snapshot or remote merge is implied.
+
+## Previous feature handover — 2026-10-04
 
 Native-wave checkpoint follows pushed worker commit `885ca87`. UTRQ 0.12
 adds generic, owner-checked packed polylines; all 524 legacy grid edges fit

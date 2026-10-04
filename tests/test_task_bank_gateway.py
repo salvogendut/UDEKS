@@ -136,13 +136,14 @@ class TaskBankGatewayTests(unittest.TestCase):
         self.assertIn("ldx #$0a", validation)
         self.assertIn("ldx #$10", validation)
 
-    def test_transient_slot_is_saved_even_while_xclock_is_active(self):
+    def test_native_apps_no_longer_require_a_foreground_backup(self):
         stage1 = (ROOT / "src/boot/stage1-gateway.s").read_text().lower()
 
         self.assertNotIn("xclock_state", stage1)
         self.assertNotIn("xclock_running", stage1)
-        self.assertIn("task_save_foreground:", stage1)
-        self.assertIn("task_restore_page:", stage1)
+        self.assertNotIn("sta $8000", stage1)
+        self.assertNotIn("lda $8000", stage1)
+        self.assertNotIn("task_restore_page:", stage1)
 
 
 if __name__ == "__main__":

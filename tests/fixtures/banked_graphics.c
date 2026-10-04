@@ -1,14 +1,16 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #define UDEKS_GRAPHICS_HOST_TEST
 unsigned char graphics_request[38], graphics_memory[65536];
-unsigned char graphics_overlay[1008];
+unsigned char graphics_overlay[1008], graphics_pool[2304];
+const unsigned char udeks_native_base_pages[4]={0x23,0x35,0x80,0xc6};
+const unsigned char udeks_native_stack_pages[4]={0x34,0x3f,0x8f,0xcf};
 #include "../../src/services/window/banked_graphics.c"
 #undef R
 #undef P
 #undef C
 #include "../../src/services/window/retained_paths.c"
 
-unsigned char test_task, test_state[2], test_reap_busy, test_owner[5];
+unsigned char test_task, test_state[4], test_reap_busy, test_owner[5];
 unsigned char test_load_error, test_activate_error, test_selector, test_path[17];
 unsigned char test_active, test_init_calls, test_init_error;
 unsigned int test_repaints, test_writes, test_draws, test_x, test_y;
@@ -31,13 +33,14 @@ void test_reset(void)
     memset(running,0,sizeof(running));
     memset(udeks_retained_lengths,0,sizeof(udeks_retained_lengths));
     memset(graphics_overlay,0,sizeof(graphics_overlay));
+    memset(graphics_pool,0,sizeof(graphics_pool));
     memset(udeks_banked_graphics_names,0,sizeof(udeks_banked_graphics_names));
     memset(graphics_request,0,sizeof(graphics_request));
     memset(graphics_memory,0,sizeof(graphics_memory));
     memset(test_owner,0,sizeof(test_owner));
     memset(widths,0,sizeof(widths));memset(heights,0,sizeof(heights));
     udeks_banked_graphics_installed=0;
-    test_task=3; test_state[0]=test_state[1]=0; test_reap_busy=0;
+    test_task=3; memset(test_state,0,sizeof(test_state)); test_reap_busy=0;
     test_repaints=test_writes=test_draws=0; click_handle=test_dragging=0;
     test_load_error=test_activate_error=test_selector=0;
     test_active=test_init_calls=test_init_error=0;
@@ -53,12 +56,10 @@ unsigned char udeks_vic_graphics_initialize(void) {
 }
 unsigned char udeks_banked_call(unsigned char selector)
 {
-    unsigned char i, first=0, limit=2;
+    unsigned char i;
     if(!selector) {
         if(test_load_error) return test_load_error;
-        if(!memcmp(P+1,"xcalc",5)) limit=1;
-        if(!memcmp(P+1,"xdraw",5)) first=1;
-        for(i=first;i<limit;++i) if(!test_state[i]) {
+        for(i=0;i<4;++i) if(!test_state[i]) {
             test_selector=i+3; memcpy(test_path,P,17);
             if(test_activate_error) return test_activate_error;
             test_state[i]=1; R[11]=i+3; return 0;
@@ -66,15 +67,15 @@ unsigned char udeks_banked_call(unsigned char selector)
         return 16;
     }
     if(selector==0x30) return test_task;
-    if(selector==0x63 || selector==0x64) return test_state[selector-0x63];
-    if(selector==0xc3 || selector==0xc4) {
+    if(selector>=0x63 && selector<=0x66) return test_state[selector-0x63];
+    if(selector>=0xc3 && selector<=0xc6) {
         if(!test_reap_busy) test_state[selector-0xc3]=0;
         return test_reap_busy;
     }
-    if(selector==3 || selector==4) {
+    if(selector>=3 && selector<=6) {
         test_selector=selector; memcpy(test_path,P,17); return test_load_error;
     }
-    if(selector==0x43 || selector==0x44) return test_activate_error;
+    if(selector>=0x43 && selector<=0x46) return test_activate_error;
     return 0;
 }
 /* Host equivalent of the bounded assembly request-marshalling adapter. */

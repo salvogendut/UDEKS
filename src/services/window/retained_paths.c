@@ -3,6 +3,7 @@
 #include "udeks/banked_graphics.h"
 #include "udeks/retained_paths.h"
 #include "udeks/vic_graphics.h"
+#include <string.h>
 #ifdef UDEKS_GRAPHICS_HOST_TEST
 extern unsigned char graphics_request[38];
 #define R graphics_request
@@ -12,27 +13,59 @@ extern volatile unsigned char udeks_graphics_record[38];
 #endif
 #define P (R+14)
 #define C (R+16)
+#ifdef UDEKS_GRAPHICS_HOST_TEST
+extern unsigned char graphics_pool[2304];
+#define POOL(address) (graphics_pool+(address)-UDEKS_RETAINED_BASE)
+#else
+#define POOL(address) ((unsigned char *)(address))
+#endif
 #pragma code-name("GRAPHICSPATHS")
 #pragma rodata-name("GRAPHICSPATHS")
-#pragma bss-name("PATHSTATE")
-/* Serialized parser scratch, initialized by the lazy module installation.
+#pragma bss-name("BSS")
+/* Serialized parser scratch, cleared by crt0.
  * No callbacks or yields occur during validation/copy. Paint is nonrecursive. */
 static unsigned int cursor,remaining;
 static unsigned char byte_index,bad,draw;
 static int x,y,old_x,old_y;
 
-#pragma code-name(push, "CODE")
+#pragma code-name(push, "GRAPHICSCODE")
 unsigned int __fastcall__ udeks_retained_address(unsigned char index)
 {
-    return index?0xcb00u:0xc600u;
+    unsigned int address=UDEKS_RETAINED_BASE;
+    while(index) address+=udeks_retained_lengths[--index]&0x7fffu;
+    return address;
 }
+void __fastcall__ udeks_retained_read(unsigned int address)
+{
+    memcpy((void *)C,POOL(address),8);
+}
+/* All images stay packed in slot order. Admission is serialized, and only
+ * validated replacements reach this compaction; no foreign pointers remain. */
+static void resize_image(unsigned char index,unsigned int length)
+{
+    unsigned int start,old,end;
+    start=udeks_retained_address(index);
+    old=udeks_retained_lengths[index]&0x7fffu;
+    end=udeks_retained_address(UDEKS_NATIVE_CLIENTS);
+    memmove(POOL(start+length),POOL(start+old),end-start-old);
+    udeks_retained_lengths[index]=length;
+}
+#pragma code-name(push, "GRAPHICSPATHS")
+void __fastcall__ udeks_retained_discard(unsigned char index)
+{
+    resize_image(index,0);
+}
+#pragma code-name(pop)
 #pragma code-name(pop)
 #pragma code-name(push, "GRAPHICSCODE")
 static unsigned char next_byte(void)
 {
     if(!remaining) { bad=1; return 0; }
     --remaining;
-    if(byte_index==8) { udeks_banked_read(cursor);cursor+=8;byte_index=0; }
+    if(byte_index==8) {
+        if(draw) udeks_retained_read(cursor); else udeks_banked_read(cursor);
+        cursor+=8;byte_index=0;
+    }
     return C[byte_index++];
 }
 #pragma code-name(pop)
@@ -62,12 +95,14 @@ static unsigned char paths(void)
         }
     }
 }
+#pragma code-name(push, "GRAPHICSCODE")
 void __fastcall__ udeks_retained_paths_paint(unsigned char index)
 {
     cursor=udeks_retained_address(index);
     remaining=udeks_retained_lengths[index]&0x7fffu;
     draw=1; paths();
 }
+#pragma code-name(pop)
 unsigned char __fastcall__ udeks_retained_present(unsigned char index)
 {
     unsigned int source,length,limit,destination,offset;
@@ -83,8 +118,10 @@ unsigned char __fastcall__ udeks_retained_present(unsigned char index)
         if(length>48) return 22;
         length*=8;
     }
-    limit=index?0x4000u:0x3500u;
-    if(source<(index?0x3500u:0x2300u) || source>=limit || length>limit-source) return 22;
+    limit=(unsigned int)udeks_native_stack_pages[index]<<8;
+    if(source<((unsigned int)udeks_native_base_pages[index]<<8) || source>=limit || length>limit-source) return 22;
+    if(length>UDEKS_RETAINED_POOL_SIZE-(udeks_retained_address(UDEKS_NATIVE_CLIENTS)-
+        UDEKS_RETAINED_BASE-(udeks_retained_lengths[index]&0x7fffu))) return 12;
     if(format) {
         cursor=source;remaining=length;draw=0;
         if(!paths()) return 22;
@@ -95,8 +132,9 @@ unsigned char __fastcall__ udeks_retained_present(unsigned char index)
         }
     }
     destination=udeks_retained_address(index);
+    resize_image(index,length);
     for(offset=0;offset<length;offset+=8) {
-        udeks_banked_read(source+offset);udeks_banked_write(destination+offset);
+        udeks_banked_read(source+offset);memcpy(POOL(destination+offset),(const void *)C,8);
     }
     udeks_retained_lengths[index]=length|(format?0x8000u:0);
     return 0;

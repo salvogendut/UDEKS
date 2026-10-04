@@ -75,15 +75,16 @@ Use `build/boot/udeks.d64` or `build/boot/udeks.d71` for this test candidate;
 VICE D64/D71 and native 1986 input checks pass; physical-C128 acceptance of
 this candidate is the next gate.
 
-On the #35 follow-up branch, `graphics-native-clients`, an independently built `.BIN` can launch
-as `name` or `name &` into either free compatible native slot, without an OS name-table
-entry. Try the [generic-app demo and build recipe](docs/GRAPHICAL-APPS-SDK.md).
-The SDK also builds independent argc/argv console commands. Instance/name-based
-control and legacy-client migration remain pending. Fresh builds now include a
-[D81 / 1581 image](docs/D81.md); the published snapshots above have not been replaced.
-Native clock and Z80-assisted wave migration candidates now use public resize,
-retained-drawing and worker APIs. See the [native wave test recipe](docs/GRAPHICAL-APPS-SDK.md#native-wave-migration-candidate).
-Four interchangeable native slots and replacing the default legacy apps remain next.
+On the #35 follow-up branch, `graphics-native-clients`, all four graphical apps
+are relocatable disk programs. A new `.BIN` launches as `name` or `name &`
+into any free **compatible-sized** allocation, without an OS name-table entry.
+`name -q` stops a matching instance; Ctrl+C targets the foreground instance.
+See the [SDK and limits](docs/GRAPHICAL-APPS-SDK.md) and
+[four-native-slot layout](docs/GENERIC-GRAPHICS-APPS.md#four-native-slot-cutover--2026-10-05).
+The SDK also builds independent argc/argv console commands. Fresh test disks
+are `build/boot/udeks.d64`, `.d71` and `.d81`; published snapshots above
+have not been replaced. VICE three-format and 1986 native-input checks pass;
+physical acceptance of this cutover is still due.
 
 `/mnt` starts free. To use a separate data disk on device 9:
 
@@ -122,7 +123,7 @@ this is not a claim that every model, peripheral or failure path is qualified.
 The target baseline is a stock 128 KiB C128 with 16 KiB VDC RAM; 64 KiB VDC,
 REU and GeoRAM are optional. PAL and NTSC remain targets.
 
-**Current feature:** qualify four simultaneous graphical apps. **Next architectural
+**Current feature:** physical acceptance of four generic native app slots. **Next architectural
 milestone:** extract the first non-kernel service into a disk-loaded program.
 General scripting, filesystem writes, broader tasking and optimization are
 separate roadmap work. The existing `/etc/rc` command runner is not a POSIX

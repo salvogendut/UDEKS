@@ -49,7 +49,7 @@ def layout_maps(normal, panic):
     extra = {'GRAPHICSCODE', 'GRAPHICSHELP'} & actual.keys()
     if extra and extra != {'GRAPHICSCODE', 'GRAPHICSHELP'}:
         raise ValueError('incomplete banked graphics module layout')
-    for name, start, limit in (('GRAPHICSCODE',0x0c00,0x1200),('GRAPHICSHELP',0xa100,0xa1e0)):
+    for name, start, limit in (('GRAPHICSCODE',0x0c00,0x1300),('GRAPHICSHELP',0xa100,0xa1e0)):
         if name in extra:
             low,end,size = actual[name]
             if low != start or not 0 < size == end-low+1 <= limit-low:

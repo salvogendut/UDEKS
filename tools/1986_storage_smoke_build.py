@@ -38,8 +38,12 @@ def main():
     parser.add_argument('--root-namespace', action='store_true', help='system root, cwd, data alias and native window regression')
     parser.add_argument('--xcalc', action='store_true', help='native calculator mouse, arithmetic, console and app-slot checks')
     parser.add_argument('--four-apps', action='store_true', help='four-app native input and independent lifecycle qualification')
+    parser.add_argument('--four-native', action='store_true', help='four generic native clients, actual keyboard and 1351 input')
     parser.add_argument('--native-clock', action='store_true', help='two relocatable clocks with native input and legacy peers')
     args = parser.parse_args()
+    if args.four_native and any((args.disk_exec,args.disk_shell,args.sysinfo,args.disk_graphics,
+                                 args.drag_regression,args.root_namespace,args.xcalc,args.four_apps,args.native_clock)):
+        parser.error('--four-native is a standalone qualification mode')
     if args.boot_mounted and not args.drag_regression:
         parser.error('--boot-mounted requires --drag-regression')
     if args.native_clock and any((args.disk_exec,args.disk_shell,args.sysinfo,args.disk_graphics,
@@ -55,14 +59,22 @@ def main():
     kernel_map = (ROOT/'build/8502/udeks-8502.map').read_text()
     console_base = int(re.search(r'^LOWBSS\s+([0-9A-Fa-f]+)',kernel_map,re.M)[1],16)
     calc_flags = []
-    if args.xcalc or args.four_apps:
-        calc_map = (ROOT/'build/user/xcalc.map').read_text()
+    if args.xcalc or args.four_apps or args.four_native:
+        calc_map = (ROOT/('build/user/native-calc/xcalc_native.map' if args.four_native else 'build/user/xcalc.map')).read_text()
         calc_flags = ['-DUDEKS_XCALC_SMOKE','-DUDEKS_DISK_GRAPHICS_SMOKE']
         for symbol, define in (('_udeks_calc_value','VALUE'),('_udeks_calc_error','ERROR')):
             address = re.search(r'\b'+symbol+r'\s+([0-9A-Fa-f]+)\s+RLA',calc_map)[1]
+            if args.four_native: address=f'{int(address,16)-0x1000+0x2300:04x}'
             calc_flags.append('-DUDEKS_CALC_'+define+'=0x'+address)
         if (ROOT/'build/user/xcalc.udx').read_bytes()[7]==0:
             calc_flags.append('-DUDEKS_CALC_BANK=0x10000')
+    if args.four_native:
+        calc_flags.append('-DUDEKS_FOUR_NATIVE_SMOKE')
+        wave=map_exports((ROOT/'build/user/native-wave/xwave_native.map').read_text())
+        for symbol,define in (('presents','PRESENTS'),('width','WIDTH'),('height','HEIGHT')):
+            calc_flags.append('-DUDEKS_WAVE_'+define+'='+str(wave['_native_wave_'+symbol][0]-0x1000+0x18000))
+        draw=map_exports((ROOT/'build/user/native-draw/xdraw.map').read_text())
+        calc_flags.append('-DUDEKS_DRAW_CELLS='+str(draw['_udeks_xdraw_cells'][0]-0x1000+0x1c600))
     if args.four_apps:
         draw_map=(ROOT/'build/user/xdraw.map').read_text()
         address=re.search(r'\b_udeks_xdraw_cells\s+([0-9A-Fa-f]+)\s+RLA',draw_map)[1]
@@ -114,6 +126,7 @@ def main():
         'root_namespace': args.root_namespace,
         'xcalc': args.xcalc,
         'four_apps': args.four_apps,
+        'four_native': args.four_native,
         'native_clock': args.native_clock,
         'drive': int(args.drive),
         **({'program_sha256':hashlib.sha256(program).hexdigest()} if args.native_clock else {}),

@@ -38,24 +38,26 @@ unsigned char udeks_xclock_stop(void) { ++calls; clock_run=0; return 0; }
 unsigned char udeks_xwave_stop(void) { ++calls; wave_run=0; return 0; }
 unsigned char udeks_xclock_is_running(void) { return clock_run; }
 unsigned char udeks_xwave_is_running(void) { return wave_run; }
-unsigned char banked_run[2];
+unsigned char banked_run[4];
 unsigned char udeks_banked_graphics_selected;
 unsigned char udeks_banked_graphics_exec(const unsigned char *name) {
     ++calls; ++starts; strncpy(last_name,(const char *)name,16);
     if(app_result) return app_result;
-    if(banked_run[0] && banked_run[1]) return 4;
-    udeks_banked_graphics_selected=banked_run[0]?1:0;
+    for(udeks_banked_graphics_selected=0;udeks_banked_graphics_selected<4;++udeks_banked_graphics_selected)
+        if(!banked_run[udeks_banked_graphics_selected]) break;
+    if(udeks_banked_graphics_selected==4) return 4;
     banked_run[udeks_banked_graphics_selected]=1; return 0;
 }
 unsigned char udeks_banked_graphics_start(unsigned char i) { ++calls; ++starts; if (!app_result) banked_run[i]=1; return app_result; }
 unsigned char udeks_banked_graphics_stop(unsigned char i) { ++calls; banked_run[i]=0; return 0; }
-unsigned char udeks_banked_graphics_control_stop(unsigned char bit) { return udeks_shell_stop_app(bit); }
+unsigned char udeks_banked_graphics_stop_name(const unsigned char *name) { return udeks_banked_graphics_stop(0); }
 unsigned char udeks_banked_graphics_running(unsigned char i) { return banked_run[i]; }
 unsigned char udeks_z80_submit(unsigned char op, unsigned int a, unsigned int b,
     unsigned int n, unsigned int *r) { ++calls; *r=0; return 0; }
 void reset(void) {
     memset(session_memory, 0, sizeof(session_memory));
-    active=clock_run=wave_run=banked_run[0]=banked_run[1]=calls=starts=app_result=0;
+    memset(banked_run,0,sizeof(banked_run));
+    active=clock_run=wave_run=calls=starts=app_result=0;
     token_count=init_error=load_error=load_exit=loads=loaded_count=0;
     memset(last_name,0,sizeof(last_name)); output[0]=0;
     udeks_shell_start(); session_memory[UDEKS_USH_STATUS_BASE+1]=UDEKS_USH_STATE_READY;
@@ -82,7 +84,7 @@ class ServiceControl(unittest.TestCase):
 
     def value(self, name): return ctypes.c_ubyte.in_dll(self.lib, name).value
 
-    def request(self, target=2, action=0, background=1, minor=7, descriptor=0, flags=0, count=3):
+    def request(self, target=1, action=0, background=0, minor=7, descriptor=0, flags=0, count=3):
         record = b'UTRQ'+bytes((0, minor, 1, 20, 93, descriptor, count, 0, 0, flags, target, action, background))
         self.memory[0xf359:0xf359+len(record)] = record
         self.lib.udeks_service_control_request()
@@ -105,7 +107,7 @@ class ServiceControl(unittest.TestCase):
     def test_unknown_background_names_select_instances_without_foreground(self):
         ctypes.c_ubyte.in_dll(self.lib,'token_count').value=2
         line=(ctypes.c_ubyte*55).in_dll(self.lib,'udeks_shell_command_line')
-        for name in (b'orbit', b'canvas'):
+        for name in (b'orbit', b'canvas', b'third', b'fourth'):
             data=name+b'\0&\0'; line[:len(data)]=data
             self.lib.udeks_shell_dispatch_line()
             self.assertEqual(bytes((ctypes.c_char*17).in_dll(self.lib,'last_name')).split(b'\0')[0],name)
@@ -113,7 +115,7 @@ class ServiceControl(unittest.TestCase):
         line[:8]=b'extra\0&\0'
         self.lib.udeks_shell_dispatch_line()
         self.assertIn(b'task slot busy',bytes((ctypes.c_char*256).in_dll(self.lib,'output')))
-        self.assertEqual(bytes((ctypes.c_ubyte*2).in_dll(self.lib,'banked_run')),b'\1\1')
+        self.assertEqual(bytes((ctypes.c_ubyte*4).in_dll(self.lib,'banked_run')),b'\1\1\1\1')
 
     def test_generic_launch_does_not_initialize_desktop(self):
         ctypes.c_ubyte.in_dll(self.lib,'token_count').value=2
@@ -142,7 +144,7 @@ class ServiceControl(unittest.TestCase):
         line[:6]=b'orbit\0'
         self.lib.udeks_shell_dispatch_line()
         self.lib.udeks_shell_poll()
-        self.assertEqual(self.memory[0xf184],4)
+        self.assertEqual(self.memory[0xf184],1)
         self.assertEqual(self.value('active'),0)
         self.assertEqual(self.lib.udeks_shell_interrupt_foreground(),1)
         self.lib.udeks_shell_poll()
@@ -166,99 +168,84 @@ class ServiceControl(unittest.TestCase):
         self.lib.udeks_shell_dispatch_line()
         self.lib.udeks_shell_poll()
         self.assertEqual(self.value('starts'),1)
-        self.assertEqual(self.memory[0xf184],4)
+        self.assertEqual(self.memory[0xf184],1)
         self.assertEqual(self.lib.udeks_shell_interrupt_foreground(),1)
 
     def test_enqueue_has_no_graphics_or_engine_side_effects(self):
-        self.assertEqual(self.request(), 0)
-        self.assertEqual(self.value('calls'), 0)
-        self.assertEqual(self.memory[0xf364], 1)
+        self.assertEqual(self.request(),0)
+        self.assertEqual(self.value('calls'),0)
+        self.assertEqual(self.memory[0xf364],1)
         self.lib.udeks_shell_poll()
-        self.assertEqual(self.value('starts'), 1)
-        self.assertEqual(bytes(self.memory[0xf3a0:0xf3a5]), bytes((165,2,0,1,0)))
-        self.assertEqual(self.memory[0xf185], 1)
+        self.assertEqual(self.value('calls'),1)
+        self.assertEqual(self.value('active'),1)
+        self.assertEqual(bytes(self.memory[0xf3a0:0xf3a5]),bytes((165,1,0,0,0)))
         self.lib.udeks_shell_poll()
-        self.assertEqual(self.value('starts'), 1)
+        self.assertEqual(self.value('calls'),1)
 
     def test_invalid_requests_leave_queue_and_reply_untouched(self):
-        for options in ({'descriptor':1}, {'flags':1}, {'count':2}, {'count':4},
-                        {'target':0}, {'target':7}, {'action':9}, {'background':2},
-                        {'target':1, 'background':1}, {'action':1, 'background':1}):
+        for options in ({'descriptor':1},{'flags':1},{'count':2},{'count':4},
+                        {'action':9},{'background':2},{'background':1}):
             self.lib.reset()
-            self.memory[0xf3a0:0xf3a5] = b'abcde'
-            self.assertEqual(self.request(**options), 22)
-            self.assertEqual(bytes(self.memory[0xf3a0:0xf3a5]), b'abcde')
+            self.memory[0xf3a0:0xf3a5]=b'abcde'
+            self.assertEqual(self.request(**options),22)
+            self.assertEqual(bytes(self.memory[0xf3a0:0xf3a5]),b'abcde')
             self.lib.udeks_shell_poll()
-            self.assertEqual(self.value('calls'), 0)
-        self.assertEqual(self.request(minor=6), 38)
+            self.assertEqual(self.value('calls'),0)
+        self.assertEqual(self.request(minor=6),38)
+        for target in (0,2,3,5,6,7,255):
+            self.assertEqual(self.request(target=target),38)
+            self.assertEqual(self.value('starts'),0)
 
     def test_busy_does_not_replace_pending_operation(self):
-        self.assertEqual(self.request(), 0)
-        self.assertEqual(self.request(target=3), 16)
+        self.assertEqual(self.request(),0)
+        self.assertEqual(self.request(target=4,action=2),16)
         self.lib.udeks_shell_poll()
-        self.assertEqual(self.value('clock_run'), 1)
-        self.assertEqual(self.value('wave_run'), 0)
-        self.memory[0xf187] = 1
-        self.assertEqual(self.request(target=4, action=2, background=0), 16)
+        self.assertEqual(self.value('active'),1)
+        self.memory[0xf187]=1
+        self.assertEqual(self.request(target=4,action=2),16)
 
-    def test_foreground_interrupt_and_desktop_shutdown(self):
-        self.assertEqual(self.request(background=0), 0)
+    def launch(self,name,background=True):
+        ctypes.c_ubyte.in_dll(self.lib,'token_count').value=2 if background else 1
+        ctypes.c_ubyte.in_dll(self.lib,'load_error').value=5
+        line=(ctypes.c_ubyte*55).in_dll(self.lib,'udeks_shell_command_line')
+        data=name+b'\0'+(b'&\0' if background else b'')
+        line[:len(data)]=data
+        self.lib.udeks_shell_dispatch_line()
         self.lib.udeks_shell_poll()
-        self.assertEqual(self.memory[0xf184], 1)
-        self.assertEqual(self.request(target=3), 16)
-        self.assertEqual(self.lib.udeks_shell_interrupt_foreground(), 1)
-        self.assertEqual(self.memory[0xf3a4], 130)
+
+    def test_four_jobs_targeted_interrupt_and_desktop_shutdown(self):
+        banked=(ctypes.c_ubyte*4).in_dll(self.lib,'banked_run')
+        for name in (b'one',b'two',b'three'): self.launch(name)
+        self.launch(b'four',False)
+        self.assertEqual(self.memory[0xf185],3)
+        self.assertEqual(self.memory[0xf184],8)
+        self.assertEqual(list(banked),[1,1,1,1])
+        self.assertEqual(self.lib.udeks_shell_interrupt_foreground(),1)
+        self.assertEqual(list(banked),[1,1,1,0])
+        self.assertEqual(self.memory[0xf3a4],130)
         self.lib.udeks_shell_poll()
-        self.assertEqual(self.memory[0xf184], 0)
-        self.assertEqual(self.request(target=3), 0)
+        self.assertEqual(self.memory[0xf184],0)
+        self.launch(b'reused')
+        self.assertEqual(self.memory[0xf185],4)
+        self.assertEqual(self.request(action=1),0)
         self.lib.udeks_shell_poll()
-        self.assertEqual(self.request(target=1, action=1, background=0), 0)
-        self.lib.udeks_shell_poll()
-        self.assertEqual(self.value('wave_run'), 0)
-        self.assertEqual(self.value('active'), 0)
+        self.assertEqual(list(banked),[0,0,0,0])
+        self.assertEqual(self.memory[0xf185],0)
 
     def test_engine_runs_only_at_poll_boundary(self):
-        self.assertEqual(self.request(target=4, action=2, background=0), 0)
-        self.assertEqual(self.value('calls'), 0)
+        self.assertEqual(self.request(target=4,action=2),0)
+        self.assertEqual(self.value('calls'),0)
         self.lib.udeks_shell_poll()
-        self.assertEqual(self.value('calls'), 1)
-        self.assertEqual(bytes(self.memory[0xf3a0:0xf3a5]), bytes((165,4,2,0,0)))
+        self.assertEqual(self.value('calls'),1)
+        self.assertEqual(bytes(self.memory[0xf3a0:0xf3a5]),bytes((165,4,2,0,0)))
 
-    def test_four_jobs_and_targeted_banked_interrupt(self):
-        banked = (ctypes.c_ubyte*2).in_dll(self.lib, 'banked_run')
-        for target in (2,3,5,6):
-            self.assertEqual(self.request(target=target), 0)
-            self.lib.udeks_shell_poll()
-        self.assertEqual(self.memory[0xf185], 4)
-        self.assertEqual(list(banked), [1,1])
-        self.assertEqual(self.request(target=6, action=1, background=0), 0)
-        self.lib.udeks_shell_poll()
-        self.assertEqual(self.memory[0xf185], 3)
-        self.assertEqual(self.request(target=6, background=0), 0)
-        self.lib.udeks_shell_poll()
-        self.assertEqual(self.memory[0xf184], 8)
-        self.assertEqual(self.lib.udeks_shell_interrupt_foreground(), 1)
-        self.assertEqual(bytes(self.memory[0xf3a0:0xf3a5]), bytes((165,6,1,0,130)))
-        self.assertEqual(list(banked), [1,0])
-        self.assertEqual((self.value('clock_run'),self.value('wave_run')), (1,1))
-        self.lib.udeks_shell_poll()
-        self.assertEqual(self.request(target=6), 0)
-        self.lib.udeks_shell_poll()
-        self.assertEqual(self.request(target=1, action=1, background=0), 0)
-        self.lib.udeks_shell_poll()
-        self.assertEqual(list(banked), [0,0])
-        self.assertEqual(self.memory[0xf185], 0)
-
-    def test_managed_errors_are_preserved_without_claiming_a_running_job(self):
-        for target in (2, 3, 5, 6):
-            for error in range(1, 7):
-                self.lib.reset()
-                ctypes.c_ubyte.in_dll(self.lib, 'app_result').value = error
-                self.assertEqual(self.request(target=target, background=0), 0)
-                self.lib.udeks_shell_poll()
-                self.assertEqual(bytes(self.memory[0xf3a0:0xf3a5]), bytes((165,target,0,0,error)))
-                self.assertEqual(self.memory[0xf184], 0)
-                self.assertEqual(self.memory[0xf185], 0)
+    def test_launch_errors_do_not_claim_jobs(self):
+        for error in range(1,7):
+            self.lib.reset()
+            ctypes.c_ubyte.in_dll(self.lib,'app_result').value=error
+            self.launch(b'unknown')
+            self.assertEqual(self.memory[0xf184],0)
+            self.assertEqual(self.memory[0xf185],0)
 
     def test_assembly_wrapper_clears_scheduler_suspend_flag(self):
         text = (ROOT/'src/8502/syscall_gate.s').read_text()

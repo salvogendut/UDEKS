@@ -108,7 +108,7 @@ Bank-0 console/input LOWBSS moved to `$9B00-$A0FC` (reservation to `$A0FF`),
 with a link assertion keeping resident code/data below `$9B00`. VIC shadow,
 common gates, native task stacks and bank-1 services have not moved.
 
-The four-app development branch replaces that calculator path with a **private native bank-1 admission
+The earlier #30 four-app development branch replaced that calculator path with a **private native bank-1 admission
 path** for ordinary flag-0 UDEX images at `$2300` (4,608-byte allocation) and
 `$3500` (2,816 bytes). The header plus image must fit staging; image plus BSS
 must fit the allocation. Entry may be anywhere inside the image. Each client
@@ -158,10 +158,11 @@ noncontiguous segments, overlapping fixups and malformed streams are rejected.
 No byte-pattern scanning is used. Format guidance: [ld65 o65 configuration](https://cc65.github.io/doc/ld65.html)
 and [cc65's reference module loader](https://github.com/cc65/cc65/blob/master/libsrc/common/modload.s).
 
-Both the **whole file** (header, image and relocation table) and **image+BSS**
-must fit the selected allocation. The current destinations remain bank-1
-`$2300-$34FF` and `$3500-$3FFF`, with the existing private CPU pages and `$0300`
-software-stack reservations. Header, exact length, all patches, entry and
+The **whole file** (header, image and relocation table) must fit the selected
+allocation. **Image+BSS** must end before its final private stack page.
+Current bank-1 destinations are `$2300-$34FF`, `$3500-$3FFF`, `$8000-$8FFF`
+and `$C600-$CFFF`, each with separate relocated CPU pages and a guarded
+160-byte C stack in its last page. See the [current layout](../docs/GENERIC-GRAPHICS-APPS.md#four-native-slot-cutover--2026-10-05). Header, exact length, all patches, entry and
 allocation are validated before applying fixups. A rejection may dirty only
 the unowned staging allocation; it must not publish ownership or touch a live
 peer. Successful installation copies the patched image, clears BSS and retains
@@ -169,7 +170,7 @@ a normalized **fixed UDEX 0.1 header** with the actual load/entry addresses.
 Ownership is published last; native admission/return/EXIT are unchanged.
 
 Private selector `$00` at `$F91C` takes the existing length + padded 16-byte
-basename request, tries task 3 then task 4, and loads/adopts an ordinary native
+basename request, tries tasks 6, 4, 5, 3 (smallest first), and loads/adopts an ordinary native
 image. Successful admission returns the selected task in UTRQ result (byte 11);
 other request bytes survive. Occupied allocations are never released. A failed
 admission releases only the image acquired by that attempt. The caller is the
@@ -181,10 +182,11 @@ The graphics service owns a padded, bounded 16-byte instance basename for each
 native allocation; the running panel renders at most nine characters. Repeated
 background launches may create independent instances of the same executable.
 Window/task ownership, not the name, determines event delivery and cleanup.
-The old named CONTROL stop adapters reject unrelated occupants. Generic
-foreground launch and name-based stop are not implemented in this increment.
+Generic foreground launch owns the Ctrl+C target; `name -q` stops the first
+matching live instance. Old application-specific CONTROL IDs return ENOSYS.
+The retired managed loader cannot create callback applications.
 
-Reproduce the compiled-C two-destination proof:
+Historical compiled-C two-destination proof (preserved pre-cutover artifacts):
 
 ```sh
 distrobox enter my-distrobox -- make -j8 boot graphics-apps-check placement-check reloc-fixtures

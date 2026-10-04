@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 /* Resident-side service module; no foreign code/title pointers. Retained
- * images live in bank 1 $C600-$CFFF, not in the client's runtime. */
+ * images share bank-0 $1300-$1BFF, not the client's runtime. */
 #include "udeks/banked_graphics.h"
 #include "udeks/retained_paths.h"
 #include "udeks/window.h"
@@ -23,35 +23,30 @@ extern volatile unsigned char udeks_graphics_record[38];
 #endif
 /* Only admission state is needed before lazy installation. Geometry and
  * retained-image state arrive with the paths overlay, before any admission. */
-static unsigned char running[2];
-#pragma bss-name(push, "PATHSTATE")
+static unsigned char running[UDEKS_NATIVE_CLIENTS];
 static struct {
-    unsigned char closing[2], handle[2];
-    char title[2][9];
+    unsigned char closing[UDEKS_NATIVE_CLIENTS], handle[UDEKS_NATIVE_CLIENTS];
+    char title[UDEKS_NATIVE_CLIENTS][9];
 } clients;
-unsigned int udeks_retained_lengths[2];
-#pragma bss-name(pop)
+unsigned int udeks_retained_lengths[UDEKS_NATIVE_CLIENTS];
 unsigned char udeks_banked_graphics_installed;
-#pragma data-name(push, "GRAPHICSCODE")
-/* Initialized with the lazily installed module; read only for live clients. */
-unsigned char udeks_banked_graphics_selected=0;
-unsigned char udeks_banked_graphics_names[2][16]={{0}};
-#pragma data-name(pop)
-const unsigned char udeks_banked_legacy_names[2][6]={"xcalc","xdraw"};
+unsigned char udeks_banked_graphics_selected;
+unsigned char udeks_banked_graphics_names[UDEKS_NATIVE_CLIENTS][16];
 #pragma bss-name(push, "PATHSTATE")
 unsigned int udeks_graphics_origin_x;
 unsigned char udeks_graphics_origin_y;
 #define wx udeks_graphics_origin_x
 #define wy udeks_graphics_origin_y
 static unsigned int ww;
-static unsigned char wh;
 #pragma bss-name(pop)
+static unsigned char wh;
 #pragma code-name(push, "GRAPHICSHELP")
 static void closed(unsigned char handle)
 {
     unsigned char i;
-    for(i=0;i<2;++i) if(clients.handle[i]==handle) {
+    for(i=0;i<UDEKS_NATIVE_CLIENTS;++i) if(clients.handle[i]==handle) {
         clients.handle[i]=0; clients.closing[i]=1;
+        udeks_retained_discard(i);
     }
 }
 #pragma code-name(pop)
@@ -74,7 +69,7 @@ static void complete_install(void)
     unsigned int offset;
     memcpy(saved,(const void *)P,10);
     for(offset=0;offset<1008;offset+=8) {
-        udeks_banked_read(0xcc00u+offset);
+        udeks_banked_read(0xcd00u+offset);
 #ifdef UDEKS_GRAPHICS_HOST_TEST
         extern unsigned char graphics_overlay[1008];
         memcpy(graphics_overlay+offset,(const void *)C,8);
@@ -89,7 +84,7 @@ static void paint(unsigned char handle)
     unsigned char i, row, bit, data, count, index;
     unsigned int address, x, y;
     index = udeks_window_owner(handle)-0x83u;
-    if (index >= 2) return;
+    if (index >= UDEKS_NATIVE_CLIENTS) return;
     udeks_window_get_geometry(handle,&wx,&wy,&ww,&wh);
     if(udeks_retained_lengths[index]&UDEKS_RETAINED_PATH_FLAG) {
         udeks_retained_paths_paint(index); return;
@@ -97,7 +92,7 @@ static void paint(unsigned char handle)
     count = udeks_retained_lengths[index]>>3;
     address = udeks_retained_address(index);
     for (i=0; i<count; ++i, address+=8u) {
-        udeks_banked_read(address);
+        udeks_retained_read(address);
         x=wx+C[1]; y=wy+C[2];
         if (C[0]==0) udeks_vic_bitmap_fill(x,y,C[3],C[4],C[5]);
         else if (C[0]==1) udeks_vic_bitmap_line(x,y,wx+C[3],wy+C[4],C[5]);
@@ -118,7 +113,7 @@ void udeks_banked_graphics_request(void)
     task=udeks_banked_call(0x30);
     index=task-3u;
     if(R[5]<9) { error=38; goto done; }
-    if(R[9] || R[13] || R[10]!=24 || index>=2) goto done;
+    if(R[9] || R[13] || R[10]!=24 || index>=UDEKS_NATIVE_CLIENTS) goto done;
     if(!running[index]) goto done;
     op=P[0]; handle=P[1];
     if(op==UDEKS_GFX_CREATE) {
@@ -172,7 +167,7 @@ done:
 void udeks_banked_graphics_poll(void)
 {
     unsigned char i,state;
-    for(i=0;i<2;++i) if(running[i]) {
+    for(i=0;i<UDEKS_NATIVE_CLIENTS;++i) if(running[i]) {
         state=udeks_banked_call(0x63u+i);
         if(state==0 || state==6) {
             if(clients.handle[i]) udeks_window_destroy(clients.handle[i]);
@@ -180,11 +175,13 @@ void udeks_banked_graphics_poll(void)
         }
     }
 }
-unsigned char __fastcall__ udeks_banked_graphics_start(unsigned char index)
+unsigned char __fastcall__ udeks_banked_graphics_stop_name(const unsigned char *name)
 {
-    if(index>=2) return 4;
-    if(running[index]) return 4;
-    return udeks_banked_graphics_exec(index?udeks_banked_legacy_names[1]:udeks_banked_legacy_names[0]);
+    unsigned char i;
+    for(i=0;i<UDEKS_NATIVE_CLIENTS;++i)
+        if(running[i] && !strcmp((const char *)name,(const char *)udeks_banked_graphics_names[i]))
+            return udeks_banked_graphics_stop(i);
+    return 1;
 }
 unsigned char udeks_banked_graphics_launch(void)
 {
@@ -200,7 +197,7 @@ unsigned char udeks_banked_graphics_launch(void)
     udeks_banked_graphics_selected=R[11]-3u;
     memcpy(udeks_banked_graphics_names[udeks_banked_graphics_selected],(const void *)(P+1),16);
     clients.handle[udeks_banked_graphics_selected]=0;
-    udeks_retained_lengths[udeks_banked_graphics_selected]=0;
+    udeks_retained_discard(udeks_banked_graphics_selected);
     clients.closing[udeks_banked_graphics_selected]=0;
     running[udeks_banked_graphics_selected]=1;
 #ifndef UDEKS_GRAPHICS_HOST_TEST
@@ -211,7 +208,7 @@ unsigned char udeks_banked_graphics_launch(void)
 #pragma code-name(push, "GRAPHICSHELP")
 unsigned char __fastcall__ udeks_banked_graphics_stop(unsigned char index)
 {
-    if(index>=2) return 1;
+    if(index>=UDEKS_NATIVE_CLIENTS) return 1;
     if(!running[index] || clients.closing[index]) return 1;
     if(clients.handle[index]) udeks_window_destroy(clients.handle[index]);
     clients.closing[index]=1;
@@ -219,6 +216,6 @@ unsigned char __fastcall__ udeks_banked_graphics_stop(unsigned char index)
 }
 unsigned char __fastcall__ udeks_banked_graphics_running(unsigned char index)
 {
-    return index<2 && running[index] && !clients.closing[index];
+    return index<UDEKS_NATIVE_CLIENTS && running[index] && !clients.closing[index];
 }
 #pragma code-name(pop)

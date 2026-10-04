@@ -17,7 +17,7 @@ unsigned char native_wave_rows,native_wave_presents,native_wave_failure;
 unsigned int native_wave_width;
 unsigned char native_wave_height;
 static unsigned char handle;
-static struct udeks_wave_projection projection;
+#define projection udeks_wave_projection_state
 
 unsigned char udeks_graphical_main(void)
 {
@@ -45,7 +45,7 @@ unsigned char udeks_graphical_main(void)
             ++native_wave_rows;
         } else if(event==UDEKS_GFX_RESIZED) {
             if(width!=projection.width || height!=projection.height)
-                if(!udeks_wave_paths_begin(&projection,width,height)) return 4;
+                if(!udeks_wave_paths_begin(width,height)) return 4;
             /* Recheck committed geometry on every iteration, including the
              * one that publishes. A drag pauses work; a new size restarts it. */
             if(projection.done) {
@@ -55,7 +55,7 @@ unsigned char udeks_graphical_main(void)
                 if(gfx_request(UDEKS_GFX_PATHS)) { native_wave_failure=5; return 5; }
                 native_wave_width=width; native_wave_height=height; ++native_wave_presents;
             } else {
-                udeks_wave_paths_step(&projection,native_wave_samples,native_wave_paths);
+                udeks_wave_paths_step(native_wave_samples,native_wave_paths);
                 gfx_yield();
                 continue;
             }

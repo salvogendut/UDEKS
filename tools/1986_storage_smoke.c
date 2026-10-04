@@ -97,6 +97,9 @@ static void client_click(unsigned x,unsigned y,unsigned task) {
 #ifdef UDEKS_NATIVE_CLOCK_SMOKE
 #include "1986_native_clock_smoke.inc"
 #endif
+#ifdef UDEKS_FOUR_NATIVE_SMOKE
+#include "1986_four_native_smoke.inc"
+#endif
 static void disk_graphics(void) {
     command("xinit"); idle();
     command("xclock &"); idle();
@@ -237,6 +240,11 @@ int main(int argc, char **argv) {
     }
     diagnostic();
     require(byte(0xf3d9) == 0xa5, "native raw-IEC boot failed");
+#ifdef UDEKS_FOUR_NATIVE_SMOKE
+    four_native_smoke();
+    free(machine);
+    return 0;
+#endif
 #ifdef UDEKS_NATIVE_CLOCK_SMOKE
     native_clock_smoke();
     free(machine);

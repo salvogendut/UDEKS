@@ -1,8 +1,11 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "udeks/wave_paths.h"
 
-unsigned char udeks_wave_paths_begin(struct udeks_wave_projection *s,
-    unsigned int width, unsigned char height)
+/* One projection per process, in its relocated private BSS. Direct access
+ * keeps this state machine small enough for a bounded native allocation. */
+struct udeks_wave_projection udeks_wave_projection_state;
+#define s (&udeks_wave_projection_state)
+unsigned char udeks_wave_paths_begin(unsigned int width, unsigned char height)
 {
     if(width<48 || width>320 || height<48 || height>200) return 0;
     s->width=width; s->height=height; s->used=0;
@@ -11,8 +14,7 @@ unsigned char udeks_wave_paths_begin(struct udeks_wave_projection *s,
     return 1;
 }
 
-unsigned char udeks_wave_paths_step(struct udeks_wave_projection *s,
-    const signed char *heights, unsigned char *output)
+unsigned char udeks_wave_paths_step(const signed char *heights, unsigned char *output)
 {
     unsigned char row,col,count,budget;
     unsigned int x,y;
@@ -51,9 +53,8 @@ unsigned char udeks_wave_paths_step(struct udeks_wave_projection *s,
 unsigned int udeks_wave_paths(const signed char *heights, unsigned int width,
     unsigned char height, unsigned char *output)
 {
-    struct udeks_wave_projection state;
-    if(!udeks_wave_paths_begin(&state,width,height)) return 0;
-    while(!udeks_wave_paths_step(&state,heights,output)) {}
-    return state.used;
+    if(!udeks_wave_paths_begin(width,height)) return 0;
+    while(!udeks_wave_paths_step(heights,output)) {}
+    return s->used;
 }
 #endif

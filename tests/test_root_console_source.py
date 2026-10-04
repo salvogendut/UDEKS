@@ -64,7 +64,9 @@ class RootConsoleSourceTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("_udeks_console_app_panel_initialize", renderer)
         self.assertIn("_udeks_console_poll", renderer)
-        for name in ("panel_xinit", "panel_xclock", "panel_xwave"):
+        self.assertIn(".import _udeks_banked_graphics_running, _udeks_banked_graphics_names", renderer)
+        self.assertNotIn("panel_xclock", renderer)
+        for name in ("panel_xinit", "panel_names_loop"):
             self.assertIn(name + ":", renderer)
         self.assertIn("cmp APP_MASK", renderer)
         self.assertIn(".addr _udeks_console_poll", descriptor)

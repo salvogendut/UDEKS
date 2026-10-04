@@ -37,3 +37,10 @@ class BankedBindings(unittest.TestCase):
         for g,s,c in cases:
             with self.assertRaises(ValueError): render(g,s,c)
         with self.assertRaises(KeyError): render(self.gateway.replace('banked_access','missing'),self.scheduler,self.context)
+
+    def test_page_initializer_is_a_fixed_private_kernel_binding(self):
+        good=table({'_udeks_banked_pages_init':0xe300})
+        self.assertIn('BANK0_PAGES_INIT = $e300',render(self.gateway,self.scheduler,self.context,good))
+        for bad in (good.replace('RLA','RLZ'),table({'_udeks_banked_pages_init':0xe644}),
+                    table({'_udeks_banked_pages_init':0xd300})):
+            with self.assertRaises(ValueError): render(self.gateway,self.scheduler,self.context,bad)

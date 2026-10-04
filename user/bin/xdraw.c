@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
-/* Independent task-4 disk client: click cells to toggle ink, C to clear. */
+/* Independent relocatable disk client: click cells to toggle ink, C to clear. */
 #include "udeks/banked_graphics.h"
 #define R ((volatile unsigned char *)0xf359)
 #define P ((volatile unsigned char *)0xf367)

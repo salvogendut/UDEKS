@@ -25,22 +25,6 @@ extern unsigned char submit_request(unsigned char, unsigned char, unsigned char)
 #define PAYLOAD ((volatile unsigned char *)(UDEKS_TASK_REQUEST_BASE + UDEKS_TREQ_PAYLOAD))
 #define REPLY(n) (*(volatile unsigned char *)(UDEKS_CONTROL_REPLY_BASE + (n)))
 
-static const unsigned char * const app_errors[] = {
-    (const unsigned char *)"",
-    (const unsigned char *)": not ready\n",
-    (const unsigned char *)": already running\n",
-    (const unsigned char *)": not found; check /bin\n",
-    (const unsigned char *)": slot busy\n",
-    (const unsigned char *)": bad program\n",
-    (const unsigned char *)": I/O error\n"
-};
-/* Control IDs skip the engine self-test (4). Keep names/syntax on disk. */
-static const unsigned char * const app_names[] = {
-    (const unsigned char *)"xinit", (const unsigned char *)"xclock",
-    (const unsigned char *)"xwave", (const unsigned char *)"xcalc",
-    (const unsigned char *)"xdraw"
-};
-
 static void service_notice(void)
 {
     unsigned char result;
@@ -58,12 +42,7 @@ static void service_notice(void)
     } else if (REPLY(1) == UDEKS_CONTROL_ENGINE) {
         message = (const unsigned char *)(result ? "Z80 self-test: failed\n" : "Z80 self-test: OK\n");
     } else {
-        udeks_write(1, app_names[REPLY(1) < 4 ? REPLY(1)-1 : REPLY(1)-2]);
-        if (result) {
-            if (result > UDEKS_CONTROL_DISK_ERROR) result = UDEKS_CONTROL_NOT_READY;
-            message = app_errors[result];
-        } else message = (const unsigned char *)(REPLY(2) ? " stopped\n" :
-            REPLY(3) ? " started &\n" : " running (Ctrl+C stops)\n");
+        message = (const unsigned char *)"Service request failed\n";
     }
     udeks_write(1, message);
 }
@@ -121,7 +100,6 @@ static void dispatch_line(void)
     unsigned char command;
     unsigned char rest;
     unsigned char result;
-    unsigned char target;
 
     ++USH_COMMANDS;
     command = skip_space(0);
@@ -158,18 +136,13 @@ static void dispatch_line(void)
         return;
     }
 
-    for (target=0;target<5;++target) {
-        rest = command_end(command, app_names[target]);
-        if (rest != 0xFFu) break;
-    }
-    target += target < 3 ? 1 : 2;
+    rest = command_end(command, (const unsigned char *)"xinit");
     if (rest != 0xFFu) {
         rest = skip_space(rest);
-        PAYLOAD[0] = target; PAYLOAD[1] = 0; PAYLOAD[2] = 0;
+        PAYLOAD[0] = UDEKS_CONTROL_DESKTOP; PAYLOAD[1] = 0; PAYLOAD[2] = 0;
         if (text_equal(rest, (const unsigned char *)"-q")) PAYLOAD[1] = UDEKS_CONTROL_STOP;
-        else if (target != UDEKS_CONTROL_DESKTOP && text_equal(rest, (const unsigned char *)"&")) PAYLOAD[2] = 1;
         else if (line[rest]) {
-            write_line((const unsigned char *)"xinit [-q]; xclock/xwave/xcalc/xdraw [-q|&]");
+            write_line((const unsigned char *)"xinit [-q]; program [-q|&]");
             finish_command(); return;
         }
         result = submit_request(UDEKS_TREQ_OP_CONTROL, 0, UDEKS_CONTROL_COUNT);

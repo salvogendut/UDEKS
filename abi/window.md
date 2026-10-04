@@ -124,8 +124,8 @@ Banked ordinary UDEX programs do not call UAPP's resident paint functions or
 register foreign-bank callbacks. They submit operation 23 through the existing
 `$FF16` request boundary: descriptor/flags zero, count 24. Unused payload bytes
 are ignored; clients should clear them. Each registered task owns at most one
-window. The service derives the task from the scheduler, binds owners `$83/$84`
-to tasks 3/4, and copies titles into its own storage.
+window. The service derives the task from the scheduler, binds owners `$83`–`$86`
+to tasks 3–6, and copies titles into its own storage.
 
 | Payload | Request | Successful result |
 | --- | --- | --- |
@@ -166,7 +166,9 @@ zero requests an initial size notification. The seven-byte reply is:
 Width/height are valid for every live response; click coordinates only for
 state 3. Geometry delivery takes precedence without consuming a pending click.
 Repeated polls with an old size repeat state 2; multiple intermediate resizes
-coalesce to the current size. Acknowledging it allows pending clicks through.
+coalesce to the current size. While a drag/resize outline is held, state 2 is
+suppressed; applications continue with the last acknowledged size. Releasing
+it exposes the committed size. Acknowledging it allows pending clicks through.
 No extra resident queue or lost one-shot notification is required. Moves and
 stacking alone do not generate a size change. Ownership checks precede either
 geometry lookup or input consumption. The closing owner sees state 0 before
@@ -188,8 +190,12 @@ image+BSS reservation**. Commands use window-relative byte coordinates:
 
 Colors are black (0) or yellow (7). The complete list is validated before
 commit; a rejected update leaves the old retained list and window unchanged.
-The service copies the commands into private bank-1 buffers (currently
-`$C600-$CAFF` and `$CB00-$CFFF`) and repaints through the compositor's client/damage clip.
+The service copies commands into a packed 2,304-byte bank-0 pool at
+`$1300-$1BFF` and repaints through the compositor's client/damage clip.
+All four owners share that capacity. Replacing or closing an image compacts
+the pool; an update exceeding the available capacity returns `ENOMEM`
+without changing any owner's retained image. Sources must stay below the
+caller's private stack page, even if the total allocation extends further.
 Future moves, raises or partial uncovering replay that copy at the current
 window origin, without running the client or trusting a client buffer again.
 Zero commands clears the retained content. There is no cross-task begin/end

@@ -352,6 +352,14 @@ graphics-apps-check: placement-check-guard boot $(PANIC_PROBE_KERNEL_BIN) $(BUIL
 	$(PYTHON) tools/graphics_app_layout.py --build $(BUILD_DIR) \
 		--output $(BUILD_DIR)/four-apps/layout.json
 
+# Build `boot` and the independent example in my-distrobox first; VICE is host-side.
+four-native-probe:
+	$(PYTHON) tools/four_native_probe.py --disk $(BOOT_D64) --drive 1541 --output $(BUILD_DIR)/native-clients/four-vice-d64
+	$(PYTHON) tools/four_native_probe.py --disk $(BOOT_D71) --drive 1571 --output $(BUILD_DIR)/native-clients/four-vice-d71
+	$(PYTHON) tools/four_native_probe.py --disk $(BOOT_D81) --drive 1581 --output $(BUILD_DIR)/native-clients/four-vice-d81
+
+.PHONY: four-native-probe
+
 # Run from the host after the reference-container build (VICE is a Flatpak).
 banked-apps-probe: $(BOOT_D64) $(BOOT_D71) $(BUILD_BOOT)/banked-loader.map
 	$(PYTHON) tools/banked_loader_probe.py --disk $(BOOT_D64) --drive 1541 \
@@ -864,9 +872,15 @@ $(USER_XCLOCK_BIN): $(USER_XCLOCK_ENTRY_OBJ) $(USER_XCLOCK_OBJ) \
 	$(CL65) -t none --cpu 6502 -C cfg/8502-managed-app1.cfg \
 		-m $(BUILD_USER)/xclock.map -o $@ $(filter %.o,$^)
 
-$(USER_XCLOCK_UDEX): $(USER_XCLOCK_BIN) tools/build_udex.py
-	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 \
-		--entry-address 0x0200 --bss-size 0x000D --flags 0x02 $< $@
+$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX): \
+		user/lib/native_graphics_entry.s cfg/8502-reloc-app.cfg tools/o65_to_udex.py \
+		tools/gen_capability_imports.py include/udeks/banked_graphics.h
+
+$(USER_XCLOCK_UDEX): user/bin/xclock_native.c user/lib/clock_face.c user/include/udeks/clock_face.h include/udeks/time.h user/lib/graphics_request.s tools/build_graphical_example.py Makefile | $(BUILD_USER)
+	$(PYTHON) tools/build_graphical_example.py --source user/bin/xclock_native.c --source user/lib/clock_face.c \
+		--name XCLOCK --output $(BUILD_USER)/native-clock --graphics-abi 10 --static-locals --capacity 2816 \
+		--export _udeks_native_clock_commands --export _udeks_native_clock_presents
+	cp $(BUILD_USER)/native-clock/XCLOCK.BIN $@
 
 $(BUILD_USER)/calc.s: src/apps/calc.c include/udeks/calc.h | $(BUILD_USER)
 	$(CC65) -t none --cpu 6502 --standard c99 -Os -I include -o $@ $<
@@ -894,8 +908,10 @@ $(BUILD_USER)/native_graphics_entry.o: user/lib/native_graphics_entry.s | $(BUIL
 	$(CA65) --cpu 6502 -o $@ $<
 $(BUILD_USER)/xcalc.bin $(BUILD_USER)/xcalc.map &: $(BUILD_USER)/native_graphics_entry.o $(BUILD_USER)/calc.o $(BUILD_USER)/xcalc-native.o $(BUILD_USER)/graphics_request.o cfg/8502-xcalc-native.cfg
 	$(CL65) -t none --cpu 6502 -C cfg/8502-xcalc-native.cfg -u _udeks_program_entry -u _udeks_calc_value -u _udeks_calc_error -m $(BUILD_USER)/xcalc.map -o $(BUILD_USER)/xcalc.bin $(filter %.o,$^)
-$(USER_XCALC_UDEX): $(BUILD_USER)/xcalc.bin $(BUILD_USER)/xcalc.map tools/pack_native.py tools/build_udex.py
-	$(PYTHON) tools/pack_native.py $(BUILD_USER)/xcalc.bin $(BUILD_USER)/xcalc.map $@
+$(USER_XCALC_UDEX): user/bin/xcalc_native.c src/apps/calc.c include/udeks/calc.h user/lib/graphics_request.s tools/build_graphical_example.py Makefile | $(BUILD_USER)
+	$(PYTHON) tools/build_graphical_example.py --source user/bin/xcalc_native.c --source src/apps/calc.c \
+		--name XCALC --output $(BUILD_USER)/native-calc --capacity 4608 --export _udeks_calc_value --export _udeks_calc_error
+	cp $(BUILD_USER)/native-calc/XCALC.BIN $@
 
 $(BUILD_USER)/xdraw.s: user/bin/xdraw.c include/udeks/banked_graphics.h | $(BUILD_USER)
 	$(CC65) -t none --cpu 6502 --standard c99 -Os -I include -o $@ $<
@@ -903,8 +919,10 @@ $(BUILD_USER)/xdraw.o: $(BUILD_USER)/xdraw.s
 	$(CA65) --cpu 6502 -o $@ $<
 $(BUILD_USER)/xdraw.bin $(BUILD_USER)/xdraw.map &: $(BUILD_USER)/native_graphics_entry.o $(BUILD_USER)/xdraw.o $(BUILD_USER)/graphics_request.o cfg/8502-xdraw-native.cfg
 	$(CL65) -t none --cpu 6502 -C cfg/8502-xdraw-native.cfg -u _udeks_program_entry -u _udeks_xdraw_cells -m $(BUILD_USER)/xdraw.map -o $(BUILD_USER)/xdraw.bin $(filter %.o,$^)
-$(USER_XDRAW_UDEX): $(BUILD_USER)/xdraw.bin $(BUILD_USER)/xdraw.map tools/pack_native.py tools/build_udex.py
-	$(PYTHON) tools/pack_native.py $(BUILD_USER)/xdraw.bin $(BUILD_USER)/xdraw.map $@
+$(USER_XDRAW_UDEX): user/bin/xdraw.c user/lib/graphics_request.s tools/build_graphical_example.py Makefile | $(BUILD_USER)
+	$(PYTHON) tools/build_graphical_example.py --source user/bin/xdraw.c --name XDRAW \
+		--output $(BUILD_USER)/native-draw --capacity 2560 --export _udeks_xdraw_cells
+	cp $(BUILD_USER)/native-draw/XDRAW.BIN $@
 
 $(USER_XWAVE_ASM): src/apps/xwave.c include/udeks/mailbox.h \
 		include/udeks/vic_graphics.h include/udeks/window.h \
@@ -922,9 +940,12 @@ $(USER_XWAVE_BIN): $(USER_XWAVE_ENTRY_OBJ) $(USER_XWAVE_OBJ) \
 	$(CL65) -t none --cpu 6502 -C cfg/8502-managed-app2.cfg \
 		-m $(BUILD_USER)/xwave.map -o $@ $(filter %.o,$^)
 
-$(USER_XWAVE_UDEX): $(USER_XWAVE_BIN) tools/build_udex.py
-	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x1200 \
-		--entry-address 0x1200 --bss-size 0x0225 --flags 0x02 $< $@
+$(USER_XWAVE_UDEX): user/bin/xwave_native.c user/lib/wave_paths.c user/include/udeks/wave_paths.h user/include/worker.h user/lib/graphics_request.s tools/build_graphical_example.py Makefile | $(BUILD_USER)
+	$(PYTHON) tools/build_graphical_example.py --source user/bin/xwave_native.c --source user/lib/wave_paths.c \
+		--name XWAVE --output $(BUILD_USER)/native-wave --graphics-abi 12 --static-locals --capacity 4096 \
+		--export _native_wave_samples --export _native_wave_paths --export _native_wave_rows \
+		--export _native_wave_presents --export _native_wave_failure --export _native_wave_width --export _native_wave_height
+	cp $(BUILD_USER)/native-wave/XWAVE.BIN $@
 
 $(USER_BOOTFS): $(USER_MOUNT_UDEX) \
 		$(USER_RECOVERY_USH_UDEX) \
@@ -1416,7 +1437,7 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphi
 		$$(cat $(CAPABILITY_FORCE_IMPORTS)) \
 		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) \
 		-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok \
-		-u _udeks_line_editor_get_line \
+		-u _udeks_line_editor_get_line -u _udeks_banked_pages_init \
 		-o $(KERNEL_BIN) \
 		$(filter %.o,$^)
 
@@ -1620,7 +1641,7 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$$(cat $(CAPABILITY_FORCE_IMPORTS)) \
 		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) \
 		-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok \
-		-u _udeks_line_editor_get_line \
+		-u _udeks_line_editor_get_line -u _udeks_banked_pages_init \
 		-m $(BUILD_8502)/udeks-8502-panic-probe.map \
 		-o $(PANIC_PROBE_KERNEL_BIN) \
 		$(filter %.o,$^)
@@ -2023,22 +2044,22 @@ $(MEMORY_MAP_PRG): $(MEMORY_MAP_LAUNCH_BIN) tools/bin_to_prg.py
 $(BUILD_BOOT)/stage0.o: src/boot/stage0.s | $(BUILD_BOOT)
 	$(CA65) --cpu 6502 -o $@ $<
 
-$(BUILD_BOOT)/banked-bindings.inc: $(STAGE1_GATEWAY_MAP) $(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_MAP) tools/gen_banked_bindings.py
-	$(PYTHON) tools/gen_banked_bindings.py $(STAGE1_GATEWAY_MAP) $(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_MAP) $@
+$(BUILD_BOOT)/banked-bindings.inc: $(STAGE1_GATEWAY_MAP) $(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_MAP) $(KERNEL_MAP) tools/gen_banked_bindings.py
+	$(PYTHON) tools/gen_banked_bindings.py $(STAGE1_GATEWAY_MAP) $(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_MAP) $(KERNEL_MAP) $@
 
 $(BUILD_8502)/banked_graphics.s: src/services/window/banked_graphics.c include/udeks/banked_graphics.h \
 		include/udeks/retained_paths.h include/udeks/window.h include/udeks/window_service.h include/udeks/vic_graphics.h | $(BUILD_8502)
-	$(CC65) -t none --cpu 6502 --standard c99 -Ors -I include -o $@ $<
+	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o $@ $<
 $(BUILD_8502)/banked_graphics.o: $(BUILD_8502)/banked_graphics.s
 	$(CA65) --cpu 6502 -o $@ $<
 $(BUILD_8502)/retained_paths.s: src/services/window/retained_paths.c include/udeks/retained_paths.h include/udeks/banked_graphics.h include/udeks/vic_graphics.h | $(BUILD_8502)
 	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o $@ $<
 $(BUILD_8502)/retained_paths.o: $(BUILD_8502)/retained_paths.s
 	$(CA65) --cpu 6502 -o $@ $<
-$(BUILD_8502)/banked_access.o: src/services/window/banked_access.s | $(BUILD_8502)
+$(BUILD_8502)/banked_access.o: src/services/window/banked_access.s src/services/app/native_layout.inc | $(BUILD_8502)
 	$(CA65) --cpu 6502 -o $@ $<
 
-$(BUILD_BOOT)/banked-loader.o: src/services/app/banked_loader.s $(BUILD_BOOT)/banked-bindings.inc | $(BUILD_BOOT)
+$(BUILD_BOOT)/banked-loader.o: src/services/app/banked_loader.s src/services/app/native_layout.inc $(BUILD_BOOT)/banked-bindings.inc | $(BUILD_BOOT)
 	$(CA65) --cpu 6502 -I $(BUILD_BOOT) -o $@ $<
 
 $(BANKED_LOADER_BIN) $(BUILD_BOOT)/banked-loader.map $(BANKED_RELOC_BIN) $(BANKED_ACCESS_BIN) &: $(BUILD_BOOT)/banked-loader.o \
@@ -2352,6 +2373,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 check:
+	$(PYTHON) -m py_compile tools/four_native_probe.py tools/native_app_layout.py
 	$(PYTHON) -m py_compile tools/banked_loader_probe.py tools/gen_banked_bindings.py tools/build_banked_execution.py
 	$(PYTHON) -m py_compile tools/o65_to_udex.py tools/build_reloc_fixture.py
 	$(PYTHON) -m py_compile tools/build_graphical_example.py tools/generic_launch_probe.py tools/add_disk_apps.py

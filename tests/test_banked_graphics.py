@@ -27,6 +27,7 @@ class BankedGraphics(unittest.TestCase):
         self.lib.test_reset()
         self.r = (c.c_ubyte*38).in_dll(self.lib, 'graphics_request')
         self.memory = (c.c_ubyte*65536).in_dll(self.lib, 'graphics_memory')
+        self.pool = (c.c_ubyte*2304).in_dll(self.lib,'graphics_pool')
         self.owners = (c.c_ubyte*5).in_dll(self.lib, 'test_owner')
 
     def scalar(self, name, value=None, kind=c.c_ubyte):
@@ -57,7 +58,7 @@ class BankedGraphics(unittest.TestCase):
         self.lib.test_admit(0)
         for offset,value in ((9,1),(13,1),(10,23)):
             self.assertEqual(self.request([1], **{str(offset):value}), 22)
-        for task in (0,1,2,5,255):
+        for task in (0,1,2,7,255):
             self.scalar('task', task)
             self.assertEqual(self.request([1]), 22)
         self.scalar('task',3)
@@ -161,7 +162,7 @@ class BankedGraphics(unittest.TestCase):
 
     def test_present_rejects_bad_ranges_without_writes(self):
         h=self.create()
-        for pointer,count in ((0x22ff,1),(0x3500,0),(0x34f9,1),(0xfffe,1),(0x2300,49)):
+        for pointer,count in ((0x22ff,1),(0x3500,0),(0x33f9,1),(0xfffe,1),(0x2300,49)):
             self.assertEqual(self.present(h,pointer,count),22)
         self.assertEqual(self.scalar('writes',kind=c.c_uint),0)
         self.assertEqual(self.scalar('repaints',kind=c.c_uint),0)
@@ -170,14 +171,14 @@ class BankedGraphics(unittest.TestCase):
         h=self.create()
         self.memory[0x2300:0x2308]=bytes((1,5,17,10,20,0,0,0))
         self.assertEqual(self.present(h),0)
-        original=bytes(self.memory[0xc600:0xcb00])
+        original=bytes(self.pool[:8])
         self.memory[0x2308:0x2310]=bytes((99,0,0,0,0,0,0,0))
         self.assertEqual(self.present(h,count=2),22)
-        self.assertEqual(bytes(self.memory[0xc600:0xcb00]),original)
-        self.assertEqual(self.scalar('writes',kind=c.c_uint),1)
+        self.assertEqual(bytes(self.pool[:8]),original)
+        self.assertEqual(bytes(self.pool[:8]),original)
         self.memory[0x2308:0x2310]=bytes((0,1,2,3,4,1,0,0))
         self.assertEqual(self.present(h,count=2),22)
-        self.assertEqual(bytes(self.memory[0xc600:0xcb00]),original)
+        self.assertEqual(bytes(self.pool[:8]),original)
 
     def test_repaint_uses_retained_image_at_current_geometry(self):
         h=self.create()
@@ -198,7 +199,7 @@ class BankedGraphics(unittest.TestCase):
         self.assertEqual(self.owners[b],0x84)
         self.lib.udeks_banked_graphics_poll()
         self.assertEqual(self.owners[b],0x84)
-        (c.c_ubyte*2).in_dll(self.lib,'test_state')[1]=6
+        (c.c_ubyte*4).in_dll(self.lib,'test_state')[1]=6
         self.scalar('reap_busy',16)
         self.lib.udeks_banked_graphics_poll()
         self.assertEqual(self.owners[b],0)
@@ -210,60 +211,82 @@ class BankedGraphics(unittest.TestCase):
 
     def test_second_client_has_its_own_retained_allocation(self):
         a=self.create(); self.assertEqual(self.present(a),0)
-        before=bytes(self.memory[0xc600:0xcb00])
+        before=bytes(self.pool[:8])
         b=self.create(4)
         self.memory[0x3500:0x3508]=bytes((1,2,3,4,5,0,0,0))
         self.assertEqual(self.present(b,0x2300),22)
         self.assertEqual(self.present(b,0x3500),0)
-        self.assertEqual(bytes(self.memory[0xc600:0xcb00]),before)
-        self.assertEqual(bytes(self.memory[0xcb00:0xcb08]),bytes(self.memory[0x3500:0x3508]))
+        self.assertEqual(bytes(self.pool[:8]),before)
+        self.assertEqual(bytes(self.pool[8:16]),bytes(self.memory[0x3500:0x3508]))
 
-    def test_indexed_launch_close_wait_and_reuse(self):
-        for index,name in ((0,b'xcalc'),(1,b'xdraw')):
-            self.assertEqual(self.lib.udeks_banked_graphics_start(index),0)
+    def test_generic_launch_close_wait_and_reuse(self):
+        for index,name in enumerate((b'one',b'two',b'three',b'four')):
+            self.assertEqual(self.lib.udeks_banked_graphics_exec(name),0)
             self.assertEqual(self.scalar('selector'),index+3)
-            self.assertEqual(bytes((c.c_ubyte*17).in_dll(self.lib,'test_path')),
-                             bytes((5,))+name+bytes(11))
             self.assertEqual(self.lib.udeks_banked_graphics_running(index),1)
-            self.assertEqual(self.lib.udeks_banked_graphics_start(index),4)
-        self.assertEqual(self.lib.udeks_banked_graphics_stop(1),0)
+        self.assertEqual(self.lib.udeks_banked_graphics_exec(b'fifth'),4)
+        self.assertEqual(self.lib.udeks_banked_graphics_stop_name(b'two'),0)
         self.assertEqual(self.lib.udeks_banked_graphics_running(1),0)
         self.assertEqual(self.lib.udeks_banked_graphics_running(0),1)
-        self.assertEqual(self.lib.udeks_banked_graphics_start(1),4)  # still live/closing
-        (c.c_ubyte*2).in_dll(self.lib,'test_state')[1]=6
+        self.assertEqual(self.lib.udeks_banked_graphics_exec(b'replacement'),4)
+        (c.c_ubyte*4).in_dll(self.lib,'test_state')[1]=6
         self.lib.udeks_banked_graphics_poll()
-        self.assertEqual(self.lib.udeks_banked_graphics_start(1),0)
-        self.assertEqual(self.lib.udeks_banked_graphics_start(2),4)
+        self.assertEqual(self.lib.udeks_banked_graphics_exec(b'replacement'),0)
+        self.assertEqual(self.scalar('selector'),4)
         self.assertEqual(self.lib.udeks_banked_graphics_stop(255),1)
-        self.assertEqual(self.lib.udeks_banked_graphics_running(2),0)
+        self.assertEqual(self.lib.udeks_banked_graphics_running(4),0)
 
     def test_load_errors_preserve_peer_and_do_not_publish_client(self):
-        self.assertEqual(self.lib.udeks_banked_graphics_start(0),0)
+        self.assertEqual(self.lib.udeks_banked_graphics_exec(b'one'),0)
         for error,result in ((2,3),(16,4),(12,4),(8,5),(5,6)):
             self.scalar('load_error',error)
-            self.assertEqual(self.lib.udeks_banked_graphics_start(1),result)
+            self.assertEqual(self.lib.udeks_banked_graphics_exec(b'two'),result)
             self.assertEqual(self.lib.udeks_banked_graphics_running(1),0)
             self.assertEqual(self.lib.udeks_banked_graphics_running(0),1)
         self.scalar('load_error',0);self.scalar('activate_error',8)
-        self.assertEqual(self.lib.udeks_banked_graphics_start(1),5)
+        self.assertEqual(self.lib.udeks_banked_graphics_exec(b'two'),5)
         self.assertEqual(self.lib.udeks_banked_graphics_running(1),0)
+
+    def test_four_owners_pool_compaction_and_capacity_rejection_are_atomic(self):
+        maximum=(bytes((127,10,20))+bytes(252))*5+bytes(5)
+        for task,pointer in ((3,0x2300),(4,0x3500),(5,0x8000),(6,0xc600)):
+            h=self.create(task)
+            self.assertEqual(self.paths(h,bytes((2,task,20,1,1,0,0,0)),pointer),0)
+        self.scalar('task',3)
+        self.assertEqual(self.paths(1,maximum),0)
+        before=bytes(self.pool)
+        lengths=bytes((c.c_uint*4).in_dll(self.lib,'udeks_retained_lengths'))
+        self.scalar('task',4)
+        self.assertEqual(self.paths(2,maximum,0x3500),12)
+        self.assertEqual(bytes(self.pool),before)
+        self.assertEqual(bytes((c.c_uint*4).in_dll(self.lib,'udeks_retained_lengths')),lengths)
+        self.scalar('task',3)
+        self.assertEqual(self.request([4,1]),0)
+        self.assertEqual(bytes(self.pool[:24]),before[1280:1304])
+        self.scalar('task',4)
+        self.assertEqual(self.paths(2,maximum,0x3500),0)
+        self.assertEqual(bytes(self.pool[1280:1296]),before[1288:1304])
+        self.scalar('task',6)
+        self.assertEqual(self.paths(4,maximum,0xcf00),22) # private stack, not app data
+        self.assertEqual(self.owners[3],0x85)
+        self.assertEqual(self.owners[4],0x86)
 
     def test_names_unknown_to_service_use_free_slots_and_are_copied(self):
         launch=self.lib.udeks_banked_graphics_exec
         launch.argtypes=[c.c_char_p]
-        names=(c.c_ubyte*32).in_dll(self.lib,'udeks_banked_graphics_names')
-        for index,name in enumerate((b'orbit',b'canvas_2')):
+        names=(c.c_ubyte*64).in_dll(self.lib,'udeks_banked_graphics_names')
+        for index,name in enumerate((b'orbit',b'canvas_2',b'peer',b'fourth')):
             source=c.create_string_buffer(name)
             self.assertEqual(launch(source),0)
             source[0]=b'!'
             self.assertEqual(self.scalar('selector'),3+index)
             self.assertEqual(bytes(names[index*16:index*16+16]),name.ljust(16,b'\0'))
         before=bytes(names)
-        self.assertEqual(launch(b'third'),4)
+        self.assertEqual(launch(b'fifth'),4)
         self.assertEqual(bytes(names),before)
         self.assertEqual(launch(b'12345678901234567'),5)
         self.assertEqual(bytes(names),before)
-        (c.c_ubyte*2).in_dll(self.lib,'test_state')[0]=6
+        (c.c_ubyte*4).in_dll(self.lib,'test_state')[0]=6
         self.lib.udeks_banked_graphics_poll()
         self.assertEqual(launch(b'1234567890123456'),0)
         self.assertEqual(bytes(names[:16]),b'1234567890123456')
@@ -276,12 +299,12 @@ class BankedGraphics(unittest.TestCase):
     def test_paths_validate_before_commit_and_use_independent_retained_slots(self):
         a=self.create(); first=bytes((2,10,20,5,250,0,0,0))
         self.assertEqual(self.paths(a,first),0)
-        self.assertEqual(bytes(self.memory[0xc600:0xc608]),first)
-        self.assertEqual((c.c_uint*2).in_dll(self.lib,'udeks_retained_lengths')[0],0x8008)
+        self.assertEqual(bytes(self.pool[:8]),first)
+        self.assertEqual((c.c_uint*4).in_dll(self.lib,'udeks_retained_lengths')[0],0x8008)
         b=self.create(4)
         self.assertEqual(self.paths(b,first,0x3500),0)
-        before=bytes(self.memory[0xc600:0xd000])
-        lengths=bytes((c.c_uint*2).in_dll(self.lib,'udeks_retained_lengths'))
+        before=bytes(self.pool)
+        lengths=bytes((c.c_uint*4).in_dll(self.lib,'udeks_retained_lengths'))
         writes=self.scalar('writes',kind=c.c_uint)
         repaints=self.scalar('repaints',kind=c.c_uint)
         malformed=(b'',bytes(7),bytes(1288),bytes(16), # counts / excessive pad
@@ -297,25 +320,25 @@ class BankedGraphics(unittest.TestCase):
         for data in malformed:
             with self.subTest(data=data[:8]):
                 self.assertEqual(self.paths(b,data,0x3500),22)
-                self.assertEqual(bytes(self.memory[0xc600:0xd000]),before)
-                self.assertEqual(bytes((c.c_uint*2).in_dll(self.lib,'udeks_retained_lengths')),lengths)
+                self.assertEqual(bytes(self.pool),before)
+                self.assertEqual(bytes((c.c_uint*4).in_dll(self.lib,'udeks_retained_lengths')),lengths)
         self.assertEqual(self.scalar('writes',kind=c.c_uint),writes)
         self.assertEqual(self.scalar('repaints',kind=c.c_uint),repaints)
 
     def test_paths_owner_range_version_and_format_switch(self):
         a=self.create(); data=bytes((2,10,20,5,250,0,0,0))
         self.assertEqual(self.paths(a,data,minor=11),38)
-        for pointer in (0x22ff,0x34f9,0x3500,0xfff8):
+        for pointer in (0x22ff,0x33f9,0x3500,0xfff8):
             self.assertEqual(self.paths(a,data,pointer),22)
-        self.assertEqual(self.paths(a,data,0x34f8),0) # exact allocation end
+        self.assertEqual(self.paths(a,data,0x33f8),0) # exact allocation end
         b=self.create(4)
         self.assertEqual(self.paths(a,data,0x3500),22) # wrong owner
-        self.assertEqual(self.paths(b,data,0x3ff8),0)
+        self.assertEqual(self.paths(b,data,0x3ef8),0)
         self.memory[0x3500:0x3508]=bytes((1,5,17,10,20,0,0,0))
         self.assertEqual(self.present(b,0x3500),0)
-        self.assertEqual((c.c_uint*2).in_dll(self.lib,'udeks_retained_lengths')[1],8)
+        self.assertEqual((c.c_uint*4).in_dll(self.lib,'udeks_retained_lengths')[1],8)
         self.assertEqual(self.present(b,0x3500,0),0)
-        self.assertEqual((c.c_uint*2).in_dll(self.lib,'udeks_retained_lengths')[1],0)
+        self.assertEqual((c.c_uint*4).in_dll(self.lib,'udeks_retained_lengths')[1],0)
 
     def test_paths_multiblock_and_nine_bit_coordinates_repaint_without_client(self):
         h=self.create()
@@ -328,7 +351,7 @@ class BankedGraphics(unittest.TestCase):
         self.lib.test_move(h,40,50)
         self.assertEqual(tuple(tuple(line) for line in lines[3:6]),
             tuple((x-60,y+30,x2-60,y2+30) for x,y,x2,y2 in expected))
-        self.assertEqual(self.scalar('writes',kind=c.c_uint),2)
+        self.assertEqual(bytes(self.pool[:len(data)]),data)
 
     def test_maximum_paths_image_and_late_error_are_atomic(self):
         h=self.create()
@@ -337,18 +360,18 @@ class BankedGraphics(unittest.TestCase):
         self.assertEqual(len(data),1280)
         self.assertEqual(self.paths(h,data),0)
         self.assertEqual(self.scalar('draws',kind=c.c_uint),630)
-        before=bytes(self.memory[0xc600:0xd000])
+        before=bytes(self.pool)
         self.assertEqual(self.paths(h,data[:-1]+b'\1'),22)
-        self.assertEqual(bytes(self.memory[0xc600:0xd000]),before)
+        self.assertEqual(bytes(self.pool),before)
         self.assertEqual(self.scalar('draws',kind=c.c_uint),630)
 
     def test_module_install_preserves_launch_name_and_never_replays_delivery(self):
         blob=bytes(i%251 for i in range(1008))
-        self.memory[0xcc00:0xcff0]=blob
+        self.memory[0xcd00:0xd0f0]=blob
         self.assertEqual(self.lib.udeks_banked_graphics_exec(b'stream_plotter'),0)
         self.assertEqual(bytes((c.c_ubyte*1008).in_dll(self.lib,'graphics_overlay')),blob)
         self.assertEqual(bytes((c.c_ubyte*17).in_dll(self.lib,'test_path')),b'\x0estream_plotter\0\0')
-        self.memory[0xcc00:0xcff0]=bytes(1008) # now a retained image, not delivery
+        self.memory[0xcd00:0xd0f0]=bytes(1008) # now a retained image, not delivery
         self.assertEqual(self.lib.udeks_banked_graphics_exec(b'peer'),0)
         self.assertEqual(bytes((c.c_ubyte*1008).in_dll(self.lib,'graphics_overlay')),blob)
 
@@ -374,7 +397,7 @@ class BankedGraphics(unittest.TestCase):
 
     def test_static_locals_are_not_emitted_at_executable_entry_labels(self):
         source=(ROOT/'src/services/window/retained_paths.c').read_text()
-        self.assertIn('#pragma bss-name("PATHSTATE")',source)
+        self.assertIn('#pragma bss-name("BSS")',source)
         self.assertNotIn('#pragma bss-name("GRAPHICSPATHS")',source)
         for path in ('cfg/8502-bootstrap.cfg','cfg/8502-panic-probe.cfg'):
             config=(ROOT/path).read_text()

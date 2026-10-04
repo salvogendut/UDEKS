@@ -494,7 +494,6 @@ BOOTFS_BASE             = $a000
 BOOTFS_LIMIT_HI         = $b0
 TASK_SLOT               = $0200
 PERSISTENT_SLOT         = $9000
-TASK_BACKUP             = $8000
 ; The resident image reserves four zero-page bytes before none.lib, while a
 ; standalone UDEX begins its runtime reservation at $02.
 RESIDENT_CC65_SP        = $06
@@ -551,18 +550,11 @@ task_load_persistent:
         lda #>PERSISTENT_SLOT
         bne task_load_named_destination
 task_load_managed:
-        ; The resident application manager supplies a direct name pointer.
-        ; Disk staging borrows bank-1 APP1 only when task 2 is FREE. Reject
-        ; before changing its common launcher, even for STOPPED/ZOMBIE.
-        pha
-        lda DISK_LOADER_CHILD_STATE
-        beq :+
-        pla
-        lda #TASK_BUSY
+        ; Retired callback ABI: never load into the retained-drawing pool.
+        lda #TASK_BAD_FLAGS
+        sta TASK_ERROR
+        lda #1
         rts
-:
-        pla
-        ldy #$02
 task_load_named:
         sta task_command_load+1
         stx task_command_load+2
@@ -727,11 +719,6 @@ task_lookup_bootfs:
         jmp task_lookup_code
         .byte "ULKP", 0, 1
 task_lookup_code:
-        lda task_load_mode
-        cmp #2
-        bne :+
-        jmp task_managed_name
-:
         ; Normal session commands come from the system volume. Bootfs is
         ; explicit recovery, not a higher-priority shadow of disk programs.
         lda BOOT_SHELL_SOURCE
@@ -971,57 +958,6 @@ task_disk_leaf_start:
         sta task_command_load+2
         jmp task_disk_fallback
 
-; Managed callers use fixed names and retain fixed bank-0 slots. The disk
-; header is not permitted to choose the other application's destination.
-task_managed_name:
-        lda #$0a
-        sta task_managed_limit
-        lda task_name_length
-        cmp #6
-        beq task_managed_clock
-        cmp #5
-        bne task_managed_unknown
-        ldx #4
-:
-        lda TASK_HEADER,x
-        cmp task_managed_wave_name,x
-        bne task_managed_calc
-        dex
-        bpl :-
-        lda #$12
-        bne task_managed_named
-task_managed_calc:
-        ldx #4
-:
-        lda TASK_HEADER,x
-        cmp task_managed_calc_name,x
-        bne task_managed_unknown
-        dex
-        bpl :-
-        lda #$10
-        sta task_managed_limit
-        lda #$02
-        bne task_managed_named
-task_managed_clock:
-        ldx #5
-:
-        lda TASK_HEADER,x
-        cmp task_managed_clock_name,x
-        bne task_managed_unknown
-        dex
-        bpl :-
-        lda #$02
-task_managed_named:
-        sta task_managed_base
-        jmp task_disk_leaf_start
-task_managed_unknown:
-        jmp task_not_found
-task_managed_clock_name: .byte "xclock"
-task_managed_wave_name:  .byte "xwave"
-task_managed_calc_name:  .byte "xcalc"
-task_managed_limit:      .byte 0
-task_managed_base:       .byte 0
-
         .segment "TASKLOADER"
 task_disk_fallback:
         sta MMU_LCR_KERNEL_IO
@@ -1102,17 +1038,11 @@ task_validate_header:
         ldx task_load_mode
         beq task_check_foreground_load
         bmi task_check_foreground_load
-        cpx #$01
-        bne task_check_managed_load
         cmp #$90
         beq :+
         jmp task_bad_load
 task_check_foreground_load:
         cmp #$02
-        beq :+
-        jmp task_bad_load
-task_check_managed_load:
-        cmp task_managed_base
         beq :+
         jmp task_bad_load
 :
@@ -1158,10 +1088,6 @@ task_file_size_valid:
 :
         ldx #$0a
         lda task_load_mode
-        cmp #2
-        bne :+
-        ldx task_managed_limit
-:
         cmp #1
         bne :+
         ldx #$10                    ; persistent ush ends before bootfs
@@ -1217,59 +1143,7 @@ task_check_entry_offset:
         bcc task_valid_jump
         jmp task_bad_entry
 task_valid_jump:
-        lda task_load_mode
-        cmp #2
-        bne task_validated_image
-        ; Six absolute JMP veneers are the managed ABI. Validate every
-        ; target against this image before copying any live app byte.
-        lda TASK_IMAGE_HI
-        bne :+
-        lda TASK_IMAGE_LO
-        cmp #18
-        bcc task_managed_entry_bad
-:
-        clc
-        lda task_file_lo
-        adc #16
-        sta task_managed_read+1
-        lda task_file_hi
-        adc #0
-        sta task_managed_read+2
-        ldy #0
-task_managed_vector:
-        jsr task_managed_read
-        cmp #$4c
-        bne task_managed_entry_bad
-        iny
-        jsr task_managed_read
-        sta task_entry_offset_lo
-        iny
-        jsr task_managed_read
-        sec
-        sbc task_managed_base
-        bcc task_managed_entry_bad
-        bne :+
-        ldx task_entry_offset_lo
-        cpx #18
-        bcc task_managed_entry_bad
-:
-        cmp TASK_IMAGE_HI
-        bcc task_managed_vector_next
-        bne task_managed_entry_bad
-        lda task_entry_offset_lo
-        cmp TASK_IMAGE_LO
-        bcs task_managed_entry_bad
-task_managed_vector_next:
-        iny
-        cpy #18
-        bcc task_managed_vector
-task_validated_image:
         jmp task_valid
-task_managed_entry_bad:
-        jmp task_bad_entry
-task_managed_read:
-        lda $ffff,y
-        rts
 
         .segment "TASKLOADER"
 task_valid:
@@ -1322,32 +1196,7 @@ task_prepare_copy_count:
         jmp task_copy_byte
 
 task_save_foreground:
-        ; Save all ten pages of APP1 in unused bank-1 RAM.
-        lda #$02
-        sta task_save_load+2
-        lda #$80
-        sta task_save_store+2
-        ldx #$0a
-task_save_page:
-        ldy #$00
-task_save_byte:
-        lda #$00
-        sta MMU_LCR_KERNEL_FLAT
-task_save_load:
-        lda TASK_SLOT,y
-        sta task_transfer_byte
-        lda #$00
-        sta MMU_LCR_WORKER_FLAT
-        lda task_transfer_byte
-task_save_store:
-        sta TASK_BACKUP,y
-        iny
-        bne task_save_byte
-        inc task_save_load+2
-        inc task_save_store+2
-        dex
-        bne task_save_page
-
+        ; No live callback image occupies bank-0 APP1 anymore.
         ; Copy exactly the validated UDEX image bytes into APP1.
         lda #<TASK_SLOT
         sta task_copy_store+1
@@ -1468,31 +1317,7 @@ task_restore_zp:
         dex
         bpl task_restore_zp
 
-        ; Restore APP1 before returning to any resident shell code.
-        lda #$80
-        sta task_restore_load+2
-        lda #$02
-        sta task_restore_store+2
-        ldx #$0a
-task_restore_page:
-        ldy #$00
-task_restore_byte:
-        lda #$00
-        sta MMU_LCR_WORKER_FLAT
-task_restore_load:
-        lda TASK_BACKUP,y
-        sta task_transfer_byte
-        lda #$00
-        sta MMU_LCR_KERNEL_FLAT
-        lda task_transfer_byte
-task_restore_store:
-        sta TASK_SLOT,y
-        iny
-        bne task_restore_byte
-        inc task_restore_load+2
-        inc task_restore_store+2
-        dex
-        bne task_restore_page
+        ; Bank-0 APP1 is the transient console allocation; no backup restore.
         lda #$00
         sta MMU_LCR_KERNEL_IO
         lda #$03
@@ -1618,12 +1443,6 @@ task_disk_byte:
         lda task_load_mode
         cmp #1
         beq task_disk_persistent_room
-        cmp #2
-        bne :+
-        lda task_managed_limit
-        cmp #$10
-        beq task_disk_persistent_room
-:
         lda task_disk_store+2
         cmp #$0c
         bne task_disk_room

@@ -1,9 +1,10 @@
 # An independent graphical app (development SDK)
 
-Issue #35 now supports **`name` and `name &` without an OS name-table entry**. The same
-compiled file runs in either free compatible native allocation. This is an
-intermediate SDK: native arguments, name-based stop and
-migration of the four existing named clients are still pending.
+Issue #35 supports **four generic native allocations**. Build once, install a
+`.BIN`, then use `name`, `name &` or `name -q` without an OS name-table entry.
+All four bundled graphical programs use this path. Allocation is size-based;
+not every program fits every slot. Native arguments and interactive
+background-console stdin are still separate work.
 
 ## Bounded Z80 requests (UTRQ 0.11)
 
@@ -28,43 +29,29 @@ General background-console stdin/argument handling remains separate work.
 
 ## Try the candidate
 
-Cold-boot `build/generic-apps/apps-demo.d64` (or `.d71` / `.d81`). Device 8 is mounted
-as `/` at startup. Run:
+Cold-boot a fresh `build/boot/udeks.d64`, `.d71` or `.d81`. Device 8 is
+mounted as `/` at startup:
 
 ```text
-hello &
-second
+xclock &
+xwave &
+xcalc &
+xdraw &
+cowsay four apps alive
 ```
 
-`second` owns the foreground: press **Ctrl+C** to close it and return the
-prompt. `hello` keeps running. Then:
+Move, raise, close and reload each window. Clock and wave resize after releasing
+the outline; calculator and drawing intentionally use fixed-size layouts.
+A fifth launch reports `task slot busy` without disturbing peers.
+`xinit -q` closes the desktop and its apps. `name -q` closes the first matching
+live instance (not every duplicate). Bare `name` owns the foreground; Ctrl+C
+at the VDC console closes only that instance, leaving background apps running.
 
-```text
-second &
-args alpha beta
-cowsay hello
-```
-
-Two independently owned HELLO windows appear. Click a window's client area:
-its black square moves between the two ends, without changing the other
-instance. Drag one, close it with its close box, and run its command again.
-The running panel shows `hello` and `second`. A third launch while both native
-slots are occupied reports `task slot busy`; the two live apps remain intact.
-`xinit -q` closes the desktop and all its apps.
-
-HELLO.BIN and SECOND.BIN deliberately contain identical executable bytes.
-Neither filename is compiled into the OS. You can also launch `hello &` twice;
-ownership is per task/window, not unique per filename. For this increment use
-close boxes or desktop shutdown, **not `hello -q`**. Background
-jobs do not become the console's Ctrl+C target.
-
-Graphics are initialized lazily by the first valid CREATE request, not simply
-by loading a native executable. Bare native launch currently accepts no app
-arguments; close/Ctrl+C is cooperative through the graphics event protocol.
-
-Clock/wave can coexist with these two native clients. Calculator/drawing use
-the same native allocations, so do not expect them in addition to both demos.
-Four windows remain the ceiling; this is not yet four interchangeable slots.
+Build/install HELLO using the commands below, then run `hello &` four times
+on an empty desktop. Each window has independent clicks and state, although
+all four use identical executable bytes. The name and slot are not compiled
+into the system. Close boxes retire instances; reloading clears their private
+state. Graphics initializes on CREATE, not merely on native program admission.
 
 ## Build and install without rebuilding UDEKS
 
@@ -111,7 +98,11 @@ Repeat `--source` for each C translation unit (unique basenames); the default
 HELLO-specific export is omitted for custom sources. Optional `--export SYMBOL`
 retains a diagnostic symbol in the app's map, not a binding to the kernel.
 
-## Native clock migration candidate
+## Earlier native-clock migration candidate (historical)
+
+The following commands/results describe the earlier two-native-slot build.
+The current default XCLOCK.BIN uses the same public API and the four-slot layout above.
+
 
 On branch `graphics-native-clients`, `make native-clock` builds an independent
 relocatable clock as **NCLOCK.BIN**. It shares no app callbacks, fixed task id or
@@ -179,7 +170,10 @@ corresponding D71/D81 paths). For manual packaging, install NCLOCK.BIN with
 next is a measured four-native-allocation layout before default cutover;
 see the [migration plan](GENERIC-GRAPHICS-APPS.md#clockwave-migration-follow-up-2026-10-04).
 
-## Native wave migration candidate
+## Earlier native-wave migration candidate (historical)
+
+The current default XWAVE.BIN is native; use fresh build/boot disks for the four-slot cutover.
+
 
 `NWAVE.BIN` is a separately built UDEX 0.2 app using UTRQ 0.12 packed paths
 and 0.11 bounded worker requests. No resident app ID or private kernel import
@@ -251,7 +245,7 @@ distrobox enter my-distrobox -- python3 tools/build_console_example.py \
 
 The entry/runtime links at `$0200` with a 2,560-byte image+BSS ceiling. This
 **synchronous** compatibility loader saves/restores the legacy clock allocation;
-it does not consume either native graphical slot. Bounded console commands work
+it does not consume any native graphical slot. Bounded console commands work
 with all four windows present, but block cooperative app progress until they
 return. Do not run an endless loop, use the bank-1 graphics veneers, or append
 `&` to these fixed-address commands. General console stdin, native background
@@ -262,13 +256,18 @@ this does not make arbitrary Commodore PRGs or Linux binaries compatible.
 
 ## Bounds and lifecycle
 
-- Native image/BSS allocations are 4,608 and 2,816 bytes. The complete file
-  (header, image and relocation table) must also fit the chosen allocation.
-  Each task has its own bounded runtime, CPU pages and software stack.
+- Four file capacities are 4,608 / 2,816 / 4,096 / 2,560 bytes. Reserve the
+  final 256 bytes of each allocation for runtime state: image+BSS limits are
+  4,352 / 2,560 / 3,840 / 2,304 bytes. The whole file, including relocation
+  metadata, must fit too. Each task has private CPU pages and a **160-byte C
+  stack** with guards; keep call depth/local arrays bounded (or use private
+  static data for nonrecursive code). Admission order is smallest fitting first.
+  [Exact addresses and lifetimes](GENERIC-GRAPHICS-APPS.md#four-native-slot-cutover--2026-10-05).
 - CREATE/PRESENT/EVENT/CLOSE use UTRQ 0.9. Up to 48 eight-byte commands are
   retained per client; the service copies them and clips painting to its window.
   UTRQ 0.12 alternatively accepts a packed path stream of at most 1,280 bytes.
-  Input is client click/close, not a general keyboard event API.
+  A shared 2,304-byte retained pool bounds total drawing data; ENOMEM leaves
+  prior images intact. Input is client click/close, not a general keyboard event API.
 - The sample owns its drawing data and private counter. It must yield/sleep;
   arbitrary uncooperative or invalid machine code is not hardware-isolated.
 - Close requests retire the window, then wait for cooperative task EXIT before
@@ -276,6 +275,16 @@ this does not make arbitrary Commodore PRGs or Linux binaries compatible.
   a bank-1 native task.
 
 ## Qualification and remaining work
+
+Current regression: run `make four-native-probe` on the host after
+`distrobox enter my-distrobox -- make -j8 boot graphical-example graphics-apps-check placement-check`.
+It uses Flatpak VICE and copies the disks before adding unknown-name examples.
+D64/D71/D81 cover four bundled apps, four identical independent app instances,
+private state/input, resize/worker oracles, malformed/full rejection, name-based
+stop, guarded stacks, reload and console use. Physical C128 acceptance remains due.
+
+Older probes below target preserved two-native-plus-legacy builds, not the
+new four-native allocation layout:
 
 `make generic-launch-probe` runs on the **host** after building `boot` and
 `graphical-example` in my-distrobox. It uses host Flatpak VICE, ordinary shell

@@ -13,10 +13,11 @@ from graphics_app_layout import (CANDIDATE, Region, disjoint, managed_size,
 
 class GraphicsAppLayoutTests(unittest.TestCase):
     def test_delivery_and_retention_are_separate_lifetimes_not_extra_space(self):
-        phases=graphics_lifetimes(list(CANDIDATE))
+        phases=graphics_lifetimes([])
         self.assertEqual(len(phases),2)
-        for phase in phases.values():
-            self.assertEqual(sum(r['limit']-r['start'] for r in phase),2560)
+        self.assertEqual(len(phases['after_both_modules_installed']),16)
+        self.assertEqual(phases['before_first_native_launch'][0]['start'],0xc600)
+        self.assertEqual(phases['before_first_native_launch'][1]['limit'],0xd100)
         for start in (0xc600,0xcaff,0xcb00,0xcc00,0xcfff):
             with self.assertRaises(ValueError):
                 graphics_lifetimes([Region('live owner',1,start,start+1)])
@@ -33,7 +34,7 @@ class GraphicsAppLayoutTests(unittest.TestCase):
             with self.assertRaises(ValueError): glyph_overlay_layout(segments|{field:extent})
         assets=b'VTG1\1\x3f'+bytes(1106); paths=b'P'*1008
         kernel=bytes(0x96a8-0x2000)+assets
-        delivery=b'\0\x12'+bytes(0xcc00-0x1200)+paths
+        delivery=b'\0\x12'+bytes(0xcd00-0x1200)+paths
         glyph_overlay_images(assets,paths,kernel,delivery)
         for args in ((assets[:5]+b'\x3e'+assets[6:],paths,kernel,delivery),
                      (assets,paths[:-1],kernel,delivery),(assets,paths,kernel[:-1],delivery),
@@ -53,7 +54,8 @@ class GraphicsAppLayoutTests(unittest.TestCase):
     def test_proposed_slots_stacks_and_pages_are_disjoint(self):
         disjoint(list(CANDIDATE))
         self.assertEqual([r.limit-r.start for r in CANDIDATE],
-                         [4608, 2816, 768, 768, 512, 512])
+                         [4352,256,256,256,2560,256,256,256,
+                          3840,256,256,256,2304,256,256,256])
         # Physical bank is part of ownership; equal logical ranges may coexist.
         disjoint([Region('a', 0, 0x2300, 0x3500), CANDIDATE[0]])
 
