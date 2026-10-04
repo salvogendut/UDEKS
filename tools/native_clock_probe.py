@@ -130,7 +130,7 @@ def main():
             commands,metadata,retained,geometry=sp.capture_blocks(port,[
                 (work/(tag+'-commands.bin'),app_address(slot,'commands'),app_address(slot,'commands')+343,'worker'),
                 (work/(tag+'-time.bin'),app_address(slot,'hour'),app_address(slot,'hour')+2,'worker'),
-                (work/(tag+'-retained.bin'),0xcd00+slot*384,0xcd00+slot*384+343,'worker'),
+                (work/(tag+'-retained.bin'),0xc600+slot*1280,0xc600+slot*1280+343,'worker'),
                 (work/(tag+'-geometry.bin'),app_address(slot,'width'),app_address(slot,'width')+2,'worker')])
             h,m,presents=metadata
             w=int.from_bytes(geometry[:2],'little'); ht=geometry[2]

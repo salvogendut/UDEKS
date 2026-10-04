@@ -22,8 +22,8 @@ def main():
     parser.add_argument('--source', type=Path, action='append',
                         help='C translation unit; repeat for a multi-file program')
     parser.add_argument('--name', default='HELLO', help='portable disk basename')
-    parser.add_argument('--graphics-abi', type=int, choices=(9,10,11), default=9,
-                        help='minimum request ABI; 10 enables resize, 11 adds bounded worker calls')
+    parser.add_argument('--graphics-abi', type=int, choices=(9,10,11,12), default=9,
+                        help='minimum request ABI; 10 resize, 11 worker calls, 12 retained paths')
     parser.add_argument('--static-locals', action='store_true',
                         help='cc65 private static locals; only for nonrecursive programs')
     parser.add_argument('--capacity',type=int,help='require both file and image+BSS to fit this many bytes')

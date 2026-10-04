@@ -7,9 +7,21 @@
         .import _udeks_banked_graphics_launch
         .import _udeks_banked_graphics_names, _udeks_banked_legacy_names
         .import _udeks_banked_graphics_installed, _udeks_banked_graphics_stop
+        .import _udeks_console_start_once
+        .export _udeks_console_start
         .import _udeks_shell_stop_app
         .importzp ptr1
         .segment "GRAPHICSHELP"
+; The glyph source is retired after the lazy graphics install. Never upload
+; those bytes (or invoke the retired boot composer) again. This BSS flag is
+; cleared by crt0, unlike an arbitrary power-on diagnostic-record byte.
+_udeks_console_start:
+        lda _udeks_banked_graphics_installed
+        beq :+
+        lda #0
+        tax
+        rts
+:       jmp _udeks_console_start_once
 _udeks_banked_call:
         jmp $f91c
 _udeks_banked_read:

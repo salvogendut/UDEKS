@@ -1,0 +1,277 @@
+Modules list:
+-------------
+entry.o:
+    STARTUP           Offs=000000  Size=000003  Align=00001  Fill=0000
+request.o:
+    CODE              Offs=000000  Size=00004B  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000006  Align=00001  Fill=0000
+xwave_native.o:
+    CODE              Offs=00004B  Size=0001C2  Align=00001  Fill=0000
+    RODATA            Offs=000006  Size=000006  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000681  Align=00001  Fill=0000
+wave_paths.o:
+    CODE              Offs=00020D  Size=000297  Align=00001  Fill=0000
+    BSS               Offs=000681  Size=000010  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=0004A4  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=0004C0  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax2.o):
+    CODE              Offs=0004CE  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decax6.o):
+    CODE              Offs=0004D9  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decaxy.o):
+    CODE              Offs=0004E0  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=0004E9  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax1.o):
+    CODE              Offs=000517  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax3.o):
+    CODE              Offs=00051E  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax7.o):
+    CODE              Offs=000523  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=000528  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000533  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=000549  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldai.o):
+    CODE              Offs=00054E  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=00055A  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul.o):
+    CODE              Offs=000563  Size=000045  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=0005A8  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=0005E2  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=0005F0  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000606  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=000620  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax1.o):
+    CODE              Offs=00063C  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000644  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(sub.o):
+    CODE              Offs=00065A  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(udiv.o):
+    CODE              Offs=00066F  Size=00004F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               001000  001002  000003  00001
+CODE                  001003  0016C0  0006BE  00001
+RODATA                0016C1  0016CC  00000C  00001
+BSS                   0016CD  001D5D  000691  00001
+
+
+Exports list by name:
+---------------------
+_gfx_request              00100C RLA    _gfx_sleep                001018 RLA    
+_native_wave_failure      001D44 RLA    _native_wave_height       001D47 RLA    
+_native_wave_paths        0018DA RLA    _native_wave_presents     001D43 RLA    
+_native_wave_rows         001D42 RLA    _native_wave_samples      0016CD RLA    
+_native_wave_width        001D45 RLA    _udeks_graphical_main     00104E RLA    
+_udeks_graphics_record    00F359 REA    _udeks_program_entry      001000 RLA    
+_udeks_wave_paths         001210 RLA    _udeks_worker_output      00F300 REA    
+_worker_request           001003 RLA    addysp                    0014C4 RLA    
+addysp1                   0014C3 RLA    decax6                    0014DC RLA    
+decaxy                    0014E3 RLA    incax1                    00151A RLA    
+incax3                    001521 RLA    incax7                    001526 RLA    
+incaxy                    00152D RLA    incsp2                    00153E RLA    
+incsp7                    00154C RLA    ldaidx                    001551 RLA    
+ldaxysp                   00155F RLA    mul8x16                   0015AD RLA    
+mul8x16a                  0015B7 RLA    popptr1                   0015E5 RLA    
+ptr1                      00000A RLZ    ptr4                      000010 RLZ    
+pusha                     0015F7 RLA    pusha0                    00160B RLA    
+pushax                    00160D RLA    pushw0sp                  001623 RLA    
+pushwysp                  001625 RLA    regsave                   000006 RLZ    
+shlax2                    0014D1 RLA    shrax1                    00163F RLA    
+sp                        000002 RLZ    sreg                      000004 RLZ    
+staspidx                  001647 RLA    tmp1                      000012 RLZ    
+tosaddax                  0014A9 RLA    tosicmp0                  0014EC RLA    
+tossubax                  00165F RLA    tosudiva0                 001672 RLA    
+tosumula0                 0015AB RLA    tosumulax                 001566 RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+regsave                   000006 RLZ    ptr1                      00000A RLZ    
+ptr4                      000010 RLZ    tmp1                      000012 RLZ    
+_udeks_program_entry      001000 RLA    _worker_request           001003 RLA    
+_gfx_request              00100C RLA    _gfx_sleep                001018 RLA    
+_udeks_graphical_main     00104E RLA    _udeks_wave_paths         001210 RLA    
+tosaddax                  0014A9 RLA    addysp1                   0014C3 RLA    
+addysp                    0014C4 RLA    shlax2                    0014D1 RLA    
+decax6                    0014DC RLA    decaxy                    0014E3 RLA    
+tosicmp0                  0014EC RLA    incax1                    00151A RLA    
+incax3                    001521 RLA    incax7                    001526 RLA    
+incaxy                    00152D RLA    incsp2                    00153E RLA    
+incsp7                    00154C RLA    ldaidx                    001551 RLA    
+ldaxysp                   00155F RLA    tosumulax                 001566 RLA    
+tosumula0                 0015AB RLA    mul8x16                   0015AD RLA    
+mul8x16a                  0015B7 RLA    popptr1                   0015E5 RLA    
+pusha                     0015F7 RLA    pusha0                    00160B RLA    
+pushax                    00160D RLA    pushw0sp                  001623 RLA    
+pushwysp                  001625 RLA    shrax1                    00163F RLA    
+staspidx                  001647 RLA    tossubax                  00165F RLA    
+tosudiva0                 001672 RLA    _native_wave_samples      0016CD RLA    
+_native_wave_paths        0018DA RLA    _native_wave_rows         001D42 RLA    
+_native_wave_presents     001D43 RLA    _native_wave_failure      001D44 RLA    
+_native_wave_width        001D45 RLA    _native_wave_height       001D47 RLA    
+_udeks_worker_output      00F300 REA    _udeks_graphics_record    00F359 REA    
+
+
+
+Imports list:
+-------------
+_gfx_request (request.o):
+    xwave_native.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/xwave_native.s(17)
+_gfx_sleep (request.o):
+    xwave_native.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/xwave_native.s(18)
+_native_wave_failure (xwave_native.o):
+    [linker generated]       
+_native_wave_height (xwave_native.o):
+    [linker generated]       
+_native_wave_paths (xwave_native.o):
+    [linker generated]       
+_native_wave_presents (xwave_native.o):
+    [linker generated]       
+_native_wave_rows (xwave_native.o):
+    [linker generated]       
+_native_wave_samples (xwave_native.o):
+    [linker generated]       
+_native_wave_width (xwave_native.o):
+    [linker generated]       
+_udeks_graphical_main (xwave_native.o):
+    entry.o                   user/lib/native_graphics_entry.s(3)
+_udeks_graphics_record (request.o):
+    xwave_native.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/xwave_native.s(16)
+_udeks_program_entry (entry.o):
+    [linker generated]       
+_udeks_wave_paths (wave_paths.o):
+    xwave_native.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/xwave_native.s(13)
+_udeks_worker_output (request.o):
+    xwave_native.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/xwave_native.s(15)
+_worker_request (request.o):
+    xwave_native.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/xwave_native.s(14)
+addysp (addysp.o):
+    incsp7.o                  runtime/incsp7.s(8)
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+decax6 (decax6.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+decaxy (decaxy.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+incax1 (incax1.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+    xwave_native.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/xwave_native.s(263)
+incax3 (incax3.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+incax7 (incax7.o):
+    xwave_native.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/xwave_native.s(263)
+incaxy (incaxy.o):
+    incax7.o                  runtime/incax7.s(8)
+    incax3.o                  runtime/incax3.s(8)
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+incsp7 (incsp7.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+ldaidx (ldai.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+    xwave_native.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/xwave_native.s(263)
+ldaxysp (ldaxsp.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+mul8x16 (mul8.o):
+    mul.o                     runtime/mul.s(8)
+mul8x16a (mul8.o):
+    mul.o                     runtime/mul.s(8)
+popptr1 (popptr1.o):
+    udiv.o                    runtime/udiv.s(9)
+    mul8.o                    runtime/mul8.s(9)
+    mul.o                     runtime/mul.s(9)
+ptr1 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+    ldai.o                    runtime/ldai.s(8)
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(11)
+    xwave_native.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/xwave_native.s(11)
+ptr4 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+pusha (pusha.o):
+    xwave_native.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/xwave_native.s(263)
+pusha0 (pushax.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+    xwave_native.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/xwave_native.s(263)
+pushax (pushax.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+    xwave_native.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/xwave_native.s(263)
+pushw0sp (pushwsp.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+pushwysp (pushwsp.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+regsave (zeropage.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(10)
+shlax2 (aslax2.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+shrax1 (shrax1.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+sp (zeropage.o):
+    incsp2.o                  runtime/incsp2.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    sub.o                     runtime/sub.s(9)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    add.o                     runtime/add.s(12)
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(10)
+sreg (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    icmp.o                    runtime/icmp.s(9)
+staspidx (staspidx.o):
+    xwave_native.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/xwave_native.s(263)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    shrax1.o                  runtime/shrax1.s(8)
+    mul.o                     runtime/mul.s(10)
+    incaxy.o                  runtime/incaxy.s(8)
+    decaxy.o                  runtime/decaxy.s(8)
+    aslax2.o                  runtime/aslax2.s(8)
+    add.o                     runtime/add.s(12)
+tosaddax (add.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+tosicmp0 (icmp.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+tossubax (sub.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+tosudiva0 (udiv.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+tosumula0 (mul8.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+    xwave_native.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/xwave_native.s(263)
+tosumulax (mul.o):
+    wave_paths.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/wave/wave_paths.s(317)
+

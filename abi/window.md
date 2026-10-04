@@ -188,12 +188,45 @@ image+BSS reservation**. Commands use window-relative byte coordinates:
 
 Colors are black (0) or yellow (7). The complete list is validated before
 commit; a rejected update leaves the old retained list and window unchanged.
-The service copies the commands into private bank-1 buffers (`$CD00-$CE7F`
-and `$CE80-$CFFF`) and repaints through the compositor's client/damage clip.
+The service copies the commands into private bank-1 buffers (currently
+`$C600-$CAFF` and `$CB00-$CFFF`) and repaints through the compositor's client/damage clip.
 Future moves, raises or partial uncovering replay that copy at the current
 window origin, without running the client or trusting a client buffer again.
 Zero commands clears the retained content. There is no cross-task begin/end
 painting lease and no app-specific calculator renderer in the service.
+
+### Packed retained paths (UTRQ 0.12)
+
+GRAPHICS suboperation 5, `PATHS`, accepts
+`5, handle, pointer-lo, pointer-hi, length-lo, length-hi` in the existing
+24-byte payload. Descriptor and flags remain zero. The source range must be
+entirely inside the caller's allocation. Length is an eight-byte multiple,
+8–1,280 inclusive. The service validates the **entire** stream before copying
+or repainting; any rejection preserves the prior image, length and window.
+A 0.11-or-earlier request for PATHS returns `ENOSYS`; invalid length, stream,
+pointer or ownership returns `EINVAL`. Result is zero on success.
+
+Each path consists of:
+
+1. Header: low seven bits are the point count (2–127); bit 7 is initial X bit 8.
+2. Initial X low byte, followed by initial Y byte.
+3. `count - 1` pairs of signed eight-bit X/Y deltas, joining consecutive points.
+
+Every decoded point must be in X 0–319, Y 0–199. Points are window-relative;
+painting still obeys the compositor's client/damage clip. Paths are black.
+A zero header terminates the stream; **only zero to seven zero padding bytes**
+may follow. Header `$80`, missing terminators, truncated paths, coordinate
+overflow and nonzero/excess padding are invalid. Eight zero bytes represent
+an empty image. Each new path has an absolute starting point, so paths can be
+disconnected. PRESENT and PATHS replace each other; there is one retained image
+per owner, not two simultaneous buffers.
+
+After success the client may reuse its source buffer. Moves/raises replay the
+service-owned copy with a new origin, without executing client code or leasing
+the Z80. This is retained **geometry**, not a promise of a cached pixel blit or
+constant-time repaint. The parser is synchronous and bounded by stream length;
+further rendering-latency work remains separate. Projection, function sampling
+and resize policy belong to the app, not the service or window manager.
 
 Unknown suboperations, bad ranges/counts/flags and foreign handles are `EINVAL`;
 CREATE failure is `ENOMEM`. Earlier request minors or a service not yet installed

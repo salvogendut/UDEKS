@@ -100,7 +100,7 @@ def main():
                                   ('xcalc',0x2300,'worker'),('xdraw',0x3500,'worker')):
             if name=='xdraw' and not draw:continue
             blocks.append(capture(tag+'-'+name,address,len((ROOT/('build/user/'+name+'.udx')).read_bytes())-16,bank))
-        blocks.append(capture(tag+'-retained',0xcd00,768 if draw else 384,'worker'))
+        blocks.append(capture(tag+'-retained',0xc600,2560 if draw else 1280,'worker'))
         return blocks
     try:
         sp.wait_for_byte(port,0xf3e0,2,time.monotonic()+240)

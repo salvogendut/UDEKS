@@ -85,7 +85,7 @@ def main():
                 raise AssertionError(('instance name',index,actual))
     def protected(tag):
         return [capture(tag+'-code'+str(i),base,int.from_bytes(program[10:12],'little'),'worker')
-                for i,base in enumerate((0x2300,0x3500))]+[capture(tag+'-retained',0xcd00,768,'worker')]
+                for i,base in enumerate((0x2300,0x3500))]+[capture(tag+'-retained',0xc600,2560,'worker')]
     def pointer(x,y,buttons):
         if not original_getters:
             for name,length,offsets in (('x',10,((3,0),(6,1))),('y',4,((1,2),)),('buttons',4,((1,3),))):

@@ -181,6 +181,7 @@ def main() -> None:
     parser.add_argument("--banked-reloc", type=Path, help="private bank-1 UDEX relocation extension")
     parser.add_argument("--banked-access", type=Path, help="private bank-1 access helpers")
     parser.add_argument("--banked-graphics", type=Path)
+    parser.add_argument("--retained-paths", type=Path)
     args = parser.parse_args()
     try:
         payload, constants = build_overlay(
@@ -208,7 +209,8 @@ def main() -> None:
                 b'' if args.banked_loader is None else args.banked_loader.read_bytes(),
                 b'' if args.banked_graphics is None else args.banked_graphics.read_bytes(),
                 b'' if args.banked_reloc is None else args.banked_reloc.read_bytes(),
-                b'' if args.banked_access is None else args.banked_access.read_bytes())
+                b'' if args.banked_access is None else args.banked_access.read_bytes(),
+                b'' if args.retained_paths is None else args.retained_paths.read_bytes())
     except ValueError as error:
         raise SystemExit(f"cannot build scheduler overlay: {error}") from error
     args.output.parent.mkdir(parents=True, exist_ok=True)

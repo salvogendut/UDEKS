@@ -136,7 +136,10 @@ clock and wave in today's two generic allocations would reduce concurrency.
    the window manager. **Worker portion implemented:** UTRQ 0.11 exposes
    bounded NOP/sample/surface requests without UAPP calls or a desktop. Two
    independently relocated console tasks copy results privately and coexist
-   with clock/wave. Generic retained-wave presentation remains.
+   with clock/wave. **Retained portion implemented:** UTRQ 0.12 packed polylines
+   hold all 524 wave edges in 1,128 bytes. The independent native wave samples
+   the Z80 once per load, reprojects cached heights on resize, and reuses the
+   service-owned paths on moves/raises. See the checkpoint below.
 3. **Measure and realize four compatible native allocations.** Account for
    code/BSS, relocations, private CPU pages/stacks, retained images, storage,
    Z80 and console execution together. Reclaim legacy callback/backup resources
@@ -156,6 +159,48 @@ gate and its resize extension pass: both native slots on VICE D64/D71/D81 and
 unmodified 1986 D64/D81 native keyboard/1351 input. The
 [SDK test recipe](GRAPHICAL-APPS-SDK.md#native-clock-migration-candidate)
 keeps NCLOCK separate from the production apps until full native migration.
+
+### Retained paths and native-wave checkpoint (2026-10-04)
+
+`make native-wave` builds NWAVE.BIN without relinking the OS: 2,221 file bytes,
+1,741 image bytes and 1,681 BSS bytes. It fits the larger native allocation;
+it does not fit the smaller one. The generic loader makes that decision; there
+is no wave name/slot rule. Launch wave first, then NCLOCK in the smaller slot.
+The unchanged 21×25 sinc sample field and all 524 wireframe edges are preserved.
+The worker is called once per row, with a cooperative sleep between rows.
+Resizes reuse the private 525 samples; moves/stacking do not rebuild app data
+or submit Z80 work. Generic retained geometry still needs rasterization when
+the compositor repaints; this is not the postponed wave optimization project.
+
+Placement is a **lifetime overlay**, not new RAM or reduced app capacity:
+
+- Boot assets are fixed at bank-0 `$96A8-$9AFF`. The 16-byte header and 88-byte
+  tile maps remain live. Only the 1,008 custom-glyph bytes at `$96B8-$9AA7`
+  retire after successful upload into VDC RAM.
+- On the first native launch, the graphics service copies its base image from
+  bank-1 `$C600-$CBFF` to bank-0 `$0C00-$11FF`, then its 1,008-byte extension
+  from bank-1 `$CC00-$CFEF` over the retired glyph source. Both copies precede
+  publication/admission. The pending filename survives the transfer scratch.
+- The extension has separate emitted PATHSTATE (60 bytes) and GRAPHICSPATHS
+  (938 bytes) segments. cc65 static locals must not share a segment with their
+  executable entry labels. Combined use is 998/1,008 bytes.
+- Those bank-1 delivery bytes then become two 1,280-byte retained images at
+  `$C600-$CAFF` and `$CB00-$CFFF`. Installation is never replayed after close
+  or desktop shutdown. Console reentry bypasses retired glyphs once installed.
+- Filesystem policy ends at `$C50C` and is bounded below `$C600`. No app
+  allocation, stack, CPU page or common gate moved. Resident BSS ends `$9693`
+  (20 bytes before assets); the base graphics image uses 1,535/1,536 bytes.
+
+Actual-map gates enforce both lifetimes, normal/panic equality, glyph-only
+bounds and exact secondary delivery. Host tests cover malformed-stream atomicity
+and every edge against an independent projection. VICE D64/1541 and D81/1581
+cover real drawing, grow/shrink/regrow, worker lease counts, font/metadata
+preservation, the stepped console guard, console commands, four-app compatibility
+and cleanup/reload. VICE D71 runs the complete two-clock regression. A fresh
+parallel build reproduces all disks/modules/apps. Evidence:
+`bench/{artifacts,results}/2026-10-04-native-wave`.
+No new physical-C128 or 1986 qualification is claimed for this checkpoint.
+Four interchangeable native slots and default clock/wave replacement remain next.
 
 ### Original generic-loading sequence
 

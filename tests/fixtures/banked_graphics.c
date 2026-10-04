@@ -1,12 +1,18 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #define UDEKS_GRAPHICS_HOST_TEST
 unsigned char graphics_request[38], graphics_memory[65536];
+unsigned char graphics_overlay[1008];
 #include "../../src/services/window/banked_graphics.c"
+#undef R
+#undef P
+#undef C
+#include "../../src/services/window/retained_paths.c"
 
 unsigned char test_task, test_state[2], test_reap_busy, test_owner[5];
 unsigned char test_load_error, test_activate_error, test_selector, test_path[17];
 unsigned char test_active, test_init_calls, test_init_error;
 unsigned int test_repaints, test_writes, test_draws, test_x, test_y;
+int test_lines[2048][4];
 static udeks_window_paint_fn painter[5];
 static udeks_window_close_fn closer[5];
 static struct udeks_window_click pending;
@@ -20,6 +26,9 @@ unsigned char test_flags[5];
 void test_reset(void)
 {
     memset(&clients,0,sizeof(clients));
+    memset(running,0,sizeof(running));
+    memset(udeks_retained_lengths,0,sizeof(udeks_retained_lengths));
+    memset(graphics_overlay,0,sizeof(graphics_overlay));
     memset(udeks_banked_graphics_names,0,sizeof(udeks_banked_graphics_names));
     memset(graphics_request,0,sizeof(graphics_request));
     memset(graphics_memory,0,sizeof(graphics_memory));
@@ -33,7 +42,7 @@ void test_reset(void)
     memset(test_path,0,sizeof(test_path));
     origin_x=100; origin_y=20;
 }
-void test_admit(unsigned char index) { clients.running[index]=1; test_state[index]=4; }
+void test_admit(unsigned char index) { running[index]=1; test_state[index]=4; }
 unsigned char udeks_vic_graphics_is_active(void) { return test_active; }
 unsigned char udeks_vic_graphics_initialize(void) {
     ++test_init_calls;
@@ -77,8 +86,14 @@ unsigned char udeks_banked_graphics_exec(const unsigned char *name)
     R[10]=17;
     return udeks_banked_graphics_launch();
 }
-void udeks_banked_read(unsigned int address) { memcpy(C,graphics_memory+address,8); }
-void udeks_banked_write(unsigned int address) { memcpy(graphics_memory+address,C,8); ++test_writes; }
+void udeks_banked_read(unsigned int address) {
+    P[0]=address&255; P[1]=address>>8;
+    memcpy(C,graphics_memory+address,8);
+}
+void udeks_banked_write(unsigned int address) {
+    P[0]=address&255; P[1]=address>>8;
+    memcpy(graphics_memory+address,C,8); ++test_writes;
+}
 unsigned char udeks_window_owner(unsigned char h) { return h<5?test_owner[h]:0; }
 unsigned char udeks_window_create(unsigned char owner,unsigned char surface,unsigned char flags,
     unsigned int x,unsigned char y,unsigned int width,unsigned char height,
@@ -127,5 +142,9 @@ void udeks_vic_bitmap_fill(int x,int y,int w,int h,unsigned char color)
 }
 void udeks_vic_bitmap_line(int x,int y,int x2,int y2,unsigned char color)
 {
-    (void)x2;(void)y2;udeks_vic_bitmap_fill(x,y,0,0,color);
+    if(test_draws<2048) {
+        test_lines[test_draws][0]=x;test_lines[test_draws][1]=y;
+        test_lines[test_draws][2]=x2;test_lines[test_draws][3]=y2;
+    }
+    udeks_vic_bitmap_fill(x,y,0,0,color);
 }

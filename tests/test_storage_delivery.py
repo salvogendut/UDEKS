@@ -108,6 +108,20 @@ class StorageDelivery(unittest.TestCase):
             with self.subTest(changes=list(changes)):
                 with self.assertRaises(ValueError): self.wrap(**(args | changes))
 
+    def test_paths_delivery_exact_sizes_and_policy_boundary(self):
+        graphics=b'G'*1536; paths=b'S'*1008
+        baseline,_=self.wrap()
+        payload,_=self.wrap(banked_graphics=graphics,retained_paths=paths)
+        start=2+0xc600-0x1200
+        self.assertEqual(payload[:start],baseline[:start])
+        self.assertEqual(payload[start:start+2544],graphics+paths)
+        self.assertEqual(payload[start+2544:],baseline[start+2544:])
+        args=dict(banked_graphics=graphics,retained_paths=paths)
+        self.wrap(**args,policy=b'P'*0x1600)
+        for change in ({'policy':b'P'*0x1601},{'retained_paths':paths[:-1]},
+                       {'retained_paths':paths+b'\0'},{'banked_graphics':b''}):
+            with self.assertRaises(ValueError): self.wrap(**(args|change))
+
     def test_secondary_bootfs_rejects_overflow_and_malformed_inputs(self):
         payload, _ = self.wrap()
         fs = build_bootfs([('ush', b'program')])

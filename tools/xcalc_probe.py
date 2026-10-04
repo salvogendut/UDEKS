@@ -198,11 +198,11 @@ def main():
             expected=bytes(int(i in (0,7,23)) for i in range(24))
             if capture('draw-cells',cells,24,'worker')!=expected:
                 raise AssertionError('independent drawing state not updated')
-            before=capture('four-retained-before-rejection',0xcd00,768,'worker')
+            before=capture('four-retained-before-rejection',0xc600,2560,'worker')
             command('xdraw &','xdraw: slot busy',4)
             command('xcalc &','xcalc: slot busy',4)
             windows(4,31)
-            if capture('four-retained-after-rejection',0xcd00,768,'worker')!=before:
+            if capture('four-retained-after-rejection',0xc600,2560,'worker')!=before:
                 raise AssertionError('capacity rejection changed a live retained image')
             command('free','CPU RAM:');command('cowsay four alive','four alive')
             canvas('four-apps')
@@ -214,7 +214,7 @@ def main():
             command('echo draw moved','draw moved')
             if capture('draw-cells-after-drag',cells,24,'worker')!=expected:
                 raise AssertionError('drag changed drawing state')
-            if capture('four-retained-after-drag',0xcd00,768,'worker')!=before:
+            if capture('four-retained-after-drag',0xc600,2560,'worker')!=before:
                 raise AssertionError('drag changed retained commands')
             canvas('four-dragged')
             pointer(112,91,1);windows(3,15)
@@ -247,7 +247,7 @@ def main():
         if native:
             command('free','CPU RAM:')
             handle=byte(port,0xf247)
-            retained=capture('retained-before-drag',0xcd00,384,'worker')
+            retained=capture('retained-before-drag',0xc600,1280,'worker')
             pointer(113,35,0)
             sp.wait_for_byte(port,0xf24d,0,time.monotonic()+60)
             pointer(113,35,1)
@@ -257,7 +257,7 @@ def main():
             pointer(45,45,0)
             sp.wait_for_byte(port,0xf248,0,time.monotonic()+60)
             command('echo dragged','dragged')
-            if capture('retained-after-drag',0xcd00,384,'worker')!=retained:
+            if capture('retained-after-drag',0xc600,1280,'worker')!=retained:
                 raise AssertionError('drag changed the committed command image')
             if int.from_bytes(capture('value-after-drag',value_base,4,app_bank),'little',signed=True)!=475:
                 raise AssertionError('drag changed calculator state')

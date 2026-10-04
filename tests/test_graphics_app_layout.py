@@ -6,10 +6,50 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
-from graphics_app_layout import CANDIDATE, Region, disjoint, managed_size, worker_image, z80_regions
+from graphics_app_layout import (CANDIDATE, Region, disjoint, managed_size,
+    worker_image, z80_regions, graphics_lifetimes, glyph_overlay_images, glyph_overlay_layout,
+    glyph_overlay_entrypoints)
 
 
 class GraphicsAppLayoutTests(unittest.TestCase):
+    def test_delivery_and_retention_are_separate_lifetimes_not_extra_space(self):
+        phases=graphics_lifetimes(list(CANDIDATE))
+        self.assertEqual(len(phases),2)
+        for phase in phases.values():
+            self.assertEqual(sum(r['limit']-r['start'] for r in phase),2560)
+        for start in (0xc600,0xcaff,0xcb00,0xcc00,0xcfff):
+            with self.assertRaises(ValueError):
+                graphics_lifetimes([Region('live owner',1,start,start+1)])
+
+    def test_glyph_overlay_preserves_live_metadata_and_has_hard_bounds(self):
+        segments=dict(BSS=(0x93c2,0x9693,0x2d2),VDCASSETS=(0x96a8,0x9aff,1112),
+                      PATHSTATE=(0x96b8,0x96ff,72),GRAPHICSPATHS=(0x9700,0x9aa7,936))
+        glyph_overlay_layout(segments)
+        for field,extent in (('BSS',(0x93c2,0x96a8,743)),
+                            ('VDCASSETS',(0x96a9,0x9b00,1112)),
+                            ('PATHSTATE',(0x96b7,0x96ff,73)),
+                            ('GRAPHICSPATHS',(0x96ff,0x9aa6,936)),
+                            ('GRAPHICSPATHS',(0x9700,0x9aa8,937))):
+            with self.assertRaises(ValueError): glyph_overlay_layout(segments|{field:extent})
+        assets=b'VTG1\1\x3f'+bytes(1106); paths=b'P'*1008
+        kernel=bytes(0x96a8-0x2000)+assets
+        delivery=b'\0\x12'+bytes(0xcc00-0x1200)+paths
+        glyph_overlay_images(assets,paths,kernel,delivery)
+        for args in ((assets[:5]+b'\x3e'+assets[6:],paths,kernel,delivery),
+                     (assets,paths[:-1],kernel,delivery),(assets,paths,kernel[:-1],delivery),
+                     (assets,paths,kernel,delivery[:-1]+b'!')):
+            with self.assertRaises(ValueError): glyph_overlay_images(*args)
+
+    def test_callable_entries_cannot_land_in_overlay_state(self):
+        segments={'GRAPHICSPATHS':(0x96f4,0x9a9d,938)}
+        exports={name:(0x9708,'RLA') for name in
+                 ('_udeks_retained_address','_udeks_retained_present','_udeks_retained_paths_paint')}
+        glyph_overlay_entrypoints(segments,exports)
+        for addr in (0x96b8,0x96f3,0x9a9e):
+            with self.assertRaises(ValueError):
+                glyph_overlay_entrypoints(segments,exports|{'_udeks_retained_present':(addr,'RLA')})
+        with self.assertRaises(ValueError): glyph_overlay_entrypoints(segments,{})
+
     def test_proposed_slots_stacks_and_pages_are_disjoint(self):
         disjoint(list(CANDIDATE))
         self.assertEqual([r.limit-r.start for r in CANDIDATE],

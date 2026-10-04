@@ -175,9 +175,48 @@ distrobox enter my-distrobox -- python3 tools/1986_storage_smoke_build.py \
 
 The probe disks are `build/native-clients/vice-d64/native-clock.d64` (and
 corresponding D71/D81 paths). For manual packaging, install NCLOCK.BIN with
-`add_disk_apps.py` as above. Next gates are generic retained-wave/worker
-services and a measured four-native-allocation layout before default cutover;
+`add_disk_apps.py` as above. The retained-wave/worker gates are now implemented;
+next is a measured four-native-allocation layout before default cutover;
 see the [migration plan](GENERIC-GRAPHICS-APPS.md#clockwave-migration-follow-up-2026-10-04).
+
+## Native wave migration candidate
+
+`NWAVE.BIN` is a separately built UDEX 0.2 app using UTRQ 0.12 packed paths
+and 0.11 bounded worker requests. No resident app ID or private kernel import
+is involved. It preserves the current sinc function and all 524 grid edges.
+Its 3,422-byte image+BSS fits the larger slot; launch it before NCLOCK so the
+clock can use the smaller slot. Four interchangeable native allocations are
+still pending; the default legacy binaries are deliberately not replaced yet.
+
+```sh
+distrobox enter my-distrobox -- make -j8 boot native-wave native-clock
+python3 tools/add_disk_apps.py --disk build/boot/udeks.d64 \
+  --output build/native-clients/native-wave-demo.d64 \
+  build/native-clients/wave/NWAVE.BIN build/native-clients/clock/NCLOCK.BIN
+# The same command supports .d71 and .d81 input/output.
+```
+
+Cold-boot the candidate disk, then try:
+
+```text
+nwave &
+nclock &
+date 03:15:00
+cowsay hello
+```
+
+Drag, raise, grow/shrink/regrow, and close either window. Wave moves must not
+recompute the function; resize uses the existing private height field. Close
+both, try foreground `nwave` and Ctrl+C, then reload. The original `xclock &`
+and `xwave &` can coexist in the two legacy slots; `xinit -q` closes the desktop.
+The native wave's vectors are retained, not a full pixel backing store, so
+compositor repaint latency remains open. This checkpoint is VICE-qualified;
+1986 and physical-C128 feedback on these new paths is still needed.
+
+For other dense line drawings, build with `--graphics-abi 12` and submit the
+[packed path format](../abi/window.md#packed-retained-paths-utrq-012). It supports
+9-bit X coordinates, disconnected paths and signed byte deltas. The same API
+can carry any bounded geometry; wave projection stays in `user/lib/wave_paths.c`.
 
 ### Resizable app contract
 
@@ -228,6 +267,7 @@ this does not make arbitrary Commodore PRGs or Linux binaries compatible.
   Each task has its own bounded runtime, CPU pages and software stack.
 - CREATE/PRESENT/EVENT/CLOSE use UTRQ 0.9. Up to 48 eight-byte commands are
   retained per client; the service copies them and clips painting to its window.
+  UTRQ 0.12 alternatively accepts a packed path stream of at most 1,280 bytes.
   Input is client click/close, not a general keyboard event API.
 - The sample owns its drawing data and private counter. It must yield/sleep;
   arbitrary uncooperative or invalid machine code is not hardware-isolated.
@@ -254,6 +294,6 @@ It covers VICE D64/1541, D71/1571 and D81/1581; build `boot`,
 
 Next: finish instance/name-based control, migrate calculator and
 drawing off named CONTROL, then resolve the legacy clock/wave compatibility
-model. Five bytes remain before resident LOWBSS: further resident growth
+model. Twenty bytes remain before the fixed boot assets: further resident growth
 requires a measured service-placement change, not borrowing task stacks or
 guard space. Performance tuning and more than four apps are out of scope.

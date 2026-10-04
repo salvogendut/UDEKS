@@ -36,8 +36,11 @@ Next: complete the user-selected **clock/wave native migration**. The independen
 clock and generic UTRQ 0.10 resize/geometry contract now work in both native
 allocations, qualified on VICE D64/D71/D81 and 1986 D64/D81. Task-safe bounded
 Z80 requests are now implemented as UTRQ 0.11; two ordinary native clients
-pass concurrent result/isolation/lifecycle tests on VICE D64/D81. Remaining:
-a generic retained-wave representation and a measured four-slot layout.
+pass concurrent result/isolation/lifecycle tests on VICE D64/D81. UTRQ 0.12
+retained polylines now carry the full wave grid, and the independent native
+wave candidate passes VICE D64/D81: 21 bounded Z80 row requests once per load,
+cached-height resize, no app/worker recomputation on moves, and clock/legacy
+coexistence. Remaining: a measured four-native-slot layout and default cutover.
 Instance/name-based control and the
 other native-client migration remain part of the same feature. Native console scheduling/stdin is separate
 remaining work, not implied by the fixed console-command SDK.

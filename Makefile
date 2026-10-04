@@ -383,6 +383,17 @@ native-clock: placement-check-guard
 
 .PHONY: native-clock
 
+# Candidate only: the default XCLOCK/XWAVE pair stays compatible until cutover.
+native-wave: placement-check-guard
+	$(PYTHON) tools/build_graphical_example.py --source user/bin/xwave_native.c \
+		--source user/lib/wave_paths.c --name NWAVE --output $(BUILD_DIR)/native-clients/wave \
+		--graphics-abi 12 --static-locals --capacity 4608 \
+		--export _native_wave_samples --export _native_wave_paths --export _native_wave_rows \
+		--export _native_wave_presents --export _native_wave_failure \
+		--export _native_wave_width --export _native_wave_height
+
+.PHONY: native-wave
+
 native-worker-probe-app: placement-check-guard
 	$(PYTHON) tools/build_graphical_example.py --source user/examples/worker_probe.c \
 		--name WORKER --output $(BUILD_DIR)/native-clients/worker --graphics-abi 11 \
@@ -1357,8 +1368,8 @@ $(BUILD_8502)/vic_pixel.o: src/services/display/vic_pixel.s | $(BUILD_8502)
 $(BUILD_8502)/vic_clear.o: src/services/display/vic_clear.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphics.bin &: \
-		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/banked_access.o \
+$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphics.bin $(BUILD_8502)/retained-paths.bin &: \
+		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/banked_access.o $(BUILD_8502)/retained_paths.o \
 		$(BUILD_8502)/kernel_entry.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
@@ -1537,7 +1548,7 @@ $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS) &: \
 		$(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
 		$(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_BIN) $(TASK_CONTEXT_MAP) \
 		$(TASK_CONTEXT_VECTORS_BIN) $(TASK_SWITCH_TAIL_BIN) \
-		$(TASK_YIELD_HANDLER_BIN) $(BANKED_LOADER_BIN) $(BANKED_RELOC_BIN) $(BANKED_ACCESS_BIN) $(BUILD_8502)/banked-graphics.bin \
+		$(TASK_YIELD_HANDLER_BIN) $(BANKED_LOADER_BIN) $(BANKED_RELOC_BIN) $(BANKED_ACCESS_BIN) $(BUILD_8502)/banked-graphics.bin $(BUILD_8502)/retained-paths.bin \
 		tools/build_scheduler_overlay.py tools/build_window_cache.py tools/build_storage.py | $(BUILD_BOOT)
 	$(PYTHON) tools/build_scheduler_overlay.py \
 		$(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
@@ -1551,7 +1562,7 @@ $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS) &: \
 		--storage $(STORAGE_BUILD) --ush $(USER_USH_BIN) --task-lookup $(TASK_LOOKUP_BIN) \
 		--banked-loader $(BANKED_LOADER_BIN) --banked-reloc $(BANKED_RELOC_BIN) \
 		--banked-access $(BANKED_ACCESS_BIN) \
-		--banked-graphics $(BUILD_8502)/banked-graphics.bin
+		--banked-graphics $(BUILD_8502)/banked-graphics.bin --retained-paths $(BUILD_8502)/retained-paths.bin
 
 $(TASK_SWITCH_ACTIVATION_OBJ): src/boot/task-switch-activation.s \
 		$(SCHEDULER_OVERLAY_CONSTANTS) | $(BUILD_BOOT)
@@ -1562,8 +1573,8 @@ $(TASK_SWITCH_ACTIVATION_BIN): $(TASK_SWITCH_ACTIVATION_OBJ) \
 	$(LD65) -C cfg/8502-task-switch-activation.cfg -o $@ $<
 
 $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
-		$(PANIC_PROBE_PROBE_BIN) $(PANIC_PROBE_MAP) $(BUILD_8502)/banked-graphics-panic.bin &: \
-		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/banked_access.o \
+		$(PANIC_PROBE_PROBE_BIN) $(PANIC_PROBE_MAP) $(BUILD_8502)/banked-graphics-panic.bin $(BUILD_8502)/retained-paths-panic.bin &: \
+		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/banked_access.o $(BUILD_8502)/retained_paths.o \
 		$(BUILD_8502)/kernel_entry.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
@@ -2016,9 +2027,13 @@ $(BUILD_BOOT)/banked-bindings.inc: $(STAGE1_GATEWAY_MAP) $(SCHEDULER_OVERLAY_MAP
 	$(PYTHON) tools/gen_banked_bindings.py $(STAGE1_GATEWAY_MAP) $(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_MAP) $@
 
 $(BUILD_8502)/banked_graphics.s: src/services/window/banked_graphics.c include/udeks/banked_graphics.h \
-		include/udeks/window.h include/udeks/window_service.h include/udeks/vic_graphics.h | $(BUILD_8502)
+		include/udeks/retained_paths.h include/udeks/window.h include/udeks/window_service.h include/udeks/vic_graphics.h | $(BUILD_8502)
 	$(CC65) -t none --cpu 6502 --standard c99 -Ors -I include -o $@ $<
 $(BUILD_8502)/banked_graphics.o: $(BUILD_8502)/banked_graphics.s
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_8502)/retained_paths.s: src/services/window/retained_paths.c include/udeks/retained_paths.h include/udeks/banked_graphics.h include/udeks/vic_graphics.h | $(BUILD_8502)
+	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o $@ $<
+$(BUILD_8502)/retained_paths.o: $(BUILD_8502)/retained_paths.s
 	$(CA65) --cpu 6502 -o $@ $<
 $(BUILD_8502)/banked_access.o: src/services/window/banked_access.s | $(BUILD_8502)
 	$(CA65) --cpu 6502 -o $@ $<
@@ -2341,7 +2356,7 @@ check:
 	$(PYTHON) -m py_compile tools/o65_to_udex.py tools/build_reloc_fixture.py
 	$(PYTHON) -m py_compile tools/build_graphical_example.py tools/generic_launch_probe.py tools/add_disk_apps.py
 	$(PYTHON) -m py_compile tools/build_d81.py tools/build_console_example.py tools/console_apps_probe.py
-	$(PYTHON) -m py_compile tools/native_clock_probe.py tools/native_worker_probe.py
+	$(PYTHON) -m py_compile tools/native_clock_probe.py tools/native_worker_probe.py tools/native_wave_probe.py
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
 	$(PYTHON) -m py_compile tools/xcalc_probe.py tools/pack_native.py tools/four_apps_rejection_probe.py
 	$(PYTHON) -m py_compile tools/managed_app_fixture.py tools/managed_disk_probe.py

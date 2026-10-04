@@ -1,0 +1,18 @@
+m ff00 ff00
+(C:$c23d) >C:ff00  3e                                                   >
+(C:$ff01) r
+  ADDR A  X  Y  SP 00 01 NV-BDIZC LIN CYC  STOPWATCH
+.;c23d e9 00 02 f2 00 57 00110101 000 001  113552713
+(C:$ff01) > ff01 00
+(C:$ff01) r PC=a1ab, A=ff, X=ff, FL=24
+(C:$ff01) step 4
+Stepping through the next 4 instruction(s).
+.C:a1b3  60          RTS            - A:00 X:00 Y:02 SP:f2 ..-..IZ.  113552723
+(C:$a1b3) r
+  ADDR A  X  Y  SP 00 01 NV-BDIZC LIN CYC  STOPWATCH
+.;a1b3 00 00 02 f2 00 57 00100110 000 011  113552723
+(C:$a1b3) m a1b3 a1b3
+>C:a1b3  60                                                   .
+(C:$a1b4) r PC=c23d, A=e9, X=00, Y=02, SP=f2, FL=35
+(C:$a1b4) > ff00 3e
+(C:$a1b4) 

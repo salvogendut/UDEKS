@@ -157,7 +157,7 @@ transfer_byte:
 graphics_install:
         lda #$0c
         sta install_page+1
-        lda #$c7
+        lda #$c6
         sta graphics_source+2
 install_page:
         ldy #$0c
@@ -165,7 +165,7 @@ install_page:
         jsr write_address
         ldx #0
 graphics_source:
-        lda $c700,x
+        lda $c600,x
         jsr MEMORY_GATE
         inx
         bne graphics_source

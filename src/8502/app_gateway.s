@@ -23,7 +23,7 @@
         .import _udeks_window_image_complete
         .import _udeks_window_take_click
         .import __BSS_RUN__, __BSS_SIZE__
-        .assert __BSS_RUN__+__BSS_SIZE__ <= $9b00, error, "resident reaches relocated input/console state"
+        .assert __BSS_RUN__+__BSS_SIZE__ <= $96a8, error, "resident reaches boot assets"
 
         .import addeqysp, addysp, aslax2
         .import decsp1, decsp2, decsp3, decsp4, decsp5, decsp6, decsp7, decsp8

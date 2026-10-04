@@ -374,7 +374,7 @@ static unsigned char console_fail(unsigned char code)
     return code;
 }
 
-unsigned char udeks_console_start(void)
+unsigned char udeks_console_start_once(void)
 {
     unsigned char value;
     unsigned int verify_address;

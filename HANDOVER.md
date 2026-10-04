@@ -8,6 +8,42 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 ## Current feature handover — 2026-10-04
 
+Native-wave checkpoint follows pushed worker commit `885ca87`. UTRQ 0.12
+adds generic, owner-checked packed polylines; all 524 legacy grid edges fit
+1,128 bytes. Independent NWAVE.BIN uses 21 bounded Z80 row requests per load,
+private cached heights, app-owned projection on resize, and no app/worker
+recomputation on moves or stacking. File/image/BSS: 2,221/1,741/1,681 bytes;
+it fits the larger native allocation. NCLOCK still fits either allocation.
+
+Placement: bank-0 boot glyph source `$96B8-$9AA7` retires after upload to VDC;
+only those 1,008 bytes are overlaid, never the live header/maps. The extension
+emits **separate PATHSTATE and GRAPHICSPATHS segments** (60+938 bytes). Using
+the same segment for cc65 static locals/code made entry labels point at data;
+the VICE clock regression exposed this and the corrected link/entry gates
+reject it. Base service remains `$0C00-$11FF` (1,535 bytes), BSS ends `$9693`
+(20 spare bytes). Bank-1 `$C600-$CFFF` first delivers both modules, then becomes
+two 1,280-byte retained images; never reinstall after close/shutdown. Storage
+ends `$C50C`, bounded below `$C600`. Task allocations/CPU pages/stacks unchanged.
+
+VICE D64/D81 wave proofs: full path/sample/code oracles, move/resize/stacking,
+exact worker leases, real VDC glyph and live asset metadata preservation,
+stepped console-reentry guard, clock coexistence, four apps, cleanup/reload.
+D71 full clock/resize/Ctrl+C regression passes. Fresh parallel source copy
+reproduces all three disks, both modules and both candidate apps. Probe prompt
+fences must read bank-0 task state and require WAITING **on READ**, not just
+WAITING (a command-completion POLL is not ready for typing). Test copies are
+`build/native-clients/native-wave-demo.{d64,d71,d81}`; details/evidence in
+`docs/GENERIC-GRAPHICS-APPS.md` and `bench/{artifacts,results}/2026-10-04-native-wave`.
+
+**Next:** measure/implement four compatible native allocations, then switch
+the default apps and remove named compatibility routing. Do not claim four
+interchangeable slots yet, replace defaults prematurely, or mix in wave math
+or rendering optimization. Retained paths replay geometry, not cached pixels;
+repaint latency remains open. New 1986/physical-hardware confirmation is due.
+Published `build/udeks.*` snapshots are unchanged.
+
+### Previous worker checkpoint
+
 Resize checkpoint committed/pushed as `378c033`. Following it, UTRQ 0.11
 WORKER (op 24) now lets an ordinary native program use the bounded Z80 without
 UAPP or graphical initialization. Result bytes are read-only borrowed common

@@ -75,12 +75,15 @@ Use `build/boot/udeks.d64` or `build/boot/udeks.d71` for this test candidate;
 VICE D64/D71 and native 1986 input checks pass; physical-C128 acceptance of
 this candidate is the next gate.
 
-On `graphics-generic-apps` (#35), an independently built `.BIN` can now launch
+On the #35 follow-up branch, `graphics-native-clients`, an independently built `.BIN` can launch
 as `name` or `name &` into either free compatible native slot, without an OS name-table
 entry. Try the [generic-app demo and build recipe](docs/GRAPHICAL-APPS-SDK.md).
 The SDK also builds independent argc/argv console commands. Instance/name-based
 control and legacy-client migration remain pending. Fresh builds now include a
 [D81 / 1581 image](docs/D81.md); the published snapshots above have not been replaced.
+Native clock and Z80-assisted wave migration candidates now use public resize,
+retained-drawing and worker APIs. See the [native wave test recipe](docs/GRAPHICAL-APPS-SDK.md#native-wave-migration-candidate).
+Four interchangeable native slots and replacing the default legacy apps remain next.
 
 `/mnt` starts free. To use a separate data disk on device 9:
 
