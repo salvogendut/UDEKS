@@ -26,7 +26,8 @@ def install_router(tail: bytes, start: int, bss_end: int, router: bytes) -> byte
 def wrap_storage(payload: bytes, constants: str, module: bytes,
                  policy: bytes, driver: bytes, ush: bytes,
                  lookup: bytes, banked_loader: bytes = b'',
-                 banked_graphics: bytes = b'') -> tuple[bytes, str]:
+                 banked_graphics: bytes = b'', banked_reloc: bytes = b'',
+                 banked_access: bytes = b'') -> tuple[bytes, str]:
     start = int.from_bytes(payload[:2], 'little')
     end = start + len(payload) - 2
     if start not in (0x4200, 0x5000) or end > 0x8000:
@@ -62,6 +63,17 @@ def wrap_storage(payload: bytes, constants: str, module: bytes,
         if any(image[first:last]):
             raise ValueError('banked graphics staging/retained images overlap live data')
         image[first:first+0x600] = banked_graphics
+    if banked_reloc or banked_access:
+        if not banked_loader or len(module)>0x680 or len(lookup)>0x500:
+            raise ValueError('relocation requires storage/lookup within their reduced reservations')
+        for address,capacity,blob,magic in ((0x1880,0x180,banked_reloc,b'BREL\0\1'),
+                                          (0x1f00,0x100,banked_access,b'BACC\0\1')):
+            if not 9<len(blob)<=capacity or blob[0]!=0x4c or blob[3:9]!=magic:
+                raise ValueError('invalid banked relocation/access module')
+            first,last=address-load,address-load+capacity
+            if any(image[first:last]):
+                raise ValueError('banked relocation/access overlaps live delivery')
+            image[first:first+len(blob)]=blob
     # Keep SCHEDULER_OVERLAY_END as the USOV source end: activation uses it.
     constants += (f'SECONDARY_PAYLOAD_LOAD = ${load:04x}\n'
                   f'SECONDARY_PAYLOAD_END = ${limit:04x}\n')

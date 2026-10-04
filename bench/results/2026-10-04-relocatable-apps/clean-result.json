@@ -1,0 +1,15 @@
+{
+  "source_copy": "build/generic-apps/clean.29J8sC",
+  "command": "make -j8 boot graphics-apps-check placement-check reloc-fixtures",
+  "byte_identical": true,
+  "sha256": {
+    "boot/udeks.d64": "a9763ef86d769b9ed6280e84431e1bb3edc04d88f15a040e184a29c11eba68b9",
+    "boot/udeks.d71": "90afbbd1aded94bb822cfe58e0310499a2e546ec076b81e457eb67d657a6be6f",
+    "boot/banked-loader.bin": "2f245f3e954fc92cc6366b457c39101ee645949ce36aaa8411112f2e6195229c",
+    "boot/banked-reloc.bin": "a904ac742b073228a093f3deb607cb193797b47d243ffad44a19bbe6dff18b25",
+    "boot/banked-access.bin": "c5435534946f82bb1367f04010c6f64ad5618252ad33c1bf9e42b78885c9d770",
+    "boot/task-lookup.bin": "1c7854a3669eb282f7f762834655fcf8d05eb05b7bf0c90b874f08920c768151",
+    "storage/module.bin": "9c60632be044466142cc820b1d064fb5443678f4768acfeb05758bf210bd9710",
+    "generic-apps/relocapp.udx": "4f4fd23cd22434e7074146471707d0a6bee2243a0b03701d995e7ec71b6cec28"
+  }
+}

@@ -21,6 +21,13 @@ from vice_capture import choose_port, monitor_command
 
 ROOT=Path(__file__).resolve().parents[1]
 
+def pointer_test_scratch(kernel_map):
+    """Use only linker-proven helper padding, never task or runtime state."""
+    scratch=segment_bounds(kernel_map,'GRAPHICSHELP')[1]+1
+    if scratch+4>segment_bounds(kernel_map,'VICSHADOW')[0]:
+        raise ValueError('no free pointer-test record; do not overwrite live memory')
+    return scratch
+
 def bitmap_preview(bitmap):
     """Render a captured VIC hires bitmap, without the hardware sprite."""
     if len(bitmap)!=8000: raise ValueError('expected full VIC bitmap')
@@ -90,9 +97,7 @@ def main():
         # Redirect only the getter operands to a map-proven four-byte test
         # record. Instructions/lengths stay intact, even if paused inside one.
         # This exercises the real WM drag/close path, not a physical 1351.
-        scratch=segment_bounds(kernel_map,'BSS')[1]+1
-        if scratch+4>segment_bounds(kernel_map,'LOWBSS')[0]:
-            raise ValueError('no free pointer-test record; do not overwrite BSS')
+        scratch=pointer_test_scratch(kernel_map)
         if not pointer_original:
             for name,length,offsets in (('x',10,((3,0),(6,1))),
                 ('y',4,((1,2),)),('buttons',4,((1,3),))):

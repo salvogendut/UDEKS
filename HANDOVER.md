@@ -6,7 +6,100 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current feature handover — 2026-10-01
+## Current feature handover — 2026-10-04
+
+User exploratory work exposed the limitation behind the four named apps:
+launch/control/panel paths are app-specific, and UDEX images use fixed link
+addresses. The new priority is generic graphical apps that select a free fitting
+slot without OS edits. Issue #35 and branch `graphics-generic-apps` start from
+merged main `9af159b` (PR #31). Plan: `docs/GENERIC-GRAPHICS-APPS.md`;
+roadmap now puts this before service extraction. Step 1 now implements bounded
+UDEX 0.2 page relocation from ld65 o65 records (not address scanning). A single
+real C image executes in both native bank-1 slots on VICE D64/D71, with pointer,
+BSS, private recursive stack, yield/sleep, exit/reap/reload and rejection tests.
+Independent flat links match both installed images. Evidence is preserved in
+`bench/{artifacts,results}/2026-10-04-relocatable-apps`.
+
+Placement at that checkpoint: loader CODE `$D900-$DFFA`; RELOC `$1880-$19ED`; ACCESS
+`$1F00-$1F69`. Storage/lookup reservations shrink to `$1880`/`$1F00`, enforced
+by link/build/map gates. Never use `$D100-$D4FF`: root/task-2 CPU pages own it.
+No core, public gate, runtime stack or app-slot relocation was required.
+Normal four-app VICE D64 and unmodified 1986 native-input regression pass;
+1986 has not separately qualified the new relocatable C fixture. Clean parallel copied-source build
+reproduces both disks and the new executable. Published root snapshots unchanged.
+
+`additional-apps` / issue #32 remains a separate worktree with `.CBM` container
+and image conversion work (`6b61f5c`); do not overwrite or absorb it incidentally.
+Other active worktrees include console-sleep and fix/cowsay-output. The current
+root worktree was clean before creating this branch. The relocation probe uses
+the private loader, not a user-facing launch path. Do not claim name-table removal makes four heterogeneous
+native/managed slots interchangeable. Remeasure tight budgets before coding.
+
+### Generic background-launch checkpoint
+
+Following `fbdc72d`, this checkpoint implements unknown `name &` using
+private selector 0 for free-fitting native
+load/activation (task 3 then 4). The graphics service owns names and selected
+instance; the running panel reads bounded names. Legacy CONTROL stops verify
+the occupant's name, so `xcalc -q` cannot kill HELLO. Ordinary disk commands
+and clock/wave callbacks remain unchanged. New independent sample, installer
+and guide: `user/examples/xhello.c`, `tools/add_disk_apps.py`,
+`docs/GRAPHICAL-APPS-SDK.md`. Test `build/generic-apps/generic-demo.d64`/`.d71`.
+
+VICE D64/D71 ordinary-shell generic tests and old four-app VICE/native-1986
+input tests pass. Captures use WM injection for VICE, not native mouse input;
+1986 covers the old four apps, not yet HELLO. Physical confirmation pending.
+Exact artifacts/results: `bench/{artifacts,results}/2026-10-04-generic-launch`.
+1,081 host tests pass; an isolated clean parallel build reproduces nine outputs
+including both disks and HELLO.BIN. All test-owned VICE sessions are closed.
+Loader now `$D900-$DFFE`, ACCESS `$1F00-$1FEB`; GRAPHICSCODE through `$11F4`,
+GRAPHICSHELP through `$A1D7`, resident BSS through `$9AFE` (**one byte spare**),
+high module through `$E640` (three spare). No ownership boundaries moved.
+The VICE pointer harness now uses measured helper/shadow padding, never BSS.
+
+The checkpoint below supersedes the background-only restriction. Name-based
+control/native-client migration, followed by clock/wave compatibility, remain.
+Two generic native slots are an intermediate result. Further resident growth
+needs a placement decision. The user authorized merging the checkpoint below;
+keep issue #35 open and leave published root snapshots unchanged.
+
+### Foreground, console SDK and third disk format
+
+Follow-up to `1699e82`: bare one-word UDEX 0.2 launch falls back
+from the compatibility loader's BAD_VERSION to automatic native admission;
+the selected instance owns foreground/Ctrl+C. `name &` stays background-only.
+VIC initialization moved to the graphics service's CREATE path. The independent
+`user/examples/args.c` and `tools/build_console_example.py` prove arbitrary
+fixed console filenames, argc/argv, fd 1/2 output, return 37 and BSS reset,
+including with clock/wave and two generic windows. Console execution remains
+synchronous and bounded: no background console/stdin or `$?` expansion claim.
+
+`make boot` builds `.d64`, `.d71`, **`.d81`**; `publish-boot` explicitly publishes
+all three but has not been run. D81 has rebuilt standard 1581 BAM/directory/file
+chains. Native BOOT still uses 21 sectors per track: preserve T/S addresses,
+not a linear D81 copy. The filesystem detects geometry each open, supports
+296 directory slots (16-bit enumeration cursor), and reads both BAMs for df.
+No sibling 1986 sources or existing release snapshots were changed.
+
+Memory: resident BSS ends `$9AFA` (5 bytes spare); GRAPHICSCODE ends `$11FD`.
+Storage low module ends `$1831`; policy `$B000-$C50C`; driver `$E300-$E8F9`;
+BSS through `$E112`. All existing reservations, app slots and guards stay put.
+Read-only storage no longer ships the unused outgoing filename encoder;
+the full encoder contract remains host-tested. Size-oriented cc65 compilation
+of the root bridge/CBM reader fits the additions. Keep volatile output store
+`P[n] = value; ++n` separate: `-Os` plus static locals miscompiled `P[n++]` into
+increment-before-store, caught by target file-header tests. Host tests alone
+did not expose it.
+
+Qualification: 1,095 host tests; VICE 3.10 D64/1541, D71/1571, D81/1581 independent-console and
+foreground tests; unknown-name rejection/drag/reuse VICE regression; unmodified
+1986 D64 native mouse/keyboard four-app regression; typed D81 BASIC BOOT and
+c1541 directory validation. Clean parallel copied-source build and both
+placement gates pass. Evidence: `bench/{artifacts,results}/2026-10-04-console-d81`.
+Physical 1581 and new generic-app hardware feedback remain pending. Test the
+`build/generic-apps/apps-demo.d64` / `.d71` / `.d81` candidates via the SDK guide.
+
+## Four-app checkpoint — 2026-10-01 (merged as PR #31)
 
 **Latest working-tree checkpoint: four independent graphical apps.** Clock,
 wave, banked calculator and new `XDRAW.BIN` now coexist on `graphics-four-apps`.

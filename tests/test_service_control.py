@@ -12,14 +12,25 @@ HARNESS = r'''
 #define UDEKS_SESSION_HOST_TEST
 #include "src/services/shell/shell.c"
 unsigned char session_memory[65536], active, clock_run, wave_run, calls, starts, app_result;
+unsigned char token_count, init_error;
+unsigned char load_error, load_exit, loads, loaded_count;
+unsigned char session_load(unsigned char count, unsigned char **args) {
+    ++loads; loaded_count=count;
+    session_memory[UDEKS_TASK_STATUS_BASE+UDEKS_TASK_ERROR_OFFSET]=load_error;
+    session_memory[UDEKS_TASK_STATUS_BASE+UDEKS_TASK_EXIT_OFFSET]=load_exit;
+    return 0;
+}
+char last_name[17], output[256];
 unsigned char udeks_shell_read_line(unsigned char *s, unsigned char n) { return UDEKS_LINE_EDITOR_EMPTY; }
-unsigned char udeks_shell_tokenize(unsigned char *s, unsigned char *o, unsigned char n) { return 0; }
-unsigned char udeks_stream_write(unsigned char fd, const unsigned char *s) { return 0; }
+unsigned char udeks_shell_tokenize(unsigned char *s, unsigned char *o, unsigned char n) {
+    if(token_count) { o[0]=0; o[1]=strlen((char *)s)+1; } return token_count;
+}
+unsigned char udeks_stream_write(unsigned char fd, const unsigned char *s) { strncat(output,(const char *)s,255-strlen(output)); return 0; }
 unsigned char udeks_stream_write_byte(unsigned char fd, unsigned char c) { return 0; }
 unsigned char udeks_root_terminal_prompt(void) { return 0; }
 void udeks_window_manager_reset(void) { ++calls; }
 unsigned char udeks_vic_graphics_is_active(void) { return active; }
-unsigned char udeks_vic_graphics_initialize(void) { ++calls; active=1; return 0; }
+unsigned char udeks_vic_graphics_initialize(void) { ++calls; if(!init_error) active=1; return init_error; }
 unsigned char udeks_vic_graphics_shutdown(void) { ++calls; active=0; return 0; }
 unsigned char udeks_xclock_start(void) { ++calls; ++starts; if (!app_result) clock_run=1; return app_result; }
 unsigned char udeks_xwave_start(void) { ++calls; ++starts; if (!app_result) wave_run=1; return app_result; }
@@ -28,14 +39,25 @@ unsigned char udeks_xwave_stop(void) { ++calls; wave_run=0; return 0; }
 unsigned char udeks_xclock_is_running(void) { return clock_run; }
 unsigned char udeks_xwave_is_running(void) { return wave_run; }
 unsigned char banked_run[2];
+unsigned char udeks_banked_graphics_selected;
+unsigned char udeks_banked_graphics_exec(const unsigned char *name) {
+    ++calls; ++starts; strncpy(last_name,(const char *)name,16);
+    if(app_result) return app_result;
+    if(banked_run[0] && banked_run[1]) return 4;
+    udeks_banked_graphics_selected=banked_run[0]?1:0;
+    banked_run[udeks_banked_graphics_selected]=1; return 0;
+}
 unsigned char udeks_banked_graphics_start(unsigned char i) { ++calls; ++starts; if (!app_result) banked_run[i]=1; return app_result; }
 unsigned char udeks_banked_graphics_stop(unsigned char i) { ++calls; banked_run[i]=0; return 0; }
+unsigned char udeks_banked_graphics_control_stop(unsigned char bit) { return udeks_shell_stop_app(bit); }
 unsigned char udeks_banked_graphics_running(unsigned char i) { return banked_run[i]; }
 unsigned char udeks_z80_submit(unsigned char op, unsigned int a, unsigned int b,
     unsigned int n, unsigned int *r) { ++calls; *r=0; return 0; }
 void reset(void) {
     memset(session_memory, 0, sizeof(session_memory));
     active=clock_run=wave_run=banked_run[0]=banked_run[1]=calls=starts=app_result=0;
+    token_count=init_error=load_error=load_exit=loads=loaded_count=0;
+    memset(last_name,0,sizeof(last_name)); output[0]=0;
     udeks_shell_start(); session_memory[UDEKS_USH_STATUS_BASE+1]=UDEKS_USH_STATE_READY;
 }
 unsigned char valid(unsigned char t, unsigned char a, unsigned char b) { return udeks_control_valid(t,a,b); }
@@ -79,6 +101,62 @@ class ServiceControl(unittest.TestCase):
             for v in range(3,256):
                 self.assertFalse(self.lib.valid(t,v,0))
                 self.assertFalse(self.lib.valid(t,0,v))
+
+    def test_unknown_background_names_select_instances_without_foreground(self):
+        ctypes.c_ubyte.in_dll(self.lib,'token_count').value=2
+        line=(ctypes.c_ubyte*55).in_dll(self.lib,'udeks_shell_command_line')
+        for name in (b'orbit', b'canvas'):
+            data=name+b'\0&\0'; line[:len(data)]=data
+            self.lib.udeks_shell_dispatch_line()
+            self.assertEqual(bytes((ctypes.c_char*17).in_dll(self.lib,'last_name')).split(b'\0')[0],name)
+            self.assertEqual(self.memory[0xf184],0)  # no foreground job
+        line[:8]=b'extra\0&\0'
+        self.lib.udeks_shell_dispatch_line()
+        self.assertIn(b'task slot busy',bytes((ctypes.c_char*256).in_dll(self.lib,'output')))
+        self.assertEqual(bytes((ctypes.c_ubyte*2).in_dll(self.lib,'banked_run')),b'\1\1')
+
+    def test_generic_launch_does_not_initialize_desktop(self):
+        ctypes.c_ubyte.in_dll(self.lib,'token_count').value=2
+        ctypes.c_ubyte.in_dll(self.lib,'init_error').value=1
+        line=(ctypes.c_ubyte*55).in_dll(self.lib,'udeks_shell_command_line')
+        line[:8]=b'orbit\0&\0'
+        self.lib.udeks_shell_dispatch_line()
+        self.assertEqual(self.value('starts'),1)
+        self.assertEqual(self.value('active'),0)
+
+    def test_fixed_console_arguments_and_exit_do_not_enter_native_loader(self):
+        ctypes.c_ubyte.in_dll(self.lib,'token_count').value=2
+        ctypes.c_ubyte.in_dll(self.lib,'load_exit').value=37
+        line=(ctypes.c_ubyte*55).in_dll(self.lib,'udeks_shell_command_line')
+        line[:11]=b'args\0alpha\0'
+        self.lib.udeks_shell_dispatch_line()
+        self.assertEqual(self.value('loaded_count'),2)
+        self.assertEqual(self.value('starts'),0)
+        self.assertEqual(self.memory[0xf17a],37)
+        self.assertEqual(self.value('active'),0)
+
+    def test_minor2_foreground_fallback_and_targeted_interrupt(self):
+        ctypes.c_ubyte.in_dll(self.lib,'token_count').value=1
+        ctypes.c_ubyte.in_dll(self.lib,'load_error').value=5
+        line=(ctypes.c_ubyte*55).in_dll(self.lib,'udeks_shell_command_line')
+        line[:6]=b'orbit\0'
+        self.lib.udeks_shell_dispatch_line()
+        self.lib.udeks_shell_poll()
+        self.assertEqual(self.memory[0xf184],4)
+        self.assertEqual(self.value('active'),0)
+        self.assertEqual(self.lib.udeks_shell_interrupt_foreground(),1)
+        self.lib.udeks_shell_poll()
+        self.assertEqual(self.memory[0xf184],0)
+
+    def test_other_loader_errors_and_native_arguments_do_not_fall_back(self):
+        line=(ctypes.c_ubyte*55).in_dll(self.lib,'udeks_shell_command_line')
+        for error,count in ((11,1),(3,1),(4,1),(5,2)):
+            self.lib.reset()
+            ctypes.c_ubyte.in_dll(self.lib,'token_count').value=count
+            ctypes.c_ubyte.in_dll(self.lib,'load_error').value=error
+            line[:10]=b'orbit\0arg\0'
+            self.lib.udeks_shell_dispatch_line()
+            self.assertEqual(self.value('starts'),0)
 
     def test_enqueue_has_no_graphics_or_engine_side_effects(self):
         self.assertEqual(self.request(), 0)

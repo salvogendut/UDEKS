@@ -139,6 +139,10 @@ uint8_t udeks_fs_classify(const uint8_t *physical, uint8_t data_volume,
     return 0;
 }
 
+#ifndef UDEKS_FS_READ_ONLY
+/* Outgoing filename generation is for a future write/create service. The
+ * read-only runtime scans/classifies real directory entries instead. Keep
+ * this host-tested contract, but do not deliver unused code to the C128. */
 uint8_t udeks_fs_physical(const struct udeks_fs_path *path, uint8_t kind,
                          uint8_t *physical)
 {
@@ -181,10 +185,11 @@ uint8_t udeks_fs_physical(const struct udeks_fs_path *path, uint8_t kind,
         c = path->name[i];
         physical[i] = c >= 'a' && c <= 'z' ? c - ('a' - 'A') : c;
     }
-    for (i = 0; i < suffix_length; ++i) physical[n++] = suffix[i];
-    while (n < UDEKS_FS_NAME_MAX) physical[n++] = 0xa0u;
+    for (i = 0; i < suffix_length; ++i) { physical[n] = suffix[i]; ++n; }
+    while (n < UDEKS_FS_NAME_MAX) { physical[n] = 0xa0u; ++n; }
     return 0;
 }
+#endif
 
 uint8_t udeks_fs_consider(const struct udeks_fs_path *query,
                          const uint8_t *physical, uint8_t *selected)

@@ -1,0 +1,18 @@
+{
+  "byte_identical": true,
+  "copy": "build/generic-apps/clean-console.MH5AO9",
+  "command": "make -j8 boot graphical-example console-example graphics-apps-check placement-check",
+  "sha256": {
+    "boot/udeks.d64": "f2446a9faa0adcb973ce2a2abfa9133a2dd79502dfb9522b8d6af40b39d6b9bb",
+    "boot/udeks.d71": "5afc3eed8da5114516167f29e0e0a1de723d1652de23619e9ba2d4c61f8d4321",
+    "boot/udeks.d81": "b8a10dd606ef58e969c7eb63d9c0f5e340c9736bf8545b902cee93c60be20093",
+    "8502/udeks-8502.bin": "dc1f81a43fd46f8f2b28edd06aac3143f9950be5e20a4d33569edae7f6eaada7",
+    "8502/banked-graphics.bin": "ebe6a47fc2d2eb1f2e349a1e7d9a2fa80f730e64e32081bfb932ac1040bfc209",
+    "storage/module.bin": "7d9f00a0aef927331c06dbabf3e735666f368641a04e7712b8b653ecfc435f1f",
+    "storage/policy.bin": "008d3d392b7e71d60d2f5e0c5a52aab221d7ab7174d4a24b86c6d569d82ba442",
+    "storage/driver.bin": "e1f5e9e53d08bdf4ed5ebf07029bf5f33499d666ec80f85ddaaf99a9a03d3cd2",
+    "user/ush.udx": "497553598888ac589cf7b7d3b964404cf1683752b1a7b16721de4b10d3e27ab1",
+    "generic-apps/example/HELLO.BIN": "6062c16c3e9e58c1af3a04d8c5a573a63fea808e54c6c88c1beca88f80bdcb8b",
+    "generic-apps/console/ARGS.BIN": "fd15ea34bd657d26e2bea3b6efa6db658dedf7729d868093133558d6f3a73c89"
+  }
+}

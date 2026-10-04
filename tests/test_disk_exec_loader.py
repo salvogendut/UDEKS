@@ -44,5 +44,5 @@ class DiskExecLoader(unittest.TestCase):
         make = (ROOT/'Makefile').read_text()
         self.assertIn('$(STAGE1_GATEWAY_BIN) $(TASK_LOADER_BIN) $(TASK_LOOKUP_BIN) $(STAGE1_GATEWAY_MAP) &:', make)
         self.assertIn('$(TASK_LOOKUP_BIN)', (ROOT/'mk/storage.mk').read_text())
-        self.assertIn('start = $1A00, size = $0600', (ROOT/'cfg/8502-stage1-gateway.cfg').read_text())
-        self.assertIn('start=$1200, size=$0800', (ROOT/'cfg/8502-storage.cfg').read_text())
+        self.assertIn('start = $1A00, size = $0500', (ROOT/'cfg/8502-stage1-gateway.cfg').read_text())
+        self.assertIn('start=$1200, size=$0680', (ROOT/'cfg/8502-storage.cfg').read_text())

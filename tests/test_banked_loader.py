@@ -74,5 +74,7 @@ class BankedLoader(unittest.TestCase):
         make = (ROOT/'Makefile').read_text()
         self.assertIn('$(TASK_YIELD_HANDLER_BIN) $(BANKED_LOADER_BIN)', make)
         self.assertIn('--banked-loader $(BANKED_LOADER_BIN)', make)
-        self.assertIn('$(BANKED_LOADER_BIN) $(BUILD_BOOT)/banked-loader.map &:', make)
+        self.assertIn('$(BANKED_LOADER_BIN) $(BUILD_BOOT)/banked-loader.map $(BANKED_RELOC_BIN) $(BANKED_ACCESS_BIN) &:', make)
+        self.assertIn('--banked-reloc $(BANKED_RELOC_BIN)', make)
+        self.assertIn('--banked-access $(BANKED_ACCESS_BIN)', make)
         self.assertIn('size = $0700', (ROOT/'cfg/8502-banked-loader.cfg').read_text())

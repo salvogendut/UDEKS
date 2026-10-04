@@ -4,7 +4,7 @@ STORAGE_BUILD := build/storage
 # Compile/measure the #26 namespace contract without changing the boot image.
 filesystem-policy: $(STORAGE_BUILD)/fs_namespace.o
 $(STORAGE_BUILD)/fs_namespace.o: src/services/filesystem/fs_namespace.c include/udeks/fs_namespace.h include/udeks/task_request.h | $(STORAGE_BUILD)
-	$(CL65) $(CFLAGS_8502) --static-locals --code-name STORAGECODE -c -o $@ $<
+	$(CL65) $(CFLAGS_8502) -D UDEKS_FS_READ_ONLY --static-locals --code-name STORAGECODE -c -o $@ $<
 .PHONY: iec-eof-reference
 iec-eof-reference: $(BUILD_IEC_DIRECTORY)/kernal-eof.prg
 $(BUILD_IEC_DIRECTORY)/kernal-eof.o: bench/iec-directory/kernal-eof.s | $(BUILD_IEC_DIRECTORY)
@@ -74,7 +74,7 @@ $(STORAGE_BUILD)/iec_entry.o: src/services/filesystem/iec_entry.s | $(STORAGE_BU
 $(STORAGE_BUILD)/iec_service.o: src/services/filesystem/iec_service.c include/udeks/task_request.h | $(STORAGE_BUILD)
 	$(CL65) $(CFLAGS_8502) --static-locals --code-name STORAGECODE -c -o $@ $<
 $(STORAGE_BUILD)/cbm_file.o: src/services/filesystem/cbm_file.c include/udeks/cbm_file.h include/udeks/iec_slow.h | $(STORAGE_BUILD)
-	$(CL65) $(CFLAGS_8502) --static-locals -c -o $@ $<
+	$(CL65) -t none --cpu 6502 --standard c99 -Os -I include --static-locals -c -o $@ $<
 $(STORAGE_BUILD)/iec_slow.o: src/services/filesystem/iec_slow.s | $(STORAGE_BUILD)
 	$(CA65) --cpu 6502 -D UDEKS_STORAGE_MODULE -o $@ $<
 $(STORAGE_BUILD)/module.bin $(STORAGE_BUILD)/driver.bin $(STORAGE_BUILD)/policy.bin $(STORAGE_BUILD)/module.map &: \

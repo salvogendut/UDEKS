@@ -1,0 +1,162 @@
+Modules list:
+-------------
+entry.o:
+    CODE              Offs=000000  Size=00007F  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000006  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000012  Align=00001  Fill=0000
+probe.o:
+    CODE              Offs=00007F  Size=000239  Align=00001  Fill=0000
+    RODATA            Offs=000006  Size=00000B  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000007  Align=00001  Fill=0000
+    DATA              Offs=000000  Size=00000E  Align=00001  Fill=0000
+split.o:
+    CODE              Offs=0002B8  Size=000032  Align=00001  Fill=0000
+    RODATA            Offs=000011  Size=000006  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=0002EA  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=0002F8  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000326  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=00033C  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(jmpvec.o):
+    DATA              Offs=00000E  Size=000003  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000341  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000357  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=000371  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=00037C  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               001000  001011  000012  00001
+CODE                  001012  00139A  000389  00001
+RODATA                00139B  0013B1  000017  00001
+DATA                  0013B2  0013C2  000011  00001
+BSS                   0013C3  0013C9  000007  00001
+
+
+Exports list by name:
+---------------------
+_probe_control            0013C4 RLA    _probe_error              0013C5 RLA    
+_probe_low_sp             0013B2 RLA    _probe_operation          0013C8 RLA    
+_probe_progress           0013C6 RLA    _probe_ready              0013C3 RLA    
+_probe_request            001012 RLA    _probe_sequence           0013C9 RLA    
+_probe_split_ok           0012CA RLA    _probe_value              0013B4 RLA    
+_udeks_program_entry      001002 RLA    _udeks_program_main       001189 RLA    
+addysp                    0012FD RLA    incsp2                    001340 RLA    
+incsp3                    00134E RLA    jmpvec                    0013C0 RLA    
+ptr1                      00000A RLZ    pusha                     001357 RLA    
+pusha0                    00136B RLA    pushax                    00136D RLA    
+sp                        000002 RLZ    sreg                      000004 RLZ    
+stax0sp                   001383 RLA    staxysp                   001385 RLA    
+subysp                    00138E RLA    tmp1                      000012 RLZ    
+tosicmp                   00130C RLA    tosicmp0                  00130A RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+ptr1                      00000A RLZ    tmp1                      000012 RLZ    
+_udeks_program_entry      001002 RLA    _probe_request            001012 RLA    
+_udeks_program_main       001189 RLA    _probe_split_ok           0012CA RLA    
+addysp                    0012FD RLA    tosicmp0                  00130A RLA    
+tosicmp                   00130C RLA    incsp2                    001340 RLA    
+incsp3                    00134E RLA    pusha                     001357 RLA    
+pusha0                    00136B RLA    pushax                    00136D RLA    
+stax0sp                   001383 RLA    staxysp                   001385 RLA    
+subysp                    00138E RLA    _probe_low_sp             0013B2 RLA    
+_probe_value              0013B4 RLA    jmpvec                    0013C0 RLA    
+_probe_ready              0013C3 RLA    _probe_control            0013C4 RLA    
+_probe_error              0013C5 RLA    _probe_progress           0013C6 RLA    
+_probe_operation          0013C8 RLA    _probe_sequence           0013C9 RLA    
+
+
+
+Imports list:
+-------------
+_probe_control (probe.o):
+    [linker generated]       
+_probe_error (probe.o):
+    entry.o                   user/probes/banked_client_entry.s(5)
+    [linker generated]       
+_probe_low_sp (probe.o):
+    entry.o                   user/probes/banked_client_entry.s(5)
+    [linker generated]       
+_probe_operation (probe.o):
+    entry.o                   user/probes/banked_client_entry.s(5)
+_probe_progress (probe.o):
+    split.o                   user/probes/reloc_split.s(5)
+    [linker generated]       
+_probe_ready (probe.o):
+    [linker generated]       
+_probe_request (entry.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(13)
+_probe_sequence (probe.o):
+    entry.o                   user/probes/banked_client_entry.s(5)
+_probe_split_ok (split.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(22)
+_probe_value (probe.o):
+    split.o                   user/probes/reloc_split.s(5)
+    [linker generated]       
+_udeks_program_entry (entry.o):
+    [linker generated]       
+_udeks_program_main (probe.o):
+    entry.o                   user/probes/banked_client_entry.s(4)
+addysp (addysp.o):
+    incsp3.o                  runtime/incsp3.s(8)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(366)
+incsp2 (incsp2.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(366)
+incsp3 (incsp3.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(366)
+jmpvec (jmpvec.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(366)
+ptr1 (zeropage.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(11)
+    entry.o                   user/probes/banked_client_entry.s(6)
+pusha (pusha.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(366)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(366)
+    entry.o                   user/probes/banked_client_entry.s(4)
+pusha0 (pushax.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(366)
+pushax (pushax.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(366)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(366)
+sp (zeropage.o):
+    subysp.o                  runtime/subysp.s(9)
+    staxsp.o                  runtime/staxsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    addysp.o                  runtime/addysp.s(8)
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(10)
+    entry.o                   user/probes/banked_client_entry.s(6)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+stax0sp (staxsp.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(366)
+staxysp (staxsp.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(366)
+subysp (subysp.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(366)
+tmp1 (zeropage.o):
+    entry.o                   user/probes/banked_client_entry.s(6)
+tosicmp (icmp.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(366)
+tosicmp0 (icmp.o):
+    probe.o                   /var/home/salvogendut/Dev/UDEKS/build/generic-apps/probe.s(366)
+

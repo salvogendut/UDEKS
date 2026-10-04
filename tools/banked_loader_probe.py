@@ -19,6 +19,7 @@ from gen_capability_imports import map_exports
 from storage_shell_probe import sp, byte, keyboard_queue_address, type_command, console_address
 from task_waitpid_probe import scheduler_symbols
 from vice_capture import choose_port, monitor_command
+from o65_to_udex import relocate_executable
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRATCH = 0x0C00
@@ -92,7 +93,9 @@ def main():
     parser.add_argument('--drive', choices=('1541','1571'), default='1541')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--native', action='store_true', help='also execute compiled banked C clients')
+    parser.add_argument('--reloc', action='store_true', help='load the SAME relocatable C executable into both native slots')
     args = parser.parse_args()
+    if args.reloc: args.native=True
     work = args.output.resolve()
     work.mkdir(parents=True, exist_ok=True)
     kernel_map = (ROOT/'build/8502/udeks-8502.map').read_text()
@@ -127,8 +130,33 @@ def main():
     if args.native:
         for tag in (3,4):
             name = 'native'+str(tag)
-            files[name] = (ROOT/('build/four-apps/native/'+name+'.udx')).read_bytes()
-            native_maps[tag] = map_exports((ROOT/('build/four-apps/native/'+name+'.map')).read_text())
+            if args.reloc:
+                files['relocapp']=(ROOT/'build/generic-apps/relocapp.udx').read_bytes()
+                delta=(0x2300 if tag==3 else 0x3500)-0x1000
+                native_maps[tag]={k:(a+delta if a>=0x1000 else a,t) for k,(a,t) in
+                    map_exports((ROOT/'build/generic-apps/probe.map').read_text()).items()}
+            else:
+                files[name] = (ROOT/('build/four-apps/native/'+name+'.udx')).read_bytes()
+                native_maps[tag] = map_exports((ROOT/('build/four-apps/native/'+name+'.map')).read_text())
+    reloc_faults=[]
+    if args.reloc:
+        # The legacy probe covers full-capacity fixed images. Use small fixed
+        # images here so the same-file relocation suite also fits on a D64.
+        for name in ('full3', 'full4', 'over'):
+            del files[name]
+        # Small malformed streams are never activated.
+        original=(b'UDEX\0\2\1\0\0\x10\x10\0\0\0\0\x10'+
+                  b'\xea'*16+b'\x03\0\x01\0\x03\0\x05\0')
+        end=16+int.from_bytes(original[10:12],'little')
+        for name,offset,replacement in (
+                ('rcount',end,b'\xff\xff'),('rpast',end+2,original[10:12]),
+                ('rdup',end+4,original[end+2:end+4]),
+                ('rorder',end+6,b'\0\0'),('rbase',8,b'\1\x10'),
+                ('rentry',14,b'\xff\x0f'),('rflags',7,b'\2')):
+            bad=bytearray(original);bad[offset:offset+len(replacement)]=replacement
+            files[name]=bytes(bad);reloc_faults.append(name)
+        files['rshort']=original[:-1];files['rtrail']=original+b'\0'
+        reloc_faults.extend(('rshort','rtrail'))
     disk_image = bytearray(args.disk.read_bytes())
     for name, data in files.items():
         install_prg_file(disk_image, name.upper()+'.BIN', data, file_type=0x81)
@@ -188,6 +216,8 @@ def main():
 
     def verify_loaded(slot, name):
         data = files[name]
+        if data[5]==2:
+            data=relocate_executable(data,0x2300 if slot==3 else 0x3500,0x1200 if slot==3 else 0xb00)
         size, bss = (int.from_bytes(data[n:n+2], 'little') for n in (10, 12))
         if allocation(slot)[:size+bss] != data[16:]+bytes(bss):
             raise AssertionError('image/BSS differs: '+name)
@@ -206,7 +236,7 @@ def main():
                 raise AssertionError(('native C self-check',tag,native_byte(tag,'error')))
             if exited:
                 if state[1] == 6:
-                    if state[4] != 40+tag: raise AssertionError(('native exit',tag,state.hex()))
+                    if state[4] != 40+(3 if args.reloc else tag): raise AssertionError(('native exit',tag,state.hex()))
                     return
             elif native_byte(tag,'ready') == 0xA5 and native_byte(tag,'progress',2) >= 8:
                 return
@@ -220,7 +250,8 @@ def main():
         value = native_byte(tag,'value',2)
         low_sp = native_byte(tag,'low_sp',2)
         bottom, top, page = (0x8A00,0x8CB0,0xD600) if tag==3 else (0x8D00,0x8FB0,0xD800)
-        if value != (tag*1000+tag*progress)&65535:
+        client_tag=3 if args.reloc else tag
+        if value != (client_tag*1000+client_tag*progress)&65535:
             raise AssertionError(('private state crossed',tag,progress,value))
         if not bottom+16 <= low_sp < top-64:
             raise AssertionError(('C stack was not exercised safely',tag,hex(low_sp)))
@@ -228,8 +259,8 @@ def main():
             if capture('native'+str(tag)+'-'+name,address,size,'worker') != b'\xa5'*size:
                 raise AssertionError(('guard overwritten',tag,name))
         records.append(dict(native_task=tag, progress=progress,value=value,
-                            lowest_software_sp=low_sp,exit_status=40+tag,guards_ok=True))
-        print('PASS native C',tag,'steps',progress,'stack low',hex(low_sp),'exit',40+tag,flush=True)
+                            lowest_software_sp=low_sp,exit_status=40+client_tag,guards_ok=True))
+        print('PASS native C',tag,'steps',progress,'stack low',hex(low_sp),'exit',40+client_tag,flush=True)
 
     try:
         sp.wait_for_byte(port, 0xF3E0, 2, time.monotonic()+240)
@@ -249,7 +280,7 @@ def main():
         invoke(0x43, '', 8)          # a managed callback image must not execute
         peer = allocation(4)
         own = allocation(3)
-        invoke(3, 'full3', 16)
+        invoke(3, 'load3', 16)
         if allocation(3) != own: raise AssertionError('owned slot overwritten')
         for slot in (2, 3, 4):
             for state in (5, 6):  # fault-injected ownership, not scheduled tasks
@@ -264,11 +295,12 @@ def main():
             raise AssertionError('release disturbed peer ownership')
         if capture('cleared-header', headers, 16, 'worker') != bytes(16):
             raise AssertionError('release retained header')
-        for name in ('short', 'trail', *mutations):
+        for name in ('short', 'trail', *mutations, *reloc_faults):
             invoke(3, name, 12 if name == 'bss' else 8)
             if capture('rejected-owned', owned, 2, 'worker') != b'\0\1':
                 raise AssertionError('invalid image published ownership')
-        invoke(3, 'over', 12)
+        if not args.reloc:
+            invoke(3, 'over', 12)
         invoke(3, 'absent', 2)
         invoke(2, 'load3', 22)
         invoke(5, 'load3', 22)
@@ -276,17 +308,20 @@ def main():
         bad = bytearray(request_record('load3')); bad[30] = 1
         invoke(3, 'padding', 22, bytes(bad))
         if allocation(4) != peer: raise AssertionError('peer image changed on rejection')
-        invoke(3, 'full3')
-        verify_loaded(3, 'full3')
+        replacement3 = 'load3' if args.reloc else 'full3'
+        replacement4 = 'load4' if args.reloc else 'full4'
+        invoke(3, replacement3)
+        verify_loaded(3, replacement3)
         invoke(0x84, '')
-        invoke(4, 'full4')
-        verify_loaded(4, 'full4')
+        invoke(4, replacement4)
+        verify_loaded(4, replacement4)
         if args.native:
             invoke(0x83,'')
             invoke(0x84,'')
             for tag in (3,4):
-                invoke(tag,'native'+str(tag))
-                verify_loaded(tag,'native'+str(tag))
+                name='relocapp' if args.reloc else 'native'+str(tag)
+                invoke(tag,name)
+                verify_loaded(tag,name)
                 invoke(0x40|tag,'')
             wait_native(3)
             wait_native(4)
@@ -318,8 +353,9 @@ def main():
                 if any(waits[index*8+tag-1] for index in range(10)):
                     raise AssertionError('native wait snapshot survived reap')
             # Reload resets DATA/BSS and must not inherit the old context or wait.
-            invoke(3,'native3')
-            verify_loaded(3,'native3')
+            name='relocapp' if args.reloc else 'native3'
+            invoke(3,name)
+            verify_loaded(3,name)
             invoke(0x43,'')
             wait_native(3)
             finish_native(3)
@@ -335,6 +371,8 @@ def main():
         (work/'result.json').write_text(json.dumps(dict(
             disk_sha256=hashlib.sha256(disk_image).hexdigest(),
             loader_sha256=hashlib.sha256((ROOT/'build/boot/banked-loader.bin').read_bytes()).hexdigest(),
+            relocatable_same_file=args.reloc,
+            relocatable_sha256=hashlib.sha256(files['relocapp']).hexdigest() if args.reloc else None,
             drive=args.drive, load_only=not args.native, records=records,
             legacy_code_preserved=True, console_alive=True), indent=2)+'\n')
     except Exception:

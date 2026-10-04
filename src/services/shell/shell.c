@@ -24,11 +24,14 @@ extern unsigned char session_memory[65536];
 #define R (session_memory + UDEKS_TASK_REQUEST_BASE)
 #define REPLY (session_memory + UDEKS_CONTROL_REPLY_BASE)
 #define USH_READY (session_memory[UDEKS_USH_STATUS_BASE + 1u] == UDEKS_USH_STATE_READY)
+extern unsigned char session_load(unsigned char, unsigned char **);
+#define LOAD session_load
 #else
 #define S(n) (*(volatile unsigned char *)(UDEKS_SHELL_STATUS_BASE + (n)))
 #define R ((volatile unsigned char *)UDEKS_TASK_REQUEST_BASE)
 #define REPLY ((volatile unsigned char *)UDEKS_CONTROL_REPLY_BASE)
 #define USH_READY (*(volatile unsigned char *)(UDEKS_USH_STATUS_BASE + 1u) == UDEKS_USH_STATE_READY)
+#define LOAD ((udeks_task_loader_entry)UDEKS_TASK_LOADER_ENTRY)
 #endif
 
 #pragma bss-name(push, "HIGHBSS")
@@ -52,7 +55,7 @@ static unsigned char app_running(unsigned char bit)
         udeks_banked_graphics_running(bit >> 3);
 }
 
-static unsigned char app_stop(unsigned char bit)
+unsigned char __fastcall__ udeks_shell_stop_app(unsigned char bit)
 {
     return bit == 1 ? udeks_xclock_stop() : bit == 2 ? udeks_xwave_stop() :
         udeks_banked_graphics_stop(bit >> 3);
@@ -60,7 +63,9 @@ static unsigned char app_stop(unsigned char bit)
 
 static void publish_jobs(void)
 {
-    unsigned char bit, count=0;
+    /* Serialized root-service scratch, not a task's cc65 frame. */
+    static unsigned char bit, count;
+    count=0;
     for (bit=1;bit<16;bit<<=1) {
         if (!app_running(bit)) background_jobs &= ~bit;
         if (background_jobs & bit) ++count;
@@ -98,15 +103,15 @@ static void control_reply(unsigned char target, unsigned char action,
 /* Only on the bank-0 service poll, AFTER the task gateway unwinds. */
 static void run_control(void)
 {
-    unsigned char result, bit;
-    unsigned int worker_result;
+    static unsigned char result, bit;
+    static unsigned int worker_result;
     result = 0;
     if (queued_target == UDEKS_CONTROL_ENGINE) {
         result = udeks_z80_submit(UDEKS_MB_OP_NOP, 0, 0, 0, &worker_result);
         if (!result && worker_result) result = 1;
     } else if (queued_target == UDEKS_CONTROL_DESKTOP) {
         if (queued_action == UDEKS_CONTROL_STOP) {
-            for (bit=1;bit<16;bit<<=1) if (app_running(bit)) app_stop(bit);
+            for (bit=1;bit<16;bit<<=1) if (app_running(bit)) udeks_shell_stop_app(bit);
             foreground = background_jobs = 0;
             udeks_window_manager_reset();
             result = udeks_vic_graphics_shutdown();
@@ -116,7 +121,7 @@ static void run_control(void)
             queued_target == UDEKS_CONTROL_WAVE ? 2u :
             queued_target == UDEKS_CONTROL_CALC ? 4u : 8u;
         if (queued_action == UDEKS_CONTROL_STOP) {
-            result = app_stop(bit);
+            result = udeks_banked_graphics_control_stop(bit);
             if (!result) background_jobs &= ~bit;
         } else {
             if (!udeks_vic_graphics_is_active()) result = udeks_vic_graphics_initialize();
@@ -137,9 +142,14 @@ static void run_control(void)
 /* Compatibility EXEC: tokenization and loading only; no builtin catalogue. */
 unsigned char udeks_shell_dispatch_line(void)
 {
-    unsigned char count, i, result;
-    unsigned int loaded;
-    volatile unsigned char *task = (volatile unsigned char *)UDEKS_TASK_STATUS_BASE;
+    /* Only the root poll calls this; dispatch cannot re-enter while a child
+     * runs. Static service scratch avoids a second persistent command frame. */
+    static unsigned char count, i, result;
+#ifdef UDEKS_SESSION_HOST_TEST
+#define task (session_memory+UDEKS_TASK_STATUS_BASE)
+#else
+#define task ((volatile unsigned char *)UDEKS_TASK_STATUS_BASE)
+#endif
     count = udeks_shell_tokenize(udeks_shell_command_line, offsets, UDEKS_SHELL_MAX_ARGUMENTS);
     if (count == UDEKS_SHELL_PARSE_TOO_MANY) {
         increment(18);
@@ -149,8 +159,24 @@ unsigned char udeks_shell_dispatch_line(void)
     S(8) = count;
     if (!count) return 0;
     for (i = 0; i < count; ++i) arguments[i] = udeks_shell_command_line + offsets[i];
-    loaded = ((udeks_task_loader_entry)UDEKS_TASK_LOADER_ENTRY)(count, arguments);
-    result = loaded == UDEKS_TASK_SLOT_OWNED ? UDEKS_TASK_BUSY : task[UDEKS_TASK_ERROR_OFFSET];
+    /* Fixed console programs retain argc/argv and synchronous execution.
+     * A minor-2 image is rejected by that loader before execution; one-word
+     * foreground commands can then enter the native, relocatable path. */
+    if (count==2 && arguments[1][0]=='&' && !arguments[1][1]) {
+        count=0;                    /* native background, no app arguments */
+    } else {
+        result = LOAD(count, arguments)
+            == UDEKS_TASK_SLOT_OWNED ? UDEKS_TASK_BUSY : task[UDEKS_TASK_ERROR_OFFSET];
+        if(result!=UDEKS_TASK_BAD_VERSION || count!=1) goto completed;
+    }
+    result=udeks_banked_graphics_exec(arguments[0]);
+    if(!result) {
+        i=udeks_banked_graphics_selected?8u:4u;
+        if(count) foreground=i;
+        else background_jobs|=i;
+    }
+    result=result==3?UDEKS_TASK_NOT_FOUND:result==4?UDEKS_TASK_BUSY:result;
+completed:
     S(9) = result ? 0xFFu : 0xFEu;
     S(10) = result ? result : task[UDEKS_TASK_EXIT_OFFSET];
     if (!result) { increment(14); return 0; }
@@ -166,10 +192,11 @@ unsigned char udeks_shell_dispatch_line(void)
     }
     return 0;
 }
+#undef task
 
 unsigned char udeks_shell_start(void)
 {
-    unsigned char i;
+    static unsigned char i;
     for (i = 0; i < UDEKS_SHELL_STATUS_SIZE; ++i) S(i) = 0;
     S(0) = 'S'; S(1) = 'H'; S(2) = 'L'; S(3) = 'L'; S(4) = 1;
     foreground = background_jobs = queued_target = 0;
@@ -180,7 +207,7 @@ unsigned char udeks_shell_start(void)
 
 unsigned char udeks_shell_poll(void)
 {
-    unsigned char result;
+    static unsigned char result;
     increment(12);
     publish_jobs();
     if (foreground) {
@@ -202,12 +229,9 @@ unsigned char udeks_shell_poll(void)
 
 unsigned char udeks_shell_interrupt_foreground(void)
 {
-    unsigned char stopped = 0;
-    if (foreground) stopped = app_stop(foreground) == 0;
-    if (stopped) {
-        control_reply(foreground == 8 ? UDEKS_CONTROL_DRAW : foreground + 1u,
-            UDEKS_CONTROL_STOP, 0, UDEKS_CONTROL_INTERRUPTED);
-        ++S(22);
-    }
-    return stopped;
+    if (!foreground || udeks_shell_stop_app(foreground)) return 0;
+    control_reply(foreground == 8 ? UDEKS_CONTROL_DRAW : foreground + 1u,
+        UDEKS_CONTROL_STOP, 0, UDEKS_CONTROL_INTERRUPTED);
+    ++S(22);
+    return 1;
 }

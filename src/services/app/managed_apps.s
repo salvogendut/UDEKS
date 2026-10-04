@@ -6,10 +6,7 @@
         .export _udeks_xclock_is_running, _udeks_xclock_is_focused
         .export _udeks_xwave_start, _udeks_xwave_stop
         .export _udeks_xwave_is_running, _udeks_xwave_is_focused
-        .export _udeks_xcalc_start, _udeks_xcalc_stop, _udeks_xcalc_is_running
-        .export _udeks_xdraw_is_running
-        .import _udeks_banked_graphics_start, _udeks_banked_graphics_stop
-        .import _udeks_banked_graphics_running, _udeks_banked_graphics_poll
+        .import _udeks_banked_graphics_poll
 MANAGED_LOADER=$f916
 XCLOCK=$0200
 XWAVE=$1200
@@ -57,9 +54,6 @@ slot1_loaded:
         inc xclock_loaded
 slot1_start:
         jmp XCLOCK+3
-_udeks_xcalc_start:
-        lda #0
-        jmp _udeks_banked_graphics_start
 _udeks_xwave_start:
         lda xwave_loaded
         bne wave_loaded
@@ -93,9 +87,6 @@ _udeks_xclock_stop:
         lda xclock_loaded
         beq app_not_ready
         jmp XCLOCK+9
-_udeks_xcalc_stop:
-        lda #0
-        jmp _udeks_banked_graphics_stop
 _udeks_xwave_stop:
         lda xwave_loaded
         beq app_not_ready
@@ -106,12 +97,6 @@ _udeks_xclock_is_running:
         lda xclock_loaded
         beq app_false
         jmp XCLOCK+12
-_udeks_xcalc_is_running:
-        lda #0
-        jmp _udeks_banked_graphics_running
-_udeks_xdraw_is_running:
-        lda #1
-        jmp _udeks_banked_graphics_running
 _udeks_xwave_is_running:
         lda xwave_loaded
         beq app_false

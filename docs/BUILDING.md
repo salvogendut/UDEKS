@@ -1,5 +1,9 @@
 # Building UDEKS
 
+To build/install a graphical program **without rebuilding the OS**, start with
+the [independent app example](GRAPHICAL-APPS-SDK.md). The recipe below builds
+the system itself; the example has its own `make graphical-example` target.
+
 ## Reference environment
 
 The validated development environment is the Fedora 44 `my-distrobox`
@@ -35,8 +39,8 @@ make check      # host-side unit and utility checks; no target compiler needed
 make 8502       # build build/8502/udeks-8502.bin and .prg
 make z80        # build build/z80/udeks-z80.bin through SDCC
 make z80-asm    # build the independent RASM smoke image
-make boot       # build build/boot/udeks.d64 and .d71 for native C128 boot
-make publish-boot  # explicitly refresh checked-in build/udeks.d64/.d71 + SHA256SUMS
+make boot       # build build/boot/udeks.d64, .d71 and .d81 for native C128 boot
+make publish-boot  # explicitly refresh checked-in build/udeks.d64/.d71/.d81 + SHA256SUMS
 make panic-probe  # build a non-release D71 that injects descriptor failure
 make placement-check  # verify the real linker-map placement budget (reference container)
 make task-poll-policy  # cc65 compile-only event-wait reference policy; not linked
@@ -44,6 +48,7 @@ make filesystem-policy  # compile the root/suffix resolver also used by the live
 make framebuffer-assets  # pack the 64x64 XPM as a 512-byte VDC bitmap
 make user-sources  # compile staged user programs separately from the kernel
 make user-programs  # link and package standalone UDEX programs
+make console-example  # independent ARGS.BIN; no kernel link
 make bench      # build comparable 8502 and Z80 benchmark payloads
 make bench-irq  # build both CIA interrupt-entry probes
 make bench-irq-service  # build the three-path interrupt-service suite
@@ -77,6 +82,10 @@ program, and restores the slot on exit. Runtime qualification in both
 emulators and on hardware remains required before this milestone is closed.
 
 ### Publishing disk images
+
+Fresh builds also produce `build/boot/udeks.d81` (819,200 bytes), for a 1581
+or VICE configured with drive 8 type **1581**. See [D81 format and tests](D81.md).
+Do not select this format for a Pi1541 configured as a 1541.
 
 The repository's downloadable snapshots are `build/udeks.d64` and
 `build/udeks.d71`, with provenance in [build/README.md](../build/README.md).

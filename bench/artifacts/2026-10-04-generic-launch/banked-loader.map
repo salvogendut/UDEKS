@@ -1,0 +1,38 @@
+Modules list:
+-------------
+banked-loader.o:
+    CODE              Offs=000000  Size=0006FF  Align=00001  Fill=0000
+    ACCESS            Offs=000000  Size=0000EC  Align=00001  Fill=0000
+    RELOC             Offs=000000  Size=00016E  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+RELOC                 001880  0019ED  00016E  00001
+ACCESS                001F00  001FEB  0000EC  00001
+CODE                  00D900  00DFFE  0006FF  00001
+
+
+Exports list by name:
+---------------------
+banked_end                00DFFF RLA    banked_headers            00DF89 RLA    
+banked_owned              00DF87 RLA    
+
+
+Exports list by value:
+----------------------
+banked_owned              00DF87 RLA    banked_headers            00DF89 RLA    
+banked_end                00DFFF RLA    
+
+
+Imports list:
+-------------
+banked_end (banked-loader.o):
+    [linker generated]       
+banked_headers (banked-loader.o):
+    [linker generated]       
+banked_owned (banked-loader.o):
+    [linker generated]       
+

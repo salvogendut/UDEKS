@@ -1,0 +1,31 @@
+PC=FF74 drive=EAB7 jam=0 speed=1 CIA2=07/3F bus=110 via=02/1A request=00/00/00 exit=0
+PC=E3BC drive=D5A6 jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E4AE drive=E9A5 jam=0 speed=0 CIA2=47/3F bus=101 via=0D/1A request=00/00/00 exit=0
+PC=E3B6 drive=F85C jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E569 drive=D12A jam=0 speed=0 CIA2=27/3F bus=100 via=0D/1A request=00/00/00 exit=0
+PC=E4AB drive=E9A4 jam=0 speed=0 CIA2=47/3F bus=101 via=0D/1A request=00/00/00 exit=0
+PC=E56F drive=F821 jam=0 speed=0 CIA2=27/3F bus=100 via=0D/1A request=00/00/00 exit=0
+PC=E4BE drive=EC2D jam=0 speed=0 CIA2=9F/3F bus=000 via=00/1A request=01/06/00 exit=0
+command: xclock & -> accepted (Return release=842 frames)
+command: xwave & -> accepted (Return release=638 frames)
+command: xcalc & -> accepted (Return release=969 frames)
+calculator 1.25+2.75= => 400 (expected 400)
+command: xdraw & -> accepted (Return release=558 frames)
+command: xdraw & -> accepted (Return release=102 frames)
+command: cowsay four alive -> accepted (Return release=1105 frames)
+command: free -> accepted (Return release=102 frames)
+command: xdraw & -> accepted (Return release=556 frames)
+command: xclock -q -> accepted (Return release=119 frames)
+command: xclock & -> accepted (Return release=483 frames)
+command: xwave -q -> accepted (Return release=269 frames)
+command: xwave & -> accepted (Return release=293 frames)
+command: xcalc -q -> accepted (Return release=179 frames)
+command: xcalc & -> accepted (Return release=1857 frames)
+command: xdraw -q -> accepted (Return release=104 frames)
+command: xdraw & -> accepted (Return release=559 frames)
+command: xdraw -q -> accepted (Return release=406 frames)
+command: xdraw -> accepted (Return release=560 frames)
+calculator C7.5/2.5= => 300 (expected 300)
+command: xdraw & -> accepted (Return release=560 frames)
+command: xinit -q -> accepted (Return release=627 frames)
+PASS four apps: native input, drawing, calculator, drag, panel, capacity, independent reload, Ctrl+C, shutdown, guards, bitmap

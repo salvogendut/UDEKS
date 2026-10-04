@@ -1,0 +1,16 @@
+{
+  "source_copy": "build/generic-apps/clean-launch.l9ns9q",
+  "command": "make -j8 boot graphics-apps-check placement-check graphical-example",
+  "byte_identical": true,
+  "sha256": {
+    "boot/udeks.d64": "1a79acc36729fc2c69a7883fd4fffe5dba70ef483f2a5c910fa20ea24ebb3408",
+    "boot/udeks.d71": "2cc901c48b572433f14580735950af3d29f3f5595b87e019d5566e8888c63c7f",
+    "boot/banked-loader.bin": "f257b22be593f9e19fa63a3d749fd9378870750dc1796b2c3ef34fed4b0fa8cf",
+    "boot/banked-reloc.bin": "131f2dc9dfb4ef7102ad34c6621329228e8ab97e062a2504464c9e4a51c5c7a0",
+    "boot/banked-access.bin": "a450b1c930cb1289614831f63dfb14bcfd3a963b9dd940fbac474d7a6c712708",
+    "8502/banked-graphics.bin": "3e67fc2e34858bfc0a1449f9d90d009e4dd79102e2be2d1717e2bd305ef63e84",
+    "boot/task-lookup.bin": "1c7854a3669eb282f7f762834655fcf8d05eb05b7bf0c90b874f08920c768151",
+    "storage/module.bin": "9c60632be044466142cc820b1d064fb5443678f4768acfeb05758bf210bd9710",
+    "generic-apps/example/HELLO.BIN": "6062c16c3e9e58c1af3a04d8c5a573a63fea808e54c6c88c1beca88f80bdcb8b"
+  }
+}
