@@ -78,6 +78,13 @@ class RootConsoleSourceTests(unittest.TestCase):
         self.assertIn("source[first + column] >= 'a'", renderer)
         self.assertIn("ATTRIBUTE_BASE +", renderer)
 
+    def test_panel_text_loop_reloads_each_character_after_case_conversion(self):
+        source=(ROOT/'src/services/console/app_panel.s').read_text()
+        loop=source.split('panel_next_character:',1)[1].split('panel_text_ready:',1)[0]
+        self.assertIn('panel_text_load:\n        lda $ffff,y',loop)
+        self.assertIn('bcc panel_next_character',loop)
+        self.assertNotIn('bcc :-',loop)
+
     def test_model_is_linked_into_production_and_panic_images(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
         self.assertGreaterEqual(makefile.count("root_console.o"), 2)

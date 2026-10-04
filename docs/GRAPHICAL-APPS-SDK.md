@@ -78,6 +78,82 @@ with `cfg/8502-reloc-app.cfg` and the private cc65 runtime, then use
 for your program. The fixed `$1000` link base is a relocation convention, not
 an app slot assignment. Never scan instruction bytes to infer relocations.
 
+The builder also accepts arbitrary sources and filenames directly:
+
+```sh
+distrobox enter my-distrobox -- python3 tools/build_graphical_example.py \
+  --source /absolute/path/to/myapp.c --source /absolute/path/to/model.c \
+  --name MYAPP --output build/myapp
+```
+
+Repeat `--source` for each C translation unit (unique basenames); the default
+HELLO-specific export is omitted for custom sources. Optional `--export SYMBOL`
+retains a diagnostic symbol in the app's map, not a binding to the kernel.
+
+## Native clock migration candidate
+
+On branch `graphics-native-clients`, `make native-clock` builds an independent
+relocatable clock as **NCLOCK.BIN**. It shares no app callbacks, fixed task id or
+private runtime symbols with the resident system. Both generic slots accept
+the exact same 2,463-byte file (2,039 image + 351 BSS bytes; staging includes the
+relocation table). All face/tick/hand/digit calculations stay in the disk app;
+the existing graphics service retains 43 ordinary commands. The app reads the
+same common TIME snapshot as `date`, updates once per changed minute, and
+sleeps between event checks. It does not re-submit its image merely on a move.
+
+Test **`build/native-clients/native-clock-demo.d64`**, `.d71` or `.d81`:
+
+```text
+nclock &
+clock2
+```
+
+The windows initially overlap: drag the top clock aside. Ctrl+C at the VDC
+console closes only `clock2`; `nclock` remains. Then:
+
+```text
+clock2 &
+date 214500
+cowsay clocks alive
+xinit -q
+```
+
+Both clocks should show 21:45; either close box retires that instance and its
+slot can be reused. `NCLOCK.BIN` and `CLOCK2.BIN` contain identical bytes. These
+are deliberately separate test filenames: **shipped `xclock`/`xwave` remain
+unchanged**, so there is no concurrency or resize regression in normal builds.
+The candidate uses the current **fixed-size** generic API, not yet the legacy
+clock's resizable window. No `nclock -q` support is implied.
+
+VICE D64/D71/D81 qualifies both slots, an independent drawing oracle, `date`,
+dragging, targeted Ctrl+C, reuse, console and four windows with the old apps.
+Unmodified 1986 D64 also passes native keyboard/1351 drag and close, time
+changes, cancellation/reuse and guards. Physical-C128 feedback is still due.
+Exact artifacts/results: `bench/{artifacts,results}/2026-10-04-native-clock`.
+
+Follow-up after manual 1986 feedback: the running-app panel's repeated-initial
+bug is fixed in fresh `build/native-clients/native-clock-demo.d64` / `.d71` /
+`.d81`. VICE and 1986 verify actual panel characters/attributes and lifecycle
+updates. D81 also passes in 1986 with **1581 selected before restart**; see
+[D81 setup](D81.md#1986). Updated evidence is kept separately in
+`bench/{artifacts,results}/2026-10-04-app-panel`; earlier snapshots are unchanged.
+
+Rebuild/test without changing the kernel or default disk contents:
+
+```sh
+distrobox enter my-distrobox -- make native-clock
+make native-clock-probe  # host VICE; build boot images in the container first
+distrobox enter my-distrobox -- python3 tools/1986_storage_smoke_build.py \
+  --emulator ../1986 --roms ../1986/roms --native-clock \
+  --output build/native-clients/1986-d64
+```
+
+The probe disks are `build/native-clients/vice-d64/native-clock.d64` (and
+corresponding D71/D81 paths). For manual packaging, install NCLOCK.BIN with
+`add_disk_apps.py` as above. Next gates are generic resize/retained-wave/worker
+services and a measured four-native-allocation layout before default cutover;
+see the [migration plan](GENERIC-GRAPHICS-APPS.md#clockwave-migration-follow-up-2026-10-04).
+
 ## Independent console commands
 
 Console commands already use name-independent disk lookup too. The new

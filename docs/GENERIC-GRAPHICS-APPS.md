@@ -2,8 +2,9 @@
 
 Status: relocation and generic foreground/background launch implemented, 2026-10-04.
 [Issue #35](https://github.com/salvogendut/UDEKS/issues/35).
-Branch: `graphics-generic-apps`, based on merged
-PR #31 (`9af159b`). This is the next feature priority, before service extraction.
+Initial branch `graphics-generic-apps` merged as PR #36 (`c704250`).
+The clock/wave follow-up is on `graphics-native-clients`, still under #35.
+This is the next feature priority, before service extraction.
 It replaces application-specific slot wiring, not the four-window capacity limit.
 
 ## User-visible target
@@ -106,6 +107,48 @@ and all-four-slot interchangeability remain incomplete. Plan the next service
 placement before adding resident code.
 
 ## Implementation sequence
+
+### Clock/wave migration follow-up (2026-10-04)
+
+The user explicitly asks to remove the two legacy application slots. This is
+a native-task and service-boundary migration, **not xwave algorithm tuning**.
+Preserve the four-window baseline until its replacement passes; merely putting
+clock and wave in today's two generic allocations would reduce concurrency.
+
+1. **Independent clock candidate.** Build `user/bin/xclock_native.c` separately
+   as `NCLOCK.BIN`. Use ordinary UDEX 0.2 admission, private C runtime/data,
+   common read-only TIME snapshot, retained graphics and cooperative events.
+   Qualify the identical file in both allocations, concurrent instances,
+   `date` changes, dragging, foreground Ctrl+C, reload and coexistence with
+   the existing legacy apps. The first candidate uses the existing fixed-size
+   graphics API; it is not yet the replacement for the resizable `xclock`.
+2. **Close the public-service gaps.** Add owner-checked resize/geometry events
+   and choose a bounded generic retained-image representation for wave. The
+   current 48-command buffer cannot represent the existing 524 wireframe edges;
+   do not hide a wave-specific renderer in the window manager or drop edges to
+   claim migration. Expose a bounded worker request through the task boundary
+   instead of calling bank-0 UAPP/Z80 functions from a native task. Preserve
+   height reuse on moves and the established dual-engine computation.
+3. **Measure and realize four compatible native allocations.** Account for
+   code/BSS, relocations, private CPU pages/stacks, retained images, storage,
+   Z80 and console execution together. Reclaim legacy callback/backup resources
+   only once their users have migrated. Normal/panic map gates and negative
+   overlap checks must precede switching the disk defaults. Today's slots are
+   not magically four slots, and a binary need not fit the smallest allocation.
+4. **Cut over and remove compatibility wiring.** Migrate clock/wave and the
+   calculator/drawing adapters to the generic path; update `ush`, control,
+   panel and packaging without app-specific routing. Replace shipped images
+   only after four-app launch, resize, drag, stop, slot reuse, console and
+   worker-isolation tests pass on VICE/1986, followed by a physical-C128 test
+   candidate. Keep historical evidence immutable.
+
+The native clock and its drawing model belong entirely to disk-program code.
+`make native-clock` does not link the kernel or change boot media. The first
+gate passes: both native slots on VICE D64/D71/D81 and unmodified 1986 D64
+native keyboard/1351 input. The [SDK test recipe](GRAPHICAL-APPS-SDK.md#native-clock-migration-candidate)
+keeps the fixed-size NCLOCK candidate separate from the production apps.
+
+### Original generic-loading sequence
 
 1. **Prove slot-independent execution.** Define a bounded versioned executable
    and SDK contract with a measured placement plan. Evaluate relocation or

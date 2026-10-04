@@ -8,6 +8,49 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 
 ## Current feature handover — 2026-10-04
 
+Panel/D81 follow-up: user reports the native clock works in 1986, but the app
+panel repeats each row's first character and D81 does not boot. Fixed the
+panel's anonymous backward branch (it jumped into case conversion instead of
+loading the next character) with a named loop target; zero code-size growth.
+Old image reproduces `RRRRRRRRR`; actual VDC bytes/attributes now pass on VICE
+and 1986, including startup, both clocks, cancellation, four apps and shutdown.
+1986's saved drive was 1571; explicit ROM-backed 1581 cold boot and native input
+pass without sibling source/config changes. See `docs/D81.md` for selection and
+restart instructions. Fresh `build/native-clients/native-clock-demo.*` include
+the panel fix; default `build/boot/udeks.*` also rebuilt. Prior immutable clock
+evidence below predates this fix; its byte-identical-boot claim applies only
+to that checkpoint. New evidence: `bench/{artifacts,results}/2026-10-04-app-panel`.
+Published root release snapshots remain unchanged. Physical 1581 acceptance
+is not claimed, and native-clock feedback does not complete legacy migration.
+
+Latest follow-up: PR #36 merged as `c704250`, then the user selected removing
+the clock/wave legacy slots. Branch `graphics-native-clients`, existing issue
+#35. Migration plan is in `docs/GENERIC-GRAPHICS-APPS.md`. First runnable gate:
+`make native-clock` builds NCLOCK.BIN (2,463 file / 2,039 image / 351 BSS bytes),
+an independent UDEX 0.2 client that fits both native allocations. Its retained
+clock model stays in user space; no kernel, callback table or memory-map change.
+Builder now supports custom filenames and multiple C sources without edits.
+
+VICE D64/D71/D81: both slots, independent retained-command oracle, time changes,
+drag, foreground Ctrl+C, reload, console and legacy coexistence. Unmodified
+1986 `81485cc7` D64: native keyboard/1351 drag/close, time, Ctrl+C/reuse, four
+windows, guards and bitmap equality. Exact artifacts/results:
+`bench/{artifacts,results}/2026-10-04-native-clock`. All normal boot images and
+HELLO.BIN remain byte-identical to PR #36; independent fresh-output clock build
+is deterministic. `make check` passes 1,103 tests and preserved checksums;
+both actual-build placement gates pass. Test copies:
+`build/native-clients/native-clock-demo.*`.
+
+**Not a completed migration:** NCLOCK/CLOCK2 are temporary test names and use
+the fixed-size GFX API. Default xclock/xwave remain legacy so the accepted
+four-app/resizing paths are not removed. Next: generic geometry/resize events,
+bounded retained representation for wave (524 edges exceed 48 commands), a
+task-safe Z80 request, and a measured four-native-slot layout before default
+cutover/removing compatibility glue. Keep xwave algorithm/optimization separate.
+Physical C128 confirmation of the new clock remains pending.
+
+### Merged generic-loading checkpoint (PR #36)
+
 User exploratory work exposed the limitation behind the four named apps:
 launch/control/panel paths are app-specific, and UDEX images use fixed link
 addresses. The new priority is generic graphical apps that select a free fitting

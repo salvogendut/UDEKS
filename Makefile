@@ -372,6 +372,22 @@ graphical-example: placement-check-guard
 console-example: placement-check-guard
 	$(PYTHON) tools/build_console_example.py
 
+# Migration candidate only: does not replace legacy XCLOCK.BIN in boot media.
+native-clock: placement-check-guard
+	$(PYTHON) tools/build_graphical_example.py --source user/bin/xclock_native.c \
+		--source user/lib/clock_face.c --name NCLOCK --output $(BUILD_DIR)/native-clients/clock \
+		--export _udeks_native_clock_commands --export _udeks_native_clock_hour \
+		--export _udeks_native_clock_minute --export _udeks_native_clock_presents
+
+.PHONY: native-clock
+
+native-clock-probe:
+	$(PYTHON) tools/native_clock_probe.py --disk $(BOOT_D64) --drive 1541 --output $(BUILD_DIR)/native-clients/vice-d64
+	$(PYTHON) tools/native_clock_probe.py --disk $(BOOT_D71) --drive 1571 --output $(BUILD_DIR)/native-clients/vice-d71
+	$(PYTHON) tools/native_clock_probe.py --disk $(BOOT_D81) --drive 1581 --output $(BUILD_DIR)/native-clients/vice-d81
+
+.PHONY: native-clock-probe
+
 console-apps-probe: $(BOOT_D64) $(BOOT_D71) $(BOOT_D81)
 	$(PYTHON) tools/console_apps_probe.py --disk $(BOOT_D64) --drive 1541 --output $(BUILD_DIR)/generic-apps/console-d64
 	$(PYTHON) tools/console_apps_probe.py --disk $(BOOT_D71) --drive 1571 --output $(BUILD_DIR)/generic-apps/console-d71
@@ -2308,6 +2324,7 @@ check:
 	$(PYTHON) -m py_compile tools/o65_to_udex.py tools/build_reloc_fixture.py
 	$(PYTHON) -m py_compile tools/build_graphical_example.py tools/generic_launch_probe.py tools/add_disk_apps.py
 	$(PYTHON) -m py_compile tools/build_d81.py tools/build_console_example.py tools/console_apps_probe.py
+	$(PYTHON) -m py_compile tools/native_clock_probe.py
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
 	$(PYTHON) -m py_compile tools/xcalc_probe.py tools/pack_native.py tools/four_apps_rejection_probe.py
 	$(PYTHON) -m py_compile tools/managed_app_fixture.py tools/managed_disk_probe.py

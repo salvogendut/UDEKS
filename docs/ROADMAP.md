@@ -14,7 +14,9 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 ## Current baseline
 
 **Current user-selected feature (2026-10-04): generic graphical applications**,
-[#35](https://github.com/salvogendut/UDEKS/issues/35), branch `graphics-generic-apps`.
+[#35](https://github.com/salvogendut/UDEKS/issues/35). The first increment merged
+as [PR #36](https://github.com/salvogendut/UDEKS/pull/36); follow-up branch
+`graphics-native-clients` removes the legacy clock/wave application model.
 Build a new app separately, copy its `.BIN` to disk, then launch it into any
 free compatible slot without adding OS name tables or choosing an address.
 This requires both generic instance/launch routing and slot-independent
@@ -30,8 +32,10 @@ C commands have a build/install example, argc/argv, stdout/stderr and reload
 tests; their current loader remains synchronous. D81 is the third boot build,
 with 1581 directory/file/free-space support. See the
 [test/build recipe](GRAPHICAL-APPS-SDK.md) and [D81 notes](D81.md).
-Next: instance/name-based control, native-client migration, then the
-legacy-slot compatibility model. Native console scheduling/stdin is separate
+Next: the user-selected **clock/wave native migration**, beginning with an
+independent clock candidate, then the generic resize/retained-render/worker
+contracts and a measured four-slot layout. Instance/name-based control and the
+other native-client migration remain part of the same feature. Native console scheduling/stdin is separate
 remaining work, not implied by the fixed console-command SDK.
 The feature is **not yet complete**; physical testing of this increment is due.
 The exploratory `.CBM` work on `additional-apps` / #32 stays separate.

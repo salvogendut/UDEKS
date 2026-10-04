@@ -190,7 +190,7 @@ panel_draw_text:
         ora panel_text_load+2
         beq panel_text_ready
         ldy #$00
-:
+panel_next_character:
 panel_text_load:
         lda $ffff,y
         beq panel_text_ready
@@ -207,7 +207,9 @@ panel_text_load:
         sta panel_buffer+1,y
         iny
         cpy #$09
-        bcc :-
+        ; Reload the next source byte. An anonymous backward label here can
+        ; resolve inside the case conversion and repeat the first character.
+        bcc panel_next_character
 panel_text_ready:
         ldx panel_row
         jsr panel_write_screen

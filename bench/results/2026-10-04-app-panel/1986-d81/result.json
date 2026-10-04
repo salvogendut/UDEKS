@@ -1,0 +1,19 @@
+{
+  "disk_sha256": "c1a78fe442c0b9d2a27959d0f73cf9bcd05a0cc53b6e76393e1860bde7720d11",
+  "test_disk_sha256": "904748f5abf4c964c7e5f63668e5c0f8cf0fa7f1171b05e95d27b75f5064a305",
+  "emulator_revision": "81485cc7bc88b2113b210a4573529322dceac0c2",
+  "exit_status": 0,
+  "raw_iec": true,
+  "disk_exec": false,
+  "disk_shell": false,
+  "sysinfo": false,
+  "disk_graphics": false,
+  "drag_regression": false,
+  "boot_mounted": false,
+  "root_namespace": false,
+  "xcalc": false,
+  "four_apps": false,
+  "native_clock": true,
+  "drive": 1581,
+  "program_sha256": "3e29fa20dc92d360d6be09f175de26e6fea7a8cbf9ecee526b0fcca69068cfaa"
+}
