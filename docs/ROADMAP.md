@@ -25,8 +25,14 @@ in both native bank-1 allocations; VICE D64/D71, malformed-image rejection,
 independent state/stack/lifecycle and the existing four-app regression pass.
 Generic instance tracking and automatic `name &` launch now work in those two
 native slots, with dynamic panel names and an independently installed sample.
-See the [test/build recipe](GRAPHICAL-APPS-SDK.md). Next: generic foreground and
-control, native-client migration, then the legacy-slot compatibility model.
+Generic foreground launch and targeted Ctrl+C now work too. Independent console
+C commands have a build/install example, argc/argv, stdout/stderr and reload
+tests; their current loader remains synchronous. D81 is the third boot build,
+with 1581 directory/file/free-space support. See the
+[test/build recipe](GRAPHICAL-APPS-SDK.md) and [D81 notes](D81.md).
+Next: instance/name-based control, native-client migration, then the
+legacy-slot compatibility model. Native console scheduling/stdin is separate
+remaining work, not implied by the fixed console-command SDK.
 The feature is **not yet complete**; physical testing of this increment is due.
 The exploratory `.CBM` work on `additional-apps` / #32 stays separate.
 
@@ -123,7 +129,7 @@ mounts or applications must not require rebuilding the kernel.
 | Machine bring-up and dual displays | Working baseline; broader hardware/memory qualification due. |
 | Kernel and tasking | Cooperative root/command tasks plus two bounded banked task allocations; general allocation, IPC, and preemption due. |
 | Z80 secondary engine | Mailbox and xwave computation work; reusable operations and soak tests due. |
-| Graphics and input | Four named apps merged (#31); generic background launch in two native slots works (#35). Foreground/control, client migration and legacy-slot compatibility remain. Repaint latency and focused-window keyboard input remain open. |
+| Graphics and input | Four named apps merged (#31); generic foreground/background launch and targeted Ctrl+C in two native slots work (#35). Name-based control, client migration and legacy-slot compatibility remain. Repaint latency and focused-window keyboard input remain open. |
 | Storage and applications | Disk shell, RC, graphics and disk commands (#21/#23/#25); root namespace accepted (#26/PR #28). Generic app loading precedes first disk-loaded service lifecycle. General scripting deferred (#27). |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 

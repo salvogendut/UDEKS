@@ -153,6 +153,7 @@ TASK_BANK_GATE_BIN := $(BUILD_BOOT)/task-bank-gateway.bin
 STAGE1_BIN := $(BUILD_BOOT)/stage1.bin
 BOOT_D71 := $(BUILD_BOOT)/udeks.d71
 BOOT_D64 := $(BUILD_BOOT)/udeks.d64
+BOOT_D81 := $(BUILD_BOOT)/udeks.d81
 IEC_DIRECTORY_PRG := $(BUILD_IEC_DIRECTORY)/iec-directory.prg
 TASK_EXIT_PROBE_D71 := $(BUILD_BOOT)/udeks-task-exit-probe.d71
 TASK_EXIT_PROBE_D64 := $(BUILD_BOOT)/udeks-task-exit-probe.d64
@@ -265,18 +266,22 @@ $(BUILD_DIR)/disk-exec/test.d71: $(BOOT_D71) $(USER_COWSAY_UDEX) tools/disk_exec
 	task-exit-probe task-waitpid-probe task-spawn-loader-probe task-spawn-probe \
 	task-sleep-probe task-cancel-probe task-poll-probe \
 	iec-probe iec-vice-probe \
-	reloc-fixtures reloc-probe graphical-example generic-launch-probe check doctor clean help
+	reloc-fixtures reloc-probe graphical-example console-example generic-launch-probe console-apps-probe check doctor clean help
 
 all: 8502 z80 z80-asm
 
-boot: $(BOOT_D71) $(BOOT_D64)
+boot: $(BOOT_D71) $(BOOT_D64) $(BOOT_D81)
+
+$(BOOT_D81): $(BOOT_D71) tools/build_d81.py tools/build_d71.py
+	$(PYTHON) tools/build_d81.py $< $@
 
 # Explicit publication: normal and experimental boot builds leave the
 # checked-in, qualified snapshots untouched.
 publish-boot: boot
 	cp $(BOOT_D64) $(BUILD_DIR)/udeks.d64
 	cp $(BOOT_D71) $(BUILD_DIR)/udeks.d71
-	cd $(BUILD_DIR) && sha256sum udeks.d64 udeks.d71 > SHA256SUMS
+	cp $(BOOT_D81) $(BUILD_DIR)/udeks.d81
+	cd $(BUILD_DIR) && sha256sum udeks.d64 udeks.d71 udeks.d81 > SHA256SUMS
 
 # Standalone native-bus qualification, deliberately not linked into the
 # resident kernel before its storage-service placement is frozen.
@@ -363,6 +368,14 @@ reloc-fixtures: placement-check-guard
 # Independent example: no resident kernel link or app catalogue change.
 graphical-example: placement-check-guard
 	$(PYTHON) tools/build_graphical_example.py
+
+console-example: placement-check-guard
+	$(PYTHON) tools/build_console_example.py
+
+console-apps-probe: $(BOOT_D64) $(BOOT_D71) $(BOOT_D81)
+	$(PYTHON) tools/console_apps_probe.py --disk $(BOOT_D64) --drive 1541 --output $(BUILD_DIR)/generic-apps/console-d64
+	$(PYTHON) tools/console_apps_probe.py --disk $(BOOT_D71) --drive 1571 --output $(BUILD_DIR)/generic-apps/console-d71
+	$(PYTHON) tools/console_apps_probe.py --disk $(BOOT_D81) --drive 1581 --output $(BUILD_DIR)/generic-apps/console-d81
 
 # Host, after building boot + graphical-example inside my-distrobox.
 generic-launch-probe: $(BOOT_D64) $(BOOT_D71)
@@ -1001,7 +1014,7 @@ $(BUILD_8502)/shell.s: src/services/shell/shell.c \
 		include/udeks/z80_worker.h include/udeks/vic_graphics.h \
 		include/udeks/window.h include/udeks/xclock.h \
 		include/udeks/xwave.h | $(BUILD_8502)
-	$(CC65) $(CFLAGS_8502) -o $@ $<
+	$(CC65) -t none --cpu 6502 --standard c99 -Os -I include -o $@ $<
 
 $(BUILD_8502)/z80_worker.s: src/services/engine/z80_worker.c \
 		include/udeks/mailbox.h include/udeks/memory.h \
@@ -2294,6 +2307,7 @@ check:
 	$(PYTHON) -m py_compile tools/banked_loader_probe.py tools/gen_banked_bindings.py tools/build_banked_execution.py
 	$(PYTHON) -m py_compile tools/o65_to_udex.py tools/build_reloc_fixture.py
 	$(PYTHON) -m py_compile tools/build_graphical_example.py tools/generic_launch_probe.py tools/add_disk_apps.py
+	$(PYTHON) -m py_compile tools/build_d81.py tools/build_console_example.py tools/console_apps_probe.py
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
 	$(PYTHON) -m py_compile tools/xcalc_probe.py tools/pack_native.py tools/four_apps_rejection_probe.py
 	$(PYTHON) -m py_compile tools/managed_app_fixture.py tools/managed_disk_probe.py
@@ -2446,7 +2460,7 @@ help:
 		'make z80        Build the SDCC Z80 worker scaffold' \
 		'make z80-asm    Build the standalone RASM smoke image' \
 		'make boot       Build the native autoboot D64/D71 images in build/boot' \
-		'make publish-boot  Refresh the checked-in build/udeks.d64/.d71 and checksums' \
+		'make publish-boot  Refresh the checked-in build/udeks.d64/.d71/.d81 and checksums' \
 		'make panic-probe  Build the bad-descriptor panic qualification D71' \
 		'make framebuffer-assets  Pack the VDC boot-splash source artwork' \
 		'make user-sources  Compile staged user-program C sources' \

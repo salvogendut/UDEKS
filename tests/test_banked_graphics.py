@@ -77,6 +77,22 @@ class BankedGraphics(unittest.TestCase):
         self.assertEqual(self.r[14],1)
         self.assertEqual(self.owners[b],0x84)
 
+    def test_desktop_is_lazy_and_create_failure_is_retryable(self):
+        self.assertEqual(self.lib.udeks_banked_graphics_exec(b'console'),0)
+        self.assertEqual(self.scalar('init_calls'),0)
+        self.assertEqual(self.request([1]),22)
+        self.assertEqual(self.scalar('init_calls'),0)
+        payload=[1,108,0,30,104,133,0x16]+list(b'HELLO\0\0\0')
+        self.scalar('init_error',1)
+        self.assertEqual(self.request(payload),5)
+        self.assertEqual(self.scalar('active'),0)
+        self.assertEqual(bytes(self.owners),bytes(5))
+        self.scalar('init_error',0)
+        self.assertEqual(self.request(payload),0)
+        self.assertEqual(self.scalar('init_calls'),2)
+        self.create(4)
+        self.assertEqual(self.scalar('init_calls'),2)  # never clear a live desktop
+
     def test_present_rejects_bad_ranges_without_writes(self):
         h=self.create()
         for pointer,count in ((0x22ff,1),(0x3500,0),(0x34f9,1),(0xfffe,1),(0x2300,49)):

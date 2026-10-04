@@ -5,6 +5,7 @@ unsigned char graphics_request[38], graphics_memory[65536];
 
 unsigned char test_task, test_state[2], test_reap_busy, test_owner[5];
 unsigned char test_load_error, test_activate_error, test_selector, test_path[17];
+unsigned char test_active, test_init_calls, test_init_error;
 unsigned int test_repaints, test_writes, test_draws, test_x, test_y;
 static udeks_window_paint_fn painter[5];
 static udeks_window_close_fn closer[5];
@@ -24,10 +25,17 @@ void test_reset(void)
     test_task=3; test_state[0]=test_state[1]=0; test_reap_busy=0;
     test_repaints=test_writes=test_draws=0; click_handle=0;
     test_load_error=test_activate_error=test_selector=0;
+    test_active=test_init_calls=test_init_error=0;
     memset(test_path,0,sizeof(test_path));
     origin_x=100; origin_y=20;
 }
 void test_admit(unsigned char index) { clients.running[index]=1; test_state[index]=4; }
+unsigned char udeks_vic_graphics_is_active(void) { return test_active; }
+unsigned char udeks_vic_graphics_initialize(void) {
+    ++test_init_calls;
+    if(!test_init_error) test_active=1;
+    return test_init_error;
+}
 unsigned char udeks_banked_call(unsigned char selector)
 {
     unsigned char i, first=0, limit=2;

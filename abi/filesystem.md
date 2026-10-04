@@ -107,9 +107,11 @@ until CLOSE, including after EOF or read failure. Validation precedes I/O:
 ### Placement and qualification
 
 Recovery bootfs is now bounded to bank-1 `$A000-$AFFF` (4 KiB). Filesystem
-policy owns `$B000-$CFFF` (8 KiB), replacing its old `$8A00-$8FFF` reservation.
+policy owns `$B000-$C6FF`; graphics delivery and retained commands own
+`$C700-$CFFF`. The old `$8A00-$8FFF` policy reservation now holds the two
+native graphical tasks' software stacks.
 Linker, secondary packer, bootfs builder and lookup limits enforce the split.
-The old policy hole is unused, not a newly advertised heap. Service state is
+Service state is
 bounded to `$E000-$E17F`, leaving at least 128 bytes below its `$E200` software
 stack. The IEC driver stays at `$E300-$E8FF`, below the shell stack. Public
 gateways and resident/window placements do not move.
@@ -119,6 +121,13 @@ Enumeration re-scans to prove uniqueness; lookup scans to EOF before using a
 match. This prioritizes correctness over speed. The single-stream and directory
 traversal bounds remain. Working directory is shared root-session state, not
 yet isolated for independently scheduled processes.
+
+The third disk build adds [D81 / 1581 support](../docs/D81.md): geometry is
+detected on each open, 16-bit directory enumeration covers all 296 slots,
+and `statfs` sums both BAM sectors, excluding directory track 40. D64/D71
+retain their zone-based sector bounds. The read-only service omits the unused
+outgoing filename encoder (`UDEKS_FS_READ_ONLY`); host tests retain its full
+contract for a future write service. No public request layout changes.
 
 `tools/root_namespace_probe.py` checks true-drive VICE D64/1541 and D71/1571,
 an independent device-9 disk, cwd-relative I/O, graphics-active commands and

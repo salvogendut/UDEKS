@@ -24,11 +24,14 @@ extern unsigned char session_memory[65536];
 #define R (session_memory + UDEKS_TASK_REQUEST_BASE)
 #define REPLY (session_memory + UDEKS_CONTROL_REPLY_BASE)
 #define USH_READY (session_memory[UDEKS_USH_STATUS_BASE + 1u] == UDEKS_USH_STATE_READY)
+extern unsigned char session_load(unsigned char, unsigned char **);
+#define LOAD session_load
 #else
 #define S(n) (*(volatile unsigned char *)(UDEKS_SHELL_STATUS_BASE + (n)))
 #define R ((volatile unsigned char *)UDEKS_TASK_REQUEST_BASE)
 #define REPLY ((volatile unsigned char *)UDEKS_CONTROL_REPLY_BASE)
 #define USH_READY (*(volatile unsigned char *)(UDEKS_USH_STATUS_BASE + 1u) == UDEKS_USH_STATE_READY)
+#define LOAD ((udeks_task_loader_entry)UDEKS_TASK_LOADER_ENTRY)
 #endif
 
 #pragma bss-name(push, "HIGHBSS")
@@ -156,19 +159,23 @@ unsigned char udeks_shell_dispatch_line(void)
     S(8) = count;
     if (!count) return 0;
     for (i = 0; i < count; ++i) arguments[i] = udeks_shell_command_line + offsets[i];
-    /* Explicit background requests select any fitting native allocation.
-     * Ordinary foreground commands retain the existing disk-command path. */
+    /* Fixed console programs retain argc/argv and synchronous execution.
+     * A minor-2 image is rejected by that loader before execution; one-word
+     * foreground commands can then enter the native, relocatable path. */
     if (count==2 && arguments[1][0]=='&' && !arguments[1][1]) {
-        if (!udeks_vic_graphics_is_active() && udeks_vic_graphics_initialize()) result=1;
-        else result=udeks_banked_graphics_exec(arguments[0]);
-        if (!result) {
-            background_jobs |= udeks_banked_graphics_selected ? 8u : 4u;
-        }
-        result=result==3?UDEKS_TASK_NOT_FOUND:result==4?UDEKS_TASK_BUSY:result;
-        goto completed;
+        count=0;                    /* native background, no app arguments */
+    } else {
+        result = LOAD(count, arguments)
+            == UDEKS_TASK_SLOT_OWNED ? UDEKS_TASK_BUSY : task[UDEKS_TASK_ERROR_OFFSET];
+        if(result!=UDEKS_TASK_BAD_VERSION || count!=1) goto completed;
     }
-    result = ((udeks_task_loader_entry)UDEKS_TASK_LOADER_ENTRY)(count, arguments)
-        == UDEKS_TASK_SLOT_OWNED ? UDEKS_TASK_BUSY : task[UDEKS_TASK_ERROR_OFFSET];
+    result=udeks_banked_graphics_exec(arguments[0]);
+    if(!result) {
+        i=udeks_banked_graphics_selected?8u:4u;
+        if(count) foreground=i;
+        else background_jobs|=i;
+    }
+    result=result==3?UDEKS_TASK_NOT_FOUND:result==4?UDEKS_TASK_BUSY:result;
 completed:
     S(9) = result ? 0xFFu : 0xFEu;
     S(10) = result ? result : task[UDEKS_TASK_EXIT_OFFSET];
@@ -189,7 +196,7 @@ completed:
 
 unsigned char udeks_shell_start(void)
 {
-    unsigned char i;
+    static unsigned char i;
     for (i = 0; i < UDEKS_SHELL_STATUS_SIZE; ++i) S(i) = 0;
     S(0) = 'S'; S(1) = 'H'; S(2) = 'L'; S(3) = 'L'; S(4) = 1;
     foreground = background_jobs = queued_target = 0;
@@ -200,7 +207,7 @@ unsigned char udeks_shell_start(void)
 
 unsigned char udeks_shell_poll(void)
 {
-    unsigned char result;
+    static unsigned char result;
     increment(12);
     publish_jobs();
     if (foreground) {
@@ -222,12 +229,9 @@ unsigned char udeks_shell_poll(void)
 
 unsigned char udeks_shell_interrupt_foreground(void)
 {
-    unsigned char stopped = 0;
-    if (foreground) stopped = udeks_shell_stop_app(foreground) == 0;
-    if (stopped) {
-        control_reply(foreground == 8 ? UDEKS_CONTROL_DRAW : foreground + 1u,
-            UDEKS_CONTROL_STOP, 0, UDEKS_CONTROL_INTERRUPTED);
-        ++S(22);
-    }
-    return stopped;
+    if (!foreground || udeks_shell_stop_app(foreground)) return 0;
+    control_reply(foreground == 8 ? UDEKS_CONTROL_DRAW : foreground + 1u,
+        UDEKS_CONTROL_STOP, 0, UDEKS_CONTROL_INTERRUPTED);
+    ++S(22);
+    return 1;
 }

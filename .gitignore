@@ -2,6 +2,7 @@
 /build/*
 !/build/udeks.d64
 !/build/udeks.d71
+!/build/udeks.d81
 !/build/SHA256SUMS
 !/build/README.md
 /dist/

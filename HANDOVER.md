@@ -57,11 +57,47 @@ GRAPHICSHELP through `$A1D7`, resident BSS through `$9AFE` (**one byte spare**),
 high module through `$E640` (three spare). No ownership boundaries moved.
 The VICE pointer harness now uses measured helper/shadow padding, never BSS.
 
-Next is foreground/name-based control and native-client migration, followed by
-clock/wave compatibility. Two generic native slots are an intermediate result.
-Keep generic launch background-only until that integration is implemented;
-close through the window or `xinit -q`, not generic `name -q`. Further resident
-growth needs a placement decision. Do not merge or refresh root snapshots here.
+The checkpoint below supersedes the background-only restriction. Name-based
+control/native-client migration, followed by clock/wave compatibility, remain.
+Two generic native slots are an intermediate result. Further resident growth
+needs a placement decision. The user authorized merging the checkpoint below;
+keep issue #35 open and leave published root snapshots unchanged.
+
+### Foreground, console SDK and third disk format
+
+Follow-up to `1699e82`: bare one-word UDEX 0.2 launch falls back
+from the compatibility loader's BAD_VERSION to automatic native admission;
+the selected instance owns foreground/Ctrl+C. `name &` stays background-only.
+VIC initialization moved to the graphics service's CREATE path. The independent
+`user/examples/args.c` and `tools/build_console_example.py` prove arbitrary
+fixed console filenames, argc/argv, fd 1/2 output, return 37 and BSS reset,
+including with clock/wave and two generic windows. Console execution remains
+synchronous and bounded: no background console/stdin or `$?` expansion claim.
+
+`make boot` builds `.d64`, `.d71`, **`.d81`**; `publish-boot` explicitly publishes
+all three but has not been run. D81 has rebuilt standard 1581 BAM/directory/file
+chains. Native BOOT still uses 21 sectors per track: preserve T/S addresses,
+not a linear D81 copy. The filesystem detects geometry each open, supports
+296 directory slots (16-bit enumeration cursor), and reads both BAMs for df.
+No sibling 1986 sources or existing release snapshots were changed.
+
+Memory: resident BSS ends `$9AFA` (5 bytes spare); GRAPHICSCODE ends `$11FD`.
+Storage low module ends `$1831`; policy `$B000-$C50C`; driver `$E300-$E8F9`;
+BSS through `$E112`. All existing reservations, app slots and guards stay put.
+Read-only storage no longer ships the unused outgoing filename encoder;
+the full encoder contract remains host-tested. Size-oriented cc65 compilation
+of the root bridge/CBM reader fits the additions. Keep volatile output store
+`P[n] = value; ++n` separate: `-Os` plus static locals miscompiled `P[n++]` into
+increment-before-store, caught by target file-header tests. Host tests alone
+did not expose it.
+
+Qualification: 1,095 host tests; VICE 3.10 D64/1541, D71/1571, D81/1581 independent-console and
+foreground tests; unknown-name rejection/drag/reuse VICE regression; unmodified
+1986 D64 native mouse/keyboard four-app regression; typed D81 BASIC BOOT and
+c1541 directory validation. Clean parallel copied-source build and both
+placement gates pass. Evidence: `bench/{artifacts,results}/2026-10-04-console-d81`.
+Physical 1581 and new generic-app hardware feedback remain pending. Test the
+`build/generic-apps/apps-demo.d64` / `.d71` / `.d81` candidates via the SDK guide.
 
 ## Four-app checkpoint — 2026-10-01 (merged as PR #31)
 

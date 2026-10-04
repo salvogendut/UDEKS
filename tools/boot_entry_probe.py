@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Check a typed BASIC BOOT with a true 1541, separately from autoboot."""
+"""Check a typed BASIC BOOT with a true drive, separately from autoboot."""
 import argparse
 import hashlib
 import json
@@ -9,6 +9,7 @@ from pathlib import Path
 import time
 import shadow_boot_probe as sp
 from build_d71 import blank_d71, d64_compatibility_image
+from build_d81 import blank_d81
 from vice_capture import choose_port, monitor_command
 
 
@@ -17,13 +18,16 @@ def main():
     parser.add_argument('--disk', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--model', default='c128')
+    parser.add_argument('--drive', choices=('1541','1571','1581'), default='1541')
     args = parser.parse_args()
     work = args.output.resolve(); work.mkdir(parents=True, exist_ok=True)
-    blank = work/'blank.d64'
-    blank.write_bytes(d64_compatibility_image(blank_d71()))
+    suffix={'1541':'.d64','1571':'.d71','1581':'.d81'}[args.drive]
+    blank = work/('blank'+suffix)
+    blank.write_bytes(blank_d81() if args.drive=='1581' else
+                      d64_compatibility_image(blank_d71()) if args.drive=='1541' else blank_d71())
     port = choose_port()
     process, master = sp.launch_vice(blank, port, 'net.sf.VICE',
-        ('-drive8truedrive', '-drive8type', '1541', '-model', args.model))
+        ('-drive8truedrive', '-drive8type', args.drive, '-model', args.model))
     try:
         # Let the stock ROM reach BASIC on a non-bootable disk. No machine
         # state is patched: attach the candidate, then type the BASIC command.
@@ -46,7 +50,7 @@ def main():
             (work/'probe-site.bin', 0x8000, 0x8007, 'kernel')])
         (work/'result.json').write_text(json.dumps(dict(
             disk_sha256=hashlib.sha256(args.disk.read_bytes()).hexdigest(),
-            entry='BASIC BOOT', model=args.model, drive='1541',
+            entry='BASIC BOOT', model=args.model, drive=args.drive,
             shell=status[1].hex(), probe_site=status[2].hex()), indent=2)+'\n')
         print('PASS typed BOOT:', args.model, args.disk, flush=True)
     finally:

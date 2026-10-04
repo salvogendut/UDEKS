@@ -13,6 +13,13 @@ HARNESS = r'''
 #include "src/services/shell/shell.c"
 unsigned char session_memory[65536], active, clock_run, wave_run, calls, starts, app_result;
 unsigned char token_count, init_error;
+unsigned char load_error, load_exit, loads, loaded_count;
+unsigned char session_load(unsigned char count, unsigned char **args) {
+    ++loads; loaded_count=count;
+    session_memory[UDEKS_TASK_STATUS_BASE+UDEKS_TASK_ERROR_OFFSET]=load_error;
+    session_memory[UDEKS_TASK_STATUS_BASE+UDEKS_TASK_EXIT_OFFSET]=load_exit;
+    return 0;
+}
 char last_name[17], output[256];
 unsigned char udeks_shell_read_line(unsigned char *s, unsigned char n) { return UDEKS_LINE_EDITOR_EMPTY; }
 unsigned char udeks_shell_tokenize(unsigned char *s, unsigned char *o, unsigned char n) {
@@ -49,7 +56,8 @@ unsigned char udeks_z80_submit(unsigned char op, unsigned int a, unsigned int b,
 void reset(void) {
     memset(session_memory, 0, sizeof(session_memory));
     active=clock_run=wave_run=banked_run[0]=banked_run[1]=calls=starts=app_result=0;
-    token_count=init_error=0; memset(last_name,0,sizeof(last_name)); output[0]=0;
+    token_count=init_error=load_error=load_exit=loads=loaded_count=0;
+    memset(last_name,0,sizeof(last_name)); output[0]=0;
     udeks_shell_start(); session_memory[UDEKS_USH_STATUS_BASE+1]=UDEKS_USH_STATE_READY;
 }
 unsigned char valid(unsigned char t, unsigned char a, unsigned char b) { return udeks_control_valid(t,a,b); }
@@ -107,14 +115,48 @@ class ServiceControl(unittest.TestCase):
         self.assertIn(b'task slot busy',bytes((ctypes.c_char*256).in_dll(self.lib,'output')))
         self.assertEqual(bytes((ctypes.c_ubyte*2).in_dll(self.lib,'banked_run')),b'\1\1')
 
-    def test_failed_desktop_setup_never_attempts_generic_load(self):
+    def test_generic_launch_does_not_initialize_desktop(self):
         ctypes.c_ubyte.in_dll(self.lib,'token_count').value=2
         ctypes.c_ubyte.in_dll(self.lib,'init_error').value=1
         line=(ctypes.c_ubyte*55).in_dll(self.lib,'udeks_shell_command_line')
         line[:8]=b'orbit\0&\0'
         self.lib.udeks_shell_dispatch_line()
-        self.assertEqual(self.value('starts'),0)
+        self.assertEqual(self.value('starts'),1)
         self.assertEqual(self.value('active'),0)
+
+    def test_fixed_console_arguments_and_exit_do_not_enter_native_loader(self):
+        ctypes.c_ubyte.in_dll(self.lib,'token_count').value=2
+        ctypes.c_ubyte.in_dll(self.lib,'load_exit').value=37
+        line=(ctypes.c_ubyte*55).in_dll(self.lib,'udeks_shell_command_line')
+        line[:11]=b'args\0alpha\0'
+        self.lib.udeks_shell_dispatch_line()
+        self.assertEqual(self.value('loaded_count'),2)
+        self.assertEqual(self.value('starts'),0)
+        self.assertEqual(self.memory[0xf17a],37)
+        self.assertEqual(self.value('active'),0)
+
+    def test_minor2_foreground_fallback_and_targeted_interrupt(self):
+        ctypes.c_ubyte.in_dll(self.lib,'token_count').value=1
+        ctypes.c_ubyte.in_dll(self.lib,'load_error').value=5
+        line=(ctypes.c_ubyte*55).in_dll(self.lib,'udeks_shell_command_line')
+        line[:6]=b'orbit\0'
+        self.lib.udeks_shell_dispatch_line()
+        self.lib.udeks_shell_poll()
+        self.assertEqual(self.memory[0xf184],4)
+        self.assertEqual(self.value('active'),0)
+        self.assertEqual(self.lib.udeks_shell_interrupt_foreground(),1)
+        self.lib.udeks_shell_poll()
+        self.assertEqual(self.memory[0xf184],0)
+
+    def test_other_loader_errors_and_native_arguments_do_not_fall_back(self):
+        line=(ctypes.c_ubyte*55).in_dll(self.lib,'udeks_shell_command_line')
+        for error,count in ((11,1),(3,1),(4,1),(5,2)):
+            self.lib.reset()
+            ctypes.c_ubyte.in_dll(self.lib,'token_count').value=count
+            ctypes.c_ubyte.in_dll(self.lib,'load_error').value=error
+            line[:10]=b'orbit\0arg\0'
+            self.lib.udeks_shell_dispatch_line()
+            self.assertEqual(self.value('starts'),0)
 
     def test_enqueue_has_no_graphics_or_engine_side_effects(self):
         self.assertEqual(self.request(), 0)

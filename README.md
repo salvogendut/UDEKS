@@ -76,10 +76,11 @@ VICE D64/D71 and native 1986 input checks pass; physical-C128 acceptance of
 this candidate is the next gate.
 
 On `graphics-generic-apps` (#35), an independently built `.BIN` can now launch
-as `name &` into either free compatible native slot, without an OS name-table
+as `name` or `name &` into either free compatible native slot, without an OS name-table
 entry. Try the [generic-app demo and build recipe](docs/GRAPHICAL-APPS-SDK.md).
-Generic foreground/control and migration of the legacy app paths are still
-pending; the published snapshots above have not been replaced.
+The SDK also builds independent argc/argv console commands. Instance/name-based
+control and legacy-client migration remain pending. Fresh builds now include a
+[D81 / 1581 image](docs/D81.md); the published snapshots above have not been replaced.
 
 `/mnt` starts free. To use a separate data disk on device 9:
 
@@ -166,7 +167,8 @@ make check
 make boot
 ```
 
-Fresh build outputs are `build/boot/udeks.d64` and `build/boot/udeks.d71`.
+Fresh build outputs are `build/boot/udeks.d64`, `build/boot/udeks.d71` and
+`build/boot/udeks.d81`.
 The downloadable copies at `build/udeks.d64` and `build/udeks.d71` are
 deliberately published snapshots: ordinary builds do not replace them.
 After qualification, `make publish-boot` refreshes those copies and their

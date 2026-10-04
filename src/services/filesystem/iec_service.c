@@ -23,7 +23,9 @@ extern uint8_t udeks_storage_cwd, udeks_storage_boot_source;
 static struct udeks_fs_volumes volumes;
 static struct udeks_fs_path query, entry;
 static uint8_t opened, eof, channel, regular, read_error, device;
-static uint8_t owner, directory, next_entry, virtual_entry;
+static uint8_t owner, directory, virtual_entry;
+/* A 1581 directory has 296 slots, including deleted entries. */
+static uint16_t next_entry;
 static uint8_t selected, saved_entry[30];
 static const uint8_t * const directories[] = {
     (const uint8_t *)"/", (const uint8_t *)"/bin",
@@ -115,7 +117,10 @@ static uint8_t read_regular(uint8_t count)
             channel = 0;
             break;
         }
-        P[n++] = (uint8_t)value;
+        /* Keep the store and increment separate: cc65 -Os/static-locals
+         * otherwise hoists n++ ahead of this volatile indexed store. */
+        P[n] = (uint8_t)value;
+        ++n;
     }
     return reply(0, n);
 }
@@ -124,7 +129,8 @@ static uint8_t read_regular(uint8_t count)
  * uniqueness without a resident filename index; STAT cannot disrupt a file. */
 static uint8_t getdents(void)
 {
-    uint8_t status, error, index, kind, i, length;
+    uint8_t status, error, kind, i, length;
+    uint16_t index;
     if (directory == UDEKS_FS_ROOT && virtual_entry < 3u) {
         ++virtual_entry;
         P[0] = UDEKS_DT_DIR; P[1] = 3;
@@ -195,8 +201,8 @@ uint8_t udeks_storage_dispatch(void)
         if (fd || count || R[UDEKS_TREQ_FLAGS] || CWD > UDEKS_FS_MNT)
             return reply(UDEKS_TREQ_EINVAL, 0);
         i = 0;
-        do { P[i] = directories[CWD][i]; } while (P[i++]);
-        return reply(0, i-1u);
+        do { P[i] = directories[CWD][i]; if (!P[i]) break; ++i; } while (1);
+        return reply(0, i);
     }
     if (op == UDEKS_TREQ_OP_CHDIR || op == UDEKS_TREQ_OP_STATFS ||
         op == UDEKS_TREQ_OP_OPEN || op == UDEKS_TREQ_OP_STAT) {

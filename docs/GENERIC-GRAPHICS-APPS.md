@@ -1,6 +1,6 @@
 # Generic disk-loaded graphical applications
 
-Status: relocation and generic background launch implemented, 2026-10-04.
+Status: relocation and generic foreground/background launch implemented, 2026-10-04.
 [Issue #35](https://github.com/salvogendut/UDEKS/issues/35).
 Branch: `graphics-generic-apps`, based on merged
 PR #31 (`9af159b`). This is the next feature priority, before service extraction.
@@ -99,11 +99,11 @@ resident BSS ends `$9AFE` (one spare byte). No runtime stack, guard, CPU page
 or app allocation moved. Serialized root-service scratch is static to avoid
 extra persistent cc65 frames. The new metadata belongs to the graphics service.
 
-**Next:** generic foreground/name-based control and native-client migration,
-then explicit clock/wave compatibility. Bare generic commands, generic `-q`,
-arguments and all-four-slot interchangeability are not implemented. This
-background-launch checkpoint is testable, not completion of #35. Plan the
-next service placement before adding resident code.
+At that checkpoint foreground remained pending. The follow-up below implements
+bare generic launch/Ctrl+C. **Next:** instance/name-based control and native-client
+migration, then explicit clock/wave compatibility. Generic `-q`, native arguments
+and all-four-slot interchangeability remain incomplete. Plan the next service
+placement before adding resident code.
 
 ## Implementation sequence
 
@@ -160,6 +160,15 @@ placement pressure with more hardcoded applications.
   concrete physical-C128 test candidate. Preserve exact artifacts and evidence.
 
 ## Related work and boundaries
+
+The follow-up to `1699e82` adds bare foreground native launch with cooperative
+Ctrl+C, deferred desktop initialization on CREATE, and a standalone console
+SDK/proof (arguments, streams, return status, BSS reset with four windows).
+All three VICE formats now qualify those paths; D81 adds real 1581 geometry,
+not an extension rename. Console commands use the existing synchronous UDEX
+0.1 loader, not native task slots; native arguments/background console I/O are
+not complete. Instance/name-based stop and migration of the named apps remain
+the next #35 increments. See [the SDK](GRAPHICAL-APPS-SDK.md).
 
 - PR #31 / issue #30 provides the merged four-app baseline; its historical
   qualification records remain immutable.

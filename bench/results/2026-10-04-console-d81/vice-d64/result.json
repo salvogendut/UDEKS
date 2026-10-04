@@ -1,0 +1,97 @@
+{
+  "drive": "1541",
+  "disk_sha256": "f2446a9faa0adcb973ce2a2abfa9133a2dd79502dfb9522b8d6af40b39d6b9bb",
+  "fixture_sha256": "03bb30206ebc884e1a769ee98aeb91ddfcb79bbac2098ec2225faab782772c61",
+  "console_sha256": "fd15ea34bd657d26e2bea3b6efa6db658dedf7729d868093133558d6f3a73c89",
+  "graphical_sha256": "6062c16c3e9e58c1af3a04d8c5a573a63fea808e54c6c88c1beca88f80bdcb8b",
+  "arbitrary_names": true,
+  "arguments": true,
+  "stdout_stderr": true,
+  "exit_status": true,
+  "bss_reload": true,
+  "lazy_graphics": true,
+  "foreground_ctrl_c_both_slots": true,
+  "console_with_four_windows": true,
+  "records": [
+    {
+      "command": "ls /bin",
+      "console": "df\nxclock\nxwave\nxcalc\nxdraw\ncowsay\ndate\nls\ncat\nuname\nlshw\nlsmod\nlscpu\nz80ctl\nmount\numount\nargs\nagain\nhello\nsecond\nUDEKS:~>",
+      "exit": null
+    },
+    {
+      "command": "df",
+      "console": "xdraw\ncowsay\ndate\nls\ncat\nuname\nlshw\nlsmod\nlscpu\nz80ctl\nmount\numount\nargs\nagain\nhello\nsecond\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         593   71        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~>",
+      "exit": null
+    },
+    {
+      "command": "args alpha beta",
+      "console": "lshw\nlsmod\nlscpu\nz80ctl\nmount\numount\nargs\nagain\nhello\nsecond\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         593   71        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> args alpha beta\nargs: fresh BSS\n[args]\n[alpha]\n[beta]\nargs: stderr works\nUDEKS:~>",
+      "exit": 37
+    },
+    {
+      "command": "again renamed",
+      "console": "umount\nargs\nagain\nhello\nsecond\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         593   71        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> args alpha beta\nargs: fresh BSS\n[args]\n[alpha]\n[beta]\nargs: stderr works\nUDEKS:~> again renamed\nargs: fresh BSS\n[again]\n[renamed]\nargs: stderr works\nUDEKS:~>",
+      "exit": 37
+    },
+    {
+      "command": "hello",
+      "console": "args\nagain\nhello\nsecond\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         593   71        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> args alpha beta\nargs: fresh BSS\n[args]\n[alpha]\n[beta]\nargs: stderr works\nUDEKS:~> again renamed\nargs: fresh BSS\n[again]\n[renamed]\nargs: stderr works\nUDEKS:~> hello\n",
+      "exit": null
+    },
+    {
+      "command": "echo foreground returned",
+      "console": "second\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         593   71        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> args alpha beta\nargs: fresh BSS\n[args]\n[alpha]\n[beta]\nargs: stderr works\nUDEKS:~> again renamed\nargs: fresh BSS\n[again]\n[renamed]\nargs: stderr works\nUDEKS:~> hello\nInterrupted\nUDEKS:~> echo foreground returned\nforeground returned\nUDEKS:~>",
+      "exit": null
+    },
+    {
+      "command": "hello &",
+      "console": "UDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         593   71        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> args alpha beta\nargs: fresh BSS\n[args]\n[alpha]\n[beta]\nargs: stderr works\nUDEKS:~> again renamed\nargs: fresh BSS\n[again]\n[renamed]\nargs: stderr works\nUDEKS:~> hello\nInterrupted\nUDEKS:~> echo foreground returned\nforeground returned\nUDEKS:~> hello &\nUDEKS:~>",
+      "exit": null
+    },
+    {
+      "command": "second",
+      "console": "Filesystem  256B-blocks  Used  Available  Mounted on\niec8        664         593   71        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> args alpha beta\nargs: fresh BSS\n[args]\n[alpha]\n[beta]\nargs: stderr works\nUDEKS:~> again renamed\nargs: fresh BSS\n[again]\n[renamed]\nargs: stderr works\nUDEKS:~> hello\nInterrupted\nUDEKS:~> echo foreground returned\nforeground returned\nUDEKS:~> hello &\nUDEKS:~> second\n",
+      "exit": null
+    },
+    {
+      "command": "second &",
+      "console": "Read-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> args alpha beta\nargs: fresh BSS\n[args]\n[alpha]\n[beta]\nargs: stderr works\nUDEKS:~> again renamed\nargs: fresh BSS\n[again]\n[renamed]\nargs: stderr works\nUDEKS:~> hello\nInterrupted\nUDEKS:~> echo foreground returned\nforeground returned\nUDEKS:~> hello &\nUDEKS:~> second\nInterrupted\nUDEKS:~> second &\nUDEKS:~>",
+      "exit": null
+    },
+    {
+      "command": "xclock &",
+      "console": "args: fresh BSS\n[args]\n[alpha]\n[beta]\nargs: stderr works\nUDEKS:~> again renamed\nargs: fresh BSS\n[again]\n[renamed]\nargs: stderr works\nUDEKS:~> hello\nInterrupted\nUDEKS:~> echo foreground returned\nforeground returned\nUDEKS:~> hello &\nUDEKS:~> second\nInterrupted\nUDEKS:~> second &\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~>",
+      "exit": null
+    },
+    {
+      "command": "xwave &",
+      "console": "[alpha]\n[beta]\nargs: stderr works\nUDEKS:~> again renamed\nargs: fresh BSS\n[again]\n[renamed]\nargs: stderr works\nUDEKS:~> hello\nInterrupted\nUDEKS:~> echo foreground returned\nforeground returned\nUDEKS:~> hello &\nUDEKS:~> second\nInterrupted\nUDEKS:~> second &\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~>",
+      "exit": null
+    },
+    {
+      "command": "args while graphics run",
+      "console": "args: stderr works\nUDEKS:~> hello\nInterrupted\nUDEKS:~> echo foreground returned\nforeground returned\nUDEKS:~> hello &\nUDEKS:~> second\nInterrupted\nUDEKS:~> second &\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> args while graphics run\nargs: fresh BSS\n[args]\n[while]\n[graphics]\n[run]\nargs: stderr works\nUDEKS:~>",
+      "exit": 37
+    },
+    {
+      "command": "args reload",
+      "console": "UDEKS:~> hello &\nUDEKS:~> second\nInterrupted\nUDEKS:~> second &\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> args while graphics run\nargs: fresh BSS\n[args]\n[while]\n[graphics]\n[run]\nargs: stderr works\nUDEKS:~> args reload\nargs: fresh BSS\n[args]\n[reload]\nargs: stderr works\nUDEKS:~>",
+      "exit": 37
+    },
+    {
+      "command": "cowsay console alive",
+      "console": "args: fresh BSS\n[args]\n[while]\n[graphics]\n[run]\nargs: stderr works\nUDEKS:~> args reload\nargs: fresh BSS\n[args]\n[reload]\nargs: stderr works\nUDEKS:~> cowsay console alive\n _______________\n< console alive >\n ---------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>",
+      "exit": null
+    },
+    {
+      "command": "xinit -q",
+      "console": "[while]\n[graphics]\n[run]\nargs: stderr works\nUDEKS:~> args reload\nargs: fresh BSS\n[args]\n[reload]\nargs: stderr works\nUDEKS:~> cowsay console alive\n _______________\n< console alive >\n ---------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~>",
+      "exit": null
+    },
+    {
+      "command": "args final",
+      "console": "args: fresh BSS\n[args]\n[reload]\nargs: stderr works\nUDEKS:~> cowsay console alive\n _______________\n< console alive >\n ---------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> args final\nargs: fresh BSS\n[args]\n[final]\nargs: stderr works\nUDEKS:~>",
+      "exit": 37
+    }
+  ]
+}

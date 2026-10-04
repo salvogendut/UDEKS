@@ -9,11 +9,15 @@ import argparse
 from pathlib import Path
 import re
 from build_d71 import D64_SIZE, blank_d71, install_prg_file, sector_offset
+import build_d81
 
 
 def directory_names(image):
+    if len(image) == build_d81.SIZE:
+        return {e[3:19].rstrip(b'\xa0').upper()
+                for e in build_d81.entries(image, build_d81.sector_offset, 40, 3)}
     if len(image) not in (D64_SIZE, len(blank_d71())):
-        raise ValueError('expected a standard 35-track D64 or 70-track D71')
+        raise ValueError('expected a standard D64, D71 or D81')
     sector, seen, names = 1, set(), set()
     while True:
         pos = sector_offset(18, sector)
@@ -47,8 +51,9 @@ def add_apps(image, files):
         names.add(key)
         pending.append((name, data))
     result = bytearray(image)
+    install = build_d81.install_file if len(image) == build_d81.SIZE else install_prg_file
     for name, data in pending:
-        install_prg_file(result, name, data, file_type=0x81)
+        install(result, name, data, file_type=0x81)
     return bytes(result)
 
 

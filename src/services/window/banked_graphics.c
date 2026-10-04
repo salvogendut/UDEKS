@@ -31,6 +31,12 @@ unsigned char udeks_banked_graphics_names[2][16]={{0}};
 const unsigned char udeks_banked_legacy_names[2][6]={"xcalc","xdraw"};
 static unsigned int wx, ww;
 static unsigned char wy, wh;
+/* Launching a native console task must not switch on or clear the VIC.
+ * Only CREATE asks for a desktop; keep this small helper resident. */
+static unsigned char desktop(void)
+{
+    return udeks_vic_graphics_is_active()?0:udeks_vic_graphics_initialize();
+}
 #pragma code-name(push, "GRAPHICSHELP")
 static unsigned int retained(unsigned char index) { return index ? 0xce80u : 0xcd00u; }
 static void closed(unsigned char handle)
@@ -80,6 +86,7 @@ void udeks_banked_graphics_request(void)
     op=P[0]; handle=P[1];
     if(op==UDEKS_GFX_CREATE) {
         if(clients.handle[index] || clients.closing[index] || (P[6]&0xf9u)!=0x10u) goto done;
+        if(desktop()) { error=5; goto done; }
         /* Exactly eight title bytes, plus a service-owned terminator. */
         memcpy(clients.title[index],(const void *)(P+7),8);
         clients.title[index][8]=0;

@@ -2,10 +2,13 @@
 import ctypes as c
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT/'tools'))
+import build_d81
 
 
 class StorageService(unittest.TestCase):
@@ -14,7 +17,7 @@ class StorageService(unittest.TestCase):
         cls.temp = tempfile.TemporaryDirectory()
         library = Path(cls.temp.name) / 'storage.so'
         subprocess.run(['cc', '-std=c99', '-Wall', '-Wextra', '-Werror', '-shared',
-                        '-fPIC', '-DUDEKS_STORAGE_HOST_TEST', '-I'+str(ROOT/'include'),
+                        '-fPIC', '-DUDEKS_STORAGE_HOST_TEST', '-DUDEKS_FS_READ_ONLY', '-I'+str(ROOT/'include'),
                         str(ROOT/'src/services/filesystem/iec_service.c'),
                         str(ROOT/'src/services/filesystem/fs_namespace.c'),
                         str(ROOT/'src/services/filesystem/cbm_file.c'),
@@ -34,11 +37,11 @@ class StorageService(unittest.TestCase):
                      'dos_error', 'status_bad', 'status_error', 'talk_error', 'command_error'):
             self.byte(name).value = 0
         self.word('fail_at').value = 65535
-        self.tracks = (c.c_uint8 * 32).in_dll(self.lib, 'test_tracks')
-        self.units = (c.c_uint8 * 32).in_dll(self.lib, 'test_units')
-        self.units[:] = bytes(32)
-        self.numbers = (c.c_uint8 * 32).in_dll(self.lib, 'test_numbers')
-        self.sectors = (c.c_uint16 * 8192).in_dll(self.lib, 'test_sectors')
+        self.tracks = (c.c_uint8 * 64).in_dll(self.lib, 'test_tracks')
+        self.units = (c.c_uint8 * 64).in_dll(self.lib, 'test_units')
+        self.units[:] = bytes(64)
+        self.numbers = (c.c_uint8 * 64).in_dll(self.lib, 'test_numbers')
+        self.sectors = (c.c_uint16 * 16384).in_dll(self.lib, 'test_sectors')
         self.disk = {(18, 1): bytearray(b'\0\xff'+bytes(254))}
         self.sync()
 
@@ -46,10 +49,15 @@ class StorageService(unittest.TestCase):
     def word(self, name): return c.c_uint16.in_dll(self.lib, 'test_'+name)
 
     def sync(self):
-        self.tracks[:] = bytes(32)
-        for i, ((track, sector), data) in enumerate(self.disk.items()):
+        self.tracks[:] = bytes(64)
+        for i, ((track, sector), data) in enumerate(self.with_header(self.disk).items()):
             self.tracks[i], self.numbers[i] = track, sector
             self.sectors[i*256:(i+1)*256] = data
+
+    @staticmethod
+    def with_header(disk):
+        if (40,0) in disk or (18,0) in disk: return disk
+        return dict(disk) | {(18,0): bytearray(b'\x12\x01\x41\0'+bytes(252))}
 
     def file(self, data, name=b'HELLO', slot=0, first=0):
         blocks = max(1, (len(data)+253)//254)
@@ -297,6 +305,63 @@ class StorageService(unittest.TestCase):
         self.assertEqual(self.request(17, b'\x08/', minor=8), (1, 2, 0, 0))
         c.c_uint8.in_dll(self.lib, 'udeks_storage_boot_source').value = 1
 
+    def d81(self):
+        image=build_d81.blank_d81()
+        self.disk={(40,s):bytearray(image[build_d81.sector_offset(40,s):
+                                         build_d81.sector_offset(40,s)+256]) for s in range(4)}
+        self.sync()
+
+    def test_d81_highest_track_sector_and_exact_file_length(self):
+        self.d81()
+        directory=self.disk[40,3]
+        directory[2:21]=b'\x81\x50\x27HELLO'+b'\xa0'*11
+        directory[30:32]=b'\x01\0'
+        self.disk[80,39]=bytearray(b'\0\x04ABC'+bytes(251))
+        self.sync(); self.mount()
+        self.assertEqual(self.request(6,b'/mnt/HELLO'),(1,2,4,0))
+        self.assertEqual(self.read_all(),b'ABC')
+        self.request(9,fd=4)
+        self.disk[40,3][3]=81; self.sync()
+        self.assertEqual(self.request(6,b'/mnt/HELLO'),(1,2,4,0))
+        self.assertEqual(self.request(1,fd=4,count=24),(1,128,0,5))
+
+    def test_d81_statfs_both_bams_errors_and_media_change(self):
+        self.d81(); self.mount()
+        self.disk[40,1][16]-=3
+        self.disk[40,2][16]-=7
+        self.sync()
+        self.assertEqual(self.request(19,b'/mnt',minor=6),(1,2,8,0))
+        self.assertEqual(bytes(self.r[14:22]),b'\0\1'+(3160).to_bytes(2,'little')+
+                         (3150).to_bytes(2,'little')+b'\x08\x01')
+        for sector,index,value in ((1,16,41),(2,16,41),(2,2,65),(2,3,0)):
+            old=self.disk[40,sector][index]; self.disk[40,sector][index]=value;self.sync()
+            self.assertEqual(self.request(19,b'/mnt',minor=6),(1,128,0,5))
+            self.disk[40,sector][index]=old
+        # Same mounted unit, changed medium: do not reuse the old geometry.
+        self.disk={(18,1):bytearray(b'\0\xff'+bytes(254))};self.bam(True)
+        self.assertEqual(self.request(19,b'/mnt',minor=6),(1,2,8,0))
+        self.assertEqual(bytes(self.r[16:20]),(1328).to_bytes(2,'little')*2)
+
+    def test_d81_296th_directory_slot_and_eof_do_not_wrap(self):
+        self.d81()
+        for s in range(3,40):
+            self.disk[40,s]=bytearray(bytes((40,s+1)) if s<39 else b'\0\xff')+bytearray(254)
+        pos=2+7*32
+        self.disk[40,39][pos:pos+19]=b'\x81\x50\x27LAST'+b'\xa0'*12
+        self.disk[40,39][pos+28:pos+30]=b'\x01\0'
+        self.disk[80,39]=bytearray(b'\0\x02X'+bytes(253))
+        self.sync();self.mount()
+        self.assertEqual(self.entries(b'/mnt'),[b'LAST'])
+        self.assertEqual(self.request(6,b'/mnt/LAST'),(1,2,4,0))
+        self.assertEqual(self.read_all(),b'X')
+
+    def test_d81_invalid_header_and_directory_loop_fail_closed(self):
+        self.d81();self.disk[40,0][2]=0;self.sync()
+        self.assertEqual(self.request(17,b'\x08/mnt'),(1,128,0,5))
+        self.disk[40,0][2]=0x44;self.disk[40,3][:2]=bytes((40,3));self.sync()
+        self.mount();self.request(6,b'/mnt',1)
+        self.assertEqual(self.request(7,fd=4,count=24),(1,128,0,5))
+
     def entries(self, path):
         self.assertEqual(self.request(6, path, 1, minor=8), (1, 2, 4, 0))
         result = []
@@ -330,10 +395,10 @@ class StorageService(unittest.TestCase):
         self.disk = {(18, 1): bytearray(b'\0\xff'+bytes(254))}
         self.file(b'DATA', b'FOO.BIN')
         data = self.disk.copy()
-        self.tracks[:] = bytes(32)
+        self.tracks[:] = bytes(64)
         index = 0
         for unit, disk in ((8, system), (9, data)):
-            for (track, sector), content in disk.items():
+            for (track, sector), content in self.with_header(disk).items():
                 self.units[index], self.tracks[index], self.numbers[index] = unit, track, sector
                 self.sectors[index*256:(index+1)*256] = content
                 index += 1
