@@ -28,16 +28,22 @@ Read the [dedication](DEDICATION.md).
 
 ## Download and boot
 
-The checked-in images contain the accepted root-namespace build from
-[PR #28](https://github.com/salvogendut/UDEKS/pull/28).
+These preserved test images contain the four-generic-slot build and the xwave
+resize improvement from [PR #37](https://github.com/salvogendut/UDEKS/pull/37):
 
 | Image | Use |
 | --- | --- |
-| [Download D64](build/udeks.d64?raw=true) | 1541-compatible drives and Pi1541; also VICE and 1986. |
-| [Download D71](build/udeks.d71?raw=true) | A 1571-compatible drive or emulator configured for D71. |
+| [Download D64](bench/artifacts/2026-10-05-wave-resize/udeks.d64?raw=true) | 1541-compatible drives and Pi1541; also VICE and 1986. |
+| [Download D71](bench/artifacts/2026-10-05-wave-resize/udeks.d71?raw=true) | A 1571-compatible drive or emulator configured for D71. |
+| [Download D81](bench/artifacts/2026-10-05-wave-resize/udeks.d81?raw=true) | A 1581-compatible drive or emulator configured for D81. |
 
-See [image provenance and checksums](build/README.md). These are ordinary
-CBM DOS disk images, not a special UDEKS disk format.
+See [checksums](bench/artifacts/2026-10-05-wave-resize/SHA256SUMS) and
+[qualification and limits](docs/GENERIC-GRAPHICS-APPS.md#resize-latency-follow-up--2026-10-05).
+VICE qualifies all three formats; native 1986 input qualifies D64/1571.
+The user accepted the improved behavior; the latest manual-test platform was
+not specified, so no additional physical-C128 result is claimed. The older
+[published snapshots](build/README.md) in `build/udeks.*` still contain PR #28
+and have not been overwritten. All are ordinary CBM DOS disk images.
 
 1. Select/mount the image as device **8**.
 2. Start in native C128 mode with the **80-column VDC display** enabled.
@@ -64,27 +70,28 @@ of the VDC console. Mouse: port 1 (1351); joystick: port 2. Use `xclock -q`
 or `xwave -q` to stop a background app; `Ctrl+C` stops a foreground app.
 `xinit -q` shuts down the graphics display.
 
-Since merged PR #31, freshly built images also support
-`xcalc &` (decimal calculator) and `xdraw &` (click-to-toggle drawing grid).
-**All four graphical apps can run together**, with independent bank-1
-allocations for calculator and drawing. Click xdraw's C button to clear it;
-`xcalc -q` / `xdraw -q` close the respective app. See
-[four-app candidate and tests](docs/DISK-GRAPHICS.md#four-application-support-30).
-The published download snapshots above remain the accepted main build.
-Use `build/boot/udeks.d64` or `build/boot/udeks.d71` for this test candidate;
-VICE D64/D71 and native 1986 input checks pass; physical-C128 acceptance of
-this candidate is the next gate.
+Add `xcalc &` (decimal calculator) and `xdraw &` (click-to-toggle drawing grid)
+to run **all four graphical apps together**. All four are independent,
+relocatable disk programs with private runtimes and stacks. Clock and wave
+resize; calculator and drawing use fixed-size layouts. Click xdraw's C button
+to clear it; `xcalc -q` / `xdraw -q` close the respective app.
 
-On the #35 follow-up branch, `graphics-native-clients`, all four graphical apps
-are relocatable disk programs. A new `.BIN` launches as `name` or `name &`
+A new `.BIN` launches as `name` or `name &`
 into any free **compatible-sized** allocation, without an OS name-table entry.
 `name -q` stops a matching instance; Ctrl+C targets the foreground instance.
 See the [SDK and limits](docs/GRAPHICAL-APPS-SDK.md) and
 [four-native-slot layout](docs/GENERIC-GRAPHICS-APPS.md#four-native-slot-cutover--2026-10-05).
-The SDK also builds independent argc/argv console commands. Fresh test disks
-are `build/boot/udeks.d64`, `.d71` and `.d81`; published snapshots above
-have not been replaced. VICE three-format and 1986 native-input checks pass;
-physical acceptance of this cutover is still due.
+The SDK also builds independent argc/argv console commands; console loading
+remains synchronous. Four slots are available, but not every binary fits every
+slot. The retained drawing pool is shared and each native task has a bounded
+160-byte C stack. Fresh source builds produce `build/boot/udeks.d64`, `.d71`
+and `.d81`.
+
+Wave resize no longer spends as long rebuilding coordinates: the native PAL
+two/four-app checks improved from about 15/28 seconds to 8/12 seconds after
+release, without further clicks. Dense wireframe painting is still slow;
+this is not instant resizing. The improvement is app-local, not new wave
+policy in the window manager.
 
 `/mnt` starts free. To use a separate data disk on device 9:
 
@@ -105,6 +112,8 @@ open files also keep it busy. System commands remain available afterward.
   panel, Unix-like streams and Bash-like command names.
 - Disk-loaded `ush`, utilities and graphical apps. Bare commands use system
   `/bin`, never an arbitrary data disk; bootfs provides explicit recovery.
+- Four generic native graphical allocations, an independent app SDK, dynamic
+  running-instance names, foreground/background launch and clean slot reuse.
 - A coherent `cd`/`pwd`/`ls`/`cat`/`df` namespace over flat DOS files:
   `NAME.BIN` → `/bin/name`, `RC.ETC` → `/etc/rc`. Raw data mounts retain
   ordinary filenames. `.SH` is reserved and readable, but execution is deferred.
@@ -113,7 +122,7 @@ open files also keep it busy. System commands remain available afterward.
 - `xclock` uses the same TI/TI$-compatible timebase as `date`. `xwave` uses
   the Z80 for sinc-surface heights and the 8502 for projection and plotting;
   computed heights survive moves and resizes.
-- Native D64/D71 boot, hardware discovery, cooperative task switching and
+- Native D64/D71/D81 boot images, hardware discovery, cooperative task switching and
   bounded Z80 jobs. `free` reports the fixed task-memory pool, **not all unused
   physical RAM**; `df` reports the selected disk's DOS allocation blocks.
 
@@ -123,8 +132,9 @@ this is not a claim that every model, peripheral or failure path is qualified.
 The target baseline is a stock 128 KiB C128 with 16 KiB VDC RAM; 64 KiB VDC,
 REU and GeoRAM are optional. PAL and NTSC remain targets.
 
-**Current feature:** physical acceptance of four generic native app slots. **Next architectural
-milestone:** extract the first non-kernel service into a disk-loaded program.
+**Completed feature:** four generic native app slots, emulator-qualified and
+accepted by the user for merge. **Next architectural milestone:** extract the
+first non-kernel service into a disk-loaded program.
 General scripting, filesystem writes, broader tasking and optimization are
 separate roadmap work. The existing `/etc/rc` command runner is not a POSIX
 `sh` or Bash implementation.
@@ -173,8 +183,9 @@ make boot
 
 Fresh build outputs are `build/boot/udeks.d64`, `build/boot/udeks.d71` and
 `build/boot/udeks.d81`.
-The downloadable copies at `build/udeks.d64` and `build/udeks.d71` are
-deliberately published snapshots: ordinary builds do not replace them.
+The older copies at `build/udeks.d64` and `build/udeks.d71` are deliberately
+published snapshots: ordinary builds do not replace them. The current test
+downloads above instead point to immutable qualification artifacts.
 After qualification, `make publish-boot` refreshes those copies and their
 checksums. See the [publication procedure](docs/BUILDING.md#publishing-disk-images).
 

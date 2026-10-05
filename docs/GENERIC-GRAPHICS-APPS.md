@@ -1,10 +1,10 @@
 # Generic disk-loaded graphical applications
 
-Status: four-native-client cutover implemented, 2026-10-05; physical acceptance pending.
+Status: four-native-client cutover implemented and user-accepted for merge, 2026-10-05.
 [Issue #35](https://github.com/salvogendut/UDEKS/issues/35).
 Initial branch `graphics-generic-apps` merged as PR #36 (`c704250`).
-The clock/wave follow-up is on `graphics-native-clients`, still under #35.
-This is the next feature priority, before service extraction.
+The clock/wave follow-up is [PR #37](https://github.com/salvogendut/UDEKS/pull/37).
+The next feature priority is service extraction.
 It replaces application-specific slot wiring, not the four-window capacity limit.
 
 ## Four-native-slot cutover — 2026-10-05
@@ -71,12 +71,14 @@ Physical-C128 confirmation remains due. Test the fresh
 remain unchanged. Reproduce with `make four-native-probe` after the container
 build and `make graphical-example`.
 
-Final qualification: 1,158 host tests pass, both actual-build placement gates
+Original cutover qualification: 1,158 host tests pass, both actual-build placement gates
 pass, and an isolated parallel build reproduces all three disks byte-for-byte.
 Exact images/captures and reproduction notes are preserved in
 [`bench/results/2026-10-05-four-native`](../bench/results/2026-10-05-four-native/README.md).
-Next gate is physical-C128 acceptance, then review/merge #35; the next roadmap
-feature is one disk-loaded non-kernel service, not another graphics optimization.
+The user subsequently accepted the resize follow-up and requested merge; the
+manual-test platform was unspecified, so physical qualification is not inferred.
+The next roadmap feature is one disk-loaded non-kernel service, not another
+graphics optimization.
 
 ### Resize-latency follow-up — 2026-10-05
 

@@ -6,6 +6,28 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
+## Current handoff — user acceptance, 2026-10-05
+
+The user accepted the resize improvement and explicitly requested commit,
+push, PR and merge. [PR #37](https://github.com/salvogendut/UDEKS/pull/37)
+delivers the four-native-slot follow-up to #35/PR #36, including the app-local
+resize correction. The latest manual-test platform was not specified: do not
+turn that acceptance into a new physical-C128 qualification claim.
+
+Current verification: **1,162 host tests**, D64/D71/D81 builds, both placement
+checks, VICE on all three formats and unmodified 1986 native keyboard/1351
+input. Preserve both dated evidence sets below. README downloads now point to
+the exact `2026-10-05-wave-resize` test artifacts; the older `build/udeks.*`
+published snapshots are unchanged.
+
+Next work is the **first disk-loaded non-kernel service**, on its own issue and
+branch: choose one service, inventory dependencies and boot/recovery ownership,
+then define and implement its bounded load/start/stop contract. Keep missing or
+invalid service images recoverable. Do not reopen app-name routing or add
+preemption, filesystem writes, scripting or xwave optimization as prerequisites.
+Dense repaint remains synchronous and slow; native background-console
+arguments/stdin and larger task allocations remain separate work.
+
 ## Four-native-slot cutover — 2026-10-05
 
 Implemented on `graphics-native-clients`: **all four shipped graphical apps are
@@ -70,11 +92,11 @@ Physical-C128 confirmation remains due. Test the fresh
 remain unchanged. Reproduce with `make four-native-probe` after the container
 build and `make graphical-example`.
 
-Qualification is complete: 1,158 host tests; actual-map placement gates;
+Original cutover qualification: 1,158 host tests; actual-map placement gates;
 byte-identical isolated parallel build; VICE all three formats and 1986 native
 input. Preserved evidence: `bench/{artifacts,results}/2026-10-05-four-native`.
-Next: user physical-C128 test, then review/merge #35; after that, the first
-disk-loaded non-kernel service. No published snapshot or remote merge is implied.
+The current acceptance and next milestone are recorded in the handoff above.
+No new physical test or published-snapshot refresh is implied.
 
 Resize follow-up: the user noticed updates apparently depending on later focus
 changes. No-input native-mouse tests instead measured excessive projection and
