@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """XSPRDEF session sprite editor: source, packaging and retained-budget checks."""
 import math
+import re
 import unittest
 from pathlib import Path
 
@@ -80,12 +81,23 @@ class XsprdefSourceTests(unittest.TestCase):
         self.assertIn("#define SPRITE_BYTES 63", source)
         self.assertIn("#define CELL         8", source)
         self.assertIn("bit_flip(edit,", source)
-        self.assertIn("emit_sprite(edit, MAG_X, MAG_Y);", source)
+        self.assertIn("emit_sprite(edit, MAG_X, MAG_Y, CELL);", source)
+        self.assertIn("emit_sprite(edit, PRE_X, PRE_Y, 1);", source)
         self.assertIn('P[7 + i] = "XSPRDEF"[i];', source)
         self.assertIn("copy_sprite(sprite_bank[selected], edit);", source)
         self.assertNotIn("udeks_window_", source)
         self.assertNotIn("keyboard", source)
         self.assertIn("user/bin/xsprdef.c", makefile)
+
+    def test_window_geometry_fits_the_create_byte_fields(self):
+        source = SOURCE.read_text(encoding="utf-8")
+        width = int(re.search(r"P\[4\] = (\d+);", source).group(1))
+        height = int(re.search(r"P\[5\] = (\d+);", source).group(1))
+        # CREATE carries width/height as single bytes; 320 truncated to 64 once.
+        self.assertLessEqual(width, 255)
+        self.assertGreaterEqual(width, 24 * 8 + 8 + 24 + 8)
+        self.assertLessEqual(height, 200 - 4)
+        self.assertGreaterEqual(height, 21 * 8 + 24)
 
     def test_makefile_builds_and_ships_the_app(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")

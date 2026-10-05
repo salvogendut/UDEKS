@@ -13,15 +13,18 @@ extern void gfx_sleep(void);
 #define SPRITES      8
 #define SPRITE_BYTES 63
 #define CELL         8
-#define MAX_COMMANDS 72
+#define MAX_COMMANDS 68
 #define MAG_X        8
 #define MAG_Y        20
+#define PRE_X        208
+#define PRE_Y        20
 #define BTN_S_X      208
-#define BTN_S_Y      56
+#define BTN_S_Y      52
 #define BTN_B_X      208
-#define BTN_B_Y      86
+#define BTN_B_Y      82
+#define LIST_X       30
 #define LIST_Y       80
-#define LIST_STEP    34
+#define LIST_STEP    26
 
 static unsigned char handle;
 static unsigned char sprite_bank[SPRITES][SPRITE_BYTES];
@@ -83,9 +86,10 @@ static void text(unsigned char x, unsigned char y, const char *s)
     while (*s) { glyph(x, y, *s++); x = (unsigned char)(x + 7u); }
 }
 
-/* Emit the set pixels of a 63-byte sprite as merged rectangles, one 8x8 cell
- * per sprite pixel. */
-static void emit_sprite(const unsigned char *s, unsigned char ox, unsigned char oy)
+/* Emit the set pixels of a 63-byte sprite as merged rectangles scaled by
+ * `cell` (8 for the magnified pane, 1 for the normal-size preview). */
+static void emit_sprite(const unsigned char *s, unsigned char ox, unsigned char oy,
+    unsigned char cell)
 {
     unsigned char px[8], pw[8], py[8], pn;
     unsigned char nx[8], nw[8], ny[8];
@@ -111,8 +115,8 @@ static void emit_sprite(const unsigned char *s, unsigned char ox, unsigned char 
                 used[i] = 1;
                 nx[n] = px[j]; nw[n] = pw[j]; ny[n] = py[j]; ++n;
             } else {
-                fill((unsigned char)(ox + px[j] * CELL), (unsigned char)(oy + py[j] * CELL),
-                    (unsigned char)(pw[j] * CELL), (unsigned char)((y - py[j]) * CELL), 0);
+                fill((unsigned char)(ox + px[j] * cell), (unsigned char)(oy + py[j] * cell),
+                    (unsigned char)(pw[j] * cell), (unsigned char)((y - py[j]) * cell), 0);
             }
         }
         for (i = 0; i < c; ++i) if (!used[i]) {
@@ -122,8 +126,8 @@ static void emit_sprite(const unsigned char *s, unsigned char ox, unsigned char 
         pn = n;
     }
     for (j = 0; j < pn; ++j)
-        fill((unsigned char)(ox + px[j] * CELL), (unsigned char)(oy + py[j] * CELL),
-            (unsigned char)(pw[j] * CELL), (unsigned char)((21u - py[j]) * CELL), 0);
+        fill((unsigned char)(ox + px[j] * cell), (unsigned char)(oy + py[j] * cell),
+            (unsigned char)(pw[j] * cell), (unsigned char)((21u - py[j]) * cell), 0);
 }
 
 static void payload(void)
@@ -145,13 +149,14 @@ static unsigned char list_present(void)
     unsigned char i;
     count = 0;
     for (i = 0; i < SPRITES; ++i)
-        glyph((unsigned char)(40u + i * LIST_STEP), LIST_Y, (unsigned char)('1' + i));
+        glyph((unsigned char)(LIST_X + i * LIST_STEP), LIST_Y, (unsigned char)('1' + i));
     return present();
 }
 static unsigned char editor_present(void)
 {
     count = 0;
-    emit_sprite(edit, MAG_X, MAG_Y);
+    emit_sprite(edit, MAG_X, MAG_Y, CELL);
+    emit_sprite(edit, PRE_X, PRE_Y, 1);
     if (confirming) {
         text(BTN_S_X, 120, "SAVE? S/B");
     } else {
@@ -169,7 +174,7 @@ static void copy_sprite(unsigned char *dst, const unsigned char *src)
 unsigned char udeks_graphical_main(void)
 {
     unsigned char i, x, y;
-    payload(); P[1] = 0; P[3] = 0; P[4] = 320; P[5] = 200; P[6] = 0x16;
+    payload(); P[1] = 4; P[3] = 4; P[4] = 248; P[5] = 192; P[6] = 0x16;
     for (i = 0; i < 7u; ++i) P[7 + i] = "XSPRDEF"[i];
     if (gfx_request(UDEKS_GFX_CREATE)) return 1;
     handle = R[11];
@@ -182,7 +187,7 @@ unsigned char udeks_graphical_main(void)
             x = P[1]; y = P[3];
             if (mode == 0) {
                 for (i = 0; i < SPRITES; ++i) {
-                    unsigned char bx = (unsigned char)(40u + i * LIST_STEP);
+                    unsigned char bx = (unsigned char)(LIST_X + i * LIST_STEP);
                     if (x >= (unsigned char)(bx - 4u) && x < (unsigned char)(bx + 10u) &&
                         y >= (unsigned char)(LIST_Y - 4u) && y < (unsigned char)(LIST_Y + 14u)) {
                         selected = i;
