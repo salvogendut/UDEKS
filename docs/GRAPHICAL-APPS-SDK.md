@@ -264,7 +264,7 @@ this does not make arbitrary Commodore PRGs or Linux binaries compatible.
   stack** with guards; keep call depth/local arrays bounded (or use private
   static data for nonrecursive code). Admission order is smallest fitting first.
   [Exact addresses and lifetimes](GENERIC-GRAPHICS-APPS.md#four-native-slot-cutover--2026-10-05).
-- CREATE/PRESENT/EVENT/CLOSE use UTRQ 0.9. Up to 48 eight-byte commands are
+- CREATE/PRESENT/EVENT/CLOSE use UTRQ 0.9. Up to 160 eight-byte commands are
   retained per client; the service copies them and clips painting to its window.
   UTRQ 0.12 alternatively accepts a packed path stream of at most 1,280 bytes.
   A shared 2,304-byte retained pool bounds total drawing data; ENOMEM leaves

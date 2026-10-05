@@ -179,8 +179,9 @@ image. Until then the old image remains clipped to the new client rectangle.
 The service does not implement clock scaling or any other app-specific model.
 Old 0.9 executables retain their exact four-byte EVENT and fixed-size behavior.
 
-PRESENT takes at most 48 eight-byte commands from **inside the caller's own
-image+BSS reservation**. Commands use window-relative byte coordinates:
+PRESENT takes at most 160 eight-byte commands (1,280 bytes, matching the PATHS
+budget) from **inside the caller's own image+BSS reservation**. Commands use
+window-relative byte coordinates:
 
 | Opcode | Remaining seven bytes | Meaning |
 | --- | --- | --- |

@@ -5,6 +5,7 @@
 #define UDEKS_RETAINED_BASE 0x1300u
 #define UDEKS_RETAINED_POOL_SIZE 2304u
 #define UDEKS_RETAINED_CAPACITY 1280u
+#define UDEKS_RETAINED_COMMANDS 160u
 #define UDEKS_RETAINED_PATH_FLAG 0x8000u
 extern unsigned int udeks_retained_lengths[4];
 extern unsigned int udeks_graphics_origin_x;

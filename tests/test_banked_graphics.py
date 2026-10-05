@@ -162,7 +162,7 @@ class BankedGraphics(unittest.TestCase):
 
     def test_present_rejects_bad_ranges_without_writes(self):
         h=self.create()
-        for pointer,count in ((0x22ff,1),(0x3500,0),(0x33f9,1),(0xfffe,1),(0x2300,49)):
+        for pointer,count in ((0x22ff,1),(0x3500,0),(0x33f9,1),(0xfffe,1),(0x2300,161)):
             self.assertEqual(self.present(h,pointer,count),22)
         self.assertEqual(self.scalar('writes',kind=c.c_uint),0)
         self.assertEqual(self.scalar('repaints',kind=c.c_uint),0)

@@ -234,6 +234,7 @@ USER_XCLOCK_BIN := $(BUILD_USER)/xclock.bin
 USER_XCLOCK_UDEX := $(BUILD_USER)/xclock.udx
 USER_XCALC_UDEX := $(BUILD_USER)/xcalc.udx
 USER_XDRAW_UDEX := $(BUILD_USER)/xdraw.udx
+USER_XSPRDEF_UDEX := $(BUILD_USER)/xsprdef.udx
 USER_XWAVE_ASM := $(BUILD_USER)/xwave.s
 USER_XWAVE_OBJ := $(BUILD_USER)/xwave.o
 USER_XWAVE_ENTRY_OBJ := $(BUILD_USER)/xwave_entry.o
@@ -318,6 +319,7 @@ user-sources: $(USER_COWSAY_ASM) $(USER_DATE_ASM) $(USER_LS_ASM) $(USER_USH_ASM)
 		$(USER_FILESYSTEM_OBJ) $(USER_POLL_ENTRY_OBJ)
 
 user-programs: $(USER_BOOTFS) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX)
+user-programs: $(USER_XSPRDEF_UDEX)
 user-programs: $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(BUILD_USER)/filetools.udx $(BUILD_USER)/sysinfo.udx $(BUILD_USER)/diagnostics.udx
 
 $(BUILD_8502)/shell.s: include/udeks/service_control.h include/udeks/task_request.h include/udeks/banked_graphics.h
@@ -923,6 +925,11 @@ $(USER_XDRAW_UDEX): user/bin/xdraw.c user/lib/graphics_request.s tools/build_gra
 	$(PYTHON) tools/build_graphical_example.py --source user/bin/xdraw.c --name XDRAW \
 		--output $(BUILD_USER)/native-draw --capacity 2560 --export _udeks_xdraw_cells
 	cp $(BUILD_USER)/native-draw/XDRAW.BIN $@
+
+$(USER_XSPRDEF_UDEX): user/bin/xsprdef.c user/lib/graphics_request.s tools/build_graphical_example.py Makefile | $(BUILD_USER)
+	$(PYTHON) tools/build_graphical_example.py --source user/bin/xsprdef.c --name XSPRDEF \
+		--output $(BUILD_USER)/native-xsprdef --static-locals --capacity 4352
+	cp $(BUILD_USER)/native-xsprdef/XSPRDEF.BIN $@
 
 $(USER_XWAVE_ASM): src/apps/xwave.c include/udeks/mailbox.h \
 		include/udeks/vic_graphics.h include/udeks/window.h \
@@ -2104,7 +2111,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
 		tools/build_d71.py bench/iec-directory/hello.txt user/etc/rc $(USER_SYSINFO_UDEX) \
-		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX)
+		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX) $(USER_XSPRDEF_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX)
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
@@ -2127,7 +2134,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) \
 		--hello bench/iec-directory/hello.txt \
 		--rc user/etc/rc --sysinfo $(USER_SYSINFO_UDEX) \
-		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) --xcalc $(USER_XCALC_UDEX) --xdraw $(USER_XDRAW_UDEX) \
+		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) --xcalc $(USER_XCALC_UDEX) --xdraw $(USER_XDRAW_UDEX) --xsprdef $(USER_XSPRDEF_UDEX) \
 		--command COWSAY=$(USER_COWSAY_UDEX) --command DATE=$(USER_DATE_UDEX) \
 		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_FILETOOLS_UDEX) \
 		--command UNAME=$(USER_DIAGNOSTICS_UDEX) --command LSHW=$(USER_DIAGNOSTICS_UDEX) \

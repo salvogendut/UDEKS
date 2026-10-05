@@ -102,6 +102,19 @@ static void client_click(unsigned x,unsigned y,unsigned task) {
 #endif
 static void disk_graphics(void) {
     command("xinit"); idle();
+    /* XSPRDEF: the session sprite editor creates its window and closes. */
+    {
+        unsigned created = word(0xf250);
+        unsigned destroyed;
+        unsigned attempt;
+        command("xsprdef &"); idle();
+        for (attempt = 0; attempt < 2000 && word(0xf250) == created; ++attempt) frames(1);
+        require(word(0xf250) == created+1, "xsprdef did not create a window");
+        require(byte(0xf247) != 0, "xsprdef did not take focus");
+        destroyed = word(0xf252);
+        command("xsprdef -q"); idle();
+        require(word(0xf252) == destroyed+1, "xsprdef did not close");
+    }
     command("xclock &"); idle();
     require(byte(0xf225) == 3, "disk clock did not start");
     unsigned clock_handle = byte(0xf247);

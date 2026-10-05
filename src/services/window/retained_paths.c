@@ -115,7 +115,7 @@ unsigned char __fastcall__ udeks_retained_present(unsigned char index)
         length|=(unsigned int)P[5]<<8;
         if(!length || length>UDEKS_RETAINED_CAPACITY || (length&7)) return 22;
     } else {
-        if(length>48) return 22;
+        if(length>UDEKS_RETAINED_COMMANDS) return 22;
         length*=8;
     }
     limit=(unsigned int)udeks_native_stack_pages[index]<<8;
