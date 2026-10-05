@@ -1,0 +1,138 @@
+{
+  "drive": "1581",
+  "disk_sha256": "b8a10dd606ef58e969c7eb63d9c0f5e340c9736bf8545b902cee93c60be20093",
+  "fixture_sha256": "8cb4aa8a1bff16ac0b5a6c571635e3aa80b6203a4cbd2efd0f74b1a3f4bd92fd",
+  "program_sha256": "3e29fa20dc92d360d6be09f175de26e6fea7a8cbf9ecee526b0fcca69068cfaa",
+  "slots": [
+    3,
+    4
+  ],
+  "relocated_code": true,
+  "commands_oracle": true,
+  "date_updates": true,
+  "drag": true,
+  "targeted_ctrl_c": true,
+  "reload": true,
+  "legacy_state_untouched": true,
+  "four_app_compatibility": true,
+  "stack_guards": true,
+  "records": [
+    {
+      "command": "nclock &",
+      "console": "V0.1.0 (C)2026\n\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> nclock &\nUDEKS:~>"
+    },
+    {
+      "check": "first-clock",
+      "slot": 3,
+      "hour": 1,
+      "minute": 0,
+      "presents": 1
+    },
+    {
+      "command": "date 03:15:00",
+      "console": "INITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> nclock &\nUDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~>"
+    },
+    {
+      "check": "first-set-time",
+      "slot": 3,
+      "hour": 3,
+      "minute": 15,
+      "presents": 2
+    },
+    {
+      "command": "clock2",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> nclock &\nUDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~> clock2\n"
+    },
+    {
+      "check": "second-clock",
+      "slot": 4,
+      "hour": 3,
+      "minute": 15,
+      "presents": 1
+    },
+    {
+      "check": "first-after-drag",
+      "slot": 3,
+      "hour": 3,
+      "minute": 15,
+      "presents": 2
+    },
+    {
+      "check": "second-after-drag",
+      "slot": 4,
+      "hour": 3,
+      "minute": 15,
+      "presents": 1
+    },
+    {
+      "check": "background-survives",
+      "slot": 3,
+      "hour": 3,
+      "minute": 16,
+      "presents": 3
+    },
+    {
+      "command": "clock2 &",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> nclock &\nUDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~> clock2\nInterrupted\nUDEKS:~> clock2 &\nUDEKS:~>"
+    },
+    {
+      "check": "reloaded-clock",
+      "slot": 4,
+      "hour": 3,
+      "minute": 16,
+      "presents": 1
+    },
+    {
+      "command": "date 21:45:00",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> nclock &\nUDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~> clock2\nInterrupted\nUDEKS:~> clock2 &\nUDEKS:~> date 21:45:00\n21:45:00\nUDEKS:~>"
+    },
+    {
+      "check": "first-changed-time",
+      "slot": 3,
+      "hour": 21,
+      "minute": 45,
+      "presents": 4
+    },
+    {
+      "check": "second-changed-time",
+      "slot": 4,
+      "hour": 21,
+      "minute": 45,
+      "presents": 2
+    },
+    {
+      "command": "xclock &",
+      "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> nclock &\nUDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~> clock2\nInterrupted\nUDEKS:~> clock2 &\nUDEKS:~> date 21:45:00\n21:45:00\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "console": "Z80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> nclock &\nUDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~> clock2\nInterrupted\nUDEKS:~> clock2 &\nUDEKS:~> date 21:45:00\n21:45:00\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay native clocks",
+      "console": "UDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~> clock2\nInterrupted\nUDEKS:~> clock2 &\nUDEKS:~> date 21:45:00\n21:45:00\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay native clocks\n _______________\n< native clocks >\n ---------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "check": "four-apps-first",
+      "slot": 3,
+      "hour": 21,
+      "minute": 46,
+      "presents": 5
+    },
+    {
+      "check": "four-apps-second",
+      "slot": 4,
+      "hour": 21,
+      "minute": 46,
+      "presents": 3
+    },
+    {
+      "command": "xinit -q",
+      "console": "UDEKS:~> clock2\nInterrupted\nUDEKS:~> clock2 &\nUDEKS:~> date 21:45:00\n21:45:00\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay native clocks\n _______________\n< native clocks >\n ---------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~>"
+    },
+    {
+      "command": "echo reusable",
+      "console": "UDEKS:~> clock2 &\nUDEKS:~> date 21:45:00\n21:45:00\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay native clocks\n _______________\n< native clocks >\n ---------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> echo reusable\nreusable\nUDEKS:~>"
+    }
+  ]
+}

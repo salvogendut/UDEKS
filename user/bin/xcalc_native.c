@@ -3,8 +3,9 @@
  * only retains/replays generic relative drawing commands and routes clicks. */
 #include "udeks/calc.h"
 #include "udeks/banked_graphics.h"
-#define R ((volatile unsigned char *)0xf359)
-#define P ((volatile unsigned char *)0xf367)
+extern volatile unsigned char udeks_graphics_record[38];
+#define R udeks_graphics_record
+#define P (udeks_graphics_record+14)
 extern unsigned char __fastcall__ gfx_request(unsigned char op);
 extern void gfx_sleep(void);
 static unsigned char commands[48][8], count, handle;
@@ -20,18 +21,18 @@ static const unsigned char glyphs[][5]={
 static void glyph(unsigned char x,unsigned char y,unsigned char c)
 {
  unsigned char i,r;
- if(c>='0' && c<='9') i=c-'0';
- else { for(i=0;"+-*/=C.NE"[i] && "+-*/=C.NE"[i]!=c;++i) {}
-        if(!"+-*/=C.NE"[i]) return; i+=10; }
- commands[count][0]=2; commands[count][1]=x; commands[count][2]=y;
- for(r=0;r<5;++r) commands[count][3+r]=glyphs[i][r];
- ++count;
+ unsigned char *command;
+ for(i=0;"0123456789+-*/=C.NE"[i] && "0123456789+-*/=C.NE"[i]!=c;++i) {}
+ if(!"0123456789+-*/=C.NE"[i]) return;
+ command=commands[count++];
+ command[0]=2; command[1]=x; command[2]=y;
+ for(r=0;r<5;++r) command[3+r]=glyphs[i][r];
 }
 static void line(unsigned char x,unsigned char y,unsigned char x2,unsigned char y2)
 {
- commands[count][0]=1; commands[count][1]=x; commands[count][2]=y;
- commands[count][3]=x2; commands[count][4]=y2; commands[count][5]=0;
- ++count;
+ unsigned char *command=commands[count++];
+ command[0]=1; command[1]=x; command[2]=y;
+ command[3]=x2; command[4]=y2; command[5]=0;
 }
 static void payload(void) { unsigned char i; for(i=0;i<24;++i) P[i]=0; P[1]=handle; }
 static unsigned char present(void)

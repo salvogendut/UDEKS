@@ -1,0 +1,42 @@
+PC=FF74 1581=AF5F jam=0 rawIEC=1 fdc=00 track=0 sector=0 request=00/00/00 exit=0
+PC=E4B1 1581=AE17 jam=0 rawIEC=1 fdc=80 track=3 sector=3 request=00/00/00 exit=0
+PC=E49A 1581=AD37 jam=0 rawIEC=1 fdc=00 track=6 sector=4 request=00/00/00 exit=0
+PC=E3B7 1581=CD1A jam=0 rawIEC=1 fdc=81 track=0 sector=0 request=00/00/00 exit=0
+PC=E571 1581=CD17 jam=0 rawIEC=1 fdc=81 track=4 sector=4 request=00/00/00 exit=0
+PC=E560 1581=AD15 jam=0 rawIEC=1 fdc=00 track=8 sector=3 request=00/00/00 exit=0
+PC=E7E5 1581=AD37 jam=0 rawIEC=1 fdc=80 track=10 sector=6 request=01/01/00 exit=0
+PC=BB52 1581=B12E jam=0 rawIEC=1 fdc=00 track=11 sector=8 request=01/06/00 exit=0
+panel row 1: 12 15 0e 0e 09 0e 07 20 20 expected RUNNING
+panel row 2: 0e 0f 0e 05 20 20 20 20 20 expected NONE
+command: nclock & -> accepted (Return release=826 frames)
+panel row 2: 18 09 0e 09 14 20 20 20 20 expected xinit
+panel row 3: 0e 03 0c 0f 03 0b 20 20 20 expected nclock
+command: date 031500 -> accepted (Return release=761 frames)
+clock task 3: 03:15, presents 3
+command: clock2 -> accepted (Return release=1646 frames)
+panel row 4: 03 0c 0f 03 0b 32 20 20 20 expected clock2
+clock task 4: 03:15, presents 1
+panel row 3: 0e 03 0c 0f 03 0b 20 20 20 expected nclock
+panel row 4: 20 20 20 20 20 20 20 20 20 expected 
+command: clock2 & -> accepted (Return release=1058 frames)
+panel row 4: 03 0c 0f 03 0b 32 20 20 20 expected clock2
+command: date 214500 -> accepted (Return release=761 frames)
+clock task 3: 21:45, presents 5
+clock task 4: 21:45, presents 2
+command: clock2 & -> accepted (Return release=905 frames)
+command: xclock & -> accepted (Return release=971 frames)
+command: xwave & -> accepted (Return release=893 frames)
+panel row 2: 18 09 0e 09 14 20 20 20 20 expected xinit
+panel row 3: 18 03 0c 0f 03 0b 20 20 20 expected xclock
+panel row 4: 18 17 01 16 05 20 20 20 20 expected xwave
+panel row 5: 0e 03 0c 0f 03 0b 20 20 20 expected nclock
+panel row 6: 03 0c 0f 03 0b 32 20 20 20 expected clock2
+command: cowsay native clocks -> accepted (Return release=1271 frames)
+command: xinit -q -> accepted (Return release=103 frames)
+panel row 2: 0e 0f 0e 05 20 20 20 20 20 expected NONE
+panel row 3: 20 20 20 20 20 20 20 20 20 expected 
+panel row 4: 20 20 20 20 20 20 20 20 20 expected 
+panel row 5: 20 20 20 20 20 20 20 20 20 expected 
+panel row 6: 20 20 20 20 20 20 20 20 20 expected 
+PASS native clock: both slots, date, native drag/close, Ctrl+C, reload, four windows, console, guards, bitmap
+PASS running panel: header, complete names, digit suffix, updates, cleared rows, attributes

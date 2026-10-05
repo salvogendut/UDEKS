@@ -1,0 +1,118 @@
+{
+  "drive": "1581",
+  "disk_sha256": "99e8b8eff5beffcae66da57ef7f5b72bb9d2bbb8e4e6b6c1e787092b916058eb",
+  "fixture_sha256": "ec2472b47b93df4e963b67ab675cd264c7290c736809d51ddb367c4a592252f4",
+  "program_sha256": "cc5ca764c302625f0503edfe3918af3e38eeae1ea3e5c061e3a31e5e49cf2f28",
+  "edges": 524,
+  "path_bytes": 1128,
+  "worker_leases_per_load": 21,
+  "move_without_present": true,
+  "resize_without_worker": true,
+  "stacking_without_worker": true,
+  "retained_oracle": true,
+  "vdc_glyphs_preserved": true,
+  "live_asset_metadata_preserved": true,
+  "four_apps": true,
+  "console_reentry_guard": true,
+  "reload": true,
+  "console_live": true,
+  "stack_guards": true,
+  "records": [
+    {
+      "command": "nwave &",
+      "console": "V0.1.0 (C)2026\n\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> nwave &\nUDEKS:~>"
+    },
+    {
+      "check": "initial-wave",
+      "width": 176,
+      "height": 112,
+      "edges": 524,
+      "presents": 1
+    },
+    {
+      "check": "moved-wave",
+      "width": 176,
+      "height": 112,
+      "edges": 524,
+      "presents": 1
+    },
+    {
+      "check": "resized-wave",
+      "width": 256,
+      "height": 146,
+      "edges": 524,
+      "presents": 3
+    },
+    {
+      "check": "minimum-wave",
+      "width": 48,
+      "height": 48,
+      "edges": 524,
+      "presents": 5
+    },
+    {
+      "check": "restored-wave",
+      "width": 176,
+      "height": 112,
+      "edges": 524,
+      "presents": 6
+    },
+    {
+      "command": "nclock &",
+      "console": "\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> nwave &\nUDEKS:~> nclock &\nUDEKS:~>"
+    },
+    {
+      "command": "date 03:15:00",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> nwave &\nUDEKS:~> nclock &\nUDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~>"
+    },
+    {
+      "check": "after-stacking",
+      "width": 176,
+      "height": 112,
+      "edges": 524,
+      "presents": 6
+    },
+    {
+      "command": "cowsay native wave",
+      "console": "IEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> nwave &\nUDEKS:~> nclock &\nUDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~> cowsay native wave\n _____________\n< native wave >\n -------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> nwave &\nUDEKS:~> nclock &\nUDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~> cowsay native wave\n _____________\n< native wave >\n -------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "console": "\nWELCOME TO UDEKS.\n\nUDEKS:~> nwave &\nUDEKS:~> nclock &\nUDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~> cowsay native wave\n _____________\n< native wave >\n -------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~>"
+    },
+    {
+      "check": "four-apps-wave",
+      "width": 176,
+      "height": 112,
+      "edges": 524,
+      "presents": 6
+    },
+    {
+      "command": "xinit -q",
+      "console": "\nUDEKS:~> nwave &\nUDEKS:~> nclock &\nUDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~> cowsay native wave\n _____________\n< native wave >\n -------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~>"
+    },
+    {
+      "command": "nwave &",
+      "console": "UDEKS:~> nwave &\nUDEKS:~> nclock &\nUDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~> cowsay native wave\n _____________\n< native wave >\n -------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> nwave &\nUDEKS:~>"
+    },
+    {
+      "check": "reloaded-wave",
+      "width": 176,
+      "height": 112,
+      "edges": 524,
+      "presents": 1
+    },
+    {
+      "command": "xinit -q",
+      "console": "UDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~> cowsay native wave\n _____________\n< native wave >\n -------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> nwave &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~>"
+    },
+    {
+      "command": "echo wave cleanup passed",
+      "console": "UDEKS:~> cowsay native wave\n _____________\n< native wave >\n -------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> nwave &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> echo wave cleanup passed\nwave cleanup passed\nUDEKS:~>"
+    }
+  ]
+}

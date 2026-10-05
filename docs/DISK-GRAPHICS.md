@@ -107,7 +107,10 @@ Invalid submissions leave the committed image intact. Close retires the window
 before the cooperative client exits and is reaped; a live task is never forcibly
 released. This is a trusted cooperative design, not process memory protection.
 
-Placement is build-checked in both normal/panic links:
+The following measurements describe the original four-app checkpoint.
+The native-client branch now uses a checked glyph/delivery lifetime overlay;
+see [current placement](GENERIC-GRAPHICS-APPS.md#retained-paths-and-native-wave-checkpoint-2026-10-04).
+Both normal/panic links are checked:
 
 - Bank-0 graphics module `$0C00-$11B8` (1,465 bytes in a 1,536-byte output),
   helper `$A100-$A1CE` (207 bytes), plus lifecycle glue in resident CODE.

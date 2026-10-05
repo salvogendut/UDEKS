@@ -13,27 +13,33 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
-**Current user-selected feature (2026-10-04): generic graphical applications**,
-[#35](https://github.com/salvogendut/UDEKS/issues/35), branch `graphics-generic-apps`.
+**Completed feature (accepted 2026-10-05): generic graphical applications**,
+[#35](https://github.com/salvogendut/UDEKS/issues/35). The first increment merged
+as [PR #36](https://github.com/salvogendut/UDEKS/pull/36);
+[PR #37](https://github.com/salvogendut/UDEKS/pull/37) removes the legacy
+clock/wave application model.
 Build a new app separately, copy its `.BIN` to disk, then launch it into any
 free compatible slot without adding OS name tables or choosing an address.
 This requires both generic instance/launch routing and slot-independent
 executable loading; removing hardcoded names alone is insufficient.
 See the [plan and acceptance criteria](GENERIC-GRAPHICS-APPS.md).
-Step 1 is implemented: one UDEX 0.2 compiled C binary relocates and executes
-in both native bank-1 allocations; VICE D64/D71, malformed-image rejection,
-independent state/stack/lifecycle and the existing four-app regression pass.
-Generic instance tracking and automatic `name &` launch now work in those two
-native slots, with dynamic panel names and an independently installed sample.
-Generic foreground launch and targeted Ctrl+C now work too. Independent console
-C commands have a build/install example, argc/argv, stdout/stderr and reload
-tests; their current loader remains synchronous. D81 is the third boot build,
-with 1581 directory/file/free-space support. See the
-[test/build recipe](GRAPHICAL-APPS-SDK.md) and [D81 notes](D81.md).
-Next: instance/name-based control, native-client migration, then the
-legacy-slot compatibility model. Native console scheduling/stdin is separate
-remaining work, not implied by the fixed console-command SDK.
-The feature is **not yet complete**; physical testing of this increment is due.
+The four-native-client cutover is implemented: xclock, xwave, xcalc and xdraw
+are separately linked relocatable programs. Four size-based allocations replace
+the legacy clock/wave slots, with generic launch, instance names, close/reuse
+and targeted foreground Ctrl+C. The same unknown-name binary runs in all four
+allocations. VICE D64/D71/D81 and unmodified 1986 D64/1571 native input pass;
+the user accepted the behavior and requested merge. The latest manual-test
+platform was unspecified; physical-C128 confirmation of this cutover is not
+inferred. See the [current layout and evidence](GENERIC-GRAPHICS-APPS.md#four-native-slot-cutover--2026-10-05).
+
+Independent console commands already have a build/install SDK, argc/argv and
+stdout/stderr; their loader remains synchronous. Native background-console
+stdin/arguments are separate remaining work. D81 is the third boot build.
+Wave holds its computation cache across moves and yields during resize
+projection. A reported resize delay is reduced by app-local scale tables;
+[measured dense repaint latency remains](GENERIC-GRAPHICS-APPS.md#resize-latency-follow-up--2026-10-05),
+and renderer optimization stays separate. **Next: the first disk-loaded
+non-kernel service, in its own issue/branch.**
 The exploratory `.CBM` work on `additional-apps` / #32 stays separate.
 
 **Merged baseline:** four graphical apps (#30), [PR #31](https://github.com/salvogendut/UDEKS/pull/31),
@@ -79,15 +85,15 @@ with bootstrap root mounting and an initially unmounted `/mnt`.
 The finishing corrections are implemented: specific app-launch errors,
 measured IEC/bootfs header status, a real mount-success message, and normal
 boot progress enabled to match the accepted diagnostic setting.
-Generic app loading is the current user-selected feature; service extraction
-follows. Neither requires a scripting or graphics-optimization detour.
+Generic app loading is implemented and user-accepted; service extraction is
+next. Neither requires a scripting or graphics-optimization detour.
 
 - Native D64/D71 boot, an 8502 executive, a bounded Z80 worker, a VDC root
   console, and an independent VIC-IIe graphical display are working.
 - `/bin/ush`, bootfs, fixed-address UDEX loading, basic Unix-like streams and
   commands, `xclock`, and Z80-assisted `xwave` provide a usable demonstration.
-- Cooperative task switching, lifecycle requests, and the initial two-task
-  arrangement work. General allocation, IPC, and preemption are not complete.
+- Cooperative task switching, lifecycle requests, root/command execution and
+  four native graphical allocations work. General allocation, IPC and preemption remain incomplete.
 - The generic retained window cache is enabled in normal builds and has
   positive real-hardware feedback. Window release/background repair can still
   take seconds; that is an open limitation, not a claim of responsive graphics.
@@ -127,15 +133,19 @@ mounts or applications must not require rebuilding the kernel.
 | --- | --- |
 | Foundation and CPU choice | Established; independently pinned toolchain still due. |
 | Machine bring-up and dual displays | Working baseline; broader hardware/memory qualification due. |
-| Kernel and tasking | Cooperative root/command tasks plus two bounded banked task allocations; general allocation, IPC, and preemption due. |
-| Z80 secondary engine | Mailbox and xwave computation work; reusable operations and soak tests due. |
-| Graphics and input | Four named apps merged (#31); generic foreground/background launch and targeted Ctrl+C in two native slots work (#35). Name-based control, client migration and legacy-slot compatibility remain. Repaint latency and focused-window keyboard input remain open. |
+| Kernel and tasking | Cooperative root/command tasks plus four native banked allocations; general allocation, IPC and preemption due. |
+| Z80 secondary engine | Bounded task-safe worker API and cached wave computation work; broader operations and soak tests due. |
+| Graphics and input | Four generic native slots, migrated disk clients, dynamic names, foreground/background launch, targeted Ctrl+C and name-based stop accepted for merge (#35/PR #37). No new physical-platform result inferred. Repaint latency and focused-window keyboard input are separate work. |
 | Storage and applications | Disk shell, RC, graphics and disk commands (#21/#23/#25); root namespace accepted (#26/PR #28). Generic app loading precedes first disk-loaded service lifecycle. General scripting deferred (#27). |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
 
-### Now: generic graphical applications (#35)
+### Completed: generic graphical applications (#35 / PR #37)
+
+All three implementation steps below are complete and emulator-qualified;
+the user accepted the behavior and authorized merge on 2026-10-05. Continue
+with service extraction, not a graphics-optimization detour.
 
 1. Prove one real C executable can load and execute in different compatible
    slots, with an explicit format/relocation contract and measured memory bounds.
@@ -143,8 +153,7 @@ mounts or applications must not require rebuilding the kernel.
    selection and per-instance ownership/lifecycle records.
 3. Supply an SDK/sample unknown to the OS, migrate existing clients, qualify
    independent windows and clean rejection/reuse, then offer a hardware test.
-   Legacy clock/wave slot compatibility must be addressed explicitly: two
-   generic slots are an intermediate result, not all-four-slot completion.
+   Clock/wave now use the native path; the former two-slot intermediate is retired.
 
 Keep this feature bounded by the existing concurrency limit. The detailed
 [plan](GENERIC-GRAPHICS-APPS.md) records the placement gate and acceptance tests.
@@ -167,7 +176,7 @@ Keep this feature bounded by the existing concurrency limit. The detailed
 4. Physical-C128 qualification remains recorded as pending for this candidate;
    merging it did not turn emulator evidence into a hardware result.
 
-### After #35: one disk-loaded non-kernel service
+### Next: one disk-loaded non-kernel service
 
 1. Select one existing service and inventory its dependencies, fixed entry
    points and memory lifetime. Record which minimal boot/read path must stay
@@ -367,8 +376,8 @@ path. This is separate from expanding task capacity below. Issue #26 has
 separated the system command source from data mounts: disk utilities now
 come from `/bin` on the system volume, not `/mnt`.
 
-Generalize the current two-task allocation to at least four C tasks, add a
-bounded message/handle mechanism, and move console, input, graphics, and
+The four-native allocation step is implemented; generalize it beyond these
+bounded slots, add a message/handle mechanism, and move console, input, graphics, and
 storage policy behind service interfaces rather than private kernel calls.
 Keep cooperative scheduling as a valid intermediate step. Introduce
 timer-driven preemption only after bank, cc65 runtime, stack, and device

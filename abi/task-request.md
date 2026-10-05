@@ -1,4 +1,4 @@
-# Bank-task request ABI 0.9
+# Bank-task request ABI 0.12
 
 Bank-1 8502 tasks exchange bounded requests with the resident kernel through a
 38-byte record in top common RAM. The task fills the record and calls `$FF16`.
@@ -9,17 +9,26 @@ ABI 0.3 keeps every 0.2 operation number and behavior unchanged and adds
 lifecycle operations `10`-`15`. `YIELD`, `EXIT`, immediate/nonblocking and
 blocking `WAITPID`, `SLEEP`, `CANCEL`, and `SPAWN` are implemented. Rebuilt
 0.3 clients may keep using the 0.2 operations unchanged, and
-the resident version check accepts minor `0` through `9`.
+the resident version check accepts minor `0` through `12`.
 ABI 0.4 adds non-consuming stdin readiness (`POLL`, operation 16). A 0.0–0.3
 request for operation 16 returns `ENOSYS`; an unsupported future minor returns
 `EPROTO`. Operations 1–15 retain their existing numbers and behavior.
 ABI 0.5 adds read-only IEC `MOUNT`/`UMOUNT` through a private bank-1 C service.
 Existing stream/directory clients continue to request their minimum ABI 0.4;
-`POLL` accepts 0.4 through 0.9. The current shell uses 0.8; `df` uses 0.6
+`POLL` accepts 0.4 through 0.12. The current shell uses 0.8; `df` uses 0.6
 for `STATFS`. ABI 0.7 adds deferred numeric service control; 0.8 adds root
 namespace routing and working-directory operations. No published entry address changes.
 ABI 0.9 adds owner-bound retained drawing and click/close delivery for banked
 clients (`GRAPHICS`). UAPP 0.4 remains unchanged for the legacy bank-0 apps.
+ABI 0.10 extends GRAPHICS with opt-in resizable windows and acknowledged
+geometry events. The 0.9 fixed-size CREATE and four-byte EVENT reply remain
+unchanged; see [window ABI](window.md#geometry-events-utrq-010) for the
+complete contract. No operation number or public gate moves.
+ABI 0.11 adds synchronous bounded Z80 requests (`WORKER`), available without
+opening a graphical window. It does not change the worker's algorithms.
+ABI 0.12 adds packed retained polylines as GRAPHICS suboperation 5, without
+changing the operation number, record size, or older command-list contract.
+See [the path format](window.md#packed-retained-paths-utrq-012).
 
 ## Record
 
@@ -29,7 +38,7 @@ The record occupies `$F359-$F37E`:
 |---:|---:|---|
 | 0 | 4 | ASCII magic `UTRQ` |
 | 4 | 1 | ABI major (`0`) |
-| 5 | 1 | ABI minor (`9`; earlier compatible minors remain accepted) |
+| 5 | 1 | ABI minor (`12`; earlier compatible minors remain accepted) |
 | 6 | 1 | State |
 | 7 | 1 | Operation |
 | 8 | 1 | Sequence number |
@@ -69,6 +78,7 @@ States are idle (`0`), request (`1`), complete (`2`), and error (`$80`).
 | 21 | `CHDIR` | 0.8 | Validate and change the root session's working directory. |
 | 22 | `GETCWD` | 0.8 | Return the root session's absolute working directory. |
 | 23 | `GRAPHICS` | 0.9 | Create/present/poll/close an owned banked-client window. |
+| 24 | `WORKER` | 0.11 | Run one bounded Z80 computation and borrow its result. |
 
 `EXEC` (`3`) is not task creation and its meaning does not change: it remains
 the bounded command-line bridge to the executable loader. There is no resident
@@ -78,6 +88,38 @@ loader-backed task creation is `SPAWN` (`15`).
 
 After validating the protocol envelope, all other operation values return
 `ENOSYS` before operation-specific field checks.
+
+## Bounded worker (0.11)
+
+Operation 24 uses descriptor/flags zero and count exactly four. Input bytes
+are `opcode, arg0, arg1, length`; no task id, bank selector or output pointer
+is accepted. Current kernels use the existing [mailbox](mailbox.md) opcodes:
+
+| Opcode | Operands | Maximum output |
+|---|---|---:|
+| 0, NOP | both arguments and length zero | 0 bytes |
+| 4, WAVE_SAMPLES | byte phase, byte phase step; length 1–64 | 64 bytes |
+| 5, SURFACE_ROWS | first row 0–20, row count 1–2; sum <=21; length=count*25 | 50 bytes |
+
+Success returns result count **3**: `worker result LE16, output length` in
+payload bytes 0–2. Result means zero for NOP, next phase for WAVE_SAMPLES, and
+next row for SURFACE_ROWS. Exactly `output length` bytes at **$F300** are valid;
+the rest of that 64-byte buffer is unspecified. This is a **read-only borrowed
+result**, valid only until the caller's next request or yield. Copy it to
+private memory immediately, before sleeping, painting or requesting more work.
+There is no asynchronous worker result ownership or scheduling during the
+lease. This contract relies on the current cooperative task model.
+
+Earlier minors or unsupported opcodes return `ENOSYS`; malformed fields or
+operands return `EINVAL`; unavailable worker or transport/sequence failure
+returns `EIO`. Errors return result count zero and no valid output. Envelope,
+opcode and global length checks happen before leasing. Per-kernel operand
+validation remains in the Z80: invalid rows take one bounded rejection lease,
+leave output untouched, and do not poison worker readiness. Original UTRQ
+sequence is preserved. No desktop is initialized by WORKER.
+
+The request handler/policy stays in the engine service, not the window manager.
+The existing common transport and stock-clock worker remain unchanged.
 
 ## Banked graphics (0.9)
 
@@ -128,6 +170,13 @@ removing an unused data mount. Mount probes and STATFS cannot interrupt an
 open handle. File STAT still returns `ENOSYS` (no invented byte sizes).
 
 ## Deferred root-session control (0.7)
+
+Since the four-native-client cutover (2026-10-05), only desktop `1` and
+engine `4` are implemented. Application IDs `2`, `3`, `5`, `6` are retired
+and return `ENOSYS` without queuing or changing a live app. Generic `EXEC`
+launches a filename; the session owns instance jobs and name-based stop.
+The original numeric assignments below are retained for historical decoding,
+not as an alternate way to launch the new native applications.
 
 `CONTROL`: descriptor/flags `0`, count exactly `3`, payload `[target, action,
 background]`. Targets: desktop `1`, clock `2`, wave `3`, engine `4`, calculator

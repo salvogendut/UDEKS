@@ -1,0 +1,83 @@
+{
+  "drive": "1541",
+  "disk_sha256": "96c17422d27f306ea7e53db98ccc59d117aa2b6efdff37f4a6469cb4792f7703",
+  "fixture_sha256": "3b4ba8b252517944e5736a16ea6229dcb51b5a9145678d737dc303802ba55f74",
+  "program_sha256": "1300669bdb6652cf307b396794c9f10588cdaa9cf95e5283979968a3fe58dac3",
+  "slots": [
+    3,
+    4
+  ],
+  "surface_oracle": true,
+  "wave_oracle": true,
+  "private_results": true,
+  "sequence_checked": true,
+  "errors_return": true,
+  "lease_counts": true,
+  "console_live": true,
+  "lazy_graphics": true,
+  "legacy_coexistence": true,
+  "reap_reload": true,
+  "stack_guards": true,
+  "records": [
+    {
+      "command": "worker &",
+      "console": "V0.1.0 (C)2026\n\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> worker &\nUDEKS:~>"
+    },
+    {
+      "command": "peer &",
+      "console": "\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> worker &\nUDEKS:~> peer &\nUDEKS:~>"
+    },
+    {
+      "command": "echo worker clients alive",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> worker &\nUDEKS:~> peer &\nUDEKS:~> echo worker clients alive\nworker clients alive\nUDEKS:~>"
+    },
+    {
+      "check": "client-0",
+      "slot": 3,
+      "steps": 21,
+      "phase": 39
+    },
+    {
+      "check": "client-1",
+      "slot": 4,
+      "steps": 21,
+      "phase": 57
+    },
+    {
+      "command": "xclock &",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> worker &\nUDEKS:~> peer &\nUDEKS:~> echo worker clients alive\nworker clients alive\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> worker &\nUDEKS:~> peer &\nUDEKS:~> echo worker clients alive\nworker clients alive\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay worker API",
+      "console": "\nWELCOME TO UDEKS.\n\nUDEKS:~> worker &\nUDEKS:~> peer &\nUDEKS:~> echo worker clients alive\nworker clients alive\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay worker API\n ____________\n< worker API >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "check": "after-legacy-0",
+      "slot": 3,
+      "steps": 21,
+      "phase": 39
+    },
+    {
+      "check": "after-legacy-1",
+      "slot": 4,
+      "steps": 21,
+      "phase": 57
+    },
+    {
+      "command": "worker &",
+      "console": "WELCOME TO UDEKS.\n\nUDEKS:~> worker &\nUDEKS:~> peer &\nUDEKS:~> echo worker clients alive\nworker clients alive\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay worker API\n ____________\n< worker API >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> worker &\nUDEKS:~>"
+    },
+    {
+      "command": "xinit -q",
+      "console": "UDEKS:~> worker &\nUDEKS:~> peer &\nUDEKS:~> echo worker clients alive\nworker clients alive\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay worker API\n ____________\n< worker API >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> worker &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~>"
+    },
+    {
+      "command": "echo worker cleanup passed",
+      "console": "UDEKS:~> echo worker clients alive\nworker clients alive\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> cowsay worker API\n ____________\n< worker API >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> worker &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> echo worker cleanup passed\nworker cleanup passed\nUDEKS:~>"
+    }
+  ]
+}

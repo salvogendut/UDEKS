@@ -1,0 +1,307 @@
+Modules list:
+-------------
+entry.o:
+    STARTUP           Offs=000000  Size=000003  Align=00001  Fill=0000
+request.o:
+    CODE              Offs=000000  Size=000042  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000006  Align=00001  Fill=0000
+xclock_native.o:
+    CODE              Offs=000042  Size=00014F  Align=00001  Fill=0000
+    RODATA            Offs=000006  Size=000007  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000163  Align=00001  Fill=0000
+clock_face.o:
+    CODE              Offs=000191  Size=000450  Align=00001  Fill=0000
+    RODATA            Offs=00000D  Size=000073  Align=00001  Fill=0000
+    BSS               Offs=000163  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=0005E1  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=0005FD  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax3.o):
+    CODE              Offs=00060B  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decax8.o):
+    CODE              Offs=000619  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decaxy.o):
+    CODE              Offs=000620  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=000629  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax1.o):
+    CODE              Offs=000657  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax7.o):
+    CODE              Offs=00065E  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=000663  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=00066E  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=000684  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=000689  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldai.o):
+    CODE              Offs=00068E  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=00069A  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=0006A3  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax3.o):
+    CODE              Offs=0006DD  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax5.o):
+    CODE              Offs=0006EE  Size=000014  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(negabs.o):
+    CODE              Offs=000702  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000714  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000722  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000738  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax1.o):
+    CODE              Offs=000752  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax2.o):
+    CODE              Offs=00075A  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax4.o):
+    CODE              Offs=000765  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000776  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(sub.o):
+    CODE              Offs=00078C  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(udiv.o):
+    CODE              Offs=0007A1  Size=00004F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(umod.o):
+    CODE              Offs=0007F0  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               001000  001002  000003  00001
+CODE                  001003  001803  000801  00001
+RODATA                001804  001883  000080  00001
+BSS                   001884  0019F4  000171  00001
+
+
+Exports list by name:
+---------------------
+_gfx_request              001003 RLA    _gfx_sleep                00100F RLA    
+_udeks_clock_face         001194 RLA    _udeks_graphical_main     00108A RLA    
+_udeks_graphics_record    00F359 REA    _udeks_native_clock_commands 001884 RLA    
+_udeks_native_clock_height 0019E1 RLA    _udeks_native_clock_hour  0019DC RLA    
+_udeks_native_clock_minute 0019DD RLA    _udeks_native_clock_presents 0019DE RLA    
+_udeks_native_clock_width 0019DF RLA    _udeks_program_entry      001000 RLA    
+_udeks_time_snapshot      00F200 REA    addysp                    001601 RLA    
+addysp1                   001600 RLA    decax8                    00161C RLA    
+decaxy                    001623 RLA    incax1                    00165A RLA    
+incax7                    001661 RLA    incaxy                    001668 RLA    
+incsp2                    001679 RLA    incsp3                    001687 RLA    
+incsp7                    00168C RLA    ldaidx                    001691 RLA    
+ldax0sp                   00169D RLA    ldaxysp                   00169F RLA    
+mulax3                    0016E0 RLA    mulax5                    0016F1 RLA    
+negax                     001709 RLA    popptr1                   001717 RLA    
+ptr1                      00000A RLZ    ptr4                      000010 RLZ    
+pusha                     001729 RLA    pusha0                    00173D RLA    
+pushax                    00173F RLA    regsave                   000006 RLZ    
+shlax3                    00160E RLA    shrax1                    001755 RLA    
+shrax2                    00175D RLA    shrax4                    001768 RLA    
+sp                        000002 RLZ    sreg                      000004 RLZ    
+staspidx                  001779 RLA    tmp1                      000012 RLZ    
+tosaddax                  0015E6 RLA    tosicmp                   00162E RLA    
+tossuba0                  00178F RLA    tossubax                  001791 RLA    
+tosudiva0                 0017A4 RLA    tosumoda0                 0017F3 RLA    
+tosumula0                 0016A6 RLA    udiv16                    0017B5 RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+regsave                   000006 RLZ    ptr1                      00000A RLZ    
+ptr4                      000010 RLZ    tmp1                      000012 RLZ    
+_udeks_program_entry      001000 RLA    _gfx_request              001003 RLA    
+_gfx_sleep                00100F RLA    _udeks_graphical_main     00108A RLA    
+_udeks_clock_face         001194 RLA    tosaddax                  0015E6 RLA    
+addysp1                   001600 RLA    addysp                    001601 RLA    
+shlax3                    00160E RLA    decax8                    00161C RLA    
+decaxy                    001623 RLA    tosicmp                   00162E RLA    
+incax1                    00165A RLA    incax7                    001661 RLA    
+incaxy                    001668 RLA    incsp2                    001679 RLA    
+incsp3                    001687 RLA    incsp7                    00168C RLA    
+ldaidx                    001691 RLA    ldax0sp                   00169D RLA    
+ldaxysp                   00169F RLA    tosumula0                 0016A6 RLA    
+mulax3                    0016E0 RLA    mulax5                    0016F1 RLA    
+negax                     001709 RLA    popptr1                   001717 RLA    
+pusha                     001729 RLA    pusha0                    00173D RLA    
+pushax                    00173F RLA    shrax1                    001755 RLA    
+shrax2                    00175D RLA    shrax4                    001768 RLA    
+staspidx                  001779 RLA    tossuba0                  00178F RLA    
+tossubax                  001791 RLA    tosudiva0                 0017A4 RLA    
+udiv16                    0017B5 RLA    tosumoda0                 0017F3 RLA    
+_udeks_native_clock_commands 001884 RLA    _udeks_native_clock_hour  0019DC RLA    
+_udeks_native_clock_minute 0019DD RLA    _udeks_native_clock_presents 0019DE RLA    
+_udeks_native_clock_width 0019DF RLA    _udeks_native_clock_height 0019E1 RLA    
+_udeks_time_snapshot      00F200 REA    _udeks_graphics_record    00F359 REA    
+
+
+
+Imports list:
+-------------
+_gfx_request (request.o):
+    xclock_native.o           /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/xclock_native.s(16)
+_gfx_sleep (request.o):
+    xclock_native.o           /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/xclock_native.s(17)
+_udeks_clock_face (clock_face.o):
+    xclock_native.o           /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/xclock_native.s(13)
+_udeks_graphical_main (xclock_native.o):
+    entry.o                   user/lib/native_graphics_entry.s(3)
+_udeks_graphics_record (request.o):
+    xclock_native.o           /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/xclock_native.s(14)
+_udeks_native_clock_commands (xclock_native.o):
+    [linker generated]       
+_udeks_native_clock_height (xclock_native.o):
+    [linker generated]       
+_udeks_native_clock_hour (xclock_native.o):
+    [linker generated]       
+_udeks_native_clock_minute (xclock_native.o):
+    [linker generated]       
+_udeks_native_clock_presents (xclock_native.o):
+    [linker generated]       
+_udeks_native_clock_width (xclock_native.o):
+    [linker generated]       
+_udeks_program_entry (entry.o):
+    [linker generated]       
+_udeks_time_snapshot (request.o):
+    xclock_native.o           /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/xclock_native.s(15)
+addysp (addysp.o):
+    incsp7.o                  runtime/incsp7.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+decax8 (decax8.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+decaxy (decaxy.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+incax1 (incax1.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+incax7 (incax7.o):
+    xclock_native.o           /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/xclock_native.s(239)
+incaxy (incaxy.o):
+    incax7.o                  runtime/incax7.s(8)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+incsp3 (incsp3.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+incsp7 (incsp7.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+ldaidx (ldai.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+ldax0sp (ldaxsp.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+ldaxysp (ldaxsp.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+mulax3 (mulax3.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+mulax5 (mulax5.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+negax (negabs.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+popptr1 (popptr1.o):
+    umod.o                    runtime/umod.s(8)
+    udiv.o                    runtime/udiv.s(9)
+    mul8.o                    runtime/mul8.s(9)
+ptr1 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mulax5.o                  runtime/mulax5.s(9)
+    mulax3.o                  runtime/mulax3.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    ldai.o                    runtime/ldai.s(8)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(11)
+    xclock_native.o           /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/xclock_native.s(11)
+ptr4 (zeropage.o):
+    umod.o                    runtime/umod.s(9)
+    udiv.o                    runtime/udiv.s(10)
+    mul8.o                    runtime/mul8.s(10)
+pusha (pusha.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    xclock_native.o           /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/xclock_native.s(239)
+pusha0 (pushax.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+pushax (pushax.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    xclock_native.o           /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/xclock_native.s(239)
+regsave (zeropage.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(10)
+shlax3 (aslax3.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+shrax1 (shrax1.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+shrax2 (shrax2.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+shrax4 (shrax4.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+sp (zeropage.o):
+    addysp.o                  runtime/addysp.s(8)
+    sub.o                     runtime/sub.s(9)
+    staspidx.o                runtime/staspidx.s(9)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    add.o                     runtime/add.s(12)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(10)
+sreg (zeropage.o):
+    umod.o                    runtime/umod.s(9)
+    udiv.o                    runtime/udiv.s(10)
+    icmp.o                    runtime/icmp.s(9)
+staspidx (staspidx.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    shrax4.o                  runtime/shrax4.s(8)
+    shrax2.o                  runtime/shrax2.s(8)
+    shrax1.o                  runtime/shrax1.s(8)
+    incaxy.o                  runtime/incaxy.s(8)
+    decaxy.o                  runtime/decaxy.s(8)
+    aslax3.o                  runtime/aslax3.s(8)
+    add.o                     runtime/add.s(12)
+tosaddax (add.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+tosicmp (icmp.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+tossuba0 (sub.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+tossubax (sub.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+tosudiva0 (udiv.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+tosumoda0 (umod.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+tosumula0 (mul8.o):
+    clock_face.o              /var/home/salvogendut/Dev/UDEKS/build/native-clients/clock/clock_face.s(692)
+udiv16 (udiv.o):
+    umod.o                    runtime/umod.s(8)
+

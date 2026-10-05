@@ -11,6 +11,9 @@ import shutil
 import subprocess
 import re
 from build_d71 import install_prg_file
+from build_d81 import install_file as install_d81_file
+from add_disk_apps import add_apps
+from gen_capability_imports import map_exports
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('input_smoke', ROOT/'tools/1986_input_smoke_build.py')
@@ -23,6 +26,8 @@ def main():
     parser.add_argument('--emulator', type=Path, required=True)
     parser.add_argument('--roms', type=Path, required=True)
     parser.add_argument('--disk', type=Path, default=ROOT/'build/boot/udeks.d64')
+    parser.add_argument('--drive', choices=('1571','1581'), default='1571',
+                        help='explicit ROM-backed drive; D81 requires 1581')
     parser.add_argument('--output', type=Path, default=ROOT/'build/storage/1986')
     parser.add_argument('--disk-exec', action='store_true', help='test disk-only execution fixtures')
     parser.add_argument('--disk-shell', action='store_true', help='require disk-first shell boot and uname')
@@ -33,9 +38,19 @@ def main():
     parser.add_argument('--root-namespace', action='store_true', help='system root, cwd, data alias and native window regression')
     parser.add_argument('--xcalc', action='store_true', help='native calculator mouse, arithmetic, console and app-slot checks')
     parser.add_argument('--four-apps', action='store_true', help='four-app native input and independent lifecycle qualification')
+    parser.add_argument('--four-native', action='store_true', help='four generic native clients, actual keyboard and 1351 input')
+    parser.add_argument('--native-clock', action='store_true', help='two relocatable clocks with native input and legacy peers')
     args = parser.parse_args()
+    if args.four_native and any((args.disk_exec,args.disk_shell,args.sysinfo,args.disk_graphics,
+                                 args.drag_regression,args.root_namespace,args.xcalc,args.four_apps,args.native_clock)):
+        parser.error('--four-native is a standalone qualification mode')
     if args.boot_mounted and not args.drag_regression:
         parser.error('--boot-mounted requires --drag-regression')
+    if args.native_clock and any((args.disk_exec,args.disk_shell,args.sysinfo,args.disk_graphics,
+                                 args.drag_regression,args.root_namespace,args.xcalc,args.four_apps)):
+        parser.error('--native-clock is a standalone qualification mode')
+    if (args.disk.suffix.lower()=='.d81') != (args.drive=='1581'):
+        parser.error('use --drive 1581 with D81, or --drive 1571 with D64/D71')
     work = args.output.resolve()
     work.mkdir(parents=True, exist_ok=True)
     binary = work/'smoke'
@@ -44,20 +59,36 @@ def main():
     kernel_map = (ROOT/'build/8502/udeks-8502.map').read_text()
     console_base = int(re.search(r'^LOWBSS\s+([0-9A-Fa-f]+)',kernel_map,re.M)[1],16)
     calc_flags = []
-    if args.xcalc or args.four_apps:
-        calc_map = (ROOT/'build/user/xcalc.map').read_text()
+    if args.xcalc or args.four_apps or args.four_native:
+        calc_map = (ROOT/('build/user/native-calc/xcalc_native.map' if args.four_native else 'build/user/xcalc.map')).read_text()
         calc_flags = ['-DUDEKS_XCALC_SMOKE','-DUDEKS_DISK_GRAPHICS_SMOKE']
         for symbol, define in (('_udeks_calc_value','VALUE'),('_udeks_calc_error','ERROR')):
             address = re.search(r'\b'+symbol+r'\s+([0-9A-Fa-f]+)\s+RLA',calc_map)[1]
+            if args.four_native: address=f'{int(address,16)-0x1000+0x2300:04x}'
             calc_flags.append('-DUDEKS_CALC_'+define+'=0x'+address)
         if (ROOT/'build/user/xcalc.udx').read_bytes()[7]==0:
             calc_flags.append('-DUDEKS_CALC_BANK=0x10000')
+    if args.four_native:
+        calc_flags.append('-DUDEKS_FOUR_NATIVE_SMOKE')
+        wave=map_exports((ROOT/'build/user/native-wave/xwave_native.map').read_text())
+        for symbol,define in (('presents','PRESENTS'),('width','WIDTH'),('height','HEIGHT')):
+            calc_flags.append('-DUDEKS_WAVE_'+define+'='+str(wave['_native_wave_'+symbol][0]-0x1000+0x18000))
+        calc_flags.append('-DUDEKS_WAVE_PROJECTION='+str(wave['_udeks_wave_projection_state'][0]-0x1000+0x18000))
+        draw=map_exports((ROOT/'build/user/native-draw/xdraw.map').read_text())
+        calc_flags.append('-DUDEKS_DRAW_CELLS='+str(draw['_udeks_xdraw_cells'][0]-0x1000+0x1c600))
     if args.four_apps:
         draw_map=(ROOT/'build/user/xdraw.map').read_text()
         address=re.search(r'\b_udeks_xdraw_cells\s+([0-9A-Fa-f]+)\s+RLA',draw_map)[1]
         calc_flags.extend(['-DUDEKS_FOUR_APPS_SMOKE','-DUDEKS_DRAW_CELLS=0x'+address])
+    if args.native_clock:
+        clock_map=map_exports((ROOT/'build/native-clients/clock/xclock_native.map').read_text())
+        calc_flags=['-DUDEKS_NATIVE_CLOCK_SMOKE','-DUDEKS_DISK_GRAPHICS_SMOKE']
+        for name in ('commands','hour','minute','presents','width','height'):
+            offset=clock_map['_udeks_native_clock_'+name][0]-0x1000
+            calc_flags.append('-DUDEKS_NATIVE_CLOCK_'+name.upper()+'='+str(offset))
     subprocess.run(['cc', '-std=gnu11', '-O2', '-I'+str(emulator/'src'),
-                    '-DUDEKS_CONSOLE_BASE='+str(console_base), *calc_flags,
+                    '-DUDEKS_CONSOLE_BASE='+str(console_base),
+                    '-DUDEKS_SMOKE_DRIVE='+args.drive, *calc_flags,
                     *(['-DUDEKS_DISK_EXEC_SMOKE'] if args.disk_exec else []),
                     *(['-DUDEKS_DISK_SHELL_SMOKE'] if args.disk_shell else []),
                     *(['-DUDEKS_SYSINFO_SMOKE'] if args.sysinfo else []),
@@ -71,9 +102,13 @@ def main():
     disk = work/('test'+args.disk.suffix)
     shutil.copyfile(args.disk, disk)
     data = bytearray(disk.read_bytes())
-    if not args.disk_exec:
-        install_prg_file(data, 'EMPTY', b'', file_type=0x81)
-        install_prg_file(data, 'ONE', b'X', file_type=0x81)
+    if args.native_clock:
+        program=(ROOT/'build/native-clients/clock/NCLOCK.BIN').read_bytes()
+        data=bytearray(add_apps(data,[('NCLOCK.BIN',program),('CLOCK2.BIN',program)]))
+    elif not args.disk_exec:
+        install = install_d81_file if args.drive=='1581' else install_prg_file
+        install(data, 'EMPTY', b'', file_type=0x81)
+        install(data, 'ONE', b'X', file_type=0x81)
     disk.write_bytes(data)
     with (work/'run.log').open('w') as log:
         result = subprocess.run([str(binary), str(args.roms.resolve()), str(disk),
@@ -92,6 +127,10 @@ def main():
         'root_namespace': args.root_namespace,
         'xcalc': args.xcalc,
         'four_apps': args.four_apps,
+        'four_native': args.four_native,
+        'native_clock': args.native_clock,
+        'drive': int(args.drive),
+        **({'program_sha256':hashlib.sha256(program).hexdigest()} if args.native_clock else {}),
     }, indent=2)+'\n')
     raise SystemExit(result.returncode)
 

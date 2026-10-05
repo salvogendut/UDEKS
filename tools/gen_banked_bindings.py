@@ -9,7 +9,7 @@ WAIT_FIELDS = ('state', 'operation', 'sequence', 'descriptor', 'count', 'flags',
                'selector', 'selector_high', 'child', 'status')
 
 
-def render(gateway, scheduler, context):
+def render(gateway, scheduler, context, kernel=None):
     g, s, c = (map_exports(text) for text in (gateway, scheduler, context))
     def address(table, name, low, limit, size=1):
         value, kind = table[name]
@@ -27,8 +27,10 @@ def render(gateway, scheduler, context):
         raise ValueError('wait snapshot arrays are not ten contiguous eight-byte arrays')
     values = dict(BANK0_ACCESS=access, BANK0_SLOTS=slots, BANK0_CURRENT=current, BANK0_EVENT=event,
                   BANK0_CONTEXTS=contexts, BANK0_WAITS=waits[0])
+    if kernel is not None:
+        values['BANK0_PAGES_INIT']=address(map_exports(kernel),'_udeks_banked_pages_init',0xe300,0xe644)
     return '; Generated private bindings.\n'+''.join(f'{n} = ${v:04x}\n' for n,v in values.items())
 
 
 if __name__ == '__main__':
-    Path(sys.argv[4]).write_text(render(*(Path(p).read_text() for p in sys.argv[1:4])))
+    Path(sys.argv[-1]).write_text(render(*(Path(p).read_text() for p in sys.argv[1:-1])))

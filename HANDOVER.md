@@ -6,7 +6,227 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current feature handover — 2026-10-04
+## Current handoff — user acceptance, 2026-10-05
+
+The user accepted the resize improvement and explicitly requested commit,
+push, PR and merge. [PR #37](https://github.com/salvogendut/UDEKS/pull/37)
+delivers the four-native-slot follow-up to #35/PR #36, including the app-local
+resize correction. The latest manual-test platform was not specified: do not
+turn that acceptance into a new physical-C128 qualification claim.
+
+Current verification: **1,162 host tests**, D64/D71/D81 builds, both placement
+checks, VICE on all three formats and unmodified 1986 native keyboard/1351
+input. Preserve both dated evidence sets below. README downloads now point to
+the exact `2026-10-05-wave-resize` test artifacts; the older `build/udeks.*`
+published snapshots are unchanged.
+
+Next work is the **first disk-loaded non-kernel service**, on its own issue and
+branch: choose one service, inventory dependencies and boot/recovery ownership,
+then define and implement its bounded load/start/stop contract. Keep missing or
+invalid service images recoverable. Do not reopen app-name routing or add
+preemption, filesystem writes, scripting or xwave optimization as prerequisites.
+Dense repaint remains synchronous and slow; native background-console
+arguments/stdin and larger task allocations remain separate work.
+
+## Four-native-slot cutover — 2026-10-05
+
+Implemented on `graphics-native-clients`: **all four shipped graphical apps are
+ordinary relocatable disk programs**, with no app-name routing in ush, the
+resident session, loader or running panel. `name &` picks the smallest FREE
+compatible allocation; `name` owns the foreground and Ctrl+C closes only that
+instance. `name -q` cooperatively stops the first matching live instance.
+Repeated names are permitted. The retired named CONTROL app operations now
+return ENOSYS; the old managed loader entry rejects flag-2 loads.
+
+| Task | Bank-1 allocation | Image + BSS maximum | ZP / hardware-stack pages |
+| --- | --- | ---: | --- |
+| 3 | $2300–$34FF | 4,352 bytes | $D5 / $D6 |
+| 4 | $3500–$3FFF | 2,560 bytes | $D7 / $D8 |
+| 5 | $8000–$8FFF | 3,840 bytes | $D0 / $E2 |
+| 6 | $C600–$CFFF | 2,304 bytes | $00 / $01 |
+
+Admission order is 6, 4, 5, 3, based only on capacity. The complete file,
+including relocation metadata, must fit the allocation. Its final page is
+reserved after installation: 16-byte lower guard, **160-byte private C stack**,
+16-byte upper guard and private exit trampoline. Image+BSS and graphics source
+pointers may not enter that page. Stack depth is a real SDK limit, not hardware
+protection. All four contexts use the accepted scheduler and frozen gates;
+the MMU initializer preserves the 8502 port at $00/$01.
+
+Removing the legacy callbacks frees the bank-1 foreground backup and old
+external C stacks. Both graphical service modules are copied out of bank-1
+$C600–$D0EF before *any* native client is admitted; their installed flag is
+never reset. Only then may task 6 and task 5's zero page reuse that delivery
+area. The temporary bootstrap context at $E2E2 has already been retired by
+scheduler activation before task 5 uses its hardware-stack page. Bank-1
+physical pages $00/$01 are otherwise unused after boot; foreground task 2
+still starts at $0200 and uses its separate relocated CPU pages.
+
+Retained images now share **2,304 bytes in bank 0 at $1300–$1BFF**, packed in
+slot order. Replacement/close compacts the pool; malformed or over-capacity
+updates leave all live images unchanged. PRESENT stays at most 384 bytes;
+PATHS stays at most 1,280 bytes per image, but four maximum-sized path images
+cannot coexist. Pool exhaustion returns ENOMEM. The normal four-app set fits.
+The base graphics service occupies $0C00–$12FF; the existing 1,008-byte retired
+VDC glyph-source overlay is unchanged. Console commands, recovery bootfs,
+filesystem, cache, VIC bitmap and Z80 code retain distinct ownership.
+
+Wave resize now waits for outline release and projects sixteen table-scaled
+vertices per cooperative yield. The app caches all 525 heights and retains all 524 edges:
+moves/raises replay service data; resize never resubmits the Z80 height job.
+Dense geometry repaint is still synchronous, not a new pixel-blit guarantee.
+
+VICE D64/1541, D71/1571 and D81/1581 pass the bundled four apps, calculator
+arithmetic, drawing input, clock/time oracle, full wave path/sample oracle,
+held-outline/no-duplicate resize, exact worker leases, console use, fifth-app
+rejection, shutdown and reload. Four renamed copies of the same independently
+built HELLO binary also run simultaneously, each with independent input,
+guarded stacks and names; malformed loads preserve peers and freed slots
+accept another name. These are injected VICE WM events; native mouse and
+physical-C128 confirmation are separate gates. Unmodified 1986 revision
+`81485cc7` also passes raw-IEC D64/1571 boot, actual keyboard/1351 drag and
+resize, calculator/drawing input, held-outline/worker reuse, independent reload,
+foreground Ctrl+C, canvas equality and all four private stack guards.
+Physical-C128 confirmation remains due. Test the fresh
+`build/boot/udeks.d64`, `.d71` or `.d81`; published `build/udeks.*` snapshots
+remain unchanged. Reproduce with `make four-native-probe` after the container
+build and `make graphical-example`.
+
+Original cutover qualification: 1,158 host tests; actual-map placement gates;
+byte-identical isolated parallel build; VICE all three formats and 1986 native
+input. Preserved evidence: `bench/{artifacts,results}/2026-10-05-four-native`.
+The current acceptance and next milestone are recorded in the handoff above.
+No new physical test or published-snapshot refresh is implied.
+
+Resize follow-up: the user noticed updates apparently depending on later focus
+changes. No-input native-mouse tests instead measured excessive projection and
+paint latency: 755/1,399 PAL frames with two/four clients. App-local exact scale
+tables and 16-vertex slices reduce that to 418/594 frames, with the same paths
+and no additional worker leases. The dense synchronous repaint remains slow;
+do not describe this as instantaneous or as a window-manager event fix.
+The expanded probes test four-client resize without subsequent input and check
+actual visible wave pixels. See the [follow-up](docs/GENERIC-GRAPHICS-APPS.md#resize-latency-follow-up--2026-10-05)
+and `bench/{artifacts,results}/2026-10-05-wave-resize`; old evidence is unchanged.
+
+## Previous feature handover — 2026-10-04
+
+Native-wave checkpoint follows pushed worker commit `885ca87`. UTRQ 0.12
+adds generic, owner-checked packed polylines; all 524 legacy grid edges fit
+1,128 bytes. Independent NWAVE.BIN uses 21 bounded Z80 row requests per load,
+private cached heights, app-owned projection on resize, and no app/worker
+recomputation on moves or stacking. File/image/BSS: 2,221/1,741/1,681 bytes;
+it fits the larger native allocation. NCLOCK still fits either allocation.
+
+Placement: bank-0 boot glyph source `$96B8-$9AA7` retires after upload to VDC;
+only those 1,008 bytes are overlaid, never the live header/maps. The extension
+emits **separate PATHSTATE and GRAPHICSPATHS segments** (60+938 bytes). Using
+the same segment for cc65 static locals/code made entry labels point at data;
+the VICE clock regression exposed this and the corrected link/entry gates
+reject it. Base service remains `$0C00-$11FF` (1,535 bytes), BSS ends `$9693`
+(20 spare bytes). Bank-1 `$C600-$CFFF` first delivers both modules, then becomes
+two 1,280-byte retained images; never reinstall after close/shutdown. Storage
+ends `$C50C`, bounded below `$C600`. Task allocations/CPU pages/stacks unchanged.
+
+VICE D64/D81 wave proofs: full path/sample/code oracles, move/resize/stacking,
+exact worker leases, real VDC glyph and live asset metadata preservation,
+stepped console-reentry guard, clock coexistence, four apps, cleanup/reload.
+D71 full clock/resize/Ctrl+C regression passes. Fresh parallel source copy
+reproduces all three disks, both modules and both candidate apps. Probe prompt
+fences must read bank-0 task state and require WAITING **on READ**, not just
+WAITING (a command-completion POLL is not ready for typing). Test copies are
+`build/native-clients/native-wave-demo.{d64,d71,d81}`; details/evidence in
+`docs/GENERIC-GRAPHICS-APPS.md` and `bench/{artifacts,results}/2026-10-04-native-wave`.
+
+**Next:** measure/implement four compatible native allocations, then switch
+the default apps and remove named compatibility routing. Do not claim four
+interchangeable slots yet, replace defaults prematurely, or mix in wave math
+or rendering optimization. Retained paths replay geometry, not cached pixels;
+repaint latency remains open. New 1986/physical-hardware confirmation is due.
+Published `build/udeks.*` snapshots are unchanged.
+
+### Previous worker checkpoint
+
+Resize checkpoint committed/pushed as `378c033`. Following it, UTRQ 0.11
+WORKER (op 24) now lets an ordinary native program use the bounded Z80 without
+UAPP or graphical initialization. Result bytes are read-only borrowed common
+RAM at $F300, copied privately BEFORE any request/yield. Four-byte inputs,
+three-byte reply; per-kernel operand checks remain in the worker. No app-slot
+or common-gate placement changed. Worker-service code is compiled for size
+with private static locals (serialized, no IRQ entry); boot status uses a
+constant image and a tiny assembly counter transport replaces pointer-heavy C.
+The new handler remains C. Resident BSS ends $9AF7 (eight bytes spare).
+
+`make native-worker-probe-app` and `tools/native_worker_probe.py` exercise
+the real task API with two independently relocated console clients: all 525
+surface samples, the quantized 64-sample waveform, bounded errors, preserved
+request sequences, exact lease counts, private copies surviving legacy xwave,
+reap/reload, console input and stack guards. VICE D64/D81 passes; clock resize
+and four-window compatibility passes on VICE D71. The native worker API has
+not yet been separately tested on 1986 or physical hardware. Default clock/wave
+remain legacy; next is generic retained paths, NOT math tuning or removal of
+working four-app support. Evidence: `bench/{artifacts,results}/2026-10-04-native-worker`.
+
+Resize checkpoint: prior native-clock/panel/D81 work committed and pushed as
+`9f2e994`. User authorizes the resize work AND subsequent native-wave/four-slot
+cutover sequence on this branch. UTRQ 0.10 is now implemented: explicit sizing
+flags and seven-byte EVENT (client-acknowledged dimensions, pending-click
+preservation). Version 0.9 remains byte-compatible. Native NCLOCK is 2,770 file /
+2,180 image / 369 BSS and fits both allocations. Pure C scaling is app-owned.
+Graphics uses an absolute common-record array binding to fit its old segment;
+no reservation moves. Foreground native fallback also handles the legacy
+staging-size rejection before the native loader's independent validation.
+
+Fresh `build/native-clients/resize-demo.{d64,d71,d81}`: grow/shrink/regrow both
+native clocks, date, drag, targeted Ctrl+C, close/reload and legacy coexistence.
+VICE three-format drawing oracle and code equality pass; unmodified 1986
+D64/1571 and D81/1581 native mouse/input pass. Exact evidence is preserved in
+`bench/{artifacts,results}/2026-10-04-native-resize`. Physical resize feedback
+remains due. Next: bounded generic retained paths and task-safe worker requests
+for native wave, then measured four-native allocations and default cutover.
+Do not remove old four-app support or call this entire migration complete.
+
+Panel/D81 follow-up: user reports the native clock works in 1986, but the app
+panel repeats each row's first character and D81 does not boot. Fixed the
+panel's anonymous backward branch (it jumped into case conversion instead of
+loading the next character) with a named loop target; zero code-size growth.
+Old image reproduces `RRRRRRRRR`; actual VDC bytes/attributes now pass on VICE
+and 1986, including startup, both clocks, cancellation, four apps and shutdown.
+1986's saved drive was 1571; explicit ROM-backed 1581 cold boot and native input
+pass without sibling source/config changes. See `docs/D81.md` for selection and
+restart instructions. Fresh `build/native-clients/native-clock-demo.*` include
+the panel fix; default `build/boot/udeks.*` also rebuilt. Prior immutable clock
+evidence below predates this fix; its byte-identical-boot claim applies only
+to that checkpoint. New evidence: `bench/{artifacts,results}/2026-10-04-app-panel`.
+Published root release snapshots remain unchanged. Physical 1581 acceptance
+is not claimed, and native-clock feedback does not complete legacy migration.
+
+Latest follow-up: PR #36 merged as `c704250`, then the user selected removing
+the clock/wave legacy slots. Branch `graphics-native-clients`, existing issue
+#35. Migration plan is in `docs/GENERIC-GRAPHICS-APPS.md`. First runnable gate:
+`make native-clock` builds NCLOCK.BIN (2,463 file / 2,039 image / 351 BSS bytes),
+an independent UDEX 0.2 client that fits both native allocations. Its retained
+clock model stays in user space; no kernel, callback table or memory-map change.
+Builder now supports custom filenames and multiple C sources without edits.
+
+VICE D64/D71/D81: both slots, independent retained-command oracle, time changes,
+drag, foreground Ctrl+C, reload, console and legacy coexistence. Unmodified
+1986 `81485cc7` D64: native keyboard/1351 drag/close, time, Ctrl+C/reuse, four
+windows, guards and bitmap equality. Exact artifacts/results:
+`bench/{artifacts,results}/2026-10-04-native-clock`. All normal boot images and
+HELLO.BIN remain byte-identical to PR #36; independent fresh-output clock build
+is deterministic. `make check` passes 1,103 tests and preserved checksums;
+both actual-build placement gates pass. Test copies:
+`build/native-clients/native-clock-demo.*`.
+
+**Not a completed migration:** NCLOCK/CLOCK2 are temporary test names and use
+the fixed-size GFX API. Default xclock/xwave remain legacy so the accepted
+four-app/resizing paths are not removed. Next: generic geometry/resize events,
+bounded retained representation for wave (524 edges exceed 48 commands), a
+task-safe Z80 request, and a measured four-native-slot layout before default
+cutover/removing compatibility glue. Keep xwave algorithm/optimization separate.
+Physical C128 confirmation of the new clock remains pending.
+
+### Merged generic-loading checkpoint (PR #36)
 
 User exploratory work exposed the limitation behind the four named apps:
 launch/control/panel paths are app-specific, and UDEX images use fixed link

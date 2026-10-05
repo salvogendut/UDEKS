@@ -25,6 +25,19 @@ FROZEN_RANGES = {
 }
 
 
+def glyph_overlay_layout(segments):
+    """A post-upload overlay may replace glyph bytes, never header or maps."""
+    if segments.get('VDCASSETS') != (0x96a8, 0x9aff, 1112):
+        raise ValueError('VDC boot asset reservation changed')
+    state, last, count = segments.get('PATHSTATE', (0, 0, 0))
+    start, end, size = segments.get('GRAPHICSPATHS', (0, 0, 0))
+    if (state!=0x96b8 or not 0<count==last-state+1 or start!=last+1 or
+            not 0<size==end-start+1 or end>=0x9aa8):
+        raise ValueError('graphics paths overlay exceeds retired glyph bytes')
+    if segments['BSS'][1] >= 0x96a8:
+        raise ValueError('resident reaches boot assets')
+
+
 def layout_maps(normal, panic):
     expected = {name: (start, end, end - start + 1)
                 for name, (start, end) in FROZEN_RANGES.items()}
@@ -36,11 +49,17 @@ def layout_maps(normal, panic):
     extra = {'GRAPHICSCODE', 'GRAPHICSHELP'} & actual.keys()
     if extra and extra != {'GRAPHICSCODE', 'GRAPHICSHELP'}:
         raise ValueError('incomplete banked graphics module layout')
-    for name, start, limit in (('GRAPHICSCODE',0x0c00,0x1200),('GRAPHICSHELP',0xa100,0xa1e0)):
+    for name, start, limit in (('GRAPHICSCODE',0x0c00,0x1300),('GRAPHICSHELP',0xa100,0xa1e0)):
         if name in extra:
             low,end,size = actual[name]
             if low != start or not 0 < size == end-low+1 <= limit-low:
                 raise ValueError('banked graphics exceeds reservation: '+name)
+    overlay = {'VDCASSETS', 'PATHSTATE', 'GRAPHICSPATHS'} & actual.keys()
+    if overlay:
+        if overlay != {'VDCASSETS', 'PATHSTATE', 'GRAPHICSPATHS'} or len(extra) != 2:
+            raise ValueError('incomplete glyph overlay layout')
+        glyph_overlay_layout(actual)
+        extra |= overlay
     for label, text in (('normal', normal), ('panic', panic)):
         current = map_segments(text)
         if current.keys() != expected.keys() | extra or current != actual or any(

@@ -46,14 +46,13 @@
 #define UDEKS_Z80_STACK_BOTTOM        0xF2B0u
 #define UDEKS_Z80_STACK_TOP           0xF300u
 
-/* Bank-1 bootfs image and the first transient task-slot backup. */
+/* Bank-1 recovery bootfs and shell. Native allocation ownership is in
+ * services/app/native_layout.inc; no legacy foreground backup remains. */
 #define UDEKS_BOOTFS_BASE             0xA000u
 #define UDEKS_BOOTFS_LIMIT            0xB000u
 #define UDEKS_USH_BASE                0x9000u
 #define UDEKS_USH_LIMIT               0xA000u
 #define UDEKS_USH_STACK_BOTTOM        0xE900u
-#define UDEKS_TASK_BACKUP_BASE        0x8000u
-#define UDEKS_TASK_BACKUP_LIMIT       0x8A00u
 
 /* Four KiB of bank-0 RAM shared at the top of every RAM-bank view. */
 #define UDEKS_COMMON_BASE             0xF000u

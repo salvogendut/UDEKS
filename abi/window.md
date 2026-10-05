@@ -24,7 +24,7 @@ as the compact range 1 through the active-window count, so repeated switching
 cannot wrap an ever-growing sequence number. Destroying a window recomposes
 its old rectangle and focuses the remaining top window.
 
-Every current application window is resizable. Two diagonal marks in its
+Resizable application windows show two diagonal marks in their
 lower-right corner identify a ten-by-ten-pixel resize grip. Pressing the grip
 hides the window contents and starts the same direct-to-VIC outline operation
 used for movement. The outline is constrained to the 320x200 surface and a
@@ -124,8 +124,8 @@ Banked ordinary UDEX programs do not call UAPP's resident paint functions or
 register foreign-bank callbacks. They submit operation 23 through the existing
 `$FF16` request boundary: descriptor/flags zero, count 24. Unused payload bytes
 are ignored; clients should clear them. Each registered task owns at most one
-window. The service derives the task from the scheduler, binds owners `$83/$84`
-to tasks 3/4, and copies titles into its own storage.
+window. The service derives the task from the scheduler, binds owners `$83`–`$86`
+to tasks 3–6, and copies titles into its own storage.
 
 | Payload | Request | Successful result |
 | --- | --- | --- |
@@ -139,8 +139,45 @@ and CLOSABLE (`$04`) only. Geometry passes the existing window-manager bounds
 checks. Titles are eight bytes plus a private terminator. EVENT is nonblocking:
 state 0 means closed, 1 alive/no click, 3 alive with a consumed client click.
 Click coordinates are relative to the whole window. There is no keyboard or
-resize event yet; clients sleep/yield between polls. An already-closing owner
+resize event in 0.9; clients sleep/yield between polls. An already-closing owner
 gets state 0, never another window's events.
+
+### Geometry events (UTRQ 0.10)
+
+All envelope fields and operation numbers stay unchanged. CREATE accepts
+exactly one of FIXED_SIZE (`$10`) or RESIZABLE (`$08`), optionally combined with
+MOVABLE/CLOSABLE. A 0.9 request still rejects RESIZABLE. No callbacks or foreign
+code pointers are introduced. The existing manager's lower-right outline grip
+commits a size only on release, constrained to the display and its 48×48 drag
+minimum. CREATE uses the existing bounds; clients choose an appropriate initial
+size. A resized window may be wider than 255 pixels.
+
+EVENT input is `3, handle, last-width-lo, last-width-hi, last-height`, padded
+to the usual 24 bytes. The client supplies the geometry it last rendered;
+zero requests an initial size notification. The seven-byte reply is:
+
+`state, click-x-lo, click-x-hi, click-y, width-lo, width-hi, height`
+
+- `0`: closed; only state is valid.
+- `1`: live, geometry unchanged, no click.
+- `2`: live, dimensions differ from the client's acknowledgement.
+- `3`: live, dimensions unchanged, one consumed client click.
+
+Width/height are valid for every live response; click coordinates only for
+state 3. Geometry delivery takes precedence without consuming a pending click.
+Repeated polls with an old size repeat state 2; multiple intermediate resizes
+coalesce to the current size. While a drag/resize outline is held, state 2 is
+suppressed; applications continue with the last acknowledged size. Releasing
+it exposes the committed size. Acknowledging it allows pending clicks through.
+No extra resident queue or lost one-shot notification is required. Moves and
+stacking alone do not generate a size change. Ownership checks precede either
+geometry lookup or input consumption. The closing owner sees state 0 before
+any lookup, and no freed window handle is dereferenced.
+
+Applications recompute content themselves and PRESENT an updated retained
+image. Until then the old image remains clipped to the new client rectangle.
+The service does not implement clock scaling or any other app-specific model.
+Old 0.9 executables retain their exact four-byte EVENT and fixed-size behavior.
 
 PRESENT takes at most 48 eight-byte commands from **inside the caller's own
 image+BSS reservation**. Commands use window-relative byte coordinates:
@@ -153,12 +190,49 @@ image+BSS reservation**. Commands use window-relative byte coordinates:
 
 Colors are black (0) or yellow (7). The complete list is validated before
 commit; a rejected update leaves the old retained list and window unchanged.
-The service copies the commands into private bank-1 buffers (`$CD00-$CE7F`
-and `$CE80-$CFFF`) and repaints through the compositor's client/damage clip.
+The service copies commands into a packed 2,304-byte bank-0 pool at
+`$1300-$1BFF` and repaints through the compositor's client/damage clip.
+All four owners share that capacity. Replacing or closing an image compacts
+the pool; an update exceeding the available capacity returns `ENOMEM`
+without changing any owner's retained image. Sources must stay below the
+caller's private stack page, even if the total allocation extends further.
 Future moves, raises or partial uncovering replay that copy at the current
 window origin, without running the client or trusting a client buffer again.
 Zero commands clears the retained content. There is no cross-task begin/end
 painting lease and no app-specific calculator renderer in the service.
+
+### Packed retained paths (UTRQ 0.12)
+
+GRAPHICS suboperation 5, `PATHS`, accepts
+`5, handle, pointer-lo, pointer-hi, length-lo, length-hi` in the existing
+24-byte payload. Descriptor and flags remain zero. The source range must be
+entirely inside the caller's allocation. Length is an eight-byte multiple,
+8–1,280 inclusive. The service validates the **entire** stream before copying
+or repainting; any rejection preserves the prior image, length and window.
+A 0.11-or-earlier request for PATHS returns `ENOSYS`; invalid length, stream,
+pointer or ownership returns `EINVAL`. Result is zero on success.
+
+Each path consists of:
+
+1. Header: low seven bits are the point count (2–127); bit 7 is initial X bit 8.
+2. Initial X low byte, followed by initial Y byte.
+3. `count - 1` pairs of signed eight-bit X/Y deltas, joining consecutive points.
+
+Every decoded point must be in X 0–319, Y 0–199. Points are window-relative;
+painting still obeys the compositor's client/damage clip. Paths are black.
+A zero header terminates the stream; **only zero to seven zero padding bytes**
+may follow. Header `$80`, missing terminators, truncated paths, coordinate
+overflow and nonzero/excess padding are invalid. Eight zero bytes represent
+an empty image. Each new path has an absolute starting point, so paths can be
+disconnected. PRESENT and PATHS replace each other; there is one retained image
+per owner, not two simultaneous buffers.
+
+After success the client may reuse its source buffer. Moves/raises replay the
+service-owned copy with a new origin, without executing client code or leasing
+the Z80. This is retained **geometry**, not a promise of a cached pixel blit or
+constant-time repaint. The parser is synchronous and bounded by stream length;
+further rendering-latency work remains separate. Projection, function sampling
+and resize policy belong to the app, not the service or window manager.
 
 Unknown suboperations, bad ranges/counts/flags and foreign handles are `EINVAL`;
 CREATE failure is `ENOMEM`. Earlier request minors or a service not yet installed

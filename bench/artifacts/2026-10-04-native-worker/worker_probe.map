@@ -1,0 +1,135 @@
+Modules list:
+-------------
+entry.o:
+    STARTUP           Offs=000000  Size=000003  Align=00001  Fill=0000
+request.o:
+    CODE              Offs=000000  Size=00004B  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000006  Align=00001  Fill=0000
+worker_probe.o:
+    CODE              Offs=00004B  Size=0001D2  Align=00001  Fill=0000
+    RODATA            Offs=000006  Size=000006  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000255  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=00021D  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax1.o):
+    CODE              Offs=00022B  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000232  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000248  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=00024D  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000287  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000295  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=0002AB  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               001000  001002  000003  00001
+CODE                  001003  0012C7  0002C5  00001
+RODATA                0012C8  0012D3  00000C  00001
+BSS                   0012D4  001528  000255  00001
+
+
+Exports list by name:
+---------------------
+_gfx_sleep                001018 RLA    _udeks_graphical_main     001093 RLA    
+_udeks_graphics_record    00F359 REA    _udeks_program_entry      001000 RLA    
+_udeks_worker_output      00F300 REA    _worker_command           0012D4 RLA    
+_worker_failure           0012D6 RLA    _worker_phase             001525 RLA    
+_worker_request           001003 RLA    _worker_samples           0012D8 RLA    
+_worker_state             0012D5 RLA    _worker_steps             0012D7 RLA    
+_worker_wave              0014E5 RLA    addysp                    001221 RLA    
+incax1                    00122E RLA    incsp2                    00123D RLA    
+incsp4                    00124B RLA    popptr1                   00128A RLA    
+ptr1                      00000A RLZ    ptr4                      000010 RLZ    
+pusha                     00129C RLA    pusha0                    0012B0 RLA    
+sp                        000002 RLZ    tosumula0                 001250 RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    ptr1                      00000A RLZ    
+ptr4                      000010 RLZ    _udeks_program_entry      001000 RLA    
+_worker_request           001003 RLA    _gfx_sleep                001018 RLA    
+_udeks_graphical_main     001093 RLA    addysp                    001221 RLA    
+incax1                    00122E RLA    incsp2                    00123D RLA    
+incsp4                    00124B RLA    tosumula0                 001250 RLA    
+popptr1                   00128A RLA    pusha                     00129C RLA    
+pusha0                    0012B0 RLA    _worker_command           0012D4 RLA    
+_worker_state             0012D5 RLA    _worker_failure           0012D6 RLA    
+_worker_steps             0012D7 RLA    _worker_samples           0012D8 RLA    
+_worker_wave              0014E5 RLA    _worker_phase             001525 RLA    
+_udeks_worker_output      00F300 REA    _udeks_graphics_record    00F359 REA    
+
+
+
+Imports list:
+-------------
+_gfx_sleep (request.o):
+    worker_probe.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/worker/worker_probe.s(16)
+_udeks_graphical_main (worker_probe.o):
+    entry.o                   user/lib/native_graphics_entry.s(3)
+_udeks_graphics_record (request.o):
+    worker_probe.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/worker/worker_probe.s(15)
+_udeks_program_entry (entry.o):
+    [linker generated]       
+_udeks_worker_output (request.o):
+    worker_probe.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/worker/worker_probe.s(14)
+_worker_command (worker_probe.o):
+    [linker generated]       
+_worker_failure (worker_probe.o):
+    [linker generated]       
+_worker_phase (worker_probe.o):
+    [linker generated]       
+_worker_request (request.o):
+    worker_probe.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/worker/worker_probe.s(13)
+_worker_samples (worker_probe.o):
+    [linker generated]       
+_worker_state (worker_probe.o):
+    [linker generated]       
+_worker_steps (worker_probe.o):
+    [linker generated]       
+_worker_wave (worker_probe.o):
+    [linker generated]       
+addysp (addysp.o):
+    incsp4.o                  runtime/incsp4.s(8)
+incax1 (incax1.o):
+    worker_probe.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/worker/worker_probe.s(276)
+incsp2 (incsp2.o):
+    popptr1.o                 runtime/popptr1.s(8)
+incsp4 (incsp4.o):
+    worker_probe.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/worker/worker_probe.s(276)
+popptr1 (popptr1.o):
+    mul8.o                    runtime/mul8.s(9)
+ptr1 (zeropage.o):
+    popptr1.o                 runtime/popptr1.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    worker_probe.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/worker/worker_probe.s(11)
+ptr4 (zeropage.o):
+    mul8.o                    runtime/mul8.s(10)
+pusha (pusha.o):
+    worker_probe.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/worker/worker_probe.s(276)
+    worker_probe.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/worker/worker_probe.s(276)
+pusha0 (pushax.o):
+    worker_probe.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/worker/worker_probe.s(276)
+sp (zeropage.o):
+    incsp2.o                  runtime/incsp2.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    worker_probe.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/worker/worker_probe.s(10)
+tosumula0 (mul8.o):
+    worker_probe.o            /var/home/salvogendut/Dev/UDEKS/build/native-clients/worker/worker_probe.s(276)
+

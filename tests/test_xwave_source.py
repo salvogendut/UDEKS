@@ -12,8 +12,8 @@ class XwaveSourceTests(unittest.TestCase):
     def test_application_is_a_managed_resizable_wireframe_plot(self):
         source = (ROOT / "src/apps/xwave.c").read_text(encoding="utf-8")
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
-        self.assertIn("8502-managed-app2.cfg", makefile)
-        self.assertIn("--flags 0x02", makefile)
+        self.assertIn("user/bin/xwave_native.c", makefile)
+        self.assertIn("tools/build_graphical_example.py", makefile)
         self.assertIn("udeks_window_create(", source)
         self.assertIn("paint_wave, close_wave", source)
         self.assertIn("udeks_window_get_geometry(", source)
@@ -69,10 +69,10 @@ class XwaveSourceTests(unittest.TestCase):
         )
         self.assertIn(".addr _udeks_managed_apps_service_descriptor", table)
         self.assertIn(".byte $0a, $00", descriptor)
-        self.assertIn("XCLOCK=$0200", manager)
-        self.assertIn("XWAVE=$1200", manager)
-        self.assertIn("MANAGED_LOADER=$f916", manager)
-        self.assertGreaterEqual(manager.count("cmp #0"), 4)
+        self.assertNotIn("XCLOCK=$0200", manager)
+        self.assertNotIn("XWAVE=$1200", manager)
+        self.assertNotIn("MANAGED_LOADER=$f916", manager)
+        self.assertIn("jsr _udeks_banked_graphics_poll", manager)
         self.assertFalse((ROOT / "src/services/app/managed_apps.c").exists())
 
 

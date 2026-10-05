@@ -1,0 +1,23 @@
+PC=FF74 drive=EAB7 jam=0 speed=1 CIA2=07/3F bus=110 via=02/1A request=00/00/00 exit=0
+PC=E3BC drive=D59C jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E45C drive=E928 jam=0 speed=0 CIA2=47/3F bus=111 via=05/1A request=00/00/00 exit=0
+PC=E3B1 drive=F4DC jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E571 drive=F4E1 jam=0 speed=0 CIA2=27/3F bus=100 via=0D/1A request=00/00/00 exit=0
+PC=E49A drive=FEF7 jam=0 speed=0 CIA2=47/3F bus=110 via=07/1A request=00/00/00 exit=0
+PC=E4B1 drive=E99C jam=0 speed=0 CIA2=47/3F bus=101 via=0C/1A request=00/00/00 exit=0
+PC=BC45 drive=EC2D jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=01/06/00 exit=0
+command: nclock & -> accepted (Return release=712 frames)
+command: date 031500 -> accepted (Return release=572 frames)
+clock task 3: 03:15, presents 2
+command: clock2 -> accepted (Return release=1327 frames)
+clock task 4: 03:15, presents 1
+command: clock2 & -> accepted (Return release=763 frames)
+command: date 214500 -> accepted (Return release=574 frames)
+clock task 3: 21:45, presents 4
+clock task 4: 21:45, presents 2
+command: clock2 & -> accepted (Return release=756 frames)
+command: xclock & -> accepted (Return release=103 frames)
+command: xwave & -> accepted (Return release=702 frames)
+command: cowsay native clocks -> accepted (Return release=1129 frames)
+command: xinit -q -> accepted (Return release=319 frames)
+PASS native clock: both slots, date, native drag/close, Ctrl+C, reload, four windows, console, guards, bitmap

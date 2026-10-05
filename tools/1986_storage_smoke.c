@@ -6,6 +6,9 @@
 #ifndef UDEKS_CONSOLE_BASE
 #define UDEKS_CONSOLE_BASE 0x0c00
 #endif
+#ifndef UDEKS_SMOKE_DRIVE
+#define UDEKS_SMOKE_DRIVE 1571
+#endif
 
 static bool console_contains(const char *text) {
     for (unsigned row = 0; row < 21; ++row)
@@ -14,6 +17,14 @@ static bool console_contains(const char *text) {
 }
 
 static void diagnostic(void) {
+#if UDEKS_SMOKE_DRIVE == 1581
+    Drive1581 *d=&machine->real1581[0];
+    printf("PC=%04X 1581=%04X jam=%u rawIEC=%u fdc=%02X track=%u sector=%u "
+           "request=%02X/%02X/%02X exit=%u\n",
+           machine->cpu.pc,d->cpu.pc,d->cpu.jammed,machine->drive_raw_iec,
+           d->fdc.status,d->fdc.track,d->fdc.sector,
+           byte(0xf35f),byte(0xf360),byte(0xf365),byte(0xf287));
+#else
     Drive1571Cr *d = &machine->integrated_drive;
     printf("PC=%04X drive=%04X jam=%u speed=%u CIA2=%02X/%02X "
            "bus=%d%d%d via=%02X/%02X request=%02X/%02X/%02X exit=%u\n",
@@ -22,6 +33,7 @@ static void diagnostic(void) {
            machine->iec_bus.atn_high, machine->iec_bus.clock_high,
            machine->iec_bus.data_high, d->via1.orb, d->via1.ddrb,
            byte(0xf35f), byte(0xf360), byte(0xf365), byte(0xf287));
+#endif
     fflush(stdout);
 }
 
@@ -81,6 +93,12 @@ static void client_click(unsigned x,unsigned y,unsigned task) {
 #endif
 #ifdef UDEKS_FOUR_APPS_SMOKE
 #include "1986_four_apps_smoke.inc"
+#endif
+#ifdef UDEKS_NATIVE_CLOCK_SMOKE
+#include "1986_native_clock_smoke.inc"
+#endif
+#ifdef UDEKS_FOUR_NATIVE_SMOKE
+#include "1986_four_native_smoke.inc"
 #endif
 static void disk_graphics(void) {
     command("xinit"); idle();
@@ -189,6 +207,7 @@ int main(int argc, char **argv) {
     config.joy_port_mode[0] = JOYPORT_MOUSE;
     config.joy_port_mode[1] = JOYPORT_JOYSTICK;
     config.real_disk_drive = true;
+    config.drive_type = UDEKS_SMOKE_DRIVE;
     config.notify_mode = NOTIFY_MODE_CONSOLE;
     machine = calloc(1, sizeof(*machine));
     require(machine != NULL, "allocate emulator");
@@ -197,18 +216,40 @@ int main(int argc, char **argv) {
     c128_init(machine, &config);
     require(mem_load_c128_roms(&machine->mem, argv[1]) != 0, "load C128 ROMs");
     char rom[1024];
+#if UDEKS_SMOKE_DRIVE == 1581
+    snprintf(rom,sizeof(rom),"%s/dos1581.bin",argv[1]);
+    if(!drive1581_load_rom(&machine->real1581[0],rom)) {
+        snprintf(rom,sizeof(rom),"%s/dos1581-318045-02.bin",argv[1]);
+        require(drive1581_load_rom(&machine->real1581[0],rom),"load 1581 drive ROM");
+    }
+#else
     snprintf(rom, sizeof(rom), "%s/dos1571cr.bin", argv[1]);
     require(drive1571cr_load_rom(&machine->integrated_drive, rom), "load drive ROM");
+#endif
     require(drive_attach_disk(&machine->drive, argv[2]) == 0, "attach disk copy");
     machine->col_mode_80 = true;
+    /* Match desktop startup: merely setting raw_iec leaves the default 1571
+     * attached to the bus, even if the selected ROM/model is a 1581. */
+    require(c128_configure_real_drives(machine),"configure selected real IEC drive");
     c128_power_cycle(machine);
-    machine->drive_raw_iec = true; /* Same mode as main.c, no ROM traps. */
+    require(machine->real_drive_type[0]==UDEKS_SMOKE_DRIVE && machine->drive_raw_iec,
+            "selected real IEC drive is inactive");
     for (unsigned n = 0; n < 30000 && byte(0xf3d9) != 0xa5; ++n) {
         frames(1);
         if (!(n % 2500)) diagnostic();
     }
     diagnostic();
     require(byte(0xf3d9) == 0xa5, "native raw-IEC boot failed");
+#ifdef UDEKS_FOUR_NATIVE_SMOKE
+    four_native_smoke();
+    free(machine);
+    return 0;
+#endif
+#ifdef UDEKS_NATIVE_CLOCK_SMOKE
+    native_clock_smoke();
+    free(machine);
+    return 0;
+#endif
 #ifdef UDEKS_FOUR_APPS_SMOKE
     four_apps_smoke();
     free(machine);

@@ -1,10 +1,17 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "udeks/mailbox.h"
 
+#ifdef UDEKS_Z80_WORKER_HOST_TEST
+extern volatile unsigned char udeks_worker_mailbox[64];
+extern volatile unsigned char udeks_worker_output[64];
+#define MAILBOX_BYTE(offset) udeks_worker_mailbox[offset]
+#define WAVE_BYTE(offset) udeks_worker_output[offset]
+#else
 #define MAILBOX_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_MAILBOX_BASE + (offset)))
 #define WAVE_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_WAVE_BUFFER_BASE + (offset)))
+#endif
 
 extern void udeks_z80_yield(void);
 

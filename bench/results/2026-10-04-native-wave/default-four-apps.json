@@ -1,0 +1,372 @@
+{
+  "disk_sha256": "30ef58c4b37f2771559d74c981b7b1b3a584c33084ad283cb1ef166ec7eefa21",
+  "drive": "1541",
+  "native_banked": true,
+  "four_apps": true,
+  "click_method": "injected WM queue/getters; not native input qualification",
+  "image_matches_disk": true,
+  "shadow_matches_bitmap": true,
+  "records": [
+    {
+      "command": "xclock &",
+      "console": "\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~>"
+    },
+    {
+      "command": "xcalc &",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "Z80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "BOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "WELCOME TO UDEKS.\n\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "expression": "1.25+2.75=",
+      "hundredths": 400
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "expression": "C7.5/2.5=",
+      "hundredths": 300
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "command": "echo clicked",
+      "console": "UDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~>"
+    },
+    {
+      "expression": "C5+N.25=",
+      "hundredths": 475
+    },
+    {
+      "command": "cowsay calculator",
+      "console": "clicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> cowsay calculator\n ____________\n< calculator >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "xdraw &",
+      "console": "clicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> cowsay calculator\n ____________\n< calculator >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~>"
+    },
+    {
+      "command": "echo drawing",
+      "console": "clicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> cowsay calculator\n ____________\n< calculator >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~>"
+    },
+    {
+      "command": "echo drawing",
+      "console": "clicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> cowsay calculator\n ____________\n< calculator >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~>"
+    },
+    {
+      "command": "echo drawing",
+      "console": "clicked\nUDEKS:~> echo clicked\nclicked\nUDEKS:~> cowsay calculator\n ____________\n< calculator >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~>"
+    },
+    {
+      "command": "xdraw &",
+      "console": "clicked\nUDEKS:~> cowsay calculator\n ____________\n< calculator >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xdraw &\nxdraw: slot busy\nUDEKS:~>"
+    },
+    {
+      "command": "xcalc &",
+      "console": " ____________\n< calculator >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xdraw &\nxdraw: slot busy\nUDEKS:~> xcalc &\nxcalc: slot busy\nUDEKS:~>"
+    },
+    {
+      "command": "free",
+      "console": "                ||----w |\n                ||     ||\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xdraw &\nxdraw: slot busy\nUDEKS:~> xcalc &\nxcalc: slot busy\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay four alive",
+      "console": "drawing\nUDEKS:~> xdraw &\nxdraw: slot busy\nUDEKS:~> xcalc &\nxcalc: slot busy\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> cowsay four alive\n ____________\n< four alive >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "echo draw moved",
+      "console": "xdraw: slot busy\nUDEKS:~> xcalc &\nxcalc: slot busy\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> cowsay four alive\n ____________\n< four alive >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> echo draw moved\ndraw moved\nUDEKS:~>"
+    },
+    {
+      "command": "echo draw closed",
+      "console": "xcalc: slot busy\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> cowsay four alive\n ____________\n< four alive >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> echo draw moved\ndraw moved\nUDEKS:~> echo draw closed\ndraw closed\nUDEKS:~>"
+    },
+    {
+      "command": "xdraw &",
+      "console": "CPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> cowsay four alive\n ____________\n< four alive >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> echo draw moved\ndraw moved\nUDEKS:~> echo draw closed\ndraw closed\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~>"
+    },
+    {
+      "command": "echo drawing",
+      "console": "  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> cowsay four alive\n ____________\n< four alive >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> echo draw moved\ndraw moved\nUDEKS:~> echo draw closed\ndraw closed\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~>"
+    },
+    {
+      "command": "echo drawing",
+      "console": "General heap: not implemented; swap: none.\nUDEKS:~> cowsay four alive\n ____________\n< four alive >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> echo draw moved\ndraw moved\nUDEKS:~> echo draw closed\ndraw closed\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "console": " ____________\n< four alive >\n ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> echo draw moved\ndraw moved\nUDEKS:~> echo draw closed\ndraw closed\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "console": " ------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> echo draw moved\ndraw moved\nUDEKS:~> echo draw closed\ndraw closed\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~>"
+    },
+    {
+      "command": "xwave -q",
+      "console": "         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> echo draw moved\ndraw moved\nUDEKS:~> echo draw closed\ndraw closed\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "console": "                ||----w |\n                ||     ||\nUDEKS:~> echo draw moved\ndraw moved\nUDEKS:~> echo draw closed\ndraw closed\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~>"
+    },
+    {
+      "command": "xcalc -q",
+      "console": "UDEKS:~> echo draw moved\ndraw moved\nUDEKS:~> echo draw closed\ndraw closed\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xcalc &",
+      "console": "UDEKS:~> echo draw closed\ndraw closed\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~>"
+    },
+    {
+      "command": "echo drawing",
+      "console": "UDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~>"
+    },
+    {
+      "command": "echo drawing",
+      "console": "UDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~>"
+    },
+    {
+      "command": "echo drawing",
+      "console": "UDEKS:~> echo drawing\ndrawing\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~>"
+    },
+    {
+      "command": "echo drawing",
+      "console": "UDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~>"
+    },
+    {
+      "command": "echo drawing",
+      "console": "UDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~>"
+    },
+    {
+      "command": "echo drawing",
+      "console": "UDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~>"
+    },
+    {
+      "command": "echo drawing",
+      "console": "UDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~>"
+    },
+    {
+      "command": "echo drawing",
+      "console": "UDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~>"
+    },
+    {
+      "command": "xdraw -q",
+      "console": "UDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xdraw -q\nxdraw stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xdraw",
+      "console": "UDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xdraw -q\nxdraw stopped\nUDEKS:~> xdraw\nxdraw running (Ctrl+C stops)\n"
+    },
+    {
+      "command": "echo draw interrupted",
+      "console": "drawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xdraw -q\nxdraw stopped\nUDEKS:~> xdraw\nxdraw running (Ctrl+C stops)\nInterrupted\nUDEKS:~> echo draw interrupted\ndraw interrupted\nUDEKS:~>"
+    },
+    {
+      "four_apps": true,
+      "independent_drawing": true,
+      "capacity_rejection": true,
+      "each_app_reloaded": true,
+      "draw_close_and_reload": true,
+      "draw_ctrl_c_preserves_three": true
+    },
+    {
+      "command": "free",
+      "console": "drawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xdraw -q\nxdraw stopped\nUDEKS:~> xdraw\nxdraw running (Ctrl+C stops)\nInterrupted\nUDEKS:~> echo draw interrupted\ndraw interrupted\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~>"
+    },
+    {
+      "command": "echo dragged",
+      "console": "drawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xdraw -q\nxdraw stopped\nUDEKS:~> xdraw\nxdraw running (Ctrl+C stops)\nInterrupted\nUDEKS:~> echo draw interrupted\ndraw interrupted\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> echo dragged\ndragged\nUDEKS:~>"
+    },
+    {
+      "command": "echo closed",
+      "console": "drawing\nUDEKS:~> echo drawing\ndrawing\nUDEKS:~> xdraw -q\nxdraw stopped\nUDEKS:~> xdraw\nxdraw running (Ctrl+C stops)\nInterrupted\nUDEKS:~> echo draw interrupted\ndraw interrupted\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> echo dragged\ndragged\nUDEKS:~> echo closed\nclosed\nUDEKS:~>"
+    },
+    {
+      "command": "xcalc &",
+      "console": "drawing\nUDEKS:~> xdraw -q\nxdraw stopped\nUDEKS:~> xdraw\nxdraw running (Ctrl+C stops)\nInterrupted\nUDEKS:~> echo draw interrupted\ndraw interrupted\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> echo dragged\ndragged\nUDEKS:~> echo closed\nclosed\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~>"
+    },
+    {
+      "drag_retains_image": true,
+      "close_and_reload": true,
+      "peer_windows": 2
+    },
+    {
+      "command": "xwave -q",
+      "console": "xdraw stopped\nUDEKS:~> xdraw\nxdraw running (Ctrl+C stops)\nInterrupted\nUDEKS:~> echo draw interrupted\ndraw interrupted\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> echo dragged\ndragged\nUDEKS:~> echo closed\nclosed\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xcalc -q",
+      "console": "xdraw running (Ctrl+C stops)\nInterrupted\nUDEKS:~> echo draw interrupted\ndraw interrupted\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> echo dragged\ndragged\nUDEKS:~> echo closed\nclosed\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "console": "UDEKS:~> echo draw interrupted\ndraw interrupted\nUDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> echo dragged\ndragged\nUDEKS:~> echo closed\nclosed\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "console": "UDEKS:~> free\nCPU RAM: 128 KiB; VDC RAM: 64 KiB (video only)\nNative child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> echo dragged\ndragged\nUDEKS:~> echo closed\nclosed\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~>"
+    },
+    {
+      "command": "xcalc &",
+      "console": "Native child image pool (bytes):\n  total 2560  used 0  free 2560\nFixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> echo dragged\ndragged\nUDEKS:~> echo closed\nclosed\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "console": "Fixed task slot; not total unused physical RAM.\nGeneral heap: not implemented; swap: none.\nUDEKS:~> echo dragged\ndragged\nUDEKS:~> echo closed\nclosed\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xcalc -q",
+      "console": "UDEKS:~> echo dragged\ndragged\nUDEKS:~> echo closed\nclosed\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xcalc &",
+      "console": "UDEKS:~> echo closed\nclosed\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~>"
+    },
+    {
+      "command": "echo console still alive",
+      "console": "UDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo console still alive\nconsole still alive\nUDEKS:~>"
+    },
+    {
+      "command": "xcalc -q",
+      "console": "UDEKS:~> xwave -q\nxwave stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo console still alive\nconsole still alive\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "console": "UDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo console still alive\nconsole still alive\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "console": "UDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo console still alive\nconsole still alive\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~>"
+    },
+    {
+      "command": "xcalc",
+      "console": "UDEKS:~> xclock &\nxclock started &\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo console still alive\nconsole still alive\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc\nxcalc running (Ctrl+C stops)\n"
+    },
+    {
+      "command": "echo cancelled",
+      "console": "xcalc started &\nUDEKS:~> xclock -q\nxclock stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo console still alive\nconsole still alive\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc\nxcalc running (Ctrl+C stops)\nInterrupted\nUDEKS:~> echo cancelled\ncancelled\nUDEKS:~>"
+    },
+    {
+      "foreground_ctrl_c": true,
+      "peer_windows": 2
+    },
+    {
+      "command": "xcalc &",
+      "console": "xclock stopped\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo console still alive\nconsole still alive\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc\nxcalc running (Ctrl+C stops)\nInterrupted\nUDEKS:~> echo cancelled\ncancelled\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~>"
+    },
+    {
+      "command": "xdraw &",
+      "console": "xcalc stopped\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> echo console still alive\nconsole still alive\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc\nxcalc running (Ctrl+C stops)\nInterrupted\nUDEKS:~> echo cancelled\ncancelled\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~>"
+    },
+    {
+      "command": "xinit -q",
+      "console": "xcalc started &\nUDEKS:~> echo console still alive\nconsole still alive\nUDEKS:~> xcalc -q\nxcalc stopped\nUDEKS:~> xclock &\nxclock started &\nUDEKS:~> xwave &\nxwave started &\nUDEKS:~> xcalc\nxcalc running (Ctrl+C stops)\nInterrupted\nUDEKS:~> echo cancelled\ncancelled\nUDEKS:~> xcalc &\nxcalc started &\nUDEKS:~> xdraw &\nxdraw started &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~>"
+    },
+    {
+      "desktop_closes_all": true,
+      "software_guards_ok": true
+    }
+  ]
+}

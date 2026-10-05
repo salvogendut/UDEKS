@@ -3,13 +3,16 @@
 #include "udeks/memory.h"
 #include "udeks/vic_graphics.h"
 #include "udeks/z80_worker.h"
+#include <string.h>
 
-#define MAILBOX_BYTE(offset) \
-    (*(volatile unsigned char *)(UDEKS_MAILBOX_BASE + (offset)))
-#define STATUS_BYTE(offset) \
-    (*(volatile unsigned char *)(UDEKS_Z80_WORKER_STATUS_BASE + (offset)))
-#define BOOT_CHAIN_BYTE(offset) \
-    (*(volatile unsigned char *)(UDEKS_BOOT_CHAIN_BASE + (offset)))
+/* Absolute linker bindings: indexed common-RAM accesses need no temporary
+ * pointer arithmetic or storage. Addresses remain part of the mailbox ABI. */
+extern volatile unsigned char udeks_worker_mailbox[64];
+extern volatile unsigned char udeks_worker_status[32];
+extern volatile unsigned char udeks_worker_boot_chain[16];
+#define MAILBOX_BYTE(offset) udeks_worker_mailbox[offset]
+#define STATUS_BYTE(offset) udeks_worker_status[offset]
+#define BOOT_CHAIN_BYTE(offset) udeks_worker_boot_chain[offset]
 
 #define STATUS_ERROR                 6u
 #define STATUS_LAST_OPCODE           7u
@@ -28,39 +31,25 @@
 
 extern void udeks_z80_prepare(void);
 extern void udeks_z80_handoff(void);
+/* Private transport helper; status counters are only written by this service. */
+extern void __fastcall__ udeks_z80_increment_counter(unsigned char low_offset);
 
 static unsigned int sequence;
 
-static void increment_counter(unsigned char low_offset)
-{
-    ++STATUS_BYTE(low_offset);
-    if (STATUS_BYTE(low_offset) == 0) {
-        ++STATUS_BYTE(low_offset + 1u);
-    }
-}
-
-static void set_error(unsigned char error)
+static void __fastcall__ set_error(unsigned char error)
 {
     STATUS_BYTE(STATUS_ERROR) = error;
     STATUS_BYTE(5) = UDEKS_Z80_WORKER_ERROR;
-    increment_counter(STATUS_FAILURES_LO);
+    udeks_z80_increment_counter(STATUS_FAILURES_LO);
 }
 
 static unsigned char image_is_staged(void)
 {
-    return BOOT_CHAIN_BYTE(0) == 'S' &&
-        BOOT_CHAIN_BYTE(1) == '0' &&
-        BOOT_CHAIN_BYTE(2) == 'O' &&
-        BOOT_CHAIN_BYTE(3) == 'K' &&
-        BOOT_CHAIN_BYTE(4) == 'S' &&
-        BOOT_CHAIN_BYTE(5) == '1' &&
-        BOOT_CHAIN_BYTE(6) == 'O' &&
-        BOOT_CHAIN_BYTE(7) == 'K' &&
-        BOOT_CHAIN_BYTE(8) == 'Z' &&
-        BOOT_CHAIN_BYTE(9) == '8' &&
-        BOOT_CHAIN_BYTE(10) == '0' &&
-        BOOT_CHAIN_BYTE(11) == '!' &&
-        BOOT_CHAIN_BYTE(12) == 2u &&
+    unsigned char i;
+    for(i=0;i<12;++i) {
+        if(BOOT_CHAIN_BYTE(i) ^ (unsigned char)"S0OKS1OKZ80!"[i]) return 0;
+    }
+    return BOOT_CHAIN_BYTE(12) == 2u &&
         BOOT_CHAIN_BYTE(13) == 0u;
 }
 
@@ -122,7 +111,7 @@ unsigned char udeks_z80_submit(
     }
     if (MAILBOX_BYTE(UDEKS_MB_STATE) == UDEKS_MB_STATE_ERROR ||
         MAILBOX_BYTE(UDEKS_MB_STATUS) != UDEKS_MB_STATUS_OK) {
-        increment_counter(STATUS_FAILURES_LO);
+        udeks_z80_increment_counter(STATUS_FAILURES_LO);
         return UDEKS_Z80_WORKER_REJECTED;
     }
     if (MAILBOX_BYTE(UDEKS_MB_STATE) != UDEKS_MB_STATE_COMPLETE) {
@@ -133,28 +122,21 @@ unsigned char udeks_z80_submit(
         *result = (unsigned int)MAILBOX_BYTE(UDEKS_MB_RESULT_LO) |
             ((unsigned int)MAILBOX_BYTE(UDEKS_MB_RESULT_HI) << 8);
     }
-    increment_counter(STATUS_TRANSACTIONS_LO);
+    udeks_z80_increment_counter(STATUS_TRANSACTIONS_LO);
     return UDEKS_Z80_OK;
 }
 
 unsigned char udeks_z80_worker_start(void)
 {
-    unsigned char offset;
+    static const unsigned char initial_status[UDEKS_Z80_WORKER_STATUS_SIZE]={
+        'Z','W','R','K',1,UDEKS_Z80_WORKER_OFFLINE,0,0,0,0,0,0,0,0,0,0,
+        UDEKS_MAILBOX_ABI_MAJOR,UDEKS_MAILBOX_ABI_MINOR,0,0,UDEKS_Z80_TIMING_STOCK
+    };
     unsigned char result;
     unsigned int worker_result;
 
-    for (offset = 0; offset < UDEKS_Z80_WORKER_STATUS_SIZE; ++offset) {
-        STATUS_BYTE(offset) = 0;
-    }
-    STATUS_BYTE(0) = 'Z';
-    STATUS_BYTE(1) = 'W';
-    STATUS_BYTE(2) = 'R';
-    STATUS_BYTE(3) = 'K';
-    STATUS_BYTE(4) = 1;
-    STATUS_BYTE(5) = UDEKS_Z80_WORKER_OFFLINE;
-    STATUS_BYTE(STATUS_ABI_MAJOR) = UDEKS_MAILBOX_ABI_MAJOR;
-    STATUS_BYTE(STATUS_ABI_MINOR) = UDEKS_MAILBOX_ABI_MINOR;
-    STATUS_BYTE(STATUS_TIMING_POLICY) = UDEKS_Z80_TIMING_STOCK;
+    /* Status is ordinary RAM, not MMIO; no concurrent writer at startup. */
+    memcpy((void *)udeks_worker_status,initial_status,sizeof(initial_status));
 
     if (!image_is_staged()) {
         STATUS_BYTE(STATUS_ERROR) = UDEKS_Z80_NOT_STAGED;

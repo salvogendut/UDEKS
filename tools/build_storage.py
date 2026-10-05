@@ -27,7 +27,7 @@ def wrap_storage(payload: bytes, constants: str, module: bytes,
                  policy: bytes, driver: bytes, ush: bytes,
                  lookup: bytes, banked_loader: bytes = b'',
                  banked_graphics: bytes = b'', banked_reloc: bytes = b'',
-                 banked_access: bytes = b'') -> tuple[bytes, str]:
+                 banked_access: bytes = b'', retained_paths: bytes = b'') -> tuple[bytes, str]:
     start = int.from_bytes(payload[:2], 'little')
     end = start + len(payload) - 2
     if start not in (0x4200, 0x5000) or end > 0x8000:
@@ -56,7 +56,15 @@ def wrap_storage(payload: bytes, constants: str, module: bytes,
         if any(image[first:last]):
             raise ValueError('banked loader reservation is occupied')
         image[first:first+len(banked_loader)] = banked_loader
-    if banked_graphics:
+    if retained_paths:
+        if len(banked_graphics) != 0x700 or len(retained_paths) != 0x3F0 or len(policy) > 0x1600:
+            raise ValueError('graphics/path delivery requires $C600-$CFFF free from policy')
+        first, last = 0xC600-load, 0xD100-load
+        if any(image[first:last]):
+            raise ValueError('graphics/path delivery overlaps live data')
+        image[first:first+0x700] = banked_graphics
+        image[first+0x700:first+0xAF0] = retained_paths
+    elif banked_graphics:  # Accept archived pre-paths envelope fixtures.
         if len(banked_graphics) != 0x600 or len(policy) > 0x1700:
             raise ValueError('banked graphics requires $C700-$CFFF free from policy')
         first, last = 0xC700-load, 0xD000-load

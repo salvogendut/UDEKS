@@ -1,5 +1,23 @@
 # Bank-1 8502 cooperative-task gate 0.2
 
+## Current placement (2026-10-05)
+
+The frozen $FF10/$FF13/$FF16 addresses now enter the full cooperative
+scheduler, not the bootstrap copy-context gate described below. Root ush and
+ordinary child task 2 retain their own relocated CPU pages. Four native
+graphical clients use tasks 3–6; see the authoritative
+[allocation/lifetime table](../docs/GENERIC-GRAPHICS-APPS.md#four-native-slot-cutover--2026-10-05).
+The former bank-1 foreground backup and external app stacks have been retired;
+$8000–$8FFF is now an app allocation. Bank-1 $E2E2 is a *bootstrap-only*
+context, dead before native admission; page $E2 becomes task 5's hardware
+stack. Bank-0 high BSS/context ownership is unchanged. Never invoke the
+replaced bootstrap implementation after scheduler activation.
+
+## Historical bootstrap gate and migrations
+
+The following records the original gate and earlier placements, not current
+graphical allocation ownership.
+
 The persistent `/bin/ush` task cannot occupy bank-0 application slot 1 or 2:
 those slots retain loader-managed `xclock` and `xwave` after first use. It instead executes from
 bank 1 at `$9000`, with its cc65 software stack growing down from `$EFF0`.

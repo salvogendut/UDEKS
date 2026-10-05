@@ -1,0 +1,467 @@
+{
+  "status": "four independent graphical executables; placement verified",
+  "baseline_apps": {
+    "xclock": {
+      "file": 2772,
+      "image": 2182,
+      "bss": 369,
+      "allocation": 2551,
+      "fits": [
+        3,
+        4,
+        5
+      ]
+    },
+    "xwave": {
+      "file": 2368,
+      "image": 1840,
+      "bss": 1686,
+      "allocation": 3526,
+      "fits": [
+        3,
+        5
+      ]
+    },
+    "xcalc": {
+      "file": 4599,
+      "image": 3747,
+      "bss": 412,
+      "allocation": 4159,
+      "fits": [
+        3
+      ]
+    },
+    "xdraw": {
+      "file": 1781,
+      "image": 1479,
+      "bss": 354,
+      "allocation": 1833,
+      "fits": [
+        3,
+        4,
+        5,
+        6
+      ]
+    }
+  },
+  "proposed": [
+    {
+      "name": "app 3 image+BSS",
+      "bank": 1,
+      "start": 8960,
+      "limit": 13312
+    },
+    {
+      "name": "app 3 software stack/guards/exit",
+      "bank": 1,
+      "start": 13312,
+      "limit": 13568
+    },
+    {
+      "name": "app 3 zero page",
+      "bank": 1,
+      "start": 54528,
+      "limit": 54784
+    },
+    {
+      "name": "app 3 hardware stack",
+      "bank": 1,
+      "start": 54784,
+      "limit": 55040
+    },
+    {
+      "name": "app 4 image+BSS",
+      "bank": 1,
+      "start": 13568,
+      "limit": 16128
+    },
+    {
+      "name": "app 4 software stack/guards/exit",
+      "bank": 1,
+      "start": 16128,
+      "limit": 16384
+    },
+    {
+      "name": "app 4 zero page",
+      "bank": 1,
+      "start": 55040,
+      "limit": 55296
+    },
+    {
+      "name": "app 4 hardware stack",
+      "bank": 1,
+      "start": 55296,
+      "limit": 55552
+    },
+    {
+      "name": "app 5 image+BSS",
+      "bank": 1,
+      "start": 32768,
+      "limit": 36608
+    },
+    {
+      "name": "app 5 software stack/guards/exit",
+      "bank": 1,
+      "start": 36608,
+      "limit": 36864
+    },
+    {
+      "name": "app 5 zero page",
+      "bank": 1,
+      "start": 53248,
+      "limit": 53504
+    },
+    {
+      "name": "app 5 hardware stack",
+      "bank": 1,
+      "start": 57856,
+      "limit": 58112
+    },
+    {
+      "name": "app 6 image+BSS",
+      "bank": 1,
+      "start": 50688,
+      "limit": 52992
+    },
+    {
+      "name": "app 6 software stack/guards/exit",
+      "bank": 1,
+      "start": 52992,
+      "limit": 53248
+    },
+    {
+      "name": "app 6 zero page",
+      "bank": 1,
+      "start": 0,
+      "limit": 256
+    },
+    {
+      "name": "app 6 hardware stack",
+      "bank": 1,
+      "start": 256,
+      "limit": 512
+    }
+  ],
+  "existing": [
+    {
+      "name": "kernel pages",
+      "bank": 0,
+      "start": 0,
+      "limit": 512
+    },
+    {
+      "name": "transient console slot",
+      "bank": 0,
+      "start": 512,
+      "limit": 3072
+    },
+    {
+      "name": "banked graphics service",
+      "bank": 0,
+      "start": 3072,
+      "limit": 4864
+    },
+    {
+      "name": "retained drawing pool",
+      "bank": 0,
+      "start": 4864,
+      "limit": 7168
+    },
+    {
+      "name": "scheduler page",
+      "bank": 0,
+      "start": 7168,
+      "limit": 8192
+    },
+    {
+      "name": "resident and scheduler tail",
+      "bank": 0,
+      "start": 8192,
+      "limit": 53248
+    },
+    {
+      "name": "resident high state and C stack",
+      "bank": 0,
+      "start": 57344,
+      "limit": 61440
+    },
+    {
+      "name": "common RAM",
+      "bank": 0,
+      "start": 61440,
+      "limit": 65536
+    },
+    {
+      "name": "native child and disk staging/stack",
+      "bank": 1,
+      "start": 512,
+      "limit": 4608
+    },
+    {
+      "name": "storage module",
+      "bank": 1,
+      "start": 4608,
+      "limit": 6272
+    },
+    {
+      "name": "relocation module",
+      "bank": 1,
+      "start": 6272,
+      "limit": 6656
+    },
+    {
+      "name": "task lookup module",
+      "bank": 1,
+      "start": 6656,
+      "limit": 7936
+    },
+    {
+      "name": "banked access module",
+      "bank": 1,
+      "start": 7936,
+      "limit": 8192
+    },
+    {
+      "name": "display/cache/bitmap/sprite",
+      "bank": 1,
+      "start": 16384,
+      "limit": 32768
+    },
+    {
+      "name": "ush",
+      "bank": 1,
+      "start": 36864,
+      "limit": 40960
+    },
+    {
+      "name": "recovery bootfs",
+      "bank": 1,
+      "start": 40960,
+      "limit": 45056
+    },
+    {
+      "name": "filesystem policy",
+      "bank": 1,
+      "start": 45056,
+      "limit": 50688
+    },
+    {
+      "name": "banked image loader",
+      "bank": 1,
+      "start": 55552,
+      "limit": 57344
+    },
+    {
+      "name": "storage state/software stack",
+      "bank": 1,
+      "start": 57344,
+      "limit": 57856
+    },
+    {
+      "name": "IEC driver and ush stack",
+      "bank": 1,
+      "start": 58112,
+      "limit": 61440
+    },
+    {
+      "name": "TASK zero page",
+      "bank": 1,
+      "start": 53504,
+      "limit": 53760
+    },
+    {
+      "name": "TASK hardware stack",
+      "bank": 1,
+      "start": 53760,
+      "limit": 54016
+    },
+    {
+      "name": "TASK2 zero page",
+      "bank": 1,
+      "start": 54016,
+      "limit": 54272
+    },
+    {
+      "name": "TASK2 hardware stack",
+      "bank": 1,
+      "start": 54272,
+      "limit": 54528
+    },
+    {
+      "name": "Z80 CODE",
+      "bank": 1,
+      "start": 8192,
+      "limit": 8855
+    }
+  ],
+  "calculator_current_allocation_spare": 193,
+  "fourth_app_capacity": 2560,
+  "fourth_app_allocation_spare": 471,
+  "private_stack_reservation_per_banked_app": 256,
+  "private_usable_stack_bytes": 160,
+  "shared_retained_capacity": 2304,
+  "resident_bridge_headroom": 1,
+  "graphics_delivery_and_retention_lifetimes": {
+    "before_first_native_launch": [
+      {
+        "name": "base graphics delivery",
+        "bank": 1,
+        "start": 50688,
+        "limit": 52480
+      },
+      {
+        "name": "paths delivery/container",
+        "bank": 1,
+        "start": 52480,
+        "limit": 53504
+      },
+      {
+        "name": "retired bootstrap context",
+        "bank": 1,
+        "start": 58082,
+        "limit": 58112
+      }
+    ],
+    "after_both_modules_installed": [
+      {
+        "name": "app 3 image+BSS",
+        "bank": 1,
+        "start": 8960,
+        "limit": 13312
+      },
+      {
+        "name": "app 3 software stack/guards/exit",
+        "bank": 1,
+        "start": 13312,
+        "limit": 13568
+      },
+      {
+        "name": "app 3 zero page",
+        "bank": 1,
+        "start": 54528,
+        "limit": 54784
+      },
+      {
+        "name": "app 3 hardware stack",
+        "bank": 1,
+        "start": 54784,
+        "limit": 55040
+      },
+      {
+        "name": "app 4 image+BSS",
+        "bank": 1,
+        "start": 13568,
+        "limit": 16128
+      },
+      {
+        "name": "app 4 software stack/guards/exit",
+        "bank": 1,
+        "start": 16128,
+        "limit": 16384
+      },
+      {
+        "name": "app 4 zero page",
+        "bank": 1,
+        "start": 55040,
+        "limit": 55296
+      },
+      {
+        "name": "app 4 hardware stack",
+        "bank": 1,
+        "start": 55296,
+        "limit": 55552
+      },
+      {
+        "name": "app 5 image+BSS",
+        "bank": 1,
+        "start": 32768,
+        "limit": 36608
+      },
+      {
+        "name": "app 5 software stack/guards/exit",
+        "bank": 1,
+        "start": 36608,
+        "limit": 36864
+      },
+      {
+        "name": "app 5 zero page",
+        "bank": 1,
+        "start": 53248,
+        "limit": 53504
+      },
+      {
+        "name": "app 5 hardware stack",
+        "bank": 1,
+        "start": 57856,
+        "limit": 58112
+      },
+      {
+        "name": "app 6 image+BSS",
+        "bank": 1,
+        "start": 50688,
+        "limit": 52992
+      },
+      {
+        "name": "app 6 software stack/guards/exit",
+        "bank": 1,
+        "start": 52992,
+        "limit": 53248
+      },
+      {
+        "name": "app 6 zero page",
+        "bank": 1,
+        "start": 0,
+        "limit": 256
+      },
+      {
+        "name": "app 6 hardware stack",
+        "bank": 1,
+        "start": 256,
+        "limit": 512
+      }
+    ]
+  },
+  "glyph_overlay": {
+    "start": 38584,
+    "bytes": 1008,
+    "live_header": 16,
+    "live_tile_maps": 88
+  },
+  "source_sha256": {
+    "include/udeks/memory.h": "a56a603ae2e1e4219c15a0bbe35dc674489933bd1a707444ad7662ed8213e74f",
+    "src/scheduler/task_context.s": "7240bf5fb75522a051ee37fa0b6d1f0555b967950b49b6ddfe4be6845e4cf871",
+    "src/scheduler/task_yield_handler.s": "717a66034ecb8c7d6b0db4ab5b01ce3e98d9d662bbca4ffcdb8484d0a463c889",
+    "tools/graphics_app_layout.py": "c71a820a89d7b997d66c5ed0ca46877e3c1a72a014c18e139810d7737f433bca",
+    "src/services/app/banked_loader.s": "36cd07012787c344f173a9d2dd93839cf92f680524a9eec2cc41cad8d3bead98",
+    "src/boot/stage1-gateway.s": "a5f006720444e8dfeb56cd69358b06f2eaa0cef465da36373680332da7b7f791",
+    "src/services/window/banked_graphics.c": "2bafe96ce3ecdc2d53fc50cf9d2263162136641e782aeb987c27a0acdb5f5b69",
+    "src/services/window/banked_access.s": "d0c913e52bca1cb4d3a04507b38640ef288dc6b93fdda3cb2d59433390e89fda",
+    "src/services/window/retained_paths.c": "042416d583e923b481ffba235b2142ba81f9a4dab8f25c5517cdfa2aad8358ca",
+    "include/udeks/retained_paths.h": "97b6c2fd2b31351a59d67446b0b2706fc25668b3af8f8a0b916be24efac05556",
+    "user/bin/xcalc_native.c": "272bbbeea82f28254c6f7ca7456145d7736877e008e643ea368c3c10b89799f9",
+    "user/bin/xdraw.c": "c81cfcf34b2b85d80543e3e7b7e69011ba95aa08796f49ee99c0441d9bfa0d08",
+    "user/lib/graphics_request.s": "60dd4b4d849e0e3c1b9b9ca74fefbfd580897d29d425980834a7553d68df99ff"
+  },
+  "input_sha256": {
+    "8502/udeks-8502.map": "210d72f911df523f291e3c2ac0a9caf6790f7ac09fb2804179faee565a0d9637",
+    "8502/udeks-8502-panic-probe.map": "12b1ec1c8eee105a8d5b78addd4af636a9ce98e2de851abf480841448feb9232",
+    "storage/module.map": "3208d645b41765b5b30ee69ff156cc6590b2096f7b9e2a976d8bc296463d9ca4",
+    "z80/udeks-z80.map": "522aa699273bbcd3103e2cf42fe05f610d5743166fc6f22e6c9ba3e7cdb5b250",
+    "z80/udeks-z80.bin": "2e755ea96ae87507fd7c21199db117f99dbcbf223e58afd29d1613668469516f",
+    "z80/udeks-z80.ihx": "0425524e4393fedfb78dd60825b283ab03283e740f7defe3ca5d089acd89244e",
+    "boot/task-lookup.bin": "2b9235c441a8a0959b711a51fe45436655a4f2f9885bf45685a873f8c92dee68",
+    "boot/banked-loader.bin": "fc9b7de96751ee71e433eef6f9a95811ef7195086b030a32117d12ec2b1f2f67",
+    "boot/banked-loader.map": "28c5f4cce0d0b86dcc6b4588569e9e54b7f8735dd27ab2f1af4c8a7517af075e",
+    "boot/banked-reloc.bin": "1b2c03113e296d06e45f6a169bd820f9c131bf7fd8d66294686fbfae5a3171b6",
+    "boot/banked-access.bin": "1f8bee606aa2683cfa88156fbdba01126eff6bab7c91fedc6b242946d6c6752a",
+    "8502/banked-graphics.bin": "58d8e2b721f30d99a6960db9f74f3ada84f91ce7f951848513da30d606cf6904",
+    "8502/retained-paths.bin": "1aad83c18fc56c58f66b9aae2bd253a966dd343686e57935cfc50c130866c737",
+    "assets/udeks-vdc-text.bin": "9495ff45ad086e50b8824fe7dc93480efb88cfdf40adb7cb369c52248f63420a",
+    "boot/scheduler-overlay.prg": "752c073829bac0c2c18db3a95e6c0ed3fe2d6bde1b9ea7d6a0a30d7ebdab3305",
+    "8502/banked-graphics-panic.bin": "58d8e2b721f30d99a6960db9f74f3ada84f91ce7f951848513da30d606cf6904",
+    "user/xclock.udx": "250ddf6a3c7d88fe0da008660973fc02e0f330b161daa057aeb400fbc947188c",
+    "user/xwave.udx": "ea3dabf2cb5599a2b530842e819be5bedd4923faff514e5f1ab2bc32bf02588d",
+    "user/xcalc.udx": "30e83b911cbe17c8f5d1062a96e53e6c1f1ddc8e0a64d897a2ffff663cd77b0c",
+    "user/xdraw.udx": "49bd1da2105e6da906354ad5c42692ff97eea964e4115b35bb0399ae4e07502b"
+  }
+}

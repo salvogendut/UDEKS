@@ -64,7 +64,9 @@ class RootConsoleSourceTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("_udeks_console_app_panel_initialize", renderer)
         self.assertIn("_udeks_console_poll", renderer)
-        for name in ("panel_xinit", "panel_xclock", "panel_xwave"):
+        self.assertIn(".import _udeks_banked_graphics_running, _udeks_banked_graphics_names", renderer)
+        self.assertNotIn("panel_xclock", renderer)
+        for name in ("panel_xinit", "panel_names_loop"):
             self.assertIn(name + ":", renderer)
         self.assertIn("cmp APP_MASK", renderer)
         self.assertIn(".addr _udeks_console_poll", descriptor)
@@ -77,6 +79,13 @@ class RootConsoleSourceTests(unittest.TestCase):
         self.assertIn("attribute_buffer", renderer)
         self.assertIn("source[first + column] >= 'a'", renderer)
         self.assertIn("ATTRIBUTE_BASE +", renderer)
+
+    def test_panel_text_loop_reloads_each_character_after_case_conversion(self):
+        source=(ROOT/'src/services/console/app_panel.s').read_text()
+        loop=source.split('panel_next_character:',1)[1].split('panel_text_ready:',1)[0]
+        self.assertIn('panel_text_load:\n        lda $ffff,y',loop)
+        self.assertIn('bcc panel_next_character',loop)
+        self.assertNotIn('bcc :-',loop)
 
     def test_model_is_linked_into_production_and_panic_images(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")

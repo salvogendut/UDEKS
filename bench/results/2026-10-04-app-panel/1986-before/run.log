@@ -1,0 +1,22 @@
+PC=FF74 drive=EAB7 jam=0 speed=1 CIA2=07/3F bus=110 via=02/1A request=00/00/00 exit=0
+PC=E3BC drive=D59C jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E45C drive=E928 jam=0 speed=0 CIA2=47/3F bus=111 via=05/1A request=00/00/00 exit=0
+PC=E3B1 drive=F4DC jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E571 drive=F4E1 jam=0 speed=0 CIA2=27/3F bus=100 via=0D/1A request=00/00/00 exit=0
+PC=E49A drive=FEF7 jam=0 speed=0 CIA2=47/3F bus=110 via=07/1A request=00/00/00 exit=0
+PC=E4B1 drive=E99C jam=0 speed=0 CIA2=47/3F bus=101 via=0C/1A request=00/00/00 exit=0
+PC=BC45 drive=EC2D jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=01/06/00 exit=0
+panel row 1: 12 12 12 12 12 12 12 12 12 expected RUNNING
+FAIL: running panel text mismatch (frame 27314, PC $7591, request 00/10/00)
+trace PC=$6B2E drag=0 buttons=0 moves=0 finishes=0
+trace PC=$627B drag=0 buttons=0 moves=0 finishes=0
+trace PC=$8D81 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$8C86 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$623E drag=0 buttons=0 moves=0 finishes=0
+trace PC=$622C drag=0 buttons=0 moves=0 finishes=0
+trace PC=$75B6 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$8F5C drag=0 buttons=0 moves=0 finishes=0
+trace PC=$2C58 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$6274 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$2C0D drag=0 buttons=0 moves=0 finishes=0
+trace PC=$8D85 drag=0 buttons=0 moves=0 finishes=0

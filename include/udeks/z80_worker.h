@@ -21,6 +21,7 @@
 #define UDEKS_Z80_TIMING_STOCK             1u
 
 unsigned char udeks_z80_worker_start(void);
+unsigned char udeks_task_worker_request(void);
 unsigned char udeks_z80_submit(
     unsigned char opcode, unsigned int argument0,
     unsigned int argument1, unsigned int length,

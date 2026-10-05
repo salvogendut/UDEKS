@@ -1,14 +1,27 @@
 ; SPDX-License-Identifier: GPL-3.0-or-later
+        .export _udeks_graphics_record = $f359
         .setcpu "6502"
         .export _udeks_banked_call, _udeks_banked_read, _udeks_banked_write
         .export _udeks_banked_graphics_exec
-        .export _udeks_banked_graphics_control_stop
         .import _udeks_banked_graphics_launch
-        .import _udeks_banked_graphics_names, _udeks_banked_legacy_names
         .import _udeks_banked_graphics_installed, _udeks_banked_graphics_stop
-        .import _udeks_shell_stop_app
+        .import _udeks_console_start_once
+        .export _udeks_console_start
+        .include "../app/native_layout.inc"
+        .export _udeks_banked_pages_init
+        .export _udeks_native_base_pages, _udeks_native_stack_pages
         .importzp ptr1
         .segment "GRAPHICSHELP"
+; The glyph source is retired after the lazy graphics install. Never upload
+; those bytes (or invoke the retired boot composer) again. This BSS flag is
+; cleared by crt0, unlike an arbitrary power-on diagnostic-record byte.
+_udeks_console_start:
+        lda _udeks_banked_graphics_installed
+        beq :+
+        lda #0
+        tax
+        rts
+:       jmp _udeks_console_start_once
 _udeks_banked_call:
         jmp $f91c
 _udeks_banked_read:
@@ -21,10 +34,6 @@ transfer:
         stx $f368
         tya
         jmp $f91c
-legacy_not_ready:
-        lda #1
-        ldx #0
-        rts
 
 ; Name is a resident-session pointer, never a foreign task pointer. Build the
 ; bounded, padded loader request before borrowing the worker-bank service.
@@ -58,48 +67,45 @@ name_bad:
         ldx #0
         rts
 
-; Frozen named CONTROL requests may not stop an unrelated generic instance.
-; The foreground/desktop paths still stop by the registered instance slot.
-_udeks_banked_graphics_control_stop:
-        cmp #4
-        bcc :+
-        jmp legacy_native
-:
-        jmp _udeks_shell_stop_app
+; Private, IRQ-masked bank-0 entry. X is a validated allocation index.
+; No stack or ZP-dependent instruction/call while the task pages are mapped.
+; Unlike absolute worker-bank stores, this also initializes physical pages
+; $00/$01 without accidentally overwriting the resident kernel's page zero.
         .segment "MODULECODE"
-legacy_native:
-        lsr a
-        lsr a
-        lsr a
-        tax
-        lda _udeks_banked_graphics_installed
-        bne legacy_choose
+_udeks_banked_pages_init:
         lda #1
-        ldx #0
-        rts
-legacy_choose:
-        txa
-        beq legacy_first
-        ldx #16
-        lda #6
-legacy_first:
-        tay
-        jmp legacy_compare
-        .segment "GRAPHICSCODE"
-legacy_compare:
-        lda _udeks_banked_legacy_names,y
-        cmp _udeks_banked_graphics_names,x
-        beq :+
-        jmp legacy_not_ready
-:       cmp #0
-        beq legacy_match
-        inx
+        sta $d508
+        sta $d50a
+        lda native_zero,x
+        sta $d507
+        lda native_hardware,x
+        sta $d509
+        ; $00/$01 are the 8502 CPU port, not task scratch. Leave them alone.
+        ldy #2
+        lda #0
+clear_native_pages:
+        sta $0000,y
+        sta $0100,y
         iny
-        bne legacy_compare
-legacy_match:
-        txa
-        lsr a
-        lsr a
-        lsr a
-        lsr a
-        jmp _udeks_banked_graphics_stop
+        bne clear_native_pages
+        lda #$a5
+        sta $0100
+        lda #$b0
+        sta $02
+        lda _udeks_native_stack_pages,x
+        sta $03
+        sta $01ff
+        lda #$bf
+        sta $01fe
+        lda #0
+        sta $d508
+        sta $d507
+        sta $d50a
+        lda #1
+        sta $d509
+        rts
+        .segment "MODULERODATA"
+_udeks_native_base_pages: native_bases
+_udeks_native_stack_pages: native_stacks
+native_zero: native_zero_pages
+native_hardware: native_hardware_pages

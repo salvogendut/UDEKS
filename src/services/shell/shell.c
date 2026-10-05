@@ -13,8 +13,6 @@
 #include "udeks/z80_worker.h"
 #include "udeks/vic_graphics.h"
 #include "udeks/window.h"
-#include "udeks/xclock.h"
-#include "udeks/xwave.h"
 #include "udeks/banked_graphics.h"
 
 extern unsigned char udeks_shell_read_line(unsigned char *, unsigned char);
@@ -49,16 +47,20 @@ static void increment(unsigned char offset)
     if (++S(offset) == 0) ++S(offset + 1u);
 }
 
+static unsigned char slot_index(unsigned char bit)
+{
+    unsigned char index=0;
+    while(bit>1) { bit>>=1; ++index; }
+    return index;
+}
 static unsigned char app_running(unsigned char bit)
 {
-    return bit == 1 ? udeks_xclock_is_running() : bit == 2 ? udeks_xwave_is_running() :
-        udeks_banked_graphics_running(bit >> 3);
+    return udeks_banked_graphics_running(slot_index(bit));
 }
 
 unsigned char __fastcall__ udeks_shell_stop_app(unsigned char bit)
 {
-    return bit == 1 ? udeks_xclock_stop() : bit == 2 ? udeks_xwave_stop() :
-        udeks_banked_graphics_stop(bit >> 3);
+    return udeks_banked_graphics_stop(slot_index(bit));
 }
 
 static void publish_jobs(void)
@@ -79,6 +81,7 @@ void udeks_service_control_request(void)
 {
     unsigned char error = 0;
     if (R[UDEKS_TREQ_MINOR] < 7u) error = UDEKS_TREQ_ENOSYS;
+    else if (R[14]!=UDEKS_CONTROL_DESKTOP && R[14]!=UDEKS_CONTROL_ENGINE) error=UDEKS_TREQ_ENOSYS;
     else if (R[UDEKS_TREQ_DESCRIPTOR] || R[UDEKS_TREQ_FLAGS] ||
         R[UDEKS_TREQ_COUNT] != UDEKS_CONTROL_COUNT ||
         !udeks_control_valid(R[14], R[15], R[16])) error = UDEKS_TREQ_EINVAL;
@@ -116,22 +119,6 @@ static void run_control(void)
             udeks_window_manager_reset();
             result = udeks_vic_graphics_shutdown();
         } else result = udeks_vic_graphics_initialize();
-    } else {
-        bit = queued_target == UDEKS_CONTROL_CLOCK ? 1u :
-            queued_target == UDEKS_CONTROL_WAVE ? 2u :
-            queued_target == UDEKS_CONTROL_CALC ? 4u : 8u;
-        if (queued_action == UDEKS_CONTROL_STOP) {
-            result = udeks_banked_graphics_control_stop(bit);
-            if (!result) background_jobs &= ~bit;
-        } else {
-            if (!udeks_vic_graphics_is_active()) result = udeks_vic_graphics_initialize();
-            if (!result) result = bit == 1 ? udeks_xclock_start() : bit == 2 ? udeks_xwave_start() :
-                udeks_banked_graphics_start(bit >> 3);
-            if (!result) {
-                if (queued_background) background_jobs |= bit;
-                else foreground = bit;
-            }
-        }
     }
     control_reply(queued_target, queued_action, queued_background, result);
     queued_target = 0;
@@ -159,19 +146,24 @@ unsigned char udeks_shell_dispatch_line(void)
     S(8) = count;
     if (!count) return 0;
     for (i = 0; i < count; ++i) arguments[i] = udeks_shell_command_line + offsets[i];
+    if(count==2 && arguments[1][0]=='-' && arguments[1][1]=='q' && !arguments[1][2]) {
+        result=udeks_banked_graphics_stop_name(arguments[0]);
+        goto completed;
+    }
     /* Fixed console programs retain argc/argv and synchronous execution.
-     * A minor-2 image is rejected by that loader before execution; one-word
-     * foreground commands can then enter the native, relocatable path. */
+     * A minor-2 image is rejected by that loader before execution. A native
+     * file can also exceed its smaller staging buffer before header parsing;
+     * the native loader then validates format/placement independently. */
     if (count==2 && arguments[1][0]=='&' && !arguments[1][1]) {
         count=0;                    /* native background, no app arguments */
     } else {
         result = LOAD(count, arguments)
             == UDEKS_TASK_SLOT_OWNED ? UDEKS_TASK_BUSY : task[UDEKS_TASK_ERROR_OFFSET];
-        if(result!=UDEKS_TASK_BAD_VERSION || count!=1) goto completed;
+        if((result!=UDEKS_TASK_BAD_VERSION && result!=UDEKS_TASK_BAD_SIZE) || count!=1) goto completed;
     }
     result=udeks_banked_graphics_exec(arguments[0]);
     if(!result) {
-        i=udeks_banked_graphics_selected?8u:4u;
+        i=1u<<udeks_banked_graphics_selected;
         if(count) foreground=i;
         else background_jobs|=i;
     }

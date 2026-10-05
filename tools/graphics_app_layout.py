@@ -15,6 +15,10 @@ import re
 
 from build_scheduler_overlay import map_segments
 from ihx_to_bin import read_ihx
+from build_window_cache import glyph_overlay_layout
+from gen_capability_imports import map_exports
+from native_app_layout import (ALLOCATIONS, fitting_allocations, RETAINED_BASE, RETAINED_LIMIT,
+                               check_assembly_layout, check_linked_tables)
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -29,14 +33,11 @@ class Region:
 
 # Fixed banked allocations. The existing common-RAM,
 # native foreground child, shell and display/cache reservations stay intact.
-CANDIDATE = (
-    Region('banked app 3 image+BSS', 1, 0x2300, 0x3500),
-    Region('banked app 4 image+BSS', 1, 0x3500, 0x4000),
-    Region('app 3 software stack reservation', 1, 0x8A00, 0x8D00),
-    Region('app 4 software stack reservation', 1, 0x8D00, 0x9000),
-    Region('app 3 relocated zero page/hardware stack', 1, 0xD500, 0xD700),
-    Region('app 4 relocated zero page/hardware stack', 1, 0xD700, 0xD900),
-)
+CANDIDATE = tuple(region for task,base,limit,stack,zp,hp in ALLOCATIONS for region in (
+    Region(f'app {task} image+BSS',1,base,stack),
+    Region(f'app {task} software stack/guards/exit',1,stack,limit),
+    Region(f'app {task} zero page',1,zp,zp+256),
+    Region(f'app {task} hardware stack',1,hp,hp+256)))
 
 
 def disjoint(regions):
@@ -117,8 +118,7 @@ def source_value(path, name):
 
 def check_reservations():
     text = (ROOT / 'include/udeks/memory.h').read_text()
-    expected = dict(UDEKS_TASK_BACKUP_BASE=0x8000, UDEKS_TASK_BACKUP_LIMIT=0x8A00,
-                    UDEKS_USH_BASE=0x9000, UDEKS_USH_LIMIT=0xA000,
+    expected = dict(UDEKS_USH_BASE=0x9000, UDEKS_USH_LIMIT=0xA000,
                     UDEKS_BOOTFS_BASE=0xA000, UDEKS_BOOTFS_LIMIT=0xB000,
                     UDEKS_Z80_CODE_BASE=0x2000, UDEKS_Z80_CODE_LIMIT=0x4000,
                     UDEKS_VIC_WINDOW_BASE=0x4000, UDEKS_VIC_WINDOW_LIMIT=0x8000,
@@ -136,41 +136,39 @@ def baseline_regions(kernel, storage, worker):
     # Using complete reservations avoids treating slack in a running service
     # as an allocation. Validate the emitted map before accepting each bound.
     regions = [Region('kernel pages', 0, 0, 0x200),
-               Region('legacy clock slot', 0, 0x200, 0xC00),
-               Region('banked graphics service', 0, 0xC00, 0x1200),
-               Region('legacy wave slot', 0, 0x1200, 0x1C00),
+               Region('transient console slot', 0, 0x200, 0xC00),
+               Region('banked graphics service', 0, 0xC00, 0x1300),
+               Region('retained drawing pool', 0, RETAINED_BASE, RETAINED_LIMIT),
                Region('scheduler page', 0, 0x1C00, 0x2000),
                Region('resident and scheduler tail', 0, 0x2000, 0xD000),
                Region('resident high state and C stack', 0, 0xE000, 0xF000),
                Region('common RAM', 0, 0xF000, 0x10000),
-               Region('native child and disk staging/stack', 1, 0, 0x1200),
+               Region('native child and disk staging/stack', 1, 0x200, 0x1200),
                Region('storage module', 1, 0x1200, 0x1880),
                Region('relocation module', 1, 0x1880, 0x1A00),
                Region('task lookup module', 1, 0x1A00, 0x1F00),
                Region('banked access module', 1, 0x1F00, 0x2000),
                Region('display/cache/bitmap/sprite', 1, 0x4000, 0x8000),
-               Region('legacy foreground backup', 1, 0x8000, 0x8A00),
                Region('ush', 1, 0x9000, 0xA000),
                Region('recovery bootfs', 1, 0xA000, 0xB000),
-               Region('filesystem policy', 1, 0xB000, 0xC700),
-               Region('graphics service delivery', 1, 0xC700, 0xCD00),
-               Region('two retained command images', 1, 0xCD00, 0xD000),
+               Region('filesystem policy', 1, 0xB000, 0xC600),
                Region('banked image loader', 1, 0xD900, 0xE000),
-               Region('service state/context/driver and ush stack', 1, 0xE000, 0xF000)]
+               Region('storage state/software stack', 1, 0xE000, 0xE200),
+               Region('IEC driver and ush stack', 1, 0xE300, 0xF000)]
     allowed = {'ZEROPAGE', 'STARTUP', 'CODE', 'RODATA', 'DATA', 'BSS', 'STORAGECODE', 'IECCODE'}
     if storage.keys() != allowed:
         raise ValueError('storage segments changed; review ownership')
     for name, low, high in (
             ('STARTUP', 0x1200, 0x1880), ('CODE', 0x1200, 0x1880),
             ('RODATA', 0x1200, 0x1880), ('DATA', 0x1200, 0x1880),
-            ('BSS', 0xE000, 0xE180), ('STORAGECODE', 0xB000, 0xC700),
+            ('BSS', 0xE000, 0xE180), ('STORAGECODE', 0xB000, 0xC600),
             ('IECCODE', 0xE300, 0xE900)):
         start, end, size = storage[name]
         if not low <= start <= end < high or size != end - start + 1:
             raise ValueError('storage reservation changed: ' + name)
     for name in ('CODE', 'RODATA', 'DATA', 'BSS'):
-        if not 0x2000 <= kernel[name][0] <= kernel[name][1] < 0x9B00:
-            raise ValueError('resident reaches console state: ' + name)
+        if not 0x2000 <= kernel[name][0] <= kernel[name][1] < 0x96A8:
+            raise ValueError('resident reaches boot assets: ' + name)
     for path, prefix in (('src/scheduler/task_context.s', 'TASK'),
                          ('src/scheduler/task_yield_handler.s', 'TASK2')):
         page0 = source_value(path, prefix + '_PAGE0')
@@ -181,8 +179,42 @@ def baseline_regions(kernel, storage, worker):
     return regions + worker
 
 
+def graphics_lifetimes(regions):
+    phases = {
+        'before_first_native_launch': [Region('base graphics delivery',1,0xc600,0xcd00),
+                                      Region('paths delivery/container',1,0xcd00,0xd100),
+                                      Region('retired bootstrap context',1,0xe2e2,0xe300)],
+        'after_both_modules_installed': list(CANDIDATE),
+    }
+    for additions in phases.values():
+        disjoint(regions + additions)
+    return {name:[asdict(r) for r in additions] for name,additions in phases.items()}
+
+
+def glyph_overlay_images(assets, paths, kernel, delivery):
+    if len(assets)!=1112 or assets[:6]!=b'VTG1\x01\x3f':
+        raise ValueError('expected exactly 63 uploaded 16-byte custom glyphs')
+    if kernel[0x96a8-0x2000:0x9b00-0x2000]!=assets:
+        raise ValueError('kernel glyph delivery does not match boot assets')
+    if len(paths)!=1008:
+        raise ValueError('paths output must fit exactly the uploaded glyph bytes')
+    offset=2+0xcd00-0x1200
+    if delivery[:2]!=b'\0\x12' or delivery[offset:offset+1008]!=paths:
+        raise ValueError('paths secondary delivery differs')
+
+
+def glyph_overlay_entrypoints(segments,exports):
+    start,end,_=segments['GRAPHICSPATHS']
+    for name in ('_udeks_retained_present',):
+        if name not in exports or not start<=exports[name][0]<=end:
+            raise ValueError('paths entry is outside executable code: '+name)
+
+
 def audit(build):
     check_reservations()
+    check_assembly_layout((ROOT/'src/services/app/native_layout.inc').read_text())
+    check_linked_tables((build/'8502/udeks-module.bin').read_bytes(),
+                        map_exports((build/'8502/udeks-8502.map').read_text()))
     normal = map_segments((build / '8502/udeks-8502.map').read_text())
     panic = map_segments((build / '8502/udeks-8502-panic-probe.map').read_text())
     if normal != panic:
@@ -190,7 +222,15 @@ def audit(build):
     storage = map_segments((build / 'storage/module.map').read_text())
     worker = z80_regions((build / 'z80/udeks-z80.map').read_text())
     regions = baseline_regions(normal, storage, worker)
-    disjoint(regions + list(CANDIDATE))
+    phases=graphics_lifetimes(regions)
+    glyph_overlay_layout(normal)
+    glyph_overlay_entrypoints(normal,map_exports((build/'8502/udeks-8502.map').read_text()))
+    paths=(build/'8502/retained-paths.bin').read_bytes()
+    if paths!=(build/'8502/retained-paths-panic.bin').read_bytes():
+        raise ValueError('normal/panic paths modules differ')
+    delivery=(build/'boot/scheduler-overlay.prg').read_bytes()
+    glyph_overlay_images((build/'assets/udeks-vdc-text.bin').read_bytes(),paths,
+                         (build/'8502/udeks-8502.bin').read_bytes(),delivery)
     worker_image(worker, read_ihx(build / 'z80/udeks-z80.ihx'),
                  (build / 'z80/udeks-z80.bin').read_bytes())
     if not 0 < (build / 'boot/task-lookup.bin').stat().st_size <= 0x500:
@@ -210,45 +250,50 @@ def audit(build):
         if (blob[:1]!=b'\x4c' or blob[3:9]!=magic or not 9<len(blob)<=capacity or
                 segments.get(name)!=(address,address+len(blob)-1,len(blob))):
             raise ValueError('banked extension reservation or identity/map differs: '+name)
-    for name,low,limit in (('GRAPHICSCODE',0xC00,0x1200),('GRAPHICSHELP',0xA100,0xA1E0)):
+    for name,low,limit in (('GRAPHICSCODE',0xC00,0x1300),('GRAPHICSHELP',0xA100,0xA1E0)):
         start,end,size=normal[name]
         if not (start == low and size == end - start + 1 and end < limit):
             raise ValueError('graphics module placement changed: '+name)
     module=(build/'8502/banked-graphics.bin').read_bytes()
-    if len(module)!=0x600 or module != (build/'8502/banked-graphics-panic.bin').read_bytes():
+    if len(module)!=0x700 or module != (build/'8502/banked-graphics-panic.bin').read_bytes():
         raise ValueError('graphics module outputs differ or exceed reservation')
-    apps = {name: managed_size((build / ('user/' + name + '.udx')).read_bytes())
-            for name in ('xclock', 'xwave')}
-    from build_d71 import validate_banked_app
-    for name,base,capacity in (('xcalc',0x2300,0x1200),('xdraw',0x3500,0xB00)):
+    offset=2+0xc600-0x1200
+    if delivery[offset:offset+len(module)]!=module:
+        raise ValueError('base graphics secondary delivery differs')
+    apps = {}
+    for name in ('xclock','xwave','xcalc','xdraw'):
         program=(build/('user/'+name+'.udx')).read_bytes()
-        validate_banked_app(program,base,capacity)
-        load,image,bss,entry=(int.from_bytes(program[n:n+2],'little') for n in (8,10,12,14))
-        apps[name]=dict(load=load,image=image,bss=bss,allocation=image+bss)
-    for name, load, capacity in (('xclock', 0x200, 0xA00), ('xwave', 0x1200, 0xA00),
-                                  ('xcalc', 0x2300, 0x1200), ('xdraw', 0x3500, 0xB00)):
-        if apps[name]['load'] != load or apps[name]['allocation'] > capacity:
-            raise ValueError('baseline app placement changed: ' + name)
+        fits=fitting_allocations(program)
+        if not fits: raise ValueError('native app fits no allocation: '+name)
+        size,bss=(int.from_bytes(program[n:n+2],'little') for n in (10,12))
+        apps[name]=dict(file=len(program),image=size,bss=bss,allocation=size+bss,fits=fits)
     inputs = ['8502/udeks-8502.map', '8502/udeks-8502-panic-probe.map',
               'storage/module.map', 'z80/udeks-z80.map', 'z80/udeks-z80.bin', 'z80/udeks-z80.ihx',
               'boot/task-lookup.bin', 'boot/banked-loader.bin',
               'boot/banked-loader.map', 'boot/banked-reloc.bin', 'boot/banked-access.bin', '8502/banked-graphics.bin',
+              '8502/retained-paths.bin','assets/udeks-vdc-text.bin','boot/scheduler-overlay.prg',
               '8502/banked-graphics-panic.bin'] + ['user/' + n + '.udx' for n in apps]
     return dict(status='four independent graphical executables; placement verified',
                 baseline_apps=apps,
                 proposed=[asdict(r) for r in CANDIDATE],
                 existing=[asdict(r) for r in regions],
-                calculator_current_allocation_spare=0x1200-apps['xcalc']['allocation'],
-                fourth_app_capacity=0xB00,
-                fourth_app_allocation_spare=0xB00-apps['xdraw']['allocation'],
-                private_stack_reservation_per_banked_app=0x300,
-                resident_bridge_headroom=0x9B00-normal['BSS'][1]-1,
+                calculator_current_allocation_spare=0x1100-apps['xcalc']['allocation'],
+                fourth_app_capacity=0xA00,
+                fourth_app_allocation_spare=0x900-apps['xdraw']['allocation'],
+                private_stack_reservation_per_banked_app=0x100,
+                private_usable_stack_bytes=160,
+                shared_retained_capacity=RETAINED_LIMIT-RETAINED_BASE,
+                resident_bridge_headroom=0x96A8-normal['BSS'][1]-1,
+                graphics_delivery_and_retention_lifetimes=phases,
+                glyph_overlay=dict(start=0x96b8,bytes=1008,live_header=16,live_tile_maps=88),
                 source_sha256={p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
                                for p in ('include/udeks/memory.h', 'src/scheduler/task_context.s',
                                          'src/scheduler/task_yield_handler.s', 'tools/graphics_app_layout.py',
                                          'src/services/app/banked_loader.s', 'src/boot/stage1-gateway.s',
                                          'src/services/window/banked_graphics.c',
                                          'src/services/window/banked_access.s',
+                                         'src/services/window/retained_paths.c',
+                                         'include/udeks/retained_paths.h',
                                           'user/bin/xcalc_native.c', 'user/bin/xdraw.c',
                                           'user/lib/graphics_request.s')},
                 input_sha256={p: hashlib.sha256((build / p).read_bytes()).hexdigest() for p in inputs})
