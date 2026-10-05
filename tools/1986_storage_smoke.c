@@ -266,6 +266,8 @@ int main(int argc, char **argv) {
             "system disk shell/startup failed");
     storage_command("df", 0);
     require(console_contains("iec8"), "df did not report system volume");
+    storage_command("df -h", 0);
+    require(console_contains("Size-KiB"), "df -h output missing");
     storage_command("df /mnt", 1);
     storage_command("ls /bin", 0);
     command("cd etc"); idle();
@@ -310,10 +312,9 @@ int main(int argc, char **argv) {
     require(console_contains("Recovery: mount umount"), "disk shell help failed");
     puts("PASS native disk shell source=1 error=0 device=8, help works");
 #endif
-    /* The normal RC now owns this mount. Keep explicit mount tests below
-     * independent of the default policy, after proving RC completed. */
+    /* The normal RC leaves /mnt free; mount it explicitly for these tests. */
     wait_byte(0xf3e0, 2, "startup did not finish");
-    storage_command("umount /mnt", 0);
+    storage_command("umount /mnt", 1);
     storage_command("mount 8 /mnt", 0);
     storage_command("ls /bin", 0);
     storage_command("ls /mnt", 0);
@@ -322,8 +323,10 @@ int main(int argc, char **argv) {
     require(console_contains("total 2560  used 0  free 2560"), "free accounting missing");
     storage_command("df", 0);
     require(console_contains("iec8") && console_contains("Read-only mount"), "df output missing");
+    storage_command("df -h", 0);
+    require(console_contains("Size-KiB"), "df -h output missing");
     storage_command("df /bad", 1);
-    require(console_contains("usage: df [/mnt]"), "df usage missing");
+    require(console_contains("usage: df [-h]"), "df usage missing");
 #endif
 #ifdef UDEKS_DISK_EXEC_SMOKE
     storage_command("/mnt/diskcow hello", 0);

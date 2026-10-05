@@ -50,6 +50,25 @@ class Sysinfo(unittest.TestCase):
         self.assertIn('664         564   100', self.output())
         self.assertIn('iec8', self.output())
         self.assertIn('Read-only mount', self.output())
+    def test_df_human_reports_sizes_in_kib(self):
+        # 256-byte blocks: 664 total, 564 used, 100 available -> /4 KiB.
+        (c.c_uint8*8).in_dll(self.lib, 'test_result')[:] = b'\0\1\x98\2\x64\0\x08\1'
+        self.assertEqual(self.invoke('df', '-h'), 0)
+        self.assertIn('Size-KiB', self.output())
+        self.assertIn('166', self.output())
+        self.assertIn('141', self.output())
+        self.assertIn('25', self.output())
+        self.setUp()
+        self.assertEqual(self.invoke('df', '-h', '/mnt'), 0)
+        self.assertIn('iec8', self.output())
+        self.assertIn('KiB', self.output())
+    def test_df_human_scales_other_block_sizes(self):
+        # 1024-byte blocks: KiB equals the block count.
+        (c.c_uint8*8).in_dll(self.lib, 'test_result')[:] = b'\0\4\x10\0\x04\0\x09\1'
+        self.assertEqual(self.invoke('df', '-h'), 0)
+        self.assertIn('16', self.output())
+        self.assertIn('12', self.output())
+        self.assertIn('4', self.output())
     def test_errors_use_stderr_and_nonzero_exit(self):
         for error, text in ((2, 'not mounted'), (16, 'busy'), (5, 'read failed')):
             self.setUp(); c.c_uint8.in_dll(self.lib, 'sysinfo_error').value = error
@@ -57,6 +76,7 @@ class Sysinfo(unittest.TestCase):
             self.assertIn(text, self.output('error', 128))
             self.assertEqual(self.output(), '')
     def test_invalid_arguments_do_not_request_io(self):
-        for args in (('free', '-a'), ('df', '/other'), ('df', '/mnt', 'extra')):
+        for args in (('free', '-a'), ('df', '/other'), ('df', '/mnt', 'extra'),
+                     ('df', '-x'), ('df', '-h', '/other')):
             self.assertEqual(self.invoke(*args), 1)
         self.assertEqual(c.c_uint8.in_dll(self.lib, 'test_calls').value, 0)
