@@ -10,23 +10,24 @@ import unittest
 from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
-ACCEPTED = ROOT/'bench/artifacts/2026-09-30-root-namespace'
+ACCEPTED = ROOT/'bench/artifacts/2026-10-05-native-clients'
 
 
 class PublishedBoot(unittest.TestCase):
     def test_published_images_match_checksums_and_accepted_build(self):
         rows = (ROOT/'build/SHA256SUMS').read_text().splitlines()
-        self.assertEqual(len(rows), 2)
+        self.assertEqual(len(rows), 3)
         seen = set()
         for row in rows:
             expected, name = row.split()
-            self.assertIn(name, ('udeks.d64', 'udeks.d71'))
+            self.assertIn(name, ('udeks.d64', 'udeks.d71', 'udeks.d81'))
             self.assertNotIn(name, seen)
             seen.add(name)
             disk = (ROOT/'build'/name).read_bytes()
             self.assertEqual(hashlib.sha256(disk).hexdigest(), expected)
             self.assertEqual(disk, (ACCEPTED/name).read_bytes())
-            self.assertEqual(len(disk), 174848 if name.endswith('d64') else 349696)
+            self.assertEqual(len(disk), {'udeks.d64': 174848, 'udeks.d71': 349696,
+                                         'udeks.d81': 819200}[name])
 
     def test_current_readme_index_and_image_links_resolve(self):
         for relative in ('README.md', 'docs/README.md', 'build/README.md'):
