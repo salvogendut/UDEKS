@@ -83,6 +83,8 @@ class XsprdefSourceTests(unittest.TestCase):
         self.assertIn("bit_flip(edit,", source)
         self.assertIn("emit_sprite(edit, MAG_X, MAG_Y, CELL);", source)
         self.assertIn("emit_sprite(edit, PRE_X, PRE_Y, 1);", source)
+        self.assertIn("box((unsigned char)(PRE_X - 2u), (unsigned char)(PRE_Y - 2u), 28, 25);", source)
+        self.assertIn("box(bx, LIST_Y, 20, 20);", source)
         self.assertIn('P[7 + i] = "XSPRDEF"[i];', source)
         self.assertIn("copy_sprite(sprite_bank[selected], edit);", source)
         self.assertNotIn("udeks_window_", source)
@@ -130,8 +132,9 @@ class XsprdefSourceTests(unittest.TestCase):
         self.assertEqual(len(editor), 28)
         source = SOURCE.read_text(encoding="utf-8")
         limit = int(source.split("#define MAX_COMMANDS ", 1)[1].split("\n", 1)[0])
-        # One editor image holds the magnified sprite plus the save confirmation.
-        self.assertLessEqual(len(editor) + 9, limit)
+        # One editor image holds the magnified pane, the framed preview and
+        # the save confirmation text (or the framed save/back buttons).
+        self.assertLessEqual(len(editor) * 2 + 7, limit)
 
 
 if __name__ == "__main__":

@@ -13,15 +13,14 @@ extern void gfx_sleep(void);
 #define SPRITES      8
 #define SPRITE_BYTES 63
 #define CELL         8
-#define MAX_COMMANDS 68
+#define MAX_COMMANDS 63
 #define MAG_X        8
 #define MAG_Y        20
 #define PRE_X        208
 #define PRE_Y        20
 #define BTN_S_X      208
 #define BTN_S_Y      52
-#define BTN_B_X      208
-#define BTN_B_Y      82
+#define BTN_B_Y      78
 #define LIST_X       30
 #define LIST_Y       80
 #define LIST_STEP    26
@@ -39,11 +38,10 @@ static unsigned char confirming;
 static const unsigned char glyphs[][5] = {
     {7,5,5,5,7},{2,6,2,2,7},{7,1,7,4,7},{7,1,7,1,7},{5,5,7,1,1},
     {7,4,7,1,7},{7,4,7,5,7},{7,1,1,1,1},{7,5,7,5,7},{7,5,7,1,7},
-    {2,5,7,5,5},{6,5,6,5,6},{7,4,6,4,7},{7,2,2,2,7},{5,6,4,6,5},
-    {5,7,5,5,5},{2,5,5,5,2},{6,5,6,4,4},{6,5,6,5,5},{3,4,2,1,6},
-    {7,2,2,2,2},{5,5,5,5,2},{5,5,2,2,2},{6,1,2,0,2}
+    {2,5,7,5,5},{6,5,6,5,6},{7,4,6,4,7},{3,4,2,1,6},{5,5,5,5,2},
+    {6,1,2,0,2},{1,2,2,4,4}
 };
-#define GLYPH_TEXT "0123456789ABEIKNOPRSTVY?"
+#define GLYPH_TEXT "0123456789ABESV?"
 
 static const unsigned char row3[21] = {
     0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60
@@ -85,15 +83,23 @@ static void text(unsigned char x, unsigned char y, const char *s)
 {
     while (*s) { glyph(x, y, *s++); x = (unsigned char)(x + 7u); }
 }
+/* A button or picture frame is a black rectangle with a background inset:
+ * two retained commands and no extra drawing code. */
+static void box(unsigned char x, unsigned char y, unsigned char w, unsigned char h)
+{
+    fill(x, y, w, h, 0);
+    fill((unsigned char)(x + 1u), (unsigned char)(y + 1u),
+        (unsigned char)(w - 2u), (unsigned char)(h - 2u), 7);
+}
 
 /* Emit the set pixels of a 63-byte sprite as merged rectangles scaled by
  * `cell` (8 for the magnified pane, 1 for the normal-size preview). */
 static void emit_sprite(const unsigned char *s, unsigned char ox, unsigned char oy,
     unsigned char cell)
 {
-    unsigned char px[8], pw[8], py[8], pn;
-    unsigned char nx[8], nw[8], ny[8];
-    unsigned char rx[8], rw[8], used[8];
+    unsigned char px[4], pw[4], py[4], pn;
+    unsigned char nx[4], nw[4], ny[4];
+    unsigned char rx[4], rw[4], used[4];
     unsigned char x, y, i, j, n, c, k;
     pn = 0;
     for (y = 0; y < 21u; ++y) {
@@ -104,7 +110,7 @@ static void emit_sprite(const unsigned char *s, unsigned char ox, unsigned char 
             rx[c] = x;
             while (x < 24u && bit_get(s, x, y)) ++x;
             rw[c] = (unsigned char)(x - rx[c]);
-            if (++c == 8u) break;
+            if (++c == 4u) break;
         }
         for (i = 0; i < c; ++i) used[i] = 0;
         n = 0;
@@ -146,22 +152,27 @@ static unsigned char present(void)
 }
 static unsigned char list_present(void)
 {
-    unsigned char i;
+    unsigned char i, bx;
     count = 0;
-    for (i = 0; i < SPRITES; ++i)
-        glyph((unsigned char)(LIST_X + i * LIST_STEP), LIST_Y, (unsigned char)('1' + i));
+    for (i = 0; i < SPRITES; ++i) {
+        bx = (unsigned char)(LIST_X + i * LIST_STEP);
+        box(bx, LIST_Y, 20, 20);
+        glyph((unsigned char)(bx + 7u), (unsigned char)(LIST_Y + 5u), (unsigned char)('1' + i));
+    }
     return present();
 }
 static unsigned char editor_present(void)
 {
     count = 0;
     emit_sprite(edit, MAG_X, MAG_Y, CELL);
+    box((unsigned char)(PRE_X - 2u), (unsigned char)(PRE_Y - 2u), 28, 25);
     emit_sprite(edit, PRE_X, PRE_Y, 1);
     if (confirming) {
-        text(BTN_S_X, 120, "SAVE? S/B");
+        text(BTN_S_X, 132, "SAVE?");
     } else {
-        glyph(BTN_S_X, BTN_S_Y, 'S');
-        glyph(BTN_B_X, BTN_B_Y, 'B');
+        box(BTN_S_X, BTN_S_Y, 24, 50);
+        glyph((unsigned char)(BTN_S_X + 9u), (unsigned char)(BTN_S_Y + 7u), 'S');
+        glyph((unsigned char)(BTN_S_X + 9u), (unsigned char)(BTN_B_Y + 7u), 'B');
     }
     return present();
 }
@@ -203,8 +214,8 @@ unsigned char udeks_graphical_main(void)
                 bit_flip(edit, (unsigned char)((x - MAG_X) / CELL),
                     (unsigned char)((y - MAG_Y) / CELL));
                 if (editor_present()) return 4;
-            } else if (x >= (unsigned char)(BTN_S_X - 4u) && x < (unsigned char)(BTN_S_X + 12u) &&
-                       y >= (unsigned char)(BTN_S_Y - 4u) && y < (unsigned char)(BTN_S_Y + 14u)) {
+            } else if (x >= BTN_S_X && x < (unsigned char)(BTN_S_X + 24u) &&
+                       y >= BTN_S_Y && y < (unsigned char)(BTN_S_Y + 25u)) {
                 if (confirming) {
                     copy_sprite(sprite_bank[selected], edit);
                     mode = 0; confirming = 0;
@@ -213,8 +224,8 @@ unsigned char udeks_graphical_main(void)
                     confirming = 1;
                     if (editor_present()) return 4;
                 }
-            } else if (x >= (unsigned char)(BTN_B_X - 4u) && x < (unsigned char)(BTN_B_X + 12u) &&
-                       y >= (unsigned char)(BTN_B_Y - 4u) && y < (unsigned char)(BTN_B_Y + 14u)) {
+            } else if (x >= BTN_S_X && x < (unsigned char)(BTN_S_X + 24u) &&
+                       y >= BTN_B_Y && y < (unsigned char)(BTN_B_Y + 25u)) {
                 if (confirming) {
                     confirming = 0;
                     if (editor_present()) return 4;
