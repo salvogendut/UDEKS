@@ -243,9 +243,10 @@ distrobox enter my-distrobox -- python3 tools/build_console_example.py \
   --source /absolute/path/to/mytool.c --name MYTOOL --output build/mytool
 ```
 
-The entry/runtime links at `$0200` with a 2,560-byte image+BSS ceiling. This
-**synchronous** compatibility loader saves/restores the legacy clock allocation;
-it does not consume any native graphical slot. Bounded console commands work
+The entry/runtime links at bank-0 `$0200` with a 2,560-byte image+BSS ceiling.
+This **synchronous** compatibility loader uses the separate foreground-command
+allocation; the legacy clock allocation/backup has been retired. It does not
+consume any native graphical slot. Bounded console commands work
 with all four windows present, but block cooperative app progress until they
 return. Do not run an endless loop, use the bank-1 graphics veneers, or append
 `&` to these fixed-address commands. General console stdin, native background
@@ -281,7 +282,9 @@ Current regression: run `make four-native-probe` on the host after
 It uses Flatpak VICE and copies the disks before adding unknown-name examples.
 D64/D71/D81 cover four bundled apps, four identical independent app instances,
 private state/input, resize/worker oracles, malformed/full rejection, name-based
-stop, guarded stacks, reload and console use. Physical C128 acceptance remains due.
+stop, guarded stacks, reload and console use. The user accepted the follow-up
+for merge in PR #37; its latest manual-test platform was unspecified, so this
+does not add a physical-C128 qualification result.
 
 Older probes below target preserved two-native-plus-legacy builds, not the
 new four-native allocation layout:

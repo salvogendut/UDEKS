@@ -81,8 +81,11 @@ into any free **compatible-sized** allocation, without an OS name-table entry.
 `name -q` stops a matching instance; Ctrl+C targets the foreground instance.
 See the [SDK and limits](docs/GRAPHICAL-APPS-SDK.md) and
 [four-native-slot layout](docs/GENERIC-GRAPHICS-APPS.md#four-native-slot-cutover--2026-10-05).
-The SDK also builds independent argc/argv console commands; console loading
-remains synchronous. Four slots are available, but not every binary fits every
+The SDK also builds [independent argc/argv console commands](docs/GRAPHICAL-APPS-SDK.md#independent-console-commands)
+with stdout/stderr and an exit status. They use one fixed foreground allocation
+and pause cooperative app progress until returning; general background console
+jobs and stdin are not yet supported. Four graphical slots are available, but
+not every binary fits every
 slot. The retained drawing pool is shared and each native task has a bounded
 160-byte C stack. Fresh source builds produce `build/boot/udeks.d64`, `.d71`
 and `.d81`.
