@@ -50,8 +50,8 @@ The base graphics service occupies $0C00–$12FF; the existing 1,008-byte retire
 VDC glyph-source overlay is unchanged. Console commands, recovery bootfs,
 filesystem, cache, VIC bitmap and Z80 code retain distinct ownership.
 
-Wave resize now waits for outline release and projects four vertices per
-cooperative yield. The app caches all 525 heights and retains all 524 edges:
+Wave resize now waits for outline release and projects sixteen table-scaled
+vertices per cooperative yield. The app caches all 525 heights and retains all 524 edges:
 moves/raises replay service data; resize never resubmits the Z80 height job.
 Dense geometry repaint is still synchronous, not a new pixel-blit guarantee.
 
@@ -77,6 +77,37 @@ Exact images/captures and reproduction notes are preserved in
 [`bench/results/2026-10-05-four-native`](../bench/results/2026-10-05-four-native/README.md).
 Next gate is physical-C128 acceptance, then review/merge #35; the next roadmap
 feature is one disk-loaded non-kernel service, not another graphics optimization.
+
+### Resize-latency follow-up — 2026-10-05
+
+The user reported the new size appearing only after further clicks/repaints.
+The extended probe reproduced a long delay **without any subsequent input**:
+755 PAL frames with clock/wave, and 1,399 with all four apps. This was not a
+lost focus event. The prior probe checked eventual geometry but did not measure
+the delay, and resized before launching calculator/drawing.
+
+The app now constructs exact integer scale tables once per size and projects
+16 vertices per yield, instead of doing two multiply/divide calculations per
+vertex and yielding every four. It still preserves all 524 edges, restarts on
+a newer size, pauses during dragging and never re-runs the Z80 height job on
+resize. No kernel, scheduler, graphics ABI or WM changes are involved.
+Its image+BSS is 3,748 bytes, within the 3,840-byte slot-5 limit.
+
+The same native-1351 workload takes **418 / 594 PAL frames** after release
+(8.36 / 11.88 seconds versus 15.10 / 27.98). This is a latency reduction, **not
+instant resizing**: synchronous retained-vector painting still dominates the
+remaining delay and is separate future work. Both VICE and native 1986 tests
+now resize with all four clients active and wait without further clicks. The
+VICE test also compares the visible topmost wave pixels against the resized
+mathematical grid, not just the retained request data. The 1986 test bounds
+projection/publication delay and retains the input, guards and no-extra-worker
+checks. Baseline evidence above is unchanged; follow-up evidence is in
+`bench/{artifacts,results}/2026-10-05-wave-resize`.
+Follow-up qualification: 1,162 host tests, both placement gates, VICE on all
+three disk formats, and unmodified 1986 native input pass. During projection
+the measured maximum input-poll gaps were 8/9 PAL frames; this does not bound
+the separate synchronous painting phase. Fresh `build/boot/udeks.*` images
+contain the change; published snapshots have not been replaced.
 
 ## Earlier checkpoints (historical layouts)
 

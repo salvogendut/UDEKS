@@ -76,10 +76,15 @@ class NativeWave(unittest.TestCase):
         while not state.done:
             before=state.used
             self.lib.udeks_wave_paths_step(samples,buf)
-            # Four vertices, one or two strip headers, plus final padding.
-            self.assertLessEqual(state.used-before,16)
+            # Sixteen vertices, up to two strip headers, plus final padding.
+            self.assertLessEqual(state.used-before,40)
             calls+=1
-        self.assertEqual(calls,137) # 548 points / four per cooperative slice
+        self.assertEqual(calls,35) # 548 points / sixteen per cooperative slice
         self.assertEqual(bytes(buf),wave_paths(72,88)[0])
         self.assertEqual(self.lib.udeks_wave_paths_step(samples,buf),1)
         self.assertEqual(bytes(buf),wave_paths(72,88)[0])
+
+    def test_worker_field_fits_private_projection_tables(self):
+        heights=[v if v<128 else v-256 for v in expected_surface()]
+        indices=[28+i%25+i//25-z for i,z in enumerate(heights)]
+        self.assertEqual((min(indices),max(indices)),(10,74))

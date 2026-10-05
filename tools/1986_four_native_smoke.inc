@@ -19,6 +19,41 @@ static void native_canvas(void) {
         frames(1);
     require(!memcmp(machine->mem.ram+0xa1e0,machine->mem.ram+0x16000,8000),"native bitmap/shadow mismatch");
 }
+static void wave_resize_wait(unsigned presents) {
+    unsigned started=c128_frame_count,projected=0;
+    unsigned poll=word(0xf132),last_poll=started,max_gap=0;
+    bool projecting=false;
+    while(byte(UDEKS_WAVE_PRESENTS)==presents && c128_frame_count-started<10000) {
+        frames(1);
+        unsigned elapsed=c128_frame_count-started;
+        /* done may still describe the PREVIOUS size at release. Observe
+         * begin() resetting it before timing this projection's completion. */
+        if(!projecting && !byte(UDEKS_WAVE_PROJECTION+12)) {
+            projecting=true;poll=word(0xf132);last_poll=c128_frame_count;
+        }
+        if(projecting && !projected) {
+            if(word(0xf132)!=poll) {
+                unsigned gap=c128_frame_count-last_poll;
+                if(gap>max_gap) max_gap=gap;
+                last_poll=c128_frame_count;poll=word(0xf132);
+            }
+            if(byte(UDEKS_WAVE_PROJECTION+12)) projected=elapsed;
+        }
+        if(elapsed%100==0) {
+            printf("resize progress: %u frames, projected %u bytes, done %u, drag %u, focused %u\n",
+                elapsed,word(UDEKS_WAVE_PROJECTION+2),byte(UDEKS_WAVE_PROJECTION+12),
+                byte(0xf248),byte(0xf247));fflush(stdout);
+        }
+    }
+    require(byte(UDEKS_WAVE_PRESENTS)==presents+1,"wave resize not published");
+    printf("resize published without further input after %u PAL frames (projection %u, maximum input-poll gap %u)\n",
+        c128_frame_count-started,projected,max_gap);
+    fflush(stdout);
+    /* These generous bounds catch the old 755/1399-frame no-input delay.
+     * Synchronous retained-vector repaint still dominates completion time. */
+    require(projected && projected<=400,"wave resize projection stalled");
+    require(c128_frame_count-started<=700,"wave resize publication stalled");
+}
 static void four_native_smoke(void) {
     wait_byte(0xf3e0,2,"startup incomplete");idle();
     command("xclock &");idle();native_windows(1);
@@ -37,7 +72,7 @@ static void four_native_smoke(void) {
     require(byte(UDEKS_WAVE_PRESENTS)==presents,"wave published while outline held");
     joyports_mouse_button(&machine->joyports,0,false,false);
     wait_byte(0xf248,0,"wave resize did not finish");
-    wait_byte(UDEKS_WAVE_PRESENTS,presents+1,"wave resize not published");
+    wave_resize_wait(presents);
     require(word(UDEKS_WAVE_WIDTH)>220 && byte(UDEKS_WAVE_HEIGHT)>130,"wave size unchanged");
     require(word(0xf19c)==leases,"move/resize called worker again");
     command("xcalc &");idle();native_windows(3);
@@ -45,6 +80,19 @@ static void four_native_smoke(void) {
     command("xdraw &");idle();native_windows(4);
     client_click(226+12,89+40,6);
     wait_byte(UDEKS_DRAW_CELLS,1,"drawing click not delivered");
+    /* Resize with all four clients alive, then leave the mouse completely
+     * still: publication must not depend on a later focus/repaint event. */
+    client_click(80+12,100+40,5);
+    presents=byte(UDEKS_WAVE_PRESENTS);
+    pointer_to(44+word(UDEKS_WAVE_WIDTH)+9,44+byte(UDEKS_WAVE_HEIGHT)+37);
+    joyports_mouse_button(&machine->joyports,0,false,true);
+    wait_byte(0xf248,2,"four-client wave resize did not start");
+    pointer_to(44+176+11,44+112+39);frames(40);
+    require(byte(UDEKS_WAVE_PRESENTS)==presents,"four-client resize published while held");
+    joyports_mouse_button(&machine->joyports,0,false,false);
+    wait_byte(0xf248,0,"four-client resize did not finish");
+    wave_resize_wait(presents);
+    require(word(0xf19c)==leases,"four-client resize called worker again");
     native_guards();native_canvas();
     command("cowsay four native");idle();
     require(console_contains("four native"),"native mouse use broke console typing");

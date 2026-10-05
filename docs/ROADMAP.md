@@ -33,7 +33,9 @@ Independent console commands already have a build/install SDK, argc/argv and
 stdout/stderr; their loader remains synchronous. Native background-console
 stdin/arguments are separate remaining work. D81 is the third boot build.
 Wave holds its computation cache across moves and yields during resize
-projection; renderer optimization remains separate. **Next: user acceptance
+projection. A reported resize delay is reduced by app-local scale tables;
+[measured dense repaint latency remains](GENERIC-GRAPHICS-APPS.md#resize-latency-follow-up--2026-10-05),
+and renderer optimization stays separate. **Next: user acceptance
 and merge of #35, then the first disk-loaded non-kernel service.**
 The exploratory `.CBM` work on `additional-apps` / #32 stays separate.
 

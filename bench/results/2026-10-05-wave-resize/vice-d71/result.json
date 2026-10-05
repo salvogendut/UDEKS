@@ -1,0 +1,234 @@
+{
+  "drive": "1571",
+  "disk_sha256": "42862460e85c652afd8eabdc2b4b2f3dbf76e3daba692196df2a987b8ed8225d",
+  "fixture_sha256": "85682a6fbeee8a163cfff49417814b02b0d17b83d3488a7487ae47e357a90b57",
+  "checks": [
+    {
+      "command": "xclock &",
+      "console": "V0.1.0 (C)2026\n\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xclock &\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "console": "\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xclock &\nUDEKS:~> xwave &\nUDEKS:~>"
+    },
+    {
+      "check": "initial-wave",
+      "edges": 524,
+      "presents": 1,
+      "wait_seconds": 0.325258839991875
+    },
+    {
+      "check": "moved-wave",
+      "edges": 524,
+      "presents": 1,
+      "wait_seconds": 0.014371499011758715
+    },
+    {
+      "check": "before-resize",
+      "edges": 524,
+      "presents": 1,
+      "wait_seconds": 0.013419204013189301
+    },
+    {
+      "check": "resized-wave",
+      "edges": 524,
+      "presents": 2,
+      "wait_seconds": 0.2209800549899228
+    },
+    {
+      "check": "before-resize",
+      "edges": 524,
+      "presents": 2,
+      "wait_seconds": 0.012780176009982824
+    },
+    {
+      "check": "resized-wave",
+      "edges": 524,
+      "presents": 3,
+      "wait_seconds": 0.2244673949899152
+    },
+    {
+      "command": "xcalc &",
+      "console": "INITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xclock &\nUDEKS:~> xwave &\nUDEKS:~> xcalc &\nUDEKS:~>"
+    },
+    {
+      "command": "xdraw &",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xclock &\nUDEKS:~> xwave &\nUDEKS:~> xcalc &\nUDEKS:~> xdraw &\nUDEKS:~>"
+    },
+    {
+      "check": "four",
+      "retained_bytes": 1888,
+      "live": {
+        "4": "xclock",
+        "5": "xwave",
+        "3": "xcalc",
+        "6": "xdraw"
+      }
+    },
+    {
+      "check": "four-panel",
+      "names": {
+        "4": "xclock",
+        "5": "xwave",
+        "3": "xcalc",
+        "6": "xdraw"
+      }
+    },
+    {
+      "check": "before-resize",
+      "edges": 524,
+      "presents": 3,
+      "wait_seconds": 0.014468772016698495
+    },
+    {
+      "check": "resized-wave",
+      "edges": 524,
+      "presents": 4,
+      "wait_seconds": 0.3292161709978245
+    },
+    {
+      "check": "before-resize",
+      "edges": 524,
+      "presents": 4,
+      "wait_seconds": 0.012914407008793205
+    },
+    {
+      "check": "resized-wave",
+      "edges": 524,
+      "presents": 5,
+      "wait_seconds": 0.2216553509933874
+    },
+    {
+      "command": "date 03:15:00",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xclock &\nUDEKS:~> xwave &\nUDEKS:~> xcalc &\nUDEKS:~> xdraw &\nUDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~>"
+    },
+    {
+      "command": "cowsay four native",
+      "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> xclock &\nUDEKS:~> xwave &\nUDEKS:~> xcalc &\nUDEKS:~> xdraw &\nUDEKS:~> date 03:15:00\n03:15:00\nUDEKS:~> cowsay four native\n _____________\n< four native >\n -------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>"
+    },
+    {
+      "command": "ls /bin",
+      "console": "xwave\nxcalc\nxdraw\ncowsay\ndate\nls\ncat\nuname\nlshw\nlsmod\nlscpu\nz80ctl\nmount\numount\norbit\ncanvas\nhello\nfourth\nextra\nbadpatch\nUDEKS:~>"
+    },
+    {
+      "check": "after-console",
+      "retained_bytes": 1888,
+      "live": {
+        "4": "xclock",
+        "5": "xwave",
+        "3": "xcalc",
+        "6": "xdraw"
+      }
+    },
+    {
+      "command": "xclock &",
+      "console": "xdraw\ncowsay\ndate\nls\ncat\nuname\nlshw\nlsmod\nlscpu\nz80ctl\nmount\numount\norbit\ncanvas\nhello\nfourth\nextra\nbadpatch\nUDEKS:~> xclock &\nxclock: task slot busy\nUDEKS:~>"
+    },
+    {
+      "command": "xwave -q",
+      "console": "cowsay\ndate\nls\ncat\nuname\nlshw\nlsmod\nlscpu\nz80ctl\nmount\numount\norbit\ncanvas\nhello\nfourth\nextra\nbadpatch\nUDEKS:~> xclock &\nxclock: task slot busy\nUDEKS:~> xwave -q\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "console": "date\nls\ncat\nuname\nlshw\nlsmod\nlscpu\nz80ctl\nmount\numount\norbit\ncanvas\nhello\nfourth\nextra\nbadpatch\nUDEKS:~> xclock &\nxclock: task slot busy\nUDEKS:~> xwave -q\nUDEKS:~> xwave &\nUDEKS:~>"
+    },
+    {
+      "check": "reloaded-wave",
+      "edges": 524,
+      "presents": 1,
+      "wait_seconds": 0.4305017629812937
+    },
+    {
+      "check": "reloaded",
+      "retained_bytes": 1888,
+      "live": {
+        "4": "xclock",
+        "5": "xwave",
+        "3": "xcalc",
+        "6": "xdraw"
+      }
+    },
+    {
+      "command": "xinit -q",
+      "console": "cat\nuname\nlshw\nlsmod\nlscpu\nz80ctl\nmount\numount\norbit\ncanvas\nhello\nfourth\nextra\nbadpatch\nUDEKS:~> xclock &\nxclock: task slot busy\nUDEKS:~> xwave -q\nUDEKS:~> xwave &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~>"
+    },
+    {
+      "command": "orbit &",
+      "console": "uname\nlshw\nlsmod\nlscpu\nz80ctl\nmount\numount\norbit\ncanvas\nhello\nfourth\nextra\nbadpatch\nUDEKS:~> xclock &\nxclock: task slot busy\nUDEKS:~> xwave -q\nUDEKS:~> xwave &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> orbit &\nUDEKS:~>"
+    },
+    {
+      "command": "canvas &",
+      "console": "lshw\nlsmod\nlscpu\nz80ctl\nmount\numount\norbit\ncanvas\nhello\nfourth\nextra\nbadpatch\nUDEKS:~> xclock &\nxclock: task slot busy\nUDEKS:~> xwave -q\nUDEKS:~> xwave &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> orbit &\nUDEKS:~> canvas &\nUDEKS:~>"
+    },
+    {
+      "command": "hello &",
+      "console": "lsmod\nlscpu\nz80ctl\nmount\numount\norbit\ncanvas\nhello\nfourth\nextra\nbadpatch\nUDEKS:~> xclock &\nxclock: task slot busy\nUDEKS:~> xwave -q\nUDEKS:~> xwave &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> orbit &\nUDEKS:~> canvas &\nUDEKS:~> hello &\nUDEKS:~>"
+    },
+    {
+      "command": "fourth &",
+      "console": "lscpu\nz80ctl\nmount\numount\norbit\ncanvas\nhello\nfourth\nextra\nbadpatch\nUDEKS:~> xclock &\nxclock: task slot busy\nUDEKS:~> xwave -q\nUDEKS:~> xwave &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> orbit &\nUDEKS:~> canvas &\nUDEKS:~> hello &\nUDEKS:~> fourth &\nUDEKS:~>"
+    },
+    {
+      "check": "unknown-four",
+      "retained_bytes": 96,
+      "live": {
+        "6": "orbit",
+        "4": "canvas",
+        "5": "hello",
+        "3": "fourth"
+      }
+    },
+    {
+      "check": "unknown-four-panel",
+      "names": {
+        "6": "orbit",
+        "4": "canvas",
+        "5": "hello",
+        "3": "fourth"
+      }
+    },
+    {
+      "command": "extra &",
+      "console": "mount\numount\norbit\ncanvas\nhello\nfourth\nextra\nbadpatch\nUDEKS:~> xclock &\nxclock: task slot busy\nUDEKS:~> xwave -q\nUDEKS:~> xwave &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> orbit &\nUDEKS:~> canvas &\nUDEKS:~> hello &\nUDEKS:~> fourth &\nUDEKS:~> extra &\nextra: task slot busy\nUDEKS:~>"
+    },
+    {
+      "command": "canvas -q",
+      "console": "umount\norbit\ncanvas\nhello\nfourth\nextra\nbadpatch\nUDEKS:~> xclock &\nxclock: task slot busy\nUDEKS:~> xwave -q\nUDEKS:~> xwave &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> orbit &\nUDEKS:~> canvas &\nUDEKS:~> hello &\nUDEKS:~> fourth &\nUDEKS:~> extra &\nextra: task slot busy\nUDEKS:~> canvas -q\nUDEKS:~>"
+    },
+    {
+      "command": "badpatch &",
+      "console": "canvas\nhello\nfourth\nextra\nbadpatch\nUDEKS:~> xclock &\nxclock: task slot busy\nUDEKS:~> xwave -q\nUDEKS:~> xwave &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> orbit &\nUDEKS:~> canvas &\nUDEKS:~> hello &\nUDEKS:~> fourth &\nUDEKS:~> extra &\nextra: task slot busy\nUDEKS:~> canvas -q\nUDEKS:~> badpatch &\nbadpatch: loader error\nUDEKS:~>"
+    },
+    {
+      "command": "extra &",
+      "console": "hello\nfourth\nextra\nbadpatch\nUDEKS:~> xclock &\nxclock: task slot busy\nUDEKS:~> xwave -q\nUDEKS:~> xwave &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> orbit &\nUDEKS:~> canvas &\nUDEKS:~> hello &\nUDEKS:~> fourth &\nUDEKS:~> extra &\nextra: task slot busy\nUDEKS:~> canvas -q\nUDEKS:~> badpatch &\nbadpatch: loader error\nUDEKS:~> extra &\nUDEKS:~>"
+    },
+    {
+      "check": "unknown-reused",
+      "retained_bytes": 96,
+      "live": {
+        "6": "orbit",
+        "4": "extra",
+        "5": "hello",
+        "3": "fourth"
+      }
+    },
+    {
+      "check": "unknown-reused-panel",
+      "names": {
+        "6": "orbit",
+        "4": "extra",
+        "5": "hello",
+        "3": "fourth"
+      }
+    },
+    {
+      "command": "xinit -q",
+      "console": "extra\nbadpatch\nUDEKS:~> xclock &\nxclock: task slot busy\nUDEKS:~> xwave -q\nUDEKS:~> xwave &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> orbit &\nUDEKS:~> canvas &\nUDEKS:~> hello &\nUDEKS:~> fourth &\nUDEKS:~> extra &\nextra: task slot busy\nUDEKS:~> canvas -q\nUDEKS:~> badpatch &\nbadpatch: loader error\nUDEKS:~> extra &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~>"
+    },
+    {
+      "command": "echo four-slot cleanup passed",
+      "console": "UDEKS:~> xclock &\nxclock: task slot busy\nUDEKS:~> xwave -q\nUDEKS:~> xwave &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> orbit &\nUDEKS:~> canvas &\nUDEKS:~> hello &\nUDEKS:~> fourth &\nUDEKS:~> extra &\nextra: task slot busy\nUDEKS:~> canvas -q\nUDEKS:~> badpatch &\nbadpatch: loader error\nUDEKS:~> extra &\nUDEKS:~> xinit -q\nVIC-II graphics stopped\nUDEKS:~> echo four-slot cleanup passed\nfour-slot cleanup passed\nUDEKS:~>"
+    }
+  ]
+}

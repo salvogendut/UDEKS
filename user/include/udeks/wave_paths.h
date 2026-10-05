@@ -9,7 +9,8 @@ struct udeks_wave_projection {
 };
 extern struct udeks_wave_projection udeks_wave_projection_state;
 unsigned char udeks_wave_paths_begin(unsigned int width, unsigned char height);
-/* At most four vertices per call; no publication until done is set. */
+/* At most sixteen table-projected vertices per call; no publication until
+ * done is set. Input is the fixed opcode-5 sinc field (vertical index 0..75). */
 unsigned char udeks_wave_paths_step(const signed char *heights, unsigned char *output);
 /* App-owned projection: all 524 edges of the legacy sinc grid, in 24 paths.
  * Input is the worker's 21x25 signed-byte height field. No CPU lease here. */

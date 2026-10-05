@@ -24,6 +24,29 @@ from native_clock_probe import clock_commands
 
 ROOT=Path(__file__).resolve().parents[1]
 
+def check_wave_pixels(bitmap,x,y,width,height):
+    """Topmost client pixels must contain the NEW grid before another click.
+
+    Exclude chrome, including the bottom-right resize grip. A valid retained
+    stream alone cannot prove that the screen was actually repainted.
+    """
+    pixels=set()
+    for x0,y0,x1,y1 in wave_paths(width,height)[1]:
+        dx=abs(x1-x0);dy=-abs(y1-y0);error=dx+dy
+        sx=1 if x0<x1 else -1;sy=1 if y0<y1 else -1
+        while True:
+            pixels.add((x0,y0))
+            if (x0,y0)==(x1,y1):break
+            twice=2*error
+            if twice>=dy:error+=dy;x0+=sx
+            if twice<=dx:error+=dx;y0+=sy
+    for yy in range(14,height-12):
+        for xx in range(3,width-3):
+            px=x+xx;py=y+yy
+            actual=bool(bitmap[(py//8)*320+(px//8)*8+py%8]&(128>>(px%8)))
+            if actual!=((xx,yy) in pixels):
+                raise AssertionError(('stale resized wave pixels',xx,yy))
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--disk',type=Path,required=True)
@@ -150,7 +173,7 @@ def main():
     def leases(tag):
         return int.from_bytes(capture(tag,0xf19c,2),'little')
     def wave(tag,width,height):
-        deadline=time.monotonic()+120
+        started=time.monotonic(); deadline=started+120
         expected=wave_paths(width,height)[0]
         while True:
             state=capture(tag+'-state',app_address('xwave','_native_wave_rows',5),3,'worker')
@@ -163,7 +186,7 @@ def main():
         if capture(tag+'-samples',app_address('xwave','_native_wave_samples',5),525,'worker')!=expected_surface():
             raise AssertionError('wave height field')
         count=capture(tag+'-presents',app_address('xwave','_native_wave_presents',5),1,'worker')[0]
-        records.append(dict(check=tag,edges=524,presents=count))
+        records.append(dict(check=tag,edges=524,presents=count,wait_seconds=time.monotonic()-started))
         print('PASS',tag,flush=True); return count
     def resize_wave(handle,x,y,width,height,nw,nh):
         before=wave('before-resize',width,height); count=leases('leases-before-resize')
@@ -219,6 +242,16 @@ def main():
         wait_value('draw-cell',app_address('xdraw','_udeks_xdraw_cells',6),bytes((1,))+bytes(23))
         peers('four',{4:'xclock',5:'xwave',3:'xcalc',6:'xdraw'})
         panel('four',{4:'xclock',5:'xwave',3:'xcalc',6:'xdraw'})
+        # Raise the wave through its exposed client area, resize with all four
+        # tasks active, and wait WITHOUT any subsequent input/focus changes.
+        pointer(80,100,0);sp.wait_for_byte(port,0xf24d,0,time.monotonic()+90)
+        pointer(80,100,1);sp.wait_for_byte(port,0xf24d,1,time.monotonic()+90)
+        release(80,100)
+        resize_wave(wave_handle,44,44,176,112,256,146)
+        canvas('four-resized')
+        check_wave_pixels((work/'four-resized-bitmap.bin').read_bytes()[2:],44,44,256,146)
+        records.append(dict(check='four-resized-pixels',width=256,height=146))
+        resize_wave(wave_handle,44,44,256,146,176,112)
         command('date 03:15:00','03:15:00')
         deadline=time.monotonic()+90
         while retained(4,'clock')!=clock_commands(3,15):

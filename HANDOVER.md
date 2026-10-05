@@ -49,8 +49,8 @@ The base graphics service occupies $0C00–$12FF; the existing 1,008-byte retire
 VDC glyph-source overlay is unchanged. Console commands, recovery bootfs,
 filesystem, cache, VIC bitmap and Z80 code retain distinct ownership.
 
-Wave resize now waits for outline release and projects four vertices per
-cooperative yield. The app caches all 525 heights and retains all 524 edges:
+Wave resize now waits for outline release and projects sixteen table-scaled
+vertices per cooperative yield. The app caches all 525 heights and retains all 524 edges:
 moves/raises replay service data; resize never resubmits the Z80 height job.
 Dense geometry repaint is still synchronous, not a new pixel-blit guarantee.
 
@@ -75,6 +75,16 @@ byte-identical isolated parallel build; VICE all three formats and 1986 native
 input. Preserved evidence: `bench/{artifacts,results}/2026-10-05-four-native`.
 Next: user physical-C128 test, then review/merge #35; after that, the first
 disk-loaded non-kernel service. No published snapshot or remote merge is implied.
+
+Resize follow-up: the user noticed updates apparently depending on later focus
+changes. No-input native-mouse tests instead measured excessive projection and
+paint latency: 755/1,399 PAL frames with two/four clients. App-local exact scale
+tables and 16-vertex slices reduce that to 418/594 frames, with the same paths
+and no additional worker leases. The dense synchronous repaint remains slow;
+do not describe this as instantaneous or as a window-manager event fix.
+The expanded probes test four-client resize without subsequent input and check
+actual visible wave pixels. See the [follow-up](docs/GENERIC-GRAPHICS-APPS.md#resize-latency-follow-up--2026-10-05)
+and `bench/{artifacts,results}/2026-10-05-wave-resize`; old evidence is unchanged.
 
 ## Previous feature handover — 2026-10-04
 

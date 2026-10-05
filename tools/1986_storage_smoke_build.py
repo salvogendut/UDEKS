@@ -73,6 +73,7 @@ def main():
         wave=map_exports((ROOT/'build/user/native-wave/xwave_native.map').read_text())
         for symbol,define in (('presents','PRESENTS'),('width','WIDTH'),('height','HEIGHT')):
             calc_flags.append('-DUDEKS_WAVE_'+define+'='+str(wave['_native_wave_'+symbol][0]-0x1000+0x18000))
+        calc_flags.append('-DUDEKS_WAVE_PROJECTION='+str(wave['_udeks_wave_projection_state'][0]-0x1000+0x18000))
         draw=map_exports((ROOT/'build/user/native-draw/xdraw.map').read_text())
         calc_flags.append('-DUDEKS_DRAW_CELLS='+str(draw['_udeks_xdraw_cells'][0]-0x1000+0x1c600))
     if args.four_apps:
