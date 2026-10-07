@@ -23,6 +23,17 @@ $(WRITE_BUILD)/write.bin: $(WRITE_OBJECTS) cfg/8502-iec-write.cfg
 $(WRITE_BUILD)/write.prg: $(WRITE_BUILD)/write.bin tools/bin_to_prg.py
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
 $(WRITE_OBJECTS): mk/storage.mk
+# Actual service integration, compile-only until placement and trusted owner/
+# exit hooks are qualified. Deliberately not in STORAGE_OBJECTS or boot targets.
+WRITE_POLICY_BUILD := build/storage-write-policy
+WRITE_POLICY_OBJECTS := $(addprefix $(WRITE_POLICY_BUILD)/,iec_service.o fs_namespace.o)
+.PHONY: storage-write-policy
+storage-write-policy: $(WRITE_POLICY_OBJECTS) storage-write-backend
+$(WRITE_POLICY_BUILD):
+	mkdir -p $@
+$(WRITE_POLICY_OBJECTS): mk/storage.mk include/udeks/storage_write.h include/udeks/cbm_write.h include/udeks/fs_namespace.h
+$(WRITE_POLICY_BUILD)/%.o: src/services/filesystem/%.c include/udeks/task_request.h | $(WRITE_POLICY_BUILD)
+	$(CL65) $(CFLAGS_8502) -D UDEKS_STORAGE_WRITES -D UDEKS_IEC_WRITE --static-locals --code-name STORAGECODE -c -o $@ $<
 .PHONY: filesystem-policy
 # Compile/measure the #26 namespace contract without changing the boot image.
 filesystem-policy: $(STORAGE_BUILD)/fs_namespace.o

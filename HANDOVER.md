@@ -6,7 +6,29 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — exact-empty backend follow-up, 2026-10-07
+## Current handoff — write-service policy, 2026-10-07
+
+The exact-empty backend checkpoint is committed/pushed as **`5e0aa88`**.
+This service-policy checkpoint extends the actual C storage
+service under the disabled `UDEKS_STORAGE_WRITES` flag: provisional mode-3
+CREATE, counted WRITE/checked CLOSE, opt-in RO/RW same-device remounting,
+alias prevention and trusted-instance handle ownership/cleanup. The 61-case
+service suite includes the old read-only tests; full suite **1,276 tests**.
+`make storage-write-policy` compiles the real policy with cc65 but deliberately
+does not link it into boot images. Container boot and placement/graphics gates
+pass; normal storage blobs and all three disk-image hashes are unchanged.
+
+The private `udeks_storage_caller()` provider is **not implemented**; the
+cleanup function is **not called by real task exit/cancel or loader return**
+yet. No public ABI bump, console save command or write-enabled image is
+claimed. The measured full addition is at least 3,762 code/data + 67 BSS bytes,
+versus 327 free code bytes: next settle service placement/delivery, then wire
+trusted per-invocation identity and cleanup before enabling public routing.
+Keep all four app slots, recovery, cache and stack reservations intact. See
+[Storage 0.3](docs/STORAGE-0.3.md#service-integration-checkpoint--compile-only-2026-10-07)
+for the exact contract, measurements, tests and outstanding hooks.
+
+## Exact-empty backend checkpoint — 2026-10-07
 
 The user selected disk writes as the next feature and requested an issue and
 branch. [Issue #44](https://github.com/salvogendut/UDEKS/issues/44) tracks

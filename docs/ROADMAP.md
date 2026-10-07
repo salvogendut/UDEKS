@@ -164,19 +164,24 @@ mounts or applications must not require rebuilding the kernel.
 from boot images. Exact empty and binary create/readback/persistence now pass
 VICE on all three disk formats. A checked, new-file-only length correction
 handles DOS's synthetic CR without changing ordinary CR files or the reader.
-Integration still needs placement, mount permissions, ownership and cleanup.
+Checkpoint `5e0aa88` is committed/pushed. The actual C storage service now has
+compile-only, host-tested create/write/close policy, opt-in RW/remount
+permissions and instance-bound handles/cleanup. Production placement, trusted
+identity/exit hooks and public routing are still due. Measured additions total
+3,762 code/data bytes against 327 free; preserve app slots and recovery/stack
+reservations rather than enabling an overflowing service.
 The next user-testable target is one independent console save/readback command
 through the public API, not the standalone transport probe.
 
-1. Define and host-test a versioned create-exclusive OPEN / counted WRITE /
-   checked CLOSE contract. Decide root/data mount write enablement, handle
-   ownership, partial-write/error and cancellation behavior; preserve console
-   WRITE and old read-only clients. Measure current normal/panic/service/driver
-   and private-stack budgets before implementation.
-2. Add binary-safe writes in the C storage service, preferring drive-managed
-   DOS file channels over a new raw sector/BAM allocator. Keep timing-sensitive
-   IEC in assembly, bootfs read-only and namespace/collision checks unchanged.
-   Existing files must never be silently replaced.
+1. **Implemented privately:** create-exclusive OPEN / counted WRITE / checked
+   CLOSE, root/data RW permissions, handle-owner checks and cleanup function;
+   host tests preserve console WRITE and old read clients. Values are not yet
+   published in the syscall ABI. Backend is emulator-qualified separately.
+2. **Next:** settle measured service placement/delivery, then wire trusted
+   per-invocation identity and exit/cancel cleanup into the scheduler and
+   foreground loader. Add versioned routing and mount/SDK support. Keep IEC
+   timing in assembly, bootfs RO and namespace collision checks intact; never
+   overwrite existing files or borrow protected application/stack allocations.
 3. Deliver an independent console fixture through the public API: create a
    new file, write known data, check final CLOSE/status, reopen/read back, and
    demonstrate persistence across reboot. Qualify VICE D64/D71/D81, native

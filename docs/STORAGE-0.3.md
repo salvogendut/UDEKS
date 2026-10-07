@@ -17,7 +17,7 @@ This is **not linked into UDEKS** yet. Boot images, recovery, the request ABI
 Applications cannot save files through the public API yet. The probe calls
 the private backend directly; it is not the roadmap's standalone console app.
 
-The initial backend was committed and pushed as `ad01c45`. The follow-up adds
+The initial backend was committed and pushed as `ad01c45`. Follow-up `5e0aa88` adds
 exact empty-file finalization, qualified on all three VICE drive types. All
 1,215 host tests and the container build/layout gates pass. All three normal
 boot images remain byte-identical. The initial diagnostic is
@@ -128,15 +128,90 @@ compiler helpers also cost space. The current layout cannot simply absorb
 the additions. Consolidate shared DOS-status logic and measure the complete
 service before selecting any new reservation; retain actual-map assertions.
 
+## Service integration checkpoint — compile-only, 2026-10-07
+
+The actual `iec_service.c`, behind **`UDEKS_STORAGE_WRITES`**, now implements
+the policy and dispatch described below. This is not a second model of the
+service. The normal build does **not** define that flag or link the writer.
+`storage_write.h` is a private integration contract; UTRQ still advertises
+0.13 and the resident gateway has not been changed. Applications cannot yet
+use the provisional 0.14 values.
+
+- OPEN mode 3 is write-only/create-exclusive for ordinary data under `/` or
+  `/mnt`, including relative paths. `/bin` and `/etc` creation is deferred;
+  root suffix aliases remain rejected. The complete directory scan precedes
+  CREATE, including folded collisions, splat/locked entries and transport errors.
+- MOUNT flag 1 requests RW; flag 2 requests a same-device remount (3 = remount
+  RW, 2 = remount RO). These are accepted only for the provisional minor.
+  Legacy/boot mounts remain RO; recovery bootfs cannot be written. Root may
+  be remounted after boot without replacing the disk identity or changing cwd.
+  No RW alias is allowed in either direction, even when the other alias is RO.
+  A live handle blocks remounting; STATFS reports effective permissions.
+- One fd 4 remains shared by readers/directories/writers. Every handle is
+  bound to a trusted, nonzero **instance identity**, not request payload or a
+  reusable task-slot number. Only that instance may read/write/close it.
+  The trusted `udeks_storage_cleanup(instance)` function closes only a matching
+  handle, releases it even on failure and leaves the shared request untouched.
+- Counted binary WRITE returns an accepted prefix once; any error then stays
+  sticky through subsequent writes and CLOSE. CLOSE always checks the backend
+  and releases ownership. Console descriptors 1/2 keep their existing route.
+
+**Not implemented yet:** the trusted caller provider, scheduler exit/cancel
+and synchronous-loader cleanup call sites, banked cleanup entry, resident
+WRITE routing, mount-command options, SDK wrapper, production placement and
+public-API probe. Cleanup is tested as a function, **not** claimed to run on
+real task exit yet. The caller provider intentionally remains an unresolved
+external in the compile-only object; do not substitute a task number or request
+field to make a link pass. It must distinguish foreground invocations too,
+and cleanup must precede identity reuse/wrap and task-memory reclamation.
+
+`tests/test_storage_write_service.py` runs **61 cases**: 36 inherited read-only
+compatibility cases plus 25 write-policy/lifetime cases against the real
+dispatcher/namespace/sector reader, with a writer stub for fault injection.
+The real writer/empty-finalizer/IEC behavior remains separately qualified by
+the backend tests and preserved VICE results; these policy tests are not a
+new end-to-end drive qualification.
+
+```sh
+python3 -m unittest discover -s tests -p test_storage_write_service.py
+distrobox-enter my-distrobox -- make -j8 storage-write-policy
+# Inspect actual emitted segments; this target does not link a boot image.
+distrobox-enter my-distrobox -- od65 --dump-segments \
+  build/storage-write-policy/iec_service.o \
+  build/storage-write-policy/fs_namespace.o
+```
+
+Measured with the normal policy compiler flags:
+
+| Object | Read-only code / rodata / BSS | Write-enabled code / rodata / BSS |
+| --- | ---: | ---: |
+| `iec_service.o` | 2,814 / 25 / 103 | 3,737 / 25 / 113 |
+| `fs_namespace.o` | 2,330 / 0 / 70 | 3,037 / 14 / 76 |
+
+Thus policy plus outgoing-name encoding adds **1,644 code/data and 16 BSS
+bytes**. With the backend delta above the total is **3,762 code/data and 67
+BSS bytes**, before extra linked helpers and resident hooks. Existing BSS
+would grow from 275 to at least 342 bytes within the 384-byte state reservation;
+the separate stack headroom is not available for code or state. The code
+deficit is at least **3,435 bytes** after the current 327-byte free budget,
+even ignoring fragmentation. This requires a real placement/delivery decision,
+not enabling a flag or shaving a few instruction bytes. Preserve the four app
+allocations, recovery bootfs, graphics cache and both software/hardware stacks.
+
+Verification: **1,276 host tests**, cc65 compile-only target, normal boot and
+placement/graphics checks. Production storage blobs and D64/D71/D81 hashes
+remain identical to `5e0aa88`. No new VICE/1986/hardware qualification is
+claimed for this service increment.
+
 ## Proposed public contract — not advertised or frozen yet
 
 The intended next UTRQ minor keeps operations READ=1, WRITE=2, OPEN=6 and
 CLOSE=9, and preserves OPEN modes 0 (read), 1 (directory), 2 (exec).
-A new mode will mean write-only/create-exclusive: no append, replace or
-truncate. Filename suffix encoding uses the existing namespace policy;
-the initial application use case is ordinary data files, not an installer
-for executables. The precise new mode/flag values remain unadvertised until
-the full service and compatibility tests are present.
+The private service implementation above proposes mode 3 for
+write-only/create-exclusive: no append, replace or truncate. Filename
+encoding uses the existing namespace policy; the initial application use
+case is ordinary data files, not an installer for executables. The new
+mode/flag values remain unadvertised until the full integration is qualified.
 
 - **Mounts:** old mounts and boot defaults remain read-only. Add explicit
   opt-in read-write mounting and same-device remounting, including the root
@@ -164,9 +239,9 @@ the full service and compatibility tests are present.
 
 ## Next concrete deliverable
 
-Integrate this backend into the bank-1 storage service with measured placement,
-add explicit mount permissions/ownership and
-versioned request routing, then provide one independent console save/readback
-command. That is the next user-testable checkpoint. Qualify it on disposable
+Resolve placement/delivery for the measured write-enabled service, wire trusted
+caller identity and exit/loader cleanup, then add versioned request routing
+and one independent console save/readback command. That is the next
+user-testable checkpoint. Qualify it on disposable
 D64/D71/D81 media, 1986 and then C128+PI1541 before merge. Sprite-editor saving
 and shell redirection are consumers later, not prerequisites.
