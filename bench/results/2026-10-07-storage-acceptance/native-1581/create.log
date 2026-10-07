@@ -1,0 +1,36 @@
+PC=FF74 1581=AF5F jam=0 rawIEC=1 fdc=00 track=0 sector=0 request=00/00/00 exit=0
+PC=E4A8 1581=AE00 jam=0 rawIEC=1 fdc=80 track=3 sector=8 request=00/00/00 exit=0
+PC=E462 1581=AD20 jam=0 rawIEC=1 fdc=00 track=6 sector=2 request=00/00/00 exit=0
+PC=E3C4 1581=CD17 jam=0 rawIEC=1 fdc=81 track=0 sector=0 request=00/00/00 exit=0
+PC=E569 1581=95A3 jam=0 rawIEC=1 fdc=00 track=3 sector=2 request=00/00/00 exit=0
+PC=E4AB 1581=ADFB jam=0 rawIEC=1 fdc=80 track=8 sector=3 request=00/00/00 exit=0
+PC=E450 1581=C96C jam=0 rawIEC=1 fdc=81 track=10 sector=10 request=01/01/00 exit=0
+PC=E422 1581=9F19 jam=0 rawIEC=1 fdc=00 track=11 sector=5 request=01/06/00 exit=0
+command: save /denied 1 -> accepted (Return release=916 frames)
+PASS save /denied 1: Read-only filesystem
+command: df -> accepted (Return release=1242 frames)
+PASS df: Read-only mount
+command: mount -o remount,rw 8 / -> accepted (Return release=867 frames)
+PASS mount -o remount,rw 8 /: ready (read-write)
+command: df -> accepted (Return release=1242 frames)
+PASS df: Read-write mount
+command: save /binary 515 -> accepted (Return release=2224 frames)
+PASS save /binary 515: save: created and verified
+command: save /zero 0 -> accepted (Return release=2463 frames)
+PASS save /zero 0: save: created and verified
+command: save /binary 515 -> accepted (Return release=1229 frames)
+PASS save /binary 515: File exists
+command: save /nmitest 515 -> accepted (Return release=2245 frames)
+PASS save /nmitest 515: save: created and verified
+PASS RESTORE and CIA2 NMI drained, count=983
+command: xclock & -> accepted (Return release=1722 frames)
+command: save /graphics 24 -> accepted (Return release=2122 frames)
+PASS save /graphics 24: save: created and verified
+command: xclock -q -> accepted (Return release=122 frames)
+command: mount -o remount,ro 8 / -> accepted (Return release=900 frames)
+PASS mount -o remount,ro 8 /: ready (read-only)
+command: save /denied 1 -> accepted (Return release=991 frames)
+PASS save /denied 1: Read-only filesystem
+command: cat /hello -> accepted (Return release=1389 frames)
+PASS cat /hello: HELLO UDEKS
+PASS native 1986 public binary/empty write/readback, native input, RO defaults

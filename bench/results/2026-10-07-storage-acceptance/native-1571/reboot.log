@@ -1,0 +1,23 @@
+PC=FF74 drive=EAB7 jam=0 speed=1 CIA2=07/3F bus=110 via=02/1A request=00/00/00 exit=0
+PC=E3BC drive=D59C jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E572 drive=E9C3 jam=0 speed=0 CIA2=27/3F bus=100 via=0D/1A request=00/00/00 exit=0
+PC=E3B7 drive=F866 jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E45F drive=E9AE jam=0 speed=0 CIA2=47/3F bus=111 via=05/1A request=00/00/00 exit=0
+PC=E4B1 drive=E968 jam=0 speed=0 CIA2=47/3F bus=101 via=0D/1A request=00/00/00 exit=0
+PC=F7DA drive=D40C jam=0 speed=0 CIA2=A7/3F bus=100 via=0C/1A request=00/00/00 exit=0
+PC=E32B drive=F9D9 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=01/06/00 exit=0
+command: save /denied 1 -> accepted (Return release=808 frames)
+PASS save /denied 1: Read-only filesystem
+command: df -> accepted (Return release=988 frames)
+PASS df: Read-only mount
+command: save -c /binary 515 -> accepted (Return release=1195 frames)
+PASS save -c /binary 515: save: verified
+command: save -c /zero 0 -> accepted (Return release=1086 frames)
+PASS save -c /zero 0: save: verified
+command: save -c /nmitest 515 -> accepted (Return release=1176 frames)
+PASS save -c /nmitest 515: save: verified
+command: save -c /graphics 24 -> accepted (Return release=1094 frames)
+PASS save -c /graphics 24: save: verified
+command: cat /hello -> accepted (Return release=1060 frames)
+PASS cat /hello: HELLO UDEKS
+PASS native 1986 public binary/empty write/readback, native input, RO defaults

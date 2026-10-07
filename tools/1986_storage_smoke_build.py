@@ -5,6 +5,8 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
+import tempfile
 from pathlib import Path
 import shlex
 import shutil
@@ -14,6 +16,7 @@ from build_d71 import install_prg_file
 from build_d81 import install_file as install_d81_file
 from add_disk_apps import add_apps
 from gen_capability_imports import map_exports
+from storage_public_probe import files
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('input_smoke', ROOT/'tools/1986_input_smoke_build.py')
@@ -40,7 +43,12 @@ def main():
     parser.add_argument('--four-apps', action='store_true', help='four-app native input and independent lifecycle qualification')
     parser.add_argument('--four-native', action='store_true', help='four generic native clients, actual keyboard and 1351 input')
     parser.add_argument('--native-clock', action='store_true', help='two relocatable clocks with native input and legacy peers')
+    parser.add_argument('--storage-write', action='store_true', help='public create/readback/reboot with native keyboard and NMI')
     args = parser.parse_args()
+    if args.storage_write and any((args.disk_exec,args.disk_shell,args.sysinfo,args.disk_graphics,
+                                  args.drag_regression,args.root_namespace,args.xcalc,args.four_apps,
+                                  args.four_native,args.native_clock)):
+        parser.error('--storage-write is a standalone qualification mode')
     if args.four_native and any((args.disk_exec,args.disk_shell,args.sysinfo,args.disk_graphics,
                                  args.drag_regression,args.root_namespace,args.xcalc,args.four_apps,args.native_clock)):
         parser.error('--four-native is a standalone qualification mode')
@@ -53,12 +61,16 @@ def main():
         parser.error('use --drive 1581 with D81, or --drive 1571 with D64/D71')
     work = args.output.resolve()
     work.mkdir(parents=True, exist_ok=True)
+    if args.storage_write:
+        work=Path(tempfile.mkdtemp(prefix='write-',dir=work))
     binary = work/'smoke'
     emulator = args.emulator.resolve()
     flags = shlex.split(subprocess.check_output(['pkg-config', '--cflags', '--libs', 'sdl3'], text=True))
     kernel_map = (ROOT/'build/8502/udeks-8502.map').read_text()
     console_base = int(re.search(r'^LOWBSS\s+([0-9A-Fa-f]+)',kernel_map,re.M)[1],16)
     calc_flags = []
+    if args.storage_write:
+        calc_flags=['-DUDEKS_STORAGE_WRITE_SMOKE','-DUDEKS_DISK_GRAPHICS_SMOKE']
     if args.xcalc or args.four_apps or args.four_native:
         calc_map = (ROOT/('build/user/native-calc/xcalc_native.map' if args.four_native else 'build/user/xcalc.map')).read_text()
         calc_flags = ['-DUDEKS_XCALC_SMOKE','-DUDEKS_DISK_GRAPHICS_SMOKE']
@@ -105,11 +117,38 @@ def main():
     if args.native_clock:
         program=(ROOT/'build/native-clients/clock/NCLOCK.BIN').read_bytes()
         data=bytearray(add_apps(data,[('NCLOCK.BIN',program),('CLOCK2.BIN',program)]))
-    elif not args.disk_exec:
+    elif not args.disk_exec and not args.storage_write:
         install = install_d81_file if args.drive=='1581' else install_prg_file
         install(data, 'EMPTY', b'', file_type=0x81)
         install(data, 'ONE', b'X', file_type=0x81)
     disk.write_bytes(data)
+    if args.storage_write:
+        original=bytes(data)
+        for phase in ('create','reboot'):
+            environment=os.environ.copy()
+            environment.pop('UDEKS_WRITE_REBOOT',None)
+            if phase=='reboot': environment['UDEKS_WRITE_REBOOT']='1'
+            with (work/(phase+'.log')).open('w') as log:
+                result=subprocess.run([str(binary),str(args.roms.resolve()),str(disk),
+                    smoke.slot_address(ROOT/'build/8502/udeks-scheduler-overlay.map'),str(work/(phase+'.vsf'))],
+                    stdout=log,stderr=subprocess.STDOUT,env=environment)
+            print((work/(phase+'.log')).read_text())
+            if result.returncode: raise SystemExit(result.returncode)
+        before,after=files(original),files(disk.read_bytes())
+        for name,payload in before.items():
+            if after.get(name)!=payload: raise AssertionError(('existing file changed',name))
+        expected={n.encode():bytes(i&255 for i in range(size)) for n,size in
+                  dict(BINARY=515,ZERO=0,NMITEST=515,GRAPHICS=24).items()}
+        if {n:v for n,v in after.items() if n not in before}!=expected:
+            raise AssertionError('native persisted file contents disagree')
+        (work/'result.json').write_text(json.dumps(dict(drive=args.drive,
+            disk_sha256=hashlib.sha256(original).hexdigest(),
+            written_disk_sha256=hashlib.sha256(disk.read_bytes()).hexdigest(),
+            emulator_revision=subprocess.check_output(['git','-C',str(emulator),'rev-parse','HEAD'],text=True).strip(),
+            phases=['create','reboot'],existing_files_unchanged=len(before),
+            created={n.decode():len(v) for n,v in expected.items()}),indent=2)+'\n')
+        print('PASS native public write evidence:',work)
+        return
     with (work/'run.log').open('w') as log:
         result = subprocess.run([str(binary), str(args.roms.resolve()), str(disk),
             smoke.slot_address(ROOT/'build/8502/udeks-scheduler-overlay.map'), str(work/'result.vsf')],

@@ -1,0 +1,47 @@
+evidence: /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/storage/failures/1581-761t3the
+PASS mount 11 /mnt
+PASS mount -o rw 9 /mnt
+PASS save /mnt/NO 24
+PASS save -c /mnt/KEEP 24
+PASS umount /mnt
+PASS mount -o rw 9 /mnt
+PASS wleak /mnt/RETURN1
+PASS save -c /mnt/RETURN1 24
+PASS wleak /mnt/RETURN2
+PASS save -c /mnt/RETURN2 24
+PASS whold &
+PASS save -c /mnt/OWNER0 24
+PASS whold &
+PASS save -c /mnt/OWNER1 24
+PASS parent &
+PASS save -c /mnt/CHILD 24
+PASS umount /mnt
+PASS mount -o rw 9 /mnt
+PASS save /mnt/FULL 515
+PASS save -c /mnt/KEEP 24
+PASS cat /hello
+PASS umount /mnt
+PASS mount -o rw 9 /mnt
+PASS save /mnt/PARTIAL 4096
+PASS save -c /mnt/KEEP 24
+PASS cat /hello
+PASS umount /mnt
+PASS mount -o rw 9 /mnt
+PASS whold &
+monitor unavailable for diagnostics: [Errno 111] Connection refused
+Traceback (most recent call last):
+  File "/var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/tools/storage_failure_probe.py", line 272, in <module>
+    if __name__=='__main__': main()
+                             ~~~~^^
+  File "/var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/tools/storage_failure_probe.py", line 224, in main
+    release(action)
+    ~~~~~~~^^^^^^^^
+  File "/var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/tools/storage_failure_probe.py", line 145, in release
+    def release(value): sp.write_blocks(port,[(client('release'),bytes((value,)))],'worker')
+                        ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/tools/shadow_boot_probe.py", line 437, in write_blocks
+    live = parse_monitor_byte(run("m ff00 ff00", b":ff00"), 0xFF00)
+                              ~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/tools/shadow_boot_probe.py", line 432, in run
+    chunk = connection.recv(4096)
+ConnectionResetError: [Errno 104] Connection reset by peer

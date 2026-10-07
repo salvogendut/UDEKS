@@ -230,3 +230,13 @@ storage-owner-fixtures:
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 $(OWNER_BUILD)/child.bin $(OWNER_BUILD)/CHILD.BIN
 storage-owner-probe:
 	$(PYTHON) tools/storage_owner_probe.py
+
+FAILURE_BUILD := build/storage-failures
+.PHONY: storage-failure-fixtures
+storage-failure-fixtures:
+	$(PYTHON) tools/build_console_example.py --filesystem --static-locals --source bench/storage-failures/foreground.c --name WLEAK --output $(FAILURE_BUILD)/foreground
+	$(PYTHON) tools/build_graphical_example.py --source bench/storage-failures/holder.c --name WHOLD --static-locals --export _writer_stage --export _writer_release --export _writer_case --export _writer_errno --export _writer_written --export _writer_closed --output $(FAILURE_BUILD)/holder
+	$(PYTHON) tools/build_graphical_example.py --source bench/storage-owner/parent.c --name PARENT --static-locals --export _parent_stage --export _parent_release --export _parent_error --export _parent_result --output $(FAILURE_BUILD)/parent
+	$(CA65) --cpu 6502 -o $(FAILURE_BUILD)/child.o bench/storage-failures/child.s
+	$(LD65) -C bench/storage-owner/child.cfg -o $(FAILURE_BUILD)/child.bin $(FAILURE_BUILD)/child.o
+	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 $(FAILURE_BUILD)/child.bin $(FAILURE_BUILD)/CHILD.BIN

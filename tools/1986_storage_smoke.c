@@ -212,6 +212,10 @@ static void drag_regression(void) {
 #endif
 #endif
 
+#ifdef UDEKS_STORAGE_WRITE_SMOKE
+#include "1986_storage_write_smoke.inc"
+#endif
+
 int main(int argc, char **argv) {
     require(argc == 5, "usage: storage-smoke ROMDIR DISK SLOTADDR SNAPSHOT");
     Config config;
@@ -260,6 +264,11 @@ int main(int argc, char **argv) {
 #endif
 #ifdef UDEKS_NATIVE_CLOCK_SMOKE
     native_clock_smoke();
+    free(machine);
+    return 0;
+#endif
+#ifdef UDEKS_STORAGE_WRITE_SMOKE
+    storage_write_smoke();
     free(machine);
     return 0;
 #endif

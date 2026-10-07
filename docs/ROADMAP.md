@@ -20,7 +20,11 @@ immediate priority; that architectural milestone follows the bounded write
 slice. Guarded boot delivery and program-lifetime cleanup are VICE-qualified.
 Step 2 now exposes opt-in create-only public writes, a file SDK and disk SAVE
 command; all three VICE disk formats pass cold-boot/readback persistence.
-Step 3 is final failure/platform acceptance and merge. Boot mounts remain RO.
+Step 3 is underway: public failure/retirement checks pass on VICE 1541/1571;
+1581 passes except mid-write eject (VICE process loss). Native 1986 D64/D81
+input, NMI and reboot/readback pass. The user confirmed the manual checklist on
+real C128/PI1541 on 2026-10-07. Final review/merge and the explicit 1581 coverage
+gap remain. Boot mounts remain RO.
 The sprite editor stays parked.
 
 **Completed feature (accepted 2026-10-05): generic graphical applications**,
@@ -178,13 +182,20 @@ delivery plan is **three steps**, with steps 1 and 2 complete in this worktree:
    Checked CLOSE, exact-empty/binary readback, duplicate rejection, background
    clock and reboot persistence pass on VICE D64/D71/D81. Boot stays RO;
    no append/overwrite/redirection. Ready for user testing on disposable media.
-3. **Next — acceptance and merge.** Qualify the complete public path and failure
-   cases on VICE D64/D71/D81, native 1986 and disposable C128/PI1541 media;
-   retain read/boot/recovery, input and graphics checks. Then PR/merge #44.
+3. **Functional acceptance passed; review/merge pending.** The user confirmed
+   the manual checklist in 1986 and on real C128/PI1541 (2026-10-07), including
+   persistent binary/empty files, duplicate/RO rejection, graphics, RESTORE and
+   console input. Keep the separate VICE 1581 mid-write-ejection gap explicit
+   when reviewing the failure matrix, then PR/merge #44.
 
 Step-1 evidence: [boot ownership qualification](../bench/results/2026-10-07-storage-ownership/README.md).
 Step-2 evidence: [public save/readback qualification](../bench/results/2026-10-07-storage-public/README.md).
-It is not a new physical-hardware or integrated RESTORE qualification.
+Step-3 evidence: [failure, retirement and native 1986 qualification](../bench/results/2026-10-07-storage-acceptance/README.md).
+RESTORE/recurring CIA2 NMI and native input pass on 1986 D64/D81. VICE 1541/1571
+pass the full failure suite; 1581 mid-write eject remains unqualified because
+the emulator process disappears. Physical C128/PI1541 functional acceptance is
+user-confirmed; physical fault injection and 1581 media loss are not covered by
+that report.
 
 **Acceptance:** exact empty/binary/multi-sector/final-partial-file contents;
 meaningful disk-full, write-protect, missing-device, transport and close errors;

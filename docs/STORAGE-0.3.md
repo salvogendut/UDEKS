@@ -3,10 +3,10 @@
 Work on [issue #44](https://github.com/salvogendut/UDEKS/issues/44), branch
 `storage-0.3-disk-write`, lives in `build/storage-disk-write`.
 
-## Current checkpoint: usable public writes — step 2 complete
+## Current checkpoint: public writes accepted on C128/PI1541; review pending
 
 Boot ownership/private-lease work is committed and pushed as **160c591**.
-Step 2 now exposes **UTRQ 0.14**, with create-exclusive OPEN, counted binary
+Step 2 is committed and pushed as **5fb989b**. It exposes **UTRQ 0.14**, with create-exclusive OPEN, counted binary
 WRITE and checked CLOSE through the existing request gates. File policy stays
 in the bank-1 service; there is no new resident command or app allocation.
 
@@ -25,10 +25,79 @@ preexisting file unchanged and exact contents of all new files. Exact normal
 and written images plus console records are
 [preserved](../bench/results/2026-10-07-storage-public/README.md).
 
-**Step 3 remains:** public-path failure/cleanup qualification, integrated RESTORE,
-native 1986 and disposable physical C128/PI1541 acceptance, then PR/merge.
+**Step 3 is in progress:** VICE 1541/D64 and 1571/D71 pass the public failure
+and real writer-retirement suite. 1581/D81 passes with one explicit exception:
+ejecting media mid-write loses the Flatpak VICE process, so that case is not
+qualified. Native 1986 D64/1571 and D81/1581 pass keyboard/1351 input, RESTORE,
+recurring CIA2 NMIs during a save, and fresh-process readback. Exact evidence
+is [preserved](../bench/results/2026-10-07-storage-acceptance/README.md).
+The user confirmed the manual checklist in 1986 and then on a **real C128 with
+PI1541** on 2026-10-07: binary/empty saves, duplicate rejection, clock dragging,
+RESTORE and console input, RO remount, cold-boot readback and RO boot defaults.
+This closes the requested physical functional-acceptance gate. It does not
+qualify physical media removal, power loss or 1581 fault behavior. The separate
+1581 media-loss coverage gap remains explicit for final review; no PR/merge yet.
 No append/overwrite/delete/redirection, multi-open, rollback or power-loss
 guarantee. On failure a partial file may remain. Use disposable images/media.
+
+The step-3 failure harness uses independent public clients, real owner
+retirement, and generated data disks on unit 9; normal system images do not
+include its fixtures. It tests read-only media, full/partially full disks,
+return/EXIT/CANCEL cleanup, removal during WRITE and drive loss before CLOSE.
+Neither the syscall implementation nor its replies are patched.
+
+The full-disk case exposed DOS returning a track-allocation error rather than
+72 on completely exhausted media. Create now checks free blocks after collision
+scanning and before opening a new file. Known exhaustion returns `ENOSPC`,
+while corrupt geometry/transport errors stay errors and existing names still
+return `EEXIST`. This adds 40 policy bytes (54 remain), no state or allocation.
+
+Reproduction uses **fresh disposable copies**; fault tests intentionally leave
+some new files incomplete. Never use original media for removal/power-off tests:
+
+```sh
+distrobox-enter my-distrobox -- make -j8 boot storage-failure-fixtures placement-check graphics-apps-check
+python3 tools/storage_failure_probe.py --drive 1541 --disk build/boot/udeks.d64
+python3 tools/storage_failure_probe.py --drive 1571 --disk build/boot/udeks.d71
+python3 tools/storage_failure_probe.py --drive 1581 --disk build/boot/udeks.d81
+distrobox-enter my-distrobox -- python3 tools/1986_storage_smoke_build.py --storage-write \
+  --emulator /path/to/1986 --roms /path/to/1986/roms --disk build/boot/udeks.d64
+# Add --drive 1581 and use udeks.d81 for the second native test.
+```
+
+For the documented VICE 1581 limitation, `--skip-media-removal` runs the
+remaining checks and explicitly lists the skipped case in its report. Default
+behavior remains strict. CLOSE failure uses checked drive-disconnect controls;
+buffered firmware can acknowledge CLOSE after an eject alone.
+
+### Physical acceptance — passed 2026-10-07; reproduction checklist
+
+User-reported pass on real C128/PI1541, following the D64 checklist below and
+the earlier 1986 pass. The supplied candidate is archived with SHA-256
+`1e29e08fe0e633f6b5d643623dbf1661973651d4806138a9aaeb9cdec240a678`.
+No hardware memory dump or independent checksum of the tested media was supplied;
+this is manual acceptance, not an instrumented physical fault-injection run.
+
+Use the fresh `build/boot/udeks.d64` in this feature worktree (or the preserved
+normal candidate in the evidence directory), not an earlier download snapshot:
+
+```text
+mount -o remount,rw 8 /
+save /WRTEST 515
+save /EMPTY 0
+save /WRTEST 515
+xclock &
+save /LIVE 24
+mount -o remount,ro 8 /
+save /DENIED 1
+```
+
+First two saves and LIVE must report created and verified; the repeated WRTEST
+must report File exists, and DENIED must report Read-only filesystem. Drag the
+clock, press RESTORE, and check that console input still works. Cold boot the
+same written copy, then run `save -c /WRTEST 515`, `save -c /EMPTY 0`, and
+`save -c /LIVE 24`: all must verify. Check `cat /hello` and ordinary app launches.
+Do not eject the live system disk or perform failure injection on valuable media.
 
 ## Earlier checkpoint: boot integration and ownership complete
 

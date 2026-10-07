@@ -121,6 +121,10 @@ small recovery command retains its earlier read-only contract.
   `ENOENT` under the existing namespace rules. A non-writable mount returns
   `EROFS`; a folded-name collision (including locked or unclosed entries)
   returns `EEXIST`. Validation and directory collision scanning precede create.
+  A subsequent free-block check rejects known exhaustion with `ENOSPC`
+  before opening the output; even an empty SEQ needs one data block. Malformed
+  geometry or transport errors remain errors, not a guessed disk-full result.
+  This check is not a reservation or a guarantee that the complete write fits.
   Earlier minors reject create mode with `EINVAL`.
 - `WRITE` (2): fd 4, flags zero, **0–24 binary bytes**, including NUL. Console
   descriptors 1/2 remain unchanged. A read handle, foreign/stale owner, or

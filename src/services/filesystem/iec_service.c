@@ -347,6 +347,13 @@ uint8_t udeks_storage_dispatch(void)
             status = find_unique();
             if (status != UDEKS_TREQ_ENOENT)
                 return reply(status ? status : UDEKS_TREQ_EEXIST, 0);
+            /* A completely full DOS image can fail allocation with a track
+             * error instead of DOS 72. Reject known exhaustion before OPEN;
+             * never reinterpret a real transport/geometry error as ENOSPC.
+             * Even an empty SEQ needs one data block. */
+            status = udeks_cbm_space(device);
+            if (status) return reply(status, 0);
+            if (!udeks_cbm_free_blocks) return reply(UDEKS_CBM_ENOSPC, 0);
             /* find_unique writes saved_entry only on a match. No-match leaves
              * the validated physical name intact; every other result rejects. */
             i = 0;

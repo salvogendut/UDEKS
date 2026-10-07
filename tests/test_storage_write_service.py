@@ -41,6 +41,7 @@ class StorageWriteService(baseline.StorageService):
     def setUp(self):
         super().setUp()
         self.lib.test_writer_reset()
+        self.bam()
 
     def mount14(self, unit=8, path=b'/mnt', flags=1):
         return self.request(17, bytes((unit,))+path, flags=flags, minor=14)
@@ -206,6 +207,29 @@ class StorageWriteService(baseline.StorageService):
             self.assertEqual(self.close(), error(9))
         self.byte('create_error').value = 0
         self.assertEqual(self.create(), OPEN)
+
+    def test_full_disk_rejected_before_create_and_collision_keeps_precedence(self):
+        self.assertEqual(self.mount14(), OK)
+        bam = self.disk[18, 0]
+        for track in range(1, 36):
+            bam[4*track] = 0
+        self.sync()
+        self.assertEqual(self.create(), error(28))
+        self.assertEqual(self.word('create_calls').value, 0)
+        self.assertEqual(self.close(), error(9))
+        self.file(b'untouched', b'NEW')
+        self.assertEqual(self.create(), error(17))
+        self.assertEqual(self.word('create_calls').value, 0)
+        self.bam()
+        self.assertEqual(self.create(b'/mnt/another'), OPEN)
+
+    def test_invalid_bam_is_not_misreported_as_disk_full(self):
+        self.assertEqual(self.mount14(), OK)
+        self.disk[18, 0][4] = 22  # track 1 has only 21 sectors
+        self.sync()
+        self.assertEqual(self.create(), error(5))
+        self.assertEqual(self.word('create_calls').value, 0)
+        self.assertEqual(self.close(), error(9))
 
     def test_owner_and_generation_are_not_request_supplied(self):
         self.assertEqual(self.mount14(), OK)

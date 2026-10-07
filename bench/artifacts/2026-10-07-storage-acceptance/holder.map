@@ -1,0 +1,115 @@
+Modules list:
+-------------
+entry.o:
+    STARTUP           Offs=000000  Size=000003  Align=00001  Fill=0000
+request.o:
+    CODE              Offs=000000  Size=000044  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000006  Align=00001  Fill=0000
+holder.o:
+    CODE              Offs=000044  Size=0001FA  Align=00001  Fill=0000
+    RODATA            Offs=000006  Size=00000C  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=00023E  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=00024C  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000257  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=00026D  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000272  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000288  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=0002A2  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               001000  001002  000003  00001
+CODE                  001003  0012BA  0002B8  00001
+RODATA                0012BB  0012CC  000012  00001
+BSS                   0012CD  0012D4  000008  00001
+
+
+Exports list by name:
+---------------------
+_udeks_graphical_main     0010BC RLA    _udeks_program_entry      001000 RLA    
+_writer_case              0012CF RLA    _writer_closed            0012D2 RLA    
+_writer_errno             0012D0 RLA    _writer_release           0012CE RLA    
+_writer_stage             0012CD RLA    _writer_written           0012D1 RLA    
+addysp                    001242 RLA    incaxy                    001251 RLA    
+incsp2                    001262 RLA    incsp3                    001270 RLA    
+ptr1                      00000A RLZ    pusha                     001279 RLA    
+pushax                    00128F RLA    sp                        000002 RLZ    
+staspidx                  0012A5 RLA    tmp1                      000012 RLZ    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    ptr1                      00000A RLZ    
+tmp1                      000012 RLZ    _udeks_program_entry      001000 RLA    
+_udeks_graphical_main     0010BC RLA    addysp                    001242 RLA    
+incaxy                    001251 RLA    incsp2                    001262 RLA    
+incsp3                    001270 RLA    pusha                     001279 RLA    
+pushax                    00128F RLA    staspidx                  0012A5 RLA    
+_writer_stage             0012CD RLA    _writer_release           0012CE RLA    
+_writer_case              0012CF RLA    _writer_errno             0012D0 RLA    
+_writer_written           0012D1 RLA    _writer_closed            0012D2 RLA    
+
+
+
+Imports list:
+-------------
+_udeks_graphical_main (holder.o):
+    entry.o                   user/lib/native_graphics_entry.s(3)
+_udeks_program_entry (entry.o):
+    [linker generated]       
+_writer_case (holder.o):
+    [linker generated]       
+_writer_closed (holder.o):
+    [linker generated]       
+_writer_errno (holder.o):
+    [linker generated]       
+_writer_release (holder.o):
+    [linker generated]       
+_writer_stage (holder.o):
+    [linker generated]       
+_writer_written (holder.o):
+    [linker generated]       
+addysp (addysp.o):
+    incsp3.o                  runtime/incsp3.s(8)
+incaxy (incaxy.o):
+    holder.o                  /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/storage-failures/holder/holder.s(300)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+incsp3 (incsp3.o):
+    holder.o                  /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/storage-failures/holder/holder.s(300)
+ptr1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    holder.o                  /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/storage-failures/holder/holder.s(11)
+pusha (pusha.o):
+    holder.o                  /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/storage-failures/holder/holder.s(300)
+    holder.o                  /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/storage-failures/holder/holder.s(300)
+pushax (pushax.o):
+    holder.o                  /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/storage-failures/holder/holder.s(300)
+sp (zeropage.o):
+    incsp2.o                  runtime/incsp2.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    holder.o                  /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/storage-failures/holder/holder.s(10)
+staspidx (staspidx.o):
+    holder.o                  /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/storage-failures/holder/holder.s(300)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    incaxy.o                  runtime/incaxy.s(8)
+

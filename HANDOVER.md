@@ -6,7 +6,66 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — public disk writes, step 2 complete, 2026-10-07
+## Current handoff — storage physical functional acceptance, 2026-10-07
+
+Step 2 was committed and pushed as **5fb989b** on `storage-0.3-disk-write` (#44).
+Step-3 changes in `build/storage-disk-write` are being committed and pushed for
+PR review at the user's request. Root main's unrelated edits/worktrees remain
+untouched. Merge itself is not authorized by this preparation request.
+
+The user confirmed all manual checklist tests in 1986, then reported **all
+tests passed on REAL C128 with Pi1541**. This covers binary/empty creation,
+duplicate rejection, clock dragging, RESTORE and console input, RO remount,
+cold-boot readback and RO boot defaults. The supplied D64 candidate is the
+archived `1e29e08f…`; no independent tested-media checksum/dump was supplied.
+Record this as physical functional acceptance, not as physical fault injection
+or a resolution of the VICE 1581 mid-write-ejection gap.
+
+- `storage-failure-fixtures` builds WLEAK (foreground return), WHOLD (native
+  EXIT/reuse), and PARENT/CHILD (real CANCEL/WAITPID, foreign CLOSE). Independent
+  public clients only; test clients are never shipped on normal disks. The
+  disposable fixture disk adds CHILD to recovery bootfs because legacy SPAWN
+  still resolves there. `name -q` is an advisory GRAPHICS event, not generic
+  lifecycle cancellation; the pure writer fixture does not poll graphics.
+- `tools/storage_failure_probe.py` uses drive 8 for copied system media and
+  drive 9 for generated data disks. Full media uses real allocated file chains,
+  not fabricated BAM counts. VICE 1541/1571 pass protection, absent unit, full/
+  partial-full writes, return/EXIT/CANCEL cleanup, mid-write eject, disconnected
+  CLOSE, recovery and a background-clock save. Independent decoding proves
+  preexisting file contents unchanged and exact successful new files.
+- Full-disk OPEN returned DOS 67 on VICE. Production fix: free-block preflight
+  after the complete collision scan, before create. Known full -> ENOSPC;
+  malformed geometry/transport errors are not relabeled. EEXIST precedence
+  stays intact. +40 bank-1 policy bytes, 54 remain; no BSS/allocation changes.
+- VICE 1581 mid-write `detach 9` repeatedly loses the emulator process. Failed
+  transcript retained. `--skip-media-removal` explicitly records that gap and
+  all remaining D81 cases pass, including CLOSE after actual drive disconnect.
+  Resource commands must quote both strings and verify readback. Runtime
+  write-protect toggling also isn't reliable; RO/RW phases use fresh processes.
+- `1986_storage_smoke_build.py --storage-write` uses unmodified sibling 1986
+  revision `19386ef`, real keyboard/1351 input and device-register NMI stress.
+  Fresh D64/1571 and D81/1581 runs both pass exact binary/empty saves, duplicate
+  rejection, RESTORE, CIA2 NMI during SAVE, clock drag and post-boot readback.
+- Exact candidates, fixtures, failed VICE transcript and passing results live
+  in `bench/{artifacts,results}/2026-10-07-storage-acceptance`; tests verify hashes
+  and decode preserved media. ROM-bearing snapshots stay out of the archive.
+  Final verification: **1,332 host tests**; container boot, placement-check and
+  graphics-apps-check pass. No VICE processes remain. Fresh normal disk SHA-256:
+  D64 `1e29e08f…`, D71 `80b74654…`, D81 `89c6cad9…`.
+
+Pre-merge validation found the local `build/boot/udeks.d81` contains WRTEST,
+EMPTY and LIVE from testing, with original files unchanged. Preserve that
+written image. A separately generated `build/storage/pre-merge-udeks.d81`
+matches the pristine archived candidate; D64/D71 build outputs match too.
+
+**Next:** review the step-3 commit and PR. Keep the unqualified 1581
+mid-write-ejection gate explicit before
+milestone completion/merge; the requested C128/PI1541 checklist no longer needs
+repeating for this candidate. No append/delete/redirection,
+multi-open, rollback or automatic RW boot. On errors, partial/splat files are
+expected and must not be silently retried. Do not start another feature here.
+
+## Earlier handoff — public disk writes, step 2 complete, 2026-10-07
 
 User requested commit/push, then step 2 of three. Step 1/private lease committed
 and pushed as **160c591** on `storage-0.3-disk-write` (#44). Step-2 changes are
