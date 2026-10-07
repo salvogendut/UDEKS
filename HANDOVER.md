@@ -6,7 +6,7 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — disk-write feature setup, 2026-10-07
+## Current handoff — disk-write backend, 2026-10-07
 
 The user selected disk writes as the next feature and requested an issue and
 branch. [Issue #44](https://github.com/salvogendut/UDEKS/issues/44) tracks
@@ -14,18 +14,35 @@ branch. [Issue #44](https://github.com/salvogendut/UDEKS/issues/44) tracks
 `build/storage-disk-write` worktree. Root main's unrelated console-plan edits
 and the earlier sprite-editor experiment remain untouched.
 
-This setup changes documentation only. The filesystem still has one serialized
+Implementation has begun in an isolated backend and standalone drive probe;
+see [Storage 0.3](docs/STORAGE-0.3.md) for code, reproduction and the remaining
+public-API gates. The production filesystem still has one serialized
 IEC stream, read-only open/read/close and no file-data WRITE dispatch; stdout/
-stderr WRITE is not a disk-write API. First define the versioned contract and
-measure placement, then implement create-only writes and checked finalization
+stderr WRITE is not a disk-write API. The new C writer and optional IEC output
+path are not linked into boot images. The current storage reservations have
+only 327 free code bytes; the private writer/transport alone adds 1,096 before
+service policy and compiler helpers. Keep the working boot layout intact.
+Implement the proposed versioned contract, permissions and owner cleanup
 in the C storage service, with no overwriting of existing files. Prefer DOS
 file channels; explicitly settle mount permissions, ownership, error/partial-
 file semantics and cleanup before implementation. Keep all tests on disposable
-image copies. Follow the [current roadmap](docs/ROADMAP.md#active-storage-03--create-only-disk-writes-44).
+image copies. Native DOS also inserts CR into an unwritten SEQ file: exact
+empty-file creation remains a gate, not a passed test or a reason to hide the
+byte in the reader. Follow the [current roadmap](docs/ROADMAP.md#active-storage-03--create-only-disk-writes-44).
 
 Service extraction follows this write milestone. Sprite persistence, general
 shell redirection, multi-open, overwrite/append and rendering work are not
-prerequisites and remain deferred. No disk-write qualification is claimed yet.
+prerequisites and remain deferred. No public-API, 1986 or physical-machine
+disk-write qualification is claimed yet.
+
+Checkpoint verification: **1,196 host tests**, reference-container boot and
+placement/graphics gates, and isolated VICE 1541/D64, 1571/D71, 1581/D81 runs.
+Each drive passed non-empty binary readback, restart persistence, duplicate
+rejection and write protection; exact empty files remain unsupported. Normal
+boot images are byte-identical to the pre-change baseline. Probe artifacts and
+results are preserved under `bench/{artifacts,results}/2026-10-07-iec-write`.
+All private VICE sessions exited. The next increment is service integration,
+with exact empty-file semantics still an explicit gate.
 
 ## Sprite-editor checkpoint — accepted and parked, 2026-10-07
 

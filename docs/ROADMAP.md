@@ -160,6 +160,13 @@ mounts or applications must not require rebuilding the kernel.
 
 ### Active: Storage 0.3 — create-only disk writes (#44)
 
+**In progress:** [private C writer and IEC probe](STORAGE-0.3.md), separate
+from boot images. Non-empty create/readback/persistence has passed VICE on all
+three disk formats. Integration still needs placement, permissions/ownership
+and exact empty-file semantics: stock DOS closes an unwritten SEQ as a CR byte.
+The next user-testable target is one independent console save/readback command
+through the public API, not the standalone transport probe.
+
 1. Define and host-test a versioned create-exclusive OPEN / counted WRITE /
    checked CLOSE contract. Decide root/data mount write enablement, handle
    ownership, partial-write/error and cancellation behavior; preserve console
@@ -184,7 +191,7 @@ rollback or power-loss safety; document possible partial files on failure.
 Overwrite/truncate, append, delete/rename, formatting/fsck, multi-open, seek,
 shell redirection, scripting, sprite-editor integration and performance work
 are deferred. Detailed safety gates and scope are in
-[#44](https://github.com/salvogendut/UDEKS/issues/44). This is planned work only.
+[#44](https://github.com/salvogendut/UDEKS/issues/44). Public writes remain disabled.
 
 ### Completed: generic graphical applications (#35 / PR #37)
 

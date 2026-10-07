@@ -25,6 +25,14 @@
         .export _udeks_iec_probe_lines
         .export _udeks_iec_probe_bits
 
+        .ifdef UDEKS_IEC_WRITE
+        .export _udeks_iec_listen_file, _udeks_iec_write_byte
+        .export _udeks_iec_unlisten, _udeks_iec_finish
+IEC_FILENAME_MAX = 22
+        .else
+IEC_FILENAME_MAX = 16
+        .endif
+
 CIA2_PRA       = $dd00
 CIA2_DDRA      = $dd02
 SPEED_REG      = $d030
@@ -47,7 +55,7 @@ iec_open:       .res 1
 iec_pending:    .res 1       ; prepared channel 2 survives UNTALK/status reads
 iec_defer:      .res 1
 _udeks_iec_filename_length: .res 1
-_udeks_iec_filename: .res 16
+_udeks_iec_filename: .res IEC_FILENAME_MAX
 iec_name_index: .res 1
 iec_value:      .res 1
 iec_eoi:        .res 1
@@ -308,9 +316,12 @@ prepare_file:
         pha
         lda _udeks_iec_filename_length
         beq @bad_name
-        cmp #$11
+        cmp #IEC_FILENAME_MAX+1
         bcs @bad_name
         lda iec_open
+        .ifdef UDEKS_IEC_WRITE
+        ora iec_pending
+        .endif
         bne @bad_name
         lda #$02
         sta iec_secondary
@@ -349,6 +360,16 @@ open_common:
         sta iec_saved_speed
         and #$fe              ; original C128 slow IEC uses 1 MHz
         sta SPEED_REG
+        .ifdef UDEKS_IEC_WRITE
+        ; Once OPEN has been attempted, cleanup must send CLOSE even if a
+        ; later filename/UNLISTEN handshake times out. The drive may have
+        ; accepted it. Keep the production read-only build byte-identical.
+        lda iec_secondary
+        beq :+
+        lda #1
+        sta iec_pending
+:
+        .endif
         lda CIA2_DDRA
         ora #$38
         sta CIA2_DDRA
@@ -663,3 +684,51 @@ _udeks_iec_command:
         jsr release_command
         lda iec_status
         rts
+
+        .ifdef UDEKS_IEC_WRITE
+; Prepared channel 2 remains owned across status reads and write chunks.
+_udeks_iec_listen_file:
+        lda iec_pending
+        beq @bad
+        lda iec_open
+        bne @bad
+        jsr attention
+        lda iec_device
+        ora #$20
+        clc
+        jsr send_byte
+        bne @done
+        lda #$62
+        clc
+        jsr send_byte
+        bne @done
+        jsr atn_high
+        lda #IEC_OK
+@done: rts
+@bad:  lda #IEC_BAD_STATE
+        rts
+
+; cc65 fastcall uint16: AX. X=1 requests EOI on the final chunk byte.
+_udeks_iec_write_byte:
+        cpx #1
+        jmp send_byte
+
+_udeks_iec_unlisten:
+        jsr attention
+        lda #$3f
+        clc
+        jsr send_byte
+        sta iec_status
+        jsr release_command
+        lda iec_status
+        rts
+
+_udeks_iec_finish:
+        lda #0
+        sta iec_open
+        sta iec_pending
+        jsr release_bus
+        lda iec_saved_speed
+        sta SPEED_REG
+        rts
+        .endif

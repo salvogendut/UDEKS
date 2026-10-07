@@ -1,5 +1,28 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 STORAGE_BUILD := build/storage
+# Separate write-backend probe. No new code or ABI is enabled in boot images.
+WRITE_BUILD := build/bench/iec-write
+WRITE_CFLAGS := -t none --cpu 6502 --standard c99 -Os -I include --static-locals -D UDEKS_IEC_WRITE
+WRITE_OBJECTS := $(addprefix $(WRITE_BUILD)/,entry.o main.o cbm_write.o cbm_file.o iec_slow.o)
+.PHONY: storage-write-backend storage-write-probe
+storage-write-backend: $(WRITE_BUILD)/write.prg
+storage-write-probe: storage-write-backend
+	$(PYTHON) tools/storage_write_probe.py
+$(WRITE_BUILD):
+	mkdir -p $@
+$(WRITE_BUILD)/entry.o: bench/iec-write/entry.s | $(WRITE_BUILD)
+	$(CA65) --cpu 6502 -o $@ $<
+$(WRITE_BUILD)/main.o: bench/iec-write/main.c include/udeks/cbm_write.h | $(WRITE_BUILD)
+	$(CL65) $(WRITE_CFLAGS) -c -o $@ $<
+$(WRITE_BUILD)/%.o: src/services/filesystem/%.c include/udeks/cbm_write.h include/udeks/iec_slow.h include/udeks/cbm_file.h | $(WRITE_BUILD)
+	$(CL65) $(WRITE_CFLAGS) -c -o $@ $<
+$(WRITE_BUILD)/iec_slow.o: src/services/filesystem/iec_slow.s | $(WRITE_BUILD)
+	$(CA65) --cpu 6502 -D UDEKS_IEC_WRITE -o $@ $<
+$(WRITE_BUILD)/write.bin: $(WRITE_OBJECTS) cfg/8502-iec-write.cfg
+	$(CL65) -t none -C cfg/8502-iec-write.cfg -m $(WRITE_BUILD)/write.map -o $@ $(WRITE_OBJECTS)
+$(WRITE_BUILD)/write.prg: $(WRITE_BUILD)/write.bin tools/bin_to_prg.py
+	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
+$(WRITE_OBJECTS): mk/storage.mk
 .PHONY: filesystem-policy
 # Compile/measure the #26 namespace contract without changing the boot image.
 filesystem-policy: $(STORAGE_BUILD)/fs_namespace.o
