@@ -31,6 +31,9 @@ static uint8_t sector_limit(uint8_t zone)
 static uint8_t read_sector(void);
 static uint8_t untalk(void);
 static uint8_t dos_status(void);
+#if defined(__CC65__) && defined(UDEKS_STORAGE_HIGH)
+#pragma code-name(push, "STORAGEHIGH")
+#endif
 /* Closed zero-data SEQ files acquire a CR in stock DOS. Correct ONLY the
  * length byte of the one block DOS just allocated to our new file. Its
  * buffer remains on the drive: U1 -> B-P -> one byte -> U2. The caller owns
@@ -101,6 +104,9 @@ done:
     if (udeks_cbm_close()) error = UDEKS_TREQ_EIO;
     return error;
 }
+#if defined(__CC65__) && defined(UDEKS_STORAGE_HIGH)
+#pragma code-name(pop)
+#endif
 #endif
 
 static uint8_t untalk(void)
@@ -251,7 +257,11 @@ uint16_t udeks_cbm_read(void)
  * excluding the two directory tracks just as CBM DOS BLOCKS FREE does. */
 uint16_t udeks_cbm_total_blocks, udeks_cbm_free_blocks;
 #ifdef __CC65__
+#ifdef UDEKS_STORAGE_HIGH
+#pragma code-name(push, "STORAGECODE")
+#else
 #pragma code-name(push, "IECCODE")
+#endif
 #endif
 uint8_t udeks_cbm_space(uint8_t device)
 {

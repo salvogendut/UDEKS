@@ -34,6 +34,40 @@ $(WRITE_POLICY_BUILD):
 $(WRITE_POLICY_OBJECTS): mk/storage.mk include/udeks/storage_write.h include/udeks/cbm_write.h include/udeks/fs_namespace.h
 $(WRITE_POLICY_BUILD)/%.o: src/services/filesystem/%.c include/udeks/task_request.h | $(WRITE_POLICY_BUILD)
 	$(CL65) $(CFLAGS_8502) -D UDEKS_STORAGE_WRITES -D UDEKS_IEC_WRITE --static-locals --code-name STORAGECODE -c -o $@ $<
+# Candidate placement only; never consumed by boot/disk image targets.
+WRITE_PLACEMENT_BUILD := build/storage-write-placement
+WRITE_PLACEMENT_OBJECTS := $(addprefix $(WRITE_PLACEMENT_BUILD)/,fs_namespace.o cbm_file.o cbm_write.o no-caller.o)
+.PHONY: storage-write-placement
+storage-write-placement: $(WRITE_PLACEMENT_BUILD)/module.bin
+$(WRITE_PLACEMENT_BUILD):
+	mkdir -p $@
+$(WRITE_PLACEMENT_OBJECTS): mk/storage.mk include/udeks/storage_write.h
+$(WRITE_PLACEMENT_BUILD)/fs_namespace.o: src/services/filesystem/fs_namespace.c include/udeks/fs_namespace.h | $(WRITE_PLACEMENT_BUILD)
+	$(CL65) $(WRITE_CFLAGS) --code-name STORAGEHIGH -c -o $@ $<
+$(WRITE_PLACEMENT_BUILD)/cbm_file.o: src/services/filesystem/cbm_file.c include/udeks/cbm_file.h | $(WRITE_PLACEMENT_BUILD)
+	$(CL65) $(WRITE_CFLAGS) -D UDEKS_STORAGE_HIGH -c -o $@ $<
+$(WRITE_PLACEMENT_BUILD)/cbm_write.o: src/services/filesystem/cbm_write.c include/udeks/cbm_write.h | $(WRITE_PLACEMENT_BUILD)
+	$(CL65) $(WRITE_CFLAGS) --code-name STORAGECODE -c -o $@ $<
+$(WRITE_PLACEMENT_BUILD)/no-caller.o: bench/storage-window/no-caller.s | $(WRITE_PLACEMENT_BUILD)
+	$(CA65) --cpu 6502 -o $@ $<
+$(WRITE_PLACEMENT_BUILD)/iec_slow.o: src/services/filesystem/iec_slow.s mk/storage.mk | $(WRITE_PLACEMENT_BUILD)
+	$(CA65) --cpu 6502 -D UDEKS_STORAGE_MODULE -D UDEKS_IEC_WRITE -o $@ $<
+$(WRITE_PLACEMENT_BUILD)/module.bin $(WRITE_PLACEMENT_BUILD)/policy.bin $(WRITE_PLACEMENT_BUILD)/driver.bin $(WRITE_PLACEMENT_BUILD)/hidden.bin $(WRITE_PLACEMENT_BUILD)/module.map &: \
+		$(WRITE_PLACEMENT_OBJECTS) $(WRITE_POLICY_BUILD)/iec_service.o $(STORAGE_BUILD)/iec_entry.o $(WRITE_PLACEMENT_BUILD)/iec_slow.o cfg/8502-storage-write-candidate.cfg
+	$(CL65) -t none -C cfg/8502-storage-write-candidate.cfg -m $(WRITE_PLACEMENT_BUILD)/module.map -o $(WRITE_PLACEMENT_BUILD)/module.bin $(filter %.o,$^)
+STORAGE_WINDOW_BUILD := build/bench/storage-window
+.PHONY: storage-window storage-window-probe
+storage-window: $(STORAGE_WINDOW_BUILD)/probe.prg storage-write-placement
+storage-window-probe: storage-window
+	$(PYTHON) tools/storage_window_probe.py
+$(STORAGE_WINDOW_BUILD):
+	mkdir -p $@
+$(STORAGE_WINDOW_BUILD)/probe.o: bench/storage-window/probe.s src/8502/nmi-common.inc | $(STORAGE_WINDOW_BUILD)
+	$(CA65) --cpu 6502 -I src/8502 -o $@ $<
+$(STORAGE_WINDOW_BUILD)/probe.bin: $(STORAGE_WINDOW_BUILD)/probe.o bench/storage-window/probe.cfg
+	$(LD65) -C bench/storage-window/probe.cfg -m $(STORAGE_WINDOW_BUILD)/probe.map -o $@ $<
+$(STORAGE_WINDOW_BUILD)/probe.prg: $(STORAGE_WINDOW_BUILD)/probe.bin tools/bin_to_prg.py
+	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
 .PHONY: filesystem-policy
 # Compile/measure the #26 namespace contract without changing the boot image.
 filesystem-policy: $(STORAGE_BUILD)/fs_namespace.o

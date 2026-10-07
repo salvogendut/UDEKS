@@ -6,27 +6,37 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — write-service policy, 2026-10-07
+## Current handoff — storage placement candidate, 2026-10-07
 
-The exact-empty backend checkpoint is committed/pushed as **`5e0aa88`**.
-This service-policy checkpoint extends the actual C storage
-service under the disabled `UDEKS_STORAGE_WRITES` flag: provisional mode-3
-CREATE, counted WRITE/checked CLOSE, opt-in RO/RW same-device remounting,
-alias prevention and trusted-instance handle ownership/cleanup. The 61-case
-service suite includes the old read-only tests; full suite **1,276 tests**.
-`make storage-write-policy` compiles the real policy with cc65 but deliberately
-does not link it into boot images. Container boot and placement/graphics gates
-pass; normal storage blobs and all three disk-image hashes are unchanged.
+The exact-empty backend (`5e0aa88`) and gated service policy (`c674c97`) are
+committed/pushed. This placement checkpoint measures the complete
+write-enabled service in `cfg/8502-storage-write-candidate.cfg` and qualifies
+a separate guarded-RAM-window proof. Normal boot images and the public ABI
+remain unchanged; do not install the link-candidate blobs as a live service.
+
+The candidate adds physical bank-1 `$F000–$FEFF`, exposed only while upper
+common is disabled in a synchronous IRQ-masked lease; `$FF00–$FFFF` is reserved
+for MMU mirrors and NMI handling. Actual linked free bytes: module 12, policy
+94, driver 346, state 42, hidden 2. Entry/snapshot/cleanup code must fit the
+remaining low-memory space; no app slot, recovery, cache or stack is borrowed.
+`make storage-window` builds the candidate and standalone ASM proof. Both VICE
+and 1986 pass both VIC-bank settings, 128 rounds / 384 NMIs each, including
+128 boundary-window arrivals, common-byte preservation and a failing negative
+control. Evidence is in `bench/{artifacts,results}/2026-10-07-storage-window`.
+Full suite **1,283 tests**, container boot and placement/graphics gates pass.
+Production storage blobs/D64/D71/D81 hashes are unchanged; no VICE remains.
 
 The private `udeks_storage_caller()` provider is **not implemented**; the
 cleanup function is **not called by real task exit/cancel or loader return**
 yet. No public ABI bump, console save command or write-enabled image is
-claimed. The measured full addition is at least 3,762 code/data + 67 BSS bytes,
-versus 327 free code bytes: next settle service placement/delivery, then wire
-trusted per-invocation identity and cleanup before enabling public routing.
-Keep all four app slots, recovery, cache and stack reservations intact. See
-[Storage 0.3](docs/STORAGE-0.3.md#service-integration-checkpoint--compile-only-2026-10-07)
-for the exact contract, measurements, tests and outstanding hooks.
+claimed. Next implement the bounded low-memory lease entry and private
+request/cwd/boot/caller snapshots, plus one-time boot delivery/mirror install
+before input starts. Hidden NMI pending MUST live below `$F000`; restore common
+before forwarding it to `$FFF5` to avoid the return-boundary race. Qualify the
+actual C service, stack/CPU-page context and RESTORE path before enabling
+public routing. The proof does not run the filesystem/scheduler/Z80 or qualify
+physical hardware/cartridge NMI. See [Storage 0.3](docs/STORAGE-0.3.md#placement-candidate--guarded-top-ram-window-2026-10-07)
+for scope, measurements and remaining gates.
 
 ## Exact-empty backend checkpoint — 2026-10-07
 

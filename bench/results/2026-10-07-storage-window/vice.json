@@ -1,0 +1,95 @@
+{
+  "scope": "standalone mapping/NMI proof and separate link-size candidate; no storage runtime/OS qualification",
+  "engine": "vice",
+  "layout": {
+    "module": {
+      "base": 4608,
+      "end": 6260,
+      "used": 1652,
+      "free": 12
+    },
+    "policy": {
+      "base": 45056,
+      "end": 50594,
+      "used": 5538,
+      "free": 94
+    },
+    "driver": {
+      "base": 58112,
+      "end": 59302,
+      "used": 1190,
+      "free": 346
+    },
+    "hidden": {
+      "base": 61440,
+      "end": 65278,
+      "used": 3838,
+      "free": 2
+    },
+    "state": {
+      "base": 57344,
+      "end": 57686,
+      "used": 342,
+      "free": 42
+    }
+  },
+  "records": [
+    {
+      "case": "vic-0",
+      "raw": "5357494e01020080d700a9008000000009097effa50000000000000000000000",
+      "decoded": {
+        "rounds": 128,
+        "visible_nmis": 215,
+        "hidden_nmis": 169,
+        "boundary_nmis": 128,
+        "rcr": 9,
+        "common_bytes_compared": 3840
+      }
+    },
+    {
+      "case": "vic-1",
+      "raw": "5357494e01020080d700a9008000000049497effa50000000000000000000000",
+      "decoded": {
+        "rounds": 128,
+        "visible_nmis": 215,
+        "hidden_nmis": 169,
+        "boundary_nmis": 128,
+        "rcr": 73,
+        "common_bytes_compared": 3840
+      }
+    },
+    {
+      "case": "no-forward",
+      "raw": "5357494e01800100010001000000000009000000a50000000000000000000000",
+      "decoded": {
+        "negative_control": "missing pending forwarding rejected"
+      }
+    }
+  ],
+  "provenance": "\nVICE - Versatile Commodore Emulator\n\n            ID: net.sf.VICE\n           Ref: app/net.sf.VICE/x86_64/stable\n          Arch: x86_64\n        Branch: stable\n       Version: 3.10\n       License: GPL-2.0+\n        Origin: flathub\n    Collection: org.flathub.Stable\n  Installation: system\nInstalled Size: 45,8\u00a0MB\n       Runtime: org.freedesktop.Platform/x86_64/25.08\n           Sdk: org.freedesktop.Sdk/x86_64/25.08\n\n        Commit: bbd997ea8cbf7e6ba06ff82136fd71069ce2011f93c006412bcda7bbde17e448\n        Parent: 68a5281bbbfb691d105e1006686691713eb0cab353a7d869f4b72c066eca18c7\n       Subject: Add desktop files for vsid, x64dtv, xcbm5x0, xscpu64 (c39f8386949f)\n          Date: 2026-01-18 14:54:47 +0000\n",
+  "artifacts": {
+    "probe.prg": "7eea86ec9970a20a3e8025ad6688e55ab8fac61e50d948fd99fd8c530ad5dbbd",
+    "no-forward.prg": "6bf9e0af5dbecf64872c088c5ee5b67bd138b2047647ca587316ec4aa6f82d26",
+    "module.map": "36be6e73561702b3c4aded0a3975bc9c19340f1d4935cfdfd3fa455f1f0554a8",
+    "module.bin": "82baec70aea194baa076e97f043e128aaa83f95b98042026b2da854eb2dba74c",
+    "policy.bin": "84b8a983b8bba7607a0ad472fac6767a44a5a69a006b7ac3a11dd83a8a230c54",
+    "driver.bin": "9a90395a16ae5bdf9582144256bcd16641295a95a46e930e6babc223801bc0ce",
+    "hidden.bin": "1e20ae56b666d2cb01dbc7077600ba17ad08c44e59380ba9991da741a4c85aa8"
+  },
+  "source_sha256": {
+    "bench/storage-window/probe.s": "0c90c62fe001da8556fbdc528d846126877b1b721d6a48f40bf70b780763c234",
+    "bench/storage-window/probe.cfg": "a45994db6743e4ffa1b5ae96c789fd7aea4f209bbb86e0207a37d4b6eff2d31a",
+    "bench/storage-window/runner.c": "306e2fdf84da7a328e0f29cfd4512157a98bdab192a4cbd83262a6b41c8dfca8",
+    "bench/storage-window/no-caller.s": "05b7f9ed576f8c493d0369a9f3f72fb085a379b12ba9f107260e17fab704c587",
+    "cfg/8502-storage-write-candidate.cfg": "594f2e612ebf33d823728a885f18b8d89f4bd0b48d1458995fd953ae1f3f9a17",
+    "mk/storage.mk": "e81af6734df213f3ba548c5cdcbf52d2e1d36c6e3d5a983ffa466872a05ed7f1",
+    "src/8502/nmi-common.inc": "887c7ee02f0458fada7394848cfdc839adec985a40cbfc540419089625d0e9ad",
+    "src/services/filesystem/cbm_file.c": "73fdce9a5357b23f40e47e31fa0b37f03f47a0451e48cd6fd377f7f3a23ec479",
+    "src/services/filesystem/cbm_write.c": "be36717ac956a24ac2220145cb7f28ec829b0e49306977520edd0e4da5785507",
+    "src/services/filesystem/iec_slow.s": "afe88670c30690c9da4cfb68026cba402fed987722cd72a0df50892ee6ab6914",
+    "src/services/filesystem/iec_service.c": "091757b344e6cdadd2e4932f72d2310e20112507bb0958da5aae185d1c66092b",
+    "src/services/filesystem/fs_namespace.c": "b8d853e1619d4e0e4d3211e17dba54e3ab014358d17b44912b2fc5a48a815746",
+    "src/services/filesystem/iec_entry.s": "ab25d6eb37ad2a9947a0d36360f36c08ab24ce41c84344cef35032387c6f9297",
+    "tools/storage_window_probe.py": "8856f978a5ffa6c9eac275c7a0b9886d7f1c90d2c476429ef965cd4f88d85baf"
+  }
+}

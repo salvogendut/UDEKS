@@ -164,12 +164,13 @@ mounts or applications must not require rebuilding the kernel.
 from boot images. Exact empty and binary create/readback/persistence now pass
 VICE on all three disk formats. A checked, new-file-only length correction
 handles DOS's synthetic CR without changing ordinary CR files or the reader.
-Checkpoint `5e0aa88` is committed/pushed. The actual C storage service now has
+Checkpoints `5e0aa88` and `c674c97` are committed/pushed. The C storage service has
 compile-only, host-tested create/write/close policy, opt-in RW/remount
-permissions and instance-bound handles/cleanup. Production placement, trusted
-identity/exit hooks and public routing are still due. Measured additions total
-3,762 code/data bytes against 327 free; preserve app slots and recovery/stack
-reservations rather than enabling an overflowing service.
+permissions and instance-bound handles/cleanup. The full service now links in
+an isolated candidate using hidden bank-1 top RAM; its separate mapping/NMI
+proof passes VICE and 1986 without consuming app slots or recovery/stack
+reservations. Production entry/boot delivery, trusted identity/exit hooks and
+public routing are still due. Normal boot images remain unchanged.
 The next user-testable target is one independent console save/readback command
 through the public API, not the standalone transport probe.
 
@@ -177,7 +178,8 @@ through the public API, not the standalone transport probe.
    CLOSE, root/data RW permissions, handle-owner checks and cleanup function;
    host tests preserve console WRITE and old read clients. Values are not yet
    published in the syscall ABI. Backend is emulator-qualified separately.
-2. **Next:** settle measured service placement/delivery, then wire trusted
+2. **Next:** integrate the measured guarded-window entry and boot delivery,
+   qualify the actual service across mapping changes, then wire trusted
    per-invocation identity and exit/cancel cleanup into the scheduler and
    foreground loader. Add versioned routing and mount/SDK support. Keep IEC
    timing in assembly, bootfs RO and namespace collision checks intact; never

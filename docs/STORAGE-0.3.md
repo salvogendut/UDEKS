@@ -203,6 +203,76 @@ placement/graphics checks. Production storage blobs and D64/D71/D81 hashes
 remain identical to `5e0aa88`. No new VICE/1986/hardware qualification is
 claimed for this service increment.
 
+## Placement candidate — guarded top-RAM window, 2026-10-07
+
+Policy checkpoint **`c674c97`** is committed/pushed. This placement
+checkpoint supplies a bounded link candidate and a separate executable mapping
+proof. It does **not** enable writes or change memory ownership in normal boot.
+
+The candidate uses physical **bank-1 `$F000–$FEFF`**, hidden by the ordinary
+bank-0 common window, only during an IRQ-masked, synchronous storage lease.
+Clear only `$D506` bit 3, preserving the common-size/bottom-sharing/VIC-bank
+bits; restore it before returning to any common code or scheduler. The entire
+`$FF00–$FFFF` page is excluded from C code/data for the MMU mirrors and mirrored
+NMI/vector handling. This uses stock 128 KiB RAM, not an expansion or an app
+allocation. The register behavior follows Commodore's original
+[C128/C128D Service Manual, MMU section](https://retro-bobbel.de/zimmers/cbm/schematics/computers/c128/servicemanuals/Commodore_128_128D_Service_Manual_314001-08_%281987_Nov%29_Alt_Ver.pdf).
+
+The full service/policy/backend objects and compiler helpers link within:
+
+| Physical bank-1 region | Linked end (inclusive) | Free bytes |
+| --- | --- | ---: |
+| `$1200–$187F` module | `$1873` | 12 |
+| `$B000–$C5FF` policy | `$C5A1` | 94 |
+| `$E000–$E17F` state | `$E155` | 42 |
+| `$E300–$E8FF` driver | `$E7A5` | 346 |
+| `$F000–$FEFF` hidden code/constants | `$FEFD` | 2 |
+
+Namespace code uses cc65 `-Os`; the namespace and empty-file finalizer go in
+`STORAGEHIGH`, constants alongside them, and BAM-query code moves from the
+driver to policy. The existing production object layout is unchanged unless
+the private candidate flags/config are selected. **Two free high bytes are
+not integration headroom:** the low driver/policy slack must pay for the
+entry/snapshot/cleanup machinery. The 42 BSS bytes are also a tight bound, not
+permission to use stack headroom. The link-only caller stub returns zero
+(denying OPEN); it is not a substitute for a trusted caller provider.
+
+The standalone ASM proof runs actual instructions in the hidden bank-1
+window, checks registers/carry/stack, compares all 3,840 common bytes below
+`$FF00` with their preimage, and injects CIA2 timer NMIs into visible, hidden
+and mapping-boundary windows. A hidden NMI must write a **private pending
+byte below `$F000`**, not a flag that vanishes when common mapping returns.
+On exit, restore common mapping **first**, then forward that low-memory flag
+by setting (never clearing) the real `$FFF5`. This avoids losing an NMI in
+the last instructions before remapping. Mirrored vectors/stub are installed
+with native CIA2 sources masked and acknowledged before enabling them.
+
+VICE and 1986 both pass 128 rounds per VIC-bank case (`$D506=$09` and `$49`):
+215 visible + 169 hidden NMIs = 384, with 128 observed in the boundary window.
+The negative control removes only pending forwarding and fails with code 1
+on both emulators. Exact artifacts/results are under
+`bench/{artifacts,results}/2026-10-07-storage-window` and verified by host tests.
+No disks are attached or modified by this proof.
+
+```sh
+distrobox-enter my-distrobox -- make -j8 storage-window
+python3 tools/storage_window_probe.py
+distrobox-enter my-distrobox -- python3 tools/storage_window_probe.py --engine 1986
+```
+
+**Still required:** boot delivery/one-time mirror installation before input
+starts; an entry/exit stub below `$F000`; private request/cwd/boot/caller
+snapshots (common records are hidden during C dispatch); real owner and cleanup
+hooks; stack-depth and relocated CPU-page checks with the actual service;
+integrated NMI/RESTORE, graphics, IEC and physical-C128 qualification. The
+standalone proof pins CPU pages to bank 0 and does not exercise the filesystem,
+scheduler, Z80 or cartridge-generated NMIs. Do not install the candidate blobs
+directly or claim production placement accepted from this proof alone.
+
+Verification: **1,283 host tests**, candidate link, normal boot and
+placement/graphics gates pass. Production storage blobs and all three disk
+images still have their pre-change hashes; no VICE sessions remain.
+
 ## Proposed public contract — not advertised or frozen yet
 
 The intended next UTRQ minor keeps operations READ=1, WRITE=2, OPEN=6 and
@@ -239,8 +309,9 @@ mode/flag values remain unadvertised until the full integration is qualified.
 
 ## Next concrete deliverable
 
-Resolve placement/delivery for the measured write-enabled service, wire trusted
-caller identity and exit/loader cleanup, then add versioned request routing
+Integrate and qualify the guarded-window entry and boot delivery within the
+measured candidate budget, wire trusted caller identity and exit/loader cleanup,
+then add versioned request routing
 and one independent console save/readback command. That is the next
 user-testable checkpoint. Qualify it on disposable
 D64/D71/D81 media, 1986 and then C128+PI1541 before merge. Sprite-editor saving
