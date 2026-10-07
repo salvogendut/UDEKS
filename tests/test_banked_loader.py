@@ -42,7 +42,7 @@ class BankedLoader(unittest.TestCase):
         loader = (ROOT/'src/services/app/banked_loader.s').read_text()
         self.assertIn('boot_saved_activation = $0c00', source)
         self.assertNotIn('boot_saved_activation:  .res', source)
-        self.assertIn('task_loader_end <= $fe80', source)
+        self.assertIn('task_loader_end <= $fe20', source)
         self.assertIn('* <= $ff00', source)
         self.assertIn('lda DISK_LOADER_CHILD_STATE-8,x', source)
         gate = source.split('banked_load_gate:', 1)[1].split('task_loader_end:', 1)[0]

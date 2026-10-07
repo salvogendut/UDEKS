@@ -12,9 +12,15 @@ class DiskExecLoader(unittest.TestCase):
     def test_ownership_binding_uses_linked_scheduler(self):
         fixture = ('Exports list by name:\n'
                    '_udeks_lifecycle_slots_private 00C7D9 RLA\n'
+                   '_udeks_lifecycle_current_private 00C819 RLA\n'
+                   '_udeks_bootfs_finish_error 00F65B REA\n'
                    'Exports list by value:\n')
         self.assertIn('$c7e2', render(fixture))
-        for bad in (fixture.replace('RLA', 'RLZ'), fixture.replace('00C7D9', '00F000')):
+        self.assertIn('STORAGE_CURRENT_TASK = $c819', render(fixture))
+        self.assertIn('STORAGE_FINISH_ERROR = $f65b', render(fixture))
+        for bad in (fixture.replace('RLA', 'RLZ'), fixture.replace('00C7D9', '00F000'),
+                    fixture.replace('00C819','00F000'), fixture.replace('00F65B','00F68A'),
+                    fixture.replace('REA','RLZ')):
             with self.assertRaises(ValueError): render(bad)
         with self.assertRaises(KeyError): render(fixture.replace('_private', '_missing'))
         state = (ROOT/'src/kernel/task_state.c').read_text()

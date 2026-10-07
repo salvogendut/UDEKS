@@ -97,10 +97,10 @@ class UserBoundaryTests(unittest.TestCase):
         self.assertIn("task_saved_zp:          .res $1e", loader)
 
     def test_transient_filesystem_calls_do_not_use_bank1_gateway(self):
-        source = (ROOT / "user/lib/filesystem.c").read_text()
+        source = (ROOT / "user/lib/fs_request.s").read_text().lower()
 
-        self.assertIn("UDEKS_SYSCALL_TASK_REQUEST", source)
-        self.assertNotIn("UDEKS_TASK_BANK_REQUEST", source)
+        self.assertIn("jsr $cf30", source)
+        self.assertNotIn("jsr $ff16", source)
 
     def test_architecture_decision_defines_both_sides(self):
         decision = (

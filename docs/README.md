@@ -7,6 +7,7 @@ addresses or status claims do not override the current source and ABI.
 ## Start here
 
 - [Roadmap](ROADMAP.md) — accepted features, limits and next priorities
+- [Disk-write work](STORAGE-0.3.md) — active feature (#44), private backend and integration gates
 - [Generic graphical-app plan](GENERIC-GRAPHICS-APPS.md) — current feature (#35)
 - [Independent apps SDK](GRAPHICAL-APPS-SDK.md) — console C commands and foreground/background graphical apps
 - [D81 / 1581 image](D81.md) — third build format, filesystem support and tests

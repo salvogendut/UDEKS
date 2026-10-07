@@ -210,7 +210,9 @@ def main() -> None:
                 b'' if args.banked_graphics is None else args.banked_graphics.read_bytes(),
                 b'' if args.banked_reloc is None else args.banked_reloc.read_bytes(),
                 b'' if args.banked_access is None else args.banked_access.read_bytes(),
-                b'' if args.retained_paths is None else args.retained_paths.read_bytes())
+                b'' if args.retained_paths is None else args.retained_paths.read_bytes(),
+                (args.storage / 'hidden.bin').read_bytes(),
+                (args.storage / 'install.bin').read_bytes())
     except ValueError as error:
         raise SystemExit(f"cannot build scheduler overlay: {error}") from error
     args.output.parent.mkdir(parents=True, exist_ok=True)

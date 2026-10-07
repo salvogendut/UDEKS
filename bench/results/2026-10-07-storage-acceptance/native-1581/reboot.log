@@ -1,0 +1,23 @@
+PC=FF74 1581=AF5F jam=0 rawIEC=1 fdc=00 track=0 sector=0 request=00/00/00 exit=0
+PC=E4A8 1581=AD38 jam=0 rawIEC=1 fdc=80 track=3 sector=5 request=00/00/00 exit=0
+PC=E4A2 1581=AD12 jam=0 rawIEC=1 fdc=00 track=6 sector=4 request=00/00/00 exit=0
+PC=E3C3 1581=CD1A jam=0 rawIEC=1 fdc=81 track=0 sector=0 request=00/00/00 exit=0
+PC=E571 1581=95A5 jam=0 rawIEC=1 fdc=00 track=3 sector=8 request=00/00/00 exit=0
+PC=E4A2 1581=ACFF jam=0 rawIEC=1 fdc=00 track=8 sector=8 request=00/00/00 exit=0
+PC=E44F 1581=C971 jam=0 rawIEC=1 fdc=83 track=10 sector=7 request=01/01/00 exit=0
+PC=E424 1581=AE92 jam=0 rawIEC=1 fdc=00 track=11 sector=2 request=01/06/00 exit=0
+command: save /denied 1 -> accepted (Return release=984 frames)
+PASS save /denied 1: Read-only filesystem
+command: df -> accepted (Return release=1273 frames)
+PASS df: Read-only mount
+command: save -c /binary 515 -> accepted (Return release=1473 frames)
+PASS save -c /binary 515: save: verified
+command: save -c /zero 0 -> accepted (Return release=1398 frames)
+PASS save -c /zero 0: save: verified
+command: save -c /nmitest 515 -> accepted (Return release=1464 frames)
+PASS save -c /nmitest 515: save: verified
+command: save -c /graphics 24 -> accepted (Return release=1440 frames)
+PASS save -c /graphics 24: save: verified
+command: cat /hello -> accepted (Return release=1396 frames)
+PASS cat /hello: HELLO UDEKS
+PASS native 1986 public binary/empty write/readback, native input, RO defaults

@@ -11,6 +11,8 @@
 #define UDEKS_IO_ERROR                  0xFFu
 #define UDEKS_O_RDONLY                  0x00u
 #define UDEKS_O_DIRECTORY               0x01u
+#define UDEKS_O_CREATE_EXCL             0x03u
+#define UDEKS_FILE_CHUNK                24u
 
 extern unsigned char udeks_errno;
 
@@ -20,6 +22,12 @@ unsigned char udeks_write(
     unsigned char descriptor, const unsigned char *text);
 unsigned char udeks_read(
     unsigned char descriptor, unsigned char *buffer, unsigned char count);
+/* Counted binary WRITE, up to 24 bytes. Returns accepted prefix or IO_ERROR.
+ * Never retry a short/error write. CLOSE and report failure; check CLOSE
+ * even after complete writes. Unlike udeks_write(), this accepts NUL bytes. */
+unsigned char udeks_write_bytes(
+    unsigned char descriptor, const unsigned char *buffer, unsigned char count);
+const unsigned char *udeks_error_string(unsigned char error);
 /* Returns 1 when readable, 0 on timeout, UDEKS_IO_ERROR on failure. */
 unsigned char udeks_poll(unsigned char descriptor, unsigned int timeout);
 unsigned char udeks_exec_line(

@@ -27,6 +27,88 @@ static uint8_t sector_limit(uint8_t zone)
 #pragma code-name(pop)
 #endif
 
+#ifdef UDEKS_IEC_WRITE
+static uint8_t read_sector(void);
+static uint8_t untalk(void);
+static uint8_t dos_status(void);
+#if defined(__CC65__) && defined(UDEKS_STORAGE_HIGH)
+#pragma code-name(push, "STORAGEHIGH")
+#endif
+/* Closed zero-data SEQ files acquire a CR in stock DOS. Correct ONLY the
+ * length byte of the one block DOS just allocated to our new file. Its
+ * buffer remains on the drive: U1 -> B-P -> one byte -> U2. The caller owns
+ * the successful-create token; this is not exposed as truncate or raw I/O.
+ * Scan to directory EOF before issuing any modifying command. */
+uint8_t udeks_cbm_finish_empty(uint8_t device, const uint8_t *name)
+{
+    uint8_t i, state, found = 0, same, file_track = 0, file_sector = 0;
+    uint8_t count, error = UDEKS_TREQ_EIO;
+    uint16_t value;
+    static const uint8_t pointer[] = "B-P:2 1";
+    static const uint8_t update[] = "U2:2 0 00 00";
+    if (udeks_cbm_begin(device)) return UDEKS_TREQ_EIO;
+    while ((state = udeks_cbm_next()) == 1u) {
+        if (!(udeks_cbm_entry[0] & 0x3fu)) continue;
+        same = 1;
+        for (i = 0; i < 16u; ++i) if (udeks_cbm_entry[i+3u] != name[i]) same = 0;
+        if (!same) continue;
+        if (found || udeks_cbm_entry[0] != 0x81u ||
+            udeks_cbm_entry[28] != 1u || udeks_cbm_entry[29]) goto done;
+        found = 1;
+        file_track = udeks_cbm_entry[1]; file_sector = udeks_cbm_entry[2];
+    }
+    if (state || !found || !file_track ||
+        (d81 ? file_track == 40u : file_track == 18u || file_track == 53u)) goto done;
+    /* Reject obvious cross-linked directory entries, including ones which
+     * preceded our match. No other live entry may name this first sector. */
+    track = d81 ? 40u : 18u; sector = d81 ? 3u : 1u;
+    slots = 0; dirs = d81 ? 37u : 19u; found = 0;
+    while ((state = udeks_cbm_next()) == 1u) {
+        if ((udeks_cbm_entry[0] & 0x3fu) && udeks_cbm_entry[1] == file_track &&
+            udeks_cbm_entry[2] == file_sector && ++found != 1u) goto done;
+    }
+    if (state || found != 1u) goto done;
+    track = file_track; sector = file_sector;
+    if (read_sector() || track || (sector != 1u && sector != 2u)) goto done;
+    count = sector;
+    value = udeks_iec_read_byte();
+    if (value > 255u || (count == 2u && value != 13u)) goto done;
+    /* Consume the entire U1 reply; a truncated/early-EOI sector isn't proof. */
+    i = 3;
+    do {
+        value = udeks_iec_read_byte();
+        if (value > 511u || (value > 255u && i != 255u)) goto done;
+    } while (++i);
+    if (value < 256u) goto done;
+    if (count == 1u) { error = 0; goto done; } /* already exact-empty */
+    if (untalk()) goto done;
+    for (i = 0; i < 7u; ++i) udeks_iec_filename[i] = pointer[i];
+    udeks_iec_filename_length = 7;
+    if (udeks_iec_command() || dos_status()) goto done;
+    state = udeks_iec_listen_file();
+    if (!state) state = udeks_iec_write_byte(0x101u); /* position 1 := 1, EOI */
+    if (udeks_iec_unlisten()) state = 1;
+    if (dos_status() || state) goto done;
+    for (i = 0; i < 12u; ++i) udeks_iec_filename[i] = update[i];
+    udeks_iec_filename[7] += file_track / 10u;
+    udeks_iec_filename[8] += file_track % 10u;
+    udeks_iec_filename[10] += file_sector / 10u;
+    udeks_iec_filename[11] += file_sector % 10u;
+    udeks_iec_filename_length = 12;
+    if (udeks_iec_command() || dos_status()) goto done;
+    /* Re-read from disk, not the write buffer, and require the exact link. */
+    track = file_track; sector = file_sector;
+    if (read_sector() || track || sector != 1u || udeks_iec_read_byte() != 13u) goto done;
+    error = 0;
+done:
+    if (udeks_cbm_close()) error = UDEKS_TREQ_EIO;
+    return error;
+}
+#if defined(__CC65__) && defined(UDEKS_STORAGE_HIGH)
+#pragma code-name(pop)
+#endif
+#endif
+
 static uint8_t untalk(void)
 {
     if (!talking) return 0;
@@ -175,7 +257,11 @@ uint16_t udeks_cbm_read(void)
  * excluding the two directory tracks just as CBM DOS BLOCKS FREE does. */
 uint16_t udeks_cbm_total_blocks, udeks_cbm_free_blocks;
 #ifdef __CC65__
+#ifdef UDEKS_STORAGE_HIGH
+#pragma code-name(push, "STORAGECODE")
+#else
 #pragma code-name(push, "IECCODE")
+#endif
 #endif
 uint8_t udeks_cbm_space(uint8_t device)
 {

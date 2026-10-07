@@ -1,0 +1,160 @@
+Modules list:
+-------------
+entry.o:
+    STARTUP           Offs=000000  Size=000012  Align=00001  Fill=0000
+syscall.o:
+    CODE              Offs=000000  Size=000026  Align=00001  Fill=0000
+mount_rw.o:
+    CODE              Offs=000026  Size=0003E0  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000096  Align=00001  Fill=0000
+mount_rw_request.o:
+    CODE              Offs=000406  Size=000068  Align=00001  Fill=0000
+    RODATA            Offs=000096  Size=00000A  Align=00001  Fill=0000
+error_string.o:
+    CODE              Offs=00046E  Size=00007F  Align=00001  Fill=0000
+    RODATA            Offs=0000A0  Size=0000E3  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=0004ED  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000509  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(bneg.o):
+    CODE              Offs=000517  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=000525  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=000532  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp6.o):
+    CODE              Offs=00053F  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=00054C  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=00057A  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=000581  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popa.o):
+    CODE              Offs=0005AD  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=0005B9  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=0005CF  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=0005E9  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               000200  000211  000012  00001
+CODE                  000212  000805  0005F4  00001
+RODATA                000806  000988  000183  00001
+
+
+Exports list by name:
+---------------------
+_udeks_error_string       000680 RLA    _udeks_mount_rw_request   000618 RLA    
+_udeks_program_main       000238 RLA    _udeks_write              00021C RLA    
+_udeks_write_byte         000212 RLA    addysp                    00071C RLA    
+bnegax                    000729 RLA    booleq                    000799 RLA    
+decsp2                    000737 RLA    decsp3                    000744 RLA    
+decsp6                    000751 RLA    incsp1                    00078C RLA    
+popa                      0007BF RLA    ptr1                      00000A RLZ    
+pusha                     0007CF RLA    pusha0                    0007E3 RLA    
+pushax                    0007E5 RLA    regsave                   000006 RLZ    
+sp                        000002 RLZ    sreg                      000004 RLZ    
+staxysp                   0007FD RLA    tmp1                      000012 RLZ    
+tosadda0                  0006FF RLA    tosicmp                   000760 RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+regsave                   000006 RLZ    ptr1                      00000A RLZ    
+tmp1                      000012 RLZ    _udeks_write_byte         000212 RLA    
+_udeks_write              00021C RLA    _udeks_program_main       000238 RLA    
+_udeks_mount_rw_request   000618 RLA    _udeks_error_string       000680 RLA    
+tosadda0                  0006FF RLA    addysp                    00071C RLA    
+bnegax                    000729 RLA    decsp2                    000737 RLA    
+decsp3                    000744 RLA    decsp6                    000751 RLA    
+tosicmp                   000760 RLA    incsp1                    00078C RLA    
+booleq                    000799 RLA    popa                      0007BF RLA    
+pusha                     0007CF RLA    pusha0                    0007E3 RLA    
+pushax                    0007E5 RLA    staxysp                   0007FD RLA    
+
+
+
+Imports list:
+-------------
+_udeks_error_string (error_string.o):
+    mount_rw.o                user/bin/mount_rw.s(16)
+_udeks_mount_rw_request (mount_rw_request.o):
+    mount_rw.o                user/bin/mount_rw.s(18)
+_udeks_program_main (mount_rw.o):
+    entry.o                   user/lib/entry.s(7)
+_udeks_write (syscall.o):
+    mount_rw.o                user/bin/mount_rw.s(15)
+_udeks_write_byte (syscall.o):
+    mount_rw.o                user/bin/mount_rw.s(14)
+addysp (addysp.o):
+    mount_rw.o                user/bin/mount_rw.s(554)
+bnegax (bneg.o):
+    mount_rw.o                user/bin/mount_rw.s(554)
+booleq (makebool.o):
+    mount_rw.o                user/bin/mount_rw.s(554)
+decsp2 (decsp2.o):
+    mount_rw.o                user/bin/mount_rw.s(554)
+decsp3 (decsp3.o):
+    mount_rw.o                user/bin/mount_rw.s(554)
+decsp6 (decsp6.o):
+    mount_rw.o                user/bin/mount_rw.s(554)
+incsp1 (incsp1.o):
+    error_string.o            user/lib/error_string.s(117)
+popa (popa.o):
+    mount_rw_request.o        user/lib/mount_rw_request.s(4)
+    syscall.o                 user/lib/syscall.s(12)
+ptr1 (zeropage.o):
+    mount_rw.o                user/bin/mount_rw.s(11)
+    syscall.o                 user/lib/syscall.s(13)
+    entry.o                   user/lib/entry.s(9)
+pusha (pusha.o):
+    error_string.o            user/lib/error_string.s(117)
+    mount_rw.o                user/bin/mount_rw.s(554)
+    entry.o                   user/lib/entry.s(8)
+pusha0 (pushax.o):
+    mount_rw.o                user/bin/mount_rw.s(554)
+pushax (pushax.o):
+    mount_rw.o                user/bin/mount_rw.s(554)
+regsave (zeropage.o):
+    mount_rw.o                user/bin/mount_rw.s(10)
+sp (zeropage.o):
+    staxsp.o                  runtime/staxsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popa.o                    runtime/popa.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp6.o                  runtime/decsp6.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    add.o                     runtime/add.s(12)
+    error_string.o            user/lib/error_string.s(10)
+    mount_rw.o                user/bin/mount_rw.s(10)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+staxysp (staxsp.o):
+    mount_rw.o                user/bin/mount_rw.s(554)
+tmp1 (zeropage.o):
+    add.o                     runtime/add.s(12)
+    mount_rw.o                user/bin/mount_rw.s(11)
+    syscall.o                 user/lib/syscall.s(13)
+    entry.o                   user/lib/entry.s(9)
+tosadda0 (add.o):
+    mount_rw.o                user/bin/mount_rw.s(554)
+tosicmp (icmp.o):
+    mount_rw.o                user/bin/mount_rw.s(554)
+

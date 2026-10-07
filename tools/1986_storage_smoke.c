@@ -212,8 +212,19 @@ static void drag_regression(void) {
 #endif
 #endif
 
+#ifdef UDEKS_STORAGE_WRITE_SMOKE
+#include "1986_storage_write_smoke.inc"
+#endif
+#ifdef UDEKS_STORAGE_EJECT_SMOKE
+#include "1986_storage_eject_smoke.inc"
+#endif
+
 int main(int argc, char **argv) {
+#ifdef UDEKS_STORAGE_EJECT_SMOKE
+    require(argc == 6, "usage: storage-smoke ROMDIR DISK SLOTADDR SNAPSHOT DATA_DISK");
+#else
     require(argc == 5, "usage: storage-smoke ROMDIR DISK SLOTADDR SNAPSHOT");
+#endif
     Config config;
     config_set_defaults(&config);
     config.col_mode_80 = true;
@@ -221,6 +232,11 @@ int main(int argc, char **argv) {
     config.joy_port_mode[1] = JOYPORT_JOYSTICK;
     config.real_disk_drive = true;
     config.drive_type = UDEKS_SMOKE_DRIVE;
+#ifdef UDEKS_STORAGE_EJECT_SMOKE
+    config.second_drive = true;
+    config.drive2_type = 1581;
+    config.drive2_unit = 9;
+#endif
     config.notify_mode = NOTIFY_MODE_CONSOLE;
     machine = calloc(1, sizeof(*machine));
     require(machine != NULL, "allocate emulator");
@@ -235,6 +251,10 @@ int main(int argc, char **argv) {
         snprintf(rom,sizeof(rom),"%s/dos1581-318045-02.bin",argv[1]);
         require(drive1581_load_rom(&machine->real1581[0],rom),"load 1581 drive ROM");
     }
+#ifdef UDEKS_STORAGE_EJECT_SMOKE
+    require(drive1581_load_rom(&machine->real1581[1],rom),"load second 1581 ROM");
+    require(drive_attach_disk(&machine->drive2,argv[5])==0,"attach disposable data D81");
+#endif
 #else
     snprintf(rom, sizeof(rom), "%s/dos1571cr.bin", argv[1]);
     require(drive1571cr_load_rom(&machine->integrated_drive, rom), "load drive ROM");
@@ -260,6 +280,16 @@ int main(int argc, char **argv) {
 #endif
 #ifdef UDEKS_NATIVE_CLOCK_SMOKE
     native_clock_smoke();
+    free(machine);
+    return 0;
+#endif
+#ifdef UDEKS_STORAGE_WRITE_SMOKE
+    storage_write_smoke();
+    free(machine);
+    return 0;
+#endif
+#ifdef UDEKS_STORAGE_EJECT_SMOKE
+    storage_eject_smoke(argv[5]);
     free(machine);
     return 0;
 #endif

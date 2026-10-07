@@ -13,6 +13,22 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
+**Completed feature (accepted for merge 2026-10-07):**
+[#44 — create-only disk writes](https://github.com/salvogendut/UDEKS/issues/44),
+branch `storage-0.3-disk-write`, [PR #45](https://github.com/salvogendut/UDEKS/pull/45).
+The next architectural milestone is the first disk-loaded non-kernel service.
+Guarded boot delivery and program-lifetime cleanup are VICE-qualified.
+Step 2 now exposes opt-in create-only public writes, a file SDK and disk SAVE
+command; all three VICE disk formats pass cold-boot/readback persistence.
+Step 3 is complete: public failure/retirement checks pass on VICE 1541/1571;
+1581 passes except mid-write eject (VICE process loss). Native 1986 D64/D81
+input, NMI and reboot/readback pass. The user confirmed the manual checklist on
+real C128/PI1541 on 2026-10-07. A follow-up native 1986 test now also passes
+1581 mid-write ejection, error handling, reinsertion and reboot readback;
+VICE's own failure remains undiagnosed. The user authorized merge; PR #45
+records its status. Boot mounts remain RO.
+The sprite editor stays parked.
+
 **Completed feature (accepted 2026-10-05): generic graphical applications**,
 [#35](https://github.com/salvogendut/UDEKS/issues/35). The first increment merged
 as [PR #36](https://github.com/salvogendut/UDEKS/pull/36);
@@ -39,7 +55,7 @@ Wave holds its computation cache across moves and yields during resize
 projection. A reported resize delay is reduced by app-local scale tables;
 [measured dense repaint latency remains](GENERIC-GRAPHICS-APPS.md#resize-latency-follow-up--2026-10-05),
 and renderer optimization stays separate. **Next: the first disk-loaded
-non-kernel service, in its own issue/branch.**
+non-kernel service.** Create-only writes (#44) are qualified and accepted.
 The exploratory `.CBM` work on `additional-apps` / #32 stays separate.
 
 **Accepted and parked (2026-10-07):** [`xsprdef`, the session sprite editor](XSPRDEF.md),
@@ -49,7 +65,7 @@ eight app-local monochrome definitions with magnified/1x views, confirmed
 session saves, Clear and Invert. It is a generic disk app; UTRQ 0.13 provides
 reusable bitmap tiles, not editor-specific kernel policy. Persistence/export,
 thumbnails, keyboard editing, multicolor and partial repaint remain deferred.
-This does not displace the next loadable-service milestone. Latest manual
+Further editor work stays deferred. Latest manual
 acceptance did not specify a platform; no new physical-C128 result is inferred.
 
 **Merged baseline:** four graphical apps (#30), [PR #31](https://github.com/salvogendut/UDEKS/pull/31),
@@ -64,7 +80,7 @@ Native 1986 D64 mouse/keyboard input also passes. The four-app candidate is read
 for user testing on physical C128; exact images/results are preserved in
 `bench/{artifacts,results}/2026-10-01-four-apps`.
 
-**After generic app loading: the first disk-loaded non-kernel service.** Define one
+**After the disk-write slice: the first disk-loaded non-kernel service.** Define one
 existing service's load/start/stop and dependency contract, then replace its
 preloaded copy with an ordinary disk image. Keep bootstrap/recovery working;
 do not make a scripting language or expanded task capacity prerequisites.
@@ -95,8 +111,9 @@ with bootstrap root mounting and an initially unmounted `/mnt`.
 The finishing corrections are implemented: specific app-launch errors,
 measured IEC/bootfs header status, a real mount-success message, and normal
 boot progress enabled to match the accepted diagnostic setting.
-Generic app loading is implemented and user-accepted; service extraction is
-next. Neither requires a scripting or graphics-optimization detour.
+Generic app loading and create-only disk writes are implemented and
+user-accepted; service extraction is next. No scripting or graphics-optimization
+detour is required.
 
 - Native D64/D71 boot, an 8502 executive, a bounded Z80 worker, a VDC root
   console, and an independent VIC-IIe graphical display are working.
@@ -146,16 +163,64 @@ mounts or applications must not require rebuilding the kernel.
 | Kernel and tasking | Cooperative root/command tasks plus four native banked allocations; general allocation, IPC and preemption due. |
 | Z80 secondary engine | Bounded task-safe worker API and cached wave computation work; broader operations and soak tests due. |
 | Graphics and input | Four generic native slots, migrated disk clients, dynamic names, foreground/background launch, targeted Ctrl+C and name-based stop accepted for merge (#35/PR #37). No new physical-platform result inferred. Repaint latency and focused-window keyboard input are separate work. |
-| Storage and applications | Disk shell, RC, graphics and disk commands (#21/#23/#25); root namespace accepted (#26/PR #28). Generic app loading precedes first disk-loaded service lifecycle. General scripting deferred (#27). |
+| Storage and applications | Disk shell, RC, graphics and disk commands (#21/#23/#25); root namespace accepted (#26/PR #28); create-only writes qualified and accepted (#44/PR #45). Next: disk-loaded service lifecycle. General scripting deferred (#27). |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
 
+### Completed: Storage 0.3 — create-only disk writes (#44 / PR #45)
+
+The [create-only backend](STORAGE-0.3.md) already passes exact empty/binary
+write/readback/persistence checks on all three VICE drive types. All **three
+delivery steps are complete**, with user approval to merge:
+
+1. **Done — boot integration and ownership.** Normal disks install the guarded
+   service; trusted context + generation identities distinguish native tasks
+   and successive synchronous console invocations. Real EXIT, CANCEL and
+   console-return paths close leaked handles before reuse. VICE D64/D71/D81
+   pass; recovery and the four-native-app regression pass too. Public UTRQ
+   stays 0.13, mounts stay RO, and no application/stack allocation is borrowed.
+2. **Done — usable public writes.** UTRQ 0.14 route, explicit RW/remount
+   options, counted binary SDK, disk SAVE.BIN and permission-aware `df`.
+   Checked CLOSE, exact-empty/binary readback, duplicate rejection, background
+   clock and reboot persistence pass on VICE D64/D71/D81. Boot stays RO;
+   no append/overwrite/redirection.
+3. **Done — functional acceptance and failure qualification.** The user confirmed
+   the manual checklist in 1986 and on real C128/PI1541 (2026-10-07), including
+   persistent binary/empty files, duplicate/RO rejection, graphics, RESTORE and
+   console input. The missing 1581 mid-write-ejection behavior is now covered
+   under 1986; retain VICE's failed-run caveat in the matrix. The follow-up
+   evidence is included in PR #45, with explicit user merge approval.
+
+Step-1 evidence: [boot ownership qualification](../bench/results/2026-10-07-storage-ownership/README.md).
+Step-2 evidence: [public save/readback qualification](../bench/results/2026-10-07-storage-public/README.md).
+Step-3 evidence: [failure, retirement and native 1986 qualification](../bench/results/2026-10-07-storage-acceptance/README.md).
+RESTORE/recurring CIA2 NMI and native input pass on 1986 D64/D81. VICE 1541/1571
+pass the full failure suite; 1581 mid-write eject remains unqualified because
+the emulator process disappears. Physical C128/PI1541 functional acceptance is
+user-confirmed; physical fault injection and 1581 media loss are not covered by
+that report.
+The separate [1986 ejection follow-up](../bench/results/2026-10-07-storage-eject-1986/README.md)
+passes the missing 1581 media-loss/recovery test using two ROM-backed drives,
+unchanged UDEKS/1986, and disposable media. VICE itself is not fixed or requalified.
+
+**Acceptance:** exact empty/binary/multi-sector/final-partial-file contents;
+meaningful disk-full, write-protect, missing-device, transport and close errors;
+no corruption of existing files or active handles; working read/boot/recovery,
+console, input and graphics afterward. All destructive qualification uses
+copied/disposable images, never the user's original media. Do not claim atomic
+rollback or power-loss safety; document possible partial files on failure.
+
+Overwrite/truncate, append, delete/rename, formatting/fsck, multi-open, seek,
+shell redirection, scripting, sprite-editor integration and performance work
+are deferred. Detailed safety gates and scope are in
+[#44](https://github.com/salvogendut/UDEKS/issues/44). Writes require explicit RW permission.
+
 ### Completed: generic graphical applications (#35 / PR #37)
 
 All three implementation steps below are complete and emulator-qualified;
-the user accepted the behavior and authorized merge on 2026-10-05. Continue
-with service extraction, not a graphics-optimization detour.
+the user accepted the behavior and authorized merge on 2026-10-05. The next
+feature is now disk writes, followed by service extraction, not graphics optimization.
 
 1. Prove one real C executable can load and execute in different compatible
    slots, with an explicit format/relocation contract and measured memory bounds.
@@ -186,7 +251,7 @@ Keep this feature bounded by the existing concurrency limit. The detailed
 4. Physical-C128 qualification remains recorded as pending for this candidate;
    merging it did not turn emulator evidence into a hardware result.
 
-### Next: one disk-loaded non-kernel service
+### Following disk writes: one disk-loaded non-kernel service
 
 1. Select one existing service and inventory its dependencies, fixed entry
    points and memory lifetime. Record which minimal boot/read path must stay

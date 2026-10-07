@@ -12,4 +12,13 @@ uint16_t udeks_cbm_read(void); /* data 0..255, 256 EOF, 512 error */
 uint8_t udeks_cbm_close(void);
 extern uint16_t udeks_cbm_total_blocks, udeks_cbm_free_blocks;
 uint8_t udeks_cbm_space(uint8_t device); /* closed on every return; 0 or EIO */
+#ifdef UDEKS_IEC_WRITE
+/* Writer-internal finalization, NOT a general truncate primitive. Only after
+ * our successful exclusive CREATE + zero data + checked CLOSE. Name is 16
+ * canonical, A0-padded physical bytes. Validates the complete directory and
+ * a one-block closed SEQ containing only CR, then changes its length to zero.
+ * No allocation, BAM or directory writes. Never call for an existing file. */
+uint8_t udeks_cbm_finish_empty(uint8_t device, const uint8_t *name);
+extern uint8_t udeks_cbm_dos_error;
+#endif
 #endif

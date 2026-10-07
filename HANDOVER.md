@@ -6,6 +6,304 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
+## Current handoff — Storage 0.3 accepted for merge, 2026-10-07
+
+Step 3 was committed/pushed as `451fdcf`. The follow-up below closes the
+VICE-blocked 1581 coverage gap under sibling 1986; the user explicitly approved
+merging [PR #45](https://github.com/salvogendut/UDEKS/pull/45). This checkpoint
+includes the probe/docs/evidence; production UDEKS images and sibling emulator
+source remain unchanged. Preserve the written local D81 and root main's
+unrelated edits. Earlier handoffs below are historical, not current blockers.
+
+`1986_storage_smoke_build.py --storage-eject --drive 1581` uses two ROM-backed
+1581s, system on unit 8 and generated data on 9. The existing WHOLD fixture
+writes 24 bytes, yields with its file open, then the normal UI media API ejects
+unit 9 without disconnecting/resetting it. Subsequent WRITE/CLOSE both return
+EIO, zero new bytes accepted, owner generation advances 1 -> 2, cleanup zero.
+Console CAT works; reinsertion, new SAVE, same native-slot reuse, EXIT cleanup
+and fresh-process readback all pass. Only client control flags are poked.
+
+Evidence: `bench/results/2026-10-07-storage-eject-1986`, emulator revision
+`19386ef`, tracked tree clean. Host audit preserves KEEP and system media;
+RECOVER/OWNER4 contain exact bytes 0..23. Aborted OWNER2 has no entry (allowed).
+Both emulator phases succeeded; the first postprocessor incorrectly demanded
+OWNER2 exist. The corrected independent collector re-audits the same logs and
+media; original postprocessing failure is preserved, with a regression test.
+No runtime or emulator fix was needed. ROM snapshots are not archived.
+Final host validation passes **1,337 tests**, including archived media decoding,
+hash verification and re-collection of the ejection report; diff checks pass.
+
+**Next roadmap feature:** the first disk-loaded non-kernel service; define its
+load/start/stop and dependency contract before extracting it. Further storage
+operations and sprite-editor integration remain separate work.
+The UDEKS 1581 ejection/recovery coverage gap is closed under 1986; VICE's process
+loss is still undiagnosed and its historical test remains failed. No new
+physical 1581 fault-injection claim or general power-loss guarantee. Earlier
+C128/PI1541 functional acceptance remains valid; PR #45 records merge status.
+
+## Earlier handoff — storage physical functional acceptance, 2026-10-07
+
+Step 2 was committed and pushed as **5fb989b** on `storage-0.3-disk-write` (#44).
+Step-3 changes in `build/storage-disk-write` are being committed and pushed for
+PR review at the user's request. Root main's unrelated edits/worktrees remain
+untouched. Merge itself is not authorized by this preparation request.
+
+The user confirmed all manual checklist tests in 1986, then reported **all
+tests passed on REAL C128 with Pi1541**. This covers binary/empty creation,
+duplicate rejection, clock dragging, RESTORE and console input, RO remount,
+cold-boot readback and RO boot defaults. The supplied D64 candidate is the
+archived `1e29e08f…`; no independent tested-media checksum/dump was supplied.
+Record this as physical functional acceptance, not as physical fault injection
+or a resolution of the VICE 1581 mid-write-ejection gap.
+
+- `storage-failure-fixtures` builds WLEAK (foreground return), WHOLD (native
+  EXIT/reuse), and PARENT/CHILD (real CANCEL/WAITPID, foreign CLOSE). Independent
+  public clients only; test clients are never shipped on normal disks. The
+  disposable fixture disk adds CHILD to recovery bootfs because legacy SPAWN
+  still resolves there. `name -q` is an advisory GRAPHICS event, not generic
+  lifecycle cancellation; the pure writer fixture does not poll graphics.
+- `tools/storage_failure_probe.py` uses drive 8 for copied system media and
+  drive 9 for generated data disks. Full media uses real allocated file chains,
+  not fabricated BAM counts. VICE 1541/1571 pass protection, absent unit, full/
+  partial-full writes, return/EXIT/CANCEL cleanup, mid-write eject, disconnected
+  CLOSE, recovery and a background-clock save. Independent decoding proves
+  preexisting file contents unchanged and exact successful new files.
+- Full-disk OPEN returned DOS 67 on VICE. Production fix: free-block preflight
+  after the complete collision scan, before create. Known full -> ENOSPC;
+  malformed geometry/transport errors are not relabeled. EEXIST precedence
+  stays intact. +40 bank-1 policy bytes, 54 remain; no BSS/allocation changes.
+- VICE 1581 mid-write `detach 9` repeatedly loses the emulator process. Failed
+  transcript retained. `--skip-media-removal` explicitly records that gap and
+  all remaining D81 cases pass, including CLOSE after actual drive disconnect.
+  Resource commands must quote both strings and verify readback. Runtime
+  write-protect toggling also isn't reliable; RO/RW phases use fresh processes.
+- `1986_storage_smoke_build.py --storage-write` uses unmodified sibling 1986
+  revision `19386ef`, real keyboard/1351 input and device-register NMI stress.
+  Fresh D64/1571 and D81/1581 runs both pass exact binary/empty saves, duplicate
+  rejection, RESTORE, CIA2 NMI during SAVE, clock drag and post-boot readback.
+- Exact candidates, fixtures, failed VICE transcript and passing results live
+  in `bench/{artifacts,results}/2026-10-07-storage-acceptance`; tests verify hashes
+  and decode preserved media. ROM-bearing snapshots stay out of the archive.
+  Final verification: **1,332 host tests**; container boot, placement-check and
+  graphics-apps-check pass. No VICE processes remain. Fresh normal disk SHA-256:
+  D64 `1e29e08f…`, D71 `80b74654…`, D81 `89c6cad9…`.
+
+Pre-merge validation found the local `build/boot/udeks.d81` contains WRTEST,
+EMPTY and LIVE from testing, with original files unchanged. Preserve that
+written image. A separately generated `build/storage/pre-merge-udeks.d81`
+matches the pristine archived candidate; D64/D71 build outputs match too.
+
+**Next:** review the step-3 commit and PR. Keep the unqualified 1581
+mid-write-ejection gate explicit before
+milestone completion/merge; the requested C128/PI1541 checklist no longer needs
+repeating for this candidate. No append/delete/redirection,
+multi-open, rollback or automatic RW boot. On errors, partial/splat files are
+expected and must not be silently retried. Do not start another feature here.
+
+## Earlier handoff — public disk writes, step 2 complete, 2026-10-07
+
+User requested commit/push, then step 2 of three. Step 1/private lease committed
+and pushed as **160c591** on `storage-0.3-disk-write` (#44). Step-2 changes are
+in the same `build/storage-disk-write` worktree, **uncommitted**. Preserve root
+main's unrelated roadmap/console-plan edits and other active worktrees.
+
+- Public UTRQ minor 14; request gate routes non-console WRITE to `$C880`.
+  Existing operations/gates and native/foreground owner-generation mechanism
+  unchanged. Request gateway fits exactly 265/265 bytes; no allocation growth.
+- Disk-only `mount_rw.c` + request assembly expose explicit RW/remount flags.
+  Original mount.c remains the small RO recovery program under a separate
+  `mount-recovery.udx` build target. Normal boot/remount defaults stay RO.
+- Transient file SDK supplies OPEN/READ/counted WRITE/CLOSE plus optional
+  metadata/error-string archive members. It calls CF30, never native FF16.
+  `--filesystem` enables this in the independent console builder; optional
+  `--static-locals` is for nonrecursive programs. No kernel imports.
+- SAVE.BIN is disk-loaded, create-only, byte-pattern/readback/check-only, with
+  checked CLOSE and no short-write retries. Default 515 bytes, range 0–4096.
+  It fits the unchanged $0200–$0BFF console allocation; df uses STATFS flags.
+- `tools/storage_public_probe.py` makes fresh disposable disk copies, enters
+  commands through the keyboard queue, and reboots each written disk in a
+  new emulator process. True 1541/D64, 1571/D71 and 1581/D81 pass. Exact normal
+  and written images, binaries, maps and command records are in
+  `bench/{artifacts,results}/2026-10-07-storage-public`. Host tests decode all
+  existing/new files independently and verify hashes; earlier archives unchanged.
+- Current owner fixture's future-version rejection moves from minor 14 to 15.
+  The archived step-1 LEAK binary/evidence intentionally still tests old 14.
+- Final verification: 1,324 host tests pass; container boot/user-programs,
+  placement-check and graphics-apps-check pass. Rebuilt disks are byte-identical
+  to the archived candidates. No VICE processes were left running.
+
+Next is **step 3**, not another API increment: qualify public write failures,
+real write-owner cleanup, RESTORE, native 1986 and disposable physical hardware,
+then PR/merge. Current live proof covers successful public writes and reboot,
+not those failure/platform gates. User instructions:
+`mount -o remount,rw 8 /`, `save /WRTEST 515`, `save /EMPTY 0`, repeated create
+must fail, `mount -o remount,ro 8 /`; reboot then `save -c /WRTEST 515` and
+`save -c /EMPTY 0`. Use fresh build/boot images; old download snapshots lack SAVE.
+
+## Earlier handoff — boot storage ownership, step 1 complete, 2026-10-07
+
+User requested **step 1 of three**, not public writes or another application.
+Implemented in `build/storage-disk-write`, branch `storage-0.3-disk-write`
+(#44). HEAD remains `5a43574`; this and the preceding private-lease increment
+are uncommitted. Preserve unrelated root-main edits/worktrees.
+
+- Normal boot now installs UIEC 0.3, including hidden bank-1 code/constants.
+  The one-shot `$3200` installer consumes `$2300–$31FF` source bytes before
+  the stage-1 Z80 container copy, then initializes the NMI mirror/state.
+  Test A explicitly after initialization: that entry preserves P.
+- Permanent common transport is `$FE20–$FE51`; loader ends `$FE11` and has a
+  link assertion against `$FE20`. Storage no longer overwrites `$F68A` or the
+  transient C stack. Filesystem policy remains a bank-1 C service.
+- Bank-0 router `$C880` derives tags from the real current-task binding;
+  native tags 1–8, synchronous invocation 9, bootstrap/root loader 10.
+  Private bank-1 generations form a 16-bit instance ID. `$C883` retirement
+  preserves registers/status/request, closes/releases before incrementing,
+  and records cleanup errno without replacing the program's exit status.
+  Native EXIT/CANCEL and synchronous return call it before memory reuse.
+- Actual remaining bytes: module 15, policy 94, driver 163, hidden 2, BSS 0.
+  Keep the `$E180–$E1FF` C stack and all four app allocations intact.
+- Public UTRQ stays **0.13**; mounts remain RO. Independent clients prove a
+  0.14 request and create-mode request are rejected. Do not claim users can
+  save files yet.
+
+`storage-owner-fixtures` builds independent console/native test clients.
+`tools/storage_owner_probe.py` qualifies leaked foreground return, native
+EXIT, parent CANCEL/WAITPID, foreign CLOSE rejection and slot reuse through
+the real gates. All VICE 1541/1571/1581 cases pass. Bootfs recovery passes;
+the full four-native-client suite passes on 1571 (drag/resize, worker,
+disk commands, close/reload, unknown names and rejected loads).
+Evidence: `bench/{artifacts,results}/2026-10-07-storage-ownership`.
+Final gates: **1,302 host tests**, `make boot`, `placement-check` and
+`graphics-apps-check` pass; rebuilt disks match the preserved hashes.
+No new physical C128/1986 or integrated RESTORE result is claimed.
+
+Fixture lessons: legacy native SPAWN still resolves bootfs, so the probe
+adds its tiny child to bootfs on a disposable image, keeping recovery entries.
+SPAWN returns result=1, child ID in payload, not result=task ID. cc65 `-Os`
+can retain a stale ptr1 after an indexed clear loop; the parent fixture uses
+`memset` before rebuilding the next payload. No runtime kernel test hooks.
+
+**Next: step 2**, public version/routing + explicit RW mount/remount + SDK +
+independent save/readback command. Step 3 is end-to-end failure qualification,
+1986/C128 acceptance and merge. Follow [the roadmap](docs/ROADMAP.md), not the
+older “boot delivery still due” notes below.
+
+## Previous handoff — actual guarded storage service, 2026-10-07
+
+User requested commit/push and next step. Placement proof committed/pushed as
+`5a43574` on `storage-0.3-disk-write` (#44). The following service-entry increment
+is implemented in the worktree, not committed yet. Use
+`build/storage-disk-write`; preserve unrelated root-main edits/worktrees.
+
+`src/services/filesystem/iec_lease.s` + the private lease linker target run the
+actual C policy/writer, with low request/cwd/boot snapshots, trusted AX caller
+identity, a banked cleanup entry and deferred NMI forwarding after restoring
+common. Initialization clears state and installs the hidden NMI mirror once;
+boot must install the hidden image first, before CIA2/input ownership. Actual
+free bytes: module 21, policy 141, driver 175, hidden 2, state **0**. Do not
+spend the `$E180–$E1FF` stack or another app's allocation.
+
+`make storage-lease-probe` and `tools/storage_lease_probe.py` exercise these
+exact binaries on newly generated disposable media. All three true-drive VICE
+formats pass, both VIC-bank settings: 27 requests, 3 cleanup calls, binary
+readback, exact-empty finalization, ownership and RO rejection, snapshot/cwd,
+stack/common preservation, hidden NMI forwarding. A one-instruction negative
+control detects missing forwarding before any write. Preserved evidence:
+`bench/{artifacts,results}/2026-10-07-storage-lease`. Production disk/storage
+hashes are unchanged; **1,291 host tests** and container boot/placement/graphics
+gates pass. All probe-owned VICE sessions are terminated.
+
+**Next concrete work:** install the new service and hidden image in the real
+boot delivery, then supply per-invocation identity and cleanup on scheduler
+exit/cancel and foreground-loader return. Keep the public UTRQ minor at 0.13
+until the complete path is qualified. Add the versioned mount/SDK route and
+independent console save/readback fixture as the next user-testable feature.
+This standalone service probe is VICE-only and uses bank-0 CPU pages; it does
+not demonstrate live scheduler cleanup, 1986, physical hardware or integrated
+RESTORE recovery. See [Storage 0.3](docs/STORAGE-0.3.md#actual-guarded-service-entry--2026-10-07).
+
+## Previous handoff — storage placement candidate, 2026-10-07
+
+The exact-empty backend (`5e0aa88`) and gated service policy (`c674c97`) are
+committed/pushed. This placement checkpoint measures the complete
+write-enabled service in `cfg/8502-storage-write-candidate.cfg` and qualifies
+a separate guarded-RAM-window proof. Normal boot images and the public ABI
+remain unchanged; do not install the link-candidate blobs as a live service.
+
+The candidate adds physical bank-1 `$F000–$FEFF`, exposed only while upper
+common is disabled in a synchronous IRQ-masked lease; `$FF00–$FFFF` is reserved
+for MMU mirrors and NMI handling. Actual linked free bytes: module 12, policy
+94, driver 346, state 42, hidden 2. Entry/snapshot/cleanup code must fit the
+remaining low-memory space; no app slot, recovery, cache or stack is borrowed.
+`make storage-window` builds the candidate and standalone ASM proof. Both VICE
+and 1986 pass both VIC-bank settings, 128 rounds / 384 NMIs each, including
+128 boundary-window arrivals, common-byte preservation and a failing negative
+control. Evidence is in `bench/{artifacts,results}/2026-10-07-storage-window`.
+Full suite **1,283 tests**, container boot and placement/graphics gates pass.
+Production storage blobs/D64/D71/D81 hashes are unchanged; no VICE remains.
+
+The private `udeks_storage_caller()` provider is **not implemented**; the
+cleanup function is **not called by real task exit/cancel or loader return**
+yet. No public ABI bump, console save command or write-enabled image is
+claimed. Next implement the bounded low-memory lease entry and private
+request/cwd/boot/caller snapshots, plus one-time boot delivery/mirror install
+before input starts. Hidden NMI pending MUST live below `$F000`; restore common
+before forwarding it to `$FFF5` to avoid the return-boundary race. Qualify the
+actual C service, stack/CPU-page context and RESTORE path before enabling
+public routing. The proof does not run the filesystem/scheduler/Z80 or qualify
+physical hardware/cartridge NMI. See [Storage 0.3](docs/STORAGE-0.3.md#placement-candidate--guarded-top-ram-window-2026-10-07)
+for scope, measurements and remaining gates.
+
+## Exact-empty backend checkpoint — 2026-10-07
+
+The user selected disk writes as the next feature and requested an issue and
+branch. [Issue #44](https://github.com/salvogendut/UDEKS/issues/44) tracks
+`storage-0.3-disk-write`, based on merged main `ba0ba97`; use the dedicated
+`build/storage-disk-write` worktree. Root main's unrelated console-plan edits
+and the earlier sprite-editor experiment remain untouched.
+
+Implementation has begun in an isolated backend and standalone drive probe;
+see [Storage 0.3](docs/STORAGE-0.3.md) for code, reproduction and the remaining
+public-API gates. The production filesystem still has one serialized
+IEC stream, read-only open/read/close and no file-data WRITE dispatch; stdout/
+stderr WRITE is not a disk-write API. The new C writer and optional IEC output
+path are not linked into boot images. The current storage reservations have
+only 327 free code bytes; the writer, transport and new empty-file finalizer
+add 2,118 code/data bytes before service policy and compiler helpers. Keep the
+working boot layout intact; don't spend app slots or stack/recovery space.
+Implement the proposed versioned contract, permissions and owner cleanup
+in the C storage service, with no overwriting of existing files. Prefer DOS
+file channels; explicitly settle mount permissions, ownership, error/partial-
+file semantics and cleanup before implementation. Keep all tests on disposable
+image copies. Exact empty-file creation is now implemented: after a successful
+zero-data CREATE/CLOSE, validate the fresh one-block closed SEQ and correct
+only its sector count through standard B-P/U2. No allocator, directory/BAM
+rewrite, ROM patch or reader special case. Failed operations and non-empty
+writes never enter this correction. Follow the [current roadmap](docs/ROADMAP.md#active-storage-03--create-only-disk-writes-44).
+
+Service extraction follows this write milestone. Sprite persistence, general
+shell redirection, multi-open, overwrite/append and rendering work are not
+prerequisites and remain deferred. No public-API, 1986 or physical-machine
+disk-write qualification is claimed yet.
+
+Initial checkpoint `ad01c45` is committed/pushed, with **1,196 host tests**, reference-container boot and
+placement/graphics gates, and isolated VICE 1541/D64, 1571/D71, 1581/D81 runs.
+Each drive passed non-empty binary readback, restart persistence, duplicate
+rejection and write protection; exact empty files were then unsupported. Normal
+boot images are byte-identical to the pre-change baseline. Probe artifacts and
+results are preserved under `bench/{artifacts,results}/2026-10-07-iec-write`.
+The new follow-up passes the same three VICE drives with twelve exact files
+(empty, binary boundaries and an ordinary CR), reboot persistence, write
+protection and 16-byte empty filenames. Exact probe/results are preserved in
+`bench/{artifacts,results}/2026-10-07-iec-write-r1`; do not replace the first
+diagnostic evidence. The host finalizer tests prove a one-byte-only change and
+fail-closed handling of malformed targets/transfers. Public writes are still
+disabled. Placement, mount permissions, task ownership and cancellation/media
+failure qualification remain the next service-integration work. This follow-up
+is the exact-empty backend checkpoint. Final checks: **1,215 host tests**, container boot,
+placement/graphics checks; normal D64/D71/D81 and storage blobs still match
+the pre-change hashes. All private VICE sessions exited.
+
 ## Sprite-editor checkpoint — accepted and parked, 2026-10-07
 
 The user accepted the reviewed editor, authorized commit/push/PR/merge, and

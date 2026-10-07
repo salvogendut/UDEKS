@@ -266,7 +266,8 @@ class StorageService(unittest.TestCase):
 
     def test_early_sector_eoi_and_truncated_directory_are_errors(self):
         self.file(b'AB'); self.mount(); self.request(6, b'/mnt/HELLO')
-        self.sectors[256+2] |= 0x100  # first data byte, not final logical byte
+        data_slot = list(self.with_header(self.disk)).index((1, 0))
+        self.sectors[data_slot*256+2] |= 0x100  # first data byte, not final logical byte
         self.assertEqual(self.request(1, fd=4, count=24), (1, 128, 0, 5))
         self.request(9, fd=4); self.request(6, b'/mnt', 1)
         self.sectors[2] |= 0x100

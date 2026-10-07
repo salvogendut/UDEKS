@@ -27,6 +27,6 @@ class DiskCommands(unittest.TestCase):
         rule = (ROOT/'Makefile').read_text().split('$(USER_BOOTFS):', 1)[1].split('\n\n', 1)[0]
         for name in ('cowsay', 'date', 'ls', 'cat', 'xclock', 'xwave'):
             self.assertNotIn('--entry '+name+'=', rule)
-        self.assertIn('--entry mount=$(USER_MOUNT_UDEX)', rule)
-        self.assertIn('--entry umount=$(USER_MOUNT_UDEX)', rule)
+        self.assertIn('--entry mount=$(USER_RECOVERY_MOUNT_UDEX)', rule)
+        self.assertIn('--entry umount=$(USER_RECOVERY_MOUNT_UDEX)', rule)
         self.assertIn('--entry ush=$(USER_RECOVERY_USH_UDEX)', rule)

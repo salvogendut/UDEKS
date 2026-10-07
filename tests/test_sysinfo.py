@@ -69,6 +69,13 @@ class Sysinfo(unittest.TestCase):
         self.assertIn('16', self.output())
         self.assertIn('12', self.output())
         self.assertIn('4', self.output())
+    def test_df_reports_read_write_from_statfs(self):
+        for args in (('df',), ('df', '-h')):
+            self.setUp()
+            (c.c_uint8*8).in_dll(self.lib, 'test_result')[:] = b'\0\1\x98\2\x64\0\x08\0'
+            self.assertEqual(self.invoke(*args), 0)
+            self.assertIn('Read-write mount', self.output())
+            self.assertNotIn('Read-only', self.output())
     def test_errors_use_stderr_and_nonzero_exit(self):
         for error, text in ((2, 'not mounted'), (16, 'busy'), (5, 'read failed')):
             self.setUp(); c.c_uint8.in_dll(self.lib, 'sysinfo_error').value = error

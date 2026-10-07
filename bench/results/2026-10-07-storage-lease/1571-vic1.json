@@ -1,0 +1,73 @@
+{
+  "scope": "actual linked bank-1 service on disposable media; not installed OS/lifecycle integration",
+  "drive": "1571",
+  "vic": 64,
+  "negative": false,
+  "record": "534c53450102000000001b030100010049497e00e20000000000000000000000",
+  "decoded": {
+    "requests": 27,
+    "cleanups": 3,
+    "hidden_nmis_forwarded": 1,
+    "service_stack_restored": 57856,
+    "rcr": 73
+  },
+  "layout": {
+    "module": {
+      "start": 4608,
+      "used": 1643,
+      "free": 21
+    },
+    "policy": {
+      "start": 45056,
+      "used": 5491,
+      "free": 141
+    },
+    "driver": {
+      "start": 58112,
+      "used": 1361,
+      "free": 175
+    },
+    "hidden": {
+      "start": 61440,
+      "used": 3838,
+      "free": 2
+    },
+    "state": {
+      "start": 57344,
+      "used": 384,
+      "free": 0
+    }
+  },
+  "files": {
+    "KEEP": "fffefdfcfbfaf9f8f7f6f5f4f3f2f1f0efeeedecebeae9e8e7e6e5e4e3e2e1e0dfdedddcdbdad9d8d7d6d5d4d3d2d1d0cfcecdcccbcac9c8c7c6c5c4c3c2c1c0bfbebdbcbbbab9b8b7b6b5b4b3b2b1b0afaeadacabaaa9a8a7a6a5a4a3a2a1a09f9e9d9c9b9a999897969594939291908f8e8d8c8b8a898887868584838281807f7e7d7c7b7a797877767574737271706f6e6d6c6b6a696867666564636261605f5e5d5c5b5a595857565554535251504f4e4d4c4b4a494847464544434241403f3e3d3c3b3a393837363534333231302f2e2d2c2b2a292827262524232221201f1e1d1c1b1a191817161514131211100f0e0d0c0b0a09080706050403020100fffefdfcfbfaf9f8f7f6f5f4f3f2f1f0efeeedecebeae9e8e7e6e5e4e3e2e1e0dfdedddcdbdad9d8d7d6d5d4d3d2d1d0cfcecdcccbcac9c8c7c6c5c4c3c2c1c0bfbebdbcbbbab9b8b7b6b5b4b3b2b1b0afaeadacabaaa9a8a7a6a5a4a3a2a1a09f9e9d9c9b9a999897969594939291908f8e8d8c8b8a898887868584838281807f7e7d7c7b7a797877767574737271706f6e6d6c6b6a696867666564636261605f5e5d5c5b5a595857565554535251504f4e4d4c4b4a494847464544434241403f3e3d3c3b3a393837363534333231302f2e2d2c2b2a292827262524232221201f1e1d1c1b1a191817161514131211100f0e0d0c0b0a09080706050403020100fffefdfcfbfaf9f8f7f6f5f4f3f2f1f0efeeedecebeae9e8e7e6e5e4e3e2e1e0dfdedddcdbdad9d8d7d6d5d4d3d2d1d0cfcecdcccbcac9c8c7c6c5c4c3c2c1c0bfbebdbcbbbab9b8b7b6b5b4b3b2b1b0afaeadacabaaa9a8a7a6a5a4a3a2a1a09f9e9d9c9b9a999897969594939291908f8e8d8c8b8a898887868584838281807f7e7d7c7b7a797877767574737271706f6e6d6c6b6a696867666564636261605f5e5d5c5b5a595857565554535251504f4e4d4c4b4a494847464544434241403f3e3d3c3b3a393837363534333231302f2e2d2c2b2a292827262524232221201f1e1d1c1b1a191817161514131211100f0e0d0c0b0a09080706050403020100",
+    "LEASE": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132",
+    "EMPTY": ""
+  },
+  "disk_before": "6fff646788b904d3f04258d09cc136996d73e2761370402a9384ce94a370cb93",
+  "disk_after": "10cc26c2f995da43af170005a16e14e4568c1e1b77f9394ee33add7e696cbe4a",
+  "artifacts": {
+    "probe.prg": "3cd12237b220f22f2250d80272d82e0b37da29fc547de9a8b6f1729c6e8dbdb2",
+    "no-forward.prg": "27acd4c6b9000658deb1378587d66be800900e1d7d978ba77ca554ab3d1996e1",
+    "module.bin": "9039a7c977000b16c0a7b7887498cb51e8032c735637fc1bc56e6bc3ab1a08af",
+    "policy.bin": "e058f8abc0a5a340267fabbf6e2ac12fa9dfe066503dab978ff956054318080c",
+    "driver.bin": "cefb6aa42dc472ac16eb601939dbad2a3d8f8c8005807d9d13088a20f808c3f8",
+    "hidden.bin": "36ed283871f13a7772c5ca71302c8ba8b46e8fdd62f2dc9ad05fc4372cf47d72",
+    "module.map": "1f56d4e98641228fd3be254deb02c429d262212c675f0e72bbaf965c9e88b286"
+  },
+  "source_sha256": {
+    "src/services/filesystem/iec_lease.s": "d74eb0d74fbdb0d8c353af840687486951ec41ae273944219821f32d33508206",
+    "src/services/filesystem/iec_service.c": "c6059ca558f7dd4319570421555f301820f986c3474460d714ec7baeb003bfd7",
+    "src/services/filesystem/cbm_file.c": "73fdce9a5357b23f40e47e31fa0b37f03f47a0451e48cd6fd377f7f3a23ec479",
+    "src/services/filesystem/cbm_write.c": "be36717ac956a24ac2220145cb7f28ec829b0e49306977520edd0e4da5785507",
+    "src/services/filesystem/iec_slow.s": "afe88670c30690c9da4cfb68026cba402fed987722cd72a0df50892ee6ab6914",
+    "src/services/filesystem/fs_namespace.c": "b8d853e1619d4e0e4d3211e17dba54e3ab014358d17b44912b2fc5a48a815746",
+    "include/udeks/storage_write.h": "f3fa90b52cac08405fe01a4d6cdb6a66bf340a7582ba4e3bde644d114c09ffc1",
+    "cfg/8502-storage-write-lease.cfg": "9dde89c5a0be92429a24717e527824343108033d9938033f898401e3f3912b2f",
+    "bench/storage-lease/entry.s": "fb4f5ca695506c8284d258fe1b497a1245d5e3132e24d01c9140e7ee5bd88705",
+    "bench/storage-lease/main.c": "8350fb0be96d35a1c875ed493c239390c9ad1eda4363d52648285d8a50e98ae0",
+    "bench/storage-lease/probe.cfg": "a21330fe45f4e1aa872b7fea8f8b36737bcb8905a6af5adfb5d30e35c0ff67fd",
+    "tools/storage_lease_probe.py": "05e9cdfc1272fa75c1d55228d561ae6c280bae328577962a8e2f583665e744cc",
+    "mk/storage.mk": "dc4761442fdb82a2a4ddf1bc8ab9954ba0435dc814661d566a0fa90528f83530"
+  },
+  "vice": "\nVICE - Versatile Commodore Emulator\n\n            ID: net.sf.VICE\n           Ref: app/net.sf.VICE/x86_64/stable\n          Arch: x86_64\n        Branch: stable\n       Version: 3.10\n       License: GPL-2.0+\n        Origin: flathub\n    Collection: org.flathub.Stable\n  Installation: system\nInstalled Size: 45,8\u00a0MB\n       Runtime: org.freedesktop.Platform/x86_64/25.08\n           Sdk: org.freedesktop.Sdk/x86_64/25.08\n\n        Commit: bbd997ea8cbf7e6ba06ff82136fd71069ce2011f93c006412bcda7bbde17e448\n        Parent: 68a5281bbbfb691d105e1006686691713eb0cab353a7d869f4b72c066eca18c7\n       Subject: Add desktop files for vsid, x64dtv, xcbm5x0, xscpu64 (c39f8386949f)\n          Date: 2026-01-18 14:54:47 +0000\n"
+}

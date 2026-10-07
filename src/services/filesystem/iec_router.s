@@ -1,52 +1,56 @@
 ; SPDX-License-Identifier: GPL-3.0-or-later
-; Bank-0 filesystem fallback. IRQ-masked, synchronous first implementation.
-; The overlay stays BELOW the transient C stack at $F700, unlike VIC gateways.
+; Bank-0 dispatcher and trusted retirement hook. The permanent common gate
+; owns only mapping/runtime transport; filesystem policy stays in bank 1.
         .setcpu "6502"
+        .include "disk-loader-bindings.inc"
         .segment "CODE"
-router:
+router: jmp request
+        jmp retire                  ; $C883: A=context tag, preserves A/X/Y/P
+request:
         php
         sei
-        lda #0
-        sta $f3ed                   ; invalidate the VIC outline overlay lease
-        ldx #gateway_end-gateway-1
-copy:   lda gateway,x
-        sta $f68a,x
-        dex
-        bpl copy
-        jsr $f68a
+        lda STORAGE_CURRENT_TASK
+        bne selected
+        ldx #10                     ; root loader/bootstrap, no running task
+        lda $f285                   ; synchronous foreground invocation?
+        cmp #2
+        bne :+
+        dex                         ; tag 9 is never the native shell instance
+:       txa
+selected:
+        ldy #$0f                    ; private context request at $120F
+        jsr $fe20
         plp
         cmp #0
         beq fallback
+        cmp #$ff
+        beq unavailable
         lda #0
         clc
         rts
+unavailable:
+        lda #5
+        jmp STORAGE_FINISH_ERROR
 fallback:
-        jmp $f3ef                   ; unchanged bootfs/lifecycle fallback
-gateway:
-        cld
-        ldx #29
-save:   lda $02,x
+        jmp $f3ef
+retire:
+        php
+        sei
         pha
-        dex
-        bpl save
-        sta $ff03                   ; bank-1 worker I/O
-        lda #<$e200
-        sta $02
-        lda #>$e200
-        sta $03
-        jsr $1200
-        sta $f68a+(result+1-gateway)
-        sta $ff01                   ; bank-0 kernel I/O
-        ldx #0
-restore:
+        txa
+        pha
+        tya
+        pha
+        tsx
+        lda $0103,x                 ; original A, trusted task/tag
+        ldy #$12                    ; retire before slot/storage is reclaimed
+        jsr $fe20
         pla
-        sta $02,x
-        inx
-        cpx #30
-        bcc restore
-result: lda #0
+        tay
+        pla
+        tax
+        pla
+        plp
         rts
-gateway_end:
         .assert router = $c880, lderror, "storage router moved"
         .assert * <= $c900, lderror, "storage router reaches lifecycle handler"
-        .assert $f68a+gateway_end-gateway <= $f700, error, "storage gateway reaches transient stack"

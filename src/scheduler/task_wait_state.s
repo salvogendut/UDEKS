@@ -315,6 +315,8 @@ _udeks_task_cancel_request:
         cmp _udeks_lifecycle_current_private
         bne cancel_missing
 
+        lda TREQ_PAYLOAD
+        jsr $c883                   ; preserve request/X/Y, retire valid child
         lda TREQ_PAYLOAD+2
         sta _udeks_lifecycle_slots_private+TASK_SLOT_EXIT,x
         lda #$00

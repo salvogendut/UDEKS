@@ -1,0 +1,282 @@
+Modules list:
+-------------
+entry.o:
+    STARTUP           Offs=000000  Size=000012  Align=00001  Fill=0000
+syscall.o:
+    CODE              Offs=000000  Size=000026  Align=00001  Fill=0000
+program.o:
+    CODE              Offs=000026  Size=0003D0  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=00006B  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=00002A  Align=00001  Fill=0000
+/var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.lib(filesystem.o):
+    CODE              Offs=0003F6  Size=0001F0  Align=00001  Fill=0000
+    BSS               Offs=00002A  Size=000006  Align=00001  Fill=0000
+/var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.lib(error_string.o):
+    CODE              Offs=0005E6  Size=00007F  Align=00001  Fill=0000
+    RODATA            Offs=00006B  Size=0000E3  Align=00001  Fill=0000
+/var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.lib(fs_request.o):
+    CODE              Offs=000665  Size=000054  Align=00001  Fill=0000
+    RODATA            Offs=00014E  Size=000006  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=0006B9  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=0006D5  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax1.o):
+    CODE              Offs=0006E3  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decaxy.o):
+    CODE              Offs=0006EB  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=0006F4  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax1.o):
+    CODE              Offs=000722  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax2.o):
+    CODE              Offs=000729  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000730  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000737  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=00074D  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000752  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=000757  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxi.o):
+    CODE              Offs=00075C  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=000769  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax10.o):
+    CODE              Offs=000772  Size=000019  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popa.o):
+    CODE              Offs=00078B  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000797  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=0007A5  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=0007BB  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushw.o):
+    CODE              Offs=0007D5  Size=00000F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=0007E4  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000800  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(strcmp.o):
+    CODE              Offs=000816  Size=000021  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               000200  000211  000012  00001
+CODE                  000212  000A48  000837  00001
+RODATA                000A49  000B9C  000154  00001
+BSS                   000B9D  000BCC  000030  00001
+
+
+Exports list by name:
+---------------------
+__BSS_SIZE__              000030 REA    _strcmp                   000A28 RLA    
+_udeks_close              0006D2 RLA    _udeks_errno              000BC7 RLA    
+_udeks_error_string       0007F8 RLA    _udeks_fs_request         000877 RLA    
+_udeks_open               0006B8 RLA    _udeks_program_entry      000200 RLA    
+_udeks_program_main       000238 RLA    _udeks_read               000608 RLA    
+_udeks_write              00021C RLA    _udeks_write_byte         000212 RLA    
+_udeks_write_bytes        000626 RLA    addysp                    0008E8 RLA    
+aslax1                    0008F5 RLA    decaxy                    0008FD RLA    
+incax1                    000934 RLA    incax2                    00093B RLA    
+incsp1                    000942 RLA    incsp2                    000951 RLA    
+incsp3                    00095F RLA    incsp4                    000964 RLA    
+incsp5                    000969 RLA    ldax0sp                   00097B RLA    
+ldaxi                     00096E RLA    ldaxysp                   00097D RLA    
+mulax10                   000984 RLA    popa                      00099D RLA    
+popptr1                   0009A9 RLA    ptr1                      00000A RLZ    
+ptr2                      00000C RLZ    pusha                     0009BB RLA    
+pusha0                    0009CF RLA    pushax                    0009D1 RLA    
+pushwidx                  0009E9 RLA    pushwysp                  0009F8 RLA    
+regsave                   000006 RLZ    sp                        000002 RLZ    
+sreg                      000004 RLZ    staspidx                  000A12 RLA    
+tmp1                      000012 RLZ    tosadda0                  0008CB RLA    
+tosicmp                   000908 RLA    tosicmp0                  000906 RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+regsave                   000006 RLZ    ptr1                      00000A RLZ    
+ptr2                      00000C RLZ    tmp1                      000012 RLZ    
+__BSS_SIZE__              000030 REA    _udeks_program_entry      000200 RLA    
+_udeks_write_byte         000212 RLA    _udeks_write              00021C RLA    
+_udeks_program_main       000238 RLA    _udeks_read               000608 RLA    
+_udeks_write_bytes        000626 RLA    _udeks_open               0006B8 RLA    
+_udeks_close              0006D2 RLA    _udeks_error_string       0007F8 RLA    
+_udeks_fs_request         000877 RLA    tosadda0                  0008CB RLA    
+addysp                    0008E8 RLA    aslax1                    0008F5 RLA    
+decaxy                    0008FD RLA    tosicmp0                  000906 RLA    
+tosicmp                   000908 RLA    incax1                    000934 RLA    
+incax2                    00093B RLA    incsp1                    000942 RLA    
+incsp2                    000951 RLA    incsp3                    00095F RLA    
+incsp4                    000964 RLA    incsp5                    000969 RLA    
+ldaxi                     00096E RLA    ldax0sp                   00097B RLA    
+ldaxysp                   00097D RLA    mulax10                   000984 RLA    
+popa                      00099D RLA    popptr1                   0009A9 RLA    
+pusha                     0009BB RLA    pusha0                    0009CF RLA    
+pushax                    0009D1 RLA    pushwidx                  0009E9 RLA    
+pushwysp                  0009F8 RLA    staspidx                  000A12 RLA    
+_strcmp                   000A28 RLA    _udeks_errno              000BC7 RLA    
+
+
+
+Imports list:
+-------------
+__BSS_SIZE__ ([linker generated]):
+    [linker generated]       
+_strcmp (strcmp.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(13)
+_udeks_close (filesystem.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(21)
+_udeks_errno (filesystem.o):
+    fs_request.o              user/lib/fs_request.s(5)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(14)
+_udeks_error_string (error_string.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(19)
+_udeks_fs_request (fs_request.o):
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(18)
+_udeks_open (filesystem.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(20)
+_udeks_program_entry (entry.o):
+    [linker generated]       
+_udeks_program_main (program.o):
+    entry.o                   user/lib/entry.s(7)
+_udeks_read (filesystem.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(17)
+_udeks_write (syscall.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(16)
+_udeks_write_byte (syscall.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(15)
+_udeks_write_bytes (filesystem.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(18)
+addysp (addysp.o):
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+aslax1 (aslax1.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+decaxy (decaxy.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+incax1 (incax1.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+incax2 (incax2.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+incsp1 (incsp1.o):
+    error_string.o            /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/error_string.s(117)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+incsp2 (incsp2.o):
+    popptr1.o                 runtime/popptr1.s(8)
+    staspidx.o                runtime/staspidx.s(8)
+incsp3 (incsp3.o):
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+incsp4 (incsp4.o):
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+incsp5 (incsp5.o):
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+ldax0sp (ldaxsp.o):
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+ldaxi (ldaxi.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+ldaxysp (ldaxsp.o):
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+mulax10 (mulax10.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+popa (popa.o):
+    fs_request.o              user/lib/fs_request.s(5)
+    syscall.o                 user/lib/syscall.s(12)
+popptr1 (popptr1.o):
+    strcmp.o                  common/strcmp.s(8)
+ptr1 (zeropage.o):
+    popptr1.o                 runtime/popptr1.s(9)
+    strcmp.o                  common/strcmp.s(9)
+    staspidx.o                runtime/staspidx.s(9)
+    pushw.o                   runtime/pushw.s(9)
+    mulax10.o                 runtime/mulax10.s(9)
+    ldaxi.o                   runtime/ldaxi.s(8)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(11)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(11)
+    syscall.o                 user/lib/syscall.s(13)
+    entry.o                   user/lib/entry.s(9)
+ptr2 (zeropage.o):
+    strcmp.o                  common/strcmp.s(9)
+pusha (pusha.o):
+    error_string.o            /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/error_string.s(117)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+    entry.o                   user/lib/entry.s(8)
+pusha0 (pushax.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+pushax (pushax.o):
+    pushw.o                   runtime/pushw.s(8)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+pushwidx (pushw.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+pushwysp (pushwsp.o):
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+regsave (zeropage.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(10)
+sp (zeropage.o):
+    popptr1.o                 runtime/popptr1.s(9)
+    incsp2.o                  runtime/incsp2.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popa.o                    runtime/popa.s(8)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    add.o                     runtime/add.s(12)
+    error_string.o            /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/error_string.s(10)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(10)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(10)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+staspidx (staspidx.o):
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(347)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    decaxy.o                  runtime/decaxy.s(8)
+    aslax1.o                  runtime/aslax1.s(8)
+    add.o                     runtime/add.s(12)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/filesystem.s(11)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(11)
+    syscall.o                 user/lib/syscall.s(13)
+    entry.o                   user/lib/entry.s(9)
+tosadda0 (add.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+tosicmp (icmp.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+tosicmp0 (icmp.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-disk-write/build/user/save/program.s(498)
+

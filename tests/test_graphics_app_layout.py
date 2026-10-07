@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from graphics_app_layout import (CANDIDATE, Region, disjoint, managed_size,
     worker_image, z80_regions, graphics_lifetimes, glyph_overlay_images, glyph_overlay_layout,
-    glyph_overlay_entrypoints)
+    glyph_overlay_entrypoints, STORAGE_HIDDEN)
 
 
 class GraphicsAppLayoutTests(unittest.TestCase):
@@ -73,6 +73,14 @@ class GraphicsAppLayoutTests(unittest.TestCase):
                        Region('bad', 1, 0xEFFF, 0xF001)):
             with self.assertRaises(ValueError):
                 disjoint([region])
+
+    def test_only_the_guarded_storage_reservation_may_hide_under_common(self):
+        disjoint([STORAGE_HIDDEN, Region('visible common', 0, 0xf000, 0x10000)])
+        for changed in (replace(STORAGE_HIDDEN, start=0xefff),
+                        replace(STORAGE_HIDDEN, limit=0xff01),
+                        replace(STORAGE_HIDDEN, name='application')):
+            with self.assertRaises(ValueError): disjoint([changed])
+        with self.assertRaises(ValueError): disjoint([STORAGE_HIDDEN, STORAGE_HIDDEN])
 
     def test_worker_code_growth_and_nonempty_data_are_not_free(self):
         text = ' 00002000 s__CODE\n 00000297 l__CODE\n 00003000 s__DATA\n 00000000 l__DATA\n'

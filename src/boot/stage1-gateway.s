@@ -214,7 +214,14 @@ bank1_ready:
         beq bank0_ready
         jmp bank0_failure
 bank0_ready:
-
+        ; SCHEDOVR's otherwise-zero $2300-$32FF is boot-only source data.
+        ; Install hidden storage before the Z80 container overwrites it.
+        sta $ff03
+        jsr $3200
+        cmp #0                     ; initializer preserves P; test returned A
+        beq :+
+        jmp copy_failure
+:
         lda #$00
         sta source_sum_low
         sta source_sum_high
@@ -438,7 +445,7 @@ capability_installed:
         ; $F800-$F9FF boot code without stack-page relocation.
         jmp final_install
 
-storage_identity: .byte "UIEC", 0, 1
+storage_identity: .byte "UIEC", 0, 3
 bootfs_identity:  .byte "UBFS", 0, 1
 
 bank1_failure:
@@ -1310,6 +1317,8 @@ task_save_zp:
 task_call_entry:
         jsr TASK_SLOT
         sta TASK_EXIT
+        lda #9
+        jsr $c883                   ; retire foreground instance before reuse
         ldx #$1d
 task_restore_zp:
         lda task_saved_zp,x
@@ -1554,8 +1563,8 @@ task_file_size_lo:      .byte $00
 task_file_size_hi:      .byte $00
 task_load_mode:         .byte $00
 task_saved_zp:          .res $1e, $00
-; Storage requests reuse $F68A, where boot presentation left the one-shot
-; scheduler activator. Preserve that still-live image until init installs it.
+; Preserve the one-shot scheduler activator until init installs it. Storage
+; now uses its permanent $FE20 gate; retain this legacy boot lifetime guard.
 BOOT_ACTIVATION_SIZE = 42
 ; Boot-only scratch: after probes, before any managed application owns slot 1.
 ; Retired once boot_shell_return restores the activation image. Never used by
@@ -1589,11 +1598,46 @@ banked_return:
 banked_signature: .byte "BLOD",0,1
 
 task_loader_end:
-        .assert task_loader_end <= $fe80, error, "task loader reaches boot init gate"
+        .assert task_loader_end <= $fe20, error, "task loader reaches storage common gate"
 
-; Private bootstrap gate. The C mount/file policy remains in the storage
-; service; this mechanism only selects the initial persistent shell source.
+; Permanent private transport, not filesystem policy. Caller has kernel
+; hardware pages mapped and IRQs masked; preserve cc65 ZP across bank-1 C.
 ; F910/F913/F916/F919 and every public request gate remain unchanged.
+        .segment "STORAGEGATE"
+storage_gate:
+        sta storage_caller+1
+        sty storage_invoke+1
+        cld
+        ldx #29
+storage_save_zp:
+        lda $02,x
+        pha
+        dex
+        bpl storage_save_zp
+        sta $ff03
+        lda #<$e200
+        sta $02
+        lda #>$e200
+        sta $03
+storage_caller:
+        lda #0
+storage_invoke:
+        jsr $120f
+        sta storage_result+1
+        sta $ff01
+        ldx #0
+storage_restore_zp:
+        pla
+        sta $02,x
+        inx
+        cpx #30
+        bcc storage_restore_zp
+storage_result:
+        lda #0
+        rts
+        .assert storage_gate = $fe20, error, "storage transport gate moved"
+        .assert * <= $fe80, error, "storage gate reaches boot shell entry"
+
         .segment "BOOTINIT"
 boot_shell_entry:
         .assert boot_shell_entry = $fe80, error, "boot shell gate moved"

@@ -20,7 +20,14 @@ uint8_t UDEKS_FASTCALL udeks_iec_open_directory(uint8_t device);
  * copies no caller-owned memory: the single service owner fills this buffer
  * and length while idle, then calls open_file(device). Names are PETSCII;
  * path conversion and validation belong to the storage service. */
-extern uint8_t udeks_iec_filename[16];
+#ifdef UDEKS_IEC_WRITE
+/* Probe-only extension: 0: + sixteen-byte name + ,S,W. Not linked into
+ * the shipped service until the storage layout and request gate qualify. */
+#define UDEKS_IEC_FILENAME_MAX 22u
+#else
+#define UDEKS_IEC_FILENAME_MAX 16u
+#endif
+extern uint8_t udeks_iec_filename[UDEKS_IEC_FILENAME_MAX];
 extern uint8_t udeks_iec_filename_length;
 uint8_t UDEKS_FASTCALL udeks_iec_open_file(uint8_t device);
 /* Checked file open: prepare, TALK status 15, consume status, UNTALK, TALK 2.
@@ -37,4 +44,13 @@ uint8_t udeks_iec_command(void);
  * byte itself is valid and must be consumed before closing the channel. */
 uint16_t udeks_iec_read_byte(void);
 uint8_t udeks_iec_close(void);
+#ifdef UDEKS_IEC_WRITE
+uint8_t udeks_iec_listen_file(void);
+/* Low byte = data, high byte = 0 (ordinary) or 1 (EOI). */
+uint8_t UDEKS_FASTCALL udeks_iec_write_byte(uint16_t value);
+uint8_t udeks_iec_unlisten(void);
+/* Release lines and restore the original speed AFTER reading CLOSE status.
+ * Does not send CLOSE 15 (which would close unrelated drive channels). */
+void udeks_iec_finish(void);
+#endif
 #endif

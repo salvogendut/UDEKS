@@ -51,7 +51,7 @@ class DiskShellFixture(unittest.TestCase):
 
     def test_bootstrap_stays_in_private_loader_segments(self):
         source = (ROOT/'src/boot/stage1-gateway.s').read_text()
-        self.assertIn('task_loader_end <= $fe80', source)
+        self.assertIn('task_loader_end <= $fe20', source)
         self.assertIn('boot_shell_entry = $fe80', source)
         self.assertIn('* <= $ff00', source)
         self.assertIn('lda $ba\n        sta BOOT_CHAIN+20', source)

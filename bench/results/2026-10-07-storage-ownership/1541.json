@@ -1,0 +1,112 @@
+{
+  "drive": "1541",
+  "disk_sha256": "abf4866cb05ae00b70d58db3b2439aaaecb0662ab09eaec5a623224f5a13c2cd",
+  "fixture_sha256": "ea65c2b61c344233eea7ae20c63bb40c6ded61fa02188d395f793e4e76280009",
+  "checks": [
+    {
+      "command": "cat /hello",
+      "console": "\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "leak",
+      "console": "INITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "retired": 9,
+      "generation_before": 2,
+      "generation_after": 3
+    },
+    {
+      "command": "cat /hello",
+      "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "leak",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "retired": 9,
+      "generation_before": 4,
+      "generation_after": 5
+    },
+    {
+      "command": "cat /hello",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "hold &",
+      "console": "REU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "retired": 6,
+      "generation_before": 1,
+      "generation_after": 2
+    },
+    {
+      "command": "cat /hello",
+      "console": "8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "hold &",
+      "console": "Z80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "retired": 6,
+      "generation_before": 2,
+      "generation_after": 3
+    },
+    {
+      "command": "cat /hello",
+      "console": "BOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "parent &",
+      "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> parent &\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "retired": 2,
+      "generation_before": 1,
+      "generation_after": 2
+    },
+    {
+      "retired": 6,
+      "generation_before": 3,
+      "generation_after": 4
+    },
+    {
+      "command": "cat /hello",
+      "console": "\nWELCOME TO UDEKS.\n\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> parent &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "xclock &",
+      "console": "WELCOME TO UDEKS.\n\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> parent &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> xclock &\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "command": "cat /hello",
+      "console": "UDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> parent &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> xclock &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "xclock -q",
+      "console": "HELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> parent &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> xclock &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> xclock -q\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "command": "echo ownership-ok",
+      "console": "UDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> leak\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> hold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> parent &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> xclock &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> xclock -q\nUDEKS:~> echo ownership-ok\nownership-ok\nUDEKS:~>",
+      "status": null
+    }
+  ]
+}

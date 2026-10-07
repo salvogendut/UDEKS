@@ -1,0 +1,338 @@
+{
+  "drive": "1581",
+  "disk_sha256": "89c6cad9a501b070c50755bace3e841d6a60d29a79df09477ddf93850570fe54",
+  "skipped": [
+    "media-removal-during-write"
+  ],
+  "system_sha256": "ce6c456b08e5f03fa6665f987e69e9d4b5ae2fea59fa31fd74134f7298d4acc8",
+  "checks": [
+    {
+      "command": "mount 11 /mnt",
+      "console": "\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount 11 /mnt\nmount: Input/output error\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "command": "mount -o rw 9 /mnt",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount 11 /mnt\nmount: Input/output error\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "save /mnt/NO 24",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount 11 /mnt\nmount: Input/output error\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/NO 24\nsave: Read-only filesystem\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "command": "save -c /mnt/KEEP 24",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount 11 /mnt\nmount: Input/output error\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/NO 24\nsave: Read-only filesystem\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "umount /mnt",
+      "console": "REU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount 11 /mnt\nmount: Input/output error\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/NO 24\nsave: Read-only filesystem\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> umount /mnt\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "phase": "fresh-writable-boot"
+    },
+    {
+      "command": "mount -o rw 9 /mnt",
+      "console": "\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "wleak /mnt/RETURN1",
+      "console": "INITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> wleak /mnt/RETURN1\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "retired": 9,
+      "before": 2,
+      "after": 3,
+      "cleanup_error": 0
+    },
+    {
+      "command": "save -c /mnt/RETURN1 24",
+      "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> wleak /mnt/RETURN1\nUDEKS:~> save -c /mnt/RETURN1 24\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "wleak /mnt/RETURN2",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> wleak /mnt/RETURN1\nUDEKS:~> save -c /mnt/RETURN1 24\nsave: verified\nUDEKS:~> wleak /mnt/RETURN2\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "retired": 9,
+      "before": 4,
+      "after": 5,
+      "cleanup_error": 0
+    },
+    {
+      "command": "save -c /mnt/RETURN2 24",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> wleak /mnt/RETURN1\nUDEKS:~> save -c /mnt/RETURN1 24\nsave: verified\nUDEKS:~> wleak /mnt/RETURN2\nUDEKS:~> save -c /mnt/RETURN2 24\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "whold &",
+      "console": "REU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> wleak /mnt/RETURN1\nUDEKS:~> save -c /mnt/RETURN1 24\nsave: verified\nUDEKS:~> wleak /mnt/RETURN2\nUDEKS:~> save -c /mnt/RETURN2 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "retired": 6,
+      "before": 1,
+      "after": 2,
+      "cleanup_error": 0
+    },
+    {
+      "command": "save -c /mnt/OWNER0 24",
+      "console": "8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> wleak /mnt/RETURN1\nUDEKS:~> save -c /mnt/RETURN1 24\nsave: verified\nUDEKS:~> wleak /mnt/RETURN2\nUDEKS:~> save -c /mnt/RETURN2 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER0 24\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "whold &",
+      "console": "Z80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> wleak /mnt/RETURN1\nUDEKS:~> save -c /mnt/RETURN1 24\nsave: verified\nUDEKS:~> wleak /mnt/RETURN2\nUDEKS:~> save -c /mnt/RETURN2 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER0 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "retired": 6,
+      "before": 2,
+      "after": 3,
+      "cleanup_error": 0
+    },
+    {
+      "command": "save -c /mnt/OWNER1 24",
+      "console": "BOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> wleak /mnt/RETURN1\nUDEKS:~> save -c /mnt/RETURN1 24\nsave: verified\nUDEKS:~> wleak /mnt/RETURN2\nUDEKS:~> save -c /mnt/RETURN2 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER0 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER1 24\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "parent &",
+      "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> wleak /mnt/RETURN1\nUDEKS:~> save -c /mnt/RETURN1 24\nsave: verified\nUDEKS:~> wleak /mnt/RETURN2\nUDEKS:~> save -c /mnt/RETURN2 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER0 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER1 24\nsave: verified\nUDEKS:~> parent &\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "retired": 6,
+      "before": 3,
+      "after": 4,
+      "cleanup_error": 0
+    },
+    {
+      "retired": 2,
+      "before": 1,
+      "after": 2,
+      "cleanup_error": 0
+    },
+    {
+      "command": "save -c /mnt/CHILD 24",
+      "console": "\nWELCOME TO UDEKS.\n\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> wleak /mnt/RETURN1\nUDEKS:~> save -c /mnt/RETURN1 24\nsave: verified\nUDEKS:~> wleak /mnt/RETURN2\nUDEKS:~> save -c /mnt/RETURN2 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER0 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER1 24\nsave: verified\nUDEKS:~> parent &\nUDEKS:~> save -c /mnt/CHILD 24\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "umount /mnt",
+      "console": "WELCOME TO UDEKS.\n\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> wleak /mnt/RETURN1\nUDEKS:~> save -c /mnt/RETURN1 24\nsave: verified\nUDEKS:~> wleak /mnt/RETURN2\nUDEKS:~> save -c /mnt/RETURN2 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER0 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER1 24\nsave: verified\nUDEKS:~> parent &\nUDEKS:~> save -c /mnt/CHILD 24\nsave: verified\nUDEKS:~> umount /mnt\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "mount -o rw 9 /mnt",
+      "console": "UDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> wleak /mnt/RETURN1\nUDEKS:~> save -c /mnt/RETURN1 24\nsave: verified\nUDEKS:~> wleak /mnt/RETURN2\nUDEKS:~> save -c /mnt/RETURN2 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER0 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER1 24\nsave: verified\nUDEKS:~> parent &\nUDEKS:~> save -c /mnt/CHILD 24\nsave: verified\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "save /mnt/FULL 515",
+      "console": "UDEKS:~> wleak /mnt/RETURN1\nUDEKS:~> save -c /mnt/RETURN1 24\nsave: verified\nUDEKS:~> wleak /mnt/RETURN2\nUDEKS:~> save -c /mnt/RETURN2 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER0 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER1 24\nsave: verified\nUDEKS:~> parent &\nUDEKS:~> save -c /mnt/CHILD 24\nsave: verified\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/FULL 515\nsave: No space left on device\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "command": "save -c /mnt/KEEP 24",
+      "console": "save: verified\nUDEKS:~> wleak /mnt/RETURN2\nUDEKS:~> save -c /mnt/RETURN2 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER0 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER1 24\nsave: verified\nUDEKS:~> parent &\nUDEKS:~> save -c /mnt/CHILD 24\nsave: verified\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/FULL 515\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "cat /hello",
+      "console": "UDEKS:~> save -c /mnt/RETURN2 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER0 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER1 24\nsave: verified\nUDEKS:~> parent &\nUDEKS:~> save -c /mnt/CHILD 24\nsave: verified\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/FULL 515\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "umount /mnt",
+      "console": "save: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER0 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER1 24\nsave: verified\nUDEKS:~> parent &\nUDEKS:~> save -c /mnt/CHILD 24\nsave: verified\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/FULL 515\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "mount -o rw 9 /mnt",
+      "console": "UDEKS:~> save -c /mnt/OWNER0 24\nsave: verified\nUDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER1 24\nsave: verified\nUDEKS:~> parent &\nUDEKS:~> save -c /mnt/CHILD 24\nsave: verified\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/FULL 515\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "save /mnt/PARTIAL 4096",
+      "console": "UDEKS:~> whold &\nUDEKS:~> save -c /mnt/OWNER1 24\nsave: verified\nUDEKS:~> parent &\nUDEKS:~> save -c /mnt/CHILD 24\nsave: verified\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/FULL 515\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/PARTIAL 4096\nsave: No space left on device\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "command": "save -c /mnt/KEEP 24",
+      "console": "save: verified\nUDEKS:~> parent &\nUDEKS:~> save -c /mnt/CHILD 24\nsave: verified\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/FULL 515\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/PARTIAL 4096\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "cat /hello",
+      "console": "UDEKS:~> save -c /mnt/CHILD 24\nsave: verified\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/FULL 515\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/PARTIAL 4096\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "skipped": "media-removal-during-write"
+    },
+    {
+      "command": "umount /mnt",
+      "console": "save: verified\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/FULL 515\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/PARTIAL 4096\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "mount -o rw 9 /mnt",
+      "console": "UDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/FULL 515\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/PARTIAL 4096\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "whold &",
+      "console": "mount: /mnt ready (read-write)\nUDEKS:~> save /mnt/FULL 515\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/PARTIAL 4096\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> whold &\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "retired": 6,
+      "before": 4,
+      "after": 5,
+      "cleanup_error": 0
+    },
+    {
+      "fault": "close",
+      "write_error": 0,
+      "accepted": 0,
+      "close_error": 5
+    },
+    {
+      "command": "umount /mnt",
+      "console": "UDEKS:~> save /mnt/FULL 515\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/PARTIAL 4096\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> whold &\nUDEKS:~> umount /mnt\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "mount -o rw 9 /mnt",
+      "console": "UDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/PARTIAL 4096\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> whold &\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "save /mnt/RECOVER3 24",
+      "console": "UDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/PARTIAL 4096\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> whold &\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/RECOVER3 24\nsave: created and verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "xclock &",
+      "console": "HELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/PARTIAL 4096\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> whold &\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/RECOVER3 24\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "command": "save /mnt/AFTER 515",
+      "console": "UDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/PARTIAL 4096\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> whold &\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/RECOVER3 24\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~> save /mnt/AFTER 515\nsave: created and verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "xclock -q",
+      "console": "mount: /mnt ready (read-write)\nUDEKS:~> save /mnt/PARTIAL 4096\nsave: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> whold &\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/RECOVER3 24\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~> save /mnt/AFTER 515\nsave: created and verified\nUDEKS:~> xclock -q\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "command": "cat /hello",
+      "console": "save: No space left on device\nUDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> whold &\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/RECOVER3 24\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~> save /mnt/AFTER 515\nsave: created and verified\nUDEKS:~> xclock -q\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "umount /mnt",
+      "console": "UDEKS:~> save -c /mnt/KEEP 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> whold &\nUDEKS:~> umount /mnt\nUDEKS:~> mount -o rw 9 /mnt\nmount: /mnt ready (read-write)\nUDEKS:~> save /mnt/RECOVER3 24\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~> save /mnt/AFTER 515\nsave: created and verified\nUDEKS:~> xclock -q\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> umount /mnt\nUDEKS:~>",
+      "status": 0
+    }
+  ],
+  "files": {
+    "protected": {},
+    "normal": {
+      "RETURN1": {
+        "closed": true,
+        "blocks": 1,
+        "bytes": 24,
+        "sha256": "1d64add2a6388367c9bc2d1f1b384b069a6ef382cdaaa89771dd103e28613a25"
+      },
+      "RETURN2": {
+        "closed": true,
+        "blocks": 1,
+        "bytes": 24,
+        "sha256": "1d64add2a6388367c9bc2d1f1b384b069a6ef382cdaaa89771dd103e28613a25"
+      },
+      "OWNER0": {
+        "closed": true,
+        "blocks": 1,
+        "bytes": 24,
+        "sha256": "1d64add2a6388367c9bc2d1f1b384b069a6ef382cdaaa89771dd103e28613a25"
+      },
+      "OWNER1": {
+        "closed": true,
+        "blocks": 1,
+        "bytes": 24,
+        "sha256": "1d64add2a6388367c9bc2d1f1b384b069a6ef382cdaaa89771dd103e28613a25"
+      },
+      "CHILD": {
+        "closed": true,
+        "blocks": 1,
+        "bytes": 24,
+        "sha256": "1d64add2a6388367c9bc2d1f1b384b069a6ef382cdaaa89771dd103e28613a25"
+      },
+      "RECOVER3": {
+        "closed": true,
+        "blocks": 1,
+        "bytes": 24,
+        "sha256": "1d64add2a6388367c9bc2d1f1b384b069a6ef382cdaaa89771dd103e28613a25"
+      },
+      "AFTER": {
+        "closed": true,
+        "blocks": 3,
+        "bytes": 515,
+        "sha256": "87cb471831d76279b4f17f7c516e05b529caaf21abe13c10fda2b49d72a5f84f"
+      }
+    },
+    "full": {},
+    "partial": {
+      "PARTIAL": {
+        "closed": true,
+        "blocks": 2,
+        "bytes": 264,
+        "sha256": "2edb08dacd9617b6e52bedcfb982b99e8c204df3df4c7025bdfb852ae5bc6155"
+      }
+    },
+    "removed": {},
+    "close": {
+      "OWNER3": {
+        "closed": false,
+        "blocks": 0
+      }
+    }
+  },
+  "media": {
+    "protected": {
+      "before_sha256": "d78f0e2d20ba13335840e96e80fdf1a547409c673e085d20dbc3d297fd668925",
+      "after_sha256": "d78f0e2d20ba13335840e96e80fdf1a547409c673e085d20dbc3d297fd668925"
+    },
+    "normal": {
+      "before_sha256": "d78f0e2d20ba13335840e96e80fdf1a547409c673e085d20dbc3d297fd668925",
+      "after_sha256": "7cc9c5693bec69c67c8823858744dc3b131703b543e13c518460c63342c0526d"
+    },
+    "full": {
+      "before_sha256": "99ae4c4ba21557f60f1c0f4d2ea064e18a93129fbdd6de4fe91af41e175cadeb",
+      "after_sha256": "99ae4c4ba21557f60f1c0f4d2ea064e18a93129fbdd6de4fe91af41e175cadeb"
+    },
+    "partial": {
+      "before_sha256": "22fd239dcac83c723f63940bb448970008acd86d13d6810bf53a8ec496b15840",
+      "after_sha256": "cc38d9e9eee1ef674c6f059c461d856bf4b6843c19bbdfafcec856695309e184"
+    },
+    "removed": {
+      "before_sha256": "d78f0e2d20ba13335840e96e80fdf1a547409c673e085d20dbc3d297fd668925",
+      "after_sha256": "d78f0e2d20ba13335840e96e80fdf1a547409c673e085d20dbc3d297fd668925"
+    },
+    "close": {
+      "before_sha256": "d78f0e2d20ba13335840e96e80fdf1a547409c673e085d20dbc3d297fd668925",
+      "after_sha256": "5cd4bce01022201f9a31256ef765820eef426d283ed48ba474beea12885293e8"
+    }
+  }
+}

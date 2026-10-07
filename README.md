@@ -23,10 +23,21 @@ Read the [dedication](DEDICATION.md).
 
 > [!IMPORTANT]
 > This is an experimental native OS, not a general-purpose Unix or a finished
-> microkernel distribution. Many services are still preloaded. Storage is
-> read-only, task capacity is limited, and graphical repaints can be slow.
+> microkernel distribution. Many services are still preloaded. Storage defaults
+> to read-only; opt-in create-only writes have passed the functional checklist
+> on C128/PI1541. Task capacity is limited and graphical repaints
+> can be slow.
 
 ## Download and boot
+
+For the current disk-write candidate, build this branch and use
+`build/boot/udeks.d64`, `.d71` or `.d81`. The
+[SAVE test and writable-mount instructions](docs/GRAPHICAL-APPS-SDK.md#counted-disk-io-utrq-014)
+apply to these fresh images, **not** the older downloads below. Use disposable
+media for write testing; overwrite, append and deletion are not implemented.
+The [qualification record](bench/results/2026-10-07-storage-acceptance/README.md)
+includes the hardware acceptance. The VICE 1581 mid-write-ejection run remains
+unqualified, but the [equivalent 1986 test now passes](bench/results/2026-10-07-storage-eject-1986/README.md).
 
 These preserved test images contain the four-generic-slot build and the xwave
 resize improvement from [PR #37](https://github.com/salvogendut/UDEKS/pull/37):
@@ -144,10 +155,17 @@ The target baseline is a stock 128 KiB C128 with 16 KiB VDC RAM; 64 KiB VDC,
 REU and GeoRAM are optional. PAL and NTSC remain targets.
 
 **Completed feature:** four generic native app slots, emulator-qualified and
-accepted by the user for merge. **Next architectural milestone:** extract the
-first non-kernel service into a disk-loaded program.
-General scripting, filesystem writes, broader tasking and optimization are
-separate roadmap work. The existing `/etc/rc` command runner is not a POSIX
+accepted by the user for merge. **Completed feature, accepted for merge:**
+[#44 — safe create-only disk writes](https://github.com/salvogendut/UDEKS/issues/44),
+implemented with public UTRQ 0.14, explicit writable mounts and the standalone
+SAVE command. The manual checklist passes in 1986 and on real C128/PI1541;
+1581 mid-write ejection/recovery also passes under native 1986. The separate
+VICE limitation remains documented. [PR #45](https://github.com/salvogendut/UDEKS/pull/45)
+records the merge. The next
+architectural milestone is extracting the first non-kernel service into a
+disk-loaded program.
+General scripting, broader tasking and optimization remain separate roadmap
+work. The existing `/etc/rc` command runner is not a POSIX
 `sh` or Bash implementation.
 
 ## Screenshots

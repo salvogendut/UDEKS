@@ -321,6 +321,7 @@ user-sources: $(USER_COWSAY_ASM) $(USER_DATE_ASM) $(USER_LS_ASM) $(USER_USH_ASM)
 user-programs: $(USER_BOOTFS) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX)
 user-programs: $(USER_XSPRDEF_UDEX)
 user-programs: $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(BUILD_USER)/filetools.udx $(BUILD_USER)/sysinfo.udx $(BUILD_USER)/diagnostics.udx
+user-programs: $(USER_MOUNT_UDEX) $(USER_SAVE_UDEX)
 
 $(BUILD_8502)/shell.s: include/udeks/service_control.h include/udeks/task_request.h include/udeks/banked_graphics.h
 $(USER_USH_ASM) $(BUILD_USER)/ush-recovery.o: include/udeks/service_control.h include/udeks/task_request.h
@@ -960,11 +961,11 @@ $(USER_XWAVE_UDEX): user/bin/xwave_native.c user/lib/wave_paths.c user/include/u
 		--export _native_wave_presents --export _native_wave_failure --export _native_wave_width --export _native_wave_height
 	cp $(BUILD_USER)/native-wave/XWAVE.BIN $@
 
-$(USER_BOOTFS): $(USER_MOUNT_UDEX) \
+$(USER_BOOTFS): $(USER_RECOVERY_MOUNT_UDEX) \
 		$(USER_RECOVERY_USH_UDEX) \
 		tools/build_bootfs.py Makefile
 	$(PYTHON) tools/build_bootfs.py --max-size 0x1000 \
-		--entry mount=$(USER_MOUNT_UDEX) --entry umount=$(USER_MOUNT_UDEX) \
+		--entry mount=$(USER_RECOVERY_MOUNT_UDEX) --entry umount=$(USER_RECOVERY_MOUNT_UDEX) \
 		--entry ush=$(USER_RECOVERY_USH_UDEX) $@
 
 $(VDC_SPLASH_BIN): assets/udekspipe-64.xpm tools/xpm_to_vdc.py | $(BUILD_ASSETS)
@@ -2117,7 +2118,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
 		tools/build_d71.py bench/iec-directory/hello.txt user/etc/rc $(USER_SYSINFO_UDEX) \
-		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX) $(USER_XSPRDEF_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX)
+		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX) $(USER_XSPRDEF_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX) $(USER_MOUNT_UDEX) $(USER_SAVE_UDEX)
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
@@ -2147,6 +2148,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--command LSMOD=$(USER_DIAGNOSTICS_UDEX) --command LSCPU=$(USER_DIAGNOSTICS_UDEX) \
 		--command Z80CTL=$(USER_DIAGNOSTICS_UDEX) \
 		--command MOUNT=$(USER_MOUNT_UDEX) --command UMOUNT=$(USER_MOUNT_UDEX) \
+		--command SAVE=$(USER_SAVE_UDEX) \
 		--d64-output $(BOOT_D64) $(BOOT_D71)
 
 $(TASK_EXIT_PROBE_D71) $(TASK_EXIT_PROBE_D64) &: $(STAGE0_BIN) \
@@ -2340,6 +2342,7 @@ $(TASK_CANCEL_PROBE_D71) $(TASK_CANCEL_PROBE_D64) &: $(STAGE0_BIN) \
 		--d64-output $(TASK_CANCEL_PROBE_D64) $(TASK_CANCEL_PROBE_D71)
 
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
+		$(USER_MOUNT_UDEX) \
 		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) \
 		$(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX) \
 		$(BOOT_DELIVERY_BIN) \
@@ -2386,6 +2389,11 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 check:
+	$(PYTHON) -m py_compile tools/storage_lease_probe.py tools/storage_owner_probe.py
+	$(PYTHON) -m py_compile tools/storage_public_probe.py
+	$(PYTHON) -m py_compile tools/storage_failure_probe.py
+	$(PYTHON) -m py_compile tools/storage_window_probe.py
+	$(PYTHON) -m py_compile tools/storage_write_probe.py
 	$(PYTHON) -m py_compile tools/four_native_probe.py tools/native_app_layout.py
 	$(PYTHON) -m py_compile tools/xsprdef_probe.py
 	$(PYTHON) -m py_compile tools/banked_loader_probe.py tools/gen_banked_bindings.py tools/build_banked_execution.py

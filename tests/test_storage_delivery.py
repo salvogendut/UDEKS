@@ -44,6 +44,23 @@ class StorageDelivery(unittest.TestCase):
         self.assertIn('SECONDARY_PAYLOAD_LOAD = $1200', constants)
         self.assertIn('SECONDARY_PAYLOAD_END = $e900', constants)
 
+    def test_guarded_image_uses_boot_only_sources_without_growing_envelope(self):
+        module=b'\x4c\x15\x12UIEC\0\3'
+        installer=b'\x4c\x09\x32SINS\0\1\x60'
+        args=dict(module=module, hidden=b'H'*0xefe, installer=installer)
+        baseline,_=self.wrap()
+        result,_=self.wrap(**args)
+        self.assertEqual(len(result),len(baseline))
+        start=2+0x2300-0x1200
+        self.assertEqual(result[start:start+0xf00], b'H'*0xefe+b'\0\0')
+        self.assertEqual(result[start+0xf00:start+0xf00+len(installer)],installer)
+        self.assertEqual(result[start+0x1000:],baseline[start+0x1000:])
+        for change in ({'hidden':b''},{'installer':b''},{'hidden':b'H'*0xf01},
+                       {'installer':installer+bytes(0x100)},{'installer':b'bad'},
+                       {'module':module[:8]+b'\1'}):
+            with self.subTest(change=list(change)), self.assertRaises(ValueError):
+                self.wrap(**(args|change))
+
     def test_secondary_bootfs_does_not_change_any_other_service_byte(self):
         payload, _ = self.wrap()
         offset = 2+0xA000-0x1200
@@ -153,8 +170,9 @@ class StorageDelivery(unittest.TestCase):
             with self.assertRaises(ValueError): install_router(*args)
 
     def test_gateway_stays_below_transient_stack_and_owns_context(self):
-        source = (ROOT/'src/services/filesystem/iec_router.s').read_text()
-        self.assertIn('gateway_end-gateway <= $f700', source)
+        source = (ROOT/'src/boot/stage1-gateway.s').read_text().split('storage_gate:',1)[1].split('.segment "BOOTINIT"',1)[0]
+        self.assertIn('storage_gate = $fe20', source)
+        self.assertIn('* <= $fe80', source)
         self.assertIn('lda $02,x', source)
         self.assertIn('sta $02,x', source)
         self.assertIn('cpx #30', source)
