@@ -6,7 +6,89 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — storage placement candidate, 2026-10-07
+## Current handoff — boot storage ownership, step 1 complete, 2026-10-07
+
+User requested **step 1 of three**, not public writes or another application.
+Implemented in `build/storage-disk-write`, branch `storage-0.3-disk-write`
+(#44). HEAD remains `5a43574`; this and the preceding private-lease increment
+are uncommitted. Preserve unrelated root-main edits/worktrees.
+
+- Normal boot now installs UIEC 0.3, including hidden bank-1 code/constants.
+  The one-shot `$3200` installer consumes `$2300–$31FF` source bytes before
+  the stage-1 Z80 container copy, then initializes the NMI mirror/state.
+  Test A explicitly after initialization: that entry preserves P.
+- Permanent common transport is `$FE20–$FE51`; loader ends `$FE11` and has a
+  link assertion against `$FE20`. Storage no longer overwrites `$F68A` or the
+  transient C stack. Filesystem policy remains a bank-1 C service.
+- Bank-0 router `$C880` derives tags from the real current-task binding;
+  native tags 1–8, synchronous invocation 9, bootstrap/root loader 10.
+  Private bank-1 generations form a 16-bit instance ID. `$C883` retirement
+  preserves registers/status/request, closes/releases before incrementing,
+  and records cleanup errno without replacing the program's exit status.
+  Native EXIT/CANCEL and synchronous return call it before memory reuse.
+- Actual remaining bytes: module 15, policy 94, driver 163, hidden 2, BSS 0.
+  Keep the `$E180–$E1FF` C stack and all four app allocations intact.
+- Public UTRQ stays **0.13**; mounts remain RO. Independent clients prove a
+  0.14 request and create-mode request are rejected. Do not claim users can
+  save files yet.
+
+`storage-owner-fixtures` builds independent console/native test clients.
+`tools/storage_owner_probe.py` qualifies leaked foreground return, native
+EXIT, parent CANCEL/WAITPID, foreign CLOSE rejection and slot reuse through
+the real gates. All VICE 1541/1571/1581 cases pass. Bootfs recovery passes;
+the full four-native-client suite passes on 1571 (drag/resize, worker,
+disk commands, close/reload, unknown names and rejected loads).
+Evidence: `bench/{artifacts,results}/2026-10-07-storage-ownership`.
+Final gates: **1,302 host tests**, `make boot`, `placement-check` and
+`graphics-apps-check` pass; rebuilt disks match the preserved hashes.
+No new physical C128/1986 or integrated RESTORE result is claimed.
+
+Fixture lessons: legacy native SPAWN still resolves bootfs, so the probe
+adds its tiny child to bootfs on a disposable image, keeping recovery entries.
+SPAWN returns result=1, child ID in payload, not result=task ID. cc65 `-Os`
+can retain a stale ptr1 after an indexed clear loop; the parent fixture uses
+`memset` before rebuilding the next payload. No runtime kernel test hooks.
+
+**Next: step 2**, public version/routing + explicit RW mount/remount + SDK +
+independent save/readback command. Step 3 is end-to-end failure qualification,
+1986/C128 acceptance and merge. Follow [the roadmap](docs/ROADMAP.md), not the
+older “boot delivery still due” notes below.
+
+## Previous handoff — actual guarded storage service, 2026-10-07
+
+User requested commit/push and next step. Placement proof committed/pushed as
+`5a43574` on `storage-0.3-disk-write` (#44). The following service-entry increment
+is implemented in the worktree, not committed yet. Use
+`build/storage-disk-write`; preserve unrelated root-main edits/worktrees.
+
+`src/services/filesystem/iec_lease.s` + the private lease linker target run the
+actual C policy/writer, with low request/cwd/boot snapshots, trusted AX caller
+identity, a banked cleanup entry and deferred NMI forwarding after restoring
+common. Initialization clears state and installs the hidden NMI mirror once;
+boot must install the hidden image first, before CIA2/input ownership. Actual
+free bytes: module 21, policy 141, driver 175, hidden 2, state **0**. Do not
+spend the `$E180–$E1FF` stack or another app's allocation.
+
+`make storage-lease-probe` and `tools/storage_lease_probe.py` exercise these
+exact binaries on newly generated disposable media. All three true-drive VICE
+formats pass, both VIC-bank settings: 27 requests, 3 cleanup calls, binary
+readback, exact-empty finalization, ownership and RO rejection, snapshot/cwd,
+stack/common preservation, hidden NMI forwarding. A one-instruction negative
+control detects missing forwarding before any write. Preserved evidence:
+`bench/{artifacts,results}/2026-10-07-storage-lease`. Production disk/storage
+hashes are unchanged; **1,291 host tests** and container boot/placement/graphics
+gates pass. All probe-owned VICE sessions are terminated.
+
+**Next concrete work:** install the new service and hidden image in the real
+boot delivery, then supply per-invocation identity and cleanup on scheduler
+exit/cancel and foreground-loader return. Keep the public UTRQ minor at 0.13
+until the complete path is qualified. Add the versioned mount/SDK route and
+independent console save/readback fixture as the next user-testable feature.
+This standalone service probe is VICE-only and uses bank-0 CPU pages; it does
+not demonstrate live scheduler cleanup, 1986, physical hardware or integrated
+RESTORE recovery. See [Storage 0.3](docs/STORAGE-0.3.md#actual-guarded-service-entry--2026-10-07).
+
+## Previous handoff — storage placement candidate, 2026-10-07
 
 The exact-empty backend (`5e0aa88`) and gated service policy (`c674c97`) are
 committed/pushed. This placement checkpoint measures the complete

@@ -3,7 +3,47 @@
 Work on [issue #44](https://github.com/salvogendut/UDEKS/issues/44), branch
 `storage-0.3-disk-write`, lives in `build/storage-disk-write`.
 
-## Current checkpoint: private backend with exact empty files
+## Current checkpoint: boot integration and ownership complete
+
+**Step 1 of the final three is complete.** Normal boot images now contain the
+guarded service and its create-only backend. The public interface remains
+**UTRQ 0.13/read-only**; versioned public writes, mount options and a console
+save/readback command are step 2. End-to-end acceptance/merge is step 3.
+
+Private UIEC 0.3 adds trusted context request `$120F` and retirement `$1212`
+to the existing raw lease entries. A bank-0 router derives context tags from
+the current native task, synchronous foreground invocation or boot loader;
+applications do not supply them in a request. Each tag has a private generation
+byte, combined into a nonzero 16-bit handle identity. Retirement closes/releases
+the matching handle **before** advancing its generation, including wrap. Native
+EXIT and validated CANCEL run this before zombie publication; foreground return
+runs it before reusing the program allocation. Cleanup errors are recorded in
+`_udeks_storage_cleanup_error`, without clobbering the shared request/exit status.
+One global fd 4 is still the limit; this is not multi-open or preemptive I/O.
+
+The hidden image is delivered in boot-only bank-1 `$2300–$31FF`; a `$3200`
+installer copies it to `$F000–$FEFF` before the Z80 container reuses the source.
+Initialization/mirror installation precede native input ownership. A permanent
+50-byte common gate at `$FE20–$FE51` transports calls and preserves kernel ZP;
+it contains no filesystem policy and does not reuse the VIC gateway/C-stack
+area. The loader is link-bounded below it. No application, recovery, cache or
+stack reservation changes. Linked free bytes: module 15, policy 94, driver 163,
+hidden 2, state **0**. Boot images have intentionally changed at this step.
+
+Cold-boot VICE tests on 1541/1571/1581 use actual independent clients to leak
+files across return/EXIT/CANCEL, reject foreign CLOSE, reuse slots and read
+again. They also prove the public newer-minor/create-mode gates still reject.
+Bootfs recovery and the full four-native-app suite pass, including clock/wave
+drag/resize and console I/O. Exact disks/binaries/results are
+[preserved here](../bench/results/2026-10-07-storage-ownership/README.md).
+These integrated tests exercise **read handles**: private write finalization
+is qualified separately below, not yet via the public scheduler path. Media
+failures, integrated RESTORE, 1986 and real C128 remain final acceptance work.
+
+The sections below are chronological checkpoints; statements about unchanged
+boot images or missing hooks describe those earlier revisions, not this one.
+
+## Earlier checkpoint: private backend with exact empty files
 
 `src/services/filesystem/cbm_write.c` implements a single, serialized,
 create-only SEQ writer in C. The optional `UDEKS_IEC_WRITE` assembly transport
@@ -156,7 +196,7 @@ use the provisional 0.14 values.
   sticky through subsequent writes and CLOSE. CLOSE always checks the backend
   and releases ownership. Console descriptors 1/2 keep their existing route.
 
-**Not implemented yet:** the trusted caller provider, scheduler exit/cancel
+**At this earlier checkpoint, not implemented:** the trusted caller provider, scheduler exit/cancel
 and synchronous-loader cleanup call sites, banked cleanup entry, resident
 WRITE routing, mount-command options, SDK wrapper, production placement and
 public-API probe. Cleanup is tested as a function, **not** claimed to run on
@@ -273,6 +313,54 @@ Verification: **1,283 host tests**, candidate link, normal boot and
 placement/graphics gates pass. Production storage blobs and all three disk
 images still have their pre-change hashes; no VICE sessions remain.
 
+## Actual guarded service entry — 2026-10-07
+
+The next increment implements `iec_lease.s` and builds the real service using
+`cfg/8502-storage-write-lease.cfg`. It remains separate from normal boot.
+Private UIEC 0.2 vectors are request `$1200`, cleanup `$1209`, initialization
+`$120C`. Requests/cleanup take a **trusted instance in AX**, not a request
+field. This implements the service-side caller provider; production scheduler
+and foreground-loader providers still need wiring.
+
+The entry requires worker-I/O `$7E`, upper 4 KiB common/no bottom common,
+the service software stack at `$E200`, serialized dispatch, and caller-owned
+CPU pages. It snapshots all 38 request bytes plus cwd and boot source below
+`$F000` before hiding common RAM. Exit restores the original D506 first,
+forwards private NMI pending by setting (never clearing) `$FFF5`, then publishes
+the reply and cwd. Cleanup finalizes only its instance's handle and does not
+touch the shared request. The provisional syscall values remain private.
+
+Initialization is idempotent, clears only `$E000–$E17F`, and installs the hidden
+NMI mirror. The hidden image must already be present. First initialization is
+boot-only, before input owns CIA2 interrupts: it masks/acknowledges native CIA2
+sources and leaves them masked. It is not a general restart operation or a
+cartridge-NMI guarantee. Production delivery must obey these lifetimes.
+
+The actual callable link fits the original reservations: module 1,643 bytes
+(21 free), policy 5,491 (141 free), driver/entry 1,361 (175 free), hidden
+3,838 (2 free), state **384 (zero free)**. The snapshots consume the candidate's
+42 spare BSS bytes; `$E180–$E1FF` remains software-stack headroom, not state.
+No app slot, cache or recovery area is reassigned. Placement tests validate
+the real map and emitted binaries rather than relying on object-size sums.
+
+`make storage-lease-probe` links a standalone installer/test against those
+exact images. VICE true-drive qualification passes **27 requests + 3 cleanup
+calls** on each D64/D71/D81, with D506 `$09` and `$49`. It tests RO and explicit
+RW/remount, cwd/boot snapshots, owner rejection, idempotent init while open,
+exact binary data, duplicate rejection, exact-empty cleanup, mapping rejection,
+stack restoration/guard and common sentinel preservation. One timed CIA2 NMI
+arrives inside the real hidden service and is forwarded on return. Removing
+only that forwarding instruction produces the expected failure before writes.
+An independent host reader verifies finalized file bytes and the existing KEEP
+file. Evidence and reproduction commands:
+[`2026-10-07-storage-lease`](../bench/results/2026-10-07-storage-lease/README.md).
+
+The test supplies caller identities and pins CPU pages to bank 0; it does **not**
+qualify task exit/cancel, relocated task CPU pages, production boot, keyboard
+RESTORE interaction, 1986 or physical hardware. The separate older mapping
+proof's 1986 result must not be conflated with this new service run. Normal
+storage blobs and D64/D71/D81 images retain their previous hashes.
+
 ## Proposed public contract — not advertised or frozen yet
 
 The intended next UTRQ minor keeps operations READ=1, WRITE=2, OPEN=6 and
@@ -309,8 +397,8 @@ mode/flag values remain unadvertised until the full integration is qualified.
 
 ## Next concrete deliverable
 
-Integrate and qualify the guarded-window entry and boot delivery within the
-measured candidate budget, wire trusted caller identity and exit/loader cleanup,
+Install the qualified guarded service during boot within the measured budget,
+wire trusted caller identity and exit/loader cleanup,
 then add versioned request routing
 and one independent console save/readback command. That is the next
 user-testable checkpoint. Qualify it on disposable

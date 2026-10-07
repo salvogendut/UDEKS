@@ -17,8 +17,10 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 [#44 — create-only disk writes](https://github.com/salvogendut/UDEKS/issues/44),
 branch `storage-0.3-disk-write`. This replaces service extraction as the
 immediate priority; that architectural milestone follows the bounded write
-slice. Disk I/O is still read-only: the issue/branch establish the plan, not
-an implemented writer. The sprite editor stays parked.
+slice. The writer and guarded service are implemented; boot delivery and real
+program-lifetime cleanup are now VICE-qualified. Public disk I/O stays
+read-only until the next increment exposes the write API. The sprite editor
+stays parked.
 
 **Completed feature (accepted 2026-10-05): generic graphical applications**,
 [#35](https://github.com/salvogendut/UDEKS/issues/35). The first increment merged
@@ -160,34 +162,26 @@ mounts or applications must not require rebuilding the kernel.
 
 ### Active: Storage 0.3 — create-only disk writes (#44)
 
-**In progress:** [private C writer and IEC probe](STORAGE-0.3.md), separate
-from boot images. Exact empty and binary create/readback/persistence now pass
-VICE on all three disk formats. A checked, new-file-only length correction
-handles DOS's synthetic CR without changing ordinary CR files or the reader.
-Checkpoints `5e0aa88` and `c674c97` are committed/pushed. The C storage service has
-compile-only, host-tested create/write/close policy, opt-in RW/remount
-permissions and instance-bound handles/cleanup. The full service now links in
-an isolated candidate using hidden bank-1 top RAM; its separate mapping/NMI
-proof passes VICE and 1986 without consuming app slots or recovery/stack
-reservations. Production entry/boot delivery, trusted identity/exit hooks and
-public routing are still due. Normal boot images remain unchanged.
-The next user-testable target is one independent console save/readback command
-through the public API, not the standalone transport probe.
+The [create-only backend](STORAGE-0.3.md) already passes exact empty/binary
+write/readback/persistence checks on all three VICE drive types. The remaining
+delivery plan is **three steps**, with step 1 now complete in this worktree:
 
-1. **Implemented privately:** create-exclusive OPEN / counted WRITE / checked
-   CLOSE, root/data RW permissions, handle-owner checks and cleanup function;
-   host tests preserve console WRITE and old read clients. Values are not yet
-   published in the syscall ABI. Backend is emulator-qualified separately.
-2. **Next:** integrate the measured guarded-window entry and boot delivery,
-   qualify the actual service across mapping changes, then wire trusted
-   per-invocation identity and exit/cancel cleanup into the scheduler and
-   foreground loader. Add versioned routing and mount/SDK support. Keep IEC
-   timing in assembly, bootfs RO and namespace collision checks intact; never
-   overwrite existing files or borrow protected application/stack allocations.
-3. Deliver an independent console fixture through the public API: create a
-   new file, write known data, check final CLOSE/status, reopen/read back, and
-   demonstrate persistence across reboot. Qualify VICE D64/D71/D81, native
-   1986, then offer disposable-media tests on C128 + PI1541.
+1. **Done — boot integration and ownership.** Normal disks install the guarded
+   service; trusted context + generation identities distinguish native tasks
+   and successive synchronous console invocations. Real EXIT, CANCEL and
+   console-return paths close leaked handles before reuse. VICE D64/D71/D81
+   pass; recovery and the four-native-app regression pass too. Public UTRQ
+   stays 0.13, mounts stay RO, and no application/stack allocation is borrowed.
+2. **Next — usable public writes.** Add the versioned request route, explicit
+   RW/remount options, SDK wrapper, and one independent console save/readback
+   command. Check CLOSE/status and reboot persistence. This is the next new
+   user-testable feature; do not add append/overwrite/redirection here.
+3. **Acceptance and merge.** Qualify the complete public path and failure
+   cases on VICE D64/D71/D81, native 1986 and disposable C128/PI1541 media;
+   retain read/boot/recovery, input and graphics checks. Then PR/merge #44.
+
+Step-1 evidence: [boot ownership qualification](../bench/results/2026-10-07-storage-ownership/README.md).
+It is not a new physical-hardware or integrated RESTORE qualification.
 
 **Acceptance:** exact empty/binary/multi-sector/final-partial-file contents;
 meaningful disk-full, write-protect, missing-device, transport and close errors;

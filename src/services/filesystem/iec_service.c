@@ -9,7 +9,7 @@
 #include "udeks/storage_write.h"
 #endif
 
-#ifdef UDEKS_STORAGE_HOST_TEST
+#if defined(UDEKS_STORAGE_HOST_TEST) || defined(UDEKS_STORAGE_LEASE)
 extern uint8_t udeks_storage_request[UDEKS_TASK_REQUEST_SIZE];
 extern uint8_t udeks_storage_cwd, udeks_storage_boot_source;
 #define R udeks_storage_request
@@ -81,7 +81,7 @@ static uint8_t close_handle(void)
     return error;
 }
 
-uint8_t udeks_storage_cleanup(uint16_t instance)
+uint8_t UDEKS_FASTCALL udeks_storage_cleanup(uint16_t instance)
 {
     if (!opened || !instance || instance != handle_owner) return 0;
     return close_handle();

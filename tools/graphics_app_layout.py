@@ -38,6 +38,7 @@ CANDIDATE = tuple(region for task,base,limit,stack,zp,hp in ALLOCATIONS for regi
     Region(f'app {task} software stack/guards/exit',1,stack,limit),
     Region(f'app {task} zero page',1,zp,zp+256),
     Region(f'app {task} hardware stack',1,hp,hp+256)))
+STORAGE_HIDDEN = Region('guarded storage high', 1, 0xF000, 0xFF00)
 
 
 def disjoint(regions):
@@ -45,7 +46,9 @@ def disjoint(regions):
         if r.bank not in (0, 1) or not 0 <= r.start < r.limit <= 0x10000:
             raise ValueError('invalid region: ' + r.name)
         # This machine exposes bank 0, not bank 1, in upper common RAM.
-        if r.bank == 1 and r.limit > 0xF000:
+        # Exactly this qualified service reservation uses physical bank-1 RAM
+        # behind common. No task/allocation may use it, nor the MMU/NMI page.
+        if r.bank == 1 and r.limit > 0xF000 and r != STORAGE_HIDDEN:
             raise ValueError('bank-1 region reaches common RAM: ' + r.name)
     ordered = sorted(regions, key=lambda r: (r.bank, r.start, r.limit))
     for left, right in zip(ordered, ordered[1:]):
@@ -154,13 +157,13 @@ def baseline_regions(kernel, storage, worker):
                Region('filesystem policy', 1, 0xB000, 0xC600),
                Region('banked image loader', 1, 0xD900, 0xE000),
                Region('storage state/software stack', 1, 0xE000, 0xE200),
-               Region('IEC driver and ush stack', 1, 0xE300, 0xF000)]
-    allowed = {'ZEROPAGE', 'STARTUP', 'CODE', 'RODATA', 'DATA', 'BSS', 'STORAGECODE', 'IECCODE'}
+               Region('IEC driver and ush stack', 1, 0xE300, 0xF000), STORAGE_HIDDEN]
+    allowed = {'ZEROPAGE', 'STARTUP', 'CODE', 'RODATA', 'BSS', 'STORAGECODE', 'IECCODE', 'STORAGEHIGH'}
     if storage.keys() != allowed:
         raise ValueError('storage segments changed; review ownership')
     for name, low, high in (
             ('STARTUP', 0x1200, 0x1880), ('CODE', 0x1200, 0x1880),
-            ('RODATA', 0x1200, 0x1880), ('DATA', 0x1200, 0x1880),
+            ('RODATA', 0xF000, 0xFF00), ('STORAGEHIGH', 0xF000, 0xFF00),
             ('BSS', 0xE000, 0xE180), ('STORAGECODE', 0xB000, 0xC600),
             ('IECCODE', 0xE300, 0xE900)):
         start, end, size = storage[name]

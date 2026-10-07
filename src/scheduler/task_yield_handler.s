@@ -610,6 +610,8 @@ request_exit:
         beq :+
         jmp yield_invalid
 :
+        lda _udeks_lifecycle_current_private
+        jsr $c883                   ; close before ZOMBIE/reap/slot reuse
         lda TREQ_PAYLOAD
         sta _udeks_lifecycle_slots_private+TASK_SLOT_EXIT,x
         lda #TASK_STATE_ZOMBIE

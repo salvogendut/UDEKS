@@ -1,0 +1,33 @@
+{
+  "drive": "1541",
+  "recovery": true,
+  "disk_sha256": "abf4866cb05ae00b70d58db3b2439aaaecb0662ab09eaec5a623224f5a13c2cd",
+  "fixture_sha256": "57acd3c79711a2568ac0ab108a11e9f60824d3823a8d0a889cc02fe37365a6ec",
+  "checks": [
+    {
+      "command": "echo recovery-ok",
+      "console": "\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> echo recovery-ok\nrecovery-ok\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "command": "mount 8 /mnt",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> echo recovery-ok\nrecovery-ok\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "command": "/mnt/COWSAY.BIN recovery-alive",
+      "console": "IEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> echo recovery-ok\nrecovery-ok\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> /mnt/COWSAY.BIN recovery-alive\n ________________\n< recovery-alive >\n ----------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "command": "umount /mnt",
+      "console": "BOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> echo recovery-ok\nrecovery-ok\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> /mnt/COWSAY.BIN recovery-alive\n ________________\n< recovery-alive >\n ----------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "command": "echo recovery-cleanup-ok",
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> echo recovery-ok\nrecovery-ok\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> /mnt/COWSAY.BIN recovery-alive\n ________________\n< recovery-alive >\n ----------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> echo recovery-cleanup-ok\nrecovery-cleanup-ok\nUDEKS:~>",
+      "status": null
+    }
+  ]
+}

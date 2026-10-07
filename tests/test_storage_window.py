@@ -79,13 +79,14 @@ class StorageWindow(unittest.TestCase):
         self.assertEqual(probe.negative_image((artifacts/'probe.prg').read_bytes()),
                          (artifacts/'no-forward.prg').read_bytes())
 
-    def test_candidate_not_enabled_in_production(self):
+    def test_no_fake_caller_enabled_in_production(self):
         config = (ROOT/'cfg/8502-storage.cfg').read_text()
-        self.assertNotIn('STORAGEHIGH', config)
+        self.assertIn('STORAGEHIGH', config)
         rules = (ROOT/'mk/storage.mk').read_text().splitlines()
         objects = next(s for s in rules if s.startswith('STORAGE_OBJECTS :='))
         self.assertNotIn('WRITE_', objects)
         self.assertNotIn('no-caller', objects)
+        self.assertIn('iec_context', objects)
 
 
 if __name__ == '__main__': unittest.main()

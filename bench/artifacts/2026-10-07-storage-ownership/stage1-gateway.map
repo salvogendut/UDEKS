@@ -1,0 +1,40 @@
+Modules list:
+-------------
+stage1-gateway.o:
+    CODE              Offs=000000  Size=0001EB  Align=00001  Fill=0000
+    FINAL             Offs=000000  Size=0000D1  Align=00001  Fill=0000
+    SCHEDINSTALL      Offs=000000  Size=000023  Align=00001  Fill=0000
+    TASKLOADER        Offs=000000  Size=000502  Align=00001  Fill=0000
+    TASKLOOKUP        Offs=000000  Size=0003B1  Align=00001  Fill=0000
+    STORAGEGATE       Offs=000000  Size=000032  Align=00001  Fill=0000
+    BOOTINIT          Offs=000000  Size=00007C  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+TASKLOOKUP            001A00  001DB0  0003B1  00001
+FINAL                 00F700  00F7D0  0000D1  00001
+SCHEDINSTALL          00F7D8  00F7FA  000023  00001
+CODE                  00F800  00F9EA  0001EB  00001
+TASKLOADER            00F910  00FE11  000502  00001
+STORAGEGATE           00FE20  00FE51  000032  00001
+BOOTINIT              00FE80  00FEFB  00007C  00001
+
+
+Exports list by name:
+---------------------
+banked_access             00FEF5 RLA    
+
+
+Exports list by value:
+----------------------
+banked_access             00FEF5 RLA    
+
+
+Imports list:
+-------------
+banked_access (stage1-gateway.o):
+    [linker generated]       
+

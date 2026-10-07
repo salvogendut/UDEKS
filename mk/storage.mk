@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 STORAGE_BUILD := build/storage
-# Separate write-backend probe. No new code or ABI is enabled in boot images.
+# Separate backend qualification. Public write ABI remains disabled in boot.
 WRITE_BUILD := build/bench/iec-write
 WRITE_CFLAGS := -t none --cpu 6502 --standard c99 -Os -I include --static-locals -D UDEKS_IEC_WRITE
 WRITE_OBJECTS := $(addprefix $(WRITE_BUILD)/,entry.o main.o cbm_write.o cbm_file.o iec_slow.o)
@@ -23,8 +23,7 @@ $(WRITE_BUILD)/write.bin: $(WRITE_OBJECTS) cfg/8502-iec-write.cfg
 $(WRITE_BUILD)/write.prg: $(WRITE_BUILD)/write.bin tools/bin_to_prg.py
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
 $(WRITE_OBJECTS): mk/storage.mk
-# Actual service integration, compile-only until placement and trusted owner/
-# exit hooks are qualified. Deliberately not in STORAGE_OBJECTS or boot targets.
+# Separate policy/placement experiments, retained for reproducibility.
 WRITE_POLICY_BUILD := build/storage-write-policy
 WRITE_POLICY_OBJECTS := $(addprefix $(WRITE_POLICY_BUILD)/,iec_service.o fs_namespace.o)
 .PHONY: storage-write-policy
@@ -56,6 +55,31 @@ $(WRITE_PLACEMENT_BUILD)/module.bin $(WRITE_PLACEMENT_BUILD)/policy.bin $(WRITE_
 		$(WRITE_PLACEMENT_OBJECTS) $(WRITE_POLICY_BUILD)/iec_service.o $(STORAGE_BUILD)/iec_entry.o $(WRITE_PLACEMENT_BUILD)/iec_slow.o cfg/8502-storage-write-candidate.cfg
 	$(CL65) -t none -C cfg/8502-storage-write-candidate.cfg -m $(WRITE_PLACEMENT_BUILD)/module.map -o $(WRITE_PLACEMENT_BUILD)/module.bin $(filter %.o,$^)
 STORAGE_WINDOW_BUILD := build/bench/storage-window
+WRITE_LEASE_BUILD := build/storage-write-lease
+.PHONY: storage-write-lease
+storage-write-lease: $(WRITE_LEASE_BUILD)/module.bin
+$(WRITE_LEASE_BUILD):
+	mkdir -p $@
+$(WRITE_LEASE_BUILD)/iec_service.o: src/services/filesystem/iec_service.c include/udeks/storage_write.h mk/storage.mk | $(WRITE_LEASE_BUILD)
+	$(CL65) $(CFLAGS_8502) -D UDEKS_STORAGE_WRITES -D UDEKS_IEC_WRITE -D UDEKS_STORAGE_LEASE --static-locals --code-name STORAGECODE -c -o $@ $<
+$(WRITE_LEASE_BUILD)/iec_lease.o: src/services/filesystem/iec_lease.s | $(WRITE_LEASE_BUILD)
+	$(CA65) --cpu 6502 -o $@ $<
+$(WRITE_LEASE_BUILD)/module.bin $(WRITE_LEASE_BUILD)/policy.bin $(WRITE_LEASE_BUILD)/driver.bin $(WRITE_LEASE_BUILD)/hidden.bin $(WRITE_LEASE_BUILD)/module.map &: \
+		$(filter-out $(WRITE_PLACEMENT_BUILD)/no-caller.o,$(WRITE_PLACEMENT_OBJECTS)) $(WRITE_LEASE_BUILD)/iec_service.o $(WRITE_LEASE_BUILD)/iec_lease.o $(WRITE_PLACEMENT_BUILD)/iec_slow.o cfg/8502-storage-write-lease.cfg
+	$(CL65) -t none -C cfg/8502-storage-write-lease.cfg -m $(WRITE_LEASE_BUILD)/module.map -o $(WRITE_LEASE_BUILD)/module.bin $(filter %.o,$^)
+STORAGE_LEASE_PROBE := build/bench/storage-lease
+.PHONY: storage-lease-probe
+storage-lease-probe: $(STORAGE_LEASE_PROBE)/probe.prg
+$(STORAGE_LEASE_PROBE):
+	mkdir -p $@
+$(STORAGE_LEASE_PROBE)/main.o: bench/storage-lease/main.c include/udeks/storage_write.h include/udeks/task_request.h | $(STORAGE_LEASE_PROBE)
+	$(CL65) $(CFLAGS_8502) --static-locals -c -o $@ $<
+$(STORAGE_LEASE_PROBE)/entry.o: bench/storage-lease/entry.s $(addprefix $(WRITE_LEASE_BUILD)/,module.bin policy.bin driver.bin hidden.bin) | $(STORAGE_LEASE_PROBE)
+	$(CA65) --cpu 6502 -o $@ $<
+$(STORAGE_LEASE_PROBE)/probe.bin: $(STORAGE_LEASE_PROBE)/entry.o $(STORAGE_LEASE_PROBE)/main.o bench/storage-lease/probe.cfg
+	$(CL65) -t none -C bench/storage-lease/probe.cfg -m $(STORAGE_LEASE_PROBE)/probe.map -o $@ $(filter %.o,$^)
+$(STORAGE_LEASE_PROBE)/probe.prg: $(STORAGE_LEASE_PROBE)/probe.bin tools/bin_to_prg.py
+	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
 .PHONY: storage-window storage-window-probe
 storage-window: $(STORAGE_WINDOW_BUILD)/probe.prg storage-write-placement
 storage-window-probe: storage-window
@@ -72,7 +96,7 @@ $(STORAGE_WINDOW_BUILD)/probe.prg: $(STORAGE_WINDOW_BUILD)/probe.bin tools/bin_t
 # Compile/measure the #26 namespace contract without changing the boot image.
 filesystem-policy: $(STORAGE_BUILD)/fs_namespace.o
 $(STORAGE_BUILD)/fs_namespace.o: src/services/filesystem/fs_namespace.c include/udeks/fs_namespace.h include/udeks/task_request.h | $(STORAGE_BUILD)
-	$(CL65) $(CFLAGS_8502) -D UDEKS_FS_READ_ONLY --static-locals --code-name STORAGECODE -c -o $@ $<
+	$(CL65) $(WRITE_CFLAGS) --code-name STORAGEHIGH -c -o $@ $<
 .PHONY: iec-eof-reference
 iec-eof-reference: $(BUILD_IEC_DIRECTORY)/kernal-eof.prg
 $(BUILD_IEC_DIRECTORY)/kernal-eof.o: bench/iec-directory/kernal-eof.s | $(BUILD_IEC_DIRECTORY)
@@ -81,7 +105,7 @@ $(BUILD_IEC_DIRECTORY)/kernal-eof.bin: $(BUILD_IEC_DIRECTORY)/kernal-eof.o cfg/8
 	$(LD65) -C cfg/8502-iec-directory.cfg -o $@ $<
 $(BUILD_IEC_DIRECTORY)/kernal-eof.prg: $(BUILD_IEC_DIRECTORY)/kernal-eof.bin
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
-STORAGE_OBJECTS := $(addprefix $(STORAGE_BUILD)/,iec_entry.o iec_service.o fs_namespace.o cbm_file.o iec_slow.o)
+STORAGE_OBJECTS := $(addprefix $(STORAGE_BUILD)/,iec_lease.o iec_context.o iec_service.o fs_namespace.o cbm_file.o cbm_write.o iec_slow.o)
 USER_MOUNT_BIN := $(BUILD_USER)/mount.bin
 USER_MOUNT_UDEX := $(BUILD_USER)/mount.udx
 USER_FILETOOLS_BIN := $(BUILD_USER)/filetools.bin
@@ -124,14 +148,15 @@ $(USER_MOUNT_BIN): $(USER_ENTRY_OBJ) $(USER_SYSCALL_OBJ) $(BUILD_USER)/mount.o $
 	$(CL65) -t none -C cfg/8502-user-app1.cfg -m $(BUILD_USER)/mount.map -o $@ $(filter %.o,$^)
 $(USER_MOUNT_UDEX): $(USER_MOUNT_BIN) tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 $< $@
-$(STORAGE_OBJECTS): mk/storage.mk include/udeks/cbm_file.h include/udeks/iec_slow.h
+$(STORAGE_OBJECTS): mk/storage.mk include/udeks/cbm_file.h include/udeks/iec_slow.h \
+	include/udeks/storage_write.h include/udeks/cbm_write.h include/udeks/fs_namespace.h
 .PHONY: storage-service storage-vice-probe storage-shell-probe
 storage-shell-probe:
 	$(PYTHON) tools/storage_shell_probe.py
 	$(PYTHON) tools/storage_shell_probe.py --disk build/boot/udeks.d71 --drive 1571 --output build/storage/shell-1571
 storage-vice-probe:
 	$(PYTHON) tools/storage_service_probe.py
-storage-service: $(STORAGE_BUILD)/module.bin $(STORAGE_BUILD)/driver.bin $(STORAGE_BUILD)/policy.bin $(STORAGE_BUILD)/router.bin
+storage-service: $(STORAGE_BUILD)/module.bin $(STORAGE_BUILD)/driver.bin $(STORAGE_BUILD)/policy.bin $(STORAGE_BUILD)/hidden.bin $(STORAGE_BUILD)/router.bin $(STORAGE_BUILD)/install.bin
 $(STORAGE_BUILD):
 	mkdir -p $@
 $(STORAGE_BUILD)/%.o: src/services/filesystem/%.c include/udeks/task_request.h \
@@ -140,20 +165,44 @@ $(STORAGE_BUILD)/%.o: src/services/filesystem/%.c include/udeks/task_request.h \
 $(STORAGE_BUILD)/iec_entry.o: src/services/filesystem/iec_entry.s | $(STORAGE_BUILD)
 	$(CA65) --cpu 6502 -o $@ $<
 $(STORAGE_BUILD)/iec_service.o: src/services/filesystem/iec_service.c include/udeks/task_request.h | $(STORAGE_BUILD)
-	$(CL65) $(CFLAGS_8502) --static-locals --code-name STORAGECODE -c -o $@ $<
+	$(CL65) $(CFLAGS_8502) -D UDEKS_STORAGE_WRITES -D UDEKS_IEC_WRITE -D UDEKS_STORAGE_LEASE --static-locals --code-name STORAGECODE -c -o $@ $<
 $(STORAGE_BUILD)/cbm_file.o: src/services/filesystem/cbm_file.c include/udeks/cbm_file.h include/udeks/iec_slow.h | $(STORAGE_BUILD)
-	$(CL65) -t none --cpu 6502 --standard c99 -Os -I include --static-locals -c -o $@ $<
-$(STORAGE_BUILD)/iec_slow.o: src/services/filesystem/iec_slow.s | $(STORAGE_BUILD)
-	$(CA65) --cpu 6502 -D UDEKS_STORAGE_MODULE -o $@ $<
-$(STORAGE_BUILD)/module.bin $(STORAGE_BUILD)/driver.bin $(STORAGE_BUILD)/policy.bin $(STORAGE_BUILD)/module.map &: \
-		$(STORAGE_OBJECTS) cfg/8502-storage.cfg
-	$(CL65) -t none -C cfg/8502-storage.cfg -u _udeks_cbm_dos_error -m $(STORAGE_BUILD)/module.map \
-		-o $(STORAGE_BUILD)/module.bin $(STORAGE_OBJECTS)
-$(STORAGE_BUILD)/router.o: src/services/filesystem/iec_router.s | $(STORAGE_BUILD)
+	$(CL65) $(WRITE_CFLAGS) -D UDEKS_STORAGE_HIGH -c -o $@ $<
+$(STORAGE_BUILD)/cbm_write.o: src/services/filesystem/cbm_write.c include/udeks/cbm_write.h | $(STORAGE_BUILD)
+	$(CL65) $(WRITE_CFLAGS) --code-name STORAGECODE -c -o $@ $<
+$(STORAGE_BUILD)/iec_lease.o: src/services/filesystem/iec_lease.s | $(STORAGE_BUILD)
+	$(CA65) --cpu 6502 -D UDEKS_STORAGE_CONTEXT -o $@ $<
+$(STORAGE_BUILD)/iec_context.o: src/services/filesystem/iec_context.s | $(STORAGE_BUILD)
 	$(CA65) --cpu 6502 -o $@ $<
+$(STORAGE_BUILD)/install.o: src/boot/storage-install.s | $(STORAGE_BUILD)
+	$(CA65) --cpu 6502 -o $@ $<
+$(STORAGE_BUILD)/install.bin: $(STORAGE_BUILD)/install.o cfg/8502-storage-install.cfg
+	$(LD65) -C cfg/8502-storage-install.cfg -o $@ $<
+$(STORAGE_BUILD)/iec_slow.o: src/services/filesystem/iec_slow.s | $(STORAGE_BUILD)
+	$(CA65) --cpu 6502 -D UDEKS_STORAGE_MODULE -D UDEKS_IEC_WRITE -o $@ $<
+$(STORAGE_BUILD)/module.bin $(STORAGE_BUILD)/driver.bin $(STORAGE_BUILD)/policy.bin $(STORAGE_BUILD)/hidden.bin $(STORAGE_BUILD)/module.map &: \
+		$(STORAGE_OBJECTS) cfg/8502-storage.cfg
+	$(CL65) -t none -C cfg/8502-storage.cfg -u _udeks_cbm_dos_error -u _udeks_storage_generations -u _udeks_storage_cleanup_error -m $(STORAGE_BUILD)/module.map \
+		-o $(STORAGE_BUILD)/module.bin $(STORAGE_OBJECTS)
+$(STORAGE_BUILD)/router.o: src/services/filesystem/iec_router.s $(BUILD_8502)/disk-loader-bindings.inc | $(STORAGE_BUILD)
+	$(CA65) --cpu 6502 -I $(BUILD_8502) -o $@ $<
 $(STORAGE_BUILD)/router.bin: $(STORAGE_BUILD)/router.o cfg/8502-storage-router.cfg
 	$(LD65) -C cfg/8502-storage-router.cfg -o $@ $<
 
 $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS): \
 		$(STORAGE_BUILD)/module.bin $(STORAGE_BUILD)/policy.bin $(STORAGE_BUILD)/driver.bin \
+		$(STORAGE_BUILD)/hidden.bin $(STORAGE_BUILD)/install.bin \
 		$(STORAGE_BUILD)/router.bin $(USER_USH_BIN) $(TASK_LOOKUP_BIN) tools/build_storage.py
+
+# Independent adversarial clients; never shipped on the normal system disk.
+OWNER_BUILD := build/storage-owner
+.PHONY: storage-owner-fixtures storage-owner-probe
+storage-owner-fixtures:
+	$(PYTHON) tools/build_console_example.py --source bench/storage-owner/foreground.c --name LEAK --output $(OWNER_BUILD)/foreground
+	$(PYTHON) tools/build_graphical_example.py --source bench/storage-owner/holder.c --name HOLD --static-locals --export _owner_stage --export _owner_release --output $(OWNER_BUILD)/holder
+	$(PYTHON) tools/build_graphical_example.py --source bench/storage-owner/parent.c --name PARENT --static-locals --export _parent_stage --export _parent_release --export _parent_error --export _parent_result --output $(OWNER_BUILD)/parent
+	$(CA65) --cpu 6502 -o $(OWNER_BUILD)/child.o bench/storage-owner/child.s
+	$(LD65) -C bench/storage-owner/child.cfg -o $(OWNER_BUILD)/child.bin $(OWNER_BUILD)/child.o
+	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 $(OWNER_BUILD)/child.bin $(OWNER_BUILD)/CHILD.BIN
+storage-owner-probe:
+	$(PYTHON) tools/storage_owner_probe.py

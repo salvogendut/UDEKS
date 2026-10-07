@@ -27,12 +27,14 @@ def wrap_storage(payload: bytes, constants: str, module: bytes,
                  policy: bytes, driver: bytes, ush: bytes,
                  lookup: bytes, banked_loader: bytes = b'',
                  banked_graphics: bytes = b'', banked_reloc: bytes = b'',
-                 banked_access: bytes = b'', retained_paths: bytes = b'') -> tuple[bytes, str]:
+                 banked_access: bytes = b'', retained_paths: bytes = b'',
+                 hidden: bytes = b'', installer: bytes = b'') -> tuple[bytes, str]:
     start = int.from_bytes(payload[:2], 'little')
     end = start + len(payload) - 2
     if start not in (0x4200, 0x5000) or end > 0x8000:
         raise ValueError('unexpected cache/scheduler envelope')
-    if not module or len(module) > 0x800 or module[3:9] != b'UIEC\x00\x01':
+    identity = b'UIEC\0\3' if hidden or installer else b'UIEC\0\1'
+    if not module or len(module) > 0x800 or module[3:9] != identity:
         raise ValueError('invalid $1200 storage module')
     if not lookup or len(lookup) > 0x600 or lookup[3:9] != b'ULKP\0\1':
         raise ValueError('loader lookup exceeds $1A00-$1FFF')
@@ -48,6 +50,16 @@ def wrap_storage(payload: bytes, constants: str, module: bytes,
     for address, data in ((load, module), (0x1A00, lookup), (start, payload[2:]),
                           (POLICY_BASE, policy), (DRIVER_BASE, driver)):
         image[address-load:address-load+len(data)] = data
+    if hidden or installer:
+        if (not 0 < len(hidden) <= 0xf00 or not 9 < len(installer) <= 0x100 or
+                installer[0] != 0x4c or installer[3:9] != b'SINS\0\1'):
+            raise ValueError('invalid hidden storage image or one-shot installer')
+        # Consumed BEFORE the stage-1 Z80 $2000-$3FFF container copy. These
+        # are source bytes, never a permanent app/cache/recovery allocation.
+        first, last = 0x2300-load, 0x3300-load
+        if any(image[first:last]): raise ValueError('storage boot staging is occupied')
+        image[first:first+0xf00] = hidden.ljust(0xf00, b'\0')
+        image[first+0xf00:first+0xf00+len(installer)] = installer
     if banked_loader:
         if (len(banked_loader) > BANKED_LOADER_LIMIT - BANKED_LOADER_BASE or
                 banked_loader[3:9] != b'BLOD\0\1' or banked_loader[0] != 0x4C):
@@ -91,7 +103,7 @@ def wrap_storage(payload: bytes, constants: str, module: bytes,
 def install_bootfs(payload: bytes, bootfs: bytes) -> bytes:
     if len(payload) != 2 + SECONDARY_LIMIT - 0x1200 or payload[:2] != b'\0\x12':
         raise ValueError('secondary bootfs requires the $1200-$E8FF envelope')
-    if payload[5:11] != b'UIEC\0\1':
+    if payload[5:11] not in (b'UIEC\0\1', b'UIEC\0\3'):
         raise ValueError('secondary bootfs lacks the storage service identity')
     offset = 2 + BOOTFS_BASE - 0x1200
     end = 2 + BOOTFS_LIMIT - 0x1200
