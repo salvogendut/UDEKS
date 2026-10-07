@@ -100,13 +100,13 @@ class StorageLease(unittest.TestCase):
         self.assertIn('sta _udeks_storage_request,x', source)
         self.assertIn('sta REQUEST,x', source)
 
-    def test_production_uses_context_wrapper_but_public_write_is_still_disabled(self):
+    def test_production_uses_context_wrapper_for_public_writes(self):
         rules = (ROOT/'mk/storage.mk').read_text()
         objects = next(line for line in rules.splitlines() if line.startswith('STORAGE_OBJECTS :='))
         self.assertIn('iec_lease', objects)
         self.assertIn('iec_context', objects)
         self.assertIn('cbm_write', objects)
-        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     13u', (ROOT/'include/udeks/task_request.h').read_text())
+        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     14u', (ROOT/'include/udeks/task_request.h').read_text())
 
 
 if __name__ == '__main__': unittest.main()

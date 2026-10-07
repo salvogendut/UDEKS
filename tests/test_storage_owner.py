@@ -105,10 +105,11 @@ class StorageOwner(unittest.TestCase):
             self.assertIn(command,commands)
         self.assertTrue(any(c.get('check')=='four-resized-pixels' for c in result['checks']))
 
-    def test_provisional_write_contract_is_not_publicly_advertised(self):
+    def test_current_boundary_rejects_future_versions_and_legacy_create(self):
         header=(ROOT/'include/udeks/task_request.h').read_text()
-        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     13u',header)
+        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     14u',header)
         fixture=(ROOT/'bench/storage-owner/foreground.c').read_text()
+        self.assertIn('R[5]=15',fixture)
         self.assertIn('if(R[12]!=71)',fixture)
         self.assertIn('if(R[12]!=22)',fixture)
 

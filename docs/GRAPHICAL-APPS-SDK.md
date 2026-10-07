@@ -226,6 +226,52 @@ The native clock build uses `--static-locals` (nonrecursive, task-private) and
 `--capacity 2816` to check both file and image+BSS against the smaller slot.
 These are optional SDK build choices, not a special clock loader path.
 
+## Counted disk I/O (UTRQ 0.14)
+
+Independent synchronous C commands can opt into the file SDK without linking
+the kernel. The shipped `save` command is an executable example, not a shell
+builtin or a new resident command:
+
+```sh
+distrobox-enter my-distrobox -- python3 tools/build_console_example.py \
+  --filesystem --static-locals --source user/bin/save.c \
+  --name SAVE --output build/my-save
+```
+
+Use `udeks_open(path, UDEKS_O_CREATE_EXCL)`, `udeks_write_bytes(fd, data, n)`
+(n ≤ 24), and `udeks_close(fd)`. `UDEKS_IO_ERROR` means failure; `udeks_errno`
+gives the reason. Counted data may contain any byte; the existing
+`udeks_write(fd, text)` remains NUL-terminated **console output**. Stop on a
+short/error write, do not retry, and preserve its error across CLOSE. Check
+CLOSE even after every chunk succeeded. Reopen with `UDEKS_O_RDONLY` for
+readback. The SDK also provides READ, GETDENTS, STAT and error strings; archive
+members not used by the command are not linked.
+
+The console allocation is still fixed and synchronous, not a general background
+process. The optional `--static-locals` program optimization is suitable only
+for nonrecursive single-invocation code. The SDK itself is nonreentrant.
+
+On a **disposable copy** of the new storage-branch boot image:
+
+```text
+mount -o remount,rw 8 /
+df
+save /WRTEST 515
+save /EMPTY 0
+save /WRTEST 515
+mount -o remount,ro 8 /
+```
+
+The repeated create must report `File exists`. SAVE writes the deterministic
+binary sequence 0,1,…,255 repeated, checks CLOSE, and verifies exact readback.
+It is a qualification/example command, not redirection or a general file-copy
+utility. Optional length is 0–4096, default 515. After reboot, the root mount
+is read-only again; `save -c /WRTEST 515` and `save -c /EMPTY 0` check persistence
+without creating or modifying files. For a separate disk use `mount -o rw 9
+/mnt` and `/mnt/NAME`. Ordinary files only; no overwrite/append/delete.
+On errors a partial file may remain; there is no rollback or power-loss guarantee.
+The older README download snapshots do **not** contain this API or command.
+
 ## Independent console commands
 
 Console commands already use name-independent disk lookup too. The new

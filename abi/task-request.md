@@ -1,4 +1,4 @@
-# Bank-task request ABI 0.13
+# Bank-task request ABI 0.14
 
 Bank-1 8502 tasks exchange bounded requests with the resident kernel through a
 38-byte record in top common RAM. The task fills the record and calls `$FF16`.
@@ -9,13 +9,13 @@ ABI 0.3 keeps every 0.2 operation number and behavior unchanged and adds
 lifecycle operations `10`-`15`. `YIELD`, `EXIT`, immediate/nonblocking and
 blocking `WAITPID`, `SLEEP`, `CANCEL`, and `SPAWN` are implemented. Rebuilt
 0.3 clients may keep using the 0.2 operations unchanged, and
-the resident version check accepts minor `0` through `13`.
+the resident version check accepts minor `0` through `14`.
 ABI 0.4 adds non-consuming stdin readiness (`POLL`, operation 16). A 0.0–0.3
 request for operation 16 returns `ENOSYS`; an unsupported future minor returns
 `EPROTO`. Operations 1–15 retain their existing numbers and behavior.
 ABI 0.5 adds read-only IEC `MOUNT`/`UMOUNT` through a private bank-1 C service.
 Existing stream/directory clients continue to request their minimum ABI 0.4;
-`POLL` accepts 0.4 through 0.13. The current shell uses 0.8; `df` uses 0.6
+`POLL` accepts 0.4 through 0.14. The current shell uses 0.8; `df` uses 0.6
 for `STATFS`. ABI 0.7 adds deferred numeric service control; 0.8 adds root
 namespace routing and working-directory operations. No published entry address changes.
 ABI 0.9 adds owner-bound retained drawing and click/close delivery for banked
@@ -32,6 +32,9 @@ See [the path format](window.md#packed-retained-paths-utrq-012).
 ABI 0.13 adds scaled 8×5 monochrome tiles to GRAPHICS PRESENT. All earlier
 operations and event layouts remain unchanged; no partial-damage payload is
 defined. See [the command format](window.md#geometry-events-utrq-010).
+ABI 0.14 adds opt-in writable mounts and create-exclusive file streams using
+the existing OPEN/WRITE/CLOSE operations. Console streams, earlier request
+versions, record size and public entry addresses remain compatible.
 
 ## Record
 
@@ -41,7 +44,7 @@ The record occupies `$F359-$F37E`:
 |---:|---:|---|
 | 0 | 4 | ASCII magic `UTRQ` |
 | 4 | 1 | ABI major (`0`) |
-| 5 | 1 | ABI minor (`13`; earlier compatible minors remain accepted) |
+| 5 | 1 | ABI minor (`14`; earlier compatible minors remain accepted) |
 | 6 | 1 | State |
 | 7 | 1 | Operation |
 | 8 | 1 | Sequence number |
@@ -59,7 +62,7 @@ States are idle (`0`), request (`1`), complete (`2`), and error (`$80`).
 | Value | Name | Since | Meaning |
 |---:|---|---:|---|
 | 1 | `READ` | 0.2 | Submit console-line bytes to the descriptor. |
-| 2 | `WRITE` | 0.2 | Write payload bytes to descriptor 1 or 2. |
+| 2 | `WRITE` | 0.2 | Write payload bytes to descriptor 1 or 2; file fd 4 since 0.14. |
 | 3 | `EXEC` | 0.2 | Compatibility command-line dispatch. |
 | 4 | `WAIT` | 0.2 | Resident foreground-job wait. |
 | 5 | `PROMPT` | 0.2 | Rearm the root terminal input field. |
@@ -91,6 +94,60 @@ loader-backed task creation is `SPAWN` (`15`).
 
 After validating the protocol envelope, all other operation values return
 `ENOSYS` before operation-specific field checks.
+
+## Create-only disk streams (0.14)
+
+Boot and unqualified `MOUNT` requests remain **read-only**. Nothing implicitly
+remounts a volume writable, including after reboot. Recovery bootfs is always
+read-only. The disk-loaded `mount` command exposes these opt-in flags; the
+small recovery command retains its earlier read-only contract.
+
+- `MOUNT` (17): existing payload `device, path` and descriptor zero. Flags
+  bit 0 (`RW`) grants create permission; bit 1 (`REMOUNT`) changes permission
+  on an existing mount. Other bits are `EINVAL`. Earlier request minors
+  reject nonzero mount flags. With REMOUNT, the device must equal the current
+  mount's device (`EINVAL` otherwise); absent mount is `ENODEV`. This is a
+  permission change only, not a media rescan or cwd change. `/` cannot be
+  removed/replaced after disk-shell boot, but can be remounted with this flag.
+  An open storage handle prevents mounting/remounting (`EBUSY`). Aliasing the
+  same device at `/` and `/mnt` is permitted only while both are read-only;
+  neither alias can become writable while the other exists.
+- `OPEN` (6): descriptor **3** (`OPEN_CREATE`), flags zero, counted path
+  1–23 bytes as for existing OPEN. Success returns fd **4**. This is
+  create-exclusive, ordinary data only: `/NAME` or `/mnt/NAME`, with existing
+  cwd-relative resolution. No replace, append, truncate, binary/config
+  installation, or implicit directory creation. `/bin` and `/etc` creation
+  returns `EINVAL`; a reserved `.BIN`/`.SH`/`.ETC` raw root alias returns
+  `ENOENT` under the existing namespace rules. A non-writable mount returns
+  `EROFS`; a folded-name collision (including locked or unclosed entries)
+  returns `EEXIST`. Validation and directory collision scanning precede create.
+  Earlier minors reject create mode with `EINVAL`.
+- `WRITE` (2): fd 4, flags zero, **0–24 binary bytes**, including NUL. Console
+  descriptors 1/2 remain unchanged. A read handle, foreign/stale owner, or
+  earlier-minor file WRITE returns `EBADF`. Successful result is the accepted
+  prefix length. A partial transfer can return a nonzero prefix with errno
+  zero once; its underlying error becomes sticky for subsequent WRITE and
+  CLOSE. A zero-byte failure returns the error immediately. **Never retry a
+  short/failed chunk**: stop and CLOSE. Even a full-length result does not
+  establish final success; the final DOS status can fail afterward.
+- `CLOSE` (9): fd 4, flags/count zero. Always check its result: finalization
+  can report `EIO`, `ENOSPC`, `EROFS` or the earlier sticky write failure.
+  Local ownership is released even when finalization fails. Successful empty
+  files read back as exactly zero bytes. READ/GETDENTS on a write handle fail.
+- `STATFS` (19) reports bit 0 READ_ONLY according to the mount's permission;
+  it does not detect physical write protection. `df` displays this bit.
+
+There is still **one global storage handle**, bound to a kernel-derived
+invocation identity. Native EXIT/CANCEL and synchronous console return close
+leaked streams before allocation reuse; explicit CLOSE is necessary to observe
+finalization errors. No asynchronous I/O, multi-open, rollback or power-loss
+safety is promised. A failed create/write/close can leave a partial file.
+Unmount data media before replacing it; remounting root RO does not make live
+system-disk swapping safe.
+
+The transient SDK `udeks_write_bytes()` is counted file I/O; `udeks_write()`
+continues to mean NUL-terminated console output. See the
+[SDK example](../docs/GRAPHICAL-APPS-SDK.md#counted-disk-io-utrq-014).
 
 ## Bounded worker (0.11)
 
@@ -422,16 +479,21 @@ released, and child exit publishes the response only when the parent resumes.
 | 20 | `ENOTDIR` | filesystem operations |
 | 22 | `EINVAL` | malformed counts, flags, ids, or ranges |
 | 24 | `EMFILE` | filesystem descriptor exhaustion |
+| 28 | `ENOSPC` | disk write/finalization |
+| 30 | `EROFS` | read-only mount or write-protected drive |
 | 38 | `ENOSYS` | operation not implemented |
 | 71 | `EPROTO` | malformed 0.2 request or version |
 
 ## Rejection is atomic
 
-A rejected request must not alter lifecycle state, allocation metadata, or any
+A rejected lifecycle request must not alter lifecycle state, allocation metadata, or any
 other scheduler state. Validation of the version, state, operation, flags,
 count, task id, allocation bounds, and stack bounds happens before any
 mutation; a caller may retry a rejected request without observing partial
 effects.
+
+This lifecycle validation guarantee is not transactional disk I/O: an accepted
+create/write can fail after partial progress, as specified for 0.14 above.
 
 ## 0.2 behavior preserved
 
@@ -499,8 +561,9 @@ retain their existing return convention until they migrate to lifecycle tasks.
 
 ## Placement note
 
-The fixed `$F800` request gateway uses 262 of its 265 reserved bytes as of ABI
-0.3, and the host-testable policy compiles to 2,245 bytes (about 2.2 KiB) of
+The fixed `$F800` request gateway uses **265 of 265** reserved bytes with the
+0.14 file-WRITE route (262 at the 0.3 checkpoint). The host-testable policy
+compiles to 2,245 bytes (about 2.2 KiB) of
 cc65 code without long-arithmetic helpers. The active scheduler core occupies
 1,721 emitted bytes plus 154 bytes of BSS at `$C120-$C872`; the permanent
 1,163-byte lifecycle request handler occupies `$C900-$CD8A` outside both

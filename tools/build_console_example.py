@@ -20,18 +20,34 @@ def main():
     parser.add_argument('--source', type=Path, default=ROOT/'user/examples/args.c')
     parser.add_argument('--name', default='ARGS')
     parser.add_argument('--output', type=Path, default=ROOT/'build/generic-apps/console')
+    parser.add_argument('--filesystem', action='store_true', help='link counted file I/O (UTRQ 0.14)')
+    parser.add_argument('--static-locals', action='store_true', help='only for nonrecursive single-invocation programs')
     args = parser.parse_args()
     name = args.name.upper()
     if not re.fullmatch(r'[A-Z0-9_-]{1,12}', name): parser.error('invalid command name')
     out = args.output.resolve(); out.mkdir(parents=True, exist_ok=True)
     def run(*command): subprocess.run(command, cwd=ROOT, check=True)
     run('cc65', '-t', 'none', '--cpu', '6502', '--standard', 'c99', '-Os',
-        '-I', 'user/include', '-o', str(out/'program.s'), str(args.source.resolve()))
-    objects = []
+        *(['--static-locals'] if args.static_locals else []),
+        '-I', 'user/include', '-I', 'include', '-o', str(out/'program.s'), str(args.source.resolve()))
+    libraries=[]
+    if args.filesystem:
+        for label in ('filesystem','filesystem_meta','error_string'):
+            run('cc65','-t','none','--cpu','6502','--standard','c99','-Os','--static-locals',
+                '-I','user/include','-I','include','-o',str(out/(label+'.s')), 'user/lib/'+label+'.c')
+            libraries.append((label,out/(label+'.s')))
+        libraries.append(('fs_request','user/lib/fs_request.s'))
+    objects = []; members=[]
     for label, source in (('entry', 'user/lib/entry.s'), ('syscall', 'user/lib/syscall.s'),
-                          ('program', out/'program.s')):
-        obj = out/(label+'.o'); objects.append(str(obj))
+                          ('program', out/'program.s'), *libraries):
+        obj = out/(label+'.o')
+        (members if label in {n for n,_ in libraries} else objects).append(str(obj))
         run('ca65', '--cpu', '6502', '-o', str(obj), str(source))
+    if members:
+        library=out/'filesystem.lib'
+        library.unlink(missing_ok=True)  # generated archive, never a user source
+        run('ar65','a',str(library),*members)
+        objects.append(str(library))
     run('cl65', '-t', 'none', '--cpu', '6502', '-C', 'cfg/8502-user-app1.cfg',
         '-u', '_udeks_program_entry', '-u', '__BSS_SIZE__', '-m', str(out/'program.map'),
         '-o', str(out/'program.bin'), *objects)

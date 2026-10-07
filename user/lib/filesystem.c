@@ -1,119 +1,61 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
+/* Transient console SDK. No kernel imports, policy or automatic write retry. */
 #include "udeks/program.h"
-#include "udeks/syscall.h"
 #include "udeks/task_request.h"
-
-#define REQUEST(offset) \
-    (*(volatile unsigned char *)(UDEKS_TASK_REQUEST_BASE + (offset)))
-
-typedef unsigned char (*request_gate)(void);
-
+#ifdef UDEKS_FS_CLIENT_TEST
+extern unsigned char udeks_file_payload[24];
+#define PAYLOAD udeks_file_payload
+#else
+#define PAYLOAD ((volatile unsigned char *)0xf367)
+#endif
 unsigned char udeks_errno;
-static unsigned char sequence;
+unsigned char __fastcall__ udeks_fs_request(unsigned char op, unsigned char fd, unsigned char count);
 
-static unsigned char submit(
-    unsigned char operation, unsigned char descriptor, unsigned char count)
+static unsigned char invalid(void)
 {
-    request_gate gate;
-
-    ++sequence;
-    REQUEST(UDEKS_TREQ_MAGIC0) = 'U';
-    REQUEST(UDEKS_TREQ_MAGIC1) = 'T';
-    REQUEST(UDEKS_TREQ_MAGIC2) = 'R';
-    REQUEST(UDEKS_TREQ_MAGIC3) = 'Q';
-    REQUEST(UDEKS_TREQ_MAJOR) = UDEKS_TASK_REQUEST_ABI_MAJOR;
-    /* These directory wrappers require no operations newer than ABI 0.4. */
-    REQUEST(UDEKS_TREQ_MINOR) = 4u;
-    REQUEST(UDEKS_TREQ_OPERATION) = operation;
-    REQUEST(UDEKS_TREQ_SEQUENCE) = sequence;
-    REQUEST(UDEKS_TREQ_DESCRIPTOR) = descriptor;
-    REQUEST(UDEKS_TREQ_COUNT) = count;
-    REQUEST(UDEKS_TREQ_RESULT) = 0;
-    REQUEST(UDEKS_TREQ_ERROR) = 0;
-    REQUEST(UDEKS_TREQ_FLAGS) = 0;
-    REQUEST(UDEKS_TREQ_STATE) = UDEKS_TREQ_STATE_REQUEST;
-    /* Transient programs execute in bank 0, where the resident syscall table
-     * is directly visible.  The $FF16 bank gateway is exclusively for the
-     * persistent bank-1 runtime and would return through the wrong bank here.
-     */
-    gate = (request_gate)UDEKS_SYSCALL_TASK_REQUEST;
-    gate();
-    if (REQUEST(UDEKS_TREQ_STATE) != UDEKS_TREQ_STATE_COMPLETE) {
-        udeks_errno = REQUEST(UDEKS_TREQ_ERROR);
-        return UDEKS_IO_ERROR;
-    }
-    udeks_errno = 0;
-    return REQUEST(UDEKS_TREQ_RESULT);
+    udeks_errno=UDEKS_TREQ_EINVAL;
+    return UDEKS_IO_ERROR;
 }
-
-static unsigned char copy_path(const unsigned char *path)
+unsigned char udeks_fs_path_request(unsigned char op, unsigned char mode, const unsigned char *path)
 {
-    unsigned char length;
-
-    length = 0;
-    while (path[length] != 0) {
-        if (length == UDEKS_TASK_REQUEST_PAYLOAD_SIZE - 1u) {
-            udeks_errno = UDEKS_TREQ_EINVAL;
-            return UDEKS_IO_ERROR;
-        }
-        REQUEST(UDEKS_TREQ_PAYLOAD + length) = path[length];
-        ++length;
+    unsigned char n=0;
+    if(!path) return invalid();
+    while(path[n]) {
+        if(n==23) return invalid();
+        PAYLOAD[n]=path[n]; ++n;
     }
-    REQUEST(UDEKS_TREQ_PAYLOAD + length) = 0;
-    return length;
+    if(!n) return invalid();
+    PAYLOAD[n]=0;
+    return udeks_fs_request(op,mode,n);
 }
-
-unsigned char udeks_open(const unsigned char *path, unsigned char flags)
+unsigned char udeks_open(const unsigned char *path, unsigned char mode)
 {
-    unsigned char length;
-
-    length = copy_path(path);
-    if (length == UDEKS_IO_ERROR) {
-        return length;
-    }
-    return submit(UDEKS_TREQ_OP_OPEN, flags, length);
+    return udeks_fs_path_request(UDEKS_TREQ_OP_OPEN,mode,path);
 }
-
-unsigned char udeks_getdents(
-    unsigned char descriptor, unsigned char *buffer, unsigned char capacity)
+unsigned char udeks_fs_receive(unsigned char op, unsigned char fd, unsigned char *buffer, unsigned char count)
 {
-    unsigned char result;
-    unsigned char index;
-
-    if (capacity > UDEKS_TASK_REQUEST_PAYLOAD_SIZE) {
-        capacity = UDEKS_TASK_REQUEST_PAYLOAD_SIZE;
-    }
-    result = submit(UDEKS_TREQ_OP_GETDENTS, descriptor, capacity);
-    if (result == UDEKS_IO_ERROR) {
-        return result;
-    }
-    for (index = 0; index < result; ++index) {
-        buffer[index] = REQUEST(UDEKS_TREQ_PAYLOAD + index);
-    }
-    return result;
+    unsigned char n,i;
+    if(count>24 || (count && !buffer)) return invalid();
+    n=udeks_fs_request(op,fd,count);
+    if(n==UDEKS_IO_ERROR) return n;
+    if(n>count) { udeks_errno=UDEKS_TREQ_EIO; return UDEKS_IO_ERROR; }
+    for(i=0;i<n;++i) buffer[i]=PAYLOAD[i];
+    return n;
 }
-
-unsigned char udeks_stat(const unsigned char *path, unsigned char *status)
+unsigned char udeks_read(unsigned char fd, unsigned char *buffer, unsigned char count)
 {
-    unsigned char length;
-    unsigned char result;
-    unsigned char index;
-
-    length = copy_path(path);
-    if (length == UDEKS_IO_ERROR) {
-        return length;
-    }
-    result = submit(UDEKS_TREQ_OP_STAT, 0, length);
-    if (result == UDEKS_IO_ERROR) {
-        return result;
-    }
-    for (index = 0; index < result; ++index) {
-        status[index] = REQUEST(UDEKS_TREQ_PAYLOAD + index);
-    }
-    return result;
+    return udeks_fs_receive(UDEKS_TREQ_OP_READ,fd,buffer,count);
 }
-
-unsigned char udeks_close(unsigned char descriptor)
+unsigned char udeks_write_bytes(unsigned char fd, const unsigned char *buffer, unsigned char count)
 {
-    return submit(UDEKS_TREQ_OP_CLOSE, descriptor, 0);
+    unsigned char i,n;
+    if(count>24 || (count && !buffer)) return invalid();
+    for(i=0;i<count;++i) PAYLOAD[i]=buffer[i];
+    n=udeks_fs_request(UDEKS_TREQ_OP_WRITE,fd,count);
+    if(n!=UDEKS_IO_ERROR && n>count) { udeks_errno=UDEKS_TREQ_EIO; return UDEKS_IO_ERROR; }
+    return n;
+}
+unsigned char udeks_close(unsigned char fd)
+{
+    return udeks_fs_request(UDEKS_TREQ_OP_CLOSE,fd,0);
 }

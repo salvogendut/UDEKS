@@ -17,10 +17,11 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 [#44 — create-only disk writes](https://github.com/salvogendut/UDEKS/issues/44),
 branch `storage-0.3-disk-write`. This replaces service extraction as the
 immediate priority; that architectural milestone follows the bounded write
-slice. The writer and guarded service are implemented; boot delivery and real
-program-lifetime cleanup are now VICE-qualified. Public disk I/O stays
-read-only until the next increment exposes the write API. The sprite editor
-stays parked.
+slice. Guarded boot delivery and program-lifetime cleanup are VICE-qualified.
+Step 2 now exposes opt-in create-only public writes, a file SDK and disk SAVE
+command; all three VICE disk formats pass cold-boot/readback persistence.
+Step 3 is final failure/platform acceptance and merge. Boot mounts remain RO.
+The sprite editor stays parked.
 
 **Completed feature (accepted 2026-10-05): generic graphical applications**,
 [#35](https://github.com/salvogendut/UDEKS/issues/35). The first increment merged
@@ -164,7 +165,7 @@ mounts or applications must not require rebuilding the kernel.
 
 The [create-only backend](STORAGE-0.3.md) already passes exact empty/binary
 write/readback/persistence checks on all three VICE drive types. The remaining
-delivery plan is **three steps**, with step 1 now complete in this worktree:
+delivery plan is **three steps**, with steps 1 and 2 complete in this worktree:
 
 1. **Done — boot integration and ownership.** Normal disks install the guarded
    service; trusted context + generation identities distinguish native tasks
@@ -172,15 +173,17 @@ delivery plan is **three steps**, with step 1 now complete in this worktree:
    console-return paths close leaked handles before reuse. VICE D64/D71/D81
    pass; recovery and the four-native-app regression pass too. Public UTRQ
    stays 0.13, mounts stay RO, and no application/stack allocation is borrowed.
-2. **Next — usable public writes.** Add the versioned request route, explicit
-   RW/remount options, SDK wrapper, and one independent console save/readback
-   command. Check CLOSE/status and reboot persistence. This is the next new
-   user-testable feature; do not add append/overwrite/redirection here.
-3. **Acceptance and merge.** Qualify the complete public path and failure
+2. **Done — usable public writes.** UTRQ 0.14 route, explicit RW/remount
+   options, counted binary SDK, disk SAVE.BIN and permission-aware `df`.
+   Checked CLOSE, exact-empty/binary readback, duplicate rejection, background
+   clock and reboot persistence pass on VICE D64/D71/D81. Boot stays RO;
+   no append/overwrite/redirection. Ready for user testing on disposable media.
+3. **Next — acceptance and merge.** Qualify the complete public path and failure
    cases on VICE D64/D71/D81, native 1986 and disposable C128/PI1541 media;
    retain read/boot/recovery, input and graphics checks. Then PR/merge #44.
 
 Step-1 evidence: [boot ownership qualification](../bench/results/2026-10-07-storage-ownership/README.md).
+Step-2 evidence: [public save/readback qualification](../bench/results/2026-10-07-storage-public/README.md).
 It is not a new physical-hardware or integrated RESTORE qualification.
 
 **Acceptance:** exact empty/binary/multi-sector/final-partial-file contents;
@@ -193,7 +196,7 @@ rollback or power-loss safety; document possible partial files on failure.
 Overwrite/truncate, append, delete/rename, formatting/fsck, multi-open, seek,
 shell redirection, scripting, sprite-editor integration and performance work
 are deferred. Detailed safety gates and scope are in
-[#44](https://github.com/salvogendut/UDEKS/issues/44). Public writes remain disabled.
+[#44](https://github.com/salvogendut/UDEKS/issues/44). Writes require explicit RW permission.
 
 ### Completed: generic graphical applications (#35 / PR #37)
 

@@ -34,13 +34,13 @@ class WriteProbe(unittest.TestCase):
             image[offset(*start)+2] = 1  # splat SEQ
             with self.assertRaises(AssertionError): probe.read_files(image, drive)
 
-    def test_writer_is_integrated_but_public_abi_is_not_bumped(self):
+    def test_writer_is_integrated_and_public_abi_is_014(self):
         rules = (ROOT/'mk/storage.mk').read_text().splitlines()
         objects = next(line for line in rules if line.startswith('STORAGE_OBJECTS :='))
         self.assertIn('cbm_write', objects)
         rule = rules.index('$(STORAGE_BUILD)/iec_slow.o: src/services/filesystem/iec_slow.s | $(STORAGE_BUILD)')
         self.assertIn('UDEKS_IEC_WRITE', rules[rule+1])
-        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     13u', (ROOT/'include/udeks/task_request.h').read_text())
+        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     14u', (ROOT/'include/udeks/task_request.h').read_text())
 
     def test_preserved_probe_records_and_exact_program(self):
         results = ROOT/'bench/results/2026-10-07-iec-write'

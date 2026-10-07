@@ -1,0 +1,177 @@
+{
+  "drive": "1541",
+  "disk_sha256": "5c807f5889fa7dc44f5f4de68a23caafddff68a5f724f845258f93b1486a2d5a",
+  "written_disk_sha256": "8d43200e18d3f95929a3a58f13edb1ee4188bcdfad1c3f0b7f922ce0c8120e5d",
+  "original_files_unchanged": 23,
+  "created": {
+    "WRTEST": 515,
+    "EMPTY": 0,
+    "ONE": 1,
+    "EXACT": 254,
+    "LIVE": 24
+  },
+  "checks": [
+    {
+      "boot": 0,
+      "command": "save /NOWRITE 1",
+      "console": "\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "boot": 0,
+      "command": "df",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "mount -o remount,rw 8 /",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> mount -o remount,rw 8 /\nmount: / ready (read-write)\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "df",
+      "console": "Z80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> mount -o remount,rw 8 /\nmount: / ready (read-write)\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-write mount; DOS data blocks (directory tracks excluded).\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "save /WRTEST 515",
+      "console": "BOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> mount -o remount,rw 8 /\nmount: / ready (read-write)\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-write mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save /WRTEST 515\nsave: created and verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "save /EMPTY 0",
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> mount -o remount,rw 8 /\nmount: / ready (read-write)\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-write mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save /WRTEST 515\nsave: created and verified\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "save /ONE 1",
+      "console": "WELCOME TO UDEKS.\n\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> mount -o remount,rw 8 /\nmount: / ready (read-write)\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-write mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save /WRTEST 515\nsave: created and verified\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> save /ONE 1\nsave: created and verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "save /EXACT 254",
+      "console": "UDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> mount -o remount,rw 8 /\nmount: / ready (read-write)\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-write mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save /WRTEST 515\nsave: created and verified\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> save /ONE 1\nsave: created and verified\nUDEKS:~> save /EXACT 254\nsave: created and verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "save /wrtest 515",
+      "console": "UDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> mount -o remount,rw 8 /\nmount: / ready (read-write)\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-write mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save /WRTEST 515\nsave: created and verified\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> save /ONE 1\nsave: created and verified\nUDEKS:~> save /EXACT 254\nsave: created and verified\nUDEKS:~> save /wrtest 515\nsave: File exists\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "boot": 0,
+      "command": "save /bad.BIN 1",
+      "console": "iec8        664         626   38        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> mount -o remount,rw 8 /\nmount: / ready (read-write)\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-write mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save /WRTEST 515\nsave: created and verified\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> save /ONE 1\nsave: created and verified\nUDEKS:~> save /EXACT 254\nsave: created and verified\nUDEKS:~> save /wrtest 515\nsave: File exists\nUDEKS:~> save /bad.BIN 1\nsave: No such file or directory\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "boot": 0,
+      "command": "save /bin/new 1",
+      "console": "UDEKS:~> mount -o remount,rw 8 /\nmount: / ready (read-write)\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-write mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save /WRTEST 515\nsave: created and verified\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> save /ONE 1\nsave: created and verified\nUDEKS:~> save /EXACT 254\nsave: created and verified\nUDEKS:~> save /wrtest 515\nsave: File exists\nUDEKS:~> save /bad.BIN 1\nsave: No such file or directory\nUDEKS:~> save /bin/new 1\nsave: Invalid or unsupported request\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "boot": 0,
+      "command": "mount 8 /mnt",
+      "console": "UDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-write mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save /WRTEST 515\nsave: created and verified\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> save /ONE 1\nsave: created and verified\nUDEKS:~> save /EXACT 254\nsave: created and verified\nUDEKS:~> save /wrtest 515\nsave: File exists\nUDEKS:~> save /bad.BIN 1\nsave: No such file or directory\nUDEKS:~> save /bin/new 1\nsave: Invalid or unsupported request\nUDEKS:~> mount 8 /mnt\nmount: Device or resource busy\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "boot": 0,
+      "command": "xclock &",
+      "console": "Filesystem  256B-blocks  Used  Available  Mounted on\niec8        664         626   38        /\nRead-write mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save /WRTEST 515\nsave: created and verified\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> save /ONE 1\nsave: created and verified\nUDEKS:~> save /EXACT 254\nsave: created and verified\nUDEKS:~> save /wrtest 515\nsave: File exists\nUDEKS:~> save /bad.BIN 1\nsave: No such file or directory\nUDEKS:~> save /bin/new 1\nsave: Invalid or unsupported request\nUDEKS:~> mount 8 /mnt\nmount: Device or resource busy\nUDEKS:~> xclock &\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "boot": 0,
+      "command": "save /LIVE 24",
+      "console": "Read-write mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save /WRTEST 515\nsave: created and verified\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> save /ONE 1\nsave: created and verified\nUDEKS:~> save /EXACT 254\nsave: created and verified\nUDEKS:~> save /wrtest 515\nsave: File exists\nUDEKS:~> save /bad.BIN 1\nsave: No such file or directory\nUDEKS:~> save /bin/new 1\nsave: Invalid or unsupported request\nUDEKS:~> mount 8 /mnt\nmount: Device or resource busy\nUDEKS:~> xclock &\nUDEKS:~> save /LIVE 24\nsave: created and verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "cat /hello",
+      "console": "save: created and verified\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> save /ONE 1\nsave: created and verified\nUDEKS:~> save /EXACT 254\nsave: created and verified\nUDEKS:~> save /wrtest 515\nsave: File exists\nUDEKS:~> save /bad.BIN 1\nsave: No such file or directory\nUDEKS:~> save /bin/new 1\nsave: Invalid or unsupported request\nUDEKS:~> mount 8 /mnt\nmount: Device or resource busy\nUDEKS:~> xclock &\nUDEKS:~> save /LIVE 24\nsave: created and verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "xclock -q",
+      "console": "UDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> save /ONE 1\nsave: created and verified\nUDEKS:~> save /EXACT 254\nsave: created and verified\nUDEKS:~> save /wrtest 515\nsave: File exists\nUDEKS:~> save /bad.BIN 1\nsave: No such file or directory\nUDEKS:~> save /bin/new 1\nsave: Invalid or unsupported request\nUDEKS:~> mount 8 /mnt\nmount: Device or resource busy\nUDEKS:~> xclock &\nUDEKS:~> save /LIVE 24\nsave: created and verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> xclock -q\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "boot": 0,
+      "command": "mount -o remount,ro 8 /",
+      "console": "UDEKS:~> save /ONE 1\nsave: created and verified\nUDEKS:~> save /EXACT 254\nsave: created and verified\nUDEKS:~> save /wrtest 515\nsave: File exists\nUDEKS:~> save /bad.BIN 1\nsave: No such file or directory\nUDEKS:~> save /bin/new 1\nsave: Invalid or unsupported request\nUDEKS:~> mount 8 /mnt\nmount: Device or resource busy\nUDEKS:~> xclock &\nUDEKS:~> save /LIVE 24\nsave: created and verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> xclock -q\nUDEKS:~> mount -o remount,ro 8 /\nmount: / ready (read-only)\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "save /NOWRITE 1",
+      "console": "UDEKS:~> save /EXACT 254\nsave: created and verified\nUDEKS:~> save /wrtest 515\nsave: File exists\nUDEKS:~> save /bad.BIN 1\nsave: No such file or directory\nUDEKS:~> save /bin/new 1\nsave: Invalid or unsupported request\nUDEKS:~> mount 8 /mnt\nmount: Device or resource busy\nUDEKS:~> xclock &\nUDEKS:~> save /LIVE 24\nsave: created and verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> xclock -q\nUDEKS:~> mount -o remount,ro 8 /\nmount: / ready (read-only)\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "boot": 0,
+      "command": "df -h",
+      "console": "UDEKS:~> save /bad.BIN 1\nsave: No such file or directory\nUDEKS:~> save /bin/new 1\nsave: Invalid or unsupported request\nUDEKS:~> mount 8 /mnt\nmount: Device or resource busy\nUDEKS:~> xclock &\nUDEKS:~> save /LIVE 24\nsave: created and verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> xclock -q\nUDEKS:~> mount -o remount,ro 8 /\nmount: / ready (read-only)\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~> df -h\nFilesystem   Size-KiB  Used  Avail  Mounted on\niec8        166      158   7        /\nRead-only mount; sizes in KiB.\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 1,
+      "command": "save /NOWRITE 1",
+      "console": "\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "boot": 1,
+      "command": "df",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         634   30        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 1,
+      "command": "save -c /WRTEST 515",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         634   30        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save -c /WRTEST 515\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 1,
+      "command": "save -c /EMPTY 0",
+      "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         634   30        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save -c /WRTEST 515\nsave: verified\nUDEKS:~> save -c /EMPTY 0\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 1,
+      "command": "save -c /ONE 1",
+      "console": "Z80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         634   30        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save -c /WRTEST 515\nsave: verified\nUDEKS:~> save -c /EMPTY 0\nsave: verified\nUDEKS:~> save -c /ONE 1\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 1,
+      "command": "save -c /EXACT 254",
+      "console": "BOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         634   30        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save -c /WRTEST 515\nsave: verified\nUDEKS:~> save -c /EMPTY 0\nsave: verified\nUDEKS:~> save -c /ONE 1\nsave: verified\nUDEKS:~> save -c /EXACT 254\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 1,
+      "command": "save -c /LIVE 24",
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         634   30        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save -c /WRTEST 515\nsave: verified\nUDEKS:~> save -c /EMPTY 0\nsave: verified\nUDEKS:~> save -c /ONE 1\nsave: verified\nUDEKS:~> save -c /EXACT 254\nsave: verified\nUDEKS:~> save -c /LIVE 24\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 1,
+      "command": "cat /hello",
+      "console": "WELCOME TO UDEKS.\n\nUDEKS:~> save /NOWRITE 1\nsave: Read-only filesystem\nUDEKS:~> df\nFilesystem  256B-blocks  Used  Available  Mounted on\niec8        664         634   30        /\nRead-only mount; DOS data blocks (directory tracks excluded).\nUDEKS:~> save -c /WRTEST 515\nsave: verified\nUDEKS:~> save -c /EMPTY 0\nsave: verified\nUDEKS:~> save -c /ONE 1\nsave: verified\nUDEKS:~> save -c /EXACT 254\nsave: verified\nUDEKS:~> save -c /LIVE 24\nsave: verified\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    }
+  ]
+}

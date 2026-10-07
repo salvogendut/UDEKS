@@ -23,10 +23,18 @@ Read the [dedication](DEDICATION.md).
 
 > [!IMPORTANT]
 > This is an experimental native OS, not a general-purpose Unix or a finished
-> microkernel distribution. Many services are still preloaded. Storage is
-> read-only, task capacity is limited, and graphical repaints can be slow.
+> microkernel distribution. Many services are still preloaded. Storage defaults
+> to read-only; the development branch adds opt-in create-only writes (final
+> hardware acceptance pending). Task capacity is limited and graphical repaints
+> can be slow.
 
 ## Download and boot
+
+For the current disk-write candidate, build this branch and use
+`build/boot/udeks.d64`, `.d71` or `.d81`. The
+[SAVE test and writable-mount instructions](docs/GRAPHICAL-APPS-SDK.md#counted-disk-io-utrq-014)
+apply to these fresh images, **not** the older downloads below. Use disposable
+media for write testing; overwrite, append and deletion are not implemented.
 
 These preserved test images contain the four-generic-slot build and the xwave
 resize improvement from [PR #37](https://github.com/salvogendut/UDEKS/pull/37):

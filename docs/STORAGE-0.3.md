@@ -3,7 +3,34 @@
 Work on [issue #44](https://github.com/salvogendut/UDEKS/issues/44), branch
 `storage-0.3-disk-write`, lives in `build/storage-disk-write`.
 
-## Current checkpoint: boot integration and ownership complete
+## Current checkpoint: usable public writes — step 2 complete
+
+Boot ownership/private-lease work is committed and pushed as **160c591**.
+Step 2 now exposes **UTRQ 0.14**, with create-exclusive OPEN, counted binary
+WRITE and checked CLOSE through the existing request gates. File policy stays
+in the bank-1 service; there is no new resident command or app allocation.
+
+The disk `mount` command accepts `-o rw`, `ro`, `remount,rw`, `remount,ro`.
+Boot and ordinary mounts remain RO; recovery `mount` stays the unchanged small
+read-only binary. `df` reports actual mount permissions. Independent SAVE.BIN
+uses the optional console filesystem SDK, creates a deterministic byte pattern,
+checks close/readback, or verifies an existing file with `-c` after reboot.
+See [test instructions and SDK](GRAPHICAL-APPS-SDK.md#counted-disk-io-utrq-014)
+and the [public contract](../abi/task-request.md#create-only-disk-streams-014).
+
+Fresh VICE true-drive D64/1541, D71/1571 and D81/1581 all pass public binary
+and exact-empty saves, duplicate/permission rejection, background-clock I/O,
+RO remount and a second cold boot/readback. Host DOS decoding verifies every
+preexisting file unchanged and exact contents of all new files. Exact normal
+and written images plus console records are
+[preserved](../bench/results/2026-10-07-storage-public/README.md).
+
+**Step 3 remains:** public-path failure/cleanup qualification, integrated RESTORE,
+native 1986 and disposable physical C128/PI1541 acceptance, then PR/merge.
+No append/overwrite/delete/redirection, multi-open, rollback or power-loss
+guarantee. On failure a partial file may remain. Use disposable images/media.
+
+## Earlier checkpoint: boot integration and ownership complete
 
 **Step 1 of the final three is complete.** Normal boot images now contain the
 guarded service and its create-only backend. The public interface remains

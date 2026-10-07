@@ -310,7 +310,7 @@ task_validate_signature:
         dex
         bpl task_validate_signature
         lda TREQ_BASE+$05
-        cmp #$0e
+        cmp #$0f
         bcs task_protocol_trampoline
         lda TREQ_STATE
         cmp #TREQ_REQUEST
@@ -366,7 +366,8 @@ task_write:
         cmp #$01
         beq task_write_valid
         cmp #$02
-        bne task_bad_descriptor
+        beq task_write_valid
+        jmp $c880                   ; file WRITE, version/mode/owner in service
 task_write_valid:
         lda TREQ_COUNT
         cmp #$19

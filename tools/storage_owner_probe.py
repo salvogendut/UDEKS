@@ -4,7 +4,8 @@
 
 Only disposable disk copies are used. Input is injected at the keyboard queue;
 test-client release flags are the only runtime patches. No syscall, dispatcher,
-owner or cleanup implementation is replaced. Public writes remain disabled.
+owner or cleanup implementation is replaced. This probe uses read streams;
+public write/readback qualification lives in storage_public_probe.py.
 """
 import argparse
 import hashlib

@@ -49,7 +49,7 @@ unsigned char udeks_program_main(unsigned char argc, unsigned char **argv)
 {
     const unsigned char *name, *s;
     unsigned int total, available;
-    unsigned char unit, count, i, human = 0;
+    unsigned char unit, count, i, readonly, human = 0;
     name = s = argv[0];
     while (*s) if (*s++ == '/') name = s;
     if ((name[0] | 32u) == 'f') {
@@ -82,18 +82,21 @@ unsigned char udeks_program_main(unsigned char argc, unsigned char **argv)
                     ERROR == UDEKS_TREQ_EBUSY ? "df: filesystem busy\n" : "df: disk read failed\n");
     total = P[2] | ((unsigned int)P[3] << 8);
     available = P[4] | ((unsigned int)P[5] << 8); unit = P[6];
+    readonly = P[UDEKS_STATFS_FLAGS] & UDEKS_STATFS_READ_ONLY;
     if (human) {
         unsigned int blocksize = P[0] | ((unsigned int)P[1] << 8);
         out("Filesystem   Size-KiB  Used  Avail  Mounted on\niec");
         number(unit); out("        "); number(to_kib(total, blocksize)); out("      ");
         number(to_kib(total-available, blocksize)); out("   ");
         number(to_kib(available, blocksize)); out("        ");
-        out((const char *)s); out("\nRead-only mount; sizes in KiB.\n");
+        out((const char *)s); out(readonly ? "\nRead-only" : "\nRead-write");
+        out(" mount; sizes in KiB.\n");
         return 0;
     }
     out("Filesystem  256B-blocks  Used  Available  Mounted on\niec");
     number(unit); out("        "); number(total); out("         ");
     number(total-available); out("   "); number(available); out("        ");
-    out((const char *)s); out("\nRead-only mount; DOS data blocks (directory tracks excluded).\n");
+    out((const char *)s); out(readonly ? "\nRead-only" : "\nRead-write");
+    out(" mount; DOS data blocks (directory tracks excluded).\n");
     return 0;
 }

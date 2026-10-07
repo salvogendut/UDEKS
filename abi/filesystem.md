@@ -137,6 +137,16 @@ physical-drive harness tests a device-8 data alias, not independent device 9.
 `tools/startup_probe.py` checks valid, invalid and absent RC. Exact candidate
 disks and results are preserved under `bench/{artifacts,results}/2026-09-30-root-namespace`.
 
+## Create-only writes (Storage 0.3 / UTRQ 0.14)
+
+The current branch adds explicit writable mount/remount permission and
+create-exclusive ordinary data files. Boot and recovery defaults remain RO;
+the namespace and single serialized descriptor do not change. See the
+[exact public request contract](task-request.md#create-only-disk-streams-014)
+and [qualification/limits](../docs/STORAGE-0.3.md). The earlier placement/read-only
+qualification above describes that milestone, not the current guarded writer.
+No overwriting, app/config installation, append or deletion is exposed.
+
 ## Broader filesystem direction
 
 UDEKS user programs see one hierarchical pathname namespace. Device drivers,

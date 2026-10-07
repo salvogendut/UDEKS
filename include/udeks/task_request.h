@@ -40,7 +40,7 @@
 #define UDEKS_TREQ_PAYLOAD               14u
 
 #define UDEKS_TASK_REQUEST_ABI_MAJOR     0u
-#define UDEKS_TASK_REQUEST_ABI_MINOR     13u
+#define UDEKS_TASK_REQUEST_ABI_MINOR     14u
 
 #define UDEKS_TREQ_STATE_IDLE            0u
 #define UDEKS_TREQ_STATE_REQUEST         1u
@@ -97,6 +97,10 @@
 #define UDEKS_TREQ_OP_WORKER            24u
 /* OPEN descriptor 2 requests a UDEX candidate, not a script/config file. */
 #define UDEKS_TREQ_OPEN_EXEC             2u
+/* ABI 0.14: create a NEW ordinary data file; never replace or append. */
+#define UDEKS_TREQ_OPEN_CREATE           3u
+#define UDEKS_TREQ_MOUNT_RW              1u
+#define UDEKS_TREQ_MOUNT_REMOUNT         2u
 #define UDEKS_STATFS_SIZE               8u
 #define UDEKS_STATFS_BLOCK_SIZE         0u
 #define UDEKS_STATFS_TOTAL              2u
@@ -157,6 +161,8 @@
 #define UDEKS_TREQ_EISDIR                21u
 #define UDEKS_TREQ_EINVAL                22u
 #define UDEKS_TREQ_EMFILE                 24u
+#define UDEKS_TREQ_ENOSPC                 28u
+#define UDEKS_TREQ_EROFS                  30u
 #define UDEKS_TREQ_ENOSYS                38u
 #define UDEKS_TREQ_EPROTO                71u
 

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 STORAGE_BUILD := build/storage
-# Separate backend qualification. Public write ABI remains disabled in boot.
+# Separate backend qualification; public writes use the guarded boot service.
 WRITE_BUILD := build/bench/iec-write
 WRITE_CFLAGS := -t none --cpu 6502 --standard c99 -Os -I include --static-locals -D UDEKS_IEC_WRITE
 WRITE_OBJECTS := $(addprefix $(WRITE_BUILD)/,entry.o main.o cbm_write.o cbm_file.o iec_slow.o)
@@ -108,6 +108,8 @@ $(BUILD_IEC_DIRECTORY)/kernal-eof.prg: $(BUILD_IEC_DIRECTORY)/kernal-eof.bin
 STORAGE_OBJECTS := $(addprefix $(STORAGE_BUILD)/,iec_lease.o iec_context.o iec_service.o fs_namespace.o cbm_file.o cbm_write.o iec_slow.o)
 USER_MOUNT_BIN := $(BUILD_USER)/mount.bin
 USER_MOUNT_UDEX := $(BUILD_USER)/mount.udx
+USER_RECOVERY_MOUNT_UDEX := $(BUILD_USER)/mount-recovery.udx
+USER_SAVE_UDEX := $(BUILD_USER)/save.udx
 USER_FILETOOLS_BIN := $(BUILD_USER)/filetools.bin
 USER_FILETOOLS_UDEX := $(BUILD_USER)/filetools.udx
 USER_SYSINFO_UDEX := $(BUILD_USER)/sysinfo.udx
@@ -146,8 +148,30 @@ $(BUILD_USER)/mount_request.o: user/lib/mount_request.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
 $(USER_MOUNT_BIN): $(USER_ENTRY_OBJ) $(USER_SYSCALL_OBJ) $(BUILD_USER)/mount.o $(BUILD_USER)/mount_request.o cfg/8502-user-app1.cfg
 	$(CL65) -t none -C cfg/8502-user-app1.cfg -m $(BUILD_USER)/mount.map -o $@ $(filter %.o,$^)
-$(USER_MOUNT_UDEX): $(USER_MOUNT_BIN) tools/build_udex.py
+$(USER_RECOVERY_MOUNT_UDEX): $(USER_MOUNT_BIN) tools/build_udex.py
 	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 $< $@
+$(BUILD_USER)/mount_rw.o: user/bin/mount_rw.c user/include/udeks/program.h | $(BUILD_USER)
+	$(CL65) $(CFLAGS_8502) -I user/include -c -o $@ $<
+$(BUILD_USER)/mount_rw_request.o: user/lib/mount_rw_request.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_USER)/error_string.o: user/lib/error_string.c user/include/udeks/program.h | $(BUILD_USER)
+	$(CL65) $(CFLAGS_8502) -I user/include -c -o $@ $<
+$(BUILD_USER)/mount-rw.bin: $(USER_ENTRY_OBJ) $(USER_SYSCALL_OBJ) $(BUILD_USER)/mount_rw.o $(BUILD_USER)/mount_rw_request.o $(BUILD_USER)/error_string.o cfg/8502-user-app1.cfg
+	$(CL65) -t none -C cfg/8502-user-app1.cfg -m $(BUILD_USER)/mount-rw.map -o $@ $(filter %.o,$^)
+$(USER_MOUNT_UDEX): $(BUILD_USER)/mount-rw.bin tools/build_udex.py mk/storage.mk
+	$(PYTHON) tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 $< $@
+$(USER_SAVE_UDEX): user/bin/save.c user/lib/filesystem.c user/lib/filesystem_meta.c \
+        user/lib/fs_request.s user/lib/error_string.c user/lib/entry.s user/lib/syscall.s \
+        user/include/udeks/program.h include/udeks/task_request.h cfg/8502-user-app1.cfg \
+        tools/build_console_example.py tools/build_udex.py tools/gen_capability_imports.py \
+        mk/storage.mk | $(BUILD_USER)
+	$(PYTHON) tools/build_console_example.py --filesystem --static-locals --source user/bin/save.c --name SAVE --output $(BUILD_USER)/save
+	cp $(BUILD_USER)/save/SAVE.BIN $@
+$(BUILD_USER)/fs_request.o: user/lib/fs_request.s | $(BUILD_USER)
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_USER)/filesystem_meta.o: user/lib/filesystem_meta.c user/include/udeks/program.h include/udeks/task_request.h | $(BUILD_USER)
+	$(CL65) $(CFLAGS_8502) -I user/include -c -o $@ $<
+$(USER_LS_BIN): $(BUILD_USER)/fs_request.o $(BUILD_USER)/filesystem_meta.o
 $(STORAGE_OBJECTS): mk/storage.mk include/udeks/cbm_file.h include/udeks/iec_slow.h \
 	include/udeks/storage_write.h include/udeks/cbm_write.h include/udeks/fs_namespace.h
 .PHONY: storage-service storage-vice-probe storage-shell-probe

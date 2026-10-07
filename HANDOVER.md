@@ -6,7 +6,47 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — boot storage ownership, step 1 complete, 2026-10-07
+## Current handoff — public disk writes, step 2 complete, 2026-10-07
+
+User requested commit/push, then step 2 of three. Step 1/private lease committed
+and pushed as **160c591** on `storage-0.3-disk-write` (#44). Step-2 changes are
+in the same `build/storage-disk-write` worktree, **uncommitted**. Preserve root
+main's unrelated roadmap/console-plan edits and other active worktrees.
+
+- Public UTRQ minor 14; request gate routes non-console WRITE to `$C880`.
+  Existing operations/gates and native/foreground owner-generation mechanism
+  unchanged. Request gateway fits exactly 265/265 bytes; no allocation growth.
+- Disk-only `mount_rw.c` + request assembly expose explicit RW/remount flags.
+  Original mount.c remains the small RO recovery program under a separate
+  `mount-recovery.udx` build target. Normal boot/remount defaults stay RO.
+- Transient file SDK supplies OPEN/READ/counted WRITE/CLOSE plus optional
+  metadata/error-string archive members. It calls CF30, never native FF16.
+  `--filesystem` enables this in the independent console builder; optional
+  `--static-locals` is for nonrecursive programs. No kernel imports.
+- SAVE.BIN is disk-loaded, create-only, byte-pattern/readback/check-only, with
+  checked CLOSE and no short-write retries. Default 515 bytes, range 0–4096.
+  It fits the unchanged $0200–$0BFF console allocation; df uses STATFS flags.
+- `tools/storage_public_probe.py` makes fresh disposable disk copies, enters
+  commands through the keyboard queue, and reboots each written disk in a
+  new emulator process. True 1541/D64, 1571/D71 and 1581/D81 pass. Exact normal
+  and written images, binaries, maps and command records are in
+  `bench/{artifacts,results}/2026-10-07-storage-public`. Host tests decode all
+  existing/new files independently and verify hashes; earlier archives unchanged.
+- Current owner fixture's future-version rejection moves from minor 14 to 15.
+  The archived step-1 LEAK binary/evidence intentionally still tests old 14.
+- Final verification: 1,324 host tests pass; container boot/user-programs,
+  placement-check and graphics-apps-check pass. Rebuilt disks are byte-identical
+  to the archived candidates. No VICE processes were left running.
+
+Next is **step 3**, not another API increment: qualify public write failures,
+real write-owner cleanup, RESTORE, native 1986 and disposable physical hardware,
+then PR/merge. Current live proof covers successful public writes and reboot,
+not those failure/platform gates. User instructions:
+`mount -o remount,rw 8 /`, `save /WRTEST 515`, `save /EMPTY 0`, repeated create
+must fail, `mount -o remount,ro 8 /`; reboot then `save -c /WRTEST 515` and
+`save -c /EMPTY 0`. Use fresh build/boot images; old download snapshots lack SAVE.
+
+## Earlier handoff — boot storage ownership, step 1 complete, 2026-10-07
 
 User requested **step 1 of three**, not public writes or another application.
 Implemented in `build/storage-disk-write`, branch `storage-0.3-disk-write`
