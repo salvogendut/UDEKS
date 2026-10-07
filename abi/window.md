@@ -179,14 +179,25 @@ image. Until then the old image remains clipped to the new client rectangle.
 The service does not implement clock scaling or any other app-specific model.
 Old 0.9 executables retain their exact four-byte EVENT and fixed-size behavior.
 
-PRESENT takes at most 48 eight-byte commands from **inside the caller's own
-image+BSS reservation**. Commands use window-relative byte coordinates:
+PRESENT takes at most 160 eight-byte commands (1,280 bytes, matching the PATHS
+budget) from **inside the caller's own image+BSS reservation**. Commands use
+window-relative byte coordinates:
 
 | Opcode | Remaining seven bytes | Meaning |
 | --- | --- | --- |
 | 0 | `x,y,width,height,color,unused,unused` | Filled rectangle |
 | 1 | `x,y,x2,y2,color,unused,unused` | Line |
 | 2 | `x,y,row0,row1,row2,row3,row4` | 3×5 glyph, doubled pixels; low three bits per row |
+| 3–10 (UTRQ 0.13) | `x,y,row0,row1,row2,row3,row4` | 8×5 monochrome tile, MSB at left; integer scale is opcode minus 2 |
+
+Tiles draw set bits in black and leave clear bits transparent. For example,
+opcode 3 draws an 8×5 tile at 1×; opcode 10 draws it at 8× (64×40 pixels).
+Coordinates are widened before scaling and clipped by the compositor, just
+like glyphs. Clients clear the background with a preceding fill if needed.
+Older request minors reject tile opcodes atomically with `EINVAL`; all prior
+commands and event semantics are unchanged. This is a generic bitmap primitive,
+not a sprite-editor service. Request payload bytes 5–23 remain reserved; 0.13
+does **not** implement the experimental partial-damage payload.
 
 Colors are black (0) or yellow (7). The complete list is validated before
 commit; a rejected update leaves the old retained list and window unchanged.

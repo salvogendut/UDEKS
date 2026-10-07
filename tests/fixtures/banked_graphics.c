@@ -15,6 +15,7 @@ unsigned char test_load_error, test_activate_error, test_selector, test_path[17]
 unsigned char test_active, test_init_calls, test_init_error;
 unsigned int test_repaints, test_writes, test_draws, test_x, test_y;
 int test_lines[2048][4];
+int test_fills[2048][5];
 static udeks_window_paint_fn painter[5];
 static udeks_window_close_fn closer[5];
 static struct udeks_window_click pending;
@@ -142,7 +143,12 @@ void test_resize(unsigned char h,unsigned int w,unsigned char height)
 }
 void udeks_vic_bitmap_fill(int x,int y,int w,int h,unsigned char color)
 {
-    (void)w;(void)h;(void)color;test_x=x;test_y=y;++test_draws;
+    if(test_draws<2048) {
+        test_fills[test_draws][0]=x;test_fills[test_draws][1]=y;
+        test_fills[test_draws][2]=w;test_fills[test_draws][3]=h;
+        test_fills[test_draws][4]=color;
+    }
+    test_x=x;test_y=y;++test_draws;
 }
 void udeks_vic_bitmap_line(int x,int y,int x2,int y2,unsigned char color)
 {

@@ -42,6 +42,16 @@ and renderer optimization stays separate. **Next: the first disk-loaded
 non-kernel service, in its own issue/branch.**
 The exploratory `.CBM` work on `additional-apps` / #32 stays separate.
 
+**Accepted and parked (2026-10-07):** [`xsprdef`, the session sprite editor](XSPRDEF.md),
+[#41](https://github.com/salvogendut/UDEKS/issues/41). The user approved the
+reviewed checkpoint for merge and asked to put further work aside. It edits
+eight app-local monochrome definitions with magnified/1x views, confirmed
+session saves, Clear and Invert. It is a generic disk app; UTRQ 0.13 provides
+reusable bitmap tiles, not editor-specific kernel policy. Persistence/export,
+thumbnails, keyboard editing, multicolor and partial repaint remain deferred.
+This does not displace the next loadable-service milestone. Latest manual
+acceptance did not specify a platform; no new physical-C128 result is inferred.
+
 **Merged baseline:** four graphical apps (#30), [PR #31](https://github.com/salvogendut/UDEKS/pull/31),
 merged as `9af159b`. Fresh builds run **xclock + xwave + xcalc + xdraw together**:
 calculator and drawing have independent bank-1 allocations and an owner-checked

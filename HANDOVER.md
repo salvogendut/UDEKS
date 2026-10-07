@@ -6,7 +6,30 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — user acceptance, 2026-10-05
+## Sprite-editor checkpoint — accepted and parked, 2026-10-07
+
+The user accepted the reviewed editor, authorized commit/push/PR/merge, and
+asked to put further sprite-editor work aside. The review supersedes the early
+experiment (#41 / PR #42). Work is isolated on `graphics-xspr-review`, based on `8ef5c25`, leaving
+`build/graphics-xspr` and its uncommitted partial-repaint work unchanged. Root
+main's unrelated console-plan documents are also untouched.
+
+See [XSPRDEF](docs/XSPRDEF.md) for controls, scope, tests and test images. The
+lossy four-run rectangle algorithm is replaced by bounded generic bitmap tiles;
+button bounds and confirmation are fixed, with Clear/Invert added. ABI 0.13
+means tiles here, **not** the old dirty worktree's experimental damage payload.
+Do not blindly merge that draft onto this branch. Saving is still session-only.
+Further editor work is parked: persistence/export, thumbnails, richer input,
+multicolor and partial repaint are not the next task. This accepted checkpoint
+does not replace the roadmap's loadable-service milestone. The user's latest
+manual-test platform was not specified; do not infer hardware qualification.
+
+Review gates: 1,176 host tests; container placement/graphics gates; VICE editor
+checks on D64/1541, D71/1571 and D81/1581; existing four-native-app D64 probe.
+All pass. Fresh test media are under this worktree's `build/boot/`; no published
+images were overwritten and no 1986/physical-machine qualification is claimed.
+
+## Previous handoff — user acceptance, 2026-10-05
 
 The user accepted the resize improvement and explicitly requested commit,
 push, PR and merge. [PR #37](https://github.com/salvogendut/UDEKS/pull/37)

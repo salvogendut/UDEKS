@@ -76,6 +76,14 @@ relocatable disk programs with private runtimes and stacks. Clock and wave
 resize; calculator and drawing use fixed-size layouts. Click xdraw's C button
 to clear it; `xcalc -q` / `xdraw -q` close the respective app.
 
+Fresh builds also include [`xsprdef`, the sprite-editor experiment](docs/XSPRDEF.md).
+Run `xsprdef &` to edit eight session-local 24×21 monochrome definitions with
+an 8× editor and 1× preview. It uses the same generic app slots, not a special
+kernel entry. Saving is **in memory only**; closing the app loses the bank.
+Use a freshly built image from `build/boot/`; the published downloads above
+do not include this experiment. This checkpoint is accepted; further editor
+work is parked for now.
+
 A new `.BIN` launches as `name` or `name &`
 into any free **compatible-sized** allocation, without an OS name-table entry.
 `name -q` stops a matching instance; Ctrl+C targets the foreground instance.

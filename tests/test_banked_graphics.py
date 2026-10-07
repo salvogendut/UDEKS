@@ -162,7 +162,7 @@ class BankedGraphics(unittest.TestCase):
 
     def test_present_rejects_bad_ranges_without_writes(self):
         h=self.create()
-        for pointer,count in ((0x22ff,1),(0x3500,0),(0x33f9,1),(0xfffe,1),(0x2300,49)):
+        for pointer,count in ((0x22ff,1),(0x3500,0),(0x33f9,1),(0xfffe,1),(0x2300,161)):
             self.assertEqual(self.present(h,pointer,count),22)
         self.assertEqual(self.scalar('writes',kind=c.c_uint),0)
         self.assertEqual(self.scalar('repaints',kind=c.c_uint),0)
@@ -179,6 +179,30 @@ class BankedGraphics(unittest.TestCase):
         self.memory[0x2308:0x2310]=bytes((0,1,2,3,4,1,0,0))
         self.assertEqual(self.present(h,count=2),22)
         self.assertEqual(bytes(self.pool[:8]),original)
+
+    def test_bitmap_tiles_use_all_eight_bits_and_every_supported_scale(self):
+        h=self.create()
+        fills=((c.c_int*5)*2048).in_dll(self.lib,'test_fills')
+        rows=(0x81,0x55,0xaa,0xff,0)
+        for scale in range(1,9):
+            self.scalar('draws',0,kind=c.c_uint)
+            self.memory[0x2300:0x2308]=bytes((scale+2,8,20,*rows))
+            self.assertEqual(self.request([2,h,0,0x23,1],**{'5':13}),0)
+            expected=[(108+bit*scale,40+row*scale,scale,scale,0)
+                      for row,data in enumerate(rows) for bit in range(8)
+                      if data & (128>>bit)]
+            n=self.scalar('draws',kind=c.c_uint)
+            self.assertEqual([tuple(fills[i]) for i in range(n)],expected)
+
+    def test_tiles_are_versioned_and_malformed_lists_leave_prior_image_intact(self):
+        h=self.create()
+        self.memory[0x2300:0x2308]=bytes((0,8,20,24,21,7,0,0))
+        self.assertEqual(self.present(h),0)
+        original=bytes(self.pool)
+        for opcode,minor in ((3,12),(10,12),(11,13),(255,13)):
+            self.memory[0x2308:0x2310]=bytes((opcode,8,20,255,255,255,255,255))
+            self.assertEqual(self.request([2,h,0,0x23,2],**{'5':minor}),22)
+            self.assertEqual(bytes(self.pool),original)
 
     def test_repaint_uses_retained_image_at_current_geometry(self):
         h=self.create()

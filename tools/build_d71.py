@@ -753,6 +753,7 @@ def build_image(
     commands: tuple[tuple[str, bytes], ...] = (),
     xcalc: bytes = b"",
     xdraw: bytes = b"",
+    xsprdef: bytes = b"",
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -886,7 +887,10 @@ def build_image(
         else:
             validate_banked_app(xdraw, 0x3500, 0xB00)
         install_prg_file(image, "XDRAW.BIN", xdraw, file_type=0x81)
-    names = {'SCHEDOVR', 'USH', 'RC', 'HELLO', 'FREE', 'DF', 'XCLOCK', 'XWAVE', 'XCALC', 'XDRAW'}
+    if xsprdef:
+        validate_native_app(xsprdef)
+        install_prg_file(image, "XSPRDEF.BIN", xsprdef, file_type=0x81)
+    names = {'SCHEDOVR', 'USH', 'RC', 'HELLO', 'FREE', 'DF', 'XCLOCK', 'XWAVE', 'XCALC', 'XDRAW', 'XSPRDEF'}
     for name, executable in commands:
         if name in names or not name or len(name) > 12 or any(c not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-' for c in name):
             raise ValueError('invalid or duplicate disk command name')
@@ -933,6 +937,7 @@ def main() -> None:
     parser.add_argument("--xwave", type=Path, help="disk-only managed XWAVE UDEX")
     parser.add_argument("--xcalc", type=Path, help="disk-only banked XCALC UDEX (legacy fixtures also accepted)")
     parser.add_argument("--xdraw", type=Path, help="disk-only banked XDRAW UDEX")
+    parser.add_argument("--xsprdef", type=Path, help="disk-only native XSPRDEF UDEX")
     from build_bootfs import parse_entry
     parser.add_argument("--command", action="append", type=parse_entry, default=[], metavar="NAME=UDEX")
     parser.add_argument(
@@ -978,6 +983,7 @@ def main() -> None:
             tuple((name, path.read_bytes()) for name, path in args.command),
             b"" if args.xcalc is None else args.xcalc.read_bytes(),
             b"" if args.xdraw is None else args.xdraw.read_bytes(),
+            b"" if args.xsprdef is None else args.xsprdef.read_bytes(),
         )
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error
