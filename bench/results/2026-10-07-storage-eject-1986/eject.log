@@ -1,0 +1,33 @@
+PC=FF74 1581=AF5F jam=0 rawIEC=1 fdc=00 track=0 sector=0 request=00/00/00 exit=0
+PC=E4AE 1581=AD37 jam=0 rawIEC=1 fdc=80 track=3 sector=4 request=00/00/00 exit=0
+PC=E48B 1581=AD37 jam=0 rawIEC=1 fdc=00 track=6 sector=1 request=00/00/00 exit=0
+PC=E3BC 1581=CD1D jam=0 rawIEC=1 fdc=81 track=0 sector=0 request=00/00/00 exit=0
+PC=E44D 1581=95A5 jam=0 rawIEC=1 fdc=00 track=3 sector=7 request=00/00/00 exit=0
+PC=F2E0 1581=C0C7 jam=0 rawIEC=1 fdc=80 track=8 sector=7 request=00/00/00 exit=0
+PC=E44A 1581=CD1A jam=0 rawIEC=1 fdc=81 track=10 sector=39 request=01/01/00 exit=0
+PC=E401 1581=AEB0 jam=0 rawIEC=1 fdc=00 track=11 sector=10 request=01/06/00 exit=0
+command: mount -o rw 9 /mnt -> accepted (Return release=1034 frames)
+PASS mount -o rw 9 /mnt: ready (read-write)
+command: save -c /mnt/keep 24 -> accepted (Return release=1334 frames)
+PASS save -c /mnt/keep 24: save: verified
+command: whold & -> accepted (Return release=663 frames)
+EJECT writer stage=2, 24 initial bytes accepted, generation=1
+EJECTION_RESULT write_error=5 accepted=0 close_error=5 generation_before=1 generation_after=2 cleanup_error=0
+command: cat /hello -> accepted (Return release=1312 frames)
+PASS cat /hello: HELLO UDEKS
+command: umount /mnt -> accepted (Return release=799 frames)
+PASS umount /mnt: 
+command: mount -o rw 9 /mnt -> accepted (Return release=1079 frames)
+PASS mount -o rw 9 /mnt: ready (read-write)
+command: save -c /mnt/keep 24 -> accepted (Return release=1336 frames)
+PASS save -c /mnt/keep 24: save: verified
+command: save /mnt/recover 24 -> accepted (Return release=1918 frames)
+PASS save /mnt/recover 24: save: created and verified
+command: whold & -> accepted (Return release=657 frames)
+command: save -c /mnt/owner4 24 -> accepted (Return release=1313 frames)
+PASS save -c /mnt/owner4 24: save: verified
+command: cat /hello -> accepted (Return release=1323 frames)
+PASS cat /hello: HELLO UDEKS
+command: umount /mnt -> accepted (Return release=801 frames)
+PASS umount /mnt: 
+PASS native 1986 1581 ejection/recovery checks

@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import importlib.util
 import hashlib
+import re
+import subprocess
+import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
@@ -12,6 +15,27 @@ spec.loader.exec_module(smoke)
 
 
 class InputSmokeTests(unittest.TestCase):
+    def test_storage_ejection_uses_real_media_api_and_only_client_control_pokes(self):
+        source=(ROOT/'tools/1986_storage_eject_smoke.inc').read_text()
+        main=(ROOT/'tools/1986_storage_smoke.c').read_text()
+        self.assertIn('drive_attach_disk(&machine->drive2,NULL)',source)
+        self.assertIn('drive_attach_disk(&machine->drive2,data_path)',source)
+        self.assertIn('!machine->real1581[1].fdc.image',source)
+        self.assertIn('machine->drive2_raw_iec',source)
+        self.assertNotIn('c128_power_cycle',source)
+        self.assertNotIn('c128_enable_second_real_drive',source)
+        writes=re.findall(r'machine->mem.ram\[([^\]]+)\]\s*=',source)
+        self.assertEqual(set(writes),{'UDEKS_EJECT_CASE','UDEKS_EJECT_RELEASE'})
+        self.assertIn('config.drive2_unit = 9',main)
+        self.assertIn('drive1581_load_rom(&machine->real1581[1],rom)',main)
+
+    def test_storage_ejection_rejects_other_drive_and_combined_modes(self):
+        for flags in (['--storage-eject'],['--storage-eject','--storage-write','--drive','1581']):
+            result=subprocess.run([sys.executable,str(ROOT/'tools/1986_storage_smoke_build.py'),
+                                   '--emulator','.', '--roms','.',*flags],capture_output=True,text=True)
+            self.assertEqual(result.returncode,2)
+            self.assertIn('--storage-eject',result.stderr)
+
     def test_build_uses_machine_sources_without_frontend_main(self):
         with TemporaryDirectory() as directory:
             root = Path(directory)

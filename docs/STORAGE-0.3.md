@@ -3,7 +3,7 @@
 Work on [issue #44](https://github.com/salvogendut/UDEKS/issues/44), branch
 `storage-0.3-disk-write`, lives in `build/storage-disk-write`.
 
-## Current checkpoint: public writes accepted on C128/PI1541; review pending
+## Current checkpoint: public writes qualified and accepted for merge
 
 Boot ownership/private-lease work is committed and pushed as **160c591**.
 Step 2 is committed and pushed as **5fb989b**. It exposes **UTRQ 0.14**, with create-exclusive OPEN, counted binary
@@ -25,7 +25,7 @@ preexisting file unchanged and exact contents of all new files. Exact normal
 and written images plus console records are
 [preserved](../bench/results/2026-10-07-storage-public/README.md).
 
-**Step 3 is in progress:** VICE 1541/D64 and 1571/D71 pass the public failure
+**Step 3 is complete:** VICE 1541/D64 and 1571/D71 pass the public failure
 and real writer-retirement suite. 1581/D81 passes with one explicit exception:
 ejecting media mid-write loses the Flatpak VICE process, so that case is not
 qualified. Native 1986 D64/1571 and D81/1581 pass keyboard/1351 input, RESTORE,
@@ -35,8 +35,14 @@ The user confirmed the manual checklist in 1986 and then on a **real C128 with
 PI1541** on 2026-10-07: binary/empty saves, duplicate rejection, clock dragging,
 RESTORE and console input, RO remount, cold-boot readback and RO boot defaults.
 This closes the requested physical functional-acceptance gate. It does not
-qualify physical media removal, power loss or 1581 fault behavior. The separate
-1581 media-loss coverage gap remains explicit for final review; no PR/merge yet.
+qualify physical media removal, power loss or 1581 fault behavior.
+The user explicitly approved merging
+[PR #45](https://github.com/salvogendut/UDEKS/pull/45), which records merge status.
+The follow-up [native 1986 ejection test](../bench/results/2026-10-07-storage-eject-1986/README.md)
+now covers the previously missing 1581 media-loss scenario without runtime or
+emulator changes: EIO on WRITE/CLOSE, owner release, reinsertion, new saves,
+native-slot reuse and fresh-process readback all pass. VICE's own failure
+remains undiagnosed; its failed run is not relabeled as passed.
 No append/overwrite/delete/redirection, multi-open, rollback or power-loss
 guarantee. On failure a partial file may remain. Use disposable images/media.
 

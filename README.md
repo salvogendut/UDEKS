@@ -36,8 +36,8 @@ For the current disk-write candidate, build this branch and use
 apply to these fresh images, **not** the older downloads below. Use disposable
 media for write testing; overwrite, append and deletion are not implemented.
 The [qualification record](bench/results/2026-10-07-storage-acceptance/README.md)
-includes the hardware acceptance and the remaining VICE 1581 mid-write-ejection
-coverage gap; that failure case is not claimed as passed.
+includes the hardware acceptance. The VICE 1581 mid-write-ejection run remains
+unqualified, but the [equivalent 1986 test now passes](bench/results/2026-10-07-storage-eject-1986/README.md).
 
 These preserved test images contain the four-generic-slot build and the xwave
 resize improvement from [PR #37](https://github.com/salvogendut/UDEKS/pull/37):
@@ -155,11 +155,13 @@ The target baseline is a stock 128 KiB C128 with 16 KiB VDC RAM; 64 KiB VDC,
 REU and GeoRAM are optional. PAL and NTSC remain targets.
 
 **Completed feature:** four generic native app slots, emulator-qualified and
-accepted by the user for merge. **Current feature, awaiting final review:**
+accepted by the user for merge. **Completed feature, accepted for merge:**
 [#44 — safe create-only disk writes](https://github.com/salvogendut/UDEKS/issues/44),
 implemented with public UTRQ 0.14, explicit writable mounts and the standalone
 SAVE command. The manual checklist passes in 1986 and on real C128/PI1541;
-the separate VICE 1581 ejection limitation remains documented. The next
+1581 mid-write ejection/recovery also passes under native 1986. The separate
+VICE limitation remains documented. [PR #45](https://github.com/salvogendut/UDEKS/pull/45)
+records the merge. The next
 architectural milestone is extracting the first non-kernel service into a
 disk-loaded program.
 General scripting, broader tasking and optimization remain separate roadmap

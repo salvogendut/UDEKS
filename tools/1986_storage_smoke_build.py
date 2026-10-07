@@ -24,6 +24,43 @@ smoke = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(smoke)
 
 
+def collect_ejection(work,source,program,emulator):
+    """Independently audit completed raw logs/media; no emulator state changes."""
+    import build_d81 as d81
+    from storage_failure_probe import make_data,audit
+    before=(work/'data-before.d81').read_bytes()
+    if before!=make_data('1581'): raise AssertionError('unexpected ejection preimage')
+    after=(work/'data.d81').read_bytes()
+    added=audit(before,after,{'OWNER2','RECOVER','OWNER4'})
+    inventory={bytes(c-128 if 193<=c<=218 else c for c in e[3:19].rstrip(b'\xa0')):e
+               for e in d81.entries(after,d81.sector_offset,40,3)}
+    for name in (b'RECOVER',b'OWNER4'):
+        entry=inventory[name]
+        if entry[0]!=0x81 or d81.file_bytes(after,entry,d81.sector_offset)!=bytes(range(24)):
+            raise AssertionError(('post-ejection file mismatch',name))
+    # Failed creation may leave no directory entry, a splat, or partial file.
+    # audit() already rejects any unexpected name and changed existing data.
+    original=add_apps(source,[('WHOLD.BIN',program)])
+    if (work/'test.d81').read_bytes()!=original:
+        raise AssertionError('system disk changed during ejection test')
+    for phase in ('eject','reboot'):
+        if 'PASS native 1986 1581 ejection/recovery checks' not in (work/(phase+'.log')).read_text():
+            raise AssertionError(('incomplete ejection phase',phase))
+    match=re.search(r'EJECTION_RESULT write_error=(\d+) accepted=(\d+) close_error=(\d+) generation_before=(\d+) generation_after=(\d+) cleanup_error=(\d+)',
+                    (work/'eject.log').read_text())
+    if not match: raise AssertionError('missing ejection result')
+    report=dict(zip(('write_error','accepted','close_error','generation_before','generation_after','cleanup_error'),
+                    map(int,match.groups())))
+    report.update(drive=1581,unit=9,phases=['eject','reboot'],files=added,
+        source_disk_sha256=hashlib.sha256(source).hexdigest(),
+        system_disk_sha256=hashlib.sha256(original).hexdigest(),
+        before_sha256=hashlib.sha256(before).hexdigest(),after_sha256=hashlib.sha256(after).hexdigest(),
+        program_sha256=hashlib.sha256(program).hexdigest(),
+        emulator_revision=subprocess.check_output(['git','-C',str(emulator),'rev-parse','HEAD'],text=True).strip(),
+        emulator_tracked_changes=subprocess.check_output(['git','-C',str(emulator),'status','--porcelain','--untracked-files=no'],text=True).strip())
+    return report
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--emulator', type=Path, required=True)
@@ -44,11 +81,14 @@ def main():
     parser.add_argument('--four-native', action='store_true', help='four generic native clients, actual keyboard and 1351 input')
     parser.add_argument('--native-clock', action='store_true', help='two relocatable clocks with native input and legacy peers')
     parser.add_argument('--storage-write', action='store_true', help='public create/readback/reboot with native keyboard and NMI')
+    parser.add_argument('--storage-eject', action='store_true', help='1581 media removal with a public writer open, reinsertion/reuse/reboot')
     args = parser.parse_args()
-    if args.storage_write and any((args.disk_exec,args.disk_shell,args.sysinfo,args.disk_graphics,
+    if (args.storage_write or args.storage_eject) and any((args.disk_exec,args.disk_shell,args.sysinfo,args.disk_graphics,
                                   args.drag_regression,args.root_namespace,args.xcalc,args.four_apps,
-                                  args.four_native,args.native_clock)):
-        parser.error('--storage-write is a standalone qualification mode')
+                                  args.four_native,args.native_clock,args.storage_write and args.storage_eject)):
+        parser.error('--storage-write and --storage-eject are standalone qualification modes')
+    if args.storage_eject and args.drive!='1581':
+        parser.error('--storage-eject requires --drive 1581')
     if args.four_native and any((args.disk_exec,args.disk_shell,args.sysinfo,args.disk_graphics,
                                  args.drag_regression,args.root_namespace,args.xcalc,args.four_apps,args.native_clock)):
         parser.error('--four-native is a standalone qualification mode')
@@ -61,8 +101,8 @@ def main():
         parser.error('use --drive 1581 with D81, or --drive 1571 with D64/D71')
     work = args.output.resolve()
     work.mkdir(parents=True, exist_ok=True)
-    if args.storage_write:
-        work=Path(tempfile.mkdtemp(prefix='write-',dir=work))
+    if args.storage_write or args.storage_eject:
+        work=Path(tempfile.mkdtemp(prefix='eject-' if args.storage_eject else 'write-',dir=work))
     binary = work/'smoke'
     emulator = args.emulator.resolve()
     flags = shlex.split(subprocess.check_output(['pkg-config', '--cflags', '--libs', 'sdl3'], text=True))
@@ -71,6 +111,22 @@ def main():
     calc_flags = []
     if args.storage_write:
         calc_flags=['-DUDEKS_STORAGE_WRITE_SMOKE','-DUDEKS_DISK_GRAPHICS_SMOKE']
+    if args.storage_eject:
+        from native_app_layout import ALLOCATIONS,fitting_allocations
+        fixture=ROOT/'build/storage-failures/holder'
+        program=(fixture/'WHOLD.BIN').read_bytes()
+        if 6 not in fitting_allocations(program):
+            raise ValueError('ejection fixture no longer fits task 6')
+        base=next(row[1] for row in ALLOCATIONS if row[0]==6)
+        symbols=map_exports((fixture/'holder.map').read_text())
+        calc_flags=['-DUDEKS_STORAGE_EJECT_SMOKE']
+        for name in ('stage','release','case','errno','written','closed'):
+            calc_flags.append('-DUDEKS_EJECT_'+name.upper()+'='+str(
+                0x10000+base+symbols['_writer_'+name][0]-0x1000))
+        storage=map_exports((ROOT/'build/storage/module.map').read_text())
+        for name,symbol,offset in (('GENERATION','_udeks_storage_generations',6),
+                                    ('CLEANUP','_udeks_storage_cleanup_error',0)):
+            calc_flags.append('-DUDEKS_EJECT_'+name+'='+str(0x10000+storage[symbol][0]+offset))
     if args.xcalc or args.four_apps or args.four_native:
         calc_map = (ROOT/('build/user/native-calc/xcalc_native.map' if args.four_native else 'build/user/xcalc.map')).read_text()
         calc_flags = ['-DUDEKS_XCALC_SMOKE','-DUDEKS_DISK_GRAPHICS_SMOKE']
@@ -114,7 +170,9 @@ def main():
     disk = work/('test'+args.disk.suffix)
     shutil.copyfile(args.disk, disk)
     data = bytearray(disk.read_bytes())
-    if args.native_clock:
+    if args.storage_eject:
+        data=bytearray(add_apps(data,[('WHOLD.BIN',program)]))
+    elif args.native_clock:
         program=(ROOT/'build/native-clients/clock/NCLOCK.BIN').read_bytes()
         data=bytearray(add_apps(data,[('NCLOCK.BIN',program),('CLOCK2.BIN',program)]))
     elif not args.disk_exec and not args.storage_write:
@@ -122,6 +180,26 @@ def main():
         install(data, 'EMPTY', b'', file_type=0x81)
         install(data, 'ONE', b'X', file_type=0x81)
     disk.write_bytes(data)
+    if args.storage_eject:
+        from storage_failure_probe import make_data
+        before=make_data('1581')
+        media=work/'data.d81'; media.write_bytes(before)
+        (work/'data-before.d81').write_bytes(before)
+        print('evidence:',work,flush=True)
+        for phase in ('eject','reboot'):
+            environment=os.environ.copy(); environment.pop('UDEKS_EJECT_REBOOT',None)
+            if phase=='reboot': environment['UDEKS_EJECT_REBOOT']='1'
+            with (work/(phase+'.log')).open('w') as log:
+                result=subprocess.run([str(binary),str(args.roms.resolve()),str(disk),
+                    smoke.slot_address(ROOT/'build/8502/udeks-scheduler-overlay.map'),
+                    str(work/(phase+'.vsf')),str(media)],stdout=log,stderr=subprocess.STDOUT,
+                    env=environment,timeout=600)
+            print((work/(phase+'.log')).read_text(),flush=True)
+            if result.returncode: raise SystemExit(result.returncode)
+        report=collect_ejection(work,args.disk.read_bytes(),program,emulator)
+        (work/'result.json').write_text(json.dumps(report,indent=2)+'\n')
+        print('PASS native 1986 1581 media-ejection evidence:',work,flush=True)
+        return
     if args.storage_write:
         original=bytes(data)
         for phase in ('create','reboot'):

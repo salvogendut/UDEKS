@@ -1,0 +1,35 @@
+{
+  "write_error": 5,
+  "accepted": 0,
+  "close_error": 5,
+  "generation_before": 1,
+  "generation_after": 2,
+  "cleanup_error": 0,
+  "drive": 1581,
+  "unit": 9,
+  "phases": [
+    "eject",
+    "reboot"
+  ],
+  "files": {
+    "RECOVER": {
+      "closed": true,
+      "blocks": 1,
+      "bytes": 24,
+      "sha256": "1d64add2a6388367c9bc2d1f1b384b069a6ef382cdaaa89771dd103e28613a25"
+    },
+    "OWNER4": {
+      "closed": true,
+      "blocks": 1,
+      "bytes": 24,
+      "sha256": "1d64add2a6388367c9bc2d1f1b384b069a6ef382cdaaa89771dd103e28613a25"
+    }
+  },
+  "source_disk_sha256": "89c6cad9a501b070c50755bace3e841d6a60d29a79df09477ddf93850570fe54",
+  "system_disk_sha256": "fd69b4db7bfe70e30cd33592b6b4ba8050a9886308fe84e17ecbfb02747b5a91",
+  "before_sha256": "d78f0e2d20ba13335840e96e80fdf1a547409c673e085d20dbc3d297fd668925",
+  "after_sha256": "4d5a06357e2633b1a0562d6de033a16db8049e8971e033275ae59570f4e27fc3",
+  "program_sha256": "40b7c9c4f077f49e18a0c9101098b520817908bfc824aa31e6878815b60d6645",
+  "emulator_revision": "19386ef83d43f2770fd503541ef7ee26d4ae1249",
+  "emulator_tracked_changes": ""
+}

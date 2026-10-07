@@ -6,7 +6,42 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — storage physical functional acceptance, 2026-10-07
+## Current handoff — Storage 0.3 accepted for merge, 2026-10-07
+
+Step 3 was committed/pushed as `451fdcf`. The follow-up below closes the
+VICE-blocked 1581 coverage gap under sibling 1986; the user explicitly approved
+merging [PR #45](https://github.com/salvogendut/UDEKS/pull/45). This checkpoint
+includes the probe/docs/evidence; production UDEKS images and sibling emulator
+source remain unchanged. Preserve the written local D81 and root main's
+unrelated edits. Earlier handoffs below are historical, not current blockers.
+
+`1986_storage_smoke_build.py --storage-eject --drive 1581` uses two ROM-backed
+1581s, system on unit 8 and generated data on 9. The existing WHOLD fixture
+writes 24 bytes, yields with its file open, then the normal UI media API ejects
+unit 9 without disconnecting/resetting it. Subsequent WRITE/CLOSE both return
+EIO, zero new bytes accepted, owner generation advances 1 -> 2, cleanup zero.
+Console CAT works; reinsertion, new SAVE, same native-slot reuse, EXIT cleanup
+and fresh-process readback all pass. Only client control flags are poked.
+
+Evidence: `bench/results/2026-10-07-storage-eject-1986`, emulator revision
+`19386ef`, tracked tree clean. Host audit preserves KEEP and system media;
+RECOVER/OWNER4 contain exact bytes 0..23. Aborted OWNER2 has no entry (allowed).
+Both emulator phases succeeded; the first postprocessor incorrectly demanded
+OWNER2 exist. The corrected independent collector re-audits the same logs and
+media; original postprocessing failure is preserved, with a regression test.
+No runtime or emulator fix was needed. ROM snapshots are not archived.
+Final host validation passes **1,337 tests**, including archived media decoding,
+hash verification and re-collection of the ejection report; diff checks pass.
+
+**Next roadmap feature:** the first disk-loaded non-kernel service; define its
+load/start/stop and dependency contract before extracting it. Further storage
+operations and sprite-editor integration remain separate work.
+The UDEKS 1581 ejection/recovery coverage gap is closed under 1986; VICE's process
+loss is still undiagnosed and its historical test remains failed. No new
+physical 1581 fault-injection claim or general power-loss guarantee. Earlier
+C128/PI1541 functional acceptance remains valid; PR #45 records merge status.
+
+## Earlier handoff — storage physical functional acceptance, 2026-10-07
 
 Step 2 was committed and pushed as **5fb989b** on `storage-0.3-disk-write` (#44).
 Step-3 changes in `build/storage-disk-write` are being committed and pushed for
