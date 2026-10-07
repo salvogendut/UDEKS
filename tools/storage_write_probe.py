@@ -4,7 +4,7 @@
 
 This does not enable a UDEKS syscall. No input disk option is provided: each run
 gets a new temporary directory below build/, a blank image and a sentinel file.
-The program writes ten create-only SEQ files, checks duplicate rejection, reads
+The program writes twelve create-only SEQ files, checks duplicate rejection, reads
 exact bytes through UDEKS's sector reader, then repeats the read in a fresh VICE
 process. The host independently checks the resulting directory/file chains.
 """
@@ -20,12 +20,13 @@ from build_d71 import blank_d71, d64_compatibility_image, install_prg_file, sect
 import build_d81 as d81
 
 ROOT = Path(__file__).resolve().parents[1]
-LENGTHS = (1, 2, 23, 24, 253, 254, 255, 256, 508, 515)
+LENGTHS = (0, 1, 2, 23, 24, 253, 254, 255, 256, 508, 515, 1)
 KEEP = bytes(range(255, -1, -1))*3
 
 
 def samples():
-    return {f'WRTEST0{i}': bytes(n % 256 for n in range(size)) for i, size in enumerate(LENGTHS)}
+    return {f'WRTEST{i:02d}': b'\r' if i == 11 else bytes(n % 256 for n in range(size))
+            for i, size in enumerate(LENGTHS)}
 
 
 def make_disk(drive):
@@ -63,7 +64,7 @@ def run(drive):
     (work/('before'+extension)).write_bytes(original)
     records = []
     for mode, phase in ((3, 'write-protected'), (0, 'create-read'),
-                        (1, 'reboot-read'), (2, 'empty-diagnostic')):
+                        (1, 'reboot-read'), (2, 'empty-long-name')):
         raw = work/(phase+'.bin')
         command = ['python3', 'tools/vice_capture.py', str(program), str(raw),
                    '--raw-load', '--entry', '0x2800', '--result-address', '0x6000',
@@ -87,22 +88,23 @@ def run(drive):
                 raise AssertionError('write protection did not preserve the disk/context or return EROFS')
             print(f'{drive} write protection: EROFS, image unchanged', flush=True)
         elif mode == 2:
-            if record[2] != 9 or 'EMPTY' not in actual:
-                raise AssertionError('empty-file diagnostic did not complete')
-            empty = actual.pop('EMPTY')
-            print(f'{drive} empty-file diagnostic: {len(empty)} byte(s), {empty.hex()}; NOT an exact-empty qualification', flush=True)
-        elif record[12] != 10 or record[8:10] != record[10:12]:
+            if record[2] != 9 or 'EMPTY-1234567890' not in actual:
+                raise AssertionError('empty-file finalization did not complete')
+            empty = actual.pop('EMPTY-1234567890')
+            if empty: raise AssertionError(f'empty file contains {empty.hex()}')
+            print(f'{drive} maximum-length name: exact empty file', flush=True)
+        elif record[12] != len(LENGTHS) or record[8:10] != record[10:12]:
             raise AssertionError(f'bad readback/speed/bank record: {record.hex()}')
         if mode != 3 and actual != samples() | {'KEEP': KEEP}:
             raise AssertionError(f'{drive}: independent on-disk readback differs')
         records.append({'phase': phase, 'record': record.hex(),
                         'disk_sha256': hashlib.sha256(disk.read_bytes()).hexdigest()})
         if mode in (0, 1):
-            print(f'{drive} {phase}: 10 exact files, KEEP intact, CPU speed/VIC bank preserved', flush=True)
+            print(f'{drive} {phase}: {len(LENGTHS)} exact files (empty and CR included), KEEP intact, CPU speed/VIC bank preserved', flush=True)
     if records[1]['disk_sha256'] != records[2]['disk_sha256']:
         raise AssertionError('read-only reboot changed the disk')
     result = {'drive': drive, 'lengths': LENGTHS, 'records': records,
-              'empty_file': {'intended_size': 0, 'actual': empty.hex(), 'qualified': False},
+              'empty_file': {'intended_size': 0, 'actual': empty.hex(), 'qualified': True},
               'program_sha256': hashlib.sha256(program.read_bytes()).hexdigest(),
               'before_sha256': hashlib.sha256(original).hexdigest()}
     (work/'result.json').write_text(json.dumps(result, indent=2)+'\n')

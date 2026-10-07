@@ -8,7 +8,7 @@
 #define MODE (*(volatile uint8_t *)0x60f0) /* 0=create+read, 1=reboot, 2=empty, 3=write-protect */
 #define SPEED (*(volatile uint8_t *)0xd030)
 #define CIA (*(volatile uint8_t *)0xdd00)
-static const uint16_t lengths[] = {1, 2, 23, 24, 253, 254, 255, 256, 508, 515};
+static const uint16_t lengths[] = {0, 1, 2, 23, 24, 253, 254, 255, 256, 508, 515, 1};
 static uint8_t name[] = "WRTEST00";
 static uint8_t buffer[24];
 extern uint8_t udeks_cbm_dos_error;
@@ -33,17 +33,17 @@ int main(void)
         return 0;
     }
     if (MODE == 2u) {
-        R[2] = 9; /* diagnostic only: host MUST inspect actual file length */
-        error = udeks_cbm_create(8, (const uint8_t *)"EMPTY", 5);
+        R[2] = 9; /* maximum-length physical filename, host checks exact size */
+        error = udeks_cbm_create(8, (const uint8_t *)"EMPTY-1234567890", 16);
         if (error) goto failed;
         error = udeks_cbm_write_close();
         if (error) goto failed;
         R[0] = 2;
         return 0;
     }
-    for (file = 0; file < 10u; ++file) {
+    for (file = 0; file < 12u; ++file) {
         R[1] = file; R[2] = 1;
-        name[7] = '0'+file; length = lengths[file];
+        name[6] = '0'+file/10u; name[7] = '0'+file%10u; length = lengths[file];
         if (!MODE) {
             error = udeks_cbm_create(8, name, 8);
             if (error) goto failed;
@@ -53,7 +53,7 @@ int main(void)
             position = 0;
             while (position < length) {
                 n = length-position > 24u ? 24u : length-position;
-                for (i = 0; i < n; ++i) buffer[i] = (uint8_t)(position+i);
+                for (i = 0; i < n; ++i) buffer[i] = file == 11u ? 13u : (uint8_t)(position+i);
                 error = udeks_cbm_write(buffer, n);
                 if (error || udeks_cbm_written != n) goto failed;
                 position += n;
@@ -81,7 +81,7 @@ int main(void)
         R[2] = 6;
         for (position = 0; position < length; ++position) {
             value = udeks_cbm_read();
-            if (value != (uint8_t)position) {
+            if (value != (file == 11u ? 13u : (uint8_t)position)) {
                 R[4] = position; R[5] = position >> 8;
                 R[6] = value; R[7] = value >> 8;
                 goto failed;

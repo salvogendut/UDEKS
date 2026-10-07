@@ -23,9 +23,9 @@ class WriteProbe(unittest.TestCase):
         files = probe.samples()
         self.assertEqual(tuple(map(len, files.values())), probe.LENGTHS)
         self.assertTrue({1, 23, 24, 253, 254, 255, 256, 508, 515} <= set(probe.LENGTHS))
-        self.assertEqual(set(files['WRTEST09']), set(range(256)))
-        # Empty-file DOS behavior is a separate diagnostic, never a false pass.
-        self.assertNotIn(0, probe.LENGTHS)
+        self.assertEqual(set(files['WRTEST10']), set(range(256)))
+        self.assertEqual(files['WRTEST00'], b'')
+        self.assertEqual(files['WRTEST11'], b'\r')
 
     def test_independent_verifier_rejects_unclosed_files(self):
         for drive, start, offset in (('1541', (18, 1), build_d71.sector_offset),
@@ -49,7 +49,8 @@ class WriteProbe(unittest.TestCase):
             result = json.loads((results/(drive+'.json')).read_text())
             self.assertEqual(result['drive'], drive)
             self.assertEqual(result['program_sha256'], digest)
-            self.assertEqual(result['lengths'], list(probe.LENGTHS))
+            # Historical diagnostic, before exact-empty finalization existed.
+            self.assertEqual(result['lengths'], [1, 2, 23, 24, 253, 254, 255, 256, 508, 515])
             records = {r['phase']: r for r in result['records']}
             protected = bytes.fromhex(records['write-protected']['record'])
             self.assertEqual(protected[0], 2)
@@ -63,6 +64,33 @@ class WriteProbe(unittest.TestCase):
                 self.assertEqual(raw[8:10], raw[10:12])
             self.assertEqual(records['create-read']['disk_sha256'], records['reboot-read']['disk_sha256'])
             self.assertEqual(result['empty_file'], {'intended_size': 0, 'actual': '0d', 'qualified': False})
+
+    def test_exact_empty_revision_records_and_program(self):
+        results = ROOT/'bench/results/2026-10-07-iec-write-r1'
+        program = ROOT/'bench/artifacts/2026-10-07-iec-write-r1/write.prg'
+        digest = hashlib.sha256(program.read_bytes()).hexdigest()
+        for drive in ('1541', '1571', '1581'):
+            result = json.loads((results/(drive+'.json')).read_text())
+            self.assertEqual(result['drive'], drive)
+            self.assertEqual(result['program_sha256'], digest)
+            self.assertEqual(result['lengths'], list(probe.LENGTHS))
+            records = {r['phase']: r for r in result['records']}
+            self.assertEqual(set(records), {'write-protected', 'create-read', 'reboot-read', 'empty-long-name'})
+            for phase in ('create-read', 'reboot-read'):
+                raw = bytes.fromhex(records[phase]['record'])
+                self.assertEqual(len(raw), 32)
+                self.assertEqual(raw[0], 2)
+                self.assertEqual(raw[12], 12)
+                self.assertEqual(raw[8:10], raw[10:12])
+            self.assertEqual(records['create-read']['disk_sha256'], records['reboot-read']['disk_sha256'])
+            protected = bytes.fromhex(records['write-protected']['record'])
+            self.assertEqual(protected[0], 2)
+            self.assertEqual(protected[2:4], bytes((10, 30)))
+            self.assertEqual(records['write-protected']['disk_sha256'], result['before_sha256'])
+            empty = bytes.fromhex(records['empty-long-name']['record'])
+            self.assertEqual(empty[0], 2)
+            self.assertEqual(empty[2], 9)
+            self.assertEqual(result['empty_file'], {'intended_size': 0, 'actual': '', 'qualified': True})
 
 
 if __name__ == '__main__': unittest.main()

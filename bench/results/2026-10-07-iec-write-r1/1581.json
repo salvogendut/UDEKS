@@ -1,0 +1,46 @@
+{
+  "drive": "1581",
+  "lengths": [
+    0,
+    1,
+    2,
+    23,
+    24,
+    253,
+    254,
+    255,
+    256,
+    508,
+    515,
+    1
+  ],
+  "records": [
+    {
+      "phase": "write-protected",
+      "record": "02000a1e00000000fd03fd030000000000000000000000000000000000000000",
+      "disk_sha256": "693606956b033f576a86de4f0de0ac1436f381563909cc0c1c016402371a3f3c"
+    },
+    {
+      "phase": "create-read",
+      "record": "020b080000000000fd03fd030c00000000000000000000000000000000000000",
+      "disk_sha256": "bf6863308c33b1434c032dfa2b65ce1e9b93454da2f9b359fa08826c787a4ee3"
+    },
+    {
+      "phase": "reboot-read",
+      "record": "020b080000000000fd03fd030c00000000000000000000000000000000000000",
+      "disk_sha256": "bf6863308c33b1434c032dfa2b65ce1e9b93454da2f9b359fa08826c787a4ee3"
+    },
+    {
+      "phase": "empty-long-name",
+      "record": "0200090000000000fd0300000000000000000000000000000000000000000000",
+      "disk_sha256": "c9e84574b36160583756fdda3afdf4dd9ab800b930b8e4d47d25032a935b37fe"
+    }
+  ],
+  "empty_file": {
+    "intended_size": 0,
+    "actual": "",
+    "qualified": true
+  },
+  "program_sha256": "d473a0c86103f23eb6372b7044b2b963afd95a7bdf8a4238ce26c23ae8bb418f",
+  "before_sha256": "693606956b033f576a86de4f0de0ac1436f381563909cc0c1c016402371a3f3c"
+}

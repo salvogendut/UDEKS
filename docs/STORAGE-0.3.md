@@ -3,23 +3,26 @@
 Work on [issue #44](https://github.com/salvogendut/UDEKS/issues/44), branch
 `storage-0.3-disk-write`, lives in `build/storage-disk-write`.
 
-## Current checkpoint: private drive backend
+## Current checkpoint: private backend with exact empty files
 
 `src/services/filesystem/cbm_write.c` implements a single, serialized,
 create-only SEQ writer in C. The optional `UDEKS_IEC_WRITE` assembly transport
 extension sends binary bytes through the existing slow IEC handshakes. It
-never emits replace, scratch, format, raw-sector-write or BAM-allocation
-commands. DOS manages allocation and file finalization.
+never emits replace, scratch, format or BAM-allocation commands. DOS manages
+allocation and file finalization; the narrowly scoped empty-file correction
+below uses one checked U2 write to the newly allocated data sector.
 
 This is **not linked into UDEKS** yet. Boot images, recovery, the request ABI
 (currently UTRQ 0.13), mounts, console WRITE and the read service are unchanged.
 Applications cannot save files through the public API yet. The probe calls
 the private backend directly; it is not the roadmap's standalone console app.
 
-Checkpoint: 1,196 host tests and the reference-container placement/graphics
-gates pass. All three boot images are byte-identical before/after this change.
-The standalone VICE results and exact probe are
-[preserved here](../bench/results/2026-10-07-iec-write/README.md).
+The initial backend was committed and pushed as `ad01c45`. The follow-up adds
+exact empty-file finalization, qualified on all three VICE drive types. All
+1,215 host tests and the container build/layout gates pass. All three normal
+boot images remain byte-identical. The initial diagnostic is
+[preserved](../bench/results/2026-10-07-iec-write/README.md), alongside the
+[new exact-empty results](../bench/results/2026-10-07-iec-write-r1/README.md).
 
 The implementation validates the complete physical name before touching the
 transport, uses `0:NAME,S,W` without `@`, and checks DOS status after OPEN,
@@ -35,21 +38,36 @@ The caller must serialize this backend with the reader, finish namespace and
 case-folded collision checks, and validate mount permissions **before** calling
 it. DOS's exact-name rejection alone is not the UDEKS collision policy.
 
-### Empty-file gap — do not hide it
+### Exact empty-file finalization
 
 Closing a newly opened SEQ file without sending data produced one byte, CR
-(`$0D`), on all three tested VICE drives. Thus a successful DOS CLOSE alone
-does **not** establish exact zero-length semantics. The probe reports this
-separately, never as an empty-file pass. The original DOS source explicitly
+(`$0D`), on all three tested VICE drives in the first probe. A successful DOS
+CLOSE alone does **not** establish exact zero-length semantics. The DOS source
 inserts CR when no block or byte was written. See
 [the reconstructed Commodore DOS close routine](https://github.com/mist64/dos1541/blob/master/close.s).
 
-Resolve this before enabling the public create API. Do not reinterpret every
-one-byte CR file as empty, change the existing reader, silently append a byte,
-or introduce ROM-address-specific drive patches. Existing `ls`/`cat` must see
-the actual contents. A bounded finalization strategy needs its own proof if
-native DOS channels cannot express an exact empty file. Partial/splat files
-may remain after errors; there is no rollback or power-loss guarantee.
+The writer now remembers its successful exclusive-create name and whether any
+data was submitted. Only a clean zero-data CLOSE enters the private finalizer:
+
+1. Reopen a direct-access buffer and scan the complete directory for exactly
+   one matching 16-byte physical name: closed, unlocked SEQ, one block.
+2. Reject metadata tracks, invalid geometry, duplicate names and other live
+   directory entries sharing the first sector. Read the complete sector;
+   require a final one-byte CR block, or accept an already-zero-length block
+   without writing. Any malformed/truncated scan or transfer fails closed.
+3. Use standard `B-P` to select byte 1 in that drive buffer, change its count
+   from 2 to 1, and issue U2 to **that same data sector**. Check status, reread
+   the disk length/link, and close the buffer on both success and failure.
+
+No directory or BAM sector is rewritten by this correction. It is not a raw
+sector API or general-purpose truncate operation: only the writer's fresh
+create path can call it. Failed OPEN/WRITE/CLOSE and all non-empty writes skip
+it. The reader is unchanged; ordinary CR files stay one byte. This assumes a
+healthy DOS filesystem and exclusive service ownership, not an fsck or proof
+against arbitrary corrupt cross-links or physical media replacement. Live
+media-removal and cancellation qualification remain due before public release.
+On failure the new file may still contain CR, already be empty, or be partial;
+there is no rollback/power-loss guarantee. Never retry a failed transaction.
 
 ### Reproduce safely
 
@@ -63,17 +81,20 @@ python3 tools/storage_write_probe.py
 
 The probe creates new disposable images under `build/storage/write-probe/`;
 it accepts **no source-disk argument**. Each run has its own directory. It
-checks write protection, ten non-empty files (1, 2, 23, 24, 253, 254, 255, 256,
-508 and 515 bytes), duplicate-create rejection, exact readback through the
+checks write protection, twelve files (0, 1, 2, 23, 24, 253, 254, 255, 256,
+508 and 515 bytes, plus an ordinary CR file), duplicate-create rejection, exact readback through the
 UDEKS sector reader, and readback in a fresh VICE process. The host independently
 walks the resulting directory and sector chains, verifies a pre-existing KEEP
 file, and checks that the read-only restart did not change the image. A final
-empty-file diagnostic records the actual bytes separately. All private VICE
+empty create also exercises a maximum-length 16-byte physical name. All private VICE
 sessions are terminated by the existing capture harness.
 
 The C fault-injection tests cover invalid names/counts, attempted command
 injection, second-open exclusion, all partial-prefix positions, sticky errors,
-malformed/truncated status, failed finalization and slot reuse. DOS 26 maps to
+malformed/truncated status, failed finalization and slot reuse. A separate
+finalizer suite proves a one-byte-only disk change, no directory/BAM/sentinel
+mutation, duplicate/cross-link rejection, bounded malformed chains, transfer
+failures before U2, ignored/failed U2 and failed cleanup. DOS 26 maps to
 EROFS, 63 to EEXIST, 72 to ENOSPC, 74 to ENODEV; other failures remain explicit.
 The command/status basis is the original
 [1541 manual](https://www.zimmers.net/anonftp/pub/cbm/manuals/drives/1541-manual.txt).
@@ -97,8 +118,10 @@ the linker pass. Switching only the policy compiler options to `-Os` saves
 155 code bytes, not enough for the writer. That experiment is not enabled in
 the normal build.
 
-The standalone writer object is 1,000 bytes of code and 17 bytes of BSS;
-the optional IEC extension adds 96 code bytes and six filename bytes. These
+The writer object now uses 1,116 code and 35 BSS bytes. Exact-empty finalization
+adds 857 code, 49 read-only-data and 10 BSS bytes to the sector module; the
+optional IEC extension adds 96 code and six filename bytes. Together that is
+2,118 code/data and 51 state bytes beyond the production objects. These
 are object measurements, **not** a complete linked integration budget:
 namespace encoding, mount/owner state, cleanup hooks, dispatch and extra
 compiler helpers also cost space. The current layout cannot simply absorb
@@ -142,7 +165,7 @@ the full service and compatibility tests are present.
 ## Next concrete deliverable
 
 Integrate this backend into the bank-1 storage service with measured placement,
-resolve exact empty-file creation, add explicit mount permissions/ownership and
+add explicit mount permissions/ownership and
 versioned request routing, then provide one independent console save/readback
 command. That is the next user-testable checkpoint. Qualify it on disposable
 D64/D71/D81 media, 1986 and then C128+PI1541 before merge. Sprite-editor saving

@@ -11,6 +11,8 @@ uint16_t test_status[64], test_status_size, test_status_pos;
 /* Call indexes: prepare/listen/send/unlisten/status/read/untalk/close.
  * Finish has its own counter so terminal cleanup can be asserted. */
 uint16_t test_finish_count;
+uint8_t udeks_cbm_dos_error, test_empty_error, test_empty_count, test_empty_device;
+uint8_t test_empty_name[16];
 
 void test_reset(void)
 {
@@ -20,6 +22,7 @@ void test_reset(void)
     test_open_error = test_listen_error = test_close_error = test_unlisten_error = 0;
     test_status_error = test_untalk_error = test_device = 0;
     test_bytes = test_finish_count = 0; test_fail_at = 65535;
+    test_empty_count = test_empty_error = udeks_cbm_dos_error = 0;
     test_status[0] = '0'; test_status[1] = '0'; test_status[2] = ',';
     test_status[3] = 256+13; test_status_size = 4;
 }
@@ -44,3 +47,9 @@ uint8_t udeks_iec_untalk(void)
 uint8_t udeks_iec_close(void)
 { ++test_calls[7]; return test_close_error; }
 void udeks_iec_finish(void) { ++test_finish_count; }
+uint8_t udeks_cbm_finish_empty(uint8_t device, const uint8_t *name)
+{
+    ++test_empty_count; test_empty_device = device;
+    memcpy(test_empty_name, name, 16);
+    return test_empty_error;
+}

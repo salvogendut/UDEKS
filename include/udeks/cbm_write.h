@@ -20,9 +20,10 @@ uint8_t udeks_cbm_write_close(void);
  * is not durability. A failed byte may have reached the drive; never retry
  * after an error. Errors stick until checked CLOSE, which releases ownership
  * even on failure. Invalid counts/pointers do not poison an existing handle.
- * CLOSE is required for empty files too, but stock 1541 DOS inserts CR for
- * those files: this private backend does NOT yet implement exact empty-file
- * semantics. That is a public-API integration gate, not a one-byte success.
+ * CLOSE is required for empty files too. After successful zero-data CREATE /
+ * CLOSE, a bounded direct-access finalizer corrects DOS's synthetic CR length
+ * to zero; it never runs after a failed operation or a nonempty write.
+ * This remains probe-only until service integration is qualified.
  * Cancellation must also call CLOSE;
  * a partial/splat file can remain, with no rollback or automatic scratch. */
 extern uint8_t udeks_cbm_written;

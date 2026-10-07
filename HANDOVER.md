@@ -6,7 +6,7 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — disk-write backend, 2026-10-07
+## Current handoff — exact-empty backend follow-up, 2026-10-07
 
 The user selected disk writes as the next feature and requested an issue and
 branch. [Issue #44](https://github.com/salvogendut/UDEKS/issues/44) tracks
@@ -20,29 +20,41 @@ public-API gates. The production filesystem still has one serialized
 IEC stream, read-only open/read/close and no file-data WRITE dispatch; stdout/
 stderr WRITE is not a disk-write API. The new C writer and optional IEC output
 path are not linked into boot images. The current storage reservations have
-only 327 free code bytes; the private writer/transport alone adds 1,096 before
-service policy and compiler helpers. Keep the working boot layout intact.
+only 327 free code bytes; the writer, transport and new empty-file finalizer
+add 2,118 code/data bytes before service policy and compiler helpers. Keep the
+working boot layout intact; don't spend app slots or stack/recovery space.
 Implement the proposed versioned contract, permissions and owner cleanup
 in the C storage service, with no overwriting of existing files. Prefer DOS
 file channels; explicitly settle mount permissions, ownership, error/partial-
 file semantics and cleanup before implementation. Keep all tests on disposable
-image copies. Native DOS also inserts CR into an unwritten SEQ file: exact
-empty-file creation remains a gate, not a passed test or a reason to hide the
-byte in the reader. Follow the [current roadmap](docs/ROADMAP.md#active-storage-03--create-only-disk-writes-44).
+image copies. Exact empty-file creation is now implemented: after a successful
+zero-data CREATE/CLOSE, validate the fresh one-block closed SEQ and correct
+only its sector count through standard B-P/U2. No allocator, directory/BAM
+rewrite, ROM patch or reader special case. Failed operations and non-empty
+writes never enter this correction. Follow the [current roadmap](docs/ROADMAP.md#active-storage-03--create-only-disk-writes-44).
 
 Service extraction follows this write milestone. Sprite persistence, general
 shell redirection, multi-open, overwrite/append and rendering work are not
 prerequisites and remain deferred. No public-API, 1986 or physical-machine
 disk-write qualification is claimed yet.
 
-Checkpoint verification: **1,196 host tests**, reference-container boot and
+Initial checkpoint `ad01c45` is committed/pushed, with **1,196 host tests**, reference-container boot and
 placement/graphics gates, and isolated VICE 1541/D64, 1571/D71, 1581/D81 runs.
 Each drive passed non-empty binary readback, restart persistence, duplicate
-rejection and write protection; exact empty files remain unsupported. Normal
+rejection and write protection; exact empty files were then unsupported. Normal
 boot images are byte-identical to the pre-change baseline. Probe artifacts and
 results are preserved under `bench/{artifacts,results}/2026-10-07-iec-write`.
-All private VICE sessions exited. The next increment is service integration,
-with exact empty-file semantics still an explicit gate.
+The new follow-up passes the same three VICE drives with twelve exact files
+(empty, binary boundaries and an ordinary CR), reboot persistence, write
+protection and 16-byte empty filenames. Exact probe/results are preserved in
+`bench/{artifacts,results}/2026-10-07-iec-write-r1`; do not replace the first
+diagnostic evidence. The host finalizer tests prove a one-byte-only change and
+fail-closed handling of malformed targets/transfers. Public writes are still
+disabled. Placement, mount permissions, task ownership and cancellation/media
+failure qualification remain the next service-integration work. This follow-up
+is the exact-empty backend checkpoint. Final checks: **1,215 host tests**, container boot,
+placement/graphics checks; normal D64/D71/D81 and storage blobs still match
+the pre-change hashes. All private VICE sessions exited.
 
 ## Sprite-editor checkpoint — accepted and parked, 2026-10-07
 

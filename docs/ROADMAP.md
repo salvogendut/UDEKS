@@ -161,9 +161,10 @@ mounts or applications must not require rebuilding the kernel.
 ### Active: Storage 0.3 — create-only disk writes (#44)
 
 **In progress:** [private C writer and IEC probe](STORAGE-0.3.md), separate
-from boot images. Non-empty create/readback/persistence has passed VICE on all
-three disk formats. Integration still needs placement, permissions/ownership
-and exact empty-file semantics: stock DOS closes an unwritten SEQ as a CR byte.
+from boot images. Exact empty and binary create/readback/persistence now pass
+VICE on all three disk formats. A checked, new-file-only length correction
+handles DOS's synthetic CR without changing ordinary CR files or the reader.
+Integration still needs placement, mount permissions, ownership and cleanup.
 The next user-testable target is one independent console save/readback command
 through the public API, not the standalone transport probe.
 

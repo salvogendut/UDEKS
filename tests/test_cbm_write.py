@@ -82,6 +82,22 @@ class CbmWrite(unittest.TestCase):
         self.assertEqual(self.calls[7], 1)
         self.assertEqual(self.calls[4], 2)
         self.assertEqual(self.word('test_finish_count').value, 1)
+        self.assertEqual(self.byte('test_empty_count').value, 1)
+        self.assertEqual(self.byte('test_empty_device').value, 8)
+        name = (c.c_uint8*16).in_dll(self.lib, 'test_empty_name')
+        self.assertEqual(bytes(name), b'NEWFILE'+b'\xa0'*9)
+
+    def test_empty_finalization_failure_is_reported_and_handle_released(self):
+        self.create(); self.byte('test_empty_error').value = EIO
+        self.byte('udeks_cbm_dos_error').value = 63  # stale diagnostic, not EEXIST
+        self.assertEqual(self.close(), EIO)
+        self.assertEqual(self.close(), EBADF)
+        self.assertEqual(self.byte('test_empty_count').value, 1)
+
+    def test_zero_length_requests_do_not_turn_nonempty_file_into_empty(self):
+        self.create(); self.write(b'\r'); self.write(b'')
+        self.assertEqual(self.close(), 0)
+        self.assertEqual(self.byte('test_empty_count').value, 0)
 
     def test_binary_chunks_no_encoding_no_added_newline_eoi_on_last_byte_only(self):
         for length in (1, 23, 24, 253, 254, 255, 256, 508, 515):
@@ -120,6 +136,7 @@ class CbmWrite(unittest.TestCase):
             self.assertEqual(self.byte('udeks_cbm_written').value, 0)
             self.assertEqual(list(self.calls), before)
             self.assertEqual(self.close(), EIO)
+            self.assertEqual(self.byte('test_empty_count').value, 0)
             self.assertEqual(self.create(b'NEXT'), 0)
             self.assertEqual(self.close(), 0)
 
@@ -127,8 +144,11 @@ class CbmWrite(unittest.TestCase):
         for code, error in ((26, EROFS), (60, EBUSY), (62, 2), (63, EEXIST),
                             (70, EBUSY), (72, ENOSPC), (74, ENODEV), (25, EIO), (73, EIO)):
             self.dos(code)
+            before = self.byte('test_empty_count').value
             self.assertEqual(self.create(), error)
+            self.assertEqual(self.byte('test_empty_count').value, before)
             self.assertEqual(self.close(), EBADF)
+            self.assertEqual(self.byte('test_empty_count').value, before)
             self.dos(0)
             self.assertEqual(self.create(), 0)
             self.assertEqual(self.close(), 0)
@@ -167,7 +187,20 @@ class CbmWrite(unittest.TestCase):
         self.create(); self.byte('test_close_error').value = 2
         self.assertEqual(self.close(), EIO)
         self.assertEqual(self.word('test_finish_count').value, 1)
+        self.assertEqual(self.byte('test_empty_count').value, 0)
         self.assertEqual(self.close(), EBADF)
+
+    def test_failed_dos_close_of_unwritten_file_never_triggers_finalizer(self):
+        self.create(); self.dos(26)
+        self.assertEqual(self.close(), EROFS)
+        self.assertEqual(self.byte('test_empty_count').value, 0)
+
+    def test_empty_finalizer_uses_saved_name_not_reused_command_buffer(self):
+        self.assertEqual(self.create(b'1234567890123456', 9), 0)
+        self.filename[:] = b'Z'*22
+        self.assertEqual(self.close(), 0)
+        self.assertEqual(bytes((c.c_uint8*16).in_dll(self.lib, 'test_empty_name')), b'1234567890123456')
+        self.assertEqual(self.byte('test_empty_device').value, 9)
 
     def test_malformed_status_is_bounded_never_success(self):
         for reply in ([48], [304], [48, 304], [48, 48, 300], [48, 48, 44, 266],
