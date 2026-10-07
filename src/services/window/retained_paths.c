@@ -35,10 +35,14 @@ unsigned int __fastcall__ udeks_retained_address(unsigned char index)
     while(index) address+=udeks_retained_lengths[--index]&0x7fffu;
     return address;
 }
+/* Shared transport helper lives with the resident glue, leaving the fixed
+ * lazy-install module space for the renderer. No reservation moves. */
+#pragma code-name(push, "CODE")
 void __fastcall__ udeks_retained_read(unsigned int address)
 {
     memcpy((void *)C,POOL(address),8);
 }
+#pragma code-name(pop)
 /* All images stay packed in slot order. Admission is serialized, and only
  * validated replacements reach this compaction; no foreign pointers remain. */
 static void resize_image(unsigned char index,unsigned int length)
@@ -128,7 +132,7 @@ unsigned char __fastcall__ udeks_retained_present(unsigned char index)
     } else {
         for(offset=0;offset<length;offset+=8) {
             udeks_banked_read(source+offset);
-            if(C[0]>2 || (C[0]<2 && C[5]!=0 && C[5]!=7)) return 22;
+            if(C[0]>10 || (C[0]>2 && R[5]<13) || (C[0]<2 && C[5]!=0 && C[5]!=7)) return 22;
         }
     }
     destination=udeks_retained_address(index);

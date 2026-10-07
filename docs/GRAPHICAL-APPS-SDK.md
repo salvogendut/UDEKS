@@ -267,6 +267,10 @@ this does not make arbitrary Commodore PRGs or Linux binaries compatible.
 - CREATE/PRESENT/EVENT/CLOSE use UTRQ 0.9. Up to 160 eight-byte commands are
   retained per client; the service copies them and clips painting to its window.
   UTRQ 0.12 alternatively accepts a packed path stream of at most 1,280 bytes.
+  UTRQ 0.13 adds 8×5 monochrome bitmap tiles at integer scales 1–8; build with
+  `--graphics-abi 13`. `UDEKS_GFX_TILE(scale)` followed by x, y and five
+  MSB-first row bytes draws black set bits, leaving zero bits transparent.
+  This bounds arbitrary bitmap data without expanding each pixel into a command.
   A shared 2,304-byte retained pool bounds total drawing data; ENOMEM leaves
   prior images intact. Input is client click/close, not a general keyboard event API.
 - The sample owns its drawing data and private counter. It must yield/sleep;

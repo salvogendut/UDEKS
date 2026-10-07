@@ -362,6 +362,11 @@ four-native-probe:
 
 .PHONY: four-native-probe
 
+# Host-side VICE check, after building boot in the reference container.
+xsprdef-probe:
+	$(PYTHON) tools/xsprdef_probe.py
+.PHONY: xsprdef-probe
+
 # Run from the host after the reference-container build (VICE is a Flatpak).
 banked-apps-probe: $(BOOT_D64) $(BOOT_D71) $(BUILD_BOOT)/banked-loader.map
 	$(PYTHON) tools/banked_loader_probe.py --disk $(BOOT_D64) --drive 1541 \
@@ -928,7 +933,8 @@ $(USER_XDRAW_UDEX): user/bin/xdraw.c user/lib/graphics_request.s tools/build_gra
 
 $(USER_XSPRDEF_UDEX): user/bin/xsprdef.c user/lib/graphics_request.s tools/build_graphical_example.py Makefile | $(BUILD_USER)
 	$(PYTHON) tools/build_graphical_example.py --source user/bin/xsprdef.c --name XSPRDEF \
-		--output $(BUILD_USER)/native-xsprdef --static-locals --capacity 4352
+		--graphics-abi 13 --output $(BUILD_USER)/native-xsprdef --static-locals --capacity 4352 \
+		--export _udeks_xsprdef_pixels
 	cp $(BUILD_USER)/native-xsprdef/XSPRDEF.BIN $@
 
 $(USER_XWAVE_ASM): src/apps/xwave.c include/udeks/mailbox.h \
@@ -2381,6 +2387,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 
 check:
 	$(PYTHON) -m py_compile tools/four_native_probe.py tools/native_app_layout.py
+	$(PYTHON) -m py_compile tools/xsprdef_probe.py
 	$(PYTHON) -m py_compile tools/banked_loader_probe.py tools/gen_banked_bindings.py tools/build_banked_execution.py
 	$(PYTHON) -m py_compile tools/o65_to_udex.py tools/build_reloc_fixture.py
 	$(PYTHON) -m py_compile tools/build_graphical_example.py tools/generic_launch_probe.py tools/add_disk_apps.py

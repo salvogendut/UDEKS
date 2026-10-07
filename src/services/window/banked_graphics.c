@@ -55,7 +55,7 @@ static void closed(unsigned char handle)
 #pragma rodata-name(push, "GRAPHICSCODE")
 /* Launching a native console task must not switch on or clear the VIC.
  * Only CREATE asks for a desktop, after this module has been installed. */
-#pragma code-name(push, "GRAPHICSPATHS")
+#pragma code-name(push, "CODE")
 static unsigned char desktop(void)
 {
     return udeks_vic_graphics_is_active()?0:udeks_vic_graphics_initialize();
@@ -81,7 +81,7 @@ static void complete_install(void)
 }
 static void paint(unsigned char handle)
 {
-    unsigned char i, row, bit, data, count, index;
+    unsigned char row, data, count, index, scale;
     unsigned int address, x, y;
     index = udeks_window_owner(handle)-0x83u;
     if (index >= UDEKS_NATIVE_CLIENTS) return;
@@ -91,16 +91,22 @@ static void paint(unsigned char handle)
     }
     count = udeks_retained_lengths[index]>>3;
     address = udeks_retained_address(index);
-    for (i=0; i<count; ++i, address+=8u) {
+    for (; count; --count, address+=8u) {
         udeks_retained_read(address);
         x=wx+C[1]; y=wy+C[2];
         if (C[0]==0) udeks_vic_bitmap_fill(x,y,C[3],C[4],C[5]);
         else if (C[0]==1) udeks_vic_bitmap_line(x,y,wx+C[3],wy+C[4],C[5]);
-        else if (C[0]==2) {
-            for (row=0;row<5;++row) {
-                data=C[3+row];
-                for (bit=0;bit<3;++bit)
-                    if (data & (4u>>bit)) udeks_vic_bitmap_fill(x+bit*2u,y+row*2u,2,2,0);
+        else {
+            scale=C[0]==2?2:C[0]-2u;
+            for (row=3;row<8;++row) {
+                data=C[row];
+                if(C[0]==2) data<<=5;
+                x=wx+C[1];
+                while (data) {
+                    if (data & 128u) udeks_vic_bitmap_fill(x,y,scale,scale,0);
+                    data<<=1; x+=scale;
+                }
+                y+=scale;
             }
         }
     }
