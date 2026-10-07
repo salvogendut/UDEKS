@@ -13,6 +13,13 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
+**Active next feature (user-selected 2026-10-07):**
+[#44 — create-only disk writes](https://github.com/salvogendut/UDEKS/issues/44),
+branch `storage-0.3-disk-write`. This replaces service extraction as the
+immediate priority; that architectural milestone follows the bounded write
+slice. Disk I/O is still read-only: the issue/branch establish the plan, not
+an implemented writer. The sprite editor stays parked.
+
 **Completed feature (accepted 2026-10-05): generic graphical applications**,
 [#35](https://github.com/salvogendut/UDEKS/issues/35). The first increment merged
 as [PR #36](https://github.com/salvogendut/UDEKS/pull/36);
@@ -38,8 +45,8 @@ stdin/arguments are separate remaining work. D81 is the third boot build.
 Wave holds its computation cache across moves and yields during resize
 projection. A reported resize delay is reduced by app-local scale tables;
 [measured dense repaint latency remains](GENERIC-GRAPHICS-APPS.md#resize-latency-follow-up--2026-10-05),
-and renderer optimization stays separate. **Next: the first disk-loaded
-non-kernel service, in its own issue/branch.**
+and renderer optimization stays separate. **Next: safe file creation and
+byte-stream writes (#44); then the first disk-loaded non-kernel service.**
 The exploratory `.CBM` work on `additional-apps` / #32 stays separate.
 
 **Accepted and parked (2026-10-07):** [`xsprdef`, the session sprite editor](XSPRDEF.md),
@@ -49,7 +56,7 @@ eight app-local monochrome definitions with magnified/1x views, confirmed
 session saves, Clear and Invert. It is a generic disk app; UTRQ 0.13 provides
 reusable bitmap tiles, not editor-specific kernel policy. Persistence/export,
 thumbnails, keyboard editing, multicolor and partial repaint remain deferred.
-This does not displace the next loadable-service milestone. Latest manual
+Further editor work stays deferred while disk writes take priority. Latest manual
 acceptance did not specify a platform; no new physical-C128 result is inferred.
 
 **Merged baseline:** four graphical apps (#30), [PR #31](https://github.com/salvogendut/UDEKS/pull/31),
@@ -64,7 +71,7 @@ Native 1986 D64 mouse/keyboard input also passes. The four-app candidate is read
 for user testing on physical C128; exact images/results are preserved in
 `bench/{artifacts,results}/2026-10-01-four-apps`.
 
-**After generic app loading: the first disk-loaded non-kernel service.** Define one
+**After the disk-write slice: the first disk-loaded non-kernel service.** Define one
 existing service's load/start/stop and dependency contract, then replace its
 preloaded copy with an ordinary disk image. Keep bootstrap/recovery working;
 do not make a scripting language or expanded task capacity prerequisites.
@@ -95,8 +102,8 @@ with bootstrap root mounting and an initially unmounted `/mnt`.
 The finishing corrections are implemented: specific app-launch errors,
 measured IEC/bootfs header status, a real mount-success message, and normal
 boot progress enabled to match the accepted diagnostic setting.
-Generic app loading is implemented and user-accepted; service extraction is
-next. Neither requires a scripting or graphics-optimization detour.
+Generic app loading is implemented and user-accepted; disk writes now precede
+service extraction. Neither requires a scripting or graphics-optimization detour.
 
 - Native D64/D71 boot, an 8502 executive, a bounded Z80 worker, a VDC root
   console, and an independent VIC-IIe graphical display are working.
@@ -146,16 +153,44 @@ mounts or applications must not require rebuilding the kernel.
 | Kernel and tasking | Cooperative root/command tasks plus four native banked allocations; general allocation, IPC and preemption due. |
 | Z80 secondary engine | Bounded task-safe worker API and cached wave computation work; broader operations and soak tests due. |
 | Graphics and input | Four generic native slots, migrated disk clients, dynamic names, foreground/background launch, targeted Ctrl+C and name-based stop accepted for merge (#35/PR #37). No new physical-platform result inferred. Repaint latency and focused-window keyboard input are separate work. |
-| Storage and applications | Disk shell, RC, graphics and disk commands (#21/#23/#25); root namespace accepted (#26/PR #28). Generic app loading precedes first disk-loaded service lifecycle. General scripting deferred (#27). |
+| Storage and applications | Disk shell, RC, graphics and disk commands (#21/#23/#25); root namespace accepted (#26/PR #28). Next: create-only disk writes (#44), then disk-loaded service lifecycle. General scripting deferred (#27). |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
 
+### Active: Storage 0.3 — create-only disk writes (#44)
+
+1. Define and host-test a versioned create-exclusive OPEN / counted WRITE /
+   checked CLOSE contract. Decide root/data mount write enablement, handle
+   ownership, partial-write/error and cancellation behavior; preserve console
+   WRITE and old read-only clients. Measure current normal/panic/service/driver
+   and private-stack budgets before implementation.
+2. Add binary-safe writes in the C storage service, preferring drive-managed
+   DOS file channels over a new raw sector/BAM allocator. Keep timing-sensitive
+   IEC in assembly, bootfs read-only and namespace/collision checks unchanged.
+   Existing files must never be silently replaced.
+3. Deliver an independent console fixture through the public API: create a
+   new file, write known data, check final CLOSE/status, reopen/read back, and
+   demonstrate persistence across reboot. Qualify VICE D64/D71/D81, native
+   1986, then offer disposable-media tests on C128 + PI1541.
+
+**Acceptance:** exact empty/binary/multi-sector/final-partial-file contents;
+meaningful disk-full, write-protect, missing-device, transport and close errors;
+no corruption of existing files or active handles; working read/boot/recovery,
+console, input and graphics afterward. All destructive qualification uses
+copied/disposable images, never the user's original media. Do not claim atomic
+rollback or power-loss safety; document possible partial files on failure.
+
+Overwrite/truncate, append, delete/rename, formatting/fsck, multi-open, seek,
+shell redirection, scripting, sprite-editor integration and performance work
+are deferred. Detailed safety gates and scope are in
+[#44](https://github.com/salvogendut/UDEKS/issues/44). This is planned work only.
+
 ### Completed: generic graphical applications (#35 / PR #37)
 
 All three implementation steps below are complete and emulator-qualified;
-the user accepted the behavior and authorized merge on 2026-10-05. Continue
-with service extraction, not a graphics-optimization detour.
+the user accepted the behavior and authorized merge on 2026-10-05. The next
+feature is now disk writes, followed by service extraction, not graphics optimization.
 
 1. Prove one real C executable can load and execute in different compatible
    slots, with an explicit format/relocation contract and measured memory bounds.
@@ -186,7 +221,7 @@ Keep this feature bounded by the existing concurrency limit. The detailed
 4. Physical-C128 qualification remains recorded as pending for this candidate;
    merging it did not turn emulator evidence into a hardware result.
 
-### Next: one disk-loaded non-kernel service
+### Following disk writes: one disk-loaded non-kernel service
 
 1. Select one existing service and inventory its dependencies, fixed entry
    points and memory lifetime. Record which minimal boot/read path must stay

@@ -144,10 +144,12 @@ The target baseline is a stock 128 KiB C128 with 16 KiB VDC RAM; 64 KiB VDC,
 REU and GeoRAM are optional. PAL and NTSC remain targets.
 
 **Completed feature:** four generic native app slots, emulator-qualified and
-accepted by the user for merge. **Next architectural milestone:** extract the
-first non-kernel service into a disk-loaded program.
-General scripting, filesystem writes, broader tasking and optimization are
-separate roadmap work. The existing `/etc/rc` command runner is not a POSIX
+accepted by the user for merge. **Next feature:**
+[#44 — safe create-only disk writes](https://github.com/salvogendut/UDEKS/issues/44),
+currently planned, not implemented. The next architectural milestone after
+that is extracting the first non-kernel service into a disk-loaded program.
+General scripting, broader tasking and optimization remain separate roadmap
+work. The existing `/etc/rc` command runner is not a POSIX
 `sh` or Bash implementation.
 
 ## Screenshots

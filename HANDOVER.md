@@ -6,6 +6,27 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
+## Current handoff — disk-write feature setup, 2026-10-07
+
+The user selected disk writes as the next feature and requested an issue and
+branch. [Issue #44](https://github.com/salvogendut/UDEKS/issues/44) tracks
+`storage-0.3-disk-write`, based on merged main `ba0ba97`; use the dedicated
+`build/storage-disk-write` worktree. Root main's unrelated console-plan edits
+and the earlier sprite-editor experiment remain untouched.
+
+This setup changes documentation only. The filesystem still has one serialized
+IEC stream, read-only open/read/close and no file-data WRITE dispatch; stdout/
+stderr WRITE is not a disk-write API. First define the versioned contract and
+measure placement, then implement create-only writes and checked finalization
+in the C storage service, with no overwriting of existing files. Prefer DOS
+file channels; explicitly settle mount permissions, ownership, error/partial-
+file semantics and cleanup before implementation. Keep all tests on disposable
+image copies. Follow the [current roadmap](docs/ROADMAP.md#active-storage-03--create-only-disk-writes-44).
+
+Service extraction follows this write milestone. Sprite persistence, general
+shell redirection, multi-open, overwrite/append and rendering work are not
+prerequisites and remain deferred. No disk-write qualification is claimed yet.
+
 ## Sprite-editor checkpoint — accepted and parked, 2026-10-07
 
 The user accepted the reviewed editor, authorized commit/push/PR/merge, and
