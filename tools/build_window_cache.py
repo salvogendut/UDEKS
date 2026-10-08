@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 
 from build_scheduler_overlay import map_segments
+from service_image import TIME_BASE, TIME_LIMIT
 
 CORE = 0x4200
 HEADER = 0x5210
@@ -60,6 +61,14 @@ def layout_maps(normal, panic):
             raise ValueError('incomplete glyph overlay layout')
         glyph_overlay_layout(actual)
         extra |= overlay
+    if 'SERVICEBOOT' in actual:
+        # Time-service startup may occupy ONLY its explicitly retired slot.
+        # This is not permission to move a cache, VDC, app or stack boundary.
+        low, end, size = actual['SERVICEBOOT']
+        if (len(overlay) != 3 or low != TIME_BASE or not 0 < size == end-low+1 or
+                end >= TIME_LIMIT or actual['BSS'][1] >= TIME_BASE):
+            raise ValueError('service startup overlay exceeds its reservation')
+        extra.add('SERVICEBOOT')
     for label, text in (('normal', normal), ('panic', panic)):
         current = map_segments(text)
         if current.keys() != expected.keys() | extra or current != actual or any(

@@ -84,6 +84,11 @@ unsigned char udeks_program_main(
     unsigned char minute;
     unsigned char second;
 
+    if (TIME_BYTE(5) != UDEKS_TIME_READY) {
+        udeks_write(UDEKS_STDERR,
+            (const unsigned char *)"date: time service unavailable\n");
+        return UDEKS_EXIT_FAILURE;
+    }
     if (count == 1u) {
         print_time();
         return UDEKS_EXIT_SUCCESS;

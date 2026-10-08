@@ -317,7 +317,7 @@ $(STORAGE_BUILD)/module.bin $(STORAGE_BUILD)/driver.bin $(STORAGE_BUILD)/policy.
 	$(CL65) -t none -C cfg/8502-storage.cfg -u _udeks_cbm_dos_error -u _udeks_storage_generations -u _udeks_storage_cleanup_error -m $(STORAGE_BUILD)/module.map \
 		-o $(STORAGE_BUILD)/module.bin $(STORAGE_OBJECTS)
 $(STORAGE_BUILD)/router.o: src/services/filesystem/iec_router.s $(BUILD_8502)/disk-loader-bindings.inc | $(STORAGE_BUILD)
-	$(CA65) --cpu 6502 -I $(BUILD_8502) -o $@ $<
+	$(CA65) --cpu 6502 $(TIME_ROUTER_FLAGS) -I $(BUILD_8502) -o $@ $<
 $(STORAGE_BUILD)/router.bin: $(STORAGE_BUILD)/router.o cfg/8502-storage-router.cfg
 	$(LD65) -C cfg/8502-storage-router.cfg -o $@ $<
 

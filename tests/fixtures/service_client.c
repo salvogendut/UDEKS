@@ -11,7 +11,10 @@ static unsigned int size,position,transferred;
 static unsigned char unsupported,open_error,begin_error,read_error,close_error,commit_error,oversized_read;
 static unsigned char opens,closes,begins,commits,stops,events[128],event_count;
 #define CHECK(x) do { if(!(x)) { fprintf(stderr,"line %d: %s\n",__LINE__,#x); exit(1); } } while(0)
-unsigned char udeks_write(unsigned char fd,const unsigned char *text) { (void)fd;(void)text;return 0; }
+unsigned char udeks_write(unsigned char fd,const unsigned char *text) {
+    if(!strcmp((const char *)text,"Exec format error")) { CHECK(fd==2);error_report=8; }
+    return 0;
+}
 unsigned char udeks_write_byte(unsigned char fd,unsigned char c) { (void)fd;(void)c;return 0; }
 const unsigned char *udeks_error_string(unsigned char error) { error_report=error;return (const unsigned char *)"error"; }
 unsigned char __fastcall__ udeks_service_control(unsigned char action,unsigned int received)

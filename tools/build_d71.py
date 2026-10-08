@@ -131,6 +131,15 @@ def d64_compatibility_image(image: bytes) -> bytes:
     ) * SECTOR_SIZE
     if len(image) != expected_size:
         raise ValueError("D64 compatibility source is not a standard D71 image")
+    # A full-capacity D71 must be repackaged, not silently truncated. Check
+    # complete chains: a file may start on side one and continue on side two.
+    from build_d81 import entries, file_bytes
+    def first_side_offset(track, sector):
+        if track > D64_TRACK_COUNT:
+            raise ValueError('D64 cannot include second-side file chains')
+        return sector_offset(track, sector)
+    for entry in entries(image, first_side_offset, 18, 1):
+        file_bytes(image, entry, first_side_offset)
     result = bytearray(image[:D64_SIZE])
     # A single-sided derivative must not advertise a D71 second BAM.
     result[sector_offset(18, 0)+3] &= 0x7f
@@ -154,15 +163,20 @@ def mark_used(image: bytearray, track: int, sector: int) -> None:
 
 
 def sector_is_free(image: bytes, track: int, sector: int) -> bool:
-    if track > D64_TRACK_COUNT:
+    sector_offset(track, sector)  # validate geometry even for BAM-only queries
+    if track > D64_TRACK_COUNT and len(image) == D64_SIZE:
         return False
     bam = sector_offset(18, 0)
-    entry = bam + 4 + (track - 1) * 4
-    return bool(image[entry + 1 + sector // 8] & (1 << (sector & 7)))
+    bitmap = (bam + 5 + (track - 1) * 4 if track <= D64_TRACK_COUNT else
+              sector_offset(53, 0) + (track - 36) * 3)
+    return bool(image[bitmap + sector // 8] & (1 << (sector & 7)))
 
 
-def install_prg_file(image: bytearray, name: str, data: bytes, *, file_type: int = 0x82) -> None:
-    """Install a closed PRG (or raw-byte SEQ) on side one, also visible in D64."""
+def install_prg_file(image: bytearray, name: str, data: bytes, *, file_type: int = 0x82,
+                     max_track: int = D64_TRACK_COUNT) -> None:
+    """Install a closed file; side one by default, both sides when explicit."""
+    if max_track not in (D64_TRACK_COUNT, TRACK_COUNT):
+        raise ValueError('disk allocation must use 35 or 70 tracks')
     if file_type not in (0x81, 0x82):
         raise ValueError("disk file must be closed SEQ or PRG")
     if not data and file_type != 0x81:
@@ -175,7 +189,7 @@ def install_prg_file(image: bytearray, name: str, data: bytes, *, file_type: int
         raise ValueError("disk filename must be 1..16 characters")
     blocks = max(1, (len(data) + 253) // 254)
     available: list[tuple[int, int]] = []
-    for track in range(1, D64_TRACK_COUNT + 1):
+    for track in range(1, max_track + 1):
         if track == 18:
             continue
         for sector in range(sectors_per_track(track)):
@@ -186,7 +200,7 @@ def install_prg_file(image: bytearray, name: str, data: bytes, *, file_type: int
         if len(available) == blocks:
             break
     if len(available) != blocks:
-        raise ValueError("side one has no room for disk PRG")
+        raise ValueError("side one has no room for disk PRG" if max_track == 35 else "D71 has no room for disk file")
 
     directory = sector_offset(18, 1)
     entry = None
@@ -754,6 +768,7 @@ def build_image(
     xcalc: bytes = b"",
     xdraw: bytes = b"",
     xsprdef: bytes = b"",
+    *, file_tracks: int = D64_TRACK_COUNT,
 ) -> bytes:
     if len(stage0) > SECTOR_SIZE:
         raise ValueError("stage 0 exceeds one sector")
@@ -840,6 +855,8 @@ def build_image(
         raise AssertionError("native boot payload layout drifted")
 
     image = blank_d71()
+    def install(name, data, *, file_type=0x82):
+        install_prg_file(image, name, data, file_type=file_type, max_track=file_tracks)
     sectors = [bytes(stage0_sector)]
     sectors.extend(
         payload[offset : offset + SECTOR_SIZE]
@@ -852,27 +869,25 @@ def build_image(
         image[offset : offset + SECTOR_SIZE] = data
         mark_used(image, track, sector)
     if scheduler_overlay:
-        install_prg_file(
-            image, SCHEDULER_OVERLAY_NAME, scheduler_overlay
-        )
+        install(SCHEDULER_OVERLAY_NAME, scheduler_overlay)
     if hello is not None:
-        install_prg_file(image, "HELLO", hello, file_type=0x81)
+        install("HELLO", hello, file_type=0x81)
     if ush:
         # Raw UDEX, not a KERNAL PRG: the persistent loader validates the
         # header before copying it into bank 1. Bootfs keeps a recovery copy.
-        install_prg_file(image, "USH.BIN", ush, file_type=0x81)
+        install("USH.BIN", ush, file_type=0x81)
     if rc is not None:
-        install_prg_file(image, "RC.ETC", rc, file_type=0x81)
+        install("RC.ETC", rc, file_type=0x81)
     if sysinfo:
-        install_prg_file(image, "FREE.BIN", sysinfo, file_type=0x81)
-        install_prg_file(image, "DF.BIN", sysinfo, file_type=0x81)
+        install("FREE.BIN", sysinfo, file_type=0x81)
+        install("DF.BIN", sysinfo, file_type=0x81)
     for name, executable, base in (("XCLOCK", xclock, 0x0200), ("XWAVE", xwave, 0x1200)):
         if executable:
             if executable[5:6] == b'\x02':
                 validate_native_app(executable)
             else:
                 validate_managed_app(executable, base) # archived fixture disks
-            install_prg_file(image, name+'.BIN', executable, file_type=0x81)
+            install(name+'.BIN', executable, file_type=0x81)
     if xcalc:
         if xcalc[5:6] == b'\x02':
             validate_native_app(xcalc)
@@ -880,24 +895,39 @@ def build_image(
             validate_managed_app(xcalc, 0x0200, 0x1000)  # historical fixture disks
         else:
             validate_banked_app(xcalc, 0x2300, 0x1200)
-        install_prg_file(image, "XCALC.BIN", xcalc, file_type=0x81)
+        install("XCALC.BIN", xcalc, file_type=0x81)
     if xdraw:
         if xdraw[5:6] == b'\x02':
             validate_native_app(xdraw)
         else:
             validate_banked_app(xdraw, 0x3500, 0xB00)
-        install_prg_file(image, "XDRAW.BIN", xdraw, file_type=0x81)
+        install("XDRAW.BIN", xdraw, file_type=0x81)
     if xsprdef:
         validate_native_app(xsprdef)
-        install_prg_file(image, "XSPRDEF.BIN", xsprdef, file_type=0x81)
+        install("XSPRDEF.BIN", xsprdef, file_type=0x81)
     names = {'SCHEDOVR', 'USH', 'RC', 'HELLO', 'FREE', 'DF', 'XCLOCK', 'XWAVE', 'XCALC', 'XDRAW', 'XSPRDEF'}
     for name, executable in commands:
         if name in names or not name or len(name) > 12 or any(c not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-' for c in name):
             raise ValueError('invalid or duplicate disk command name')
         names.add(name)
         validate_command(executable)
-        install_prg_file(image, name+'.BIN', executable, file_type=0x81)
+        install(name+'.BIN', executable, file_type=0x81)
     return bytes(image)
+
+
+def add_data_files(image, files, max_track=D64_TRACK_COUNT):
+    """Append raw closed SEQ files, rejecting DOS metacharacters/collisions."""
+    from build_d81 import entries
+    names = {entry[3:19].rstrip(b'\xa0').decode('ascii')
+             for entry in entries(image, sector_offset, 18, 1)}
+    result = bytearray(image)
+    for name, data in files:
+        name = name.upper()
+        if not re.fullmatch(r'[A-Z0-9_.-]{1,16}', name) or name in names:
+            raise ValueError('invalid or duplicate data filename')
+        names.add(name)
+        install_prg_file(result, name, data, file_type=0x81, max_track=max_track)
+    return bytes(result)
 
 
 def main() -> None:
@@ -942,6 +972,9 @@ def main() -> None:
                         help="omit the optional sprite editor from D64 only; keep D71 complete")
     from build_bootfs import parse_entry
     parser.add_argument("--command", action="append", type=parse_entry, default=[], metavar="NAME=UDEX")
+    parser.add_argument("--data-file", action="append", type=parse_entry, default=[], metavar="NAME=FILE")
+    parser.add_argument("--d71-full-capacity", action="store_true",
+                        help="allow D71 files on side two; rebuild D64 separately using side one only")
     parser.add_argument(
         "--d64-output",
         type=Path,
@@ -987,10 +1020,16 @@ def main() -> None:
             b"" if args.xdraw is None else args.xdraw.read_bytes(),
             b"" if args.xsprdef is None else args.xsprdef.read_bytes(),
         )
-        image = build_image(*inputs)
+        file_tracks = TRACK_COUNT if args.d71_full_capacity else D64_TRACK_COUNT
+        image = build_image(*inputs, file_tracks=file_tracks)
         # Rebuild from components: no scratching, shared chains or BAM edits
         # of an existing disk. D71/D81 retain the full application selection.
-        d64_source = build_image(*inputs[:-1], b"") if args.d64_no_xsprdef else image
+        d64_source = (build_image(*inputs[:-1], b"") if args.d64_no_xsprdef else
+                      build_image(*inputs) if args.d71_full_capacity and args.d64_output else image)
+        data_files = [(name, path.read_bytes()) for name, path in args.data_file]
+        image = add_data_files(image, data_files, file_tracks)
+        if args.d64_output:
+            d64_source = add_data_files(d64_source, data_files)
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error
     args.output.parent.mkdir(parents=True, exist_ok=True)

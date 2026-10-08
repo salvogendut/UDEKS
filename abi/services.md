@@ -54,7 +54,7 @@ control operations are status/no-op, begin, commit and stop. Commit receives
 the actual transferred byte count separately from the header, rejects partial
 or trailing data, validates every header/vector/checksum field, clears only
 the declared BSS, caches validated vectors, runs start, and publishes last.
-The future disk loader must bound every write; this core cannot undo an
+The standalone disk loader bounds every write; this core cannot undo an
 out-of-bounds write performed before commit. The candidate request boundary
 and trusted retirement hook now enforce foreground ownership and cleanup.
 
@@ -103,8 +103,8 @@ loader's exit. No new task, sleep or blocking request is introduced. A hung
 foreground program still needs the existing reset/recovery path—retirement
 cleanup does not turn it into a cancellable native task.
 
-`make service-command` builds independent **`SVC.BIN` (2,167 file bytes,
-2,151 payload + 69 BSS)** within the existing 2,560-byte console allocation:
+`make service-command` builds independent **`SVC.BIN` (2,198 file bytes,
+2,182 payload + 69 BSS)** within the existing 2,560-byte console allocation:
 `svc status`, `svc stop`, and `svc load [FILE]` (default `/TIME.SVC`). The file
 is an ordinary flat-disk file; no new suffix directory mapping is needed.
 The command probes support before touching the slot, opens read-only, obtains
@@ -165,21 +165,60 @@ delivery must regenerate every private binding from the selected maps. Normal
 boot leaves the startup split disabled and the original resident time service
 installed.
 
-### Remaining integration and acceptance
+### Coherent boot integration and manual acceptance
 
-1. Rebuild all map-bound candidate boot delivery for the linked overlay and
-   install its matching router. The boundary, SDK and loader are qualified in
-   isolation; disk integration is not. Do not replace production artifacts
-   with the raw isolated links.
-2. Package `SVC.BIN` and `TIME.SVC` and use the existing bounded `/etc/rc`
-   runner to load after startup has fully returned. Exercise real file
-   failures, close errors and replacement through the shell on disposable disks.
-3. Define stop/duplicate-load/client behavior: never overwrite executing code,
-   invalidate the time snapshot when unavailable, and make `date`/`xclock`
-   handle unavailability rather than consume stale time. Scheduler sleep and
-   deadlines continue independently. Qualify missing/corrupt files, restart,
-   replacement without kernel relink, and normal input/disk/graphics behavior
-   on VICE/1986 before offering physical-C128 test images.
+`make service-boot` in the reference container now generates a fresh isolated
+source/build tree, regenerating all bindings from its own normal/panic maps.
+Unlike `time-overlay-check`, these are complete bootable candidates. It packages
+`SVC.BIN`, `TIME.SVC` and a bounded `/etc/rc` which invokes the loader after
+resident startup has returned. It never substitutes raw overlay bytes into a
+baseline disk. Normal `make boot` still uses the resident service.
+
+The three convenient test images are `build/services/boot/udeks.d64`, `.d71`
+and `.d81`; `latest.json` records hashes and the corresponding source/maps.
+D64 omits only `xsprdef`, with 19 free blocks. D71 uses both standard BAMs and
+D81 repacks the full file set. D64 is independently built on side one, not
+truncated from a D71 with second-side files. Boot payloads are otherwise the
+same. Always use a disposable copy, since root defaults to read/write.
+
+VICE cold-boots all three formats and exercises actual loading, `date`, clock
+creation, stop/reload, busy refusal, missing files, and revision-2 replacement
+without relinking the kernel. Additional D64 missing/corrupt startup files
+leave the shell usable and recover through an ordinary `svc load` invocation.
+Close/read-error injection remains a host-loader gate; these runs do not claim
+physical disk ejection or arbitrary interrupt stress qualification.
+
+Manual C128/Pi1541 checklist (D64): after `BOOT`, expect `time: ready`, then:
+
+```text
+svc status
+date -s 12:34:00
+date
+xclock &
+svc stop
+date
+svc load
+svc load
+xclock &
+```
+
+Drag the clock before stopping and after reloading it. Stop must remove the
+clock window; `date` must print `date: time service unavailable` and exit 1.
+The first reload succeeds, the second reports busy without disturbing time.
+While offline, a new `xclock` exits 5 without making a stale clock; normal task
+retirement owns its window cleanup. Scheduler ticks/sleep remain independent.
+Finish with `xclock -q` and `cat /hello`; console input must still work.
+
+Native 1986 D64/1571 input/1351 drag, stop/reload and console recovery pass.
+[Evidence](../bench/results/2026-10-08-disk-service/README.md) records the exact
+images and scope. Physical-C128 acceptance remains a gate before normal-boot
+cutover. The slot/address/format remain provisional; this
+is not a generic allocator for arbitrary service classes.
+
+Reproduce integration with host VICE:
+`python3 tools/service_boot_probe.py --format d64` (also `d71`/`d81`), and
+`--mode missing` / `--mode corrupt`. Test-only replacement files are added only
+to disposable images. Reports preserve disk hashes and installed image bytes.
 
 Reproduce the independent proofs in `my-distrobox`:
 `make time-module time-module-check time-slot-check service-request-check service-command time-overlay-check`.

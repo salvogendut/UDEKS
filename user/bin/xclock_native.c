@@ -41,6 +41,9 @@ static unsigned char present(void)
 unsigned char udeks_graphical_main(void)
 {
     static unsigned char i,hour,minute;
+    /* Exit status 5 means unavailable clock. Normal task retirement removes
+     * our window as well, instead of leaving a stale/frozen clock face. */
+    if(TIME[5]!=UDEKS_TIME_READY) return 5;
     payload(); P[1]=124; P[3]=50;
     P[4]=UDEKS_CLOCK_FACE_WIDTH; P[5]=UDEKS_CLOCK_FACE_HEIGHT; P[6]=0x0e;
     for(i=0;i<6;++i) P[7+i]="XCLOCK"[i];
@@ -55,7 +58,8 @@ unsigned char udeks_graphical_main(void)
         if(!P[0]) return 0;
         /* TIME is the same read-only common-RAM snapshot used by date.
          * Only root-service execution updates it; no yield between reads. */
-        if(TIME[5]==UDEKS_TIME_READY) {
+        if(TIME[5]!=UDEKS_TIME_READY) return 5;
+        {
             hour=TIME[8]; minute=TIME[9];
             if(P[0]==UDEKS_GFX_RESIZED || hour!=udeks_native_clock_hour || minute!=udeks_native_clock_minute) {
                 /* Acknowledge only the geometry actually presented. */

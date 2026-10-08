@@ -1,0 +1,48 @@
+{
+  "source": "/var/home/salvogendut/Dev/UDEKS/build/disk-service/build/services/boot/candidate-_kxrtps8/source",
+  "input_manifest_sha256": "22b0abbc29d711794a9d38af38752b635ef84a6308d6c8af69302381f1c650b5",
+  "scope": "fresh candidate boot images; emulator qualification separate",
+  "variants": {
+    "normal": {
+      "live_end": 37838,
+      "remaining_before_slot": 2,
+      "startup_bytes": 518,
+      "slot_base": 37840,
+      "slot_limit": 38568
+    },
+    "panic": {
+      "live_end": 37838,
+      "remaining_before_slot": 2,
+      "startup_bytes": 518,
+      "slot_base": 37840,
+      "slot_limit": 38568
+    }
+  },
+  "disks": {
+    "d64": {
+      "path": "/var/home/salvogendut/Dev/UDEKS/build/disk-service/build/services/boot/candidate-_kxrtps8/source/build/boot/udeks.d64",
+      "sha256": "80d4b9c7958b0695bd093c480b49f4a7c1aeed5a5084e390c3407fe23142af8c"
+    },
+    "d71": {
+      "path": "/var/home/salvogendut/Dev/UDEKS/build/disk-service/build/services/boot/candidate-_kxrtps8/source/build/boot/udeks.d71",
+      "sha256": "ba6b30ce822f5e3cf9424bc56714889bf9e5ded81faa2bdc66c677329fd857a1"
+    },
+    "d81": {
+      "path": "/var/home/salvogendut/Dev/UDEKS/build/disk-service/build/services/boot/candidate-_kxrtps8/source/build/boot/udeks.d81",
+      "sha256": "614337ba788a9d58325c1322bda55b868ae4fc5e12add460003a5c04e10d32a4"
+    }
+  },
+  "module": {
+    "base": 37840,
+    "image_size": 710,
+    "bss_size": 7,
+    "allocation": 717,
+    "spare": 11,
+    "revision": 1,
+    "request": 37888,
+    "start": 38136,
+    "poll": 38267,
+    "stop": 38506,
+    "checksum": 16217
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "scope": "real disk/RC service integration, ordinary keyboard commands",
+  "source": "/var/home/salvogendut/Dev/UDEKS/build/disk-service/build/services/boot/candidate-qirwezat/source",
+  "drive": "1571",
+  "mode": "healthy",
+  "source_disk_sha256": "ba6b30ce822f5e3cf9424bc56714889bf9e5ded81faa2bdc66c677329fd857a1",
+  "test_disk_sha256": "6e5057a75b801cc4fbc9c3957ba2120b826fa38068ce266788fdf7b793061d2a",
+  "commands": [
+    {
+      "command": "svc status",
+      "exit": 0,
+      "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> svc status\ntime: ready\nUDEKS:~>"
+    },
+    {
+      "command": "date -s 12:34:00",
+      "exit": 0,
+      "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> svc status\ntime: ready\nUDEKS:~> date -s 12:34:00\n12:34:00\nUDEKS:~>"
+    },
+    {
+      "command": "date",
+      "exit": 0,
+      "console": "REU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> svc status\ntime: ready\nUDEKS:~> date -s 12:34:00\n12:34:00\nUDEKS:~> date\n12:34:04\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "exit": 0,
+      "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> svc status\ntime: ready\nUDEKS:~> date -s 12:34:00\n12:34:00\nUDEKS:~> date\n12:34:04\nUDEKS:~> xclock &\nUDEKS:~>"
+    },
+    {
+      "command": "svc stop",
+      "exit": 0,
+      "console": "Z80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> svc status\ntime: ready\nUDEKS:~> date -s 12:34:00\n12:34:00\nUDEKS:~> date\n12:34:04\nUDEKS:~> xclock &\nUDEKS:~> svc stop\ntime: offline\nUDEKS:~>"
+    },
+    {
+      "command": "date",
+      "exit": 1,
+      "console": "BOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> svc status\ntime: ready\nUDEKS:~> date -s 12:34:00\n12:34:00\nUDEKS:~> date\n12:34:04\nUDEKS:~> xclock &\nUDEKS:~> svc stop\ntime: offline\nUDEKS:~> date\ndate: time service unavailable\nUDEKS:~>"
+    },
+    {
+      "command": "svc load /NOFILE",
+      "exit": 1,
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> svc status\ntime: ready\nUDEKS:~> date -s 12:34:00\n12:34:00\nUDEKS:~> date\n12:34:04\nUDEKS:~> xclock &\nUDEKS:~> svc stop\ntime: offline\nUDEKS:~> date\ndate: time service unavailable\nUDEKS:~> svc load /NOFILE\nsvc: No such file or directory\nUDEKS:~>"
+    },
+    {
+      "command": "svc load",
+      "exit": 0,
+      "console": "WELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> svc status\ntime: ready\nUDEKS:~> date -s 12:34:00\n12:34:00\nUDEKS:~> date\n12:34:04\nUDEKS:~> xclock &\nUDEKS:~> svc stop\ntime: offline\nUDEKS:~> date\ndate: time service unavailable\nUDEKS:~> svc load /NOFILE\nsvc: No such file or directory\nUDEKS:~> svc load\ntime: ready\nUDEKS:~>"
+    },
+    {
+      "command": "svc load",
+      "exit": 1,
+      "console": "UDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> svc status\ntime: ready\nUDEKS:~> date -s 12:34:00\n12:34:00\nUDEKS:~> date\n12:34:04\nUDEKS:~> xclock &\nUDEKS:~> svc stop\ntime: offline\nUDEKS:~> date\ndate: time service unavailable\nUDEKS:~> svc load /NOFILE\nsvc: No such file or directory\nUDEKS:~> svc load\ntime: ready\nUDEKS:~> svc load\nsvc: Device or resource busy\nUDEKS:~>"
+    },
+    {
+      "command": "date",
+      "exit": 0,
+      "console": "time: ready\nUDEKS:~> svc status\ntime: ready\nUDEKS:~> date -s 12:34:00\n12:34:00\nUDEKS:~> date\n12:34:04\nUDEKS:~> xclock &\nUDEKS:~> svc stop\ntime: offline\nUDEKS:~> date\ndate: time service unavailable\nUDEKS:~> svc load /NOFILE\nsvc: No such file or directory\nUDEKS:~> svc load\ntime: ready\nUDEKS:~> svc load\nsvc: Device or resource busy\nUDEKS:~> date\n12:36:42\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "exit": 0,
+      "console": "UDEKS:~> svc status\ntime: ready\nUDEKS:~> date -s 12:34:00\n12:34:00\nUDEKS:~> date\n12:34:04\nUDEKS:~> xclock &\nUDEKS:~> svc stop\ntime: offline\nUDEKS:~> date\ndate: time service unavailable\nUDEKS:~> svc load /NOFILE\nsvc: No such file or directory\nUDEKS:~> svc load\ntime: ready\nUDEKS:~> svc load\nsvc: Device or resource busy\nUDEKS:~> date\n12:36:42\nUDEKS:~> xclock &\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "exit": 0,
+      "console": "time: ready\nUDEKS:~> date -s 12:34:00\n12:34:00\nUDEKS:~> date\n12:34:04\nUDEKS:~> xclock &\nUDEKS:~> svc stop\ntime: offline\nUDEKS:~> date\ndate: time service unavailable\nUDEKS:~> svc load /NOFILE\nsvc: No such file or directory\nUDEKS:~> svc load\ntime: ready\nUDEKS:~> svc load\nsvc: Device or resource busy\nUDEKS:~> date\n12:36:42\nUDEKS:~> xclock &\nUDEKS:~> xclock -q\nUDEKS:~>"
+    },
+    {
+      "command": "svc stop",
+      "exit": 0,
+      "console": "12:34:00\nUDEKS:~> date\n12:34:04\nUDEKS:~> xclock &\nUDEKS:~> svc stop\ntime: offline\nUDEKS:~> date\ndate: time service unavailable\nUDEKS:~> svc load /NOFILE\nsvc: No such file or directory\nUDEKS:~> svc load\ntime: ready\nUDEKS:~> svc load\nsvc: Device or resource busy\nUDEKS:~> date\n12:36:42\nUDEKS:~> xclock &\nUDEKS:~> xclock -q\nUDEKS:~> svc stop\ntime: offline\nUDEKS:~>"
+    },
+    {
+      "command": "svc load /TIME2.SVC",
+      "exit": 0,
+      "console": "12:34:04\nUDEKS:~> xclock &\nUDEKS:~> svc stop\ntime: offline\nUDEKS:~> date\ndate: time service unavailable\nUDEKS:~> svc load /NOFILE\nsvc: No such file or directory\nUDEKS:~> svc load\ntime: ready\nUDEKS:~> svc load\nsvc: Device or resource busy\nUDEKS:~> date\n12:36:42\nUDEKS:~> xclock &\nUDEKS:~> xclock -q\nUDEKS:~> svc stop\ntime: offline\nUDEKS:~> svc load /TIME2.SVC\ntime: ready\nUDEKS:~>"
+    },
+    {
+      "command": "date",
+      "exit": 0,
+      "console": "UDEKS:~> svc stop\ntime: offline\nUDEKS:~> date\ndate: time service unavailable\nUDEKS:~> svc load /NOFILE\nsvc: No such file or directory\nUDEKS:~> svc load\ntime: ready\nUDEKS:~> svc load\nsvc: Device or resource busy\nUDEKS:~> date\n12:36:42\nUDEKS:~> xclock &\nUDEKS:~> xclock -q\nUDEKS:~> svc stop\ntime: offline\nUDEKS:~> svc load /TIME2.SVC\ntime: ready\nUDEKS:~> date\n12:38:36\nUDEKS:~>"
+    },
+    {
+      "command": "cat /hello",
+      "exit": 0,
+      "console": "UDEKS:~> date\ndate: time service unavailable\nUDEKS:~> svc load /NOFILE\nsvc: No such file or directory\nUDEKS:~> svc load\ntime: ready\nUDEKS:~> svc load\nsvc: Device or resource busy\nUDEKS:~> date\n12:36:42\nUDEKS:~> xclock &\nUDEKS:~> xclock -q\nUDEKS:~> svc stop\ntime: offline\nUDEKS:~> svc load /TIME2.SVC\ntime: ready\nUDEKS:~> date\n12:38:36\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>"
+    }
+  ]
+}

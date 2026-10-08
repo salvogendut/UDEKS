@@ -21,9 +21,9 @@ ticks explicitly outside its lifetime. The independent C/assembly module now
 builds and passes an exhaustive CPU-level clock/lifecycle proof; image-format
 validation and a measured startup-overlay placement direction are documented
 in the [service contract](../abi/services.md#disk-time-candidate--issue-49-2026-10-08).
-Checkpoints `2ff8c01`, `ed7a1f7` and `9e56af5` are pushed. Permanent startup retirement and
+Checkpoints `2ff8c01`, `ed7a1f7`, `9e56af5` and `0e31b82` are pushed. Permanent startup retirement and
 registration/stop/reload are CPU-tested; VICE qualifies the normal boot guard.
-**Loader and request boundary implemented, not boot-integrated:** the bounded
+**Boot integration now available as isolated candidate images:** the bounded
 UTRQ operation, foreground ownership/exit cleanup, runtime bridge and independent
 `svc status|stop|load` command now pass CPU/host tests. Actual normal/panic links
 leave 2 resident bytes after that glue, without moving any app/stack/graphics
@@ -31,11 +31,20 @@ boundary. The independent module uses 717 of its 728-byte slot. Tests retain
 all bounds, checksum and lifecycle checks; the command fits the existing console
 allocation. This candidate is **not installed by normal boot**.
 
-Next concrete milestone: produce coherent candidate boot images that load
-`TIME.SVC` through the bounded startup script, with clear unavailable-service
-behavior in `date`/`xclock`. Then qualify actual disk failures/restart/replacement
-and normal input/graphics in VICE/1986, and offer a user-testable image. Do not
-substitute isolated links or RAM-backed simulator proofs for that integration.
+`make service-boot` produces coherent D64/D71/D81 under `build/services/boot`,
+with all map-bound delivery rebuilt. `/etc/rc` loads `TIME.SVC`; `date` fails
+clearly while offline and `xclock` retires instead of displaying stale time.
+VICE passes real disk loading, stop/reload, missing/corrupt files and a disk-only
+module replacement without relinking the kernel. D64 retains 19 free blocks
+while omitting only `xsprdef`; D71/D81 retain the complete app selection.
+
+Native 1986 D64/1571 also passes keyboard/1351 drag, stop/reload and console
+recovery. [Preserved evidence](../bench/results/2026-10-08-disk-service/README.md).
+**Accepted for merge:** the user confirmed "all is well" and requested PR/merge
+of this opt-in integration. The test platform was not specified; do not infer
+a new physical-C128 result. Next concrete milestone: normal-boot cutover with
+clean-build/migration qualification. Issue #49 remains open until that part is
+delivered. This first fixed time slot is not yet an arbitrary service allocator.
 
 **Completed and merged (2026-10-08):**
 [#47 — writable root and file commands](https://github.com/salvogendut/UDEKS/issues/47),

@@ -14,14 +14,22 @@ merged `672110d`. Root main's unrelated edits are untouched. The user selected
 time-of-day service extraction, not scheduler timing, then authorized work.
 
 **Committed and pushed:** `2ff8c01` (standalone module), `ed7a1f7`
-(permanent startup latch and CPU-tested lifecycle), and `9e56af5` (actual
-normal/panic overlay links, placement fit). The 21-byte production
+(permanent startup latch and CPU-tested lifecycle), `9e56af5` (actual
+normal/panic overlay links, placement fit), and `0e31b82` (bounded request,
+ownership bridge and standalone loader). The 21-byte production
 startup guard caches success/failure permanently and rejects recursive entry;
 the resident time implementation remains installed by normal boot.
 
-**Current work, uncommitted: bounded request/ownership integration plus the
-independent `svc` disk loader**, both CPU/host-tested. The updated actual
-normal/panic links still fit, not merely object-size arithmetic.
+**Accepted for merge:** coherent boot integration and emulator gates. The user
+confirmed "all is well" and requested PR/merge; the test platform was not
+specified, so this is not a new physical-C128 qualification claim.
+`make service-boot` builds fresh isolated source copies, regenerating EVERY
+map-bound import, router, split output and disk file through the normal Make
+dependency graph. Candidate media are `build/services/boot/udeks.d64`, `.d71`,
+`.d81`; `latest.json` identifies their exact source/maps and hashes. The normal
+`build/boot` path remains resident-clock, not disk-clock. `DISK_TIME=1` is
+rejected outside the generated sandbox to prevent mixed stale objects.
+The updated actual normal/panic links still fit, not merely object arithmetic.
 `make time-overlay-check` independently relinks those variants under
 `build/services/time/overlay/`, redirects every split output there, and checks
 all protected memory boundaries against the baseline maps. Do NOT run these
@@ -50,8 +58,8 @@ current-task/state records, rejects native callers including malformed IDs,
 and aborts a partial lease on tag-9 retirement. Published services survive
 the loader's exit; other task retirements do not affect the lease.
 
-`make service-command` produces `build/services/command/SVC.BIN`: 2,167 bytes
-(2,151 payload + 69 BSS, leaving 340 bytes in the fixed console allocation).
+`make service-command` produces `build/services/command/SVC.BIN`: 2,198 bytes
+(2,182 payload + 69 BSS, leaving 309 bytes in the fixed console allocation).
 Commands: `svc status`, `svc stop`, `svc load [FILE]`, default `/TIME.SVC`.
 It probes support before any slot writes, opens read-only, bounds chunks,
 requires clean EOF and successful CLOSE before commit, and preserves the first
@@ -82,14 +90,28 @@ Host tests execute the real `svc.c` against fake filesystem/request endpoints
 through 17 success/error/close/overflow/unsupported-kernel scenarios.
 These are real 6502 execution tests with RAM-backed CIA registers, **not** TOD
 latching, disk-loading or new physical-C128 qualification. `make check` has
-1,526 host tests; normal boot/graphics/placement gates pass.
+1,537 host tests; normal and candidate boot/graphics/placement gates pass.
 
 `make boot` remains the production path and does **not** enable the overlay.
-Its D71 is byte-identical to the VICE-qualified `ed7a1f7` image below; the
-candidate must never be loaded at `$93D0` into that baseline's live RAM.
-All three rebuilt normal disks remain byte-identical to the pre-request baseline.
-No candidate disk image is built yet; do not insert SVC/TIME into normal media
-and claim service loading has been qualified.
+The candidate must never be loaded at `$93D0` into that baseline's live RAM.
+Normal DATE/XCLOCK binaries now also refuse an unavailable snapshot. This
+changes normal disk hashes; it does not enable service loading there.
+
+The candidate's bounded `RC.ETC` runs `svc load /TIME.SVC` after startup returns.
+`date` reports unavailable and exits 1 while offline; `xclock` exits 5 and
+normal native retirement removes its window. Neither consumes stale time.
+All three formats pass VICE cold boot, actual file loading, set/read, clock,
+stop/reload, duplicate-load busy refusal, missing-file error, disk-only revision-2
+replacement (no kernel relink), and console input afterward. Missing/corrupt
+boot-module fixtures leave the shell usable and recover by loading a good file.
+These runs use disposable media and the ordinary shell keyboard-event path;
+the monitor only observes records, never installs or calls the module.
+
+D64 still omits only `xsprdef`: **19 blocks free**, no further removal needed.
+D71 now explicitly allocates both sides using its standard second BAM;
+D64 is rebuilt separately on side one, never truncated from a two-sided chain.
+D71/D81 keep all apps. Two fresh parallel candidate builds have identical
+disk hashes. The final checksum-only negative preserves the module header.
 
 Host `make service-start-probe` passes on a disposable D71 in Flatpak VICE:
 date set/read, background xclock, cat, clock shutdown, and re-entry after SREG
@@ -100,19 +122,23 @@ legitimately change SREG between separate monitor sessions. The final monitor
 payload is bounded to 34 bytes. These fixture issues were fixed before the
 passing run; they were not production boot failures. No VICE process remains.
 
-Next: rebuild the complete map-bound candidate boot chain, package SVC.BIN and
-TIME.SVC with bounded-RC startup AFTER the startup guard reaches phase 2, and
-enforce fail-closed `date`/`xclock` behavior while the service is absent.
-`build_time_overlay.py`'s isolated router currently borrows the baseline
-scheduler binding: candidate delivery MUST regenerate all private bindings,
-boot-only imports and split images consistently from its own maps. Then qualify
-actual disk failures/restart/replacement plus normal input/graphics on VICE/1986
-and provide a hardware test image. Do not turn CPU RAM-backed evidence into a
-claim about real disk transport, IRQ interleavings or physical TOD latching.
+Native 1986 D64/1571 now passes RC loading, date, clock creation, a real 1351
+drag, stop/removal, reload, busy refusal, clock restart and console input.
+The user accepted this opt-in integration for merge. Next: normal-boot cutover
+with a clean-build/migration gate; issue #49 stays open for that remaining work.
+Physical C128/Pi1541 testing remains unrecorded for this change.
+The native probe's first attempt clicked at unadjusted bitmap coordinates;
+its corrected version includes the VIC pointer bias (12,40). Do not count the
+failed first attempt as a passed drag gate. Candidate build/probe provenance
+is recorded under `bench/results/2026-10-08-disk-service`.
+Do not turn CPU RAM-backed evidence into a claim about real disk transport,
+arbitrary IRQ interleavings or physical TOD latching. The separate periodic
+CIA2 timer-NMI loader failure remains unresolved.
 Keep the loader/policy out of the kernel where possible; do not expand app or
 stack reservations. Candidate layout/contract and remaining lifecycle gates:
 [abi/services.md](abi/services.md#disk-time-candidate--issue-49-2026-10-08).
-No new manual or physical-hardware acceptance; no disk-loading test image yet.
+Manual acceptance is recorded above; no new identified hardware result. This is one provisional
+time-module slot, not a generic arbitrary-service allocator or Unix daemon.
 
 ## Previous handoff — writable root and file commands, 2026-10-08
 

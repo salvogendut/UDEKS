@@ -14,7 +14,8 @@ static unsigned char buffer[UDEKS_FILE_CHUNK];
 static unsigned char fail(unsigned char error)
 {
     udeks_write(2,(const unsigned char *)"svc: ");
-    udeks_write(2,udeks_error_string(error));
+    udeks_write(2,error==8 ? (const unsigned char *)"Exec format error" :
+                           udeks_error_string(error));
     udeks_write_byte(2,'\n');
     return 1;
 }

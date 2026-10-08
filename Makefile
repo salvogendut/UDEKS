@@ -1470,7 +1470,7 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphi
 		$(BUILD_8502)/window_descriptor.o \
 		$(BUILD_8502)/managed_apps_descriptor.o \
 		$(BUILD_8502)/bootfs_request.o \
-		$(BUILD_8502)/time.o \
+		$(TIME_RESIDENT_OBJECTS) \
 		$(BUILD_8502)/vdc_console.o $(BUILD_8502)/app_panel.o \
 		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o $(WINDOW_CACHE_TRANSPORT) \
 		$(BUILD_8502)/keyboard.o \
@@ -1491,6 +1491,7 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphi
 		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) \
 		-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok \
 		-u _udeks_line_editor_get_line -u _udeks_banked_pages_init \
+		$(TIME_LINK_IMPORTS) \
 		-o $(KERNEL_BIN) \
 		$(filter %.o,$^)
 
@@ -1674,7 +1675,7 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(BUILD_8502)/window_descriptor.o \
 		$(BUILD_8502)/managed_apps_descriptor.o \
 		$(BUILD_8502)/bootfs_request.o \
-		$(BUILD_8502)/time.o \
+		$(TIME_RESIDENT_OBJECTS) \
 		$(BUILD_8502)/vdc_console.o $(BUILD_8502)/app_panel.o \
 		$(BUILD_8502)/root_console.o $(BUILD_8502)/window_manager.o $(WINDOW_CACHE_TRANSPORT) \
 		$(BUILD_8502)/keyboard.o \
@@ -1695,6 +1696,7 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) \
 		-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok \
 		-u _udeks_line_editor_get_line -u _udeks_banked_pages_init \
+		$(TIME_LINK_IMPORTS) \
 		-m $(BUILD_8502)/udeks-8502-panic-probe.map \
 		-o $(PANIC_PROBE_KERNEL_BIN) \
 		$(filter %.o,$^)
@@ -2125,8 +2127,8 @@ $(BANKED_LOADER_BIN) $(BUILD_BOOT)/banked-loader.map $(BANKED_RELOC_BIN) $(BANKE
 $(STAGE0_BIN): $(BUILD_BOOT)/stage0.o cfg/8502-stage0.cfg
 	$(LD65) -C cfg/8502-stage0.cfg -o $@ $<
 
-$(BUILD_8502)/disk-loader-bindings.inc: $(SCHEDULER_OVERLAY_MAP) tools/gen_disk_loader_bindings.py
-	$(PYTHON) tools/gen_disk_loader_bindings.py $< $@
+$(BUILD_8502)/disk-loader-bindings.inc: $(SCHEDULER_OVERLAY_MAP) $(KERNEL_MAP) tools/gen_disk_loader_bindings.py
+	$(PYTHON) tools/gen_disk_loader_bindings.py $< $@ $(TIME_BINDING_FLAGS)
 
 $(BUILD_BOOT)/stage1-gateway.o: src/boot/stage1-gateway.s \
 		$(CAPABILITY_CONSTANTS) $(BUILD_8502)/disk-loader-bindings.inc | $(BUILD_BOOT)
@@ -2158,7 +2160,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(USER_USH_UDEX) $(TASK_LOADER_BIN) $(TASK_REQUEST_GATE_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
-		tools/build_d71.py bench/iec-directory/hello.txt user/etc/rc $(USER_SYSINFO_UDEX) \
+		tools/build_d71.py tools/build_d81.py bench/iec-directory/hello.txt $(BOOT_RC) $(SERVICE_BOOT_FILES) $(USER_SYSINFO_UDEX) \
 		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX) $(USER_XSPRDEF_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX) $(USER_MOUNT_UDEX) $(USER_SAVE_UDEX) $(USER_MUTATION_UDEX)
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
@@ -2181,7 +2183,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--bootfs-request-service $(BOOTFS_REQUEST_SERVICE_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) \
 		--hello bench/iec-directory/hello.txt \
-		--rc user/etc/rc --sysinfo $(USER_SYSINFO_UDEX) \
+		--rc $(BOOT_RC) --sysinfo $(USER_SYSINFO_UDEX) $(SERVICE_DISK_FLAGS) \
 		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) --xcalc $(USER_XCALC_UDEX) --xdraw $(USER_XDRAW_UDEX) --xsprdef $(USER_XSPRDEF_UDEX) \
 		--command COWSAY=$(USER_COWSAY_UDEX) --command DATE=$(USER_DATE_UDEX) \
 		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_FILETOOLS_UDEX) \
@@ -2431,6 +2433,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 check:
+	$(PYTHON) -m py_compile tools/build_service_boot.py tools/service_boot_probe.py
 	$(PYTHON) -m py_compile tools/check_service_request.py
 	$(PYTHON) -m py_compile tools/service_image.py tools/build_time_module.py tools/check_time_module.py tools/time_module_layout.py tools/check_time_slot.py tools/service_start_probe.py tools/build_time_overlay.py
 	$(PYTHON) -m py_compile tools/storage_lease_probe.py tools/storage_owner_probe.py

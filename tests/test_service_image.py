@@ -102,7 +102,7 @@ class ServiceImageTests(unittest.TestCase):
 
     def test_boot_does_not_install_unqualified_candidate(self):
         make=(ROOT/'mk/services.mk').read_text()
-        self.assertNotIn('boot:',make)
+        self.assertNotRegex(make,r'(?m)^boot:')
         self.assertIn('not a dependency of normal boot',make)
         self.assertIn('BASELINE resident',(ROOT/'cfg/8502-time-module.cfg').read_text())
 
