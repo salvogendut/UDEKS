@@ -1,5 +1,30 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 STORAGE_BUILD := build/storage
+NAMESPACE_BUILD := build/bench/storage-namespace
+NAMESPACE_RENAMES := $(foreach fn,resolve device classify physical consider,-D udeks_fs_$(fn)=reference_$(fn))
+.PHONY: storage-namespace-check storage-mutation-layout
+storage-mutation-layout: placement-check-guard storage-service
+	$(PYTHON) tools/storage_mutation_layout.py
+storage-namespace-check: $(NAMESPACE_BUILD)/check $(NAMESPACE_BUILD)/negative
+	sim65 $(NAMESPACE_BUILD)/check > $(NAMESPACE_BUILD)/check.log
+	cat $(NAMESPACE_BUILD)/check.log
+	@if sim65 $(NAMESPACE_BUILD)/negative > $(NAMESPACE_BUILD)/negative.log 2>&1; then \
+		echo "namespace oracle accepted a broken rejection path" >&2; exit 1; fi
+	rg -q '^FAIL resolve ' $(NAMESPACE_BUILD)/negative.log
+$(NAMESPACE_BUILD):
+	mkdir -p $@
+$(NAMESPACE_BUILD)/reference.o: src/services/filesystem/fs_namespace.c include/udeks/fs_namespace.h | $(NAMESPACE_BUILD)
+	$(CL65) -t sim6502 --standard c99 -Os --static-locals -I include $(NAMESPACE_RENAMES) -c -o $@ $<
+$(NAMESPACE_BUILD)/namespace.o: src/services/filesystem/namespace_6502.s | $(NAMESPACE_BUILD)
+	$(CA65) --cpu 6502 -D UDEKS_NAMESPACE_TEST -o $@ $<
+$(NAMESPACE_BUILD)/negative.o: src/services/filesystem/namespace_6502.s | $(NAMESPACE_BUILD)
+	$(CA65) --cpu 6502 -D UDEKS_NAMESPACE_TEST -D UDEKS_NAMESPACE_NEGATIVE -o $@ $<
+$(NAMESPACE_BUILD)/check.o: bench/storage-namespace/check.c include/udeks/fs_namespace.h | $(NAMESPACE_BUILD)
+	$(CL65) -t sim6502 --standard c99 -Os --static-locals -I include -c -o $@ $<
+$(NAMESPACE_BUILD)/check: $(addprefix $(NAMESPACE_BUILD)/,check.o namespace.o reference.o)
+	$(CL65) -t sim6502 -m $(NAMESPACE_BUILD)/check.map -o $@ $^
+$(NAMESPACE_BUILD)/negative: $(addprefix $(NAMESPACE_BUILD)/,check.o negative.o reference.o)
+	$(CL65) -t sim6502 -o $@ $^
 # Private mutation backend qualification. Not installed in the storage module:
 # the service preflight/placement and public command ABI are a later increment.
 MUTATE_BUILD := build/bench/iec-mutate
@@ -121,10 +146,11 @@ $(STORAGE_WINDOW_BUILD)/probe.bin: $(STORAGE_WINDOW_BUILD)/probe.o bench/storage
 $(STORAGE_WINDOW_BUILD)/probe.prg: $(STORAGE_WINDOW_BUILD)/probe.bin tools/bin_to_prg.py
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
 .PHONY: filesystem-policy
-# Compile/measure the #26 namespace contract without changing the boot image.
+# The C implementation remains the policy oracle; this ABI-compatible
+# implementation fits the same guarded service regions with more headroom.
 filesystem-policy: $(STORAGE_BUILD)/fs_namespace.o
-$(STORAGE_BUILD)/fs_namespace.o: src/services/filesystem/fs_namespace.c include/udeks/fs_namespace.h include/udeks/task_request.h | $(STORAGE_BUILD)
-	$(CL65) $(WRITE_CFLAGS) -D UDEKS_STORAGE_HIGH --code-name STORAGEHIGH -c -o $@ $<
+$(STORAGE_BUILD)/fs_namespace.o: src/services/filesystem/namespace_6502.s include/udeks/fs_namespace.h include/udeks/task_request.h mk/storage.mk | $(STORAGE_BUILD)
+	$(CA65) --cpu 6502 -o $@ $<
 .PHONY: iec-eof-reference
 iec-eof-reference: $(BUILD_IEC_DIRECTORY)/kernal-eof.prg
 $(BUILD_IEC_DIRECTORY)/kernal-eof.o: bench/iec-directory/kernal-eof.s | $(BUILD_IEC_DIRECTORY)

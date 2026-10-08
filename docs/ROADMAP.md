@@ -37,10 +37,15 @@ SEQ/PRG bytes. It is not installed in the live storage service; **`mv`, `cp`
 and `rm` are not available yet**. The changed default needs user hardware
 acceptance; earlier create-only acceptance does not cover the new commands.
 
-**Next concrete delivery:** fit the generic filesystem operations into the
-storage service and ship the three commands together. The measured service
-has only 175 bytes of code headroom and no BSS slack, so placement is a real
-integration prerequisite. Preserve the four app allocations and stack guards;
+The namespace capacity prerequisite is now qualified: an ABI-compatible
+compact implementation, checked against the unchanged C reference on 6502,
+recovers 1,675 code bytes and 54 state bytes. The private backend fits in a
+separate link of the real service, leaving 563 code / 19 state bytes for
+integration. App allocations, stack guards and public APIs are unchanged.
+
+**Next concrete delivery:** service validation, bounded DOS completion and
+request/SDK wiring, then ship the three commands together as standalone
+programs (not ush builtins). The handlers must still fit the measured budget;
 do not put raw DOS commands or filesystem policy into the command binaries.
 Use DOS COPY for nonempty same-disk sources and the existing exclusive-create
 writer for verified-empty sources (stock DOS COPY inserts CR for empty files).

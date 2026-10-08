@@ -30,7 +30,8 @@ operations from the earlier create-only tests.
 ### First implementation increment
 
 The user accepted this checkpoint on 2026-10-08 (test platform unspecified)
-and requested commit/push followed by service integration. Automated gates:
+and requested commit/push followed by service integration. Committed/pushed
+as `e853885`. Automated gates:
 1,382 host tests, normal boot/graphics/placement builds and the probes below.
 
 Normal disk bootstrap explicitly uses MOUNT 0.14/RW and clears the flags before
@@ -88,13 +89,13 @@ Initial copy/rename stay on one mounted filesystem; destination collisions
 reject, removal is exact and nonrecursive. Partial files may remain after an
 error; no rollback, atomic-replacement or power-failure claim.
 
-The current production map has CODE 20 + STORAGECODE 71 + IECCODE 43 +
+That checkpoint's production map had CODE 20 + STORAGECODE 71 + IECCODE 43 +
 STORAGEHIGH 41 = **175 spare code bytes**, BSS **384/384**. The new private
 backend alone is about 1.2 KiB of C code before service policy/SDK work. It
-cannot simply be appended to the existing link. Do not borrow native app
+could not simply be appended to that link. Do not borrow native app
 allocations, the live shell/software stacks, graphics memory or recovery
-bootfs without an explicit measured ownership/delivery design. This placement
-work is the next feature-enabling task, not another UI optimization.
+bootfs without an explicit measured ownership/delivery design. The following
+increment addresses that prerequisite without changing any memory reservation.
 
 Evidence: `bench/artifacts/2026-10-08-storage-files` holds the exact D64,
 private mutation PRG/map and production storage map; corresponding
@@ -114,6 +115,41 @@ qualification uses `tools/storage_public_probe.py` on copied boot media;
 `tools/root_namespace_probe.py --recovery` checks fallback. Native regression
 uses container `tools/1986_storage_smoke_build.py --storage-write` with sibling
 emulator/ROM paths and the candidate D64. No physical acceptance is claimed.
+
+### Service-capacity increment — 2026-10-08
+
+`cp`, `mv` and `rm` remain **standalone disk programs**, not ush builtins.
+Filesystem validation belongs to the storage service; putting command parsing
+in ush would not solve the service's capacity limit.
+
+The five namespace functions now use compact `namespace_6502.s` inside the
+same serialized service. No new ZP, app memory or stack space is taken. The
+unchanged `fs_namespace.c` stays as the executable C reference. Container
+`make storage-namespace-check` compares 36,532 cases on sim65, using actual
+cc65 argument marshalling, output guards and rejection checks. A deliberately
+wrong success return fails at the first case; both executables/logs are saved.
+Keep the assembly basename distinct from the C file: cl65 generates/deletes
+the sibling `.s` intermediate when building the reference.
+
+Production now has **1,850 code bytes and 54 BSS bytes free** (1,675/54
+recovered). `make storage-mutation-layout` separately links the private backend
+with the real service and unaltered region bounds: **563 code / 19 BSS bytes
+remain**. This is a fit proof only, **not** public handlers or live mutation
+qualification. The shipping transport still has no mutation/long-wait flag.
+The audit rejects changed/missing regions, overflow and uncounted DATA.
+
+Gates: 1,392 host tests; container boot/graphics/placement checks; fresh VICE
+1541/1571/1581 write/RO/collision/reboot/source-preservation runs; native 1986
+write/input/graphics/NMI/reboot regression; missing-shell recovery. Exact D64
+(`8f141fb06fd2`), maps and sim65 programs are in
+`bench/artifacts/2026-10-08-storage-namespace`; reports, source/toolchain
+provenance and checksums are in the matching results directory. No additional
+hardware acceptance is claimed. The previous evidence is unchanged.
+
+**Next:** service-owned preflight and request/SDK wiring, bounded DOS completion,
+then ship and test the three commands together. The 563-byte remaining budget
+still has to cover integration; it is not a promise that unmeasured handlers fit.
+`mv`/`cp`/`rm` are not yet present in the rebuilt candidate images.
 
 ## Earlier handoff — sprite number and held painting, 2026-10-08
 
