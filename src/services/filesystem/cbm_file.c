@@ -34,7 +34,7 @@ static uint8_t dos_status(void);
 #if defined(__CC65__) && defined(UDEKS_STORAGE_HIGH)
 #pragma code-name(push, "STORAGEHIGH")
 #endif
-/* Closed zero-data SEQ files acquire a CR in stock DOS. Correct ONLY the
+/* Closed zero-data SEQ/PRG files acquire a CR in stock DOS. Correct ONLY the
  * length byte of the one block DOS just allocated to our new file. Its
  * buffer remains on the drive: U1 -> B-P -> one byte -> U2. The caller owns
  * the successful-create token; this is not exposed as truncate or raw I/O.
@@ -52,7 +52,7 @@ uint8_t udeks_cbm_finish_empty(uint8_t device, const uint8_t *name)
         same = 1;
         for (i = 0; i < 16u; ++i) if (udeks_cbm_entry[i+3u] != name[i]) same = 0;
         if (!same) continue;
-        if (found || udeks_cbm_entry[0] != 0x81u ||
+        if (found || (uint8_t)(udeks_cbm_entry[0] - 0x81u) > 1u ||
             udeks_cbm_entry[28] != 1u || udeks_cbm_entry[29]) goto done;
         found = 1;
         file_track = udeks_cbm_entry[1]; file_sector = udeks_cbm_entry[2];

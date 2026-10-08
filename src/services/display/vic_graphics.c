@@ -3,6 +3,10 @@
 #include "udeks/memory.h"
 #include "udeks/pointer.h"
 
+/* Display calls are serialized/nonrecursive; IRQ/NMI handlers never draw.
+ * Private compiler scratch funds the bounded delta-present service path. */
+#pragma static-locals(on)
+
 #define STATUS_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_VIC_GRAPHICS_STATUS_BASE + (offset)))
 
@@ -129,19 +133,8 @@ void udeks_vic_bitmap_line(
     }
 }
 
-void udeks_vic_bitmap_rectangle(
-    int x, int y, int width, int height, unsigned char color)
-{
-    int last_x;
-    int last_y;
-    if (width <= 0 || height <= 0) return;
-    last_x = x + width - 1;
-    last_y = y + height - 1;
-    udeks_vic_bitmap_fill(x, y, width, 1, color);
-    udeks_vic_bitmap_fill(x, last_y, width, 1, color);
-    udeks_vic_bitmap_fill(x, y, 1, height, color);
-    udeks_vic_bitmap_fill(last_x, y, 1, height, color);
-}
+/* Rectangle's four calls to the same clipped fill entry are marshalled by
+ * vic_rectangle.s, avoiding four copies of cc65 argument-building code. */
 
 /* Private serialized row parameters; geometry and ownership remain in C. */
 unsigned int udeks_span_offset;

@@ -28,8 +28,9 @@ class XsprdefSourceTests(unittest.TestCase):
     def test_makefile_builds_and_ships_the_app(self):
         makefile = (ROOT/'Makefile').read_text()
         self.assertIn('USER_XSPRDEF_UDEX := $(BUILD_USER)/xsprdef.udx',makefile)
-        self.assertIn('--graphics-abi 13 --output $(BUILD_USER)/native-xsprdef',makefile)
-        self.assertIn('--static-locals --capacity 4352',makefile)
+        self.assertIn('--graphics-abi 17 --output $(BUILD_USER)/native-xsprdef',makefile)
+        self.assertIn('--static-locals --capacity 7424',makefile)
+        self.assertIn('--source user/bin/xspr_file.c',makefile)
         self.assertIn('--xsprdef $(USER_XSPRDEF_UDEX)',makefile)
 
     def test_disk_builder_validates_and_installs_the_editor(self):
@@ -41,3 +42,10 @@ class XsprdefSourceTests(unittest.TestCase):
         self.assertIn('#define UDEKS_RETAINED_COMMANDS 160u',
                       (ROOT/'include/udeks/retained_paths.h').read_text())
         self.assertIn('at most 160 eight-byte commands',(ROOT/'abi/window.md').read_text())
+
+    def test_probe_reads_status_under_kernel_map_and_verifies_normal_speed(self):
+        source=(ROOT/'tools/xsprdef_probe.py').read_text()
+        self.assertIn("return capture('status-'+format(address,'04x'),address,1)[0]",source)
+        self.assertNotIn('byte(port,',source)
+        self.assertNotIn('sp.wait_for_byte(',source)
+        self.assertIn("if b'Warp mode is off.' not in reply:",source)

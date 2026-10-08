@@ -8,11 +8,12 @@
  * validate mount permission and finish a case-folded directory collision
  * scan BEFORE create. DOS also rejects an existing exact name: never use @.
  * Names here are canonical physical upper-case ASCII/PETSCII, not paths.
- * Only new SEQ files; bytes are counted, without a PRG header or encoding. */
+ * Only new files; type 1=SEQ, 2=PRG. Bytes are counted: the caller supplies
+ * any load-address header. There is no implicit encoding or replacement. */
 #define UDEKS_CBM_WRITE_MAX 24u
 #define UDEKS_CBM_ENOSPC 28u
 #define UDEKS_CBM_EROFS  30u
-uint8_t udeks_cbm_create(uint8_t device, const uint8_t *name, uint8_t length);
+uint8_t udeks_cbm_create(uint8_t device, const uint8_t *name, uint8_t length, uint8_t type);
 uint8_t udeks_cbm_write(const uint8_t *data, uint8_t count);
 uint8_t udeks_cbm_write_close(void);
 

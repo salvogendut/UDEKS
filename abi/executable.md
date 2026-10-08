@@ -169,6 +169,25 @@ peer. Successful installation copies the patched image, clears BSS and retains
 a normalized **fixed UDEX 0.1 header** with the actual load/entry addresses.
 Ownership is published last; native admission/return/EXIT are unchanged.
 
+The capacity extension may join the first two allocations into
+`$2300-$3FFF`, with image+BSS ending at or before `$3F00` and the guarded
+software stack/exit trampoline in `$3F00-$3FFF`. It requires both allocations
+FREE **and** unowned; loaded, stopped and zombie peers cannot be borrowed.
+Task 3 keeps its own relocated CPU pages; task 4's CPU pages stay reserved.
+The donor's lifecycle slot stays FREE, but loader ownership value 3 privately
+marks its memory unavailable. Load, activate, release and reap directed at
+that donor reject EBUSY. It is never exposed as a running application.
+
+Joining is tentative before I/O. Open/read/close/validation errors undo it;
+successful installation also undoes it if image+BSS fits the original bound,
+even when a large relocation table needed joined staging. Otherwise the loan
+lasts through EXIT/ZOMBIE until release/reap. The bank-0 source-validation
+table is refreshed from the effective stack page on **every activation**,
+before RUNNABLE publication. Its inactive entries are not allocation state.
+No syscall/executable version change or change to the foreground task-2 pool
+is implied. Limits: 7,168 installed bytes and 7,424 file bytes, three concurrent
+native clients while joined, versus four ordinary allocations.
+
 Private selector `$00` at `$F91C` takes the existing length + padded 16-byte
 basename request, tries tasks 6, 4, 5, 3 (smallest first), and loads/adopts an ordinary native
 image. Successful admission returns the selected task in UTRQ result (byte 11);

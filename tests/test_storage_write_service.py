@@ -65,6 +65,36 @@ class StorageWriteService(baseline.StorageService):
         self.assertEqual(self.mount14(flags=3), OK)
         self.assertEqual(self.create(), OPEN)
 
+    def test_prg_create_is_versioned_and_keeps_all_create_safeguards(self):
+        self.mount14()
+        before=self.byte('open_count').value
+        for minor in (5,13,14,15):
+            self.assertEqual(self.request(6,b'/mnt/SPRITES.BSV',fd=4,minor=minor),error(22))
+        for fd,flags in ((5,0),(255,0),(4,1)):
+            self.assertEqual(self.request(6,b'/mnt/SPRITES.BSV',fd=fd,flags=flags,minor=16),error(22))
+        self.assertEqual(self.byte('open_count').value,before)
+        self.assertEqual(self.word('create_calls').value,0)
+        self.assertEqual(self.request(6,b'/mnt/SPRITES.BSV',fd=4,minor=16),OPEN)
+        self.assertEqual(self.byte('create_type').value,2)
+        self.assertEqual(self.request(6,b'/mnt/OTHER',fd=4,minor=16),error(24))
+        self.assertEqual(self.write(b'\0\x0e\xff'),(1,2,3,0))
+        self.assertEqual(self.close(),OK)
+        self.assertEqual(self.create(),OPEN)
+        self.assertEqual(self.byte('create_type').value,1)
+        self.assertEqual(self.close(),OK)
+        self.assertEqual(self.mount14(flags=2),OK)
+        self.assertEqual(self.request(6,b'/mnt/SPRITES.BSV',fd=4,minor=16),error(30))
+        self.assertEqual(self.word('create_calls').value,2)
+
+    def test_prg_create_rejects_existing_and_reserved_names(self):
+        self.file(b'preserve me')
+        self.mount14(path=b'/')
+        for path in (b'/hello',b'/HELLO'):
+            self.assertEqual(self.request(6,path,fd=4,minor=16),error(17))
+        for path,code in ((b'/bad.BIN',2),(b'/bin/bad',22),(b'/a,w',22),(b'/',21)):
+            self.assertEqual(self.request(6,path,fd=4,minor=16),error(code))
+        self.assertEqual(self.word('create_calls').value,0)
+
     def test_mount_flags_are_versioned_and_remount_needs_same_device(self):
         for minor in (5, 8, 13):
             self.assertEqual(self.request(17, b'\x08/mnt', flags=1, minor=minor), error(22))

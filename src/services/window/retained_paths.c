@@ -38,10 +38,12 @@ unsigned int __fastcall__ udeks_retained_address(unsigned char index)
 /* Shared transport helper lives with the resident glue, leaving the fixed
  * lazy-install module space for the renderer. No reservation moves. */
 #pragma code-name(push, "CODE")
+#ifdef UDEKS_GRAPHICS_HOST_TEST
 void __fastcall__ udeks_retained_read(unsigned int address)
 {
     memcpy((void *)C,POOL(address),8);
 }
+#endif
 #pragma code-name(pop)
 /* All images stay packed in slot order. Admission is serialized, and only
  * validated replacements reach this compaction; no foreign pointers remain. */

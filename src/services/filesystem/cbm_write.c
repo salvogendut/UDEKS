@@ -10,6 +10,9 @@ uint8_t udeks_cbm_written, udeks_cbm_write_dos_error;
 static uint8_t active, failed;
 static uint8_t empty, created_device, created_name[16];
 
+#if defined(__CC65__) && defined(UDEKS_STORAGE_HIGH)
+#pragma code-name(push, "IECCODE")
+#endif
 static uint8_t dos_errno(uint8_t code)
 {
     switch (code) {
@@ -23,6 +26,9 @@ static uint8_t dos_errno(uint8_t code)
         default: return UDEKS_TREQ_EIO;
     }
 }
+#if defined(__CC65__) && defined(UDEKS_STORAGE_HIGH)
+#pragma code-name(pop)
+#endif
 
 /* Reading the error channel clears the drive's error, so retain the first
  * failure in the writer. Always UNTALK, including malformed/truncated replies.
@@ -51,11 +57,11 @@ static uint8_t status(void)
     return dos_errno(code);
 }
 
-uint8_t udeks_cbm_create(uint8_t device, const uint8_t *name, uint8_t length)
+uint8_t udeks_cbm_create(uint8_t device, const uint8_t *name, uint8_t length, uint8_t type)
 {
     uint8_t i, c, error;
     if (active) return UDEKS_TREQ_EBUSY;
-    if (device < 8u || device > 11u || !name || !length || length > 16u)
+    if (device < 8u || device > 11u || !name || !length || length > 16u || (uint8_t)(type - 1u) > 1u)
         return UDEKS_TREQ_EINVAL;
     if (name[0] == ' ' || name[length-1u] == ' ' ||
         (name[0] == '.' && (length == 1u || (length == 2u && name[1] == '.'))))
@@ -70,7 +76,7 @@ uint8_t udeks_cbm_create(uint8_t device, const uint8_t *name, uint8_t length)
     created_device = device; empty = 1;
     udeks_iec_filename[0] = '0'; udeks_iec_filename[1] = ':';
     for (i = 0; i < length; ++i) udeks_iec_filename[i+2u] = name[i];
-    udeks_iec_filename[i+2u] = ','; udeks_iec_filename[i+3u] = 'S';
+    udeks_iec_filename[i+2u] = ','; udeks_iec_filename[i+3u] = type == 2u ? 'P' : 'S';
     udeks_iec_filename[i+4u] = ','; udeks_iec_filename[i+5u] = 'W';
     udeks_iec_filename_length = length+6u;
     active = 1; failed = udeks_cbm_written = udeks_cbm_write_dos_error = 0;

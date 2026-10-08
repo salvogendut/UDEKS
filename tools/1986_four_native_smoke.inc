@@ -40,9 +40,9 @@ static void wave_resize_wait(unsigned presents) {
             if(byte(UDEKS_WAVE_PROJECTION+12)) projected=elapsed;
         }
         if(elapsed%100==0) {
-            printf("resize progress: %u frames, projected %u bytes, done %u, drag %u, focused %u\n",
+            printf("resize progress: %u frames, projected %u bytes, done %u, drag %u, focused %u, time %u:%u, compositions %u\n",
                 elapsed,word(UDEKS_WAVE_PROJECTION+2),byte(UDEKS_WAVE_PROJECTION+12),
-                byte(0xf248),byte(0xf247));fflush(stdout);
+                byte(0xf248),byte(0xf247),byte(0xf209),byte(0xf20a),word(0xf25e));fflush(stdout);
         }
     }
     require(byte(UDEKS_WAVE_PRESENTS)==presents+1,"wave resize not published");

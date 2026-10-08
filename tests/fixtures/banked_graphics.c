@@ -26,7 +26,21 @@ static unsigned int widths[5];
 static unsigned char heights[5];
 unsigned char test_flags[5];
 unsigned char test_dragging;
+unsigned char test_busy, test_background;
+unsigned char input_pointer[32], test_focused;
+unsigned int test_begin_paints, test_end_paints;
 unsigned char udeks_window_is_dragging(unsigned char h) { return test_dragging==h; }
+unsigned char udeks_window_update_busy(void) { return test_busy || test_dragging; }
+unsigned char udeks_window_is_focused(unsigned char h) { return h==test_focused; }
+void udeks_graphics_geometry(unsigned char h) {
+    udeks_window_get_geometry(h,&udeks_graphics_origin_x,&udeks_graphics_origin_y,
+        &udeks_graphics_width,&udeks_graphics_height);
+}
+#include "../../bench/graphics-input/reference.h"
+unsigned char udeks_window_begin_paint(unsigned char h) {
+    (void)h; ++test_begin_paints; return test_background;
+}
+void udeks_window_end_paint(void) { ++test_end_paints; }
 
 void test_reset(void)
 {
@@ -43,6 +57,8 @@ void test_reset(void)
     udeks_banked_graphics_installed=0;
     test_task=3; memset(test_state,0,sizeof(test_state)); test_reap_busy=0;
     test_repaints=test_writes=test_draws=0; click_handle=test_dragging=0;
+    test_busy=test_background=0; test_begin_paints=test_end_paints=0;
+    test_focused=0;memset(input_pointer,0,sizeof(input_pointer));
     test_load_error=test_activate_error=test_selector=0;
     test_active=test_init_calls=test_init_error=0;
     memset(test_path,0,sizeof(test_path));
@@ -107,6 +123,7 @@ unsigned char udeks_window_create(unsigned char owner,unsigned char surface,unsi
     (void)surface;(void)x;(void)y;(void)title;
     if(!width || !height || h>4) return 0;
     test_owner[h]=owner; painter[h]=paint_fn;closer[h]=close_fn;
+    test_focused=h;
     widths[h]=width;heights[h]=height;test_flags[h]=flags;
     return h;
 }

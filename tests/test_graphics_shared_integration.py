@@ -18,10 +18,14 @@ RESULTS = ROOT / 'bench/results' / SHARED_NAME
 class GraphicsSharedIntegrationTests(unittest.TestCase):
     def test_current_service_matches_qualified_candidates(self):
         source=(ROOT / 'src/services/display/vic_graphics.c').read_text()
-        for name in ('line','rectangle'):
+        for name in ('line',):
             self.assertEqual(function(source,'udeks_vic_bitmap_'+name),
                 function((ROOT / 'bench/graphics-shared' / (name+'.c')).read_text(),'udeks_vic_bitmap_'+name))
         self.assertNotIn('void udeks_vic_bitmap_clear(',source)
+        # Rectangle now marshals these four reference fills in assembly;
+        # graphics-delta-check executes it against the real cc65 runtime.
+        self.assertNotIn('void udeks_vic_bitmap_rectangle(',source)
+        self.assertIn('vic_rectangle.s',source)
         self.assertEqual((ROOT / 'src/services/display/vic_clear.s').read_bytes(),
                          (ROOT / 'bench/graphics-shared/clear.s').read_bytes())
 

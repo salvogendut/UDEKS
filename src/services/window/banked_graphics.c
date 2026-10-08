@@ -37,9 +37,12 @@ unsigned int udeks_graphics_origin_x;
 unsigned char udeks_graphics_origin_y;
 #define wx udeks_graphics_origin_x
 #define wy udeks_graphics_origin_y
-static unsigned int ww;
+unsigned int udeks_graphics_width;
+#define ww udeks_graphics_width
 #pragma bss-name(pop)
-static unsigned char wh;
+unsigned char udeks_graphics_height;
+#define wh udeks_graphics_height
+unsigned char udeks_graphics_event(void);
 #pragma code-name(push, "GRAPHICSHELP")
 static void closed(unsigned char handle)
 {
@@ -79,13 +82,15 @@ static void complete_install(void)
     }
     memcpy((void *)P,saved,10);
 }
+void __fastcall__ udeks_graphics_geometry(unsigned char handle);
+#define geometry udeks_graphics_geometry
 static void paint(unsigned char handle)
 {
     unsigned char row, data, count, index, scale;
     unsigned int address, x, y;
     index = udeks_window_owner(handle)-0x83u;
     if (index >= UDEKS_NATIVE_CLIENTS) return;
-    udeks_window_get_geometry(handle,&wx,&wy,&ww,&wh);
+    geometry(handle);
     if(udeks_retained_lengths[index]&UDEKS_RETAINED_PATH_FLAG) {
         udeks_retained_paths_paint(index); return;
     }
@@ -111,17 +116,44 @@ static void paint(unsigned char handle)
         }
     }
 }
+/* Complete retained state is committed before any pixels. The small fill
+ * list is a client-supplied delta from the last successfully presented image,
+ * not a new source of window ownership or foreign-memory pointers. */
+#pragma code-name(push, "CODE")
+static unsigned char present_delta(unsigned char index, unsigned char handle)
+{
+    unsigned char n, error;
+    if (R[5] < 15) return 38;
+    for (n = 16; n <= 21; n += 5) if (P[n] != 0 && P[n] != 7) return 22;
+    for (n = 5; n < 12; ++n) if (P[n]) return 22;
+    if (P[22] || P[23]) return 22;
+    if (udeks_window_update_busy()) return 11;
+    /* P[12..21] survives the retained transport's P[0..9] scratch. */
+    error = udeks_retained_present(index);
+    if (error) return error;
+    if (udeks_window_begin_paint(handle)) {
+        /* Background window: the compositor owns overlap/occlusion. */
+        udeks_window_repaint(handle);
+    } else {
+        geometry(handle);
+        for (n = 12; n < 22; n += 5)
+            udeks_vic_bitmap_fill(wx+P[n], wy+(P+1)[n], (P+2)[n], (P+3)[n], (P+4)[n]);
+        udeks_window_end_paint();
+    }
+    return 0;
+}
+#pragma code-name(pop)
 void udeks_banked_graphics_request(void)
 {
-    unsigned char task,index,op,handle,count,error=22;
-    unsigned int source;
-    const struct udeks_window_click *click;
+    unsigned char task,index,op,handle,error=22;
     task=udeks_banked_call(0x30);
     index=task-3u;
     if(R[5]<9) { error=38; goto done; }
     if(R[9] || R[13] || R[10]!=24 || index>=UDEKS_NATIVE_CLIENTS) goto done;
     if(!running[index]) goto done;
     op=P[0]; handle=P[1];
+    if(op==UDEKS_GFX_INPUT && R[5]>=17)
+        op=UDEKS_GFX_EVENT; /* wire opcode remains available to the adapter */
     if(op==UDEKS_GFX_CREATE) {
         if(clients.handle[index] || clients.closing[index]) goto done;
         if((P[6]&0xf9u)!=0x10u && (R[5]<10 || (P[6]&0xf9u)!=0x08u)) goto done;
@@ -136,27 +168,16 @@ void udeks_banked_graphics_request(void)
     } else {
         if(op==UDEKS_GFX_EVENT && clients.closing[index]) { P[0]=0; R[11]=R[5]>=10?7:4; error=0; goto done; }
         if(!handle || handle!=clients.handle[index] || udeks_window_owner(handle)!=task+0x80u) goto done;
-        if(op==UDEKS_GFX_PRESENT || op==UDEKS_GFX_PATHS) {
+        if(op==UDEKS_GFX_PRESENT_DELTA) {
+            error=present_delta(index,handle);
+            R[11]=0;
+        } else if(op==UDEKS_GFX_PRESENT || op==UDEKS_GFX_PATHS) {
             error=udeks_retained_present(index);
             if(error) goto done;
             udeks_window_repaint(handle);
             R[11]=0; error=0;
         } else if(op==UDEKS_GFX_EVENT) {
-            R[11]=4; error=0;
-            if(R[5]>=10) {
-                source=P[2]|((unsigned int)P[3]<<8); count=P[4];
-                udeks_window_get_geometry(handle,&wx,&wy,&ww,&wh);
-                P[4]=ww; P[5]=ww>>8; P[6]=wh; R[11]=7;
-                /* Client acknowledges its last drawn size. Changes coalesce;
-                 * moves alone do not request new client rendering. A resize
-                 * never consumes a queued click. No per-client shadow state. */
-                if((source!=ww || count!=wh) && !udeks_window_is_dragging(handle)) {
-                    P[0]=2; goto done;
-                }
-            }
-            click=udeks_window_take_click(handle);
-            P[0]=click?3:1;
-            if(click) { P[1]=click->x; P[2]=click->x>>8; P[3]=click->y; }
+            error=udeks_graphics_event();
         } else if(op==UDEKS_GFX_CLOSE) {
             udeks_window_destroy(handle); R[11]=0; error=0;
         }

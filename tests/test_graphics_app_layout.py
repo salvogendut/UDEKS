@@ -14,7 +14,7 @@ from graphics_app_layout import (CANDIDATE, Region, disjoint, managed_size,
 class GraphicsAppLayoutTests(unittest.TestCase):
     def test_delivery_and_retention_are_separate_lifetimes_not_extra_space(self):
         phases=graphics_lifetimes([])
-        self.assertEqual(len(phases),2)
+        self.assertEqual(len(phases),3)
         self.assertEqual(len(phases['after_both_modules_installed']),16)
         self.assertEqual(phases['before_first_native_launch'][0]['start'],0xc600)
         self.assertEqual(phases['before_first_native_launch'][1]['limit'],0xd100)

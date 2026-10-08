@@ -6,6 +6,73 @@ All four bundled graphical programs use this path. Allocation is size-based;
 not every program fits every slot. Native arguments and interactive
 background-console stdin are still separate work.
 
+## Larger native apps (capacity candidate, 2026-10-07)
+
+The loader can join the adjacent task-3/task-4 allocations when **both are
+free and unowned**. This raises the ceiling to **7,168 image+BSS bytes** and
+**7,424 file bytes** (including header and relocations). No new header flag,
+app-name entry, link address or kernel rebuild is needed for a new client.
+The independent builder checks both limits before emitting a `.BIN`.
+
+Four ordinary apps remain supported. A larger app consumes two allocations,
+leaving room for **two other compatible-sized apps**, not three. Smallest-fit
+admission still tries tasks 6, 4, 5, 3. Launch larger apps first if you need
+the joined pair: live apps are never moved or evicted to make room. If only
+the relocation table needed extra staging space, the donor is returned as
+soon as the installed image+BSS fits the ordinary allocation.
+
+Failure rolls back the loan; normal exit/reap or a cooperative graphical close
+returns it. The C stack is still guarded and **160 bytes**, now in the last
+page of the effective allocation. This is bounded adjacent-slot borrowing,
+not a general heap, additional task slots, or expansion of the synchronous
+argc/argv console-command allocation. Native windowless clients can use it
+too; native arguments, stdin and forced cancellation remain separate work.
+
+Build/run the independent capacity examples (not installed on normal images):
+
+```sh
+distrobox-enter my-distrobox -- make -j8 boot native-capacity-fixtures graphics-apps-check
+make native-capacity-probe
+```
+
+The probes create disposable `build/native-capacity/vice-d64/capacity.d64`,
+`vice-d71/capacity.d71` and `vice-d81/capacity.d81`. On one of these images:
+
+```text
+large &
+xdraw &
+xwave &
+```
+
+Drag the LARGE window and use the VDC console. Then `large -q`, `xclock &`,
+`xcalc &`: four ordinary apps should work again. `xinit -q` closes them.
+`bigcon` runs a bounded windowless test job, verifies its large BSS and returns
+normally; it is not an interactive console program. The subsequent sprite
+Save/Load integration uses the joined allocation in normal disk builds; see
+[XSPRDEF](XSPRDEF.md) for its separate acceptance sequence.
+
+## Native file requests (UTRQ 0.14)
+
+Build with `--graphics-abi 14` or later and include `udeks/native_file.h`.
+Set descriptor, count and payload in `udeks_graphics_record`, then call
+`native_file_request(operation)`. It preserves these inputs, uses the native
+`$FF16` request gate and returns errno (zero on success); result is byte 11.
+Do not use the synchronous argc/argv command's `$CF30` helper in a native app.
+
+This is the existing counted OPEN/READ/WRITE/CLOSE ABI, not a new filesystem.
+Only one disk descriptor is available system-wide. Check transfer counts and
+CLOSE errors; never retry a possibly partial write silently. Writes require
+an explicitly writable mount and are create-exclusive. `user/bin/xspr_file.c`
+is a bounded example: 504-byte save and exact-length load, with the caller
+staging reads privately before committing its state.
+
+UTRQ **0.16** adds `UDEKS_TREQ_OPEN_CREATE_PRG` as OPEN's descriptor/mode:
+same permissions, exclusive-create checks and returned fd 4, but a PRG
+directory entry. Use `--graphics-abi 16`; supply the load-address header
+yourself when needed. It does not turn a PRG into a UDEX app or bypass `/bin`
+and `/etc` create restrictions. Older clients and mode 3 still create SEQ.
+The sprite editor uses it to export a 514-byte stock-BASIC sprite bank.
+
 ## Bounded Z80 requests (UTRQ 0.11)
 
 Independent native programs can now request the same bounded worker operations
@@ -225,6 +292,32 @@ remain at 0.9, preserving old fixed-size programs and their four-byte replies.
 The native clock build uses `--static-locals` (nonrecursive, task-private) and
 `--capacity 2816` to check both file and image+BSS against the smaller slot.
 These are optional SDK build choices, not a special clock loader path.
+
+## Small graphical updates (UTRQ 0.15)
+
+Build with `--graphics-abi 15` to use `UDEKS_GFX_PRESENT_DELTA`.
+Supply the full command list plus two window-relative fills in payload bytes
+12–21; see the [exact contract](../abi/window.md#delta-presentation-utrq-015).
+The full list remains available for movement and uncovering; only the small
+delta is painted when the window is topmost. A background window uses normal
+composition. Retry EAGAIN after yielding, retaining the already-applied edit.
+`xsprdef.c` demonstrates an 8×8 cell and its 1× preview pixel. Older PRESENT
+and PATHS callers keep their existing behavior.
+
+## Held pointer input (UTRQ 0.17)
+
+Build with `--graphics-abi 17` and poll `UDEKS_GFX_INPUT` with the same
+geometry acknowledgement as EVENT. Resize and click responses retain their
+priority. HELD (state 4) gives signed window-relative X (`P[1..2]`) and Y
+(`P[3]` low, `P[7]` high), including positions outside the window. Only a
+focused, undragged/non-busy window receives held samples; the primary mouse
+button and joystick fire share this policy. EVENT stays click-only.
+
+Arm strokes on CLICK inside the tool's canvas, stop on IDLE/focus loss or
+outside coordinates, and never treat HELD as another toolbar click. This is
+sampled/coalesced input, not a lossless motion queue. Interpolation, brush ink
+and erasing belong to the app; `xsprdef.c` yields between cell deltas instead
+of repainting the whole editor. See the [wire layout](../abi/window.md#held-input-utrq-017).
 
 ## Counted disk I/O (UTRQ 0.14)
 

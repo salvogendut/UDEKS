@@ -30,7 +30,7 @@ Read the [dedication](DEDICATION.md).
 
 ## Download and boot
 
-For the current disk-write candidate, build this branch and use
+For the current disk-write and sprite-editor features, build the source and use
 `build/boot/udeks.d64`, `.d71` or `.d81`. The
 [SAVE test and writable-mount instructions](docs/GRAPHICAL-APPS-SDK.md#counted-disk-io-utrq-014)
 apply to these fresh images, **not** the older downloads below. Use disposable
@@ -87,13 +87,21 @@ relocatable disk programs with private runtimes and stacks. Clock and wave
 resize; calculator and drawing use fixed-size layouts. Click xdraw's C button
 to clear it; `xcalc -q` / `xdraw -q` close the respective app.
 
-Fresh builds also include [`xsprdef`, the sprite-editor experiment](docs/XSPRDEF.md).
-Run `xsprdef &` to edit eight session-local 24×21 monochrome definitions with
+Fresh builds also include [`xsprdef`, the sprite editor](docs/XSPRDEF.md).
+Run `xsprdef &` to edit eight 24×21 monochrome definitions with
 an 8× editor and 1× preview. It uses the same generic app slots, not a special
-kernel entry. Saving is **in memory only**; closing the app loses the bank.
+kernel entry. The current sprite number stays visible beside the preview;
+hold the primary mouse button to draw or erase a stroke. Click S/L for
+confirmed Save/Load of the entire bank as
+`/SPRITES.SPR`. Saving requires `mount -o remount,rw 8 /` and **creates only**:
+existing files are never overwritten. B keeps edits while returning to the list.
+The list's **E** button exports `SPRITES.BSV` for stock C128 BASIC:
+`BLOAD "SPRITES.BSV",B0,P3584`. It creates a genuine PRG file without changing
+the compact `SPRITES.SPR` format.
 Use a freshly built image from `build/boot/`; the published downloads above
-do not include this experiment. This checkpoint is accepted; further editor
-work is parked for now.
+do not include these editor features. The larger editor joins two free allocations,
+leaving room for two compatible-sized peers; launch it first. See its guide
+for safe disposable-disk testing and file-format details.
 
 A new `.BIN` launches as `name` or `name &`
 into any free **compatible-sized** allocation, without an OS name-table entry.
@@ -105,7 +113,11 @@ with stdout/stderr and an exit status. They use one fixed foreground allocation
 and pause cooperative app progress until returning; general background console
 jobs and stdin are not yet supported. Four graphical slots are available, but
 not every binary fits every
-slot. The retained drawing pool is shared and each native task has a bounded
+slot. The loader can borrow two free adjacent allocations
+for a larger native app: up to **7,168 image+BSS bytes**, with room for two
+other apps. Four ordinary apps remain supported; live apps are never moved
+to make room. See the [larger-app test sequence](docs/GRAPHICAL-APPS-SDK.md#larger-native-apps-capacity-candidate-2026-10-07).
+The retained drawing pool is shared and each native task has a bounded
 160-byte C stack. Fresh source builds produce `build/boot/udeks.d64`, `.d71`
 and `.d81`.
 

@@ -24,7 +24,7 @@ int main(void)
     R[8] = saved_speed; R[9] = saved_bank;
     if (MODE == 3u) {
         R[2] = 10;
-        error = udeks_cbm_create(8, (const uint8_t *)"NOCHANGE", 8);
+        error = udeks_cbm_create(8, (const uint8_t *)"NOCHANGE", 8, 1);
         R[3] = error;
         if (error != UDEKS_CBM_EROFS) goto failed;
         R[10] = SPEED; R[11] = CIA & 3u;
@@ -34,7 +34,7 @@ int main(void)
     }
     if (MODE == 2u) {
         R[2] = 9; /* maximum-length physical filename, host checks exact size */
-        error = udeks_cbm_create(8, (const uint8_t *)"EMPTY-1234567890", 16);
+        error = udeks_cbm_create(8, (const uint8_t *)"EMPTY-1234567890", 16, 1);
         if (error) goto failed;
         error = udeks_cbm_write_close();
         if (error) goto failed;
@@ -45,7 +45,7 @@ int main(void)
         R[1] = file; R[2] = 1;
         name[6] = '0'+file/10u; name[7] = '0'+file%10u; length = lengths[file];
         if (!MODE) {
-            error = udeks_cbm_create(8, name, 8);
+            error = udeks_cbm_create(8, name, 8, 1);
             if (error) goto failed;
             R[2] = 2;
             error = udeks_cbm_write(buffer, 0);
@@ -63,7 +63,7 @@ int main(void)
             if (error) goto failed;
             R[2] = 4;
             /* An existing exact name must survive a second create attempt. */
-            error = udeks_cbm_create(8, name, 8);
+            error = udeks_cbm_create(8, name, 8, 1);
             if (error != UDEKS_TREQ_EEXIST) goto failed;
         }
         R[2] = 5;

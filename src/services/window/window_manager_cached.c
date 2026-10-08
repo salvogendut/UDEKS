@@ -328,17 +328,20 @@ static void cache_invalidate(void)
 
 static unsigned char paint_window_damage(unsigned char handle);
 
+unsigned char udeks_window_update_busy(void)
+{
+    return dragging_handle != UDEKS_WINDOW_NONE ||
+        cache_phase == UDEKS_CACHE_CAPTURING || cache_phase == UDEKS_CACHE_PASTING;
+}
+
 unsigned char udeks_window_begin_paint(unsigned char handle)
 {
     register struct udeks_window *window;
 
     window = window_by_handle(handle);
-    if (window == 0 || dragging_handle != UDEKS_WINDOW_NONE ||
-        window->z != active_count) {
+    if (window == 0 || window->z != active_count || udeks_window_update_busy()) {
         return UDEKS_WINDOW_INVALID;
     }
-    if (cache_phase == UDEKS_CACHE_CAPTURING || cache_phase == UDEKS_CACHE_PASTING)
-        return UDEKS_WINDOW_INVALID;
     cache_invalidate();
     window->flags &= (unsigned char)~IMAGE_COMPLETE;
     udeks_vic_bitmap_set_clip(

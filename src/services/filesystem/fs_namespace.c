@@ -2,6 +2,11 @@
 #include "udeks/fs_namespace.h"
 #include "udeks/task_request.h"
 
+/* Storage's small helpers use spare driver-segment bytes; all remain in
+ * the same private bank-1 service mapping. No memory reservation moves. */
+#if defined(__CC65__) && defined(UDEKS_STORAGE_HIGH)
+#pragma code-name(push, "IECCODE")
+#endif
 static uint8_t lower(uint8_t c)
 {
     /* Both PETSCII alphabets in directory entries; requests use ASCII. */
@@ -9,6 +14,9 @@ static uint8_t lower(uint8_t c)
     if (c >= 'A' && c <= 'Z') c += 'a' - 'A';
     return c;
 }
+#if defined(__CC65__) && defined(UDEKS_STORAGE_HIGH)
+#pragma code-name(pop)
+#endif
 
 static uint8_t name_char(uint8_t c)
 {

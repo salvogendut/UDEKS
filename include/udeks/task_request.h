@@ -40,7 +40,7 @@
 #define UDEKS_TREQ_PAYLOAD               14u
 
 #define UDEKS_TASK_REQUEST_ABI_MAJOR     0u
-#define UDEKS_TASK_REQUEST_ABI_MINOR     14u
+#define UDEKS_TASK_REQUEST_ABI_MINOR     17u
 
 #define UDEKS_TREQ_STATE_IDLE            0u
 #define UDEKS_TREQ_STATE_REQUEST         1u
@@ -99,6 +99,8 @@
 #define UDEKS_TREQ_OPEN_EXEC             2u
 /* ABI 0.14: create a NEW ordinary data file; never replace or append. */
 #define UDEKS_TREQ_OPEN_CREATE           3u
+/* 0.16: same exclusive create, PRG directory type. */
+#define UDEKS_TREQ_OPEN_CREATE_PRG       4u
 #define UDEKS_TREQ_MOUNT_RW              1u
 #define UDEKS_TREQ_MOUNT_REMOUNT         2u
 #define UDEKS_STATFS_SIZE               8u

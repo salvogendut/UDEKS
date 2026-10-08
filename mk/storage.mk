@@ -42,11 +42,11 @@ $(WRITE_PLACEMENT_BUILD):
 	mkdir -p $@
 $(WRITE_PLACEMENT_OBJECTS): mk/storage.mk include/udeks/storage_write.h
 $(WRITE_PLACEMENT_BUILD)/fs_namespace.o: src/services/filesystem/fs_namespace.c include/udeks/fs_namespace.h | $(WRITE_PLACEMENT_BUILD)
-	$(CL65) $(WRITE_CFLAGS) --code-name STORAGEHIGH -c -o $@ $<
+	$(CL65) $(WRITE_CFLAGS) -D UDEKS_STORAGE_HIGH --code-name STORAGEHIGH -c -o $@ $<
 $(WRITE_PLACEMENT_BUILD)/cbm_file.o: src/services/filesystem/cbm_file.c include/udeks/cbm_file.h | $(WRITE_PLACEMENT_BUILD)
 	$(CL65) $(WRITE_CFLAGS) -D UDEKS_STORAGE_HIGH -c -o $@ $<
 $(WRITE_PLACEMENT_BUILD)/cbm_write.o: src/services/filesystem/cbm_write.c include/udeks/cbm_write.h | $(WRITE_PLACEMENT_BUILD)
-	$(CL65) $(WRITE_CFLAGS) --code-name STORAGECODE -c -o $@ $<
+	$(CL65) $(WRITE_CFLAGS) -D UDEKS_STORAGE_HIGH --code-name STORAGECODE -c -o $@ $<
 $(WRITE_PLACEMENT_BUILD)/no-caller.o: bench/storage-window/no-caller.s | $(WRITE_PLACEMENT_BUILD)
 	$(CA65) --cpu 6502 -o $@ $<
 $(WRITE_PLACEMENT_BUILD)/iec_slow.o: src/services/filesystem/iec_slow.s mk/storage.mk | $(WRITE_PLACEMENT_BUILD)
@@ -96,7 +96,7 @@ $(STORAGE_WINDOW_BUILD)/probe.prg: $(STORAGE_WINDOW_BUILD)/probe.bin tools/bin_t
 # Compile/measure the #26 namespace contract without changing the boot image.
 filesystem-policy: $(STORAGE_BUILD)/fs_namespace.o
 $(STORAGE_BUILD)/fs_namespace.o: src/services/filesystem/fs_namespace.c include/udeks/fs_namespace.h include/udeks/task_request.h | $(STORAGE_BUILD)
-	$(CL65) $(WRITE_CFLAGS) --code-name STORAGEHIGH -c -o $@ $<
+	$(CL65) $(WRITE_CFLAGS) -D UDEKS_STORAGE_HIGH --code-name STORAGEHIGH -c -o $@ $<
 .PHONY: iec-eof-reference
 iec-eof-reference: $(BUILD_IEC_DIRECTORY)/kernal-eof.prg
 $(BUILD_IEC_DIRECTORY)/kernal-eof.o: bench/iec-directory/kernal-eof.s | $(BUILD_IEC_DIRECTORY)
@@ -193,7 +193,7 @@ $(STORAGE_BUILD)/iec_service.o: src/services/filesystem/iec_service.c include/ud
 $(STORAGE_BUILD)/cbm_file.o: src/services/filesystem/cbm_file.c include/udeks/cbm_file.h include/udeks/iec_slow.h | $(STORAGE_BUILD)
 	$(CL65) $(WRITE_CFLAGS) -D UDEKS_STORAGE_HIGH -c -o $@ $<
 $(STORAGE_BUILD)/cbm_write.o: src/services/filesystem/cbm_write.c include/udeks/cbm_write.h | $(STORAGE_BUILD)
-	$(CL65) $(WRITE_CFLAGS) --code-name STORAGECODE -c -o $@ $<
+	$(CL65) $(WRITE_CFLAGS) -D UDEKS_STORAGE_HIGH --code-name STORAGECODE -c -o $@ $<
 $(STORAGE_BUILD)/iec_lease.o: src/services/filesystem/iec_lease.s | $(STORAGE_BUILD)
 	$(CA65) --cpu 6502 -D UDEKS_STORAGE_CONTEXT -o $@ $<
 $(STORAGE_BUILD)/iec_context.o: src/services/filesystem/iec_context.s | $(STORAGE_BUILD)

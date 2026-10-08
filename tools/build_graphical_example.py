@@ -7,6 +7,7 @@ import re
 import subprocess
 from gen_capability_imports import map_exports
 from o65_to_udex import pack_o65
+from native_app_layout import fitting_allocations
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -16,14 +17,18 @@ def check_capacity(image,capacity):
         if not 0<capacity<=65535 or max(len(image),allocation)>capacity:
             raise ValueError('executable file or image+BSS exceeds the requested allocation')
 
+def check_native_capacity(image):
+    if not fitting_allocations(image) and not fitting_allocations(image,joined=True):
+        raise ValueError('executable exceeds native capacity (7168 image+BSS / 7424 file bytes) or is invalid')
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, default=ROOT/'build/generic-apps/example')
     parser.add_argument('--source', type=Path, action='append',
                         help='C translation unit; repeat for a multi-file program')
     parser.add_argument('--name', default='HELLO', help='portable disk basename')
-    parser.add_argument('--graphics-abi', type=int, choices=(9,10,11,12,13), default=9,
-                        help='minimum request ABI; 10 resize, 11 worker calls, 12 retained paths, 13 bitmap tiles')
+    parser.add_argument('--graphics-abi', type=int, choices=(9,10,11,12,13,14,15,16,17), default=9,
+                        help='minimum request ABI; 10 resize, 11 worker calls, 12 retained paths, 13 bitmap tiles, 14 file I/O, 15 delta present, 16 PRG create, 17 held input')
     parser.add_argument('--static-locals', action='store_true',
                         help='cc65 private static locals; only for nonrecursive programs')
     parser.add_argument('--capacity',type=int,help='require both file and image+BSS to fit this many bytes')
@@ -60,6 +65,7 @@ def main():
         *options,'-m',str(out/(stem+'.map')),'-o',str(out/(stem+'.o65')),*objects)
     entry=map_exports((out/(stem+'.map')).read_text())['_udeks_program_entry'][0]
     image=pack_o65((out/(stem+'.o65')).read_bytes(), entry)
+    check_native_capacity(image)
     check_capacity(image,args.capacity)
     filename=args.name.upper()+'.BIN'
     (out/filename).write_bytes(image)

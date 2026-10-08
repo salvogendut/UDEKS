@@ -115,13 +115,11 @@ class VicGraphicsSourceTests(unittest.TestCase):
         self.assertIn("udeks_vic_bitmap_outline_move", source)
         self.assertIn("OUTLINE_RECORD_SIZE", source)
         self.assertIn("UDEKS_VIC_ROW_TABLE_BASE", source)
-        rectangle = source.split("void udeks_vic_bitmap_rectangle", 1)[1].split(
-            "void udeks_vic_bitmap_fill", 1
-        )[0]
-        self.assertIn("last_x = x + width - 1", rectangle)
-        self.assertIn("last_y = y + height - 1", rectangle)
-        self.assertIn("x, last_y, width, 1, color", rectangle)
-        self.assertIn("last_x, y, 1, height, color", rectangle)
+        rectangle = (ROOT/'src/services/display/vic_rectangle.s').read_text()
+        for args in ('0,2,4,12','0,10,4,12','0,2,12,6','8,2,12,6'):
+            self.assertIn('.byte '+args,rectangle)
+        self.assertIn('jsr _udeks_vic_bitmap_fill',rectangle)
+        self.assertIn('jmp incsp8',rectangle)
         fill = source.split("void udeks_vic_bitmap_fill", 1)[1].split(
             "void udeks_vic_bitmap_set_clip", 1
         )[0]
