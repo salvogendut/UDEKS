@@ -1,0 +1,49 @@
+{
+  "source": "/var/home/salvogendut/Dev/UDEKS/build/default-service/build/services/boot/candidate-ub3ei_4u/source",
+  "scope": "normal disk-service boot; emulator tests separate",
+  "variants": {
+    "normal": {
+      "live_end": 37838,
+      "remaining_before_slot": 2,
+      "startup_bytes": 518,
+      "slot_base": 37840,
+      "slot_limit": 38568
+    },
+    "panic": {
+      "live_end": 37838,
+      "remaining_before_slot": 2,
+      "startup_bytes": 518,
+      "slot_base": 37840,
+      "slot_limit": 38568
+    }
+  },
+  "module": {
+    "base": 37840,
+    "image_size": 710,
+    "bss_size": 7,
+    "allocation": 717,
+    "spare": 11,
+    "revision": 1,
+    "request": 37888,
+    "start": 38136,
+    "poll": 38267,
+    "stop": 38506,
+    "checksum": 16217
+  },
+  "disks": {
+    "d64": {
+      "path": "/var/home/salvogendut/Dev/UDEKS/build/default-service/build/services/boot/candidate-ub3ei_4u/source/build/boot/udeks.d64",
+      "sha256": "41246ba13e41b07611ac425f3a65df4ed3a0fa94c72db5d62a57995cbdc71ac3"
+    },
+    "d71": {
+      "path": "/var/home/salvogendut/Dev/UDEKS/build/default-service/build/services/boot/candidate-ub3ei_4u/source/build/boot/udeks.d71",
+      "sha256": "10c74176957e4bed5d2ccd396ee5713124638905518829320ab0fb90903efc92"
+    },
+    "d81": {
+      "path": "/var/home/salvogendut/Dev/UDEKS/build/default-service/build/services/boot/candidate-ub3ei_4u/source/build/boot/udeks.d81",
+      "sha256": "29160ba4997d6b176e130181741bcb6bd9fecf521c2765b57e7d7d493ea78115"
+    }
+  },
+  "input_manifest_sha256": "2677e505c8467169a67e3bd8c66c167c334ca7f1363c0a694475ffeeeec26725",
+  "clean_matches_worktree": true
+}

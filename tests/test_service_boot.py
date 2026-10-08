@@ -70,10 +70,11 @@ class ServiceDiskTests(unittest.TestCase):
             self.assertEqual(entry[3:19].rstrip(b'\xa0'),b'KEEP.SVC')
             self.assertEqual(d81.file_bytes(absent,entry,offset),b'USVM'+bytes(706))
 
-    def test_disk_time_cannot_reuse_a_normal_worktree(self):
-        result = subprocess.run(['make','-n','DISK_TIME=1','boot'],cwd=ROOT,capture_output=True,text=True)
-        self.assertNotEqual(result.returncode,0)
-        self.assertIn('DISK_TIME is isolated',result.stderr)
+    def test_old_build_toggle_cannot_silently_reuse_objects(self):
+        for value in ('0','1'):
+            result = subprocess.run(['make','-n','DISK_TIME='+value,'boot'],cwd=ROOT,capture_output=True,text=True)
+            self.assertNotEqual(result.returncode,0)
+            self.assertIn('DISK_TIME is retired',result.stderr)
 
 
 class ServiceBindingsTests(unittest.TestCase):

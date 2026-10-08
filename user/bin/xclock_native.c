@@ -46,7 +46,9 @@ unsigned char udeks_graphical_main(void)
     if(TIME[5]!=UDEKS_TIME_READY) return 5;
     payload(); P[1]=124; P[3]=50;
     P[4]=UDEKS_CLOCK_FACE_WIDTH; P[5]=UDEKS_CLOCK_FACE_HEIGHT; P[6]=0x0e;
-    for(i=0;i<6;++i) P[7+i]="XCLOCK"[i];
+    /* Constant title base permits compact indexed addressing in cc65. Keep
+     * the unavailable-time checks without spilling into a larger app slot. */
+    for(i=0;i<6;++i) (P+7)[i]="XCLOCK"[i];
     if(gfx_request(UDEKS_GFX_CREATE)) return 1;
     handle=R[11];
     /* Zeroed geometry forces the first complete presentation. */

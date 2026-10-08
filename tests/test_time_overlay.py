@@ -61,6 +61,8 @@ class TimeOverlayTests(unittest.TestCase):
 
     def test_every_split_output_is_redirected_and_bss_is_not_emitted(self):
         text = (ROOT/'cfg/8502-bootstrap.cfg').read_text()
+        # Exercise the historical transformation on a pre-cutover config.
+        text = re.sub(r'^    SERVICEBOOT:.*\n','',text,flags=re.M)
         result = overlay_config(text, Path('/tmp/udeks-overlay-test'))
         for name in re.findall(r'file\s*=\s*"([^"]*)"', result):
             self.assertTrue(not name or name.startswith('/tmp/udeks-overlay-test/build/'))

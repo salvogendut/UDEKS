@@ -100,11 +100,15 @@ class ServiceImageTests(unittest.TestCase):
         self.assertNotIn('udeks-8502.map',build)
         self.assertIn("'-t', 'none'",build)
 
-    def test_boot_does_not_install_unqualified_candidate(self):
+    def test_normal_boot_links_manager_and_packages_service(self):
         make=(ROOT/'mk/services.mk').read_text()
         self.assertNotRegex(make,r'(?m)^boot:')
-        self.assertIn('not a dependency of normal boot',make)
-        self.assertIn('BASELINE resident',(ROOT/'cfg/8502-time-module.cfg').read_text())
+        self.assertIn('TIME_RESIDENT_OBJECTS := $(BUILD_8502)/time-slot.o $(BUILD_8502)/time-resident.o',make)
+        self.assertNotIn('$(BUILD_8502)/time.o',make)
+        self.assertIn('--data-file TIME.SVC=',make)
+        self.assertIn('BOOT_RC := user/etc/rc',make)
+        for name in ('8502-bootstrap.cfg','8502-panic-probe.cfg'):
+            self.assertIn('SERVICEBOOT: load = KERNEL, type = ro, start = $93D0', (ROOT/'cfg'/name).read_text())
 
 
 if __name__ == '__main__': unittest.main()

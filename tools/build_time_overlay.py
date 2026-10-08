@@ -86,6 +86,10 @@ def qualify(baseline, candidate, exports, image):
 
 
 def main():
+    if 'SERVICEBOOT:' in (ROOT/'cfg/8502-bootstrap.cfg').read_text():
+        from default_service_layout import main as check_current_layout
+        check_current_layout()
+        return
     out = ROOT/'build/services/time/overlay'
     out.mkdir(parents=True, exist_ok=True)
     report_path = out/'layout.json'

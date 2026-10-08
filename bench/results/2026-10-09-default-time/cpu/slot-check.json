@@ -1,0 +1,26 @@
+{
+  "scope": "sim6502 candidate only; not installed in boot",
+  "validation_cases": 436,
+  "startup_results": 256,
+  "core_segments": {
+    "CODE": 479,
+    "RODATA": 20,
+    "BSS": 1,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "core_bytes": 500,
+  "startup_segments": {
+    "CODE": 21,
+    "RODATA": 0,
+    "BSS": 0,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "negative_control": "checksum rejection disabled: detected",
+  "module_sha256": "ee524e373c75f40647c7e36bcb670431a67544e5be4a10fce93a310eeb2601f1",
+  "fixture_sha256": "268536f84bfcb0030c06123c37977a0e89d65dc8731ed728164cbec10ffc81ae",
+  "cia": "RAM-backed, not hardware timing"
+}

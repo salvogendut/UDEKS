@@ -1,0 +1,80 @@
+{
+  "source": "/var/home/salvogendut/Dev/UDEKS/build/default-service/build/services/migration/upgrade-bsxyp89g/source",
+  "scope": "normal disk-service boot; emulator tests separate",
+  "variants": {
+    "normal": {
+      "live_end": 37838,
+      "remaining_before_slot": 2,
+      "startup_bytes": 518,
+      "slot_base": 37840,
+      "slot_limit": 38568
+    },
+    "panic": {
+      "live_end": 37838,
+      "remaining_before_slot": 2,
+      "startup_bytes": 518,
+      "slot_base": 37840,
+      "slot_limit": 38568
+    }
+  },
+  "module": {
+    "base": 37840,
+    "image_size": 710,
+    "bss_size": 7,
+    "allocation": 717,
+    "spare": 11,
+    "revision": 1,
+    "request": 37888,
+    "start": 38136,
+    "poll": 38267,
+    "stop": 38506,
+    "checksum": 16217
+  },
+  "disks": {
+    "d64": {
+      "path": "/var/home/salvogendut/Dev/UDEKS/build/default-service/build/services/migration/upgrade-bsxyp89g/source/build/boot/udeks.d64",
+      "sha256": "41246ba13e41b07611ac425f3a65df4ed3a0fa94c72db5d62a57995cbdc71ac3"
+    },
+    "d71": {
+      "path": "/var/home/salvogendut/Dev/UDEKS/build/default-service/build/services/migration/upgrade-bsxyp89g/source/build/boot/udeks.d71",
+      "sha256": "10c74176957e4bed5d2ccd396ee5713124638905518829320ab0fb90903efc92"
+    },
+    "d81": {
+      "path": "/var/home/salvogendut/Dev/UDEKS/build/default-service/build/services/migration/upgrade-bsxyp89g/source/build/boot/udeks.d81",
+      "sha256": "29160ba4997d6b176e130181741bcb6bd9fecf521c2765b57e7d7d493ea78115"
+    }
+  },
+  "base": "9eda8ba06a2a5965c9d5ad14943838d10c2e30cf",
+  "changed_inputs": [
+    "Makefile",
+    "src/services/module/time_slot.s",
+    "cfg/8502-bootstrap.cfg",
+    "cfg/8502-panic-probe.cfg",
+    "cfg/8502-time-module.cfg",
+    "mk/services.mk",
+    "mk/storage.mk",
+    "tools/build_service_boot.py",
+    "tools/build_time_overlay.py",
+    "tools/check_service_migration.py",
+    "tools/default_service_layout.py",
+    "tools/graphics_app_layout.py",
+    "tools/native_app_layout.py",
+    "tools/service_boot_probe.py",
+    "tools/time_module_layout.py",
+    "user/bin/xclock_native.c",
+    "user/etc/rc"
+  ],
+  "objects_before": {
+    "build/8502/service_registry.o": "19b12aeb70c0e6f4c87cb7397ebc45c3e0640f72754b2ea80531dd7caa3ce37f",
+    "build/8502/syscall_gate.o": "dc622e2e8014f9d1e5031f56e628c95ee9a96e7aa062ed086925b83fc0f0abcc",
+    "build/storage/router.o": "f6613f870c9d0f81b3da0b8dc892bbab05df32e9c48fb79131fdab7c48aef3e0"
+  },
+  "objects_after": {
+    "build/8502/service_registry.o": "72f0bb2f8e52839a7f894c31ff56f14668d870200dfec47c8db192c7feb0d1ae",
+    "build/8502/syscall_gate.o": "3aab3a497021e79f5a8b5d567f890b27edb256ddd159f2f2d58c798fefd06d6c",
+    "build/storage/router.o": "52bf14bfe8d7c6bde515934ba96bd2c97ce13f0e58f1f8caf3df7fdfac953b12"
+  },
+  "no_clean": true,
+  "upgrade_matches_worktree": true,
+  "noop": true
+}

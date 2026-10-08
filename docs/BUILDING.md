@@ -83,20 +83,25 @@ emulators and on hardware remains required before this milestone is closed.
 
 ### Publishing disk images
 
-The #49 disk-time experiment has a separate, explicitly opt-in build:
+Normal `make boot` now includes `SVC.BIN`, `TIME.SVC` and the bounded RC
+command that loads it. There is no resident-time build toggle; `DISK_TIME=0`
+and `DISK_TIME=1` both fail explicitly to prevent stale mixed builds.
 
 ```sh
-distrobox-enter my-distrobox -- make service-boot
+distrobox-enter my-distrobox -- make -j8 boot placement-check graphics-apps-check service-layout-check
+distrobox-enter my-distrobox -- make service-rebuild-check service-migration-check
 python3 tools/service_boot_probe.py --format d64
 ```
 
-Run from the `services-0.1-disk-module` worktree. Fresh complete builds and
-their matching maps live under `build/services/boot/candidate-*/source`;
-`latest.json` identifies the successful candidate. Convenient test copies are
-`build/services/boot/udeks.d64`, `.d71`, `.d81`. They load `TIME.SVC` using
-`RC.ETC`, unlike normal `build/boot` media. Do not enable `DISK_TIME=1` manually
-in an existing build or splice the earlier raw overlay links into boot disks.
-Do not publish these as the normal release before user/hardware acceptance.
+Build in the branch's own worktree. `service-boot` is now an alias for `boot`.
+`service-rebuild-check` builds a fresh isolated copy and requires all three disk
+hashes to match the normal outputs. `service-migration-check` builds pre-cutover
+commit `9eda8ba`, overlays only changed inputs, then rebuilds without cleaning;
+all three hashes must match, flag-sensitive objects must change, and the next
+`make boot` must leave every output untouched. Logs/manifests live under
+`build/services/boot/` and `build/services/migration/` respectively. No raw
+kernel overlay is spliced into boot media. The VICE probe uses normal `build/boot`
+and matching maps by default; `--candidate` remains available for archived runs.
 See the [manual checklist](../abi/services.md#coherent-boot-integration-and-manual-acceptance).
 
 ### Normal published images
@@ -105,11 +110,11 @@ Fresh builds also produce `build/boot/udeks.d81` (819,200 bytes), for a 1581
 or VICE configured with drive 8 type **1581**. See [D81 format and tests](D81.md).
 Do not select this format for a Pi1541 configured as a 1541.
 
-The repository's downloadable snapshots are `build/udeks.d64` and
-`build/udeks.d71`, with provenance in [build/README.md](../build/README.md).
+The repository's downloadable snapshots are `build/udeks.d64`,
+`build/udeks.d71` and `build/udeks.d81`, with provenance in [build/README.md](../build/README.md).
 They are deliberately separate from fresh outputs under `build/boot/` so
 an experiment or fault-injection build does not silently replace a published
-image. Only the two snapshots, their README and SHA256SUMS are tracked;
+image. Only the three snapshots, their README and SHA256SUMS are tracked;
 all other build contents and nested worktrees remain ignored.
 
 After building and qualifying the normal images in my-distrobox:
@@ -121,7 +126,7 @@ sha256sum -c SHA256SUMS
 ```
 
 Update image provenance and link the qualification evidence, then commit the
-two disks and checksum file together. `publish-boot` copies the normal build
+three disks and checksum file together. `publish-boot` copies the normal build
 and generates checksums; it is not itself a hardware/emulator qualification.
 Do not publish a `WINDOW_CACHE=0` or other experimental configuration as the
 accepted baseline without its own validation. `make clean` removes named

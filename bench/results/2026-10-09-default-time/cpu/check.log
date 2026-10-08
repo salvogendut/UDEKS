@@ -1,0 +1,1 @@
+PASS 174459 module calls: all 86400 times, 1024 raw TOD cases, counter rollover, TI/BCD, lifecycle, guards, atomic invalid-set rejection

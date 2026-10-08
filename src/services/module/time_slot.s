@@ -1,5 +1,5 @@
 ; SPDX-License-Identifier: GPL-3.0-or-later
-; Candidate lifecycle core, not linked into normal boot yet. Runs only in
+; Normal boot lifecycle core. Runs only in
 ; serialized root/kernel-I/O context. No foreign pointers; one bounded slot.
 ; A=0 status/no-op, 1 begin, 2 commit, 3 stop; A=errno (0 on success).
 ; COMMIT additionally takes X/Y=received byte count (low/high), not a header

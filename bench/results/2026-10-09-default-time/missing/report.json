@@ -1,0 +1,40 @@
+{
+  "scope": "real disk/RC service integration, ordinary keyboard commands",
+  "source": "/var/home/salvogendut/Dev/UDEKS/build/default-service",
+  "drive": "1541",
+  "mode": "missing",
+  "source_disk_sha256": "41246ba13e41b07611ac425f3a65df4ed3a0fa94c72db5d62a57995cbdc71ac3",
+  "test_disk_sha256": "96ebab45ea9f5b929ea22c405ec3e7ec49be5b5beffc2cc35876072faeb05453",
+  "commands": [
+    {
+      "command": "svc status",
+      "exit": 0,
+      "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\nsvc: No such file or directory\nUDEKS:~> svc status\ntime: offline\nUDEKS:~>"
+    },
+    {
+      "command": "date",
+      "exit": 1,
+      "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\nsvc: No such file or directory\nUDEKS:~> svc status\ntime: offline\nUDEKS:~> date\ndate: time service unavailable\nUDEKS:~>"
+    },
+    {
+      "command": "svc load",
+      "exit": 1,
+      "console": "REU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\nsvc: No such file or directory\nUDEKS:~> svc status\ntime: offline\nUDEKS:~> date\ndate: time service unavailable\nUDEKS:~> svc load\nsvc: No such file or directory\nUDEKS:~>"
+    },
+    {
+      "command": "svc load /TIME2.SVC",
+      "exit": 0,
+      "console": "8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\nsvc: No such file or directory\nUDEKS:~> svc status\ntime: offline\nUDEKS:~> date\ndate: time service unavailable\nUDEKS:~> svc load\nsvc: No such file or directory\nUDEKS:~> svc load /TIME2.SVC\ntime: ready\nUDEKS:~>"
+    },
+    {
+      "command": "date",
+      "exit": 0,
+      "console": "IEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\nsvc: No such file or directory\nUDEKS:~> svc status\ntime: offline\nUDEKS:~> date\ndate: time service unavailable\nUDEKS:~> svc load\nsvc: No such file or directory\nUDEKS:~> svc load /TIME2.SVC\ntime: ready\nUDEKS:~> date\n01:00:03\nUDEKS:~>"
+    },
+    {
+      "command": "cat /hello",
+      "exit": 0,
+      "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\nsvc: No such file or directory\nUDEKS:~> svc status\ntime: offline\nUDEKS:~> date\ndate: time service unavailable\nUDEKS:~> svc load\nsvc: No such file or directory\nUDEKS:~> svc load /TIME2.SVC\ntime: ready\nUDEKS:~> date\n01:00:03\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>"
+    }
+  ]
+}

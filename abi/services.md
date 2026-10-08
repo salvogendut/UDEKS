@@ -5,9 +5,10 @@
 The first extraction target is the **time-of-day service**, not the scheduler's
 monotonic tick counter. Its C start/poll logic, assembly clock setting and BASIC
 `TI` synchronization now build as an independent `build/services/time/TIME.SVC`.
-This is a **candidate only, not installed or enabled by normal boot**. Do not
-load it into a running baseline: its provisional `$93D0` address overlaps live
-resident state in that build.
+As of 2026-10-09 it is **loaded by normal boot** through `/etc/rc`; the old
+resident implementation is no longer linked. Older kernels without the
+operation-28 capability must not load this image: `$93D0` was live resident
+memory there. The disk loader probes support before touching the slot.
 
 The module links its own required cc65 code helpers; it does not import private
 kernel function addresses or require a kernel-map-generated bridge. The fixed
@@ -44,8 +45,7 @@ truncation/trailing bytes, overflow, bad checksums and vectors pointing outside
 emitted code (including header/BSS). It never mutates its input. The checksum
 detects accidental corruption, not malicious code. Runtime validation and
 registration are **not implemented by this host validator**; the separately
-CPU-tested candidate below connects the real request gate in isolated links,
-but is not enabled by normal boot.
+CPU-tested core below enforces them at the real request gate in normal boot.
 
 ### Candidate lifecycle core (not a published ABI)
 
@@ -72,8 +72,8 @@ of public `SREG` diagnostics: 0=not attempted, 1=inside startup, 2=returned.
 Both successful and failed first results are cached. Re-entry during phase 1
 returns nonzero; later calls never enter retired startup instructions, even
 with damaged diagnostics or an unusable cc65 software stack. Module begin is
-permitted only after phase 2 with a successful result. This veneer alone is
-production-linked; the candidate manager and startup overlay are not.
+permitted only after phase 2 with a successful result. The veneer, manager and
+startup overlay are all production-linked in the default disk-time build.
 
 ### Candidate request and disk command
 
@@ -126,11 +126,11 @@ The measured image is **710 bytes plus 7 BSS bytes**, including its 48-byte
 header and independent runtime helpers. Fixed-field counters and a byte-valued
 BCD lookup keep its implementation in C while avoiding unnecessary generic
 pointer arithmetic/multiply helpers. Conversion still occurs between the TOD
-hours latch and the final tenths read. The normal resident implementation is
-unchanged by these candidate-only reductions.
+hours latch and the final tenths read. This independent module is now the
+normal time implementation; scheduler ticks remain outside its lifetime.
 
-`make time-module-placement` accounts for objects; **`make time-overlay-check`
-also performs the actual normal/panic kernel links**, including compatibility
+`make service-layout-check` (also `time-module-placement` / `time-overlay-check`)
+qualifies the **actual normal/panic kernel links**, including compatibility
 wrappers, request handling and library selection. Both variants place resident
 BSS through `$93CD`, leaving **2 bytes** before the candidate slot `$93D0-$96A7`.
 The manager is 479 CODE + 20 RODATA + 1 BSS = **500 bytes**, plus the explicitly
@@ -156,26 +156,22 @@ stack, VIC, VDC, zero-page or common-RAM reservation. `$CF40` and `$CF60` retain
 their published JMP addresses and conventions. The provisional base is not a
 frozen new external ABI.
 
-These isolated links deliberately redirect **every** split output and do not
-replace production disks. They are **not runnable boot artifacts**: relocated
-boot-service import bridges and remaining map-bound delivery still need a full
-candidate rebuild. Request/ownership glue now fits, but these isolated links
-still use the baseline scheduler-derived router binding; full candidate boot
-delivery must regenerate every private binding from the selected maps. Normal
-boot leaves the startup split disabled and the original resident time service
-installed.
+Normal `make boot` regenerates every private binding from the selected maps.
+The audit rejects resident `time.o`, requires the manager/wrapper and startup
+overlay, and checks the emitted clock vectors. The older isolated overlay
+experiment is historical: do not splice its raw kernel into boot media.
 
 ### Coherent boot integration and manual acceptance
 
-`make service-boot` in the reference container now generates a fresh isolated
-source/build tree, regenerating all bindings from its own normal/panic maps.
-Unlike `time-overlay-check`, these are complete bootable candidates. It packages
+`make boot` (`service-boot` is an alias) in the reference container packages
 `SVC.BIN`, `TIME.SVC` and a bounded `/etc/rc` which invokes the loader after
 resident startup has returned. It never substitutes raw overlay bytes into a
-baseline disk. Normal `make boot` still uses the resident service.
+baseline disk. No missing-module case silently falls back to resident time.
 
-The three convenient test images are `build/services/boot/udeks.d64`, `.d71`
-and `.d81`; `latest.json` records hashes and the corresponding source/maps.
+The normal images are `build/boot/udeks.d64`, `.d71` and `.d81`.
+`service-rebuild-check` reproduces them from a fresh source copy;
+`service-migration-check` proves an existing resident-time build upgrades
+without cleaning. Both require exact three-format disk hashes.
 D64 omits only `xsprdef`, with 19 free blocks. D71 uses both standard BAMs and
 D81 repacks the full file set. D64 is independently built on side one, not
 truncated from a D71 with second-side files. Boot payloads are otherwise the
@@ -210,15 +206,19 @@ retirement owns its window cleanup. Scheduler ticks/sleep remain independent.
 Finish with `xclock -q` and `cat /hello`; console input must still work.
 
 Native 1986 D64/1571 input/1351 drag, stop/reload and console recovery pass.
-[Evidence](../bench/results/2026-10-08-disk-service/README.md) records the exact
-images and scope. Physical-C128 acceptance remains a gate before normal-boot
-cutover. The slot/address/format remain provisional; this
+[Default-boot evidence](../bench/results/2026-10-09-default-time/README.md) records
+the exact images and scope. The user authorized the default cutover and merge
+after automated tests; no new physical-C128 result is claimed. The slot/address/format remain provisional; this
 is not a generic allocator for arbitrary service classes.
 
 Reproduce integration with host VICE:
 `python3 tools/service_boot_probe.py --format d64` (also `d71`/`d81`), and
 `--mode missing` / `--mode corrupt`. Test-only replacement files are added only
 to disposable images. Reports preserve disk hashes and installed image bytes.
+`--mode shell-missing` / `--mode shell-corrupt` on D64 additionally exercise
+bootfs recovery without RC: `mount 8 /mnt`, then `/mnt/svc.bin load /mnt/TIME.SVC`.
+Recovery intentionally has no normal `/bin` search/root mount. Explicit paths
+also permit `/mnt/date.bin` and `/mnt/cat.bin /mnt/hello`; the mount stays read-only.
 
 Reproduce the independent proofs in `my-distrobox`:
 `make time-module time-module-check time-slot-check service-request-check service-command time-overlay-check`.
@@ -288,7 +288,7 @@ Initial service classes are console (`1`), hardware capability discovery
 (`2`), display (`3`), machine policy/time (`4`), input (`5`), terminal policy
 (`6`), native shell (`7`), bounded Z80 worker (`8`), window manager (`9`),
 managed-application dispatcher (`10`), and init/session policy (`11`).
-The default image starts capability discovery, CIA time, the Z80 worker, VDC
+The default image starts capability discovery, the resident time-slot bridge, the Z80 worker, VDC
 text console, pointer input, the VIC-IIe graphics service, window manager,
 keyboard, root-terminal policy, the managed-app dispatcher, and init in that
 order. Init loads and polls `/bin/ush` while retaining the resident shell only
@@ -298,7 +298,8 @@ The machine-clock and VDC framebuffer descriptors remain optional modules:
 2 MHz requires an explicit VIC-blanking policy, and VDC bitmap mode requires
 explicit display ownership. The VIC-IIe service is display class `3`, instance
 `1`; startup is passive and `xinit` performs explicit mode acquisition.
-The resident CIA time service is machine-policy class `4`, instance `1`; the
+The disk-loaded CIA time service is machine-policy class `4`, instance `1`;
+the resident bridge stays offline until RC loads it. The
 older optional machine-clock descriptor is the separate VIC-blanking 2 MHz
 transition.
 

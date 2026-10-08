@@ -1,0 +1,4 @@
+PASS startup: all 256 results, recursive entry, damaged SREG, unusable C stack
+PASS 436 independent validator cases; rejection executes no code
+PASS lifecycle: publication, abort, duplicate load, cached vectors, start/poll/stop errors
+PASS sealed TIME.SVC reload and retained clock-read C ABI; 2142 protected calls
