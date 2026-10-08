@@ -1,0 +1,35 @@
+{
+  "drive": "1541",
+  "recovery": true,
+  "disk_sha256": "3193b4cf091805968d0b4c1621e7ef587af426c31ce7990b46d40aa2f4fe4396",
+  "data_sha256": "54b28013733117e4339224853f3aacf0bed6cc8fb1a0ce2431b5744146ff6b4e",
+  "boot_console": "UDEKS - UNIFIED DUAL ENGINE EXECUTIVE KERNEL SYSTEM\nV0.1.0 (C)2026\n\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>",
+  "driver_intact": true,
+  "commands": [
+    {
+      "command": "pwd",
+      "console": "\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> pwd\n/\nUDEKS:~>",
+      "seconds": 0.2252940750331618
+    },
+    {
+      "command": "mount 9 /mnt",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> pwd\n/\nUDEKS:~> mount 9 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>",
+      "seconds": 0.22996033501112834
+    },
+    {
+      "command": "/mnt/RECOVER recovery",
+      "console": "IEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> pwd\n/\nUDEKS:~> mount 9 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> /mnt/RECOVER recovery\n __________\n< recovery >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~>",
+      "seconds": 0.8646196280024014
+    },
+    {
+      "command": "umount /mnt",
+      "console": "BOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> pwd\n/\nUDEKS:~> mount 9 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> /mnt/RECOVER recovery\n __________\n< recovery >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~>",
+      "seconds": 0.22988363105105236
+    },
+    {
+      "command": "echo namespace-ok",
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> pwd\n/\nUDEKS:~> mount 9 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> /mnt/RECOVER recovery\n __________\n< recovery >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\nUDEKS:~> umount /mnt\nUDEKS:~> echo namespace-ok\nnamespace-ok\nUDEKS:~>",
+      "seconds": 0.24160033295629546
+    }
+  ]
+}

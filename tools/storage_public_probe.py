@@ -88,6 +88,12 @@ def main():
 
         try:
             sp.wait_for_byte(port, 0xf3e0, 2, time.monotonic()+240)
+            command('df', 'Read-write mount')
+            if boot == 0:
+                command('save /BOOTRW 24', 'created and verified')
+            else:
+                command('save -c /BOOTRW 24', 'save: verified')
+            command('mount -o remount,ro 8 /', 'ready (read-only)')
             command('save /NOWRITE 1', 'Read-only filesystem', 1)
             command('df', 'Read-only mount')
             if boot == 0:
@@ -127,7 +133,7 @@ def main():
     for name, data in before_files.items():
         if after_files.get(name) != data: raise AssertionError(('existing file changed', name))
     expected = {name.encode(): bytes(i&255 for i in range(size)) for name, size in
-                (('WRTEST', 515), ('EMPTY', 0), ('ONE', 1), ('EXACT', 254), ('LIVE', 24))}
+                (('BOOTRW', 24), ('WRTEST', 515), ('EMPTY', 0), ('ONE', 1), ('EXACT', 254), ('LIVE', 24))}
     if {n: d for n, d in after_files.items() if n not in before_files} != expected:
         raise AssertionError('created files disagree with exact binary patterns')
     if args.disk.read_bytes() != original: raise AssertionError('source image changed')

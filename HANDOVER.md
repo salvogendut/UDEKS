@@ -15,9 +15,8 @@ and `rm`, and explicitly requested an issue/branch.
 
 Track [issue #47](https://github.com/salvogendut/UDEKS/issues/47) on
 `storage-0.4-file-commands`, worktree `build/storage-file-commands`, based on
-that merged main. Scope and the three delivery increments are at the top of
-the [roadmap](docs/ROADMAP.md). No runtime changes yet: existing disks still
-boot RO. Keep root main's unrelated edits and all original media untouched.
+that merged main. Scope is at the top of the [roadmap](docs/ROADMAP.md).
+Keep root main's unrelated edits and all original media untouched.
 
 First resolve the generic service contract and measured placement. The current
 bank-1 storage service has one open descriptor, so bounded copying requires an
@@ -27,6 +26,94 @@ collisions fail rather than overwrite; rename is same-filesystem only, and
 remove acts on an explicitly named regular file without wildcards. Qualify
 only disposable disk copies. Do not claim hardware acceptance of these new
 operations from the earlier create-only tests.
+
+### First implementation increment
+
+The user accepted this checkpoint on 2026-10-08 (test platform unspecified)
+and requested commit/push followed by service integration. Automated gates:
+1,382 host tests, normal boot/graphics/placement builds and the probes below.
+
+Normal disk bootstrap explicitly uses MOUNT 0.14/RW and clears the flags before
+OPEN or recovery UMOUNT. This changes the default, not unqualified MOUNT's
+semantics: device 9 `/mnt` remains RO unless requested RW; recovery bootfs stays
+RO. A runtime RO remount resets to the boot default on reboot. Published
+download images have not been replaced by this worktree's candidates.
+
+`build/storage-file-commands/build/boot/udeks.{d64,d71,d81}` (relative to the
+repository root) contains the candidate. On a **disposable copy**, boot, run
+`df` (RW), `save /RWTEST 24`, `mount -o remount,ro 8 /`, then
+`save /ROTEST 1` (Read-only filesystem). Reboot and run `save -c /RWTEST 24`.
+The three new commands are **not yet in these images**.
+
+Qualification in the worktree:
+
+- VICE true-drive 1541/1571/1581: `storage_public_probe.py` creates BOOTRW
+  before any remount, checks RO rejection, binary/empty writes and cold-boot
+  persistence, preserving all original files. Native 1986 rev `19386ef` uses
+  its ROM-backed 1571 with D64 and passes RW default, explicit RO rejection,
+  later writes, RESTORE/recurring CIA2 NMI, clock/input and reboot readback.
+- Missing-shell recovery boots bootfs, executes a program on independently
+  mounted device 9, unmounts and keeps console/IEC code intact. Its integrity
+  check now excludes only the five declared lease-state bytes and twelve
+  generation/error bytes, resolving the latter from the live build's map.
+  Every remaining code byte is still compared; negative tests cover corruption.
+- `storage-mutate-backend` builds an isolated PRG, not a production service.
+  `storage_mutate_probe.py` generates blank disposable media; its VICE
+  1541/1571/1581 runs validate nonempty SEQ/PRG copy, same-disk rename, exact
+  scratch counts, collisions, missing sources, write protection, both 16-byte
+  names (38-byte command), original/source survival and final byte/type equality.
+  The known-empty SEQ fixture takes the existing create/checked-close path;
+  stock DOS COPY would add CR. Real source-emptiness preflight is still due.
+
+Private implementation: `cbm_mutate.c` accepts exact padded physical names,
+never arbitrary DOS strings. It parses full DOS status, distinguishes zero/one
+scratched file and never retries a mutating command. Error track/sector values
+need not be zero (1581 write-protect reports 40/03). The conditional IEC
+command-only entry saves/restores the caller's CPU speed and serial/VIC bank
+bits, does not open/close data channel 2, and never CLOSEs command channel 15.
+DOS COPY can hold DATA low while doing disk work before accepting TALK 15:
+only this command-only build gets a larger bounded listener-busy wait (about
+150 seconds worst-case at 1 MHz). Bit/EOI/frame-edge waits remain unchanged.
+All mutation instrumentation/extensions are conditional and absent from the
+production transport. No public ABI version or operation is added yet.
+The long busy wait is a standalone electrical/protocol proof, **not** a
+production responsiveness qualification. Integration must define bounded
+service occupancy/completion (and lease ownership while DOS is busy); do not
+hold the live cooperative system inside that worst-case wait without a gate.
+
+**Remaining delivery:** service-owned source/destination namespace validation,
+RO/handle/generation checks, verified-empty detection, generic request/SDK
+contract, safe placement and disk-loaded `mv`/`cp`/`rm`, then public acceptance.
+Initial copy/rename stay on one mounted filesystem; destination collisions
+reject, removal is exact and nonrecursive. Partial files may remain after an
+error; no rollback, atomic-replacement or power-failure claim.
+
+The current production map has CODE 20 + STORAGECODE 71 + IECCODE 43 +
+STORAGEHIGH 41 = **175 spare code bytes**, BSS **384/384**. The new private
+backend alone is about 1.2 KiB of C code before service policy/SDK work. It
+cannot simply be appended to the existing link. Do not borrow native app
+allocations, the live shell/software stacks, graphics memory or recovery
+bootfs without an explicit measured ownership/delivery design. This placement
+work is the next feature-enabling task, not another UI optimization.
+
+Evidence: `bench/artifacts/2026-10-08-storage-files` holds the exact D64,
+private mutation PRG/map and production storage map; corresponding
+`bench/results/2026-10-08-storage-files` holds public/recovery/native reports,
+all three private-mutation reports and their final disposable media. Both
+directories have checked SHA256SUMS. The D64 hash starts `6a6afcdd3556`;
+the qualified private PRG starts `4ff4c77210ff`. `test_storage_file_checkpoint.py`
+audits those records and actual media, including all source/KEEP bytes and
+the zero-length destination. Reports distinguish private mechanism tests
+from unavailable public commands.
+
+Reproduce inside this worktree (build through `distrobox-enter my-distrobox`):
+`make -j8 boot graphics-apps-check placement-check storage-mutate-backend`.
+On the host run `python3 tools/storage_mutate_probe.py --drive all`; it creates
+its own disposable disks and never accepts an existing disk. Public boot
+qualification uses `tools/storage_public_probe.py` on copied boot media;
+`tools/root_namespace_probe.py --recovery` checks fallback. Native regression
+uses container `tools/1986_storage_smoke_build.py --storage-write` with sibling
+emulator/ROM paths and the candidate D64. No physical acceptance is claimed.
 
 ## Earlier handoff — sprite number and held painting, 2026-10-08
 

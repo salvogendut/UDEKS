@@ -107,10 +107,12 @@ After validating the protocol envelope, all other operation values return
 
 ## Create-only disk streams (0.14)
 
-Boot and unqualified `MOUNT` requests remain **read-only**. Nothing implicitly
-remounts a volume writable, including after reboot. Recovery bootfs is always
-read-only. The disk-loaded `mount` command exposes these opt-in flags; the
-small recovery command retains its earlier read-only contract.
+Unqualified `MOUNT` requests remain **read-only**. Normal disk bootstrap now
+explicitly requests ABI 0.14 and RW for the system root (normally device 8),
+then clears flags before subsequent OPEN/UMOUNT requests. Reboot restores that
+default; a runtime RO remount is not persisted. Recovery bootfs is always
+read-only. The disk-loaded `mount` command exposes these flags; the small
+recovery command retains its earlier read-only contract.
 
 - `MOUNT` (17): existing payload `device, path` and descriptor zero. Flags
   bit 0 (`RW`) grants create permission; bit 1 (`REMOUNT`) changes permission

@@ -5,7 +5,7 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'tools'))
-from storage_shell_probe import keyboard_queue_address, type_command, wait_keyboard_queue
+from storage_shell_probe import keyboard_queue_address, type_command, wait_keyboard_queue, check_driver_code
 
 MAP = '''keyboard.o:
     BSS               Offs=00007F  Size=000047  Align=00001  Fill=0000
@@ -21,6 +21,27 @@ _queue_count: .res 1,$00
 
 
 class StorageShellProbe(unittest.TestCase):
+    def test_driver_integrity_ignores_state_but_not_code_or_layout(self):
+        text = '''iec_lease.o:
+    IECCODE           Offs=000000  Size=000010  Align=00001  Fill=0000
+Segment list:
+IECCODE               00E300  00E31F  000020  00001
+Exports list by name:
+_udeks_storage_generations 00E310 RLA
+_udeks_storage_cleanup_error 00E31B RLA
+Exports list by value:
+'''
+        original = bytes(5)+bytes.fromhex('a0 00 f0 02 a0 01')+b'\xea'*5+b'\1'*11+b'\0'+b'\xea'*4
+        live = bytearray(original)
+        live[0:5] = b'\1\0\11\0\0'
+        live[0x19] = 42
+        check_driver_code(original, live, text)
+        for offset in (5, 15, 28, 31):
+            corrupt = bytearray(live); corrupt[offset] ^= 1
+            with self.assertRaises(AssertionError): check_driver_code(original, corrupt, text)
+        with self.assertRaises(ValueError): check_driver_code(original, live[:-1], text)
+        with self.assertRaises(ValueError): check_driver_code(original, live, text.replace('00E31B', '00E31C'))
+
     def test_queue_resolution_and_fail_closed_layout(self):
         self.assertEqual(keyboard_queue_address(MAP, ASSEMBLY), 0x9FA7)
         for text, asm in ((MAP.replace('keyboard.o', 'other.o'), ASSEMBLY),

@@ -28,8 +28,26 @@ and directory removal; `mv` is same-filesystem rename, not copy-and-delete.
 3. Qualify success/failure and reboot persistence on disposable images in
    VICE/1986, then provide the C128/Pi1541 acceptance checklist.
 
-This is the next feature slice, before the first disk-loaded non-kernel service.
-No runtime changes have landed yet; current boot images still mount `/` RO.
+**Branch progress:** normal boot now mounts `/` RW; explicit RO/remount and
+bootfs recovery still work. Fresh images pass VICE D64/D71/D81 public
+write/readback/reboot checks and native 1986 input/graphics/write regression.
+The private DOS rename/copy/scratch backend passes VICE on all three drive
+types, including collisions, missing files, write protection and exact binary
+SEQ/PRG bytes. It is not installed in the live storage service; **`mv`, `cp`
+and `rm` are not available yet**. The changed default needs user hardware
+acceptance; earlier create-only acceptance does not cover the new commands.
+
+**Next concrete delivery:** fit the generic filesystem operations into the
+storage service and ship the three commands together. The measured service
+has only 175 bytes of code headroom and no BSS slack, so placement is a real
+integration prerequisite. Preserve the four app allocations and stack guards;
+do not put raw DOS commands or filesystem policy into the command binaries.
+Use DOS COPY for nonempty same-disk sources and the existing exclusive-create
+writer for verified-empty sources (stock DOS COPY inserts CR for empty files).
+Cross-device copy is outside this first command slice. Keep atomic replacement,
+wildcards, directories and recursive deletion deferred.
+
+This remains the next feature slice, before the first disk-loaded non-kernel service.
 
 **Accepted checkpoint (2026-10-08):** the [sprite editor](XSPRDEF.md) now has
 fast pixel updates, confirmed whole-bank Save/Load (`SPRITES.SPR`), stock-BASIC

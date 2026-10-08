@@ -347,7 +347,6 @@ for nonrecursive single-invocation code. The SDK itself is nonreentrant.
 On a **disposable copy** of the new storage-branch boot image:
 
 ```text
-mount -o remount,rw 8 /
 df
 save /WRTEST 515
 save /EMPTY 0
@@ -359,7 +358,7 @@ The repeated create must report `File exists`. SAVE writes the deterministic
 binary sequence 0,1,…,255 repeated, checks CLOSE, and verifies exact readback.
 It is a qualification/example command, not redirection or a general file-copy
 utility. Optional length is 0–4096, default 515. After reboot, the root mount
-is read-only again; `save -c /WRTEST 515` and `save -c /EMPTY 0` check persistence
+defaults to read/write again; `save -c /WRTEST 515` and `save -c /EMPTY 0` check persistence
 without creating or modifying files. For a separate disk use `mount -o rw 9
 /mnt` and `/mnt/NAME`. Ordinary files only; no overwrite/append/delete.
 On errors a partial file may remain; there is no rollback or power-loss guarantee.

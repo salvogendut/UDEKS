@@ -28,7 +28,12 @@
         .ifdef UDEKS_IEC_WRITE
         .export _udeks_iec_listen_file, _udeks_iec_write_byte
         .export _udeks_iec_unlisten, _udeks_iec_finish
+        .ifdef UDEKS_IEC_MUTATE
+        .export _udeks_iec_begin_command
+IEC_FILENAME_MAX = 38
+        .else
 IEC_FILENAME_MAX = 22
+        .endif
         .else
 IEC_FILENAME_MAX = 16
         .endif
@@ -68,6 +73,12 @@ _udeks_iec_probe_phase: .res 1
 _udeks_iec_probe_subphase: .res 1
 _udeks_iec_probe_bus: .res 1
 _udeks_iec_probe_lines: .res 1
+        .ifdef UDEKS_MUTATE_PROBE
+        .export _udeks_iec_probe_sent, _udeks_iec_probe_eoi, _udeks_iec_probe_defer
+_udeks_iec_probe_sent: .res 1
+_udeks_iec_probe_eoi = iec_eoi
+_udeks_iec_probe_defer = iec_defer
+        .endif
 
         .ifdef UDEKS_STORAGE_MODULE
         .segment "IECCODE"
@@ -164,6 +175,16 @@ wait_data_low:
         rts
 wait_data_high:
         lda #$08
+        .ifdef UDEKS_IEC_MUTATE
+        ; DOS COPY runs inside the drive before it accepts TALK 15. This
+        ; is listener-busy time, not a bit/frame acknowledgement. Bound it
+        ; separately for command-only transactions; never resend a command.
+        ldx iec_defer
+        cpx #2
+        bne :+
+        lda #$ff
+:
+        .endif
         sta iec_busy_rounds
 @round:
         ldx #$00
@@ -217,6 +238,9 @@ wait_clock_high_start:
 ; A=byte, C=1 if the last byte of a LISTEN data stream (EOI). Returns A=0
 ; on success, A=NO_DEVICE for absent listener, A=TIMEOUT otherwise.
 send_byte:
+        .ifdef UDEKS_MUTATE_PROBE
+        sta _udeks_iec_probe_sent
+        .endif
         sta iec_value
         lda #$00
         rol a
@@ -686,6 +710,37 @@ _udeks_iec_command:
         rts
 
         .ifdef UDEKS_IEC_WRITE
+        .ifdef UDEKS_IEC_MUTATE
+; Start a command-only transaction. No OPEN/CLOSE of a data channel, and
+; never CLOSE 15 (which would close unrelated drive channels). All actual
+; protocol waits still use the ordinary bounded send/read primitives.
+_udeks_iec_begin_command:
+        cmp #8
+        bcc @bad
+        cmp #12
+        bcs @bad
+        ldx iec_open
+        bne @bad
+        ldx iec_pending
+        bne @bad
+        sta iec_device
+        lda #2
+        sta iec_defer
+        lda SPEED_REG
+        sta iec_saved_speed
+        and #$fe
+        sta SPEED_REG
+        lda CIA2_DDRA
+        ora #$38
+        sta CIA2_DDRA
+        jsr release_bus
+        lda #0
+        tax
+        rts
+@bad:   lda #IEC_BAD_STATE
+        ldx #0
+        rts
+        .endif
 ; Prepared channel 2 remains owned across status reads and write chunks.
 _udeks_iec_listen_file:
         lda iec_pending
@@ -727,6 +782,9 @@ _udeks_iec_finish:
         lda #0
         sta iec_open
         sta iec_pending
+        .ifdef UDEKS_IEC_MUTATE
+        sta iec_defer
+        .endif
         jsr release_bus
         lda iec_saved_speed
         sta SPEED_REG

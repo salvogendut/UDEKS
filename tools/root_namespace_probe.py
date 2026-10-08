@@ -10,7 +10,7 @@ import time
 
 from build_d71 import blank_d71, d64_compatibility_image, install_prg_file
 from disk_shell_fixture import build_fixture
-from storage_shell_probe import sp, byte, keyboard_queue_address, type_command
+from storage_shell_probe import sp, byte, keyboard_queue_address, type_command, check_driver_code
 from task_waitpid_probe import scheduler_symbols
 from boot_staging_map import segment_bounds
 from vice_capture import choose_port, monitor_command
@@ -115,7 +115,7 @@ def main():
         command('echo namespace-ok', ('namespace-ok',), builtin=True)
         driver = (ROOT/'build/storage/driver.bin').read_bytes()
         live = sp.capture_blocks(port, [(work/'driver-after.bin', 0xE300, 0xE300+len(driver)-1, 'worker')])[0]
-        if live != driver: raise AssertionError('shell stack corrupted IEC driver')
+        check_driver_code(driver, live, (ROOT/'build/storage/module.map').read_text())
         (work/'result.json').write_text(json.dumps(dict(drive=args.drive, recovery=args.recovery,
             disk_sha256=hashlib.sha256(image).hexdigest(), data_sha256=hashlib.sha256(data_disk.read_bytes()).hexdigest(),
             boot_console=boot, driver_intact=True, commands=records), indent=2)+'\n')

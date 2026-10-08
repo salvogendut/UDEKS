@@ -1,5 +1,33 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 STORAGE_BUILD := build/storage
+# Private mutation backend qualification. Not installed in the storage module:
+# the service preflight/placement and public command ABI are a later increment.
+MUTATE_BUILD := build/bench/iec-mutate
+MUTATE_FLAGS := -t none --cpu 6502 --standard c99 -Os -I include --static-locals -D UDEKS_IEC_WRITE -D UDEKS_IEC_MUTATE -D UDEKS_MUTATE_PROBE
+MUTATE_OBJECTS := $(addprefix $(MUTATE_BUILD)/,entry.o main.o cbm_mutate.o cbm_file.o cbm_write.o iec_slow.o)
+.PHONY: storage-mutate-backend storage-mutate-probe
+storage-mutate-backend: $(MUTATE_BUILD)/mutate.prg
+storage-mutate-probe:
+	$(PYTHON) tools/storage_mutate_probe.py
+$(MUTATE_BUILD):
+	mkdir -p $@
+$(MUTATE_OBJECTS): mk/storage.mk include/udeks/cbm_mutate.h include/udeks/iec_slow.h
+$(MUTATE_BUILD)/entry.o: bench/iec-write/entry.s | $(MUTATE_BUILD)
+	$(CA65) --cpu 6502 -o $@ $<
+$(MUTATE_BUILD)/main.o: bench/iec-mutate/main.c | $(MUTATE_BUILD)
+	$(CL65) $(MUTATE_FLAGS) -c -o $@ $<
+$(MUTATE_BUILD)/cbm_mutate.o: src/services/filesystem/cbm_mutate.c | $(MUTATE_BUILD)
+	$(CL65) $(MUTATE_FLAGS) -c -o $@ $<
+$(MUTATE_BUILD)/cbm_file.o: src/services/filesystem/cbm_file.c include/udeks/cbm_file.h | $(MUTATE_BUILD)
+	$(CL65) $(MUTATE_FLAGS) -c -o $@ $<
+$(MUTATE_BUILD)/cbm_write.o: src/services/filesystem/cbm_write.c include/udeks/cbm_write.h | $(MUTATE_BUILD)
+	$(CL65) $(MUTATE_FLAGS) -c -o $@ $<
+$(MUTATE_BUILD)/iec_slow.o: src/services/filesystem/iec_slow.s | $(MUTATE_BUILD)
+	$(CA65) --cpu 6502 -D UDEKS_IEC_WRITE -D UDEKS_IEC_MUTATE -D UDEKS_MUTATE_PROBE -o $@ $<
+$(MUTATE_BUILD)/mutate.bin: $(MUTATE_OBJECTS) cfg/8502-iec-write.cfg
+	$(CL65) -t none -C cfg/8502-iec-write.cfg -m $(MUTATE_BUILD)/mutate.map -o $@ $(MUTATE_OBJECTS)
+$(MUTATE_BUILD)/mutate.prg: $(MUTATE_BUILD)/mutate.bin tools/bin_to_prg.py
+	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
 # Separate backend qualification; public writes use the guarded boot service.
 WRITE_BUILD := build/bench/iec-write
 WRITE_CFLAGS := -t none --cpu 6502 --standard c99 -Os -I include --static-locals -D UDEKS_IEC_WRITE

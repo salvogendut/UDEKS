@@ -23,9 +23,11 @@ Read the [dedication](DEDICATION.md).
 
 > [!IMPORTANT]
 > This is an experimental native OS, not a general-purpose Unix or a finished
-> microkernel distribution. Many services are still preloaded. Storage defaults
-> to read-only; opt-in create-only writes have passed the functional checklist
-> on C128/PI1541. Task capacity is limited and graphical repaints
+> microkernel distribution. Many services are still preloaded. Fresh builds mount
+> the normal system root read/write; use disposable copies while testing.
+> Create-only writes have passed the functional checklist on C128/PI1541;
+> the changed boot default passes VICE/1986 but needs fresh hardware acceptance.
+> Task capacity is limited and graphical repaints
 > can be slow.
 
 ## Download and boot
@@ -93,7 +95,7 @@ an 8× editor and 1× preview. It uses the same generic app slots, not a special
 kernel entry. The current sprite number stays visible beside the preview;
 hold the primary mouse button to draw or erase a stroke. Click S/L for
 confirmed Save/Load of the entire bank as
-`/SPRITES.SPR`. Saving requires `mount -o remount,rw 8 /` and **creates only**:
+`/SPRITES.SPR`. Saving **creates only** and the normal root is writable by default:
 existing files are never overwritten. B keeps edits while returning to the list.
 The list's **E** button exports `SPRITES.BSV` for stock C128 BASIC:
 `BLOAD "SPRITES.BSV",B0,P3584`. It creates a genuine PRG file without changing
@@ -102,6 +104,12 @@ Use a freshly built image from `build/boot/`; the published downloads above
 do not include these editor features. The larger editor joins two free allocations,
 leaving room for two compatible-sized peers; launch it first. See its guide
 for safe disposable-disk testing and file-format details.
+
+Use `mount -o remount,ro 8 /` to make the system root read-only, and
+`mount -o remount,rw 8 /` to enable writes again. Recovery bootfs stays read-only;
+an unqualified `mount 9 /mnt` also remains read-only. The `mv`, `cp` and `rm`
+commands are being implemented in [issue #47](https://github.com/salvogendut/UDEKS/issues/47)
+and are not yet in the disk images.
 
 A new `.BIN` launches as `name` or `name &`
 into any free **compatible-sized** allocation, without an OS name-table entry.

@@ -12,12 +12,13 @@ Cold-boot a freshly built worktree image: `build/boot/udeks.d64`, `.d71` or
 Use a **disposable disk copy** for write tests.
 
 ```text
-mount -o remount,rw 8 /
 xsprdef &
 ```
 
-The boot mount is read-only by default. Loading does not require a writable
-mount; saving does. Mouse port 1 / joystick port 2 are unchanged.
+Fresh builds mount the normal system root read/write by default. Loading does
+not require a writable mount; saving does. If you explicitly remounted RO,
+use `mount -o remount,rw 8 /` before saving. Recovery bootfs remains read-only.
+Mouse port 1 / joystick port 2 are unchanged.
 
 - Click a numbered button to edit one of eight 24×21 monochrome sprites.
   Each magnified cell toggles one pixel; the framed preview is the 1× image.

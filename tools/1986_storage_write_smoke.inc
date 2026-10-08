@@ -13,6 +13,8 @@ static void write_command(const char *line,unsigned status,const char *expected)
 static void storage_write_smoke(void) {
     wait_byte(0xf3e0,2,"startup incomplete"); idle();
     require(byte(0xf3dd)==1 && !console_contains("RC failed"),"disk shell/startup failed");
+    write_command("df",0,"Read-write mount");
+    write_command("mount -o remount,ro 8 /",0,"ready (read-only)");
     write_command("save /denied 1",1,"Read-only filesystem");
     write_command("df",0,"Read-only mount");
     if(getenv("UDEKS_WRITE_REBOOT")) {
@@ -51,5 +53,5 @@ static void storage_write_smoke(void) {
     require(!byte(0xf11b),"task canary failure");
     require(snapshot_save(machine,snapshot_path)==SNAPSHOT_OK,"save evidence");
     require(drive_attach_disk(&machine->drive,NULL)==0,"flush/detach written disk");
-    puts("PASS native 1986 public binary/empty write/readback, native input, RO defaults");
+    puts("PASS native 1986 public binary/empty write/readback, native input, RW boot and explicit RO");
 }

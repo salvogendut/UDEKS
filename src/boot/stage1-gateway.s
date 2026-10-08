@@ -1736,12 +1736,19 @@ boot_shell_default_device:
 boot_shell_device_ready:
         sta BOOT_SHELL_DEVICE
         sta DISK_PAYLOAD
+        lda #14                     ; opt-in mount permissions, not legacy 0.8
+        sta DISK_REQUEST+5
+        lda #1                      ; normal disk root defaults to read/write
+        sta DISK_REQUEST+13
         lda #'/'
         sta DISK_PAYLOAD+1
         lda #2
         sta DISK_REQUEST+10
         lda #17                     ; root mount, before the shell and /etc/rc
         jsr boot_shell_request
+        ldx #0
+        stx DISK_REQUEST+13          ; never leak mount flags into OPEN/UMOUNT
+        cmp #0                      ; preserve the returned errno, not LDX's Z
         beq boot_shell_mounted
         lda #TASK_IO_ERROR
         sta BOOT_SHELL_ERROR

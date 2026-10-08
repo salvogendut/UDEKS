@@ -1,0 +1,17 @@
+{
+  "drive": "1571",
+  "disk_sha256": "6a6afcdd3556c6368fc2087cd504851c02ec3d9d15725b73f38027ad5005b794",
+  "written_disk_sha256": "92d332e603f5661ada4d246118cb3d18c9bac64aaa8e60c2ed2b30439c9bb03f",
+  "emulator_revision": "19386ef83d43f2770fd503541ef7ee26d4ae1249",
+  "phases": [
+    "create",
+    "reboot"
+  ],
+  "existing_files_unchanged": 23,
+  "created": {
+    "BINARY": 515,
+    "ZERO": 0,
+    "NMITEST": 515,
+    "GRAPHICS": 24
+  }
+}

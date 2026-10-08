@@ -139,9 +139,11 @@ disks and results are preserved under `bench/{artifacts,results}/2026-09-30-root
 
 ## Create-only writes (Storage 0.3 / UTRQ 0.14)
 
-The current branch adds explicit writable mount/remount permission and
-create-exclusive ordinary data files. Boot and recovery defaults remain RO;
-the namespace and single serialized descriptor do not change. See the
+Storage 0.3 added explicit writable mount/remount permission and
+create-exclusive ordinary data files. The Storage 0.4 branch now explicitly
+requests RW for the normal disk root at boot; recovery bootfs and unqualified
+MOUNT requests remain RO. Runtime RO remounts do not persist across reboot.
+The namespace and single serialized descriptor do not change. See the
 [exact public request contract](task-request.md#create-only-disk-streams-014)
 and [qualification/limits](../docs/STORAGE-0.3.md). The earlier placement/read-only
 qualification above describes that milestone, not the current guarded writer.

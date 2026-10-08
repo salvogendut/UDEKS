@@ -2431,6 +2431,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 check:
 	$(PYTHON) -m py_compile tools/storage_lease_probe.py tools/storage_owner_probe.py
 	$(PYTHON) -m py_compile tools/storage_public_probe.py
+	$(PYTHON) -m py_compile tools/storage_mutate_probe.py
 	$(PYTHON) -m py_compile tools/storage_failure_probe.py
 	$(PYTHON) -m py_compile tools/storage_window_probe.py
 	$(PYTHON) -m py_compile tools/storage_write_probe.py
