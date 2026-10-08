@@ -72,3 +72,10 @@ class Startup(unittest.TestCase):
         commands = [line for line in self.lines() if not line.lstrip().startswith(b'#')]
         self.assertEqual(commands, [])
         self.assertEqual((self.calls()[17], self.calls()[18]), (0, 0))
+
+    def test_service_script_passes_actual_parser_and_loads_after_close(self):
+        text = (ROOT/'user/etc/rc-services').read_bytes()
+        self.assertEqual(self.start(text), 1)
+        self.assertEqual(self.calls()[9], 1)
+        commands = [line for line in self.lines() if not line.startswith(b'#')]
+        self.assertEqual(commands, [b'svc load /TIME.SVC'])

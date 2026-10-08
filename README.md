@@ -21,6 +21,11 @@ Read the [dedication](DEDICATION.md).
 
 **[Roadmap](docs/ROADMAP.md)** · **[Documentation](docs/README.md)** · **[Build guide](docs/BUILDING.md)**
 
+Opt-in preview: a [disk-loaded time service](abi/services.md#coherent-boot-integration-and-manual-acceptance).
+`make service-boot` builds separate test images; normal `make boot` still uses
+resident timekeeping pending the default-boot cutover. This is the first service extraction,
+not yet a general-purpose module loader.
+
 > [!IMPORTANT]
 > This is an experimental native OS, not a general-purpose Unix or a finished
 > microkernel distribution. Many services are still preloaded. Fresh builds mount

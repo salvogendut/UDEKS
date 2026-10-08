@@ -83,6 +83,24 @@ emulators and on hardware remains required before this milestone is closed.
 
 ### Publishing disk images
 
+The #49 disk-time experiment has a separate, explicitly opt-in build:
+
+```sh
+distrobox-enter my-distrobox -- make service-boot
+python3 tools/service_boot_probe.py --format d64
+```
+
+Run from the `services-0.1-disk-module` worktree. Fresh complete builds and
+their matching maps live under `build/services/boot/candidate-*/source`;
+`latest.json` identifies the successful candidate. Convenient test copies are
+`build/services/boot/udeks.d64`, `.d71`, `.d81`. They load `TIME.SVC` using
+`RC.ETC`, unlike normal `build/boot` media. Do not enable `DISK_TIME=1` manually
+in an existing build or splice the earlier raw overlay links into boot disks.
+Do not publish these as the normal release before user/hardware acceptance.
+See the [manual checklist](../abi/services.md#coherent-boot-integration-and-manual-acceptance).
+
+### Normal published images
+
 Fresh builds also produce `build/boot/udeks.d81` (819,200 bytes), for a 1581
 or VICE configured with drive 8 type **1581**. See [D81 format and tests](D81.md).
 Do not select this format for a Pi1541 configured as a 1541.

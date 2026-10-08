@@ -13,9 +13,43 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
-**Current user-requested feature (2026-10-08):**
+**Active architectural feature (2026-10-08):**
+[#49 — first disk-loaded non-kernel service](https://github.com/salvogendut/UDEKS/issues/49),
+branch `services-0.1-disk-module`, worktree `build/disk-service`.
+The user selected the time-of-day service (`date`/`xclock`), with scheduler
+ticks explicitly outside its lifetime. The independent C/assembly module now
+builds and passes an exhaustive CPU-level clock/lifecycle proof; image-format
+validation and a measured startup-overlay placement direction are documented
+in the [service contract](../abi/services.md#disk-time-candidate--issue-49-2026-10-08).
+Checkpoints `2ff8c01`, `ed7a1f7`, `9e56af5` and `0e31b82` are pushed. Permanent startup retirement and
+registration/stop/reload are CPU-tested; VICE qualifies the normal boot guard.
+**Boot integration now available as isolated candidate images:** the bounded
+UTRQ operation, foreground ownership/exit cleanup, runtime bridge and independent
+`svc status|stop|load` command now pass CPU/host tests. Actual normal/panic links
+leave 2 resident bytes after that glue, without moving any app/stack/graphics
+boundary. The independent module uses 717 of its 728-byte slot. Tests retain
+all bounds, checksum and lifecycle checks; the command fits the existing console
+allocation. This candidate is **not installed by normal boot**.
+
+`make service-boot` produces coherent D64/D71/D81 under `build/services/boot`,
+with all map-bound delivery rebuilt. `/etc/rc` loads `TIME.SVC`; `date` fails
+clearly while offline and `xclock` retires instead of displaying stale time.
+VICE passes real disk loading, stop/reload, missing/corrupt files and a disk-only
+module replacement without relinking the kernel. D64 retains 19 free blocks
+while omitting only `xsprdef`; D71/D81 retain the complete app selection.
+
+Native 1986 D64/1571 also passes keyboard/1351 drag, stop/reload and console
+recovery. [Preserved evidence](../bench/results/2026-10-08-disk-service/README.md).
+**Accepted for merge:** the user confirmed "all is well" and requested PR/merge
+of this opt-in integration. The test platform was not specified; do not infer
+a new physical-C128 result. Next concrete milestone: normal-boot cutover with
+clean-build/migration qualification. Issue #49 remains open until that part is
+delivered. This first fixed time slot is not yet an arbitrary service allocator.
+
+**Completed and merged (2026-10-08):**
 [#47 — writable root and file commands](https://github.com/salvogendut/UDEKS/issues/47),
-branch `storage-0.4-file-commands`, worktree `build/storage-file-commands`.
+via [PR #48](https://github.com/salvogendut/UDEKS/pull/48), merge `672110d`.
+Historical feature worktree: `build/storage-file-commands`.
 Make the normal device-8 `/` mount read/write by default and add independent
 disk-loaded `mv`, `cp` and `rm`. Explicit RO mounts and read-only bootfs recovery
 remain supported. Initial commands reject implicit overwrite, wildcard removal
@@ -54,8 +88,7 @@ hardware test. Track the periodic-NMI loader failure separately before claiming
 that stress qualification. Cross-device copy, overwrite, directories, wildcards
 and recursive deletion stay outside this slice.
 
-After merging #47, the next architectural feature is the first disk-loaded
-non-kernel service.
+The next architectural feature is now active as #49 above.
 
 **Accepted checkpoint (2026-10-08):** the [sprite editor](XSPRDEF.md) now has
 fast pixel updates, confirmed whole-bank Save/Load (`SPRITES.SPR`), stock-BASIC

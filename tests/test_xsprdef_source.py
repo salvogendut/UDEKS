@@ -36,7 +36,8 @@ class XsprdefSourceTests(unittest.TestCase):
     def test_disk_builder_validates_and_installs_the_editor(self):
         builder = (ROOT/'tools/build_d71.py').read_text()
         self.assertIn('validate_native_app(xsprdef)',builder)
-        self.assertIn('install_prg_file(image, "XSPRDEF.BIN", xsprdef',builder)
+        self.assertIn('install("XSPRDEF.BIN", xsprdef',builder)
+        self.assertIn('max_track=file_tracks',builder)
 
     def test_retained_command_cap_is_consistent(self):
         self.assertIn('#define UDEKS_RETAINED_COMMANDS 160u',

@@ -8,30 +8,24 @@
 
         .import _udeks_service_start_all_once
         .export _udeks_service_start_all
-
-SERVICE_STATUS = $f090
-SERVICE_STATE = SERVICE_STATUS + 5
-SERVICE_READY = $02
-
-        .segment "RODATA"
-service_magic:
-        .byte 'S', 'R', 'E', 'G'
+        .export _udeks_service_start_phase, _udeks_service_start_result
 
         .segment "CODE"
 _udeks_service_start_all:
-        ldx #$03
-check_magic:
-        lda SERVICE_STATUS,x
-        cmp service_magic,x
-        bne start_services
-        dex
-        bpl check_magic
-        lda SERVICE_STATE
-        cmp #SERVICE_READY
-        bne start_services
+attempted:
         lda #$00
-        tax
+        bne completed
+        ; Private, monotonic latch in the RAM-resident veneer. Diagnostic
+        ; corruption (or a failed start) must never re-enter retired code.
+        ; Phase 1 also rejects recursion while the startup frame is live.
+        inc attempted+1
+        jsr _udeks_service_start_all_once
+        sta cached_result+1
+        inc attempted+1             ; phase 2 only AFTER the frame returns
+completed:
+cached_result:
+        lda #$01                    ; reentrant call returns a nonzero result
+        ldx #$00
         rts
-
-start_services:
-        jmp _udeks_service_start_all_once
+_udeks_service_start_phase = attempted+1
+_udeks_service_start_result = cached_result+1

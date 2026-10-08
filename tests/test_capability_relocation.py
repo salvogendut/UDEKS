@@ -57,10 +57,16 @@ class CapabilityRelocationContractTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn(".export _udeks_service_start_all", veneer)
-        self.assertIn("cmp #SERVICE_READY", veneer)
-        self.assertIn("jmp _udeks_service_start_all_once", veneer)
-        ready_path = veneer.split("cmp #SERVICE_READY", 1)[1]
-        self.assertLess(ready_path.index("rts"), ready_path.index("start_services:"))
+        # Public SREG diagnostics must not authorize a second call into
+        # startup code whose original storage has since been reused.
+        self.assertNotIn("cmp #SERVICE_READY", veneer)
+        self.assertIn("bne completed", veneer)
+        self.assertEqual(veneer.count("inc attempted+1"), 2)
+        self.assertLess(veneer.index("inc attempted+1"),
+                        veneer.index("jsr _udeks_service_start_all_once"))
+        self.assertLess(veneer.index("sta cached_result+1"),
+                        veneer.rindex("inc attempted+1"))
+        self.assertIn("_udeks_service_start_phase = attempted+1", veneer)
         self.assertIn(
             "unsigned char udeks_service_start_all_once(void)", registry
         )

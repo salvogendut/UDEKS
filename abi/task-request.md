@@ -1,5 +1,15 @@
 # Bank-task request ABI 0.18
 
+## Experimental service control (0.19, not normal boot)
+
+Issue #49's isolated `UDEKS_DISK_TIME` candidate extends the existing record
+and `$CF30` gate with operation **28**, without renumbering older operations.
+Normal boot still accepts only minors 0–18. The candidate accepts 0–19;
+operation 28 requires minor 19 specifically. Its contract and the foreground
+runtime bridge are in [services.md](services.md#candidate-request-and-disk-command).
+Do not load the new service into a baseline kernel: its provisional reservation
+overlaps baseline live data. The standalone command probes support first.
+
 ## Exact-file mutations (0.18)
 
 Issue #47's boot builds enable `UDEKS_STORAGE_MUTATIONS` and minor **0.18**.

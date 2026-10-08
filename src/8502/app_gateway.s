@@ -24,6 +24,13 @@
         .import _udeks_window_take_click
         .import __BSS_RUN__, __BSS_SIZE__
         .assert __BSS_RUN__+__BSS_SIZE__ <= $96a8, error, "resident reaches boot assets"
+        .ifdef UDEKS_DISK_TIME
+        .include "../services/module/time_slot.inc"
+        .assert __BSS_RUN__+__BSS_SIZE__ <= SLOT, error, "resident reaches time-service overlay"
+        .import __SERVICEBOOT_RUN__, __SERVICEBOOT_SIZE__
+        .assert __SERVICEBOOT_RUN__ = SLOT, error, "service startup overlay moved"
+        .assert __SERVICEBOOT_RUN__+__SERVICEBOOT_SIZE__ <= LIMIT, error, "service startup reaches boot assets"
+        .endif
 
         .import addeqysp, addysp, aslax2
         .import decsp1, decsp2, decsp3, decsp4, decsp5, decsp6, decsp7, decsp8

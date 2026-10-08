@@ -31,6 +31,9 @@ static unsigned char table_offset;
 static unsigned char start_result;
 static unsigned char poll_invoked;
 
+#ifdef UDEKS_SERVICE_BOOT_SPLIT
+#pragma code-name(push, "SERVICEBOOT")
+#endif
 static void registry_status_begin(void)
 {
     unsigned char offset;
@@ -48,6 +51,9 @@ static void registry_status_begin(void)
     STATUS_BYTE(14) = UDEKS_SERVICE_ABI_MINOR;
     STATUS_BYTE(17) = udeks_service_count;
 }
+#ifdef UDEKS_SERVICE_BOOT_SPLIT
+#pragma code-name(pop)
+#endif
 
 static unsigned char registry_fail(unsigned char code)
 {
@@ -57,6 +63,9 @@ static unsigned char registry_fail(unsigned char code)
     return code;
 }
 
+#ifdef UDEKS_SERVICE_BOOT_SPLIT
+#pragma code-name(push, "SERVICEBOOT")
+#endif
 static unsigned char descriptor_is_valid(void)
 {
     if (descriptor[UDEKS_SERVICE_MAGIC0] != 'U' ||
@@ -125,6 +134,9 @@ unsigned char udeks_service_start_all_once(void)
     STATUS_BYTE(5) = UDEKS_SERVICE_STATE_READY;
     return 0;
 }
+#ifdef UDEKS_SERVICE_BOOT_SPLIT
+#pragma code-name(pop)
+#endif
 
 unsigned char udeks_service_poll_all(void)
 {
