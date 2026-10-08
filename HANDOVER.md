@@ -13,7 +13,8 @@ Issue [#49](https://github.com/salvogendut/UDEKS/issues/49), branch
 merged `672110d`. Root main's unrelated edits are untouched. The user selected
 time-of-day service extraction, not scheduler timing, then authorized work.
 
-First implementation checkpoint: `make time-module` builds an independent
+First implementation checkpoint **committed and pushed as `2ff8c01`**:
+`make time-module` builds an independent
 797-byte image with 10-byte BSS, its own cc65 code helpers and the fixed UAPP
 0.1 zero-page contract. No private kernel-map import bridge. The assembly
 setter/TI policy moved to a shared include; normal kernel code and all three
@@ -30,19 +31,52 @@ hardware. Host tests validate the bounded image/header and rejection cases.
 Placement direction: `make time-module-placement` measures 518 boot-only
 registry bytes, 223 live registry bytes and unchanged 8-byte registry BSS.
 Only the compile-only candidate enables the split. Reusing the startup code's
-region after permanent retirement gives at most 364 resident bytes for new
-manager/wrappers/state below the provisional `$9300-$96A7` reservation. This is
-NOT an actual linked resident manager yet. Do not claim those bytes are free
-in the running baseline. The irreversible startup guard and absence of live
-startup frames must be proved before overlaying them.
+region after permanent retirement originally budgeted 364 resident bytes for
+new manager/wrappers/state below `$9300-$96A7`. This is NOT an actual linked
+resident manager. Do not claim those bytes are free in the running baseline.
 
-Next: link that real overlay/guard/dispatch, add the disk-side loader and
+Next increment, **uncommitted working tree**: `service_start.s` now uses a
+21-byte private one-shot latch. It caches success/failure permanently, rejects
+recursion and distinguishes active startup frames from returned startup.
+This is the only new production behavior; the resident clock remains installed.
+Normal/panic builds and graphics/placement gates pass. Current images are no
+longer byte-identical to PR #48 because of that guard change.
+`make check` passes 1,514 host tests; the standalone exhaustive clock check
+also still passes. No new app-slot, common-RAM or stack reservation is used.
+
+`src/services/module/time_slot.s` is a candidate registration/lifecycle core,
+not yet linked into boot or exposed at a syscall. It validates actual received
+length separately from the header, checks metadata/checksum/vector bounds,
+zeros BSS, caches entries, starts then publishes, and supports abort/stop/reload
+with fail-closed dispatch. `make time-slot-check` executes it under sim6502:
+436 host-oracle validation cases, all 256 startup results, lifecycle errors,
+sealed-module reload and checksum negative control; 2,138 protected calls.
+The zero-page/runtime isolation and RAM-backed-CIA limitations still apply.
+
+Measured integration limit: the smaller guard raises the budget to **374**;
+the candidate manager is **548** (527 CODE, 20 RODATA, 1 BSS), so it exceeds
+that by **174 bytes before request glue**. `time-module-placement` now reports
+that failure explicitly instead of treating standalone assembly as proof of
+fit. Keep app/stack/graphics reservations unchanged. Do not promote the
+candidate or merely bypass the bound to enable disk loading.
+
+Host `make service-start-probe` passes on a disposable D71 in Flatpak VICE:
+date set/read, background xclock, cat, clock shutdown, and re-entry after SREG
+corruption plus JAM poisoning of retired startup. Evidence/report lives under
+`build/services/time/vice/startup-969d9a6i`; CPU and size reports are adjacent.
+The test must corrupt and call atomically: ordinary registry polling can
+legitimately change SREG between separate monitor sessions. The final monitor
+payload is bounded to 34 bytes. These fixture issues were fixed before the
+passing run; they were not production boot failures. No VICE process remains.
+
+Next: resolve the measured manager placement, link the real overlay/dispatch,
+add request ownership/cleanup and the disk-side loader with
 bounded-RC startup, and enforce fail-closed `date`/`xclock` behavior while the
 service is absent. Then qualify VICE/1986 and provide a hardware test image.
 Keep the loader/policy out of the kernel where possible; do not expand app or
 stack reservations. Candidate layout/contract and remaining lifecycle gates:
 [abi/services.md](abi/services.md#disk-time-candidate--issue-49-2026-10-08).
-No new manual or physical-hardware acceptance. Changes are not committed.
+No new manual or physical-hardware acceptance; no disk-loading test image yet.
 
 ## Previous handoff — writable root and file commands, 2026-10-08
 

@@ -2431,7 +2431,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 check:
-	$(PYTHON) -m py_compile tools/service_image.py tools/build_time_module.py tools/check_time_module.py tools/time_module_layout.py
+	$(PYTHON) -m py_compile tools/service_image.py tools/build_time_module.py tools/check_time_module.py tools/time_module_layout.py tools/check_time_slot.py tools/service_start_probe.py
 	$(PYTHON) -m py_compile tools/storage_lease_probe.py tools/storage_owner_probe.py
 	$(PYTHON) -m py_compile tools/storage_public_probe.py
 	$(PYTHON) -m py_compile tools/storage_mutate_probe.py

@@ -41,7 +41,36 @@ The independent host validator rejects wrong identity/version, reserved bits,
 truncation/trailing bytes, overflow, bad checksums and vectors pointing outside
 emitted code (including header/BSS). It never mutates its input. The checksum
 detects accidental corruption, not malicious code. Runtime validation and
-registration are **not implemented by this host validator**.
+registration are **not implemented by this host validator**; the separately
+CPU-tested candidate below is not yet connected to any production request gate.
+
+### Candidate lifecycle core (not a published ABI)
+
+`src/services/module/time_slot.s` implements one bounded slot. Its internal
+control operations are status/no-op, begin, commit and stop. Commit receives
+the actual transferred byte count separately from the header, rejects partial
+or trailing data, validates every header/vector/checksum field, clears only
+the declared BSS, caches validated vectors, runs start, and publishes last.
+The future disk loader must bound every write; this core cannot undo an
+out-of-bounds write performed before commit. Caller/transaction ownership and
+cleanup on interrupted loading still need integration on the request boundary.
+
+Loading/unavailable slots cannot execute a time request or poll callback.
+Duplicate begin/published commit is busy. Malformed commit retires the load to
+offline without executing code or changing CIA registers. Stop invalidates the
+snapshot even if the callback fails; a poll failure unpublishes the optional
+service and marks its snapshot erroneous, rather than panicking the kernel.
+The scheduler's tick source is unrelated. Cached vectors avoid redispatching
+through a subsequently modified header; this is not protection against code
+writing arbitrary RAM on a machine without an MPU.
+
+The normal boot's startup veneer now uses a private permanent latch instead
+of public `SREG` diagnostics: 0=not attempted, 1=inside startup, 2=returned.
+Both successful and failed first results are cached. Re-entry during phase 1
+returns nonzero; later calls never enter retired startup instructions, even
+with damaged diagnostics or an unusable cc65 software stack. Module begin is
+permitted only after phase 2 with a successful result. This veneer alone is
+production-linked; the candidate manager and startup overlay are not.
 
 ### Placement and lifetime gate
 
@@ -59,17 +88,22 @@ only a mutable READY diagnostic is not sufficient. The module must not load
 from inside a still-active startup frame.
 
 `make time-module-placement` checks the real objects and normal/panic maps.
-At the provisional `$9300-$96a7` slot it budgets **at most 364 new resident
-bytes** after the measured extraction, before the actual manager, wrappers,
-state and permanent guard are linked. That is an accounting ceiling, **not a
-successful resident-integration link**. No application slot, stack guard,
+At the provisional `$9300-$96a7` slot it budgets **at most 374 new resident
+bytes** after extraction and the smaller, now-linked 21-byte startup guard
+(the committed `2ff8c01` checkpoint had 364). The measured manager is
+527 CODE + 20 RODATA + 1 BSS = **548 bytes: 174 too many**, even before new
+request-boundary glue. The report explicitly says it does not fit. This is
+an accounting gate, **not a successful resident-integration link**. Resolve
+that placement/size deficit before enabling the overlay or loader. No
+application slot, stack guard,
 VDC asset, VIC shadow or common-RAM gateway has moved. The normal startup
-split is disabled; both the old time service and original boot lifecycle remain.
+split is disabled; the old resident time service remains installed.
 
 ### Remaining integration and acceptance
 
-1. Link the real startup overlay, irreversible guard and callable-entry
-   dispatch within the measured budget. Retain frozen public clock vectors.
+1. Fit and link the real startup overlay and callable-entry dispatch within
+   the measured budget. The irreversible guard is implemented and tested;
+   the overlay is not. Retain frozen public clock vectors.
 2. Use a disk-side loader/control command and the existing bounded `/etc/rc`
    runner. Validate the complete image and placement before publishing any
    callable entry; initialize BSS, run start, then publish READY. Rejection or
@@ -81,15 +115,29 @@ split is disabled; both the old time service and original boot lifecycle remain.
    replacement without kernel relink, and normal input/disk/graphics behavior
    on VICE/1986 before offering physical-C128 test images.
 
-Reproduce the current independent proof in `my-distrobox`:
-`make time-module time-module-check time-module-placement`.
+Reproduce the independent proofs in `my-distrobox`:
+`make time-module time-module-check time-slot-check time-module-placement`.
 The exact sealed image runs under sim6502 through all 86,400 times of day;
 173,433 entry calls check read/set/TI/BCD behavior, start/stop/restart, software
 stack balance, image/BSS guards and non-mutating invalid-set rejection. An
 altered range-check instruction is detected by a negative-control run. The
 simulator uses RAM-backed CIA addresses: this is **not** hardware TOD latching,
-interrupt, disk-loading or C128/VICE qualification. The normal D64/D71/D81
-builds remain byte-identical to merged PR #48.
+interrupt, disk-loading or C128/VICE qualification.
+
+`time-slot-check` executes the actual manager and startup veneer: 436
+independent-validator cases, all 256 startup result values, recursive entry,
+corrupt diagnostics, BSS bounds, start/poll/stop failure, duplicate/aborted
+loading and sealed-module reload (2,138 protected calls). Disabling checksum
+rejection in the binary fails the negative control. Simulator code does not
+overlap the manager fixture; the root cc65 ZP/stack is isolated from the harness.
+
+After container `make boot`, host `make service-start-probe` boots a disposable
+D71 under Flatpak VICE. It runs ordinary `date` set/read, `xclock`, and disk
+`cat`, then proves the new guard returns without re-entering startup after
+atomically zeroing SREG and replacing the old entry's first opcode with JAM.
+The probe terminates only its own emulator. This qualifies the **guard and
+unchanged resident clock path**, not module loading. Only checkpoint `2ff8c01`
+was byte-identical to PR #48; the guard changes current boot-image bytes.
 
 ## Existing static descriptor contract
 

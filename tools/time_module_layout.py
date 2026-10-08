@@ -44,6 +44,9 @@ def main():
     if not time or not setter or not split['SERVICEBOOT']:
         raise ValueError('missing measured reclaim object')
     minimum=baseline-time-setter-split['SERVICEBOOT']
+    manager=segments(out/'time-slot.o')
+    manager_bytes=sum(manager.values())
+    budget=TIME_BASE-minimum
     report=dict(scope='pre-integration accounting, NOT a resident link or safe-to-load image',
                 baseline_bss_end=baseline-1, time_code=time, setter_and_ti=setter,
                 registry_boot_only=split['SERVICEBOOT'], registry_live=split['CODE'],
@@ -52,7 +55,10 @@ def main():
                 reservation=TIME_LIMIT-TIME_BASE,
                 baseline_overlap=baseline-TIME_BASE,
                 predicted_end_before_manager=minimum,
-                max_new_resident_bytes_before_slot=TIME_BASE-minimum,
+                max_new_resident_bytes_before_slot=budget,
+                manager_segments=manager, manager_bytes=manager_bytes,
+                manager_shortfall_before_request_glue=max(0,manager_bytes-budget),
+                manager_fits_before_request_glue=manager_bytes<=budget,
                 conditions=['remove old time code and setter',
                             'place SERVICEBOOT inside the future module slot',
                             'permanent one-shot startup guard before overwrite',
