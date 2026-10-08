@@ -8,6 +8,13 @@
 #include "udeks/cbm_write.h"
 #include "udeks/storage_write.h"
 #endif
+#ifdef UDEKS_STORAGE_MUTATIONS
+#ifndef UDEKS_STORAGE_WRITES
+#error "mutations require writable storage and trusted handle ownership"
+#endif
+#include "udeks/file_mutation.h"
+#include "udeks/cbm_mutate.h"
+#endif
 
 #if defined(UDEKS_STORAGE_HOST_TEST) || defined(UDEKS_STORAGE_LEASE)
 extern uint8_t udeks_storage_request[UDEKS_TASK_REQUEST_SIZE];
@@ -72,6 +79,11 @@ static void close_channel(void)
 static uint8_t close_handle(void)
 {
     uint8_t error;
+#ifdef UDEKS_STORAGE_MUTATIONS
+    if (writing == 2u) {
+        udeks_cbm_mutate_abort(); error = 0;
+    } else
+#endif
     if (writing) {
         error = udeks_cbm_write_close();
         if (read_error) error = read_error; /* preserve first WRITE failure */
@@ -198,6 +210,111 @@ static uint8_t getdents(void)
     return reply(0, length+2u);
 }
 
+#ifdef UDEKS_STORAGE_MUTATIONS
+/* Reuses directory scratch; no extra filename allocation.
+ * Wire/owner/path/permission rejection keeps the handle intact. Once those
+ * checks pass, close_handle consumes it even if subsequent IO fails. */
+#ifdef __CC65__
+#pragma code-name(push, "STORAGEHIGH")
+#endif
+static uint8_t mutate(uint8_t op, uint8_t count, uint8_t fd)
+{
+    uint8_t error, kind, unit, empty, n;
+    uint16_t value, caller;
+    if (R[UDEKS_TREQ_MINOR] < UDEKS_FILE_MUTATION_MINOR)
+        return UDEKS_TREQ_ENOSYS;
+    caller = udeks_storage_caller();
+    if (R[UDEKS_TREQ_FLAGS] == 1u) {
+        if (count) return UDEKS_TREQ_EINVAL;
+        if (fd != FD || !opened || !caller || caller != handle_owner ||
+            writing != 2u || regular != op) return UDEKS_TREQ_EBADF;
+        error = udeks_cbm_mutate_poll();
+        goto mutation_result;
+    }
+    if (R[UDEKS_TREQ_FLAGS] || (op == UDEKS_FILE_UNLINK ? count != 0u :
+        !count || count > UDEKS_FS_PATH_MAX || P[count])) return UDEKS_TREQ_EINVAL;
+    if (fd != FD || !opened || !caller || caller != handle_owner || writing)
+        return UDEKS_TREQ_EBADF;
+    if (!regular) return UDEKS_TREQ_EISDIR;
+    if (!(writable & (owner ? 2u : 1u))) return UDEKS_TREQ_EROFS;
+    if (read_error) return UDEKS_TREQ_EIO;
+    /* Reads may admit locked/USR files; destructive operations may not. */
+    if (saved_entry[0] & 0x40u) return UDEKS_TREQ_EBUSY;
+    if (saved_entry[0] != 0x81u && saved_entry[0] != 0x82u) return UDEKS_TREQ_EINVAL;
+    n = 16;
+    while (n && saved_entry[n+2u] == 0xa0u) --n;
+    if (!n || saved_entry[3] == ' ' || saved_entry[n+2u] == ' ')
+        return UDEKS_TREQ_EINVAL;
+    /* OPEN/STAT/CHDIR attempts can overwrite query/device even while a
+     * regular descriptor is live. Derive identity from its saved directory. */
+    error = backing(directory);
+    if (error) return error;
+    if (op != UDEKS_FILE_UNLINK) {
+        error = path(count, 1);
+        if (error) return error;
+        if (!query.length) return UDEKS_TREQ_EISDIR;
+        error = udeks_fs_device(&volumes, query.directory, &unit);
+        if (error) return error;
+        if (unit != device || (query.directory == UDEKS_FS_MNT) != owner)
+            return UDEKS_FILE_EXDEV;
+        if (query.name[0] == ' ' || query.name[query.length-1u] == ' ')
+            return UDEKS_TREQ_EINVAL;
+        error = udeks_fs_classify(saved_entry+3, owner, &entry, &kind);
+        if (error) return error;
+        kind = query.directory == UDEKS_FS_BIN ?
+            (kind == UDEKS_FS_SCRIPT ? UDEKS_FS_SCRIPT : UDEKS_FS_BINARY) :
+            query.directory == UDEKS_FS_ETC ? UDEKS_FS_CONFIG : UDEKS_FS_RAW;
+        error = udeks_fs_physical(&query, kind, entry.name);
+        if (error) return error;
+    }
+    error = close_handle();
+    if (error) return error;
+    empty = 0;
+    if (op == UDEKS_FILE_COPY) {
+        /* Reopen from byte zero: EOF on an already-read descriptor is NOT
+         * proof that the source was empty. The real sector reader verifies
+         * its chain/link before reporting EOF. Always check this close too. */
+        if (udeks_cbm_begin(device)) return UDEKS_TREQ_EIO;
+        for (n = 0; n < 30u; ++n) udeks_cbm_entry[n] = saved_entry[n];
+        error = udeks_cbm_select();
+        if (!error) {
+            value = udeks_cbm_read();
+            if (value > 256u) error = UDEKS_TREQ_EIO;
+            empty = value == 256u;
+        }
+        if (udeks_cbm_close()) error = UDEKS_TREQ_EIO;
+        if (error) return error;
+    }
+    if (op != UDEKS_FILE_UNLINK) {
+        /* Only a complete scan with NO match preserves saved_entry (source)
+         * and authorizes the destination held in entry.name. */
+        error = find_unique();
+        if (error != UDEKS_TREQ_ENOENT) return error ? error : UDEKS_TREQ_EEXIST;
+    }
+    if (op == UDEKS_FILE_COPY) {
+        error = udeks_cbm_space(device);
+        if (error) return error;
+        if (!udeks_cbm_free_blocks) return UDEKS_TREQ_ENOSPC;
+        if (empty) {
+            n = 0;
+            while (n < 16u && entry.name[n] != 0xa0u) ++n;
+            error = udeks_cbm_create(device, entry.name, n, saved_entry[0] & 3u);
+            return error ? error : udeks_cbm_write_close();
+        }
+    }
+    error = udeks_cbm_mutate(device, op - UDEKS_FILE_RENAME + UDEKS_CBM_RENAME,
+        saved_entry+3, op == UDEKS_FILE_UNLINK ? 0 : entry.name);
+mutation_result:
+    if (error == UDEKS_TREQ_EAGAIN) {
+        opened = 1; writing = 2; regular = op; handle_owner = caller;
+    } else { opened = writing = 0; handle_owner = 0; }
+    return error;
+}
+#ifdef __CC65__
+#pragma code-name(pop)
+#endif
+#endif
+
 uint8_t udeks_storage_dispatch(void)
 {
     uint8_t op, count, fd, i, status, unit, root;
@@ -207,6 +324,12 @@ uint8_t udeks_storage_dispatch(void)
     flags = R[UDEKS_TREQ_FLAGS];
 #endif
     op = R[UDEKS_TREQ_OPERATION]; count = R[UDEKS_TREQ_COUNT]; fd = R[UDEKS_TREQ_DESCRIPTOR];
+#ifdef UDEKS_STORAGE_MUTATIONS
+    if (op >= UDEKS_FILE_RENAME && op <= UDEKS_FILE_UNLINK) {
+        status = mutate(op, count, fd);
+        return status == UDEKS_TREQ_EAGAIN ? reply(0, 1) : reply(status, 0);
+    }
+#endif
     if (op == UDEKS_TREQ_OP_MOUNT || op == UDEKS_TREQ_OP_UMOUNT) {
         if (R[UDEKS_TREQ_MINOR] < 5u) return reply(UDEKS_TREQ_ENOSYS, 0);
         i = op == UDEKS_TREQ_OP_MOUNT ? 1u : 0u;
@@ -419,6 +542,7 @@ uint8_t udeks_storage_dispatch(void)
 #endif
     }
 #ifdef UDEKS_STORAGE_WRITES
+    if (writing == 2u) return reply(UDEKS_TREQ_EBUSY, 0);
     if (op == UDEKS_TREQ_OP_WRITE) {
         if (!writing) return reply(UDEKS_TREQ_EBADF, 0);
         if (count > UDEKS_CBM_WRITE_MAX) return reply(UDEKS_TREQ_EINVAL, 0);

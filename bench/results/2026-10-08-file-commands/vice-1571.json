@@ -1,0 +1,195 @@
+{
+  "drive": "1571",
+  "disk_sha256": "8316f7e8fb49d9d42bd721491338d0ad2b7bb664e3056184c8a4929b74c46035",
+  "written_disk_sha256": "c16fe2a3446d140dc84cb9dcff45804f0566639fad22cb5c8534ebd2153c4d06",
+  "original_files_unchanged": 26,
+  "created": {},
+  "checks": [
+    {
+      "boot": 0,
+      "command": "cp /NOFILE /MISSING",
+      "console": "\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cp /NOFILE /MISSING\ncp: No such file or directory\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "boot": 0,
+      "command": "cp /hello /COPY",
+      "console": "INITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cp /NOFILE /MISSING\ncp: No such file or directory\nUDEKS:~> cp /hello /COPY\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "cat /COPY",
+      "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cp /NOFILE /MISSING\ncp: No such file or directory\nUDEKS:~> cp /hello /COPY\nUDEKS:~> cat /COPY\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "cp /hello /COPY",
+      "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cp /NOFILE /MISSING\ncp: No such file or directory\nUDEKS:~> cp /hello /COPY\nUDEKS:~> cat /COPY\nHELLO UDEKS\nUDEKS:~> cp /hello /COPY\ncp: File exists\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "boot": 0,
+      "command": "mv /COPY /RENAMED",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cp /NOFILE /MISSING\ncp: No such file or directory\nUDEKS:~> cp /hello /COPY\nUDEKS:~> cat /COPY\nHELLO UDEKS\nUDEKS:~> cp /hello /COPY\ncp: File exists\nUDEKS:~> mv /COPY /RENAMED\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "cat /RENAMED",
+      "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cp /NOFILE /MISSING\ncp: No such file or directory\nUDEKS:~> cp /hello /COPY\nUDEKS:~> cat /COPY\nHELLO UDEKS\nUDEKS:~> cp /hello /COPY\ncp: File exists\nUDEKS:~> mv /COPY /RENAMED\nUDEKS:~> cat /RENAMED\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "rm /RENAMED",
+      "console": "8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cp /NOFILE /MISSING\ncp: No such file or directory\nUDEKS:~> cp /hello /COPY\nUDEKS:~> cat /COPY\nHELLO UDEKS\nUDEKS:~> cp /hello /COPY\ncp: File exists\nUDEKS:~> mv /COPY /RENAMED\nUDEKS:~> cat /RENAMED\nHELLO UDEKS\nUDEKS:~> rm /RENAMED\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "cat /RENAMED",
+      "console": "IEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cp /NOFILE /MISSING\ncp: No such file or directory\nUDEKS:~> cp /hello /COPY\nUDEKS:~> cat /COPY\nHELLO UDEKS\nUDEKS:~> cp /hello /COPY\ncp: File exists\nUDEKS:~> mv /COPY /RENAMED\nUDEKS:~> cat /RENAMED\nHELLO UDEKS\nUDEKS:~> rm /RENAMED\nUDEKS:~> cat /RENAMED\ncat: No such file or directory\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "boot": 0,
+      "command": "save /EMPTY 0",
+      "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cp /NOFILE /MISSING\ncp: No such file or directory\nUDEKS:~> cp /hello /COPY\nUDEKS:~> cat /COPY\nHELLO UDEKS\nUDEKS:~> cp /hello /COPY\ncp: File exists\nUDEKS:~> mv /COPY /RENAMED\nUDEKS:~> cat /RENAMED\nHELLO UDEKS\nUDEKS:~> rm /RENAMED\nUDEKS:~> cat /RENAMED\ncat: No such file or directory\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "cp /EMPTY /EMPTY2",
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cp /NOFILE /MISSING\ncp: No such file or directory\nUDEKS:~> cp /hello /COPY\nUDEKS:~> cat /COPY\nHELLO UDEKS\nUDEKS:~> cp /hello /COPY\ncp: File exists\nUDEKS:~> mv /COPY /RENAMED\nUDEKS:~> cat /RENAMED\nHELLO UDEKS\nUDEKS:~> rm /RENAMED\nUDEKS:~> cat /RENAMED\ncat: No such file or directory\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> cp /EMPTY /EMPTY2\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "save -c /EMPTY2 0",
+      "console": "WELCOME TO UDEKS.\n\nUDEKS:~> cp /NOFILE /MISSING\ncp: No such file or directory\nUDEKS:~> cp /hello /COPY\nUDEKS:~> cat /COPY\nHELLO UDEKS\nUDEKS:~> cp /hello /COPY\ncp: File exists\nUDEKS:~> mv /COPY /RENAMED\nUDEKS:~> cat /RENAMED\nHELLO UDEKS\nUDEKS:~> rm /RENAMED\nUDEKS:~> cat /RENAMED\ncat: No such file or directory\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> cp /EMPTY /EMPTY2\nUDEKS:~> save -c /EMPTY2 0\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "rm /EMPTY",
+      "console": "\nUDEKS:~> cp /NOFILE /MISSING\ncp: No such file or directory\nUDEKS:~> cp /hello /COPY\nUDEKS:~> cat /COPY\nHELLO UDEKS\nUDEKS:~> cp /hello /COPY\ncp: File exists\nUDEKS:~> mv /COPY /RENAMED\nUDEKS:~> cat /RENAMED\nHELLO UDEKS\nUDEKS:~> rm /RENAMED\nUDEKS:~> cat /RENAMED\ncat: No such file or directory\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> cp /EMPTY /EMPTY2\nUDEKS:~> save -c /EMPTY2 0\nsave: verified\nUDEKS:~> rm /EMPTY\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "rm /EMPTY2",
+      "console": "UDEKS:~> cp /NOFILE /MISSING\ncp: No such file or directory\nUDEKS:~> cp /hello /COPY\nUDEKS:~> cat /COPY\nHELLO UDEKS\nUDEKS:~> cp /hello /COPY\ncp: File exists\nUDEKS:~> mv /COPY /RENAMED\nUDEKS:~> cat /RENAMED\nHELLO UDEKS\nUDEKS:~> rm /RENAMED\nUDEKS:~> cat /RENAMED\ncat: No such file or directory\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> cp /EMPTY /EMPTY2\nUDEKS:~> save -c /EMPTY2 0\nsave: verified\nUDEKS:~> rm /EMPTY\nUDEKS:~> rm /EMPTY2\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "save /BINARY 4096",
+      "console": "UDEKS:~> cp /hello /COPY\nUDEKS:~> cat /COPY\nHELLO UDEKS\nUDEKS:~> cp /hello /COPY\ncp: File exists\nUDEKS:~> mv /COPY /RENAMED\nUDEKS:~> cat /RENAMED\nHELLO UDEKS\nUDEKS:~> rm /RENAMED\nUDEKS:~> cat /RENAMED\ncat: No such file or directory\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> cp /EMPTY /EMPTY2\nUDEKS:~> save -c /EMPTY2 0\nsave: verified\nUDEKS:~> rm /EMPTY\nUDEKS:~> rm /EMPTY2\nUDEKS:~> save /BINARY 4096\nsave: created and verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "xclock &",
+      "console": "UDEKS:~> cat /COPY\nHELLO UDEKS\nUDEKS:~> cp /hello /COPY\ncp: File exists\nUDEKS:~> mv /COPY /RENAMED\nUDEKS:~> cat /RENAMED\nHELLO UDEKS\nUDEKS:~> rm /RENAMED\nUDEKS:~> cat /RENAMED\ncat: No such file or directory\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> cp /EMPTY /EMPTY2\nUDEKS:~> save -c /EMPTY2 0\nsave: verified\nUDEKS:~> rm /EMPTY\nUDEKS:~> rm /EMPTY2\nUDEKS:~> save /BINARY 4096\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "boot": 0,
+      "command": "cp /BINARY /BINCP",
+      "console": "HELLO UDEKS\nUDEKS:~> cp /hello /COPY\ncp: File exists\nUDEKS:~> mv /COPY /RENAMED\nUDEKS:~> cat /RENAMED\nHELLO UDEKS\nUDEKS:~> rm /RENAMED\nUDEKS:~> cat /RENAMED\ncat: No such file or directory\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> cp /EMPTY /EMPTY2\nUDEKS:~> save -c /EMPTY2 0\nsave: verified\nUDEKS:~> rm /EMPTY\nUDEKS:~> rm /EMPTY2\nUDEKS:~> save /BINARY 4096\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~> cp /BINARY /BINCP\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "save -c /BINCP 4096",
+      "console": "cp: File exists\nUDEKS:~> mv /COPY /RENAMED\nUDEKS:~> cat /RENAMED\nHELLO UDEKS\nUDEKS:~> rm /RENAMED\nUDEKS:~> cat /RENAMED\ncat: No such file or directory\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> cp /EMPTY /EMPTY2\nUDEKS:~> save -c /EMPTY2 0\nsave: verified\nUDEKS:~> rm /EMPTY\nUDEKS:~> rm /EMPTY2\nUDEKS:~> save /BINARY 4096\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~> cp /BINARY /BINCP\nUDEKS:~> save -c /BINCP 4096\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "mv /BINCP /BINMOVE",
+      "console": "UDEKS:~> mv /COPY /RENAMED\nUDEKS:~> cat /RENAMED\nHELLO UDEKS\nUDEKS:~> rm /RENAMED\nUDEKS:~> cat /RENAMED\ncat: No such file or directory\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> cp /EMPTY /EMPTY2\nUDEKS:~> save -c /EMPTY2 0\nsave: verified\nUDEKS:~> rm /EMPTY\nUDEKS:~> rm /EMPTY2\nUDEKS:~> save /BINARY 4096\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~> cp /BINARY /BINCP\nUDEKS:~> save -c /BINCP 4096\nsave: verified\nUDEKS:~> mv /BINCP /BINMOVE\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "save -c /BINMOVE 4096",
+      "console": "HELLO UDEKS\nUDEKS:~> rm /RENAMED\nUDEKS:~> cat /RENAMED\ncat: No such file or directory\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> cp /EMPTY /EMPTY2\nUDEKS:~> save -c /EMPTY2 0\nsave: verified\nUDEKS:~> rm /EMPTY\nUDEKS:~> rm /EMPTY2\nUDEKS:~> save /BINARY 4096\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~> cp /BINARY /BINCP\nUDEKS:~> save -c /BINCP 4096\nsave: verified\nUDEKS:~> mv /BINCP /BINMOVE\nUDEKS:~> save -c /BINMOVE 4096\nsave: verified\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "rm /BINARY",
+      "console": "UDEKS:~> rm /RENAMED\nUDEKS:~> cat /RENAMED\ncat: No such file or directory\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> cp /EMPTY /EMPTY2\nUDEKS:~> save -c /EMPTY2 0\nsave: verified\nUDEKS:~> rm /EMPTY\nUDEKS:~> rm /EMPTY2\nUDEKS:~> save /BINARY 4096\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~> cp /BINARY /BINCP\nUDEKS:~> save -c /BINCP 4096\nsave: verified\nUDEKS:~> mv /BINCP /BINMOVE\nUDEKS:~> save -c /BINMOVE 4096\nsave: verified\nUDEKS:~> rm /BINARY\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "rm /BINMOVE",
+      "console": "UDEKS:~> cat /RENAMED\ncat: No such file or directory\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> cp /EMPTY /EMPTY2\nUDEKS:~> save -c /EMPTY2 0\nsave: verified\nUDEKS:~> rm /EMPTY\nUDEKS:~> rm /EMPTY2\nUDEKS:~> save /BINARY 4096\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~> cp /BINARY /BINCP\nUDEKS:~> save -c /BINCP 4096\nsave: verified\nUDEKS:~> mv /BINCP /BINMOVE\nUDEKS:~> save -c /BINMOVE 4096\nsave: verified\nUDEKS:~> rm /BINARY\nUDEKS:~> rm /BINMOVE\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "xclock -q",
+      "console": "cat: No such file or directory\nUDEKS:~> save /EMPTY 0\nsave: created and verified\nUDEKS:~> cp /EMPTY /EMPTY2\nUDEKS:~> save -c /EMPTY2 0\nsave: verified\nUDEKS:~> rm /EMPTY\nUDEKS:~> rm /EMPTY2\nUDEKS:~> save /BINARY 4096\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~> cp /BINARY /BINCP\nUDEKS:~> save -c /BINCP 4096\nsave: verified\nUDEKS:~> mv /BINCP /BINMOVE\nUDEKS:~> save -c /BINMOVE 4096\nsave: verified\nUDEKS:~> rm /BINARY\nUDEKS:~> rm /BINMOVE\nUDEKS:~> xclock -q\nUDEKS:~>",
+      "status": null
+    },
+    {
+      "boot": 0,
+      "command": "mount -o remount,ro 8 /",
+      "console": "save: created and verified\nUDEKS:~> cp /EMPTY /EMPTY2\nUDEKS:~> save -c /EMPTY2 0\nsave: verified\nUDEKS:~> rm /EMPTY\nUDEKS:~> rm /EMPTY2\nUDEKS:~> save /BINARY 4096\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~> cp /BINARY /BINCP\nUDEKS:~> save -c /BINCP 4096\nsave: verified\nUDEKS:~> mv /BINCP /BINMOVE\nUDEKS:~> save -c /BINMOVE 4096\nsave: verified\nUDEKS:~> rm /BINARY\nUDEKS:~> rm /BINMOVE\nUDEKS:~> xclock -q\nUDEKS:~> mount -o remount,ro 8 /\nmount: / ready (read-only)\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "cp /hello /RO",
+      "console": "UDEKS:~> save -c /EMPTY2 0\nsave: verified\nUDEKS:~> rm /EMPTY\nUDEKS:~> rm /EMPTY2\nUDEKS:~> save /BINARY 4096\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~> cp /BINARY /BINCP\nUDEKS:~> save -c /BINCP 4096\nsave: verified\nUDEKS:~> mv /BINCP /BINMOVE\nUDEKS:~> save -c /BINMOVE 4096\nsave: verified\nUDEKS:~> rm /BINARY\nUDEKS:~> rm /BINMOVE\nUDEKS:~> xclock -q\nUDEKS:~> mount -o remount,ro 8 /\nmount: / ready (read-only)\nUDEKS:~> cp /hello /RO\ncp: Read-only filesystem\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "boot": 0,
+      "command": "mv /hello /RO",
+      "console": "UDEKS:~> rm /EMPTY\nUDEKS:~> rm /EMPTY2\nUDEKS:~> save /BINARY 4096\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~> cp /BINARY /BINCP\nUDEKS:~> save -c /BINCP 4096\nsave: verified\nUDEKS:~> mv /BINCP /BINMOVE\nUDEKS:~> save -c /BINMOVE 4096\nsave: verified\nUDEKS:~> rm /BINARY\nUDEKS:~> rm /BINMOVE\nUDEKS:~> xclock -q\nUDEKS:~> mount -o remount,ro 8 /\nmount: / ready (read-only)\nUDEKS:~> cp /hello /RO\ncp: Read-only filesystem\nUDEKS:~> mv /hello /RO\nmv: Read-only filesystem\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "boot": 0,
+      "command": "rm /hello",
+      "console": "UDEKS:~> save /BINARY 4096\nsave: created and verified\nUDEKS:~> xclock &\nUDEKS:~> cp /BINARY /BINCP\nUDEKS:~> save -c /BINCP 4096\nsave: verified\nUDEKS:~> mv /BINCP /BINMOVE\nUDEKS:~> save -c /BINMOVE 4096\nsave: verified\nUDEKS:~> rm /BINARY\nUDEKS:~> rm /BINMOVE\nUDEKS:~> xclock -q\nUDEKS:~> mount -o remount,ro 8 /\nmount: / ready (read-only)\nUDEKS:~> cp /hello /RO\ncp: Read-only filesystem\nUDEKS:~> mv /hello /RO\nmv: Read-only filesystem\nUDEKS:~> rm /hello\nrm: Read-only filesystem\nUDEKS:~>",
+      "status": 1
+    },
+    {
+      "boot": 0,
+      "command": "mount -o remount,rw 8 /",
+      "console": "UDEKS:~> xclock &\nUDEKS:~> cp /BINARY /BINCP\nUDEKS:~> save -c /BINCP 4096\nsave: verified\nUDEKS:~> mv /BINCP /BINMOVE\nUDEKS:~> save -c /BINMOVE 4096\nsave: verified\nUDEKS:~> rm /BINARY\nUDEKS:~> rm /BINMOVE\nUDEKS:~> xclock -q\nUDEKS:~> mount -o remount,ro 8 /\nmount: / ready (read-only)\nUDEKS:~> cp /hello /RO\ncp: Read-only filesystem\nUDEKS:~> mv /hello /RO\nmv: Read-only filesystem\nUDEKS:~> rm /hello\nrm: Read-only filesystem\nUDEKS:~> mount -o remount,rw 8 /\nmount: / ready (read-write)\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 0,
+      "command": "cp /hello /PERSIST",
+      "console": "UDEKS:~> cp /BINARY /BINCP\nUDEKS:~> save -c /BINCP 4096\nsave: verified\nUDEKS:~> mv /BINCP /BINMOVE\nUDEKS:~> save -c /BINMOVE 4096\nsave: verified\nUDEKS:~> rm /BINARY\nUDEKS:~> rm /BINMOVE\nUDEKS:~> xclock -q\nUDEKS:~> mount -o remount,ro 8 /\nmount: / ready (read-only)\nUDEKS:~> cp /hello /RO\ncp: Read-only filesystem\nUDEKS:~> mv /hello /RO\nmv: Read-only filesystem\nUDEKS:~> rm /hello\nrm: Read-only filesystem\nUDEKS:~> mount -o remount,rw 8 /\nmount: / ready (read-write)\nUDEKS:~> cp /hello /PERSIST\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 1,
+      "command": "cat /PERSIST",
+      "console": "\nINITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cat /PERSIST\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 1,
+      "command": "rm /PERSIST",
+      "console": "INITIALIZING HARDWARE ...                                 [ OK ]\nDETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cat /PERSIST\nHELLO UDEKS\nUDEKS:~> rm /PERSIST\nUDEKS:~>",
+      "status": 0
+    },
+    {
+      "boot": 1,
+      "command": "cat /hello",
+      "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> cat /PERSIST\nHELLO UDEKS\nUDEKS:~> rm /PERSIST\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>",
+      "status": 0
+    }
+  ]
+}

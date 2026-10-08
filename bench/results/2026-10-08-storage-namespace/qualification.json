@@ -1,0 +1,26 @@
+{
+  "scope": "Compact namespace delivery and existing storage regressions, not public mv/cp/rm qualification",
+  "base_commit": "e853885",
+  "toolchain": "cl65 V2.18 - Fedora 2.19-15.fc44 (my-distrobox)",
+  "namespace_gate": "distrobox-enter my-distrobox -- make storage-namespace-check",
+  "positive_exit_status": 0,
+  "negative_exit_status": 1,
+  "cases": 36532,
+  "negative_control": "UDEKS_NAMESPACE_NEGATIVE returns success from invalid; rejected on the first resolve case",
+  "layout_gate": "distrobox-enter my-distrobox -- make storage-mutation-layout",
+  "production_has_mutation_backend": false,
+  "hardware_acceptance": false,
+  "images": {
+    "1541": "8f141fb06fd2fbfa1b1b9fbd3d9c8d5af0d31ff367cfc52df80a1f3ae0e4ceec",
+    "1571": "622fb4be0458cb1058c6acc61791d77bf72baf13d2c2baa4a78b2d9584a18c09",
+    "1581": "bc77a5dc22d1d48e862c4553a40cf0d2f18449696629d5f8ac6ba36e3742b10a"
+  },
+  "source_sha256": {
+    "src/services/filesystem/namespace_6502.s": "0c090793dfc27e26808d2732a319dd262f8467431432195d2b4457912fe158fa",
+    "src/services/filesystem/fs_namespace.c": "3f2a1832e6a41ba9ed3e35f35c96c99bf27ae954b7b36e3350df045a20cbc4aa",
+    "include/udeks/fs_namespace.h": "af7bc2e095335a47df19bd6006e7b85fb334f76913e25b897935ecaad06a469e",
+    "bench/storage-namespace/check.c": "674ce53ecfe82fa64d06b95ad9d9accd8075f71b21ecce9330ab291940452d9f",
+    "mk/storage.mk": "a6caf812f4fabeb406c7d05a79ac878e100f35389c97315aa8cfab4e60afb0e7",
+    "tools/storage_mutation_layout.py": "7658801d534a22ca2cf5b5723d9e0c5bdc3c47f1f9c7a86da12f5b04ba099eaa"
+  }
+}

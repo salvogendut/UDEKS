@@ -1,0 +1,19 @@
+{
+  "drive": "1571",
+  "phases": [
+    {
+      "phase": "protected",
+      "record": "02011e1e00000000fd0300000000000000001b0104003f000204006f0000000032362c2057524954452050524f54454354204f4e2c31382c30300d000000ffffffff00000000ffffffff00000000ffffffff00000000ffffffff00000000ffff",
+      "disk_sha256": "c60ff1df5d6e19e059296b3c7bd9e87abacd409f1f92bd3f20528c24a30af859"
+    },
+    {
+      "phase": "mutated",
+      "record": "020b000000000000fd0300000000000000000d0104003f000204006f0000000030302c204f4b2c30302c30300d4154434845442c30302c30300d00000000ffffffff00000000ffffffff00000000ffffffff00000000ffffffff00000000ffff",
+      "disk_sha256": "b4c919ea99bd99bedda9482d809fbe0ee5284652ed2c004fd4adf1f0b633f733"
+    }
+  ],
+  "scope": "private backend; namespace/permission preflight and public commands not installed",
+  "empty_copy": "known-empty SEQ fixture uses exclusive create plus checked close, not DOS COPY",
+  "program_sha256": "4ff4c77210ff2417ba3ba6b653b0249ca6c99b914846ff684b1ae2e4ef8e5021",
+  "before_sha256": "c60ff1df5d6e19e059296b3c7bd9e87abacd409f1f92bd3f20528c24a30af859"
+}

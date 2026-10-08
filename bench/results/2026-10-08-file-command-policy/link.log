@@ -1,0 +1,2 @@
+ld65: Warning: /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/storage-mutation-policy/candidate.cfg(11): Segment 'STORAGEHIGH' overflows memory area 'HIDDEN' by 586 bytes
+ld65: Error: Cannot generate most of the files due to memory area overflow 

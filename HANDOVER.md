@@ -6,7 +6,249 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — sprite number and held painting, 2026-10-08
+## Current handoff — writable root and file commands, 2026-10-08
+
+**Latest state (supersedes the historical checkpoints below):** full UTRQ 0.18
+service and independent `cp`/`mv`/`rm` now fit and are installed by `make boot`.
+The former failed-link evidence remains historical, not overwritten. Compact
+`mutation_6502.s` and the writer status parser match their independent C
+references over 35,320 + 6,193 sim6502 cases. The SDK checks 24 scenarios.
+Policy stays in C; only the bounded low-level encoding/status path is assembly.
+Current service slack: CODE 3, POLICY 5, DRIVER 0, HIDDEN 3 code bytes, BSS 26;
+the original application and stack reservations are unchanged. Do not grow a
+service region just to make the next feature link.
+
+DOS listener busy uses a held initial TALK handshake and same-owner/op status
+polls, not reissuing a command or spinning 255 rounds in the service. Every
+pending return restores speed and leaves the common-RAM/IRQ lease. Explicit
+CLOSE and trusted retirement release pending ownership; no rollback is claimed.
+The legacy console allocation remains synchronous (no unsafe native YIELD).
+
+Fresh images: `build/storage-file-commands/build/boot/udeks.{d64,d71,d81}` from
+the repository root. D64 is rebuilt without `xsprdef` (31 free blocks); full
+D71/D81 retain it. SDK archive members are split so commands link only their
+needed functions. CP/MV are 1,747 bytes; RM is 1,674 bytes.
+
+VICE public command/reboot gates pass on all three drive types. Additional
+binary/graphics checks run through `storage_public_probe.py --mutations`.
+Native 1986 ordinary D64/1571 testing also passes, including actual keyboard,
+CP/MV/RM, empty/binary copies, clock dragging, RESTORE and reboot persistence.
+Exact images, reports and known failures are preserved in
+`bench/{artifacts,results}/2026-10-08-file-commands` with checksums.
+Native 1986's periodic CIA2 timer-NMI stress found `save: loader error`; the
+old harness incorrectly accepted stale success text and exit status, then
+failed reboot readback of `/nmitest`. The harness now checks loader state and
+the submitted command too. `--skip-write-timer-stress` explicitly isolates
+ordinary file/input/RESTORE testing; its report must never claim timer-NMI
+qualification. Preserve this as an unresolved regression, not a passing gate.
+One earlier VICE D64 run also returned EIO after a scratch had taken effect;
+subsequent runs passed. This is why error paths promise no rollback or retry;
+retain the observation for hardware acceptance.
+
+The user accepted the delivered images on 2026-10-08 and requested commit,
+push, PR and merge. The test platform was unspecified; this does not establish
+new physical-C128 or periodic timer-NMI qualification. The next architectural
+feature is the first disk-loaded non-kernel service, not further storage tuning.
+
+For a separately recorded hardware check, on a **disposable** image run `cp /hello
+/COPY`, `cat /COPY`, `mv /COPY /MOVED`, `cat /MOVED`, `rm /MOVED`, and confirm
+`cat /MOVED` reports ENOENT. Check collision rejection, RO remount rejection,
+empty copies, and a copied file after reboot. Do not remove system commands.
+
+### Historical checkpoints (not the current availability statement)
+
+The sprite-editor checkpoint merged via PR #46 as `1a45100` after 1,366 host
+tests and the container build/graphics/placement gates passed. The user now
+requests a read/write default for device-8 `/`, plus standalone `mv`, `cp`
+and `rm`, and explicitly requested an issue/branch.
+
+Track [issue #47](https://github.com/salvogendut/UDEKS/issues/47) on
+`storage-0.4-file-commands`, worktree `build/storage-file-commands`, based on
+that merged main. Scope is at the top of the [roadmap](docs/ROADMAP.md).
+Keep root main's unrelated edits and all original media untouched.
+
+First resolve the generic service contract and measured placement. The current
+bank-1 storage service has one open descriptor, so bounded copying requires an
+explicit mechanism, not an assumed second stream. Preserve SEQ/PRG bytes/types,
+RO enforcement, namespace resolution and owner cleanup. Initial destination
+collisions fail rather than overwrite; rename is same-filesystem only, and
+remove acts on an explicitly named regular file without wildcards. Qualify
+only disposable disk copies. Do not claim hardware acceptance of these new
+operations from the earlier create-only tests.
+
+### First implementation increment
+
+The user accepted this checkpoint on 2026-10-08 (test platform unspecified)
+and requested commit/push followed by service integration. Committed/pushed
+as `e853885`. Automated gates:
+1,382 host tests, normal boot/graphics/placement builds and the probes below.
+
+Normal disk bootstrap explicitly uses MOUNT 0.14/RW and clears the flags before
+OPEN or recovery UMOUNT. This changes the default, not unqualified MOUNT's
+semantics: device 9 `/mnt` remains RO unless requested RW; recovery bootfs stays
+RO. A runtime RO remount resets to the boot default on reboot. Published
+download images have not been replaced by this worktree's candidates.
+
+`build/storage-file-commands/build/boot/udeks.{d64,d71,d81}` (relative to the
+repository root) contains the candidate. On a **disposable copy**, boot, run
+`df` (RW), `save /RWTEST 24`, `mount -o remount,ro 8 /`, then
+`save /ROTEST 1` (Read-only filesystem). Reboot and run `save -c /RWTEST 24`.
+At this first checkpoint the three new commands were not yet in these images.
+
+Qualification in the worktree:
+
+- VICE true-drive 1541/1571/1581: `storage_public_probe.py` creates BOOTRW
+  before any remount, checks RO rejection, binary/empty writes and cold-boot
+  persistence, preserving all original files. Native 1986 rev `19386ef` uses
+  its ROM-backed 1571 with D64 and passes RW default, explicit RO rejection,
+  later writes, RESTORE/recurring CIA2 NMI, clock/input and reboot readback.
+- Missing-shell recovery boots bootfs, executes a program on independently
+  mounted device 9, unmounts and keeps console/IEC code intact. Its integrity
+  check now excludes only the five declared lease-state bytes and twelve
+  generation/error bytes, resolving the latter from the live build's map.
+  Every remaining code byte is still compared; negative tests cover corruption.
+- `storage-mutate-backend` builds an isolated PRG, not a production service.
+  `storage_mutate_probe.py` generates blank disposable media; its VICE
+  1541/1571/1581 runs validate nonempty SEQ/PRG copy, same-disk rename, exact
+  scratch counts, collisions, missing sources, write protection, both 16-byte
+  names (38-byte command), original/source survival and final byte/type equality.
+  The known-empty SEQ fixture takes the existing create/checked-close path;
+  stock DOS COPY would add CR. Real source-emptiness preflight is still due.
+
+Private implementation: `cbm_mutate.c` accepts exact padded physical names,
+never arbitrary DOS strings. It parses full DOS status, distinguishes zero/one
+scratched file and never retries a mutating command. Error track/sector values
+need not be zero (1581 write-protect reports 40/03). The conditional IEC
+command-only entry saves/restores the caller's CPU speed and serial/VIC bank
+bits, does not open/close data channel 2, and never CLOSEs command channel 15.
+DOS COPY can hold DATA low while doing disk work before accepting TALK 15:
+only this command-only build gets a larger bounded listener-busy wait (about
+150 seconds worst-case at 1 MHz). Bit/EOI/frame-edge waits remain unchanged.
+All mutation instrumentation/extensions are conditional and absent from the
+production transport. No public ABI version or operation is added yet.
+The long busy wait is a standalone electrical/protocol proof, **not** a
+production responsiveness qualification. Integration must define bounded
+service occupancy/completion (and lease ownership while DOS is busy); do not
+hold the live cooperative system inside that worst-case wait without a gate.
+
+**Remaining delivery:** service-owned source/destination namespace validation,
+RO/handle/generation checks, verified-empty detection, generic request/SDK
+contract, safe placement and disk-loaded `mv`/`cp`/`rm`, then public acceptance.
+Initial copy/rename stay on one mounted filesystem; destination collisions
+reject, removal is exact and nonrecursive. Partial files may remain after an
+error; no rollback, atomic-replacement or power-failure claim.
+
+That checkpoint's production map had CODE 20 + STORAGECODE 71 + IECCODE 43 +
+STORAGEHIGH 41 = **175 spare code bytes**, BSS **384/384**. The new private
+backend alone is about 1.2 KiB of C code before service policy/SDK work. It
+could not simply be appended to that link. Do not borrow native app
+allocations, the live shell/software stacks, graphics memory or recovery
+bootfs without an explicit measured ownership/delivery design. The following
+increment addresses that prerequisite without changing any memory reservation.
+
+Evidence: `bench/artifacts/2026-10-08-storage-files` holds the exact D64,
+private mutation PRG/map and production storage map; corresponding
+`bench/results/2026-10-08-storage-files` holds public/recovery/native reports,
+all three private-mutation reports and their final disposable media. Both
+directories have checked SHA256SUMS. The D64 hash starts `6a6afcdd3556`;
+the qualified private PRG starts `4ff4c77210ff`. `test_storage_file_checkpoint.py`
+audits those records and actual media, including all source/KEEP bytes and
+the zero-length destination. Reports distinguish private mechanism tests
+from unavailable public commands.
+
+Reproduce inside this worktree (build through `distrobox-enter my-distrobox`):
+`make -j8 boot graphics-apps-check placement-check storage-mutate-backend`.
+On the host run `python3 tools/storage_mutate_probe.py --drive all`; it creates
+its own disposable disks and never accepts an existing disk. Public boot
+qualification uses `tools/storage_public_probe.py` on copied boot media;
+`tools/root_namespace_probe.py --recovery` checks fallback. Native regression
+uses container `tools/1986_storage_smoke_build.py --storage-write` with sibling
+emulator/ROM paths and the candidate D64. No physical acceptance is claimed.
+
+### Service-capacity increment — 2026-10-08
+
+Committed/pushed as `7389ccf` on the user's instruction before the next increment.
+
+`cp`, `mv` and `rm` remain **standalone disk programs**, not ush builtins.
+Filesystem validation belongs to the storage service; putting command parsing
+in ush would not solve the service's capacity limit.
+
+The five namespace functions now use compact `namespace_6502.s` inside the
+same serialized service. No new ZP, app memory or stack space is taken. The
+unchanged `fs_namespace.c` stays as the executable C reference. Container
+`make storage-namespace-check` compares 36,532 cases on sim65, using actual
+cc65 argument marshalling, output guards and rejection checks. A deliberately
+wrong success return fails at the first case; both executables/logs are saved.
+Keep the assembly basename distinct from the C file: cl65 generates/deletes
+the sibling `.s` intermediate when building the reference.
+
+Production now has **1,850 code bytes and 54 BSS bytes free** (1,675/54
+recovered). `make storage-mutation-layout` separately links the private backend
+with the real service and unaltered region bounds: **563 code / 19 BSS bytes
+remain**. This is a fit proof only, **not** public handlers or live mutation
+qualification. The shipping transport still has no mutation/long-wait flag.
+The audit rejects changed/missing regions, overflow and uncounted DATA.
+
+Gates: 1,392 host tests; container boot/graphics/placement checks; fresh VICE
+1541/1571/1581 write/RO/collision/reboot/source-preservation runs; native 1986
+write/input/graphics/NMI/reboot regression; missing-shell recovery. Exact D64
+(`8f141fb06fd2`), maps and sim65 programs are in
+`bench/artifacts/2026-10-08-storage-namespace`; reports, source/toolchain
+provenance and checksums are in the matching results directory. No additional
+hardware acceptance is claimed. The previous evidence is unchanged.
+
+**Next:** service-owned preflight and request/SDK wiring, bounded DOS completion,
+then ship and test the three commands together. The 563-byte remaining budget
+still has to cover integration; it is not a promise that unmeasured handlers fit.
+`mv`/`cp`/`rm` are not yet present in the rebuilt candidate images.
+
+### File-operation policy, SDK and command candidates — 2026-10-08
+
+Implemented behind **`UDEKS_STORAGE_MUTATIONS`**, not enabled in production:
+service RENAME/COPY/UNLINK checks plus standalone C `mv`, `cp`, `rm` and SDK.
+The candidate wire/descriptor-consumption contract is at the top of
+`abi/task-request.md`; released UTRQ remains **0.17**, candidate is 0.18.
+Ownership uses the trusted instance/generation. Wire/path/RO/type rejection
+retains the handle; after that it is consumed even if IO fails. The SDK always
+cleans up and preserves the primary error, without retry. Destination lookup
+must finish before mutation, including folded and BIN/SH collisions. Source
+identity comes from the held descriptor, not query/device scratch that another
+rejected request could have changed. Empty copy is proved from byte zero and
+uses checked exclusive create with the original SEQ/PRG type.
+
+`make file-commands-candidate` produces independent CP.BIN/MV.BIN (2,157 bytes
+each) and RM.BIN (2,026), all within the existing foreground allocation, with
+quiet success, stderr errors, exact operands and `--`. These are **not added
+to boot disks**. `make file-mutation-sdk-check` executes 21 scenarios using the
+actual cc65 C/ASM client and a simulated CF30 gate: versions, counts, sequence
+wrap, malformed responses, primary-error preservation, cleanup and guards.
+Host service/SDK tests use the real namespace and sector reader with a captured
+mutation backend; 82 cases (including inherited compatibility) pass, plus four
+CLI tests. No live mutation-service or hardware acceptance is claimed.
+
+**Placement gate fails honestly:** `make storage-mutation-policy` compiles the
+full candidate, keeping all production reservations. With service `-Os`, the
+handler is 955 code bytes; HIDDEN overflows by **586 bytes**, with CODE 123 +
+POLICY 139 + DRIVER 19 spare elsewhere: at least **305 additional code bytes**
+must be recovered, plus redistribution. BSS uses 374/384 (10 free). No region
+was expanded; no failed output is installed. The layout tool writes an explicit
+`link_passed: false` report and still exits nonzero. This measurement does not
+include the bounded/asynchronous DOS completion work that remains necessary.
+
+Gates: 1,482 host tests; three standalone command builds; real-6502 SDK and
+namespace checks; normal boot/graphics/placement gates pass. Production
+D64/D71/D81 are byte-identical to the capacity checkpoint, so its emulator
+evidence remains applicable. Exact candidate executables/maps, simulated SDK
+image/log, **failed** policy map/log/budget and source hashes are preserved in
+`bench/{artifacts,results}/2026-10-08-file-command-policy` with checked manifests.
+
+**Next delivery work:** recover the remaining bytes in the private DOS
+encoding/status path, implement bounded service completion/ownership while
+DOS is busy, then enable the requests and add the commands to all three disk
+formats for end-to-end acceptance. Do not enable the existing private
+150-second busy-spin in the cooperative system. No new manual test is due yet.
+
+## Earlier handoff — sprite number and held painting, 2026-10-08
 
 The user accepts the visible sprite number and held-button painting, following
 acceptance of fast pixel updates, larger-app capacity, Save/Load and BASIC

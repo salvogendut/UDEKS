@@ -15,9 +15,37 @@ import shadow_boot_probe as sp
 from build_d71 import blank_d71, d64_compatibility_image, install_prg_file
 from task_waitpid_probe import scheduler_symbols
 from boot_staging_map import segment_bounds
+from gen_capability_imports import map_exports
 from vice_capture import choose_port, monitor_command, parse_monitor_byte
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def check_driver_code(expected, live, map_text):
+    """Check code, excluding only the two declared initialized-state ranges.
+
+    UIEC 0.3 keeps five lease bytes and twelve context-generation/error bytes
+    in IECCODE; they are not shell-stack corruption. Fail closed on a changed
+    layout, and still compare every instruction and all other driver bytes.
+    """
+    symbols = map_exports(map_text)
+    base, end = segment_bounds(map_text, 'IECCODE')
+    generation, kind = symbols['_udeks_storage_generations']
+    cleanup, cleanup_kind = symbols['_udeks_storage_cleanup_error']
+    lease = re.search(r'^iec_lease\.o:\n((?:[ \t].*\n)+)', map_text, re.M)
+    lease_at_start = lease and re.search(r'IECCODE\s+Offs=000000\s+', lease[1])
+    if (base != 0xe300 or len(expected) != end-base+1 or len(live) != len(expected)
+            or not lease_at_start or cleanup != generation+11
+            or not base+5 <= generation <= end-11
+            or (kind, cleanup_kind) != ('RLA', 'RLA')
+            or expected[:5] != bytes(5)
+            or expected[5:11] != bytes.fromhex('a0 00 f0 02 a0 01')
+            or expected[generation-base:cleanup-base+1] != b'\1'*11+b'\0'):
+        raise ValueError('storage driver state/layout changed')
+    mutable = set(range(5)) | set(range(generation-base, cleanup-base+1))
+    for offset, (original, actual) in enumerate(zip(expected, live)):
+        if offset not in mutable and original != actual:
+            raise AssertionError(f'IEC driver code changed at ${base+offset:04X}')
 
 def console_address():
     """Resolve the current console backing store, not its old $0C00 address."""

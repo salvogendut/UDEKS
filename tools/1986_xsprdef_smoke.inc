@@ -155,6 +155,7 @@ static void xsprdef_files_smoke(void) {
         require(!memcmp(machine->mem.ram+UDEKS_XSPR_PIXELS,expected+441,63),"mouse edit mismatch");
         xspr_click(220,64);xspr_dialog(1);
         xspr_click(150,123);xspr_dialog(0); /* cancel */
+        command("mount -o remount,ro 8 /");idle();
         xspr_click(220,64);xspr_click(92,123);xspr_result(30); /* read-only */
         xspr_click(220,168);xspr_click(92,123);xspr_result(2); /* missing */
         require(!memcmp(machine->mem.ram+UDEKS_XSPR_PIXELS,expected+441,63),"failed load changed edit");

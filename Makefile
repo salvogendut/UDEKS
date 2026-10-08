@@ -321,7 +321,7 @@ user-sources: $(USER_COWSAY_ASM) $(USER_DATE_ASM) $(USER_LS_ASM) $(USER_USH_ASM)
 user-programs: $(USER_BOOTFS) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX)
 user-programs: $(USER_XSPRDEF_UDEX)
 user-programs: $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(BUILD_USER)/filetools.udx $(BUILD_USER)/sysinfo.udx $(BUILD_USER)/diagnostics.udx
-user-programs: $(USER_MOUNT_UDEX) $(USER_SAVE_UDEX)
+user-programs: $(USER_MOUNT_UDEX) $(USER_SAVE_UDEX) $(USER_MUTATION_UDEX)
 
 $(BUILD_8502)/shell.s: include/udeks/service_control.h include/udeks/task_request.h include/udeks/banked_graphics.h
 $(USER_USH_ASM) $(BUILD_USER)/ush-recovery.o: include/udeks/service_control.h include/udeks/task_request.h
@@ -2158,7 +2158,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
 		tools/build_d71.py bench/iec-directory/hello.txt user/etc/rc $(USER_SYSINFO_UDEX) \
-		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX) $(USER_XSPRDEF_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX) $(USER_MOUNT_UDEX) $(USER_SAVE_UDEX)
+		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX) $(USER_XSPRDEF_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX) $(USER_MOUNT_UDEX) $(USER_SAVE_UDEX) $(USER_MUTATION_UDEX)
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
@@ -2189,7 +2189,8 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--command Z80CTL=$(USER_DIAGNOSTICS_UDEX) \
 		--command MOUNT=$(USER_MOUNT_UDEX) --command UMOUNT=$(USER_MOUNT_UDEX) \
 		--command SAVE=$(USER_SAVE_UDEX) \
-		--d64-output $(BOOT_D64) $(BOOT_D71)
+		--command CP=build/file-commands/cp/CP.BIN --command MV=build/file-commands/mv/MV.BIN --command RM=build/file-commands/rm/RM.BIN \
+		--d64-no-xsprdef --d64-output $(BOOT_D64) $(BOOT_D71)
 
 $(TASK_EXIT_PROBE_D71) $(TASK_EXIT_PROBE_D64) &: $(STAGE0_BIN) \
 		$(STAGE1_BIN) $(KERNEL_BIN) $(BOOT_DELIVERY_BIN) $(CRT0_BIN) \
@@ -2431,6 +2432,8 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 check:
 	$(PYTHON) -m py_compile tools/storage_lease_probe.py tools/storage_owner_probe.py
 	$(PYTHON) -m py_compile tools/storage_public_probe.py
+	$(PYTHON) -m py_compile tools/storage_mutate_probe.py
+	$(PYTHON) -m py_compile tools/storage_mutation_layout.py
 	$(PYTHON) -m py_compile tools/storage_failure_probe.py
 	$(PYTHON) -m py_compile tools/storage_window_probe.py
 	$(PYTHON) -m py_compile tools/storage_write_probe.py

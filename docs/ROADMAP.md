@@ -13,14 +13,58 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
+**Current user-requested feature (2026-10-08):**
+[#47 — writable root and file commands](https://github.com/salvogendut/UDEKS/issues/47),
+branch `storage-0.4-file-commands`, worktree `build/storage-file-commands`.
+Make the normal device-8 `/` mount read/write by default and add independent
+disk-loaded `mv`, `cp` and `rm`. Explicit RO mounts and read-only bootfs recovery
+remain supported. Initial commands reject implicit overwrite, wildcard removal
+and directory removal; `mv` is same-filesystem rename, not copy-and-delete.
+
+1. Define generic filesystem requests and measure placement; select a bounded
+   copy mechanism (the current service has only one open descriptor).
+2. Implement the service/SDK operations, three disk commands and normal-root
+   default; preserve namespace, file types, permissions and meaningful errors.
+3. Qualify success/failure and reboot persistence on disposable images in
+   VICE/1986, then provide the C128/Pi1541 acceptance checklist.
+
+**Branch progress:** the space blocker is resolved. UTRQ 0.18 and standalone
+`cp`, `mv`, `rm` are now installed in fresh D64/D71/D81 builds. Root defaults
+to RW; explicit RO/remount and recovery semantics are preserved. The compact
+DOS/status backend keeps all existing app slots and stack guards, with a C
+reference and real-6502 differential tests. Busy DOS completion is bounded and
+releases the service lease between polls; ordinary console commands remain
+synchronous. Empty copies use checked exclusive creation, not DOS's CR-inserting
+COPY behavior.
+
+D64 omits only the optional sprite editor (`xsprdef`), as requested, leaving
+31 free blocks; the complete D71/D81 still include it. VICE qualifies public
+commands, collision/missing/RO errors, empty and multi-sector copies, and reboot
+persistence. The native 1986 periodic timer-NMI stress exposed a loader error
+that the old harness misreported using stale console/exit state; this is a
+separate unresolved regression, not a passed gate.
+Ordinary native 1986 D64/1571 command, keyboard, RESTORE, window and reboot
+tests pass with that artificial timer stress explicitly disabled. Exact
+qualification and limits: [file-command record](../bench/results/2026-10-08-file-commands/README.md).
+
+**Accepted for merge (2026-10-08):** the user confirmed the delivered images
+work and requested commit/push, PR and merge. The test platform was unspecified;
+do not infer new physical-C128 acceptance from this or the earlier create-only
+hardware test. Track the periodic-NMI loader failure separately before claiming
+that stress qualification. Cross-device copy, overwrite, directories, wildcards
+and recursive deletion stay outside this slice.
+
+After merging #47, the next architectural feature is the first disk-loaded
+non-kernel service.
+
 **Accepted checkpoint (2026-10-08):** the [sprite editor](XSPRDEF.md) now has
 fast pixel updates, confirmed whole-bank Save/Load (`SPRITES.SPR`), stock-BASIC
 export (`SPRITES.BSV`), a permanent sprite number and held-button draw/erase.
 Generic adjacent-allocation borrowing accommodates the larger app without
 editor-specific kernel routing: four ordinary apps, or one large app plus two
 compatible peers. See the [SDK](GRAPHICAL-APPS-SDK.md#larger-native-apps-capacity-candidate-2026-10-07).
-The user accepted each increment and requested PR/merge of
-`graphics-xspr-pixel-update`; the latest manual-test platform was unspecified.
+The user accepted each increment; [PR #46](https://github.com/salvogendut/UDEKS/pull/46)
+merged as `1a45100`. The latest manual-test platform was unspecified.
 Emulator evidence and limits are in XSPRDEF/HANDOVER. Overwrite, thumbnails,
 keyboard editing, undo and multicolor remain deferred. This is not a broad
 WM performance qualification. **Next architectural feature: the first

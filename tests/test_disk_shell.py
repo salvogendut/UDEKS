@@ -69,5 +69,16 @@ class DiskShellFixture(unittest.TestCase):
         self.assertIn(f'BOOT_ACTIVATION_SIZE = {TASK_SWITCH_ACTIVATION_SIZE}', source)
         self.assertIn('task_persistent_entry_bad:\n        jmp task_bad_entry', source)
 
+    def test_boot_root_requests_rw_but_clears_flags_before_later_requests(self):
+        source = (ROOT/'src/boot/stage1-gateway.s').read_text()
+        mount = source.split('boot_shell_device_ready:', 1)[1].split('boot_shell_mounted:', 1)[0]
+        self.assertIn('lda #14', mount)
+        self.assertIn('sta DISK_REQUEST+5', mount)
+        self.assertIn('lda #1', mount)
+        self.assertIn('sta DISK_REQUEST+13', mount)
+        self.assertLess(mount.index('jsr boot_shell_request'), mount.index('stx DISK_REQUEST+13'))
+        self.assertLess(mount.index('stx DISK_REQUEST+13'), mount.index('cmp #0'))
+        self.assertLess(mount.index('cmp #0'), mount.index('beq boot_shell_mounted'))
+
 
 if __name__ == '__main__': unittest.main()

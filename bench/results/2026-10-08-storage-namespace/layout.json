@@ -1,0 +1,25 @@
+{
+  "scope": "link/placement proof only; no public handlers, no runtime qualification",
+  "production": {
+    "CODE": 109,
+    "STORAGECODE": 71,
+    "BSS": 54,
+    "IECCODE": 88,
+    "STORAGEHIGH": 1582,
+    "code_total": 1850
+  },
+  "with_backend": {
+    "CODE": 104,
+    "STORAGECODE": 71,
+    "BSS": 19,
+    "IECCODE": 19,
+    "STORAGEHIGH": 369,
+    "code_total": 563
+  },
+  "inputs": {
+    "cfg/8502-storage.cfg": "915cd3f5fb857871ccfe0d22ab795f05f82ce6b6313ba038ae811e7c854a2898",
+    "src/services/filesystem/cbm_mutate.c": "5243e5d318f4b3054bbb11d883e2e55df1be3aab0752b7d4278a724693af39d7",
+    "src/services/filesystem/iec_slow.s": "fcd541aad1c127d45f34d1ad14e7299855b526f3ddcb1b8f6000140485d8a406",
+    "src/services/filesystem/namespace_6502.s": "0c090793dfc27e26808d2732a319dd262f8467431432195d2b4457912fe158fa"
+  }
+}

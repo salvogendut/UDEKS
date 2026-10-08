@@ -8,14 +8,19 @@ extern unsigned char udeks_file_payload[24];
 #else
 #define PAYLOAD ((volatile unsigned char *)0xf367)
 #endif
+#if !defined(UDEKS_FS_PART) || UDEKS_FS_PART == 0
 unsigned char udeks_errno;
+#endif
 unsigned char __fastcall__ udeks_fs_request(unsigned char op, unsigned char fd, unsigned char count);
 
+#if !defined(UDEKS_FS_PART) || UDEKS_FS_PART != 3
 static unsigned char invalid(void)
 {
     udeks_errno=UDEKS_TREQ_EINVAL;
     return UDEKS_IO_ERROR;
 }
+#endif
+#if !defined(UDEKS_FS_PART) || UDEKS_FS_PART == 0
 unsigned char udeks_fs_path_request(unsigned char op, unsigned char mode, const unsigned char *path)
 {
     unsigned char n=0;
@@ -32,6 +37,8 @@ unsigned char udeks_open(const unsigned char *path, unsigned char mode)
 {
     return udeks_fs_path_request(UDEKS_TREQ_OP_OPEN,mode,path);
 }
+#endif
+#if !defined(UDEKS_FS_PART) || UDEKS_FS_PART == 1
 unsigned char udeks_fs_receive(unsigned char op, unsigned char fd, unsigned char *buffer, unsigned char count)
 {
     unsigned char n,i;
@@ -46,6 +53,8 @@ unsigned char udeks_read(unsigned char fd, unsigned char *buffer, unsigned char 
 {
     return udeks_fs_receive(UDEKS_TREQ_OP_READ,fd,buffer,count);
 }
+#endif
+#if !defined(UDEKS_FS_PART) || UDEKS_FS_PART == 2
 unsigned char udeks_write_bytes(unsigned char fd, const unsigned char *buffer, unsigned char count)
 {
     unsigned char i,n;
@@ -55,7 +64,10 @@ unsigned char udeks_write_bytes(unsigned char fd, const unsigned char *buffer, u
     if(n!=UDEKS_IO_ERROR && n>count) { udeks_errno=UDEKS_TREQ_EIO; return UDEKS_IO_ERROR; }
     return n;
 }
+#endif
+#if !defined(UDEKS_FS_PART) || UDEKS_FS_PART == 3
 unsigned char udeks_close(unsigned char fd)
 {
     return udeks_fs_request(UDEKS_TREQ_OP_CLOSE,fd,0);
 }
+#endif

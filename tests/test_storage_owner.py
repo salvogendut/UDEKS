@@ -107,9 +107,9 @@ class StorageOwner(unittest.TestCase):
 
     def test_current_boundary_rejects_future_versions_and_legacy_create(self):
         header=(ROOT/'include/udeks/task_request.h').read_text()
-        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     17u',header)
+        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     18u',header)
         fixture=(ROOT/'bench/storage-owner/foreground.c').read_text()
-        self.assertIn('R[5]=18',fixture)
+        self.assertIn('R[5]=19',fixture)
         self.assertIn('if(R[12]!=71)',fixture)
         self.assertIn('if(R[12]!=22)',fixture)
 

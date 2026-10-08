@@ -84,8 +84,12 @@ def main():
     parser.add_argument('--four-native', action='store_true', help='four generic native clients, actual keyboard and 1351 input')
     parser.add_argument('--native-clock', action='store_true', help='two relocatable clocks with native input and legacy peers')
     parser.add_argument('--storage-write', action='store_true', help='public create/readback/reboot with native keyboard and NMI')
+    parser.add_argument('--skip-write-timer-stress', action='store_true',
+                        help='ordinary storage test only (still tests RESTORE); report timer stress as skipped')
     parser.add_argument('--storage-eject', action='store_true', help='1581 media removal with a public writer open, reinsertion/reuse/reboot')
     args = parser.parse_args()
+    if args.skip_write_timer_stress and not args.storage_write:
+        parser.error('--skip-write-timer-stress requires --storage-write')
     if args.xsprdef_files:
         args.xsprdef=True
     if args.native_capacity and any((args.disk_exec,args.disk_shell,args.sysinfo,args.disk_graphics,
@@ -269,11 +273,13 @@ def main():
         for phase in ('create','reboot'):
             environment=os.environ.copy()
             environment.pop('UDEKS_WRITE_REBOOT',None)
+            environment.pop('UDEKS_WRITE_SKIP_TIMER_STRESS',None)
+            if args.skip_write_timer_stress: environment['UDEKS_WRITE_SKIP_TIMER_STRESS']='1'
             if phase=='reboot': environment['UDEKS_WRITE_REBOOT']='1'
             with (work/(phase+'.log')).open('w') as log:
                 result=subprocess.run([str(binary),str(args.roms.resolve()),str(disk),
                     smoke.slot_address(ROOT/'build/8502/udeks-scheduler-overlay.map'),str(work/(phase+'.vsf'))],
-                    stdout=log,stderr=subprocess.STDOUT,env=environment)
+                    stdout=log,stderr=subprocess.STDOUT,env=environment,timeout=600)
             print((work/(phase+'.log')).read_text())
             if result.returncode: raise SystemExit(result.returncode)
         before,after=files(original),files(disk.read_bytes())
@@ -288,6 +294,7 @@ def main():
             written_disk_sha256=hashlib.sha256(disk.read_bytes()).hexdigest(),
             emulator_revision=subprocess.check_output(['git','-C',str(emulator),'rev-parse','HEAD'],text=True).strip(),
             phases=['create','reboot'],existing_files_unchanged=len(before),
+            timer_nmi_stress=not args.skip_write_timer_stress,
             created={n.decode():len(v) for n,v in expected.items()}),indent=2)+'\n')
         print('PASS native public write evidence:',work)
         return

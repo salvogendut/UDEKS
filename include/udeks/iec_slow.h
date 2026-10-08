@@ -20,7 +20,11 @@ uint8_t UDEKS_FASTCALL udeks_iec_open_directory(uint8_t device);
  * copies no caller-owned memory: the single service owner fills this buffer
  * and length while idle, then calls open_file(device). Names are PETSCII;
  * path conversion and validation belong to the storage service. */
-#ifdef UDEKS_IEC_WRITE
+#if defined(UDEKS_IEC_MUTATE)
+/* Private mutation qualification only: C0: + name + =0: + name. */
+#define UDEKS_IEC_FILENAME_MAX 38u
+uint8_t UDEKS_FASTCALL udeks_iec_begin_command(uint8_t device);
+#elif defined(UDEKS_IEC_WRITE)
 /* Probe-only extension: 0: + sixteen-byte name + ,S,W. Not linked into
  * the shipped service until the storage layout and request gate qualify. */
 #define UDEKS_IEC_FILENAME_MAX 22u

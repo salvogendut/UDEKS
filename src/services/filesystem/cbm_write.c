@@ -10,6 +10,10 @@ uint8_t udeks_cbm_written, udeks_cbm_write_dos_error;
 static uint8_t active, failed;
 static uint8_t empty, created_device, created_name[16];
 
+#ifdef UDEKS_COMPACT_STATUS
+extern uint8_t udeks_cbm_write_status(void);
+#define status udeks_cbm_write_status
+#else
 #if defined(__CC65__) && defined(UDEKS_STORAGE_HIGH)
 #pragma code-name(push, "IECCODE")
 #endif
@@ -56,7 +60,11 @@ static uint8_t status(void)
     udeks_cbm_write_dos_error = code;
     return dos_errno(code);
 }
+#endif
 
+#ifdef UDEKS_STATUS_REFERENCE
+uint8_t reference_write_status(void) { return status(); }
+#else
 uint8_t udeks_cbm_create(uint8_t device, const uint8_t *name, uint8_t length, uint8_t type)
 {
     uint8_t i, c, error;
@@ -129,3 +137,4 @@ uint8_t udeks_cbm_write_close(void)
      * digits. Only its validated return code may become the caller's errno. */
     return udeks_cbm_finish_empty(created_device, created_name);
 }
+#endif

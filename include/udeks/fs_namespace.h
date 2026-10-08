@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
-/* Private C filesystem policy, NOT a wire/syscall ABI. */
+/* Private filesystem namespace contract, NOT a wire/syscall ABI.
+ * C reference: fs_namespace.c; compact serialized 6502 implementation:
+ * namespace_6502.s. The production implementation is nonreentrant. */
 #ifndef UDEKS_FS_NAMESPACE_H
 #define UDEKS_FS_NAMESPACE_H
 #include <stdint.h>

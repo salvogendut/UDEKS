@@ -3,6 +3,11 @@
 Work on [issue #44](https://github.com/salvogendut/UDEKS/issues/44), branch
 `storage-0.3-disk-write`, lives in `build/storage-disk-write`.
 
+This is the historical Storage 0.3 qualification (merged via PR #45).
+The [Storage 0.4 branch](ROADMAP.md#current-baseline) changes normal boot to
+RW; the RO boot-default statements below describe the older accepted images.
+Its new file commands are not available yet.
+
 ## Current checkpoint: public writes qualified and accepted for merge
 
 Boot ownership/private-lease work is committed and pushed as **160c591**.

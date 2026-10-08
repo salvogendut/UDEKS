@@ -1,0 +1,39 @@
+{
+  "scope": "CANDIDATE policy/SDK/command qualification only; NOT a release or runnable storage image",
+  "base_commit": "7389ccf",
+  "toolchain": "cl65 V2.18 - Fedora 2.19-15.fc44 (my-distrobox)",
+  "commands": {
+    "build": "distrobox-enter my-distrobox -- make file-commands-candidate",
+    "sdk": "distrobox-enter my-distrobox -- make file-mutation-sdk-check",
+    "policy": "distrobox-enter my-distrobox -- make storage-mutation-policy"
+  },
+  "sdk_sim65_exit": 0,
+  "sdk_scenarios": 21,
+  "policy_and_sdk_host_tests": 82,
+  "command_host_tests": 4,
+  "policy_link_passed": false,
+  "policy_make_exit": 2,
+  "hidden_region_overflow": 586,
+  "other_code_slack": 281,
+  "minimum_net_code_shortfall": 305,
+  "policy_bss_slack": 10,
+  "production_minor": 17,
+  "candidate_minor": 18,
+  "candidate_shipped": false,
+  "live_mutation_qualification": false,
+  "production_d64_sha256": "8f141fb06fd2fbfa1b1b9fbd3d9c8d5af0d31ff367cfc52df80a1f3ae0e4ceec",
+  "source_sha256": {
+    "src/services/filesystem/iec_service.c": "62e19559f7f9e4cd7cbfc6c6f76f7e247e4842613009e21561cd6612476df451",
+    "include/udeks/file_mutation.h": "e9081961ba1569616e045babe5f89fe5ad80db8b2b1ffb72b6aaa20f872d3ee6",
+    "user/lib/file_mutation.c": "485aca533334e31be379a9b0b9e8f862318b91401527a75477413406b65d3398",
+    "user/lib/file_mutation_request.s": "1b6b1b53d4703e35d35571e49cb5f67490aff5dccfc240923b4a62ec91bc7de9",
+    "user/bin/cp.c": "105ff1b2fdeb06dec3a751582b37b6b5b4e812853ea1a751de41a8064aa5c78c",
+    "user/bin/mv.c": "aae42044d2656d4274e829a331c15ed7cc53fafda9398f2ebd258e113879ec94",
+    "user/bin/rm.c": "88599bf3a0aea59cd3b0499f5a67a0123839c39d3c3020441a53e198b9ee927b",
+    "user/bin/file_change.h": "c99d5384bf6f453ac2fc6fedadcb1c340f3f9f0b853fc0a437b1116500950390",
+    "bench/storage-mutation-sdk/check.c": "c1fad4c02d342d774556c6f2107278ced5cc355ba7bc3fee9da7b54c1686af1c",
+    "tools/storage_mutation_layout.py": "8305259d1511134156653411a188a5348070e65f437f165699f6b24baf3956b3",
+    "tools/build_console_example.py": "94c723e043672f0ca3fced3a531ca210c1f30faaa16ae8c7d783411a410cbd23",
+    "mk/storage.mk": "c61efdd144d7eaa4ec3d41dac6351b62b16454c527496f3151f1de24365a39f9"
+  }
+}

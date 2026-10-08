@@ -2,7 +2,7 @@
 /* Public commands entered with the emulator's real keyboard. No OS patches. */
 static void write_command(const char *line,unsigned status,const char *expected) {
     idle(); command(line); idle();
-    if(byte(0xf287)!=status || !console_contains(expected)) {
+    if(byte(0xf285)!=3 || byte(0xf287)!=status || !console_contains(expected) || !console_contains(line)) {
         diagnostic();
         for(unsigned row=0;row<21;++row)
             printf("%.*s\n",64,(char *)&machine->mem.ram[UDEKS_CONSOLE_BASE+row*65]);
@@ -13,6 +13,8 @@ static void write_command(const char *line,unsigned status,const char *expected)
 static void storage_write_smoke(void) {
     wait_byte(0xf3e0,2,"startup incomplete"); idle();
     require(byte(0xf3dd)==1 && !console_contains("RC failed"),"disk shell/startup failed");
+    write_command("df",0,"Read-write mount");
+    write_command("mount -o remount,ro 8 /",0,"ready (read-only)");
     write_command("save /denied 1",1,"Read-only filesystem");
     write_command("df",0,"Read-only mount");
     if(getenv("UDEKS_WRITE_REBOOT")) {
@@ -26,6 +28,15 @@ static void storage_write_smoke(void) {
         write_command("save /binary 515",0,"save: created and verified");
         write_command("save /zero 0",0,"save: created and verified");
         write_command("save /binary 515",1,"File exists");
+        write_command("cp /binary /copy",0,"");
+        write_command("save -c /copy 515",0,"save: verified");
+        write_command("mv /copy /renamed",0,"");
+        write_command("save -c /renamed 515",0,"save: verified");
+        write_command("rm /renamed",0,"");
+        write_command("cat /renamed",1,"No such file or directory");
+        write_command("cp /zero /emptycopy",0,"");
+        write_command("save -c /emptycopy 0",0,"save: verified");
+        write_command("rm /emptycopy",0,"");
         unsigned before=word(0xfff6);
         c128_key_event(machine,SDL_SCANCODE_PAGEUP,true); frames(4);
         c128_key_event(machine,SDL_SCANCODE_PAGEUP,false); frames(4);
@@ -33,13 +44,17 @@ static void storage_write_smoke(void) {
         /* CIA2 timer NMI continues through real keyboard, disk loading and
          * the guarded write service. Device registers only, no OS hooks. */
         before=word(0xfff6);
-        cia_write(&machine->cia2,0xdd04,0); cia_write(&machine->cia2,0xdd05,0x40);
-        cia_write(&machine->cia2,0xdd0d,0x81); cia_write(&machine->cia2,0xdd0e,0x11);
+        if(!getenv("UDEKS_WRITE_SKIP_TIMER_STRESS")) {
+            cia_write(&machine->cia2,0xdd04,0); cia_write(&machine->cia2,0xdd05,0x40);
+            cia_write(&machine->cia2,0xdd0d,0x81); cia_write(&machine->cia2,0xdd0e,0x11);
+        }
         write_command("save /nmitest 515",0,"save: created and verified");
         cia_write(&machine->cia2,0xdd0e,0); frames(4);
         cia_write(&machine->cia2,0xdd0d,0x7f); (void)cia_read(&machine->cia2,0xdd0d);
-        require(word(0xfff6)!=before && !byte(0xfff5),"CIA2 NMI not drained");
-        printf("PASS RESTORE and CIA2 NMI drained, count=%u\n",word(0xfff6));
+        if(!getenv("UDEKS_WRITE_SKIP_TIMER_STRESS")) {
+            require(word(0xfff6)!=before && !byte(0xfff5),"CIA2 NMI not drained");
+            printf("PASS RESTORE and CIA2 NMI drained, count=%u\n",word(0xfff6));
+        } else puts("RESTORE tested; periodic timer-NMI stress explicitly skipped");
         command("xclock &"); idle(); wait_byte(0xf246,1,"clock did not open");
         window_gesture(146,96,42,56);
         write_command("save /graphics 24",0,"save: created and verified");
@@ -51,5 +66,5 @@ static void storage_write_smoke(void) {
     require(!byte(0xf11b),"task canary failure");
     require(snapshot_save(machine,snapshot_path)==SNAPSHOT_OK,"save evidence");
     require(drive_attach_disk(&machine->drive,NULL)==0,"flush/detach written disk");
-    puts("PASS native 1986 public binary/empty write/readback, native input, RO defaults");
+    puts("PASS native 1986 public binary/empty write/readback, native input, RW boot and explicit RO");
 }

@@ -112,6 +112,7 @@ def main():
                 click_at(231,99);click_at(8,20);click_at(199,187)
                 screen('edited',expected[441:])
                 dialog(1,cancel=True);screen('save-cancelled',expected[441:])
+                command('mount -o remount,ro 8 /','ready (read-only)')
                 dialog(1,30);bank_matches() # RO save reports failure; edits survive
                 dialog(2,2);bank_matches();screen('missing-kept-edit',expected[441:])
                 command('mount -o remount,rw 8 /','ready (read-write)')
@@ -129,7 +130,7 @@ def main():
                 dialog(4,30,editor=False)
                 click_at(231,99);screen('exported-kept-bank',expected[441:])
             else:
-                command('df','Read-only mount')
+                command('df','Read-write mount')
                 dialog(2,0,editor=False);bank_matches()
                 click_at(231,99);screen('reboot-loaded',expected[441:])
             command('xdraw &');wait(0xf246,2);command('xdraw -q');wait(0xf246,1)

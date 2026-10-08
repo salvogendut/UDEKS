@@ -1,5 +1,109 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 STORAGE_BUILD := build/storage
+NAMESPACE_BUILD := build/bench/storage-namespace
+NAMESPACE_RENAMES := $(foreach fn,resolve device classify physical consider,-D udeks_fs_$(fn)=reference_$(fn))
+.PHONY: storage-namespace-check storage-mutation-layout storage-mutation-policy file-commands-candidate
+storage-mutation-layout: placement-check-guard storage-service
+	$(PYTHON) tools/storage_mutation_layout.py
+# Candidate handlers must pass this real link before production promotion.
+storage-mutation-policy: placement-check-guard storage-service
+	$(PYTHON) tools/storage_mutation_layout.py --policy
+USER_MUTATION_UDEX := build/file-commands/cp/CP.BIN build/file-commands/mv/MV.BIN build/file-commands/rm/RM.BIN
+file-commands-candidate: placement-check-guard $(USER_MUTATION_UDEX)
+$(USER_MUTATION_UDEX): user/bin/file_change.h user/lib/file_mutation.c user/lib/file_mutation_request.s user/lib/filesystem.c user/lib/fs_request.s user/lib/error_string.c tools/build_console_example.py mk/storage.mk
+build/file-commands/cp/CP.BIN: user/bin/cp.c
+	$(PYTHON) tools/build_console_example.py --file-mutations --static-locals --source $< --name CP --output build/file-commands/cp
+build/file-commands/mv/MV.BIN: user/bin/mv.c
+	$(PYTHON) tools/build_console_example.py --file-mutations --static-locals --source $< --name MV --output build/file-commands/mv
+build/file-commands/rm/RM.BIN: user/bin/rm.c
+	$(PYTHON) tools/build_console_example.py --file-mutations --static-locals --source $< --name RM --output build/file-commands/rm
+MUTATION_SDK_BUILD := build/bench/storage-mutation-sdk
+.PHONY: storage-mutation-backend-check
+storage-mutation-backend-check: $(MUTATION_SDK_BUILD)/backend $(MUTATION_SDK_BUILD)/status
+	sim65 $< > $(MUTATION_SDK_BUILD)/backend.log
+	cat $(MUTATION_SDK_BUILD)/backend.log
+	sim65 $(MUTATION_SDK_BUILD)/status > $(MUTATION_SDK_BUILD)/status.log
+	cat $(MUTATION_SDK_BUILD)/status.log
+$(MUTATION_SDK_BUILD)/status.o: bench/storage-mutation-sdk/status.c | $(MUTATION_SDK_BUILD)
+	$(CL65) -t sim6502 --standard c99 -Os -D UDEKS_IEC_WRITE -D UDEKS_IEC_MUTATE -I include -c -o $@ $<
+$(MUTATION_SDK_BUILD)/status-ref.o: src/services/filesystem/cbm_write.c | $(MUTATION_SDK_BUILD)
+	$(CL65) -t sim6502 --standard c99 -Os -D UDEKS_IEC_WRITE -D UDEKS_STATUS_REFERENCE -D udeks_cbm_write_dos_error=reference_dos_error -I include -c -o $@ $<
+$(MUTATION_SDK_BUILD)/async-asm.o: src/services/filesystem/mutation_6502.s | $(MUTATION_SDK_BUILD)
+	$(CA65) --cpu 6502 -D UDEKS_MUTATION_TEST -D UDEKS_IEC_ASYNC -o $@ $<
+$(MUTATION_SDK_BUILD)/status: $(addprefix $(MUTATION_SDK_BUILD)/,status.o status-ref.o async-asm.o transport.o)
+	$(CL65) -t sim6502 -m $(MUTATION_SDK_BUILD)/status.map -o $@ $^
+$(MUTATION_SDK_BUILD)/backend.o: bench/storage-mutation-sdk/backend.c | $(MUTATION_SDK_BUILD)
+	$(CL65) -t sim6502 --standard c99 -Os -D UDEKS_IEC_WRITE -D UDEKS_IEC_MUTATE -I include -c -o $@ $<
+$(MUTATION_SDK_BUILD)/backend-ref.o: src/services/filesystem/cbm_mutate.c | $(MUTATION_SDK_BUILD)
+	$(CL65) -t sim6502 --standard c99 -Os -D UDEKS_IEC_WRITE -D UDEKS_IEC_MUTATE -D udeks_cbm_mutate=reference_mutate -I include -c -o $@ $<
+$(MUTATION_SDK_BUILD)/transport.o: tests/fixtures/mutate_transport.c | $(MUTATION_SDK_BUILD)
+	$(CL65) -t sim6502 --standard c99 -Os -D UDEKS_IEC_WRITE -D UDEKS_IEC_MUTATE -I include -c -o $@ $<
+$(MUTATION_SDK_BUILD)/backend-asm.o: src/services/filesystem/mutation_6502.s | $(MUTATION_SDK_BUILD)
+	$(CA65) --cpu 6502 -D UDEKS_MUTATION_TEST -o $@ $<
+$(MUTATION_SDK_BUILD)/backend: $(addprefix $(MUTATION_SDK_BUILD)/,backend.o backend-ref.o backend-asm.o transport.o)
+	$(CL65) -t sim6502 -m $(MUTATION_SDK_BUILD)/backend.map -o $@ $^
+.PHONY: file-mutation-sdk-check
+file-mutation-sdk-check: $(MUTATION_SDK_BUILD)/check
+	sim65 $< > $(MUTATION_SDK_BUILD)/check.log
+	cat $(MUTATION_SDK_BUILD)/check.log
+$(MUTATION_SDK_BUILD):
+	mkdir -p $@
+$(MUTATION_SDK_BUILD)/check.o: bench/storage-mutation-sdk/check.c include/udeks/file_mutation.h | $(MUTATION_SDK_BUILD)
+	$(CL65) -t sim6502 --standard c99 -Os --static-locals -I include -I user/include -c -o $@ $<
+$(MUTATION_SDK_BUILD)/%.o: user/lib/%.c include/udeks/file_mutation.h user/include/udeks/program.h | $(MUTATION_SDK_BUILD)
+	$(CL65) -t sim6502 --standard c99 -Os --static-locals -I include -I user/include -c -o $@ $<
+$(MUTATION_SDK_BUILD)/%.o: user/lib/%.s | $(MUTATION_SDK_BUILD)
+	$(CA65) --cpu 6502 -o $@ $<
+$(MUTATION_SDK_BUILD)/check: $(addprefix $(MUTATION_SDK_BUILD)/,check.o filesystem.o file_mutation.o fs_request.o file_mutation_request.o)
+	$(CL65) -t sim6502 -m $(MUTATION_SDK_BUILD)/check.map -o $@ $^
+storage-namespace-check: $(NAMESPACE_BUILD)/check $(NAMESPACE_BUILD)/negative
+	sim65 $(NAMESPACE_BUILD)/check > $(NAMESPACE_BUILD)/check.log
+	cat $(NAMESPACE_BUILD)/check.log
+	@if sim65 $(NAMESPACE_BUILD)/negative > $(NAMESPACE_BUILD)/negative.log 2>&1; then \
+		echo "namespace oracle accepted a broken rejection path" >&2; exit 1; fi
+	rg -q '^FAIL resolve ' $(NAMESPACE_BUILD)/negative.log
+$(NAMESPACE_BUILD):
+	mkdir -p $@
+$(NAMESPACE_BUILD)/reference.o: src/services/filesystem/fs_namespace.c include/udeks/fs_namespace.h | $(NAMESPACE_BUILD)
+	$(CL65) -t sim6502 --standard c99 -Os --static-locals -I include $(NAMESPACE_RENAMES) -c -o $@ $<
+$(NAMESPACE_BUILD)/namespace.o: src/services/filesystem/namespace_6502.s | $(NAMESPACE_BUILD)
+	$(CA65) --cpu 6502 -D UDEKS_NAMESPACE_TEST -o $@ $<
+$(NAMESPACE_BUILD)/negative.o: src/services/filesystem/namespace_6502.s | $(NAMESPACE_BUILD)
+	$(CA65) --cpu 6502 -D UDEKS_NAMESPACE_TEST -D UDEKS_NAMESPACE_NEGATIVE -o $@ $<
+$(NAMESPACE_BUILD)/check.o: bench/storage-namespace/check.c include/udeks/fs_namespace.h | $(NAMESPACE_BUILD)
+	$(CL65) -t sim6502 --standard c99 -Os --static-locals -I include -c -o $@ $<
+$(NAMESPACE_BUILD)/check: $(addprefix $(NAMESPACE_BUILD)/,check.o namespace.o reference.o)
+	$(CL65) -t sim6502 -m $(NAMESPACE_BUILD)/check.map -o $@ $^
+$(NAMESPACE_BUILD)/negative: $(addprefix $(NAMESPACE_BUILD)/,check.o negative.o reference.o)
+	$(CL65) -t sim6502 -o $@ $^
+# Private mutation backend qualification. Not installed in the storage module:
+# the service preflight/placement and public command ABI are a later increment.
+MUTATE_BUILD := build/bench/iec-mutate
+MUTATE_FLAGS := -t none --cpu 6502 --standard c99 -Os -I include --static-locals -D UDEKS_IEC_WRITE -D UDEKS_IEC_MUTATE -D UDEKS_MUTATE_PROBE
+MUTATE_OBJECTS := $(addprefix $(MUTATE_BUILD)/,entry.o main.o cbm_mutate.o cbm_file.o cbm_write.o iec_slow.o)
+.PHONY: storage-mutate-backend storage-mutate-probe
+storage-mutate-backend: $(MUTATE_BUILD)/mutate.prg
+storage-mutate-probe:
+	$(PYTHON) tools/storage_mutate_probe.py
+$(MUTATE_BUILD):
+	mkdir -p $@
+$(MUTATE_OBJECTS): mk/storage.mk include/udeks/cbm_mutate.h include/udeks/iec_slow.h
+$(MUTATE_BUILD)/entry.o: bench/iec-write/entry.s | $(MUTATE_BUILD)
+	$(CA65) --cpu 6502 -o $@ $<
+$(MUTATE_BUILD)/main.o: bench/iec-mutate/main.c | $(MUTATE_BUILD)
+	$(CL65) $(MUTATE_FLAGS) -c -o $@ $<
+$(MUTATE_BUILD)/cbm_mutate.o: src/services/filesystem/cbm_mutate.c | $(MUTATE_BUILD)
+	$(CL65) $(MUTATE_FLAGS) -c -o $@ $<
+$(MUTATE_BUILD)/cbm_file.o: src/services/filesystem/cbm_file.c include/udeks/cbm_file.h | $(MUTATE_BUILD)
+	$(CL65) $(MUTATE_FLAGS) -c -o $@ $<
+$(MUTATE_BUILD)/cbm_write.o: src/services/filesystem/cbm_write.c include/udeks/cbm_write.h | $(MUTATE_BUILD)
+	$(CL65) $(MUTATE_FLAGS) -c -o $@ $<
+$(MUTATE_BUILD)/iec_slow.o: src/services/filesystem/iec_slow.s | $(MUTATE_BUILD)
+	$(CA65) --cpu 6502 -D UDEKS_IEC_WRITE -D UDEKS_IEC_MUTATE -D UDEKS_MUTATE_PROBE -o $@ $<
+$(MUTATE_BUILD)/mutate.bin: $(MUTATE_OBJECTS) cfg/8502-iec-write.cfg
+	$(CL65) -t none -C cfg/8502-iec-write.cfg -m $(MUTATE_BUILD)/mutate.map -o $@ $(MUTATE_OBJECTS)
+$(MUTATE_BUILD)/mutate.prg: $(MUTATE_BUILD)/mutate.bin tools/bin_to_prg.py
+	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
 # Separate backend qualification; public writes use the guarded boot service.
 WRITE_BUILD := build/bench/iec-write
 WRITE_CFLAGS := -t none --cpu 6502 --standard c99 -Os -I include --static-locals -D UDEKS_IEC_WRITE
@@ -93,10 +197,11 @@ $(STORAGE_WINDOW_BUILD)/probe.bin: $(STORAGE_WINDOW_BUILD)/probe.o bench/storage
 $(STORAGE_WINDOW_BUILD)/probe.prg: $(STORAGE_WINDOW_BUILD)/probe.bin tools/bin_to_prg.py
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
 .PHONY: filesystem-policy
-# Compile/measure the #26 namespace contract without changing the boot image.
+# The C implementation remains the policy oracle; this ABI-compatible
+# implementation fits the same guarded service regions with more headroom.
 filesystem-policy: $(STORAGE_BUILD)/fs_namespace.o
-$(STORAGE_BUILD)/fs_namespace.o: src/services/filesystem/fs_namespace.c include/udeks/fs_namespace.h include/udeks/task_request.h | $(STORAGE_BUILD)
-	$(CL65) $(WRITE_CFLAGS) -D UDEKS_STORAGE_HIGH --code-name STORAGEHIGH -c -o $@ $<
+$(STORAGE_BUILD)/fs_namespace.o: src/services/filesystem/namespace_6502.s include/udeks/fs_namespace.h include/udeks/task_request.h mk/storage.mk | $(STORAGE_BUILD)
+	$(CA65) --cpu 6502 -o $@ $<
 .PHONY: iec-eof-reference
 iec-eof-reference: $(BUILD_IEC_DIRECTORY)/kernal-eof.prg
 $(BUILD_IEC_DIRECTORY)/kernal-eof.o: bench/iec-directory/kernal-eof.s | $(BUILD_IEC_DIRECTORY)
@@ -105,7 +210,7 @@ $(BUILD_IEC_DIRECTORY)/kernal-eof.bin: $(BUILD_IEC_DIRECTORY)/kernal-eof.o cfg/8
 	$(LD65) -C cfg/8502-iec-directory.cfg -o $@ $<
 $(BUILD_IEC_DIRECTORY)/kernal-eof.prg: $(BUILD_IEC_DIRECTORY)/kernal-eof.bin
 	$(PYTHON) tools/bin_to_prg.py --load-address 0x2800 $< $@
-STORAGE_OBJECTS := $(addprefix $(STORAGE_BUILD)/,iec_lease.o iec_context.o iec_service.o fs_namespace.o cbm_file.o cbm_write.o iec_slow.o)
+STORAGE_OBJECTS := $(addprefix $(STORAGE_BUILD)/,iec_lease.o iec_context.o iec_service.o fs_namespace.o cbm_file.o cbm_write.o iec_slow.o cbm_mutate.o)
 USER_MOUNT_BIN := $(BUILD_USER)/mount.bin
 USER_MOUNT_UDEX := $(BUILD_USER)/mount.udx
 USER_RECOVERY_MOUNT_UDEX := $(BUILD_USER)/mount-recovery.udx
@@ -114,8 +219,9 @@ USER_FILETOOLS_BIN := $(BUILD_USER)/filetools.bin
 USER_FILETOOLS_UDEX := $(BUILD_USER)/filetools.udx
 USER_SYSINFO_UDEX := $(BUILD_USER)/sysinfo.udx
 USER_DIAGNOSTICS_UDEX := $(BUILD_USER)/diagnostics.udx
+$(BUILD_USER)/diagnostics.o $(BUILD_USER)/filetools.o: mk/storage.mk
 $(BUILD_USER)/diagnostics.o: user/bin/diagnostics.c include/udeks/service_control.h include/udeks/task_request.h | $(BUILD_USER)
-	$(CL65) $(CFLAGS_8502) --static-locals -I user/include -c -o $@ $<
+	$(CL65) $(filter-out -Oirs,$(CFLAGS_8502)) -Os --static-locals -I user/include -c -o $@ $<
 $(BUILD_USER)/diagnostics_request.o: user/lib/file_request.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -D UDEKS_FILE_REQUEST_MINOR=7 -o $@ $<
 $(BUILD_USER)/diagnostics.bin: $(USER_ENTRY_OBJ) $(USER_SYSCALL_OBJ) $(BUILD_USER)/diagnostics.o $(BUILD_USER)/diagnostics_request.o cfg/8502-user-app1.cfg
@@ -133,7 +239,7 @@ $(USER_SYSINFO_UDEX): $(BUILD_USER)/sysinfo.bin tools/build_udex.py
 .PHONY: filetools
 filetools: $(USER_FILETOOLS_UDEX)
 $(BUILD_USER)/filetools.o: user/bin/filetools.c user/include/udeks/program.h include/udeks/task_request.h | $(BUILD_USER)
-	$(CL65) $(CFLAGS_8502) --static-locals -I user/include -c -o $@ $<
+	$(CL65) $(filter-out -Oirs,$(CFLAGS_8502)) -Os --static-locals -I user/include -c -o $@ $<
 $(BUILD_USER)/file_request.o: user/lib/file_request.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
 $(USER_FILETOOLS_BIN): $(USER_ENTRY_OBJ) $(USER_SYSCALL_OBJ) $(BUILD_USER)/filetools.o $(BUILD_USER)/file_request.o cfg/8502-user-app1.cfg
@@ -189,11 +295,13 @@ $(STORAGE_BUILD)/%.o: src/services/filesystem/%.c include/udeks/task_request.h \
 $(STORAGE_BUILD)/iec_entry.o: src/services/filesystem/iec_entry.s | $(STORAGE_BUILD)
 	$(CA65) --cpu 6502 -o $@ $<
 $(STORAGE_BUILD)/iec_service.o: src/services/filesystem/iec_service.c include/udeks/task_request.h | $(STORAGE_BUILD)
-	$(CL65) $(CFLAGS_8502) -D UDEKS_STORAGE_WRITES -D UDEKS_IEC_WRITE -D UDEKS_STORAGE_LEASE --static-locals --code-name STORAGECODE -c -o $@ $<
+	$(CL65) $(WRITE_CFLAGS) -D UDEKS_STORAGE_WRITES -D UDEKS_IEC_MUTATE -D UDEKS_STORAGE_MUTATIONS -D UDEKS_STORAGE_LEASE --code-name STORAGECODE -c -o $@ $<
 $(STORAGE_BUILD)/cbm_file.o: src/services/filesystem/cbm_file.c include/udeks/cbm_file.h include/udeks/iec_slow.h | $(STORAGE_BUILD)
 	$(CL65) $(WRITE_CFLAGS) -D UDEKS_STORAGE_HIGH -c -o $@ $<
 $(STORAGE_BUILD)/cbm_write.o: src/services/filesystem/cbm_write.c include/udeks/cbm_write.h | $(STORAGE_BUILD)
-	$(CL65) $(WRITE_CFLAGS) -D UDEKS_STORAGE_HIGH --code-name STORAGECODE -c -o $@ $<
+	$(CL65) $(WRITE_CFLAGS) -D UDEKS_STORAGE_HIGH -D UDEKS_COMPACT_STATUS --code-name STORAGECODE -c -o $@ $<
+$(STORAGE_BUILD)/cbm_mutate.o: src/services/filesystem/mutation_6502.s | $(STORAGE_BUILD)
+	$(CA65) --cpu 6502 -D UDEKS_IEC_ASYNC -o $@ $<
 $(STORAGE_BUILD)/iec_lease.o: src/services/filesystem/iec_lease.s | $(STORAGE_BUILD)
 	$(CA65) --cpu 6502 -D UDEKS_STORAGE_CONTEXT -o $@ $<
 $(STORAGE_BUILD)/iec_context.o: src/services/filesystem/iec_context.s | $(STORAGE_BUILD)
@@ -203,7 +311,7 @@ $(STORAGE_BUILD)/install.o: src/boot/storage-install.s | $(STORAGE_BUILD)
 $(STORAGE_BUILD)/install.bin: $(STORAGE_BUILD)/install.o cfg/8502-storage-install.cfg
 	$(LD65) -C cfg/8502-storage-install.cfg -o $@ $<
 $(STORAGE_BUILD)/iec_slow.o: src/services/filesystem/iec_slow.s | $(STORAGE_BUILD)
-	$(CA65) --cpu 6502 -D UDEKS_STORAGE_MODULE -D UDEKS_IEC_WRITE -o $@ $<
+	$(CA65) --cpu 6502 -D UDEKS_STORAGE_MODULE -D UDEKS_IEC_WRITE -D UDEKS_IEC_MUTATE -D UDEKS_IEC_ASYNC -o $@ $<
 $(STORAGE_BUILD)/module.bin $(STORAGE_BUILD)/driver.bin $(STORAGE_BUILD)/policy.bin $(STORAGE_BUILD)/hidden.bin $(STORAGE_BUILD)/module.map &: \
 		$(STORAGE_OBJECTS) cfg/8502-storage.cfg
 	$(CL65) -t none -C cfg/8502-storage.cfg -u _udeks_cbm_dos_error -u _udeks_storage_generations -u _udeks_storage_cleanup_error -m $(STORAGE_BUILD)/module.map \

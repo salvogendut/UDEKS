@@ -23,9 +23,11 @@ Read the [dedication](DEDICATION.md).
 
 > [!IMPORTANT]
 > This is an experimental native OS, not a general-purpose Unix or a finished
-> microkernel distribution. Many services are still preloaded. Storage defaults
-> to read-only; opt-in create-only writes have passed the functional checklist
-> on C128/PI1541. Task capacity is limited and graphical repaints
+> microkernel distribution. Many services are still preloaded. Fresh builds mount
+> the normal system root read/write; use disposable copies while testing.
+> Create-only writes have passed the functional checklist on C128/PI1541;
+> the changed boot default passes VICE/1986 but needs fresh hardware acceptance.
+> Task capacity is limited and graphical repaints
 > can be slow.
 
 ## Download and boot
@@ -34,7 +36,8 @@ For the current disk-write and sprite-editor features, build the source and use
 `build/boot/udeks.d64`, `.d71` or `.d81`. The
 [SAVE test and writable-mount instructions](docs/GRAPHICAL-APPS-SDK.md#counted-disk-io-utrq-014)
 apply to these fresh images, **not** the older downloads below. Use disposable
-media for write testing; overwrite, append and deletion are not implemented.
+media for write testing; overwrite and append are not implemented. Fresh
+builds also have exact-file `cp`, `mv` and `rm` (see below).
 The [qualification record](bench/results/2026-10-07-storage-acceptance/README.md)
 includes the hardware acceptance. The VICE 1581 mid-write-ejection run remains
 unqualified, but the [equivalent 1986 test now passes](bench/results/2026-10-07-storage-eject-1986/README.md).
@@ -87,13 +90,14 @@ relocatable disk programs with private runtimes and stacks. Clock and wave
 resize; calculator and drawing use fixed-size layouts. Click xdraw's C button
 to clear it; `xcalc -q` / `xdraw -q` close the respective app.
 
-Fresh builds also include [`xsprdef`, the sprite editor](docs/XSPRDEF.md).
+Fresh D71/D81 builds also include [`xsprdef`, the sprite editor](docs/XSPRDEF.md)
+(omitted from D64 to leave working space for files).
 Run `xsprdef &` to edit eight 24×21 monochrome definitions with
 an 8× editor and 1× preview. It uses the same generic app slots, not a special
 kernel entry. The current sprite number stays visible beside the preview;
 hold the primary mouse button to draw or erase a stroke. Click S/L for
 confirmed Save/Load of the entire bank as
-`/SPRITES.SPR`. Saving requires `mount -o remount,rw 8 /` and **creates only**:
+`/SPRITES.SPR`. Saving **creates only** and the normal root is writable by default:
 existing files are never overwritten. B keeps edits while returning to the list.
 The list's **E** button exports `SPRITES.BSV` for stock C128 BASIC:
 `BLOAD "SPRITES.BSV",B0,P3584`. It creates a genuine PRG file without changing
@@ -102,6 +106,18 @@ Use a freshly built image from `build/boot/`; the published downloads above
 do not include these editor features. The larger editor joins two free allocations,
 leaving room for two compatible-sized peers; launch it first. See its guide
 for safe disposable-disk testing and file-format details.
+
+Use `mount -o remount,ro 8 /` to make the system root read-only, and
+`mount -o remount,rw 8 /` to enable writes again. Recovery bootfs stays read-only;
+an unqualified `mount 9 /mnt` also remains read-only. Fresh builds include
+standalone `cp SOURCE DEST`, `mv SOURCE DEST`, and `rm FILE`
+([issue #47](https://github.com/salvogendut/UDEKS/issues/47)). These act on exact
+regular-file names on the same mounted filesystem: no overwrite, wildcard,
+recursive deletion or cross-device copy. Failures can leave partial disk work.
+Use disposable copies for acceptance testing. D64 omits the optional `xsprdef`
+sprite editor to leave **31 free blocks**; D71/D81 include it. Use those larger
+formats or a separate writable data disk for larger files. Existing published
+download snapshots are not automatically updated by a source build.
 
 A new `.BIN` launches as `name` or `name &`
 into any free **compatible-sized** allocation, without an OS name-table entry.

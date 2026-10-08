@@ -1,0 +1,420 @@
+Modules list:
+-------------
+entry.o:
+    STARTUP           Offs=000000  Size=00001B  Align=00001  Fill=0000
+main.o:
+    CODE              Offs=000000  Size=0002B9  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=0000A0  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000003  Align=00001  Fill=0000
+cbm_mutate.o:
+    CODE              Offs=0002B9  Size=000512  Align=00001  Fill=0000
+    RODATA            Offs=0000A0  Size=000004  Align=00001  Fill=0000
+    BSS               Offs=000003  Size=000013  Align=00001  Fill=0000
+cbm_file.o:
+    CODE              Offs=0007CB  Size=00072C  Align=00001  Fill=0000
+    RODATA            Offs=0000A4  Size=00003E  Align=00001  Fill=0000
+    BSS               Offs=000016  Size=00004E  Align=00001  Fill=0000
+    STORAGECODE       Offs=000000  Size=0000F5  Align=00001  Fill=0000
+    IECCODE           Offs=000000  Size=0001B4  Align=00001  Fill=0000
+cbm_write.o:
+    CODE              Offs=000EF7  Size=000477  Align=00001  Fill=0000
+    BSS               Offs=000064  Size=000023  Align=00001  Fill=0000
+iec_slow.o:
+    CODE              Offs=00136E  Size=0004EE  Align=00001  Fill=0000
+    BSS               Offs=000087  Size=000039  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=00185C  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax4.o):
+    CODE              Offs=00186A  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(bneg.o):
+    CODE              Offs=00187B  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decax1.o):
+    CODE              Offs=001889  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decaxy.o):
+    CODE              Offs=001890  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=001899  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax2.o):
+    CODE              Offs=0018C7  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax3.o):
+    CODE              Offs=0018CE  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax5.o):
+    CODE              Offs=0018D3  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=0018D8  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=0018E3  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=0018EA  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=001900  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=001905  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=00190A  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=00190F  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=001914  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=00191D  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax10.o):
+    CODE              Offs=001949  Size=000019  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(or.o):
+    CODE              Offs=001962  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=001974  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=001982  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=001998  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=0019B2  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(udiv.o):
+    CODE              Offs=0019C8  Size=00004F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(umod.o):
+    CODE              Offs=001A17  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zerobss.o):
+    CODE              Offs=001A28  Size=000023  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               002800  00281A  00001B  00001
+CODE                  00281B  004265  001A4B  00001
+STORAGECODE           004266  00435A  0000F5  00001
+IECCODE               00435B  00450E  0001B4  00001
+RODATA                00450F  0045F0  0000E2  00001
+BSS                   006100  0061BF  0000C0  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               006100 RLA    __BSS_SIZE__              0000C0 REA    
+__STARTUP__               000001 REA    _main                     00294E RLA    
+_udeks_cbm_create         003712 RLA    _udeks_cbm_finish_empty   0031EA RLA    
+_udeks_cbm_mutate         002AD4 RLA    _udeks_cbm_write_close    003A1B RLA    
+_udeks_iec_begin_command  003FE8 RLA    _udeks_iec_close          003F2F RLA    
+_udeks_iec_command        003F9A RLA    _udeks_iec_filename       00618E RLA    
+_udeks_iec_filename_length 00618D RLA    _udeks_iec_finish         004062 RLA    
+_udeks_iec_listen_file    004021 RLA    _udeks_iec_open_status    003E1E RLA    
+_udeks_iec_prepare_file   003D19 RLA    _udeks_iec_probe_bus      0061BD RLA    
+_udeks_iec_probe_defer    00618C REA    _udeks_iec_probe_eoi      0061B6 REA    
+_udeks_iec_probe_lines    0061BE RLA    _udeks_iec_probe_sent     0061BF RLA    
+_udeks_iec_probe_subphase 0061BC RLA    _udeks_iec_read_byte      003E73 RLA    
+_udeks_iec_talk_file      003E22 RLA    _udeks_iec_unlisten       00404F RLA    
+_udeks_iec_untalk         003F82 RLA    _udeks_iec_write_byte     00404A RLA    
+addysp                    004078 RLA    addysp1                   004077 RLA    
+aslax4                    004085 RLA    bnega                     00409A RLA    
+bnegax                    004096 RLA    booleq                    00413E RLA    
+decax1                    0040A4 RLA    decaxy                    0040AB RLA    
+incax2                    0040E2 RLA    incax3                    0040E9 RLA    
+incax4                    0040F3 RLA    incax5                    0040EE RLA    
+incaxy                    0040F5 RLA    incsp1                    0040FE RLA    
+incsp2                    00410D RLA    incsp3                    00411B RLA    
+incsp4                    004120 RLA    incsp5                    004125 RLA    
+incsp6                    00412A RLA    ldax0sp                   00412F RLA    
+ldaxysp                   004131 RLA    mulax10                   004164 RLA    
+popptr1                   00418F RLA    ptr1                      00000A RLZ    
+ptr4                      000010 RLZ    pusha                     0041A1 RLA    
+pusha0                    0041B5 RLA    pushax                    0041B7 RLA    
+sp                        000002 RLZ    sreg                      000004 RLZ    
+staspidx                  0041CD RLA    tmp1                      000012 RLZ    
+tosicmp                   0040B6 RLA    tosicmp0                  0040B4 RLA    
+tosorax                   00417F RLA    tosudiva0                 0041E3 RLA    
+tosumoda0                 004232 RLA    udiv16                    0041F4 RLA    
+zerobss                   004243 RLA    
+
+
+Exports list by value:
+----------------------
+__STARTUP__               000001 REA    sp                        000002 RLZ    
+sreg                      000004 RLZ    ptr1                      00000A RLZ    
+ptr4                      000010 RLZ    tmp1                      000012 RLZ    
+__BSS_SIZE__              0000C0 REA    _main                     00294E RLA    
+_udeks_cbm_mutate         002AD4 RLA    _udeks_cbm_finish_empty   0031EA RLA    
+_udeks_cbm_create         003712 RLA    _udeks_cbm_write_close    003A1B RLA    
+_udeks_iec_prepare_file   003D19 RLA    _udeks_iec_open_status    003E1E RLA    
+_udeks_iec_talk_file      003E22 RLA    _udeks_iec_read_byte      003E73 RLA    
+_udeks_iec_close          003F2F RLA    _udeks_iec_untalk         003F82 RLA    
+_udeks_iec_command        003F9A RLA    _udeks_iec_begin_command  003FE8 RLA    
+_udeks_iec_listen_file    004021 RLA    _udeks_iec_write_byte     00404A RLA    
+_udeks_iec_unlisten       00404F RLA    _udeks_iec_finish         004062 RLA    
+addysp1                   004077 RLA    addysp                    004078 RLA    
+aslax4                    004085 RLA    bnegax                    004096 RLA    
+bnega                     00409A RLA    decax1                    0040A4 RLA    
+decaxy                    0040AB RLA    tosicmp0                  0040B4 RLA    
+tosicmp                   0040B6 RLA    incax2                    0040E2 RLA    
+incax3                    0040E9 RLA    incax5                    0040EE RLA    
+incax4                    0040F3 RLA    incaxy                    0040F5 RLA    
+incsp1                    0040FE RLA    incsp2                    00410D RLA    
+incsp3                    00411B RLA    incsp4                    004120 RLA    
+incsp5                    004125 RLA    incsp6                    00412A RLA    
+ldax0sp                   00412F RLA    ldaxysp                   004131 RLA    
+booleq                    00413E RLA    mulax10                   004164 RLA    
+tosorax                   00417F RLA    popptr1                   00418F RLA    
+pusha                     0041A1 RLA    pusha0                    0041B5 RLA    
+pushax                    0041B7 RLA    staspidx                  0041CD RLA    
+tosudiva0                 0041E3 RLA    udiv16                    0041F4 RLA    
+tosumoda0                 004232 RLA    zerobss                   004243 RLA    
+__BSS_RUN__               006100 RLA    _udeks_iec_probe_defer    00618C REA    
+_udeks_iec_filename_length 00618D RLA    _udeks_iec_filename       00618E RLA    
+_udeks_iec_probe_eoi      0061B6 REA    _udeks_iec_probe_subphase 0061BC RLA    
+_udeks_iec_probe_bus      0061BD RLA    _udeks_iec_probe_lines    0061BE RLA    
+_udeks_iec_probe_sent     0061BF RLA    
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    zerobss.o                 common/zerobss.s(8)
+__BSS_SIZE__ ([linker generated]):
+    zerobss.o                 common/zerobss.s(8)
+__STARTUP__ (entry.o):
+    main.o                    bench/iec-mutate/main.s(13)
+_main (main.o):
+    entry.o                   bench/iec-write/entry.s(5)
+_udeks_cbm_create (cbm_write.o):
+    main.o                    bench/iec-mutate/main.s(15)
+_udeks_cbm_finish_empty (cbm_file.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(18)
+_udeks_cbm_mutate (cbm_mutate.o):
+    main.o                    bench/iec-mutate/main.s(14)
+_udeks_cbm_write_close (cbm_write.o):
+    main.o                    bench/iec-mutate/main.s(16)
+_udeks_iec_begin_command (iec_slow.o):
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(14)
+_udeks_iec_close (iec_slow.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(25)
+    cbm_file.o                src/services/filesystem/cbm_file.s(32)
+_udeks_iec_command (iec_slow.o):
+    cbm_file.o                src/services/filesystem/cbm_file.s(30)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(19)
+_udeks_iec_filename (iec_slow.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(19)
+    cbm_file.o                src/services/filesystem/cbm_file.s(24)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(15)
+_udeks_iec_filename_length (iec_slow.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(20)
+    cbm_file.o                src/services/filesystem/cbm_file.s(25)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(16)
+_udeks_iec_finish (iec_slow.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(29)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(22)
+_udeks_iec_listen_file (iec_slow.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(26)
+    cbm_file.o                src/services/filesystem/cbm_file.s(33)
+_udeks_iec_open_status (iec_slow.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(22)
+    cbm_file.o                src/services/filesystem/cbm_file.s(27)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(17)
+_udeks_iec_prepare_file (iec_slow.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(21)
+    cbm_file.o                src/services/filesystem/cbm_file.s(26)
+_udeks_iec_probe_bus (iec_slow.o):
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(33)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(437)
+_udeks_iec_probe_defer (iec_slow.o):
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(36)
+_udeks_iec_probe_eoi (iec_slow.o):
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(35)
+_udeks_iec_probe_lines (iec_slow.o):
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(439)
+_udeks_iec_probe_sent (iec_slow.o):
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(34)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(438)
+_udeks_iec_probe_subphase (iec_slow.o):
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(32)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(436)
+_udeks_iec_read_byte (iec_slow.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(24)
+    cbm_file.o                src/services/filesystem/cbm_file.s(31)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(20)
+_udeks_iec_talk_file (iec_slow.o):
+    cbm_file.o                src/services/filesystem/cbm_file.s(29)
+_udeks_iec_unlisten (iec_slow.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(28)
+    cbm_file.o                src/services/filesystem/cbm_file.s(35)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(21)
+_udeks_iec_untalk (iec_slow.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(23)
+    cbm_file.o                src/services/filesystem/cbm_file.s(28)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(18)
+_udeks_iec_write_byte (iec_slow.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(27)
+    cbm_file.o                src/services/filesystem/cbm_file.s(34)
+addysp (addysp.o):
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+addysp1 (addysp.o):
+    or.o                      runtime/or.s(9)
+aslax4 (aslax4.o):
+    main.o                    bench/iec-mutate/main.s(562)
+bnega (bneg.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+bnegax (bneg.o):
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+booleq (makebool.o):
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+decax1 (decax1.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+decaxy (decaxy.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+incax2 (incax2.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+incax3 (incax3.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+incax4 (incaxy.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+incax5 (incax5.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+incaxy (incaxy.o):
+    incax5.o                  runtime/incax5.s(8)
+    incax3.o                  runtime/incax3.s(8)
+incsp1 (incsp1.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+incsp2 (incsp2.o):
+    popptr1.o                 runtime/popptr1.s(8)
+    staspidx.o                runtime/staspidx.s(8)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+incsp3 (incsp3.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+incsp4 (incsp4.o):
+    main.o                    bench/iec-mutate/main.s(562)
+incsp5 (incsp5.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+incsp6 (incsp6.o):
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+ldax0sp (ldaxsp.o):
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+ldaxysp (ldaxsp.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+mulax10 (mulax10.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+popptr1 (popptr1.o):
+    umod.o                    runtime/umod.s(8)
+    udiv.o                    runtime/udiv.s(9)
+ptr1 (zeropage.o):
+    popptr1.o                 runtime/popptr1.s(9)
+    zerobss.o                 common/zerobss.s(9)
+    udiv.o                    runtime/udiv.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    mulax10.o                 runtime/mulax10.s(9)
+    cbm_write.o               src/services/filesystem/cbm_write.s(11)
+    cbm_file.o                src/services/filesystem/cbm_file.s(11)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(11)
+    main.o                    bench/iec-mutate/main.s(11)
+ptr4 (zeropage.o):
+    umod.o                    runtime/umod.s(9)
+    udiv.o                    runtime/udiv.s(10)
+pusha (pusha.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+    main.o                    bench/iec-mutate/main.s(562)
+    main.o                    bench/iec-mutate/main.s(562)
+    main.o                    bench/iec-mutate/main.s(562)
+pusha0 (pushax.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+    main.o                    bench/iec-mutate/main.s(562)
+    main.o                    bench/iec-mutate/main.s(562)
+pushax (pushax.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+    main.o                    bench/iec-mutate/main.s(562)
+    main.o                    bench/iec-mutate/main.s(562)
+sp (zeropage.o):
+    popptr1.o                 runtime/popptr1.s(9)
+    addysp.o                  runtime/addysp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    or.o                      runtime/or.s(10)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    cbm_write.o               src/services/filesystem/cbm_write.s(10)
+    cbm_file.o                src/services/filesystem/cbm_file.s(10)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(10)
+    main.o                    bench/iec-mutate/main.s(10)
+    entry.o                   bench/iec-write/entry.s(6)
+sreg (zeropage.o):
+    umod.o                    runtime/umod.s(9)
+    udiv.o                    runtime/udiv.s(10)
+    icmp.o                    runtime/icmp.s(9)
+    cbm_write.o               src/services/filesystem/cbm_write.s(10)
+staspidx (staspidx.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    or.o                      runtime/or.s(10)
+    incaxy.o                  runtime/incaxy.s(8)
+    decaxy.o                  runtime/decaxy.s(8)
+    aslax4.o                  runtime/aslax4.s(8)
+tosicmp (icmp.o):
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+tosicmp0 (icmp.o):
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_mutate.o              src/services/filesystem/cbm_mutate.s(666)
+    main.o                    bench/iec-mutate/main.s(562)
+    main.o                    bench/iec-mutate/main.s(562)
+tosorax (or.o):
+    cbm_write.o               src/services/filesystem/cbm_write.s(654)
+tosudiva0 (udiv.o):
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+tosumoda0 (umod.o):
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+    cbm_file.o                src/services/filesystem/cbm_file.s(1359)
+udiv16 (udiv.o):
+    umod.o                    runtime/umod.s(8)
+zerobss (zerobss.o):
+    entry.o                   bench/iec-write/entry.s(5)
+
