@@ -1,9 +1,9 @@
 ; SPDX-License-Identifier: GPL-3.0-or-later
 ; Private bank-1 allocation and native context mechanism. No UAPP callbacks.
 ; Enter/leave via $F91C under kernel I/O; this image runs under worker FLAT.
-; A=3/4 loads a padded basename from UTRQ (count=17, length + 16 bytes).
+; A=3..6 loads a padded basename from UTRQ (count=17, length + 16 bytes).
 ; A=0 selects a free fitting allocation, loads and activates a native image;
-; success returns the selected task (3/4) in UTRQ result, errno in A.
+; success returns the selected task (3..6) in UTRQ result, errno in A.
 ; A=$43/$44 admits an ordinary (flags=0) image as native task 3/4.
 ; A=$83/$84 releases FREE, A=$C3/$C4 reaps a root-owned ZOMBIE and releases.
 ; Return A=errno, request preserved. Native return is EXIT through $FF16.
@@ -54,7 +54,15 @@ banked_entry:
         and #$e0
         cmp #$60
         jeq query_state
-        ldx #8                      ; task 2 (state-base + slot stride)
+        ; A joined task 3 owns task 4's memory, but not its lifecycle slot.
+        ; Even release/reap of the FREE donor must not release that loan.
+        ldx slot
+        cpx #1
+        bne :+
+        lda banked_owned+1
+        cmp #3                      ; reserved by adjacent allocation
+        jeq busy
+:       ldx #8                      ; task 2 (state-base + slot stride)
         jsr MEMORY_GATE
         jne busy
         lda slot
@@ -265,6 +273,7 @@ busy:
         lda #16                     ; EBUSY
         rts
 release:
+        jsr unjoin
         jsr clear_metadata           ; also after a public WAITPID already reaped
         ldx slot
         lda #0
@@ -284,6 +293,7 @@ release_header:
         bne release_header
         rts
 load_image:
+        jsr try_join
         ldx #37
 save_request:
         lda REQUEST,x
@@ -383,19 +393,62 @@ close:
         jsr validate
         bne done
         jsr install
-        ldx slot
+        ; The complete staged file may have needed the donor for relocation
+        ; records. Return it immediately if the installed image+BSS is small.
+        lda clear+2
+        cmp #$34
+        bcc :+
+        bne :++
+        lda clear+1
+        bne :++
+:       jsr unjoin
+:       ldx slot
         lda #1                      ; publish only after image + BSS complete
         sta banked_owned,x
         lda #0
 done:
         pha
-        ldx #37
+        beq :+
+        jsr unjoin                  ; all failed open/read/close/validation paths
+:       ldx #37
 restore_request:
         lda saved_request,x
         sta REQUEST,x
         dex
         bpl restore_request
         pla
+        rts
+; Tentatively join the adjacent allocations only while BOTH are unowned and
+; FREE (the selected owner was checked by banked_entry). No new task/ABI slot.
+; Called before any I/O, with BANK0_ACCESS still reading lifecycle states.
+try_join:
+        lda slot
+        bne join_return
+        lda banked_owned+1
+        bne join_return
+        ldx #24                     ; task 4 state
+        jsr MEMORY_GATE
+        bne join_return
+        lda #3
+        sta banked_owned+1
+        lda #$40
+        sta limits
+        lda #$3f
+        sta stack_pages
+join_return:
+        rts
+unjoin:
+        lda slot
+        bne join_return
+        lda banked_owned+1
+        cmp #3
+        bne join_return
+        lda #0
+        sta banked_owned+1
+        lda #$35
+        sta limits
+        lda #$34
+        sta stack_pages
         rts
 request:
         sta REQUEST+7
@@ -814,6 +867,7 @@ activate:
         lda #$20                    ; JSR fixed private bank-0 initializer
         sta BANK0_ACCESS
         ldx slot
+        lda stack_pages,x           ; effective bound, including an active loan
         jsr MEMORY_GATE
         lda #$a5
         ldy #15

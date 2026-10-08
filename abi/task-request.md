@@ -1,4 +1,4 @@
-# Bank-task request ABI 0.14
+# Bank-task request ABI 0.17
 
 Bank-1 8502 tasks exchange bounded requests with the resident kernel through a
 38-byte record in top common RAM. The task fills the record and calls `$FF16`.
@@ -9,13 +9,13 @@ ABI 0.3 keeps every 0.2 operation number and behavior unchanged and adds
 lifecycle operations `10`-`15`. `YIELD`, `EXIT`, immediate/nonblocking and
 blocking `WAITPID`, `SLEEP`, `CANCEL`, and `SPAWN` are implemented. Rebuilt
 0.3 clients may keep using the 0.2 operations unchanged, and
-the resident version check accepts minor `0` through `14`.
+the resident version check accepts minor `0` through `17`.
 ABI 0.4 adds non-consuming stdin readiness (`POLL`, operation 16). A 0.0–0.3
 request for operation 16 returns `ENOSYS`; an unsupported future minor returns
 `EPROTO`. Operations 1–15 retain their existing numbers and behavior.
 ABI 0.5 adds read-only IEC `MOUNT`/`UMOUNT` through a private bank-1 C service.
 Existing stream/directory clients continue to request their minimum ABI 0.4;
-`POLL` accepts 0.4 through 0.14. The current shell uses 0.8; `df` uses 0.6
+`POLL` accepts 0.4 through 0.17. The current shell uses 0.8; `df` uses 0.6
 for `STATFS`. ABI 0.7 adds deferred numeric service control; 0.8 adds root
 namespace routing and working-directory operations. No published entry address changes.
 ABI 0.9 adds owner-bound retained drawing and click/close delivery for banked
@@ -35,6 +35,16 @@ defined. See [the command format](window.md#geometry-events-utrq-010).
 ABI 0.14 adds opt-in writable mounts and create-exclusive file streams using
 the existing OPEN/WRITE/CLOSE operations. Console streams, earlier request
 versions, record size and public entry addresses remain compatible.
+ABI 0.15 adds GRAPHICS `PRESENT_DELTA` (suboperation 6): a full retained
+command list plus two small, client-clipped fill updates. Busy composition
+returns `EAGAIN` without accepting the image; older requests are unchanged.
+See [delta presentation](window.md#delta-presentation-utrq-015).
+ABI 0.16 adds `OPEN_CREATE_PRG` (OPEN descriptor/mode 4), an opt-in
+create-exclusive PRG directory type. It changes neither the stream bytes nor
+ownership, mount permissions, path policy, operation numbers or record layout.
+ABI 0.17 adds opt-in GRAPHICS `INPUT` (suboperation 7), retaining EVENT's
+resize/click ordering and adding signed, focused-window held-button samples.
+Legacy EVENT is unchanged; see [held input](window.md#held-input-utrq-017).
 
 ## Record
 
@@ -44,7 +54,7 @@ The record occupies `$F359-$F37E`:
 |---:|---:|---|
 | 0 | 4 | ASCII magic `UTRQ` |
 | 4 | 1 | ABI major (`0`) |
-| 5 | 1 | ABI minor (`14`; earlier compatible minors remain accepted) |
+| 5 | 1 | ABI minor (`17`; earlier compatible minors remain accepted) |
 | 6 | 1 | State |
 | 7 | 1 | Operation |
 | 8 | 1 | Sequence number |
@@ -126,6 +136,15 @@ small recovery command retains its earlier read-only contract.
   geometry or transport errors remain errors, not a guessed disk-full result.
   This check is not a reservation or a guarantee that the complete write fits.
   Earlier minors reject create mode with `EINVAL`.
+- In **0.16+**, OPEN descriptor **4** (`OPEN_CREATE_PRG`) has the same
+  validation, create-exclusive semantics and result fd **4**, but asks DOS
+  for a **PRG** instead of SEQ directory entry. Minors 0–15 reject mode 4
+  with `EINVAL`; undefined modes and nonzero flags are still rejected.
+  This does not grant executable/config installation rights, infer a type
+  from the filename, add a load address, encode data or permit replacement.
+  The caller supplies all file bytes (including any BASIC load-address header).
+  Ordinary mode 3 remains SEQ. Both types support exact zero-length creation
+  and share transfer/close-error and cleanup behavior.
 - `WRITE` (2): fd 4, flags zero, **0–24 binary bytes**, including NUL. Console
   descriptors 1/2 remain unchanged. A read handle, foreign/stale owner, or
   earlier-minor file WRITE returns `EBADF`. Successful result is the accepted
@@ -476,7 +495,7 @@ released, and child exit publishes the response only when the parent resumes.
 | 8 | `ENOEXEC` | `SPAWN` |
 | 9 | `EBADF` | `READ`, `WRITE`, filesystem operations |
 | 10 | `ECHILD` | `WAITPID` |
-| 11 | `EAGAIN` | `READ` would-block |
+| 11 | `EAGAIN` | `READ` would-block; GRAPHICS delta deferred during drag/capture/paste |
 | 12 | `ENOMEM` | `SPAWN` |
 | 16 | `EBUSY` | resource already owned |
 | 17 | `EEXIST` | ambiguous folded filename or virtual-directory collision |

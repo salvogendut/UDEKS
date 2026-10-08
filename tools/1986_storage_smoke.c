@@ -91,6 +91,12 @@ static void client_click(unsigned x,unsigned y,unsigned task) {
 #ifdef UDEKS_XCALC_SMOKE
 #include "1986_xcalc_smoke.inc"
 #endif
+#ifdef UDEKS_XSPRDEF_SMOKE
+#include "1986_xsprdef_smoke.inc"
+#endif
+#ifdef UDEKS_NATIVE_CAPACITY_SMOKE
+#include "1986_native_capacity_smoke.inc"
+#endif
 #ifdef UDEKS_FOUR_APPS_SMOKE
 #include "1986_four_apps_smoke.inc"
 #endif
@@ -273,6 +279,20 @@ int main(int argc, char **argv) {
     }
     diagnostic();
     require(byte(0xf3d9) == 0xa5, "native raw-IEC boot failed");
+#ifdef UDEKS_XSPRDEF_SMOKE
+#ifdef UDEKS_XSPRDEF_FILES
+    xsprdef_files_smoke();
+#else
+    xsprdef_smoke();
+#endif
+    free(machine);
+    return 0;
+#endif
+#ifdef UDEKS_NATIVE_CAPACITY_SMOKE
+    native_capacity_smoke();
+    free(machine);
+    return 0;
+#endif
 #ifdef UDEKS_FOUR_NATIVE_SMOKE
     four_native_smoke();
     free(machine);

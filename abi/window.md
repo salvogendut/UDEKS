@@ -142,6 +142,45 @@ Click coordinates are relative to the whole window. There is no keyboard or
 resize event in 0.9; clients sleep/yield between polls. An already-closing owner
 gets state 0, never another window's events.
 
+### Delta presentation (UTRQ 0.15)
+
+GRAPHICS suboperation `6` (`UDEKS_GFX_PRESENT_DELTA`) retains a **complete**
+replacement command list, as PRESENT does, and optionally avoids full repaint
+by applying two fills. It is generic graphics policy, not a sprite-editor
+operation. The envelope remains op 23, count 24, descriptor/flags zero.
+
+| Payload bytes | Meaning |
+| --- | --- |
+| 0–4 | `6, handle, pointer-lo, pointer-hi, command-count` |
+| 5–11 | Reserved, zero |
+| 12–16 | First fill: window-relative `x,y,width,height,color` |
+| 17–21 | Second fill, same layout |
+| 22–23 | Reserved, zero |
+
+Each fill field is an unsigned byte; color must be black (0) or yellow (7).
+Zero width or height makes a fill a no-op. Fills are clipped to the current
+client area, never chrome or another window. Coordinates need not be aligned.
+The client must supply the correct delta from its last accepted presentation
+and a matching complete retained image; this is not an append-only command
+stream. Use normal PRESENT for full-screen changes, paths, or larger updates.
+
+Ownership, payload and the entire candidate list are validated before retained
+state/pixels are changed. Unsupported minors return ENOSYS; malformed fields
+return EINVAL. During drag, cache capture or paste, EAGAIN rejects the update
+without changing retained state or pixels. Sleep/yield and retry the same
+edit; do not apply the edit a second time. Like PRESENT, result is zero.
+
+For an available topmost window, begin-paint invalidates its old move cache,
+the fills modify the normal shadow, and end-paint commits dirty bitmap pages.
+For a background window, the complete retained image is composed through the
+normal overlap-aware repaint path instead. Subsequent move/raise/uncover uses
+the replacement image, not the transient fill packet.
+
+Implementation note: retained-image transport borrows payload bytes 0–9.
+Delta bytes 12–21 remain untouched throughout validation/copy; no damage
+coordinates are kept in the overwritten scratch. All operations are serialized
+and do not yield or call foreign callbacks while consuming the request.
+
 ### Geometry events (UTRQ 0.10)
 
 All envelope fields and operation numbers stay unchanged. CREATE accepts
@@ -178,6 +217,32 @@ Applications recompute content themselves and PRESENT an updated retained
 image. Until then the old image remains clipped to the new client rectangle.
 The service does not implement clock scaling or any other app-specific model.
 Old 0.9 executables retain their exact four-byte EVENT and fixed-size behavior.
+
+### Held input (UTRQ 0.17)
+
+`INPUT` (GRAPHICS suboperation **7**) uses EVENT's request layout, caller/handle
+ownership checks, geometry acknowledgement and resize-before-click ordering.
+Earlier minors reject this suboperation with EINVAL; EVENT remains click-only
+for every minor. Live INPUT replies have eight bytes:
+
+`state, x-lo, x-hi, y-lo, width-lo, width-hi, height, y-hi`
+
+States 1–3 retain EVENT's meanings. State **4**, HELD, reports an atomic pointer
+sample while the owner's window is focused, a primary mouse button or joystick
+fire is held, and the compositor is not busy with drag/capture/paste. It never
+consumes console keys. X and Y are **signed 16-bit window-relative** coordinates;
+the pointer may be outside the window. Only HELD defines `y-hi`; CLICK retains
+its unsigned byte Y. Geometry is valid for every live response. A closed owner
+gets the existing seven-byte CLOSED reply, with only state valid.
+
+Queued clicks take priority over held samples, which are coalesced observations,
+not motion events or extra presses. A released button, lost focus or busy
+compositor gives IDLE when no resize/click is pending. Clients must arm a stroke
+only on CLICK inside their canvas, apply their own hitboxes to HELD coordinates,
+and stop on IDLE/outside input. Held input must not activate ordinary buttons.
+Drawing remains independently clipped by the compositor. No resident input
+queue or app-specific policy was added. XSPRDEF supplies its own interpolation
+and draw/erase policy, yielding between incremental pixel updates.
 
 PRESENT takes at most 160 eight-byte commands (1,280 bytes, matching the PATHS
 budget) from **inside the caller's own image+BSS reservation**. Commands use

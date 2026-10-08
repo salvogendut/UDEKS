@@ -285,6 +285,7 @@ uint8_t udeks_storage_dispatch(void)
         if (R[UDEKS_TREQ_FLAGS] || (op != UDEKS_TREQ_OP_OPEN && fd) ||
             fd > (
 #ifdef UDEKS_STORAGE_WRITES
+                R[UDEKS_TREQ_MINOR] >= 16u ? UDEKS_TREQ_OPEN_CREATE_PRG :
                 R[UDEKS_TREQ_MINOR] >= UDEKS_STORAGE_WRITE_MINOR ? UDEKS_STORAGE_OPEN_CREATE :
 #endif
                 R[UDEKS_TREQ_MINOR] >= 8u ? UDEKS_TREQ_OPEN_EXEC : O_DIRECTORY))
@@ -293,7 +294,7 @@ uint8_t udeks_storage_dispatch(void)
         if (status) return reply(status, 0);
         if (op == UDEKS_TREQ_OP_STATFS && query.length) return reply(UDEKS_TREQ_EINVAL, 0);
 #ifdef UDEKS_STORAGE_WRITES
-        if (op == UDEKS_TREQ_OP_OPEN && fd == UDEKS_STORAGE_OPEN_CREATE &&
+        if (op == UDEKS_TREQ_OP_OPEN && fd >= UDEKS_STORAGE_OPEN_CREATE &&
             !volumes.root && query.directory != UDEKS_FS_MNT)
             return reply(UDEKS_CBM_EROFS, 0); /* recovery bootfs cannot create */
 #endif
@@ -334,7 +335,7 @@ uint8_t udeks_storage_dispatch(void)
 #ifdef UDEKS_STORAGE_WRITES
         caller = udeks_storage_caller();
         if (!caller) return reply(UDEKS_TREQ_ESRCH, 0);
-        if (fd == UDEKS_STORAGE_OPEN_CREATE) {
+        if (fd >= UDEKS_STORAGE_OPEN_CREATE) {
             if (!query.length) return reply(UDEKS_TREQ_EISDIR, 0);
             if (!(writable & (query.directory == UDEKS_FS_MNT ? 2u : 1u)))
                 return reply(UDEKS_CBM_EROFS, 0);
@@ -358,7 +359,8 @@ uint8_t udeks_storage_dispatch(void)
              * the validated physical name intact; every other result rejects. */
             i = 0;
             while (i < 16u && saved_entry[i] != 0xa0u) ++i;
-            status = udeks_cbm_create(device, saved_entry, i);
+            status = udeks_cbm_create(device, saved_entry, i,
+                fd == UDEKS_TREQ_OPEN_CREATE_PRG ? 2u : 1u);
             if (status) return reply(status, 0);
             writing = 1;
             channel = 0;

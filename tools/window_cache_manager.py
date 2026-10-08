@@ -28,10 +28,11 @@ def candidate(source):
     source = registered(source)
     source = replace(source, 'static unsigned char paint_window_damage(unsigned char handle);',
         ADAPTER.read_text()+'\nstatic unsigned char paint_window_damage(unsigned char handle);')
+    source = replace(source, '    return dragging_handle != UDEKS_WINDOW_NONE;\n',
+        '    return dragging_handle != UDEKS_WINDOW_NONE ||\n'
+        '        cache_phase == UDEKS_CACHE_CAPTURING || cache_phase == UDEKS_CACHE_PASTING;\n')
     source = replace(source, '    window->flags &= (unsigned char)~IMAGE_COMPLETE;\n    udeks_vic_bitmap_set_clip(',
-        '''    if (cache_phase == UDEKS_CACHE_CAPTURING || cache_phase == UDEKS_CACHE_PASTING)
-        return UDEKS_WINDOW_INVALID;
-    cache_invalidate();
+        '''    cache_invalidate();
     window->flags &= (unsigned char)~IMAGE_COMPLETE;
     udeks_vic_bitmap_set_clip(''')
     source = replace(source, '    window->flags |= IMAGE_COMPLETE;\n    return UDEKS_WINDOW_OK;',

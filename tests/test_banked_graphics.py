@@ -71,6 +71,8 @@ class BankedGraphics(unittest.TestCase):
         self.assertEqual(self.request([3,a]),22)
         self.assertEqual(self.request([4,a]),22)
         self.assertEqual(self.present(a,0x3500),22)
+        self.assertEqual(self.delta(a),22)
+        self.assertEqual(self.scalar('begin_paints',kind=c.c_uint),0)
         self.assertEqual(self.owners[a],0x83)
         self.scalar('task',3)
         self.assertEqual(self.request([3,a]),0)
@@ -94,6 +96,45 @@ class BankedGraphics(unittest.TestCase):
         self.assertEqual(self.scalar('init_calls'),2)
         self.create(4)
         self.assertEqual(self.scalar('init_calls'),2)  # never clear a live desktop
+
+    def test_input_is_opt_in_owned_signed_and_preserves_click_resize_priority(self):
+        h=self.create()
+        pointer=(c.c_ubyte*32).in_dll(self.lib,'input_pointer')
+        pointer[8:12]=bytes((125,0,90,1))
+        req=[7,h,104,0,133]
+        self.assertEqual(self.request(req,**{'5':16}),22)
+        self.assertEqual(self.request(req,**{'5':17}),0)
+        self.assertEqual(self.r[11],8)
+        self.assertEqual(bytes(self.r[14:22]),bytes((4,13,0,30,104,0,133,0)))
+        self.assertEqual(self.request([3,h,104,0,133],**{'5':17}),0)
+        self.assertEqual(self.r[14],1) # existing apps remain click-only
+        self.lib.test_click(h,9,20)
+        self.assertEqual(self.request([7,h,103,0,133],**{'5':17}),0)
+        self.assertEqual(self.r[14],2) # resize must not eat the click
+        self.assertEqual(self.request(req,**{'5':17}),0)
+        self.assertEqual(bytes(self.r[14:18]),bytes((3,9,0,20)))
+        pointer[8:12]=bytes((18,0,45,1))
+        self.assertEqual(self.request(req,**{'5':17}),0)
+        self.assertEqual(bytes(self.r[14:18]),bytes((4,162,255,241)))
+        self.assertEqual(self.r[21],255)
+        for field in ('busy','dragging'):
+            self.scalar(field,1)
+            self.assertEqual(self.request(req,**{'5':17}),0)
+            self.assertEqual(self.r[14],1)
+            self.scalar(field,0)
+        for buttons in (0,2):
+            pointer[11]=buttons
+            self.assertEqual(self.request(req,**{'5':17}),0)
+            self.assertEqual(self.r[14],1)
+        pointer[11]=4 # joystick fire shares primary semantics
+        self.assertEqual(self.request(req,**{'5':17}),0)
+        self.assertEqual(self.r[14],4)
+        other=self.create(4)
+        self.assertEqual(self.request(req,**{'5':17}),22)
+        self.scalar('task',3)
+        self.assertEqual(self.request(req,**{'5':17}),0)
+        self.assertEqual(self.r[14],1) # owning a window does not imply focus
+        self.assertEqual(self.request([7,other,104,0,133],**{'5':17}),22)
 
     def test_resize_requires_new_minor_and_exactly_one_sizing_policy(self):
         self.lib.test_admit(0)
@@ -145,6 +186,9 @@ class BankedGraphics(unittest.TestCase):
         self.assertEqual(self.r[14],0)
         self.assertEqual(self.request([3,a]),0)
         self.assertEqual(self.r[11],4)
+        self.assertEqual(self.r[14],0)
+        self.assertEqual(self.request([7,a,104,0,133],**{'5':17}),0)
+        self.assertEqual(self.r[11],7) # closed INPUT retains state-only validity
         self.assertEqual(self.r[14],0)
 
     def test_outline_sizes_do_not_trigger_resize_or_consume_a_click(self):
@@ -213,6 +257,50 @@ class BankedGraphics(unittest.TestCase):
         self.assertEqual(self.scalar('x',kind=c.c_uint),45)
         self.assertEqual(self.scalar('y',kind=c.c_uint),67)
         self.assertEqual(self.scalar('draws',kind=c.c_uint),2)
+
+    def delta(self,h,**fields):
+        fields.setdefault('5',15)
+        return self.request([6,h,0,0x23,1]+[0]*7+[8,20,8,8,0,208,20,1,1,7,0,0],**fields)
+
+    def test_delta_retains_complete_image_but_draws_only_two_cells(self):
+        h=self.create()
+        command=bytes((10,8,20,0x80,0,0,0,0))
+        self.memory[0x2300:0x2308]=command
+        self.assertEqual(self.delta(h),0)
+        self.assertEqual(bytes(self.pool[:8]),command)
+        self.assertEqual(self.scalar('repaints',kind=c.c_uint),0)
+        self.assertEqual(self.scalar('end_paints',kind=c.c_uint),1)
+        fills=((c.c_int*5)*2048).in_dll(self.lib,'test_fills')
+        self.assertEqual([tuple(fills[i]) for i in range(2)],
+                         [(108,40,8,8,0),(308,40,1,1,7)])
+        self.memory[0x2300:0x2308]=bytes(8)
+        self.lib.test_move(h,40,50)
+        self.assertEqual(tuple(fills[2]),(48,70,8,8,0))
+
+    def test_delta_rejection_preserves_retained_image_and_pixels(self):
+        h=self.create()
+        self.memory[0x2300:0x2308]=bytes((10,8,20,128,0,0,0,0))
+        for minor in (9,13,14): self.assertEqual(self.delta(h,**{'5':minor}),38)
+        for offset in (*range(19,26),30,35,36,37):
+            self.assertEqual(self.delta(h,**{str(offset):1}),22)
+        self.assertEqual(self.delta(h,**{'16':255,'17':255}),22)
+        for attribute in ('busy','dragging'):
+            self.scalar(attribute,1)
+            self.assertEqual(self.delta(h),11)
+            self.scalar(attribute,0)
+        self.memory[0x2300]=255
+        self.assertEqual(self.delta(h),22)
+        self.assertEqual(bytes(self.pool),bytes(2304))
+        self.assertEqual(self.scalar('draws',kind=c.c_uint),0)
+        self.assertEqual(self.scalar('begin_paints',kind=c.c_uint),0)
+
+    def test_delta_background_falls_back_to_compositor(self):
+        h=self.create(); self.scalar('background',1)
+        self.memory[0x2300:0x2308]=bytes((10,8,20,128,0,0,0,0))
+        self.assertEqual(self.delta(h),0)
+        self.assertEqual(self.scalar('repaints',kind=c.c_uint),1)
+        self.assertEqual(self.scalar('end_paints',kind=c.c_uint),0)
+        self.assertEqual(self.scalar('draws',kind=c.c_uint),1)
 
     def test_close_and_zombie_cleanup_do_not_retire_live_peer(self):
         a=self.create(); b=self.create(4)

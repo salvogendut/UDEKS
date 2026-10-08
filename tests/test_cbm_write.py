@@ -19,7 +19,7 @@ class CbmWrite(unittest.TestCase):
                         str(ROOT/'src/services/filesystem/cbm_write.c'),
                         str(ROOT/'tests/fixtures/write_transport.c'), '-o', str(output)], check=True)
         cls.lib = c.CDLL(str(output))
-        cls.lib.udeks_cbm_create.argtypes = [c.c_uint8, c.c_char_p, c.c_uint8]
+        cls.lib.udeks_cbm_create.argtypes = [c.c_uint8, c.c_char_p, c.c_uint8, c.c_uint8]
         cls.lib.udeks_cbm_write.argtypes = [c.c_char_p, c.c_uint8]
         for name in ('udeks_cbm_create', 'udeks_cbm_write', 'udeks_cbm_write_close'):
             getattr(cls.lib, name).restype = c.c_uint8
@@ -35,8 +35,8 @@ class CbmWrite(unittest.TestCase):
 
     def byte(self, name): return c.c_uint8.in_dll(self.lib, name)
     def word(self, name): return c.c_uint16.in_dll(self.lib, name)
-    def create(self, name=b'NEWFILE', device=8):
-        return self.lib.udeks_cbm_create(device, name, len(name))
+    def create(self, name=b'NEWFILE', device=8, kind=1):
+        return self.lib.udeks_cbm_create(device, name, len(name), kind)
     def write(self, data): return self.lib.udeks_cbm_write(data, len(data))
     def close(self): return self.lib.udeks_cbm_write_close()
     def status(self, values):
@@ -59,10 +59,22 @@ class CbmWrite(unittest.TestCase):
                      b'A/B', b'\xc1', b'$', b'.', b'..', b'lowercase', b' A', b'A '):
             self.assertEqual(self.create(name), EINVAL)
         for device in (0, 7, 12, 255): self.assertEqual(self.create(device=device), EINVAL)
-        self.assertEqual(self.lib.udeks_cbm_create(8, None, 1), EINVAL)
+        self.assertEqual(self.lib.udeks_cbm_create(8, None, 1, 1), EINVAL)
+        for kind in (0,3,0x81,0x82,255):self.assertEqual(self.create(kind=kind),EINVAL)
         self.assertEqual(list(self.calls), [0]*8)
         self.assertEqual(bytes(self.filename), b'Z'*22)
         self.assertEqual(self.byte('udeks_iec_filename_length').value, 0x5a)
+
+    def test_prg_create_is_exclusive_and_adds_no_header(self):
+        self.assertEqual(self.create(b'SPRITES.BSV',kind=2),0)
+        length=self.byte('udeks_iec_filename_length').value
+        self.assertEqual(bytes(self.filename[:length]),b'0:SPRITES.BSV,P,W')
+        self.assertEqual(self.write(b'\0\x0e\xff'),0)
+        self.assertEqual(self.word('test_bytes').value,3)
+        self.assertEqual(self.close(),0)
+        self.assertEqual(self.create(kind=2),0)
+        self.assertEqual(self.close(),0)
+        self.assertEqual(self.byte('test_empty_count').value,1)
 
     def test_second_create_preserves_live_writer(self):
         self.assertEqual(self.create(), 0)

@@ -41,6 +41,14 @@ _gfx_yield:
         lda #10
         .endif
 request:
+        .if UDEKS_GFX_ABI >= 14
+        ldx #0
+        stx $f362
+        ; Native file clients set descriptor/count/payload before entry.
+        ; Same FF16 gate and private cc65 context, never the CF30 console ABI.
+        .export _native_file_request
+_native_file_request:
+        .endif
         sta $f360
         ldx #5
 copy:   lda signature,x
@@ -48,7 +56,9 @@ copy:   lda signature,x
         dex
         bpl copy
         lda #0
+        .if UDEKS_GFX_ABI < 14
         sta $f362
+        .endif
         sta $f366
         lda #1
         sta $f35f

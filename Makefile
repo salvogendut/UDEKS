@@ -351,7 +351,7 @@ placement-check: placement-check-guard scheduler-overlay task-switch-tail \
 	$(PYTHON) tools/placement_audit.py --verify
 
 # Actual-build placement gate: independent clients, bridge and retained lists.
-graphics-apps-check: placement-check-guard boot $(PANIC_PROBE_KERNEL_BIN) $(BUILD_BOOT)/banked-loader.map
+graphics-apps-check: placement-check-guard boot graphics-delta-check graphics-input-check $(PANIC_PROBE_KERNEL_BIN) $(BUILD_BOOT)/banked-loader.map
 	$(PYTHON) tools/graphics_app_layout.py --build $(BUILD_DIR) \
 		--output $(BUILD_DIR)/four-apps/layout.json
 
@@ -365,8 +365,43 @@ four-native-probe:
 
 # Host-side VICE check, after building boot in the reference container.
 xsprdef-probe:
-	$(PYTHON) tools/xsprdef_probe.py
+	$(PYTHON) tools/xsprdef_probe.py --expect-delta
 .PHONY: xsprdef-probe
+
+xsprdef-files-probe:
+	$(PYTHON) tools/xsprdef_files_probe.py --disk $(BOOT_D64) --drive 1541
+	$(PYTHON) tools/xsprdef_files_probe.py --disk $(BOOT_D71) --drive 1571
+	$(PYTHON) tools/xsprdef_files_probe.py --disk $(BOOT_D81) --drive 1581
+.PHONY: xsprdef-files-probe
+
+# Execute the actual display-service assembly with cc65's runtime.
+graphics-delta-check: placement-check-guard | $(BUILD_8502)
+	$(CL65) -t sim6502 --standard c99 -Os -I include -c -o $(BUILD_8502)/rectangle-test.o bench/graphics-delta/rectangle.c
+	$(CA65) -o $(BUILD_8502)/rectangle-test-stack.o bench/graphics-delta/stack.s
+	$(CA65) -o $(BUILD_8502)/rectangle-test-asm.o src/services/display/vic_rectangle.s
+	$(CL65) -t sim6502 -o $(BUILD_8502)/rectangle-test $(BUILD_8502)/rectangle-test.o \
+		$(BUILD_8502)/rectangle-test-stack.o $(BUILD_8502)/rectangle-test-asm.o
+	sim65 $(BUILD_8502)/rectangle-test
+.PHONY: graphics-delta-check
+
+graphics-input-check: placement-check-guard | $(BUILD_8502)
+	$(CL65) -t sim6502 --standard c99 -Os -I include -c -o $(BUILD_8502)/input-test.o bench/graphics-input/check.c
+	$(CA65) -D UDEKS_INPUT_TEST -o $(BUILD_8502)/input-test-asm.o src/services/window/graphics_event.s
+	$(CL65) -t sim6502 -o $(BUILD_8502)/input-test $(BUILD_8502)/input-test.o $(BUILD_8502)/input-test-asm.o
+	sim65 $(BUILD_8502)/input-test
+.PHONY: graphics-input-check
+
+# Independent large graphical AND console clients; not part of the boot disk.
+native-capacity-fixtures: placement-check-guard graphical-example
+	$(PYTHON) tools/build_graphical_example.py --source bench/native-capacity/client.c --name LARGE --output $(BUILD_DIR)/native-capacity/graphics --export _capacity_ready --export _capacity_error --export _capacity_control --export _capacity_progress --export _commands
+	$(PYTHON) tools/build_graphical_example.py --source bench/native-capacity/console.c --name BIGCON --output $(BUILD_DIR)/native-capacity/console --export _capacity_ready --export _capacity_error --export _capacity_control --export _capacity_progress
+.PHONY: native-capacity-fixtures
+
+native-capacity-probe:
+	$(PYTHON) tools/native_capacity_probe.py --public-only --disk $(BOOT_D64) --drive 1541 --output $(BUILD_DIR)/native-capacity/vice-d64
+	$(PYTHON) tools/native_capacity_probe.py --public-only --disk $(BOOT_D71) --drive 1571 --output $(BUILD_DIR)/native-capacity/vice-d71
+	$(PYTHON) tools/native_capacity_probe.py --disk $(BOOT_D81) --drive 1581 --output $(BUILD_DIR)/native-capacity/vice-d81
+.PHONY: native-capacity-probe
 
 # Run from the host after the reference-container build (VICE is a Flatpak).
 banked-apps-probe: $(BOOT_D64) $(BOOT_D71) $(BUILD_BOOT)/banked-loader.map
@@ -932,10 +967,10 @@ $(USER_XDRAW_UDEX): user/bin/xdraw.c user/lib/graphics_request.s tools/build_gra
 		--output $(BUILD_USER)/native-draw --capacity 2560 --export _udeks_xdraw_cells
 	cp $(BUILD_USER)/native-draw/XDRAW.BIN $@
 
-$(USER_XSPRDEF_UDEX): user/bin/xsprdef.c user/lib/graphics_request.s tools/build_graphical_example.py Makefile | $(BUILD_USER)
-	$(PYTHON) tools/build_graphical_example.py --source user/bin/xsprdef.c --name XSPRDEF \
-		--graphics-abi 13 --output $(BUILD_USER)/native-xsprdef --static-locals --capacity 4352 \
-		--export _udeks_xsprdef_pixels
+$(USER_XSPRDEF_UDEX): user/bin/xsprdef.c user/bin/xspr_file.c user/bin/xspr_file.h user/include/udeks/native_file.h user/lib/graphics_request.s tools/build_graphical_example.py Makefile | $(BUILD_USER)
+	$(PYTHON) tools/build_graphical_example.py --source user/bin/xsprdef.c --source user/bin/xspr_file.c --name XSPRDEF \
+		--graphics-abi 17 --output $(BUILD_USER)/native-xsprdef --static-locals --capacity 7424 \
+		--export _udeks_xsprdef_pixels --export _udeks_xsprdef_bank --export _udeks_xsprdef_dialog --export _udeks_xsprdef_file_error
 	cp $(BUILD_USER)/native-xsprdef/XSPRDEF.BIN $@
 
 $(USER_XWAVE_ASM): src/apps/xwave.c include/udeks/mailbox.h \
@@ -1397,6 +1432,9 @@ $(BUILD_8502)/vic_graphics_transport.o: src/8502/vic_graphics.s | $(BUILD_8502)
 $(BUILD_8502)/vic_span.o: src/services/display/vic_span.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
+$(BUILD_8502)/vic_rectangle.o: src/services/display/vic_rectangle.s | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
+
 $(BUILD_8502)/vic_pixel.o: src/services/display/vic_pixel.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -1404,7 +1442,7 @@ $(BUILD_8502)/vic_clear.o: src/services/display/vic_clear.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphics.bin $(BUILD_8502)/retained-paths.bin &: \
-		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/banked_access.o $(BUILD_8502)/retained_paths.o \
+		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/graphics_event.o $(BUILD_8502)/banked_access.o $(BUILD_8502)/retained_paths.o \
 		$(BUILD_8502)/kernel_entry.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
@@ -1441,7 +1479,7 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphi
 		$(BUILD_8502)/shell_parser.o $(BUILD_8502)/shell.o \
 		$(BUILD_8502)/z80_worker.o $(BUILD_8502)/task_worker.o \
 		$(BUILD_8502)/vic_graphics.o \
-		$(BUILD_8502)/vic_span.o $(BUILD_8502)/vic_pixel.o \
+		$(BUILD_8502)/vic_span.o $(BUILD_8502)/vic_pixel.o $(BUILD_8502)/vic_rectangle.o \
 		$(BUILD_8502)/vic_clear.o \
 		$(BUILD_8502)/managed_apps.o \
 		$(BUILD_8502)/vdc_text_assets.o \
@@ -1609,7 +1647,7 @@ $(TASK_SWITCH_ACTIVATION_BIN): $(TASK_SWITCH_ACTIVATION_OBJ) \
 
 $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(PANIC_PROBE_PROBE_BIN) $(PANIC_PROBE_MAP) $(BUILD_8502)/banked-graphics-panic.bin $(BUILD_8502)/retained-paths-panic.bin &: \
-		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/banked_access.o $(BUILD_8502)/retained_paths.o \
+		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/graphics_event.o $(BUILD_8502)/banked_access.o $(BUILD_8502)/retained_paths.o \
 		$(BUILD_8502)/kernel_entry.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
@@ -1645,7 +1683,7 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(BUILD_8502)/shell_parser.o $(BUILD_8502)/shell.o \
 		$(BUILD_8502)/z80_worker.o $(BUILD_8502)/task_worker.o \
 		$(BUILD_8502)/vic_graphics.o \
-		$(BUILD_8502)/vic_span.o $(BUILD_8502)/vic_pixel.o \
+		$(BUILD_8502)/vic_span.o $(BUILD_8502)/vic_pixel.o $(BUILD_8502)/vic_rectangle.o \
 		$(BUILD_8502)/vic_clear.o \
 		$(BUILD_8502)/managed_apps.o \
 		$(BUILD_8502)/vdc_text_assets.o \
@@ -2066,6 +2104,8 @@ $(BUILD_8502)/banked_graphics.s: src/services/window/banked_graphics.c include/u
 	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o $@ $<
 $(BUILD_8502)/banked_graphics.o: $(BUILD_8502)/banked_graphics.s
 	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_8502)/graphics_event.o: src/services/window/graphics_event.s | $(BUILD_8502)
+	$(CA65) --cpu 6502 -o $@ $<
 $(BUILD_8502)/retained_paths.s: src/services/window/retained_paths.c include/udeks/retained_paths.h include/udeks/banked_graphics.h include/udeks/vic_graphics.h | $(BUILD_8502)
 	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o $@ $<
 $(BUILD_8502)/retained_paths.o: $(BUILD_8502)/retained_paths.s
@@ -2395,7 +2435,7 @@ check:
 	$(PYTHON) -m py_compile tools/storage_window_probe.py
 	$(PYTHON) -m py_compile tools/storage_write_probe.py
 	$(PYTHON) -m py_compile tools/four_native_probe.py tools/native_app_layout.py
-	$(PYTHON) -m py_compile tools/xsprdef_probe.py
+	$(PYTHON) -m py_compile tools/xsprdef_probe.py tools/xsprdef_files_probe.py tools/xsprdef_basic_probe.py
 	$(PYTHON) -m py_compile tools/banked_loader_probe.py tools/gen_banked_bindings.py tools/build_banked_execution.py
 	$(PYTHON) -m py_compile tools/o65_to_udex.py tools/build_reloc_fixture.py
 	$(PYTHON) -m py_compile tools/build_graphical_example.py tools/generic_launch_probe.py tools/add_disk_apps.py

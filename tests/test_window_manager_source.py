@@ -110,7 +110,9 @@ class WindowManagerSourceTests(unittest.TestCase):
             "void udeks_window_end_paint", 1
         )[0]
         self.assertIn("window->z != active_count", begin_paint)
-        self.assertIn("dragging_handle != UDEKS_WINDOW_NONE", begin_paint)
+        self.assertIn("udeks_window_update_busy()", begin_paint)
+        busy = source.split('unsigned char udeks_window_update_busy',1)[1].split('unsigned char udeks_window_begin_paint',1)[0]
+        self.assertIn("dragging_handle != UDEKS_WINDOW_NONE", busy)
 
     def test_manager_is_an_independent_registered_module(self):
         table = (ROOT / "src/services/table.s").read_text(encoding="utf-8")

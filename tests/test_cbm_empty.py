@@ -117,10 +117,16 @@ class EmptyFinalizer(unittest.TestCase):
                 self.sync(); self.rejected()
 
     def test_splat_locked_wrong_type_and_multiple_blocks_fail(self):
-        for field, value in ((0, 1), (0, 0xc1), (0, 0x82), (0, 0x83), (0, 0x84),
+        for field, value in ((0, 1), (0, 0xc1), (0, 0xc2), (0, 0x83), (0, 0x84),
                              (28, 0), (28, 2), (29, 1)):
             self.setUp(); self.directory[2+field] = value
             self.sync(); self.rejected()
+
+    def test_closed_prg_empty_file_has_same_exact_length_fix(self):
+        self.directory[2]=0x82;self.sync()
+        before=list(self.sectors)
+        self.assertEqual(self.run_finalizer(),0)
+        self.assertEqual([i for i,(a,b) in enumerate(zip(before,self.sectors)) if a!=b],[513])
 
     def test_reserved_or_invalid_sector_targets_fail(self):
         for track, sector in ((0, 0), (18, 0), (18, 1), (53, 0), (71, 0), (1, 21)):

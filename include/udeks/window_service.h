@@ -6,5 +6,8 @@
  * This is NOT an added UAPP vector. The router must derive caller ownership
  * from its task/slot record, never trust an owner supplied in a request. */
 unsigned char __fastcall__ udeks_window_owner(unsigned char handle);
+/* Private service preflight. Frozen drag/capture/paste pixels cannot accept
+ * a delta yet. No state is mutated; the client may sleep and retry. */
+unsigned char udeks_window_update_busy(void);
 
 #endif

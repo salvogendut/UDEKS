@@ -77,12 +77,26 @@ def main():
     parser.add_argument('--boot-mounted', action='store_true', help='drag regression relies on default RC mount, never mounts manually')
     parser.add_argument('--root-namespace', action='store_true', help='system root, cwd, data alias and native window regression')
     parser.add_argument('--xcalc', action='store_true', help='native calculator mouse, arithmetic, console and app-slot checks')
+    parser.add_argument('--xsprdef', action='store_true', help='sprite pixel delta through native keyboard and 1351 input')
+    parser.add_argument('--xsprdef-files', action='store_true', help='sprite dialogs and save/reboot/load on disposable media')
+    parser.add_argument('--native-capacity',action='store_true',help='large generic clients, loan reuse and native input')
     parser.add_argument('--four-apps', action='store_true', help='four-app native input and independent lifecycle qualification')
     parser.add_argument('--four-native', action='store_true', help='four generic native clients, actual keyboard and 1351 input')
     parser.add_argument('--native-clock', action='store_true', help='two relocatable clocks with native input and legacy peers')
     parser.add_argument('--storage-write', action='store_true', help='public create/readback/reboot with native keyboard and NMI')
     parser.add_argument('--storage-eject', action='store_true', help='1581 media removal with a public writer open, reinsertion/reuse/reboot')
     args = parser.parse_args()
+    if args.xsprdef_files:
+        args.xsprdef=True
+    if args.native_capacity and any((args.disk_exec,args.disk_shell,args.sysinfo,args.disk_graphics,
+            args.drag_regression,args.root_namespace,args.xcalc,args.four_apps,args.four_native,
+            args.native_clock,args.storage_write,args.storage_eject,args.boot_mounted,args.xsprdef)):
+        parser.error('--native-capacity is a standalone qualification mode')
+    if args.xsprdef and any((args.disk_exec,args.disk_shell,args.sysinfo,args.disk_graphics,
+                            args.drag_regression,args.root_namespace,args.xcalc,args.four_apps,
+                            args.four_native,args.native_clock,args.storage_write,args.storage_eject,
+                            args.boot_mounted)):
+        parser.error('--xsprdef is a standalone qualification mode')
     if (args.storage_write or args.storage_eject) and any((args.disk_exec,args.disk_shell,args.sysinfo,args.disk_graphics,
                                   args.drag_regression,args.root_namespace,args.xcalc,args.four_apps,
                                   args.four_native,args.native_clock,args.storage_write and args.storage_eject)):
@@ -101,14 +115,32 @@ def main():
         parser.error('use --drive 1581 with D81, or --drive 1571 with D64/D71')
     work = args.output.resolve()
     work.mkdir(parents=True, exist_ok=True)
-    if args.storage_write or args.storage_eject:
-        work=Path(tempfile.mkdtemp(prefix='eject-' if args.storage_eject else 'write-',dir=work))
+    if args.storage_write or args.storage_eject or args.xsprdef_files:
+        work=Path(tempfile.mkdtemp(prefix='sprite-' if args.xsprdef_files else
+                                 'eject-' if args.storage_eject else 'write-',dir=work))
     binary = work/'smoke'
     emulator = args.emulator.resolve()
     flags = shlex.split(subprocess.check_output(['pkg-config', '--cflags', '--libs', 'sdl3'], text=True))
     kernel_map = (ROOT/'build/8502/udeks-8502.map').read_text()
     console_base = int(re.search(r'^LOWBSS\s+([0-9A-Fa-f]+)',kernel_map,re.M)[1],16)
     calc_flags = []
+    if args.native_capacity:
+        calc_flags=['-DUDEKS_NATIVE_CAPACITY_SMOKE','-DUDEKS_DISK_GRAPHICS_SMOKE']
+        for name,folder,stem in (('LARGE','graphics','client'),('BIGCON','console','console')):
+            symbols=map_exports((ROOT/f'build/native-capacity/{folder}/{stem}.map').read_text())
+            for symbol in ('ready','error'):
+                calc_flags.append('-DUDEKS_'+name+'_'+symbol.upper()+'='+str(
+                    0x12300+symbols['_capacity_'+symbol][0]-0x1000))
+        symbols=map_exports((ROOT/'build/boot/banked-loader.map').read_text())
+        calc_flags.append('-DUDEKS_NATIVE_OWNED='+str(0x10000+symbols['banked_owned'][0]))
+    if args.xsprdef:
+        calc_flags=['-DUDEKS_XSPRDEF_SMOKE','-DUDEKS_DISK_GRAPHICS_SMOKE']
+        if args.xsprdef_files:
+            calc_flags.append('-DUDEKS_XSPRDEF_FILES')
+            symbols=map_exports((ROOT/'build/user/native-xsprdef/xsprdef.map').read_text())
+            for name,define in (('bank','BANK'),('pixels','PIXELS'),('dialog','DIALOG'),('file_error','ERROR')):
+                calc_flags.append('-DUDEKS_XSPR_'+define+'='+str(
+                    0x12300+symbols['_udeks_xsprdef_'+name][0]-0x1000))
     if args.storage_write:
         calc_flags=['-DUDEKS_STORAGE_WRITE_SMOKE','-DUDEKS_DISK_GRAPHICS_SMOKE']
     if args.storage_eject:
@@ -170,16 +202,48 @@ def main():
     disk = work/('test'+args.disk.suffix)
     shutil.copyfile(args.disk, disk)
     data = bytearray(disk.read_bytes())
-    if args.storage_eject:
+    if args.native_capacity:
+        from native_capacity_probe import public_files
+        data=bytearray(add_apps(data,[(n.upper()+'.BIN',v) for n,v in public_files().items()]))
+    elif args.storage_eject:
         data=bytearray(add_apps(data,[('WHOLD.BIN',program)]))
     elif args.native_clock:
         program=(ROOT/'build/native-clients/clock/NCLOCK.BIN').read_bytes()
         data=bytearray(add_apps(data,[('NCLOCK.BIN',program),('CLOCK2.BIN',program)]))
-    elif not args.disk_exec and not args.storage_write:
+    elif not args.disk_exec and not args.storage_write and not args.xsprdef_files:
         install = install_d81_file if args.drive=='1581' else install_prg_file
         install(data, 'EMPTY', b'', file_type=0x81)
         install(data, 'ONE', b'X', file_type=0x81)
     disk.write_bytes(data)
+    if args.xsprdef_files:
+        from xsprdef_basic_probe import basic_bank
+        original=bytes(data)
+        print('evidence:',work,flush=True)
+        for phase in ('create','reboot'):
+            environment=os.environ.copy();environment.pop('UDEKS_XSPR_REBOOT',None)
+            if phase=='reboot':environment['UDEKS_XSPR_REBOOT']='1'
+            with (work/(phase+'.log')).open('w') as log:
+                result=subprocess.run([str(binary),str(args.roms.resolve()),str(disk),
+                    smoke.slot_address(ROOT/'build/8502/udeks-scheduler-overlay.map'),str(work/(phase+'.vsf'))],
+                    stdout=log,stderr=subprocess.STDOUT,env=environment,timeout=600)
+            print((work/(phase+'.log')).read_text(),flush=True)
+            if result.returncode:raise SystemExit(result.returncode)
+        before,after=files(original),files(disk.read_bytes())
+        expected=bytearray(504);expected[441]=128;expected[503]=1
+        for name,payload in before.items():
+            if after.get(name)!=payload:raise AssertionError(('existing file changed',name))
+        if {n:v for n,v in after.items() if n not in before}!={b'SPRITES.SPR':bytes(expected),
+                                                             b'SPRITES.BSV':basic_bank(expected)}:
+            raise AssertionError('sprite bank persistence mismatch')
+        if args.disk.read_bytes()!=original:raise AssertionError('source disk changed')
+        (work/'result.json').write_text(json.dumps(dict(drive=args.drive,phases=['create','reboot'],
+            disk_sha256=hashlib.sha256(original).hexdigest(),
+            written_disk_sha256=hashlib.sha256(disk.read_bytes()).hexdigest(),
+            bank_sha256=hashlib.sha256(expected).hexdigest(),existing_files_unchanged=len(before),
+            basic_export_sha256=hashlib.sha256(basic_bank(expected)).hexdigest(),
+            emulator_revision=subprocess.check_output(['git','-C',str(emulator),'rev-parse','HEAD'],text=True).strip()),indent=2)+'\n')
+        print('PASS native sprite file evidence:',work,flush=True)
+        return
     if args.storage_eject:
         from storage_failure_probe import make_data
         before=make_data('1581')
@@ -243,6 +307,8 @@ def main():
         'boot_mounted': args.boot_mounted,
         'root_namespace': args.root_namespace,
         'xcalc': args.xcalc,
+        'xsprdef': args.xsprdef,
+        'native_capacity': args.native_capacity,
         'four_apps': args.four_apps,
         'four_native': args.four_native,
         'native_clock': args.native_clock,

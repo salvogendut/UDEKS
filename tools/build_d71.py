@@ -659,7 +659,7 @@ def validate_managed_app(executable: bytes, base: int, capacity: int = 0x0A00) -
 
 def validate_native_app(executable: bytes) -> None:
     from native_app_layout import fitting_allocations
-    if not fitting_allocations(executable):
+    if not fitting_allocations(executable) and not fitting_allocations(executable, joined=True):
         raise ValueError('native executable does not fit any allocation including its stack')
 
 

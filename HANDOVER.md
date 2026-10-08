@@ -6,7 +6,321 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — Storage 0.3 accepted for merge, 2026-10-07
+## Current handoff — sprite number and held painting, 2026-10-08
+
+The user accepts the visible sprite number and held-button painting, following
+acceptance of fast pixel updates, larger-app capacity, Save/Load and BASIC
+export (latest manual-test platform unspecified). On 2026-10-08 they requested
+commit, PR and merge of the accumulated `graphics-xspr-pixel-update` branch
+in `build/graphics-xspr-pixel-update`.
+Root main's unrelated edits, sibling 1986 source and published disks are untouched.
+
+The editor shows **1–8 beside the preview**, also during editor dialogs.
+A primary CLICK in the grid chooses draw/erase from the toggled first cell.
+HELD samples extend that ink, without toggling again when stationary/retracing.
+Bresenham interpolation lives entirely in the app. It commits **one changed
+cell per PRESENT_DELTA**, yielding between steps; long strokes do not fall
+back to full-window repaint. The first full-repaint prototype delayed pointer
+updates in the native mouse test and was replaced. Release, outside-grid input
+or focus loss ends a stroke. Held input cannot activate toolbar/dialog buttons;
+title-bar dragging remains the WM's gesture. A bounded segment already sampled
+may finish before the next pointer poll. This is coalesced input, not a lossless
+motion queue; unobserved excursions cannot be reconstructed.
+
+Generic UTRQ **0.17** adds GRAPHICS `INPUT` (7). Old EVENT stays click-only.
+INPUT preserves geometry/click ordering and adds state 4 HELD, signed relative
+X and Y (`P[3]` low / `P[7]` high). Live replies are eight bytes; CLOSED keeps
+the existing seven-byte reply with only state valid. The owner/focus/busy checks
+precede the held snapshot; IRQ masking covers only the short pointer read and
+coordinate arithmetic. The earlier minor rejects INPUT with EINVAL.
+
+The existing graphics reservations were full: `graphics_event.s` replaces the
+old EVENT marshalling and two equivalent shared adapters (geometry arguments
+and eight-byte retained read), without moving reservations or adding state.
+Normal/panic maps pass: GRAPHICSCODE `$0C00-$12FF` (**full**), GRAPHICSHELP ends
+`$A1D9`, MODULECODE `$E5E8`, MODULERODATA `$E633`, resident BSS `$96A4` (three
+bytes before VDC assets). Do not silently grow these areas. A new sim65 gate
+executes the actual assembly against an independent C oracle: 2,048 cases,
+including legacy EVENT, resize/click ordering, signed outside coordinates,
+focus/busy/buttons, geometry/copy calling conventions and request guards.
+
+Editor: **6,920 file / 6,458 image+BSS bytes**, 50 scene commands, still the
+same joined task-3/task-4 allocation with two compatible peers available.
+S/L/BSV formats and create-exclusive policy are unchanged. Host tests include
+all eight labels, modal visibility, stroke retracing/erase, interpolation in
+every direction, held-control isolation and retry behavior.
+
+Current checks/evidence: **1,366 host tests**, container `boot graphics-apps-check placement-check`,
+VICE `build/sprite-paint/vice-d64` (pixel deltas, move, uncover, coexistence,
+console/close), and `build/sprite-paint/files/files-1541-_jjg0ts6` (persistence
+plus stock BASIC BLOAD/BSAVE) pass. Native 1986 `19386ef8` D64 held-input
+qualification passes under `build/sprite-paint/1986-d64-final`: ten exact
+single-cell edits (13–15 PAL frames including release), held paint/erase,
+stationary/retrace, diagonal, toolbar isolation, title drag, console and close.
+It requires zero full compositions throughout stroke editing. The harness now
+waits for each relative mouse movement to be sampled before sending another:
+the former four-frame controller queued duplicate corrections while drawing
+and overshot the grid (trace: X 196, 196, 196, 220 for a target of 212).
+Earlier r0/r1/r2/r3/trace runs are diagnostic, not passing qualifications.
+Final D64 hash `6fba5c94…50ef50` matches both VICE and native probe inputs;
+all three formats rebuild. See XSPRDEF for repeatable commands. Do not claim a
+new physical-C128 result.
+
+Next: finish the authorized PR/merge, then return to the roadmap's disk-loaded
+service milestone. No further sprite feature is required for this accepted
+checkpoint. Overwrite, thumbnails, keyboard editing, undo and multicolor remain
+deferred. The earlier unrelated four-native wave-resize timing caveat still
+applies. The historical handoffs below describe their then-current status;
+this accepted checkpoint supersedes their pending-test/no-merge notes.
+
+## Earlier handoff — BASIC-compatible sprite export, 2026-10-08
+
+The user accepted Save/Load (platform unspecified) and requested compatibility
+with C128 BASIC's `BSAVE ...,B0,P3584 TO P4096`. Added list-screen **E**, with
+Y/N confirmation, exporting all eight session sprites to `/SPRITES.BSV`.
+From the pixel editor use B → E → Y; B retains the current edit. These are
+mouse buttons. S/L still use the original 504-byte `SPRITES.SPR`; L does not
+import BSV. Both saves remain create-exclusive and require an explicit RW
+mount. No overwrite, delete, automatic remount or retry was added.
+
+The export is a genuine Commodore PRG: `$00,$0E` load header plus eight
+63-byte sprites, each padded with one zero byte (514 file bytes). A streaming
+encoder uses the existing 24-byte request buffer, not another sprite bank.
+BASIC loads it using `BLOAD "SPRITES.BSV",B0,P3584`, or just
+`BLOAD "SPRITES.BSV",B0`. Loading alone does not display sprites.
+
+Important qualification finding: the initial SEQ-file experiment with `,S`
+loaded on the 1541 but failed with stock 1571/1581 burst BLOAD. It is superseded
+by generic UTRQ **0.16**, adding opt-in OPEN mode 4, CREATE_PRG, through the
+existing file path. Ordinary CREATE stays SEQ; all ownership, root/path,
+read-only and collision checks remain unchanged. The client supplies the
+header; the filesystem never adds one or handles app names specially.
+Backend create takes an explicit SEQ/PRG type; empty-file finalization supports
+both exact closed types, still rejecting locked or unclosed entries.
+
+No memory reservations moved. Two existing pure helpers (`lower` and
+`dos_errno`) moved to IECCODE within the same bank-1 storage mapping to fit:
+STORAGECODE ends `$C5B8`, IECCODE `$E8D4`, STORAGEHIGH `$FED6`; BSS remains
+`$E000-$E17F`. The editor is **5,877 file / 5,687 image+BSS bytes**, using
+joined task 3/4 capacity; two compatible peers remain possible.
+
+Qualification: **1,360 host tests**, boot D64/D71/D81, graphics-apps-check and
+placement-check pass. Fresh VICE 1541/1571/1581 runs pass Save/Load/export,
+cancel, RO/existing-file errors, console, uncover, guards and cold reboot.
+Each independently decodes the output and uses a separate stock BASIC boot
+to test both BLOAD forms, all 512 RAM bytes plus adjacent guards, and a
+byte-identical BSAVE round trip. No monitor LOAD substitutes for BASIC.
+Native 1986 `19386ef8` D64/1571 passes actual keyboard/1351 file dialogs,
+export, console and cold-reboot Load. Ordinary public SEQ write/reboot
+regression passes on VICE 1541 too. Physical C128 export acceptance is pending.
+
+Final evidence is under `build/sprite-prg/`: `files-1541-5dc_eqer`,
+`files-1571-4_3e6wzs`, `files-1581-hq94fj9a` (each has `basic/result.json`),
+`1986-d64/sprite-bd4m5nu1`, and
+`storage-regression/public-1541-jf_jlexv`. Earlier `build/sprite-basic/`
+experiments are superseded, not the release qualification. Reproduce with
+`make xsprdef-files-probe` and the native command in [XSPRDEF](docs/XSPRDEF.md).
+
+Work remains uncommitted on `graphics-xspr-pixel-update`; no commit/push/merge
+was requested. Root main's unrelated edits, sibling 1986 source and original
+disk images are untouched. Next: user tests E export and BASIC BLOAD on a
+disposable fresh image, then branch review when requested. Preserve the
+earlier wave-resize timing caveat; this is not a complete WM performance
+qualification. Return to the roadmap's disk-loaded service milestone after
+acceptance rather than expanding sprite scope.
+
+## Earlier handoff — sprite Save/Load integration, 2026-10-07
+
+The user accepted the generic capacity increment (platform unspecified) and
+asked to continue. Integrated the previously requested S confirmation, L Load
+and `SPRITES.SPR` in the production editor on `graphics-xspr-pixel-update`.
+No commit/push/merge requested. Root main's unrelated changes, sibling 1986
+source and original disk images are untouched.
+
+Click S/L, then Y/N. B now keeps the current edit in the session bank before
+returning to the list, which also has S/L buttons. These are mouse controls,
+not keyboard shortcuts. The file is exactly 504 raw bytes: eight 63-byte,
+MSB-first sprites, no header. Save includes the current edit; Load stages in
+the private command-buffer union and commits only after exact length, EOF and
+successful CLOSE. No presentation uses that union during I/O. Errors display
+read-only, missing file, existing file, bad size, busy, full or generic error.
+
+Saving remains **create-exclusive**, explicitly announced before work. No
+overwrite, delete, automatic RW remount or retry. Failed writes may leave a
+partial file; duplicate save returns EEXIST. Boot mounts remain read-only.
+The reusable `user/include/udeks/native_file.h` / assembly helper uses the
+existing UTRQ 0.14 FF16 path and preserves descriptor/count, unlike the graphics
+helper. Native clients must not import the transient CF30 file helper.
+
+Production image: **5,367 file / 5,284 image+BSS bytes**, joined task 3/4;
+two compatible-sized peers remain possible. Disk-packager validation now
+accepts joined-capacity images too (the earlier capacity fixtures bypassed
+this normal-image check); exact limits and overflow rejection are host-tested.
+No extra kernel service or ABI version. Fast pixel deltas remain intact.
+
+Qualification: **1,353 host tests**, boot D64/D71/D81, graphics-apps-check and
+placement-check pass. Host tests include short reads, malformed lengths,
+partial/failed writes, transfer/CLOSE errors and unchanged state on failed
+Load. VICE 1541, 1571 and 1581 pass Save/Load, Y/N cancellation, RO/ENOENT/EEXIST,
+console, uncover, guards and cold reboot. Independent DOS decoding confirms
+exact 504-byte contents and every pre-existing file unchanged. Native 1986
+`19386ef8` D64/1571 passes the same mouse-dialog/reboot path with actual
+keyboard/1351 input; no app/event/request injection. The VICE pixel probe
+passes exact dense two-region updates, move/uncover and three-app coexistence.
+The final native pixel regression also passes: ten real 1351 on/off edits,
+13–15 PAL frames each including release, with zero full compositions, followed
+by console input and close (`build/sprite-files/1986-pixel`).
+
+Reproduction: `make xsprdef-files-probe` (host VICE), and container
+`tools/1986_storage_smoke_build.py --xsprdef-files` as shown in
+[XSPRDEF](docs/XSPRDEF.md). Fresh copies and result JSON/hashes live under
+`build/sprite-files/`: `files-1541-r21lp63g`, `files-1571-x3u24snw`,
+`files-1581-oktgsy01`, `1986-d64/sprite-q9f7lda0`, `pixel-d64-r1`.
+These are local development artifacts, not published release downloads.
+Final rebuilt D64/D71/D81 hashes match the corresponding qualified probe
+inputs; the repeated full check remains green. Probe emulator processes exited.
+
+Next: user tests a fresh disposable worktree image, explicitly remounting RW
+for Save, then cold-boots and Loads. Physical C128 acceptance is not claimed.
+Review/commit this accumulated branch only when requested. The earlier
+four-native wave-resize timing caveat below remains separate; do not claim a
+complete WM performance regression pass. After acceptance, return to the
+roadmap's first disk-loaded service rather than expanding sprite scope.
+
+## Earlier handoff — generic larger-app capacity, 2026-10-07
+
+The user chose generic capacity first, before integrating the sprite file UI.
+Work remains on `graphics-xspr-pixel-update`, preserving the accepted pixel
+fix and isolated Save/Load prototype. No commit/push/merge requested; root
+main's unrelated edits and sibling 1986 sources remain untouched.
+
+The loader may tentatively join native task 3/4 memory (`$2300-$3FFF`) only
+when both are FREE and unowned. Ceiling: **7,168 image+BSS / 7,424 file bytes**.
+Private ownership value 3 reserves the donor without creating a task. Its
+load/activate/release/reap calls return EBUSY; query still reports its actual
+FREE lifecycle state. Failed loads undo the loan. Successful small installed
+images give it back even if the relocation tail needed extra staging space.
+Otherwise release/reap returns it. Activation publishes the effective stack
+page to bank-0 source validation and cc65 setup before RUNNABLE. No new ABI,
+app names, task slots or runtime reservations. Four small apps still work;
+a larger one plus two compatible peers works. Existing live apps never move.
+
+Measured loader CODE: `$D900-$DFE6`, 1,767/1,792 bytes (+109); page initializer
+adds three bytes to MODULECODE. Resident BSS unchanged (`$96A3`). The layout
+gate checks joined and ordinary alternatives, keeping the idle donor CPU
+pages reserved. The independent SDK rejects both runtime and file overflow.
+The normal argc/argv synchronous console pool is unchanged; the larger
+allocation also works for separately scheduled native windowless clients.
+
+`make check`: 1,347 tests; container boot, graphics-apps-check (including
+1,028 real-cc65 rectangle cases) and placement-check pass. VICE 1541/D64,
+1571/D71 and 1581/D81 pass public large graphical/console clients, capacity
+rejection, four-small reuse and normal exit. D81 additionally tests exact
+7,168-byte image/BSS and 7,424-byte file edges, one-byte overflow, malformed
+relocations, failed open, unowned/owned donor rejection and request preservation.
+Probes read physical bank 1 using verified VICE `bank ram01`, not the aliased
+CPU view (the first probe version exposed that sampling mistake).
+
+Independent fixtures: LARGE is 5,467 file / 5,343 image+BSS bytes; BIGCON is
+402 file / 4,950 image+BSS bytes. Neither fits an ordinary allocation. LARGE
+submits drawing data beyond `$3500` and checks rejection at the new stack
+boundary. Native 1986 `19386ef8` D64/1571 passes real keyboard/1351 drags,
+guards, three-client capacity, reuse, ordinary four-client coexistence,
+windowless natural return and graphical Ctrl+C. No new physical-HW result.
+Results/reproduction: `tools/native_capacity_probe.py`,
+`tools/1986_native_capacity_smoke.inc`, `build/native-capacity/vice-*` and
+`build/native-capacity/1986-d64-final`; see the SDK for the manual sequence.
+
+Important existing limit: closing is cooperative, not forced cancellation.
+An infinite windowless fixture that only slept kept running after Ctrl+C;
+the console capacity fixture now performs bounded work and returns normally.
+Do not claim that general native console cancellation/stdin/argv was added.
+Next: user capacity test, then integrate and qualify S/L and `SPRITES.SPR`.
+Create-exclusive versus overwrite remains a separate storage/UI decision.
+
+## Earlier handoff — sprite files need a capacity decision, 2026-10-07
+
+The user reports the pixel-update build works well (platform unspecified),
+then requests an explicit S Save confirmation, an L Load control and default
+filename `SPRITES.SPR`. The first Save/Load prototype is preserved under
+[`experiments/xsprdef-files`](experiments/xsprdef-files/README.md), **not shipped**.
+Measured after app-local C compaction: **5,373 file bytes / 5,290 image+BSS**,
+against the largest native slot's **4,608 / 4,352** ceilings. The accepted
+editor and production build rules are restored; all three disk hashes remain
+identical to the pixel candidate below. All 1,342 tests, boot, placement and
+graphics-app checks still pass. No app limits or kernel policy were changed.
+
+Ask before expanding scope: generic larger-app capacity vs a dedicated compact
+implementation; create-exclusive Save/Load first vs adding overwrite support.
+The latter question was also sent asynchronously. The prototype proposes one
+504-byte raw bank (eight 63-byte sprites), failure-atomic load via private
+staging, and B keeping session edits so a full bank can be built before saving.
+These choices are not frozen APIs; the prototype is compile-measured only.
+No commit/push/merge requested. Root main and unrelated worktrees untouched.
+
+## Earlier handoff — sprite pixel-click fix, 2026-10-07
+
+At the user's request, resumed the sprite editor before its disk-persistence
+work. Branch `graphics-xspr-pixel-update`, worktree
+`build/graphics-xspr-pixel-update`, starts from merged Storage 0.3 (`ea25eff`).
+Root main's unrelated documentation edits and written storage-test media are
+untouched. No commit/push/merge was requested for this increment.
+
+UTRQ 0.15 GRAPHICS `PRESENT_DELTA` accepts a full retained command list plus
+two clipped fills. Topmost pixel edits update the 8×8 cell and 1× preview;
+background updates use the compositor. Drag/cache activity returns EAGAIN
+before mutation; the editor yields/retries without toggling twice. Clear,
+Invert, selection, move and uncover retain their complete-scene path. This is
+a generic service operation, not app-name routing or a BASIC ROM call.
+
+The existing assembly span writer was already efficient; full-window replay
+dominated the delay. A compact assembly rectangle wrapper, serialized private
+display scratch and shared geometry marshalling fund the change without
+moving reservations. The editor's exact 46-command private buffer keeps
+image+BSS at 3,835 bytes, fitting task 5 as well as task 3; this preserves
+coexistence with clock, calculator and drawing. Resident BSS ends at `$96A3`
+(four bytes before fixed VDC assets), GRAPHICSCODE at `$12F9` (six bytes free).
+Keep the existing link/layout gates: both budgets are tight.
+
+VICE D64: ten dense on/off clicks change exactly the intended two regions,
+no full compositions, shadow equals VIC; aligned/unaligned drag, retained
+replay, session save/discard, four apps, console and close/uncover pass.
+Verified `warp off`: median click-to-verified-bitmap wall time is 0.154 s vs
+3.014 s on the merged baseline (ten clicks each). This includes monitor and
+polling overhead; it is not isolated CPU timing or real-hardware latency.
+Results are under `build/xsprdef-delta/normal-{d64,baseline-d64}` within the
+worktree. Earlier timing attempts left warp on (obsolete resource name) and
+are not performance evidence. Earlier submission timeouts were probe errors:
+plain monitor reads saw KERNAL ROM over `$F3D8` (opcode `$E0`), but captured
+console/RAM proves the command completed (actual counter `$0A`). All status
+reads now use the kernel profile. Fresh D71/D81 editor sequences pass too.
+Native 1986 `--xsprdef` passes ten exact edits with real keyboard/1351 APIs,
+no state injection, at 13–16 PAL frames including input/release; console and
+close pass. Results: `build/xsprdef-delta/1986-sprite-r1`.
+
+Verification: 1,342 host tests; all three images; placement and graphics-app
+layout checks; 1,028 sim65 rectangle argument/stack checks pass.
+**Do not claim every regression gate is green:** the separate 1986 four-native
+wave timing gate fails in the candidate's four-app resize: projection 450 PAL
+frames (limit 400), total 811 (limit 700), input-poll gap 216. The unchanged
+baseline passes at 233/595, gap 7. Diagnostic run shows the candidate crosses
+5:59 -> 6:00 during projection, gains a full composition, and pauses for the
+clock minute repaint. Identical app binaries and unchanged wave code; scheduling
+phase is a likely confound, not proof of equivalent worst-case timing. Baseline
+minute-edge-delay experiments did not reproduce it (the drag itself passed the
+minute edge); their optional timing hook was removed. Do not relax the limits
+or mark this as qualified. Preserve logs in `build/xsprdef-delta/1986-four-native`
+and `1986-four-native-diagnostic`; baseline default results are in the storage
+worktree's `build/xsprdef-delta-baseline/1986-four-native`. Review before merge;
+do not roll a wave/WM scheduling fix into the editor pixel patch silently.
+
+See [XSPRDEF.md](docs/XSPRDEF.md) for tests and image paths. Next: user checks
+pixel-click response on 1986/C128, then define sprite persistence/export using
+the merged create-only file API. Do not expand this fix into wave/whole-WM
+optimization. The first disk-loaded non-kernel service remains the next
+architectural milestone, after this explicitly requested editor work.
+
+## Earlier handoff — Storage 0.3 accepted for merge, 2026-10-07
 
 Step 3 was committed/pushed as `451fdcf`. The follow-up below closes the
 VICE-blocked 1581 coverage gap under sibling 1986; the user explicitly approved

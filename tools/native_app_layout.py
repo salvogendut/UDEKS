@@ -14,6 +14,9 @@ ALLOCATIONS = (
     (6, 0xC600, 0xD000, 0xCF00, 0x0000, 0x0100),
 )
 ADMISSION_ORDER = (6, 4, 5, 3)  # smallest fitting allocation, not app names
+# Task 3 may borrow FREE, unowned task 4's adjacent memory. Its CPU pages
+# remain its own; no fifth task, general heap or new executable ABI is implied.
+JOINED_ALLOCATION = (3, 0x2300, 0x4000, 0x3F00, 0xD500, 0xD600)
 RETAINED_BASE, RETAINED_LIMIT = 0x1300, 0x1C00  # physical bank 0
 
 
@@ -40,10 +43,11 @@ def check_linked_tables(module,exports):
             raise ValueError('linked native table differs: '+symbol)
 
 
-def fitting_allocations(executable):
+def fitting_allocations(executable, *, joined=False):
     from o65_to_udex import relocate_executable
     candidates = []
-    for task,base,limit,stack,_,_ in ALLOCATIONS:
+    rows = (JOINED_ALLOCATION,) + ALLOCATIONS[2:] if joined else ALLOCATIONS
+    for task,base,limit,stack,_,_ in rows:
         try:
             installed=relocate_executable(executable,base,limit-base)
         except ValueError:

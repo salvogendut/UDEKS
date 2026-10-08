@@ -17,7 +17,7 @@ from build_scheduler_overlay import map_segments
 from ihx_to_bin import read_ihx
 from build_window_cache import glyph_overlay_layout
 from gen_capability_imports import map_exports
-from native_app_layout import (ALLOCATIONS, fitting_allocations, RETAINED_BASE, RETAINED_LIMIT,
+from native_app_layout import (ALLOCATIONS, JOINED_ALLOCATION, fitting_allocations, RETAINED_BASE, RETAINED_LIMIT,
                                check_assembly_layout, check_linked_tables)
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -183,11 +183,19 @@ def baseline_regions(kernel, storage, worker):
 
 
 def graphics_lifetimes(regions):
+    joined = tuple(region for task,base,limit,stack,zp,hp in (JOINED_ALLOCATION, *ALLOCATIONS[2:])
+                   for region in (Region(f'app {task} image+BSS',1,base,stack),
+                                  Region(f'app {task} software stack/guards/exit',1,stack,limit),
+                                  Region(f'app {task} zero page',1,zp,zp+256),
+                                  Region(f'app {task} hardware stack',1,hp,hp+256)))
     phases = {
         'before_first_native_launch': [Region('base graphics delivery',1,0xc600,0xcd00),
                                       Region('paths delivery/container',1,0xcd00,0xd100),
                                       Region('retired bootstrap context',1,0xe2e2,0xe300)],
         'after_both_modules_installed': list(CANDIDATE),
+        'joined_3_4_excludes_donor': list(joined)+[
+            Region('parked donor zero page',1,ALLOCATIONS[1][4],ALLOCATIONS[1][4]+256),
+            Region('parked donor hardware stack',1,ALLOCATIONS[1][5],ALLOCATIONS[1][5]+256)],
     }
     for additions in phases.values():
         disjoint(regions + additions)

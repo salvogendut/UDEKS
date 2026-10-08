@@ -13,7 +13,20 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
-**Completed feature (accepted for merge 2026-10-07):**
+**Accepted checkpoint (2026-10-08):** the [sprite editor](XSPRDEF.md) now has
+fast pixel updates, confirmed whole-bank Save/Load (`SPRITES.SPR`), stock-BASIC
+export (`SPRITES.BSV`), a permanent sprite number and held-button draw/erase.
+Generic adjacent-allocation borrowing accommodates the larger app without
+editor-specific kernel routing: four ordinary apps, or one large app plus two
+compatible peers. See the [SDK](GRAPHICAL-APPS-SDK.md#larger-native-apps-capacity-candidate-2026-10-07).
+The user accepted each increment and requested PR/merge of
+`graphics-xspr-pixel-update`; the latest manual-test platform was unspecified.
+Emulator evidence and limits are in XSPRDEF/HANDOVER. Overwrite, thumbnails,
+keyboard editing, undo and multicolor remain deferred. This is not a broad
+WM performance qualification. **Next architectural feature: the first
+disk-loaded non-kernel service**, not another editor optimization.
+
+**Completed feature (merged 2026-10-07):**
 [#44 — create-only disk writes](https://github.com/salvogendut/UDEKS/issues/44),
 branch `storage-0.3-disk-write`, [PR #45](https://github.com/salvogendut/UDEKS/pull/45).
 The next architectural milestone is the first disk-loaded non-kernel service.
@@ -25,9 +38,8 @@ Step 3 is complete: public failure/retirement checks pass on VICE 1541/1571;
 input, NMI and reboot/readback pass. The user confirmed the manual checklist on
 real C128/PI1541 on 2026-10-07. A follow-up native 1986 test now also passes
 1581 mid-write ejection, error handling, reinsertion and reboot readback;
-VICE's own failure remains undiagnosed. The user authorized merge; PR #45
-records its status. Boot mounts remain RO.
-The sprite editor stays parked.
+VICE's own failure remains undiagnosed. PR #45 merged as `ea25eff`.
+Boot mounts remain RO.
 
 **Completed feature (accepted 2026-10-05): generic graphical applications**,
 [#35](https://github.com/salvogendut/UDEKS/issues/35). The first increment merged
@@ -58,14 +70,15 @@ and renderer optimization stays separate. **Next: the first disk-loaded
 non-kernel service.** Create-only writes (#44) are qualified and accepted.
 The exploratory `.CBM` work on `additional-apps` / #32 stays separate.
 
-**Accepted and parked (2026-10-07):** [`xsprdef`, the session sprite editor](XSPRDEF.md),
+**Accepted checkpoint; resumed above (2026-10-07):** [`xsprdef`, the session sprite editor](XSPRDEF.md),
 [#41](https://github.com/salvogendut/UDEKS/issues/41). The user approved the
 reviewed checkpoint for merge and asked to put further work aside. It edits
 eight app-local monochrome definitions with magnified/1x views, confirmed
 session saves, Clear and Invert. It is a generic disk app; UTRQ 0.13 provides
-reusable bitmap tiles, not editor-specific kernel policy. Persistence/export,
-thumbnails, keyboard editing, multicolor and partial repaint remain deferred.
-Further editor work stays deferred. Latest manual
+reusable bitmap tiles, not editor-specific kernel policy. The accepted follow-up
+above adds UTRQ 0.15 pixel deltas, disk persistence, 0.16 PRG export and 0.17
+held input. Thumbnails,
+keyboard editing and multicolor remain deferred. Latest manual
 acceptance did not specify a platform; no new physical-C128 result is inferred.
 
 **Merged baseline:** four graphical apps (#30), [PR #31](https://github.com/salvogendut/UDEKS/pull/31),

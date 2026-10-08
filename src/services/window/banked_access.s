@@ -67,12 +67,16 @@ name_bad:
         ldx #0
         rts
 
-; Private, IRQ-masked bank-0 entry. X is a validated allocation index.
+; Private, IRQ-masked bank-0 entry. X is a validated allocation index,
+; A its effective stack page. Publish the same bound used by the loader to
+; retained-source validation before the task becomes runnable. A free task's
+; table entry is not authoritative; every activation refreshes it.
 ; No stack or ZP-dependent instruction/call while the task pages are mapped.
 ; Unlike absolute worker-bank stores, this also initializes physical pages
 ; $00/$01 without accidentally overwriting the resident kernel's page zero.
         .segment "MODULECODE"
 _udeks_banked_pages_init:
+        sta _udeks_native_stack_pages,x
         lda #1
         sta $d508
         sta $d50a

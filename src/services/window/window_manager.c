@@ -268,13 +268,17 @@ static void draw_chrome(const struct udeks_window *window)
 
 static unsigned char paint_window_damage(unsigned char handle);
 
+unsigned char udeks_window_update_busy(void)
+{
+    return dragging_handle != UDEKS_WINDOW_NONE;
+}
+
 unsigned char udeks_window_begin_paint(unsigned char handle)
 {
     struct udeks_window *window;
 
     window = window_by_handle(handle);
-    if (window == 0 || dragging_handle != UDEKS_WINDOW_NONE ||
-        window->z != active_count) {
+    if (window == 0 || window->z != active_count || udeks_window_update_busy()) {
         return UDEKS_WINDOW_INVALID;
     }
     window->flags &= (unsigned char)~IMAGE_COMPLETE;
