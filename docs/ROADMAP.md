@@ -21,16 +21,21 @@ ticks explicitly outside its lifetime. The independent C/assembly module now
 builds and passes an exhaustive CPU-level clock/lifecycle proof; image-format
 validation and a measured startup-overlay placement direction are documented
 in the [service contract](../abi/services.md#disk-time-candidate--issue-49-2026-10-08).
-Checkpoints `2ff8c01` and `ed7a1f7` are pushed. Permanent startup retirement and
+Checkpoints `2ff8c01`, `ed7a1f7` and `9e56af5` are pushed. Permanent startup retirement and
 registration/stop/reload are CPU-tested; VICE qualifies the normal boot guard.
-**Placement blocker resolved:** actual normal/panic overlay links leave 50
-resident bytes free, including the legacy clock API, without moving any
-app/stack/graphics boundary. The smaller independent module uses 717 of its
-728-byte slot. Tests retain all bounds, checksum and lifecycle checks.
-This candidate is **not installed by normal boot**. Next: connect bounded
-request/ownership handling, disk loading and unavailable-service behavior, then
-VICE/1986 and a user-testable image. Do not substitute the standalone link or
-RAM-backed simulator proof for that integration gate.
+**Loader and request boundary implemented, not boot-integrated:** the bounded
+UTRQ operation, foreground ownership/exit cleanup, runtime bridge and independent
+`svc status|stop|load` command now pass CPU/host tests. Actual normal/panic links
+leave 2 resident bytes after that glue, without moving any app/stack/graphics
+boundary. The independent module uses 717 of its 728-byte slot. Tests retain
+all bounds, checksum and lifecycle checks; the command fits the existing console
+allocation. This candidate is **not installed by normal boot**.
+
+Next concrete milestone: produce coherent candidate boot images that load
+`TIME.SVC` through the bounded startup script, with clear unavailable-service
+behavior in `date`/`xclock`. Then qualify actual disk failures/restart/replacement
+and normal input/graphics in VICE/1986, and offer a user-testable image. Do not
+substitute isolated links or RAM-backed simulator proofs for that integration.
 
 **Completed and merged (2026-10-08):**
 [#47 — writable root and file commands](https://github.com/salvogendut/UDEKS/issues/47),

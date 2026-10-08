@@ -24,16 +24,18 @@ def main():
     parser.add_argument('--file-mutations', action='store_true',
                         help='rename/copy/unlink SDK (requires UTRQ 0.18)')
     parser.add_argument('--static-locals', action='store_true', help='only for nonrecursive single-invocation programs')
+    parser.add_argument('--services', action='store_true', help='experimental time-service control (UTRQ 0.19)')
     args = parser.parse_args()
     name = args.name.upper()
     if not re.fullmatch(r'[A-Z0-9_-]{1,12}', name): parser.error('invalid command name')
     out = args.output.resolve(); out.mkdir(parents=True, exist_ok=True)
+    (out/(name+'.BIN')).unlink(missing_ok=True)
     def run(*command): subprocess.run(command, cwd=ROOT, check=True)
     run('cc65', '-t', 'none', '--cpu', '6502', '--standard', 'c99', '-Os',
         *(['--static-locals'] if args.static_locals else []),
         '-I', 'user/include', '-I', 'include', '-o', str(out/'program.s'), str(args.source.resolve()))
     libraries=[]
-    if args.filesystem or args.file_mutations:
+    if args.filesystem or args.file_mutations or args.services:
         for label in ('filesystem0','filesystem1','filesystem2','filesystem3','filesystem_meta','error_string') + (('file_mutation0','file_mutation1','file_mutation2','file_mutation3') if args.file_mutations else ()):
             part = label[-1] if label[-1].isdigit() else None
             source = label[:-1] if part is not None else label
@@ -44,6 +46,8 @@ def main():
         libraries.append(('fs_request','user/lib/fs_request.s'))
         if args.file_mutations:
             libraries.append(('file_mutation_request', 'user/lib/file_mutation_request.s'))
+        if args.services:
+            libraries.append(('service_request', 'user/lib/service_request.s'))
     objects = []; members=[]
     for label, source in (('entry', 'user/lib/entry.s'), ('syscall', 'user/lib/syscall.s'),
                           ('program', out/'program.s'), *libraries):

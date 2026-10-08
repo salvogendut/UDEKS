@@ -13,20 +13,23 @@ Issue [#49](https://github.com/salvogendut/UDEKS/issues/49), branch
 merged `672110d`. Root main's unrelated edits are untouched. The user selected
 time-of-day service extraction, not scheduler timing, then authorized work.
 
-**Committed and pushed:** `2ff8c01` (standalone module) and `ed7a1f7`
-(permanent startup latch and CPU-tested lifecycle). The 21-byte production
+**Committed and pushed:** `2ff8c01` (standalone module), `ed7a1f7`
+(permanent startup latch and CPU-tested lifecycle), and `9e56af5` (actual
+normal/panic overlay links, placement fit). The 21-byte production
 startup guard caches success/failure permanently and rejects recursive entry;
 the resident time implementation remains installed by normal boot.
 
-**Current work, uncommitted: the placement blocker is resolved in actual
-normal and panic resident links**, not merely object-size arithmetic.
+**Current work, uncommitted: bounded request/ownership integration plus the
+independent `svc` disk loader**, both CPU/host-tested. The updated actual
+normal/panic links still fit, not merely object-size arithmetic.
 `make time-overlay-check` independently relinks those variants under
 `build/services/time/overlay/`, redirects every split output there, and checks
 all protected memory boundaries against the baseline maps. Do NOT run these
 raw kernel links: map-bound boot imports/delivery are not rebuilt for them.
 
-- Live resident BSS ends at `$939D`; `$939E-$93CF` gives **50 bytes** before
-  the new provisional slot `$93D0-$96A7`.
+- Live resident BSS ends at `$93CD`; `$93CE-$93CF` gives **2 bytes** before
+  the provisional slot `$93D0-$96A7`. The request adapter consumed 48 of the
+  previously qualified 50 bytes. Do not silently grow this reservation.
 - `SERVICEBOOT` is actually linked at `$93D0-$95D5` (518 bytes). It may be
   replaced only after the private startup latch reports returned-success.
 - The module is **710 emitted + 7 BSS = 717 bytes**, leaving 11 bytes in its
@@ -36,6 +39,26 @@ raw kernel links: map-bound boot imports/delivery are not rebuilt for them.
 - `$CF40` targets the guarded setter; `$CF60` still uses the original C
   calling convention. An actual one-byte-overflow negative link fails the
   new resident-bound assertion. No app, stack, VIC, VDC or common area moved.
+
+The candidate adds UTRQ 0.19 operation 28 behind CF30, with a 3-byte payload
+(action, actual received length LE), reserved descriptor/flags zero and a
+one-byte state reply. `src/services/module/request.inc` shares the exact
+instructions between the actual gate and CPU proof. The internal abort/reply
+leaves fit existing CF33/CF43 padding; these are NOT new public call gates.
+The C880 router is 101/128 bytes, derives foreground ownership from trusted
+current-task/state records, rejects native callers including malformed IDs,
+and aborts a partial lease on tag-9 retirement. Published services survive
+the loader's exit; other task retirements do not affect the lease.
+
+`make service-command` produces `build/services/command/SVC.BIN`: 2,167 bytes
+(2,151 payload + 69 BSS, leaving 340 bytes in the fixed console allocation).
+Commands: `svc status`, `svc stop`, `svc load [FILE]`, default `/TIME.SVC`.
+It probes support before any slot writes, opens read-only, bounds chunks,
+requires clean EOF and successful CLOSE before commit, and preserves the first
+error during close/abort. It cannot overwrite an already published module.
+The independent SDK saves/restores private ZP $02-$1F (never CPU ports $00/01),
+temporarily binds the foreground software stack to module sp=$06, normalizes D,
+and validates reply sequence/result/state. No kernel-map imports in command/module.
 
 The former 174-byte deficit was at the old `$9300` base with a 548-byte
 manager and a 797+10-byte module, before charging the legacy read wrapper.
@@ -50,15 +73,23 @@ Qualification: `time-module-check` executes 174,459 calls, all 86,400 times,
 checks. `time-slot-check` executes 436 independent validation cases, all 256
 startup results, failure/abort/reload and the actual retained C read wrapper
 (2,142 protected calls). Both negative controls still fail as intended.
+The new `service-request-check` runs the actual CF30 gate, C880 router, bootfs
+finish handlers, manager, console SDK and sealed module together: **1,832 calls**.
+It checks malformed requests, wrong callers, retirement, reload, poisoned ZP,
+stack balance and D preservation. Removing the stack bridge must fail its
+negative control (the wrong but writable simulator stack is explicitly guarded).
+Host tests execute the real `svc.c` against fake filesystem/request endpoints
+through 17 success/error/close/overflow/unsupported-kernel scenarios.
 These are real 6502 execution tests with RAM-backed CIA registers, **not** TOD
 latching, disk-loading or new physical-C128 qualification. `make check` has
-1,524 host tests; normal boot/graphics/placement gates pass.
+1,526 host tests; normal boot/graphics/placement gates pass.
 
 `make boot` remains the production path and does **not** enable the overlay.
 Its D71 is byte-identical to the VICE-qualified `ed7a1f7` image below; the
 candidate must never be loaded at `$93D0` into that baseline's live RAM.
-The 50 resident bytes are before future request/ownership glue, not an
-assertion that the finished loader already fits or exists.
+All three rebuilt normal disks remain byte-identical to the pre-request baseline.
+No candidate disk image is built yet; do not insert SVC/TIME into normal media
+and claim service loading has been qualified.
 
 Host `make service-start-probe` passes on a disposable D71 in Flatpak VICE:
 date set/read, background xclock, cat, clock shutdown, and re-entry after SREG
@@ -69,10 +100,15 @@ legitimately change SREG between separate monitor sessions. The final monitor
 payload is bounded to 34 bytes. These fixture issues were fixed before the
 passing run; they were not production boot failures. No VICE process remains.
 
-Next: add the bounded request entry with ownership/cleanup and the disk-side loader,
-then rebuild the complete map-bound candidate boot chain with
-bounded-RC startup, and enforce fail-closed `date`/`xclock` behavior while the
-service is absent. Then qualify VICE/1986 and provide a hardware test image.
+Next: rebuild the complete map-bound candidate boot chain, package SVC.BIN and
+TIME.SVC with bounded-RC startup AFTER the startup guard reaches phase 2, and
+enforce fail-closed `date`/`xclock` behavior while the service is absent.
+`build_time_overlay.py`'s isolated router currently borrows the baseline
+scheduler binding: candidate delivery MUST regenerate all private bindings,
+boot-only imports and split images consistently from its own maps. Then qualify
+actual disk failures/restart/replacement plus normal input/graphics on VICE/1986
+and provide a hardware test image. Do not turn CPU RAM-backed evidence into a
+claim about real disk transport, IRQ interleavings or physical TOD latching.
 Keep the loader/policy out of the kernel where possible; do not expand app or
 stack reservations. Candidate layout/contract and remaining lifecycle gates:
 [abi/services.md](abi/services.md#disk-time-candidate--issue-49-2026-10-08).

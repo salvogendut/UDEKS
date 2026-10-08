@@ -10,6 +10,7 @@
         .import _udeks_service_start_phase, _udeks_service_start_result
         .export _udeks_time_slot_control, _udeks_time_slot_poll
         .export _udeks_time_slot_set, _udeks_time_slot_state
+        .export _udeks_time_slot_reset = offline
         ; Internal fixture binding, not a published syscall or service ABI.
         .ifdef UDEKS_TIME_SLOT_TEST
         .export time_slot_validate = validate

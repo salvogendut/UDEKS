@@ -243,7 +243,8 @@ class PollPolicyBoundaryTests(unittest.TestCase):
         self.assertRegex(header, r"#define UDEKS_TASK_REQUEST_ABI_MINOR\s+18u")
         self.assertRegex(header, r"#define UDEKS_TREQ_OP_POLL\s+16u")
         source = (ROOT / "src/8502/syscall_gate.s").read_text()
-        self.assertIn("lda TREQ_BASE+$05\n        cmp #$13", source)
+        self.assertIn("lda TREQ_BASE+$05\n        .ifdef UDEKS_DISK_TIME\n"
+                      "        cmp #$14\n        .else\n        cmp #$13\n        .endif", source)
 
     def test_policy_is_compile_only_and_does_not_mutate_or_consume(self):
         source = (ROOT / "src/kernel/task_poll_policy.c").read_text()

@@ -99,7 +99,8 @@ class TaskRequestAbiTests(unittest.TestCase):
             ROOT / "src/services/filesystem/bootfs_request.s"
         ).read_text().lower()
 
-        self.assertIn("lda treq_base+$05\n        cmp #$13", dispatcher)
+        self.assertIn("lda treq_base+$05\n        .ifdef udeks_disk_time\n"
+                      "        cmp #$14\n        .else\n        cmp #$13\n        .endif", dispatcher)
         self.assertIn("cmp #$0a", dispatcher)
         self.assertIn("task_request_fallback:", dispatcher)
         self.assertIn("jmp $c880", dispatcher)

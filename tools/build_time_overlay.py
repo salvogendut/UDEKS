@@ -117,7 +117,7 @@ def main():
         forced += shlex.split((ROOT/'build/8502'/name).read_text())
     for symbol in ('_udeks_bootfs_finish_error', '_udeks_bootfs_finish_ok',
                    '_udeks_line_editor_get_line', '_udeks_banked_pages_init',
-                   '_udeks_time_slot_control', '_udeks_time_slot_state',
+                   '_udeks_time_slot_control', '_udeks_time_slot_state', '_udeks_time_slot_request',
                    '_udeks_service_start_phase', '_udeks_service_start_result'):
         forced += ['-u', symbol]
     results = {}
@@ -155,6 +155,17 @@ def main():
         results[variant] = qualify(map_segments(base_text), map_segments(linked_text),
                                    map_exports(linked_text), binary.read_bytes())
         results[variant]['sha256'] = hashlib.sha256(binary.read_bytes()).hexdigest()
+        # Existing ownership selection/retirement stays in the bounded C880
+        # router. Bind only the new private request entry from this exact link.
+        bindings = (ROOT/'build/8502/disk-loader-bindings.inc').read_text()
+        entry = map_exports(linked_text)['_udeks_time_slot_request'][0]
+        (dest/'disk-loader-bindings.inc').write_text(bindings+f'TIME_MODULE_REQUEST = ${entry:04x}\n')
+        run('ca65', '-D', 'UDEKS_DISK_TIME', '-I', str(dest),
+            '-o', str(dest/'router.o'), 'src/services/filesystem/iec_router.s')
+        (dest/'router.cfg').write_text('MEMORY { R: start=$C880,size=$80,file=%O; }\n'
+                                       'SEGMENTS { CODE: load=R,type=ro; }\n')
+        run('ld65', '-C', str(dest/'router.cfg'), '-o', str(dest/'router.bin'), str(dest/'router.o'))
+        results[variant]['router_bytes'] = len((dest/'router.bin').read_bytes())
     normal = map_segments((out/'normal/kernel.map').read_text())
     panic = map_segments((out/'panic/kernel.map').read_text())
     if normal != panic:

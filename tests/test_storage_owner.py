@@ -70,7 +70,9 @@ class StorageOwner(unittest.TestCase):
         body = source.split('_udeks_storage_context_retire:',1)[1].split('identify:',1)[0]
         self.assertLess(body.index('jsr $1209'),body.index('inc _udeks_storage_generations,x'))
         router = (ROOT/'src/services/filesystem/iec_router.s').read_text()
-        self.assertIn('lda STORAGE_CURRENT_TASK\n        bne selected',router)
+        self.assertIn('lda STORAGE_CURRENT_TASK\n        .ifdef UDEKS_DISK_TIME',router)
+        self.assertIn('.else\n        bne selected\n        .endif',router)
+        self.assertIn('cmp #9',router)  # native ids cannot impersonate foreground tag 9
         self.assertNotIn('TREQ_PAYLOAD',router)
         self.assertNotIn('$f68a',router.lower())
 

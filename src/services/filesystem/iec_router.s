@@ -10,7 +10,16 @@ request:
         php
         sei
         lda STORAGE_CURRENT_TASK
+        .ifdef UDEKS_DISK_TIME
+        beq root_context
+        cmp #9                     ; native ids are 1..8, never tag 9/10
+        bcc selected
+        lda #$ff                   ; corrupt/out-of-range native id is denied
         bne selected
+root_context:
+        .else
+        bne selected
+        .endif
         ldx #10                     ; root loader/bootstrap, no running task
         lda $f285                   ; synchronous foreground invocation?
         cmp #2
@@ -18,6 +27,11 @@ request:
         dex                         ; tag 9 is never the native shell instance
 :       txa
 selected:
+        .ifdef UDEKS_DISK_TIME
+        ldx $f360
+        cpx #28
+        beq module_request
+        .endif
         ldy #$0f                    ; private context request at $120F
         jsr $fe20
         plp
@@ -33,6 +47,11 @@ unavailable:
         jmp STORAGE_FINISH_ERROR
 fallback:
         jmp $f3ef
+        .ifdef UDEKS_DISK_TIME
+module_request:
+        plp                         ; C service runs with caller's IRQ state
+        jmp TIME_MODULE_REQUEST     ; A retains the trusted context tag
+        .endif
 retire:
         php
         sei
@@ -43,6 +62,13 @@ retire:
         pha
         tsx
         lda $0103,x                 ; original A, trusted task/tag
+        .ifdef UDEKS_DISK_TIME
+        cmp #9
+        bne :+
+        jsr $cf33                   ; abort ONLY a loading foreground lease
+        lda #9
+:
+        .endif
         ldy #$12                    ; retire before slot/storage is reclaimed
         jsr $fe20
         pla

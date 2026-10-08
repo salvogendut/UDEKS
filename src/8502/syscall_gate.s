@@ -25,6 +25,8 @@
         .import _udeks_bootfs_request
         .ifdef UDEKS_DISK_TIME
         .import _udeks_time_slot_set
+        .include "../services/module/request.inc"
+        .export _udeks_time_slot_request
 clock_set_runtime = _udeks_time_slot_set
         .else
         .export _udeks_time_sync_ti
@@ -91,13 +93,24 @@ _udeks_syscall_write_gate:
         ; gate has already selected the kernel map and restored resident ZP.
 _udeks_syscall_task_request_gate:
         jmp task_request_runtime
+        .ifdef UDEKS_DISK_TIME
+        time_module_abort_body
+        .res 16-(*-_udeks_syscall_task_request_gate), $ea
+        .else
         .res 13, $ea
+        .endif
 
         ; $CF40: A=hour, X=minute, Y=second. Set the shared service clock and
         ; CIA1 TOD; the time service mirrors it into BASIC's TI counter.
 _udeks_syscall_clock_set_gate:
         jmp clock_set_runtime
+        .ifdef UDEKS_DISK_TIME
+time_module_reply:
+        time_module_reply_body
+        .res 16-(*-_udeks_syscall_clock_set_gate), $ea
+        .else
         .res 13, $ea
+        .endif
 
         .assert _udeks_syscall_table = $cf00, error, "syscall table moved"
         .assert _udeks_syscall_write_byte_gate = $cf10, error, "write-byte gate moved"
@@ -109,6 +122,10 @@ _udeks_syscall_clock_set_gate:
         .include "app_gateway.s"
 
         .segment "CODE"
+        .ifdef UDEKS_DISK_TIME
+_udeks_time_slot_request:
+        time_module_request_body
+        .endif
 task_extended_request:
         lda TREQ_OPERATION
         cmp #24
@@ -170,7 +187,11 @@ task_validate_signature:
         dex
         bpl task_validate_signature
         lda TREQ_BASE+$05
+        .ifdef UDEKS_DISK_TIME
+        cmp #$14
+        .else
         cmp #$13
+        .endif
         bcs task_protocol_trampoline
         lda TREQ_STATE
         cmp #TREQ_REQUEST

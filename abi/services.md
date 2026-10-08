@@ -12,8 +12,10 @@ resident state in that build.
 The module links its own required cc65 code helpers; it does not import private
 kernel function addresses or require a kernel-map-generated bridge. The fixed
 runtime zero-page layout matches UAPP 0.1 (`sp=$06`, `ptr1=$0e`, `tmp1=$16`,
-`regbank=$1a`). Calls must be serialized in the root context with its software
-stack, binary arithmetic mode and kernel-I/O map. IRQ scheduling must neither
+`regbank=$1a`). Calls must be serialized in the root context with a valid
+bounded software stack, binary arithmetic mode and kernel-I/O map. The console
+SDK temporarily binds that root ZP layout to the foreground caller's stack,
+then restores its private runtime. IRQ scheduling must neither
 call the module nor depend on its lifetime. This is a loadable service module,
 not a new independently scheduled task or a memory-protection boundary.
 
@@ -42,7 +44,8 @@ truncation/trailing bytes, overflow, bad checksums and vectors pointing outside
 emitted code (including header/BSS). It never mutates its input. The checksum
 detects accidental corruption, not malicious code. Runtime validation and
 registration are **not implemented by this host validator**; the separately
-CPU-tested candidate below is not yet connected to any production request gate.
+CPU-tested candidate below connects the real request gate in isolated links,
+but is not enabled by normal boot.
 
 ### Candidate lifecycle core (not a published ABI)
 
@@ -52,8 +55,8 @@ the actual transferred byte count separately from the header, rejects partial
 or trailing data, validates every header/vector/checksum field, clears only
 the declared BSS, caches validated vectors, runs start, and publishes last.
 The future disk loader must bound every write; this core cannot undo an
-out-of-bounds write performed before commit. Caller/transaction ownership and
-cleanup on interrupted loading still need integration on the request boundary.
+out-of-bounds write performed before commit. The candidate request boundary
+and trusted retirement hook now enforce foreground ownership and cleanup.
 
 Loading/unavailable slots cannot execute a time request or poll callback.
 Duplicate begin/published commit is busy. Malformed commit retires the load to
@@ -72,6 +75,51 @@ with damaged diagnostics or an unusable cc65 software stack. Module begin is
 permitted only after phase 2 with a successful result. This veneer alone is
 production-linked; the candidate manager and startup overlay are not.
 
+### Candidate request and disk command
+
+`UDEKS_DISK_TIME` adds **UTRQ 0.19, operation 28** behind the unchanged `$CF30`
+entry. Descriptor and flags must be zero; count is exactly 3. Payload byte 0
+is action **0 status, 1 begin, 2 commit, 3 stop**; bytes 1–2 are the actual
+received file length (LE), used by commit and ignored by the other actions.
+Success is COMPLETE, result 1, errno 0, with payload[0] holding state 0 offline,
+1 loading or 2 published. The other payload bytes are not returned data.
+Sequence is preserved. Errors use the existing ERROR/result-zero/errno shape.
+
+Only a synchronous foreground invocation is accepted: the router derives tag
+9 from current native task **0** plus the trusted running-foreground state.
+Native tasks, root bootstrap/no foreground, and corrupt native IDs are denied
+with EINVAL; no caller-supplied owner field is consulted. Wrong count, reserved
+fields, action, state transition or operation-specific version is EINVAL;
+unsupported envelope/signature/state/version is EPROTO. Startup not yet retired
+successfully is EAGAIN; duplicate loading/published installation is EBUSY;
+malformed image is ENOEXEC; callback failure is EIO. Existing operations keep
+their former routing. This is trusted code/lifetime ownership, not protection
+from arbitrary memory writes by a malicious program.
+
+There can be only one such foreground invocation at a time. Its trusted tag-9
+retirement at `$C883` aborts a loading lease before allocation reuse. Other
+retirements leave it alone; a successfully published service survives its
+loader's exit. No new task, sleep or blocking request is introduced. A hung
+foreground program still needs the existing reset/recovery path—retirement
+cleanup does not turn it into a cancellable native task.
+
+`make service-command` builds independent **`SVC.BIN` (2,167 file bytes,
+2,151 payload + 69 BSS)** within the existing 2,560-byte console allocation:
+`svc status`, `svc stop`, and `svc load [FILE]` (default `/TIME.SVC`). The file
+is an ordinary flat-disk file; no new suffix directory mapping is needed.
+The command probes support before touching the slot, opens read-only, obtains
+the lease, bounds every chunk, requires clean EOF **and successful CLOSE**,
+then commits the actual length. It never retries disk errors, preserves the
+first error while closing/aborting, and cannot replace a published service
+without an explicit stop. The kernel independently validates before execution.
+
+The SDK preserves `$02-$1F` (does not write CPU ports `$00/$01`), maps its
+private `sp=$02` to module `sp=$06` for the synchronous call, normalizes D,
+and restores the caller's runtime/decimal flag afterward. It validates reply
+sequence, result and state. Direct raw requests need the same valid root-layout
+runtime; passing ordinary console ZP directly to a C callback is unsafe.
+The command/SDK have no private kernel-map imports.
+
 ### Placement and lifetime gate
 
 The measured image is **710 bytes plus 7 BSS bytes**, including its 48-byte
@@ -83,12 +131,16 @@ unchanged by these candidate-only reductions.
 
 `make time-module-placement` accounts for objects; **`make time-overlay-check`
 also performs the actual normal/panic kernel links**, including compatibility
-wrappers and library selection. Both variants place resident BSS through
-`$939D`, leaving **50 bytes** before the candidate slot `$93D0-$96A7`.
+wrappers, request handling and library selection. Both variants place resident
+BSS through `$93CD`, leaving **2 bytes** before the candidate slot `$93D0-$96A7`.
 The manager is 479 CODE + 20 RODATA + 1 BSS = **500 bytes**, plus the explicitly
 retained **57-byte C clock-read wrapper**. The independent module uses 717 of
 the slot's 728 bytes, leaving 11. These sizes supersede the old `$9300`/548-byte
-manager estimate and its 174-byte deficit at checkpoint `ed7a1f7`.
+manager estimate and its 174-byte deficit at checkpoint `ed7a1f7`. The new
+request adapter consumes 48 of the 50 bytes qualified at `9e56af5`. Two tiny
+internal leaves occupy existing `$CF33-$CF3F` / `$CF43-$CF4F` vector padding;
+all published entries and the SYSCALLS reservation stay fixed. The candidate
+ownership/retirement router uses 101 of its existing 128 bytes at `$C880`.
 
 `SERVICEBOOT` really links at `$93D0-$95D5`: **518 startup-only registry bytes**,
 with 223 live registry bytes and unchanged shared registry state. Only after
@@ -107,19 +159,21 @@ frozen new external ABI.
 These isolated links deliberately redirect **every** split output and do not
 replace production disks. They are **not runnable boot artifacts**: relocated
 boot-service import bridges and remaining map-bound delivery still need a full
-candidate rebuild. The 50 resident bytes have not paid for the new request/
-ownership glue. Normal boot leaves the startup split disabled and the original
-resident time service installed.
+candidate rebuild. Request/ownership glue now fits, but these isolated links
+still use the baseline scheduler-derived router binding; full candidate boot
+delivery must regenerate every private binding from the selected maps. Normal
+boot leaves the startup split disabled and the original resident time service
+installed.
 
 ### Remaining integration and acceptance
 
-1. Add the bounded request/ownership entry within the remaining budget, then
-   rebuild all map-bound boot delivery for the actually linked overlay. The
-   overlay link and irreversible guard are tested; disk integration is not.
-2. Use a disk-side loader/control command and the existing bounded `/etc/rc`
-   runner. Validate the complete image and placement before publishing any
-   callable entry; initialize BSS, run start, then publish READY. Rejection or
-   interrupted loading must leave the module offline and the shell usable.
+1. Rebuild all map-bound candidate boot delivery for the linked overlay and
+   install its matching router. The boundary, SDK and loader are qualified in
+   isolation; disk integration is not. Do not replace production artifacts
+   with the raw isolated links.
+2. Package `SVC.BIN` and `TIME.SVC` and use the existing bounded `/etc/rc`
+   runner to load after startup has fully returned. Exercise real file
+   failures, close errors and replacement through the shell on disposable disks.
 3. Define stop/duplicate-load/client behavior: never overwrite executing code,
    invalidate the time snapshot when unavailable, and make `date`/`xclock`
    handle unavailability rather than consume stale time. Scheduler sleep and
@@ -128,7 +182,7 @@ resident time service installed.
    on VICE/1986 before offering physical-C128 test images.
 
 Reproduce the independent proofs in `my-distrobox`:
-`make time-module time-module-check time-slot-check time-module-placement time-overlay-check`.
+`make time-module time-module-check time-slot-check service-request-check service-command time-overlay-check`.
 The exact sealed image runs under sim6502 through all 86,400 times of day;
 174,459 entry calls check read/set/TI/BCD behavior, all 1,024 raw TOD byte
 encodings, counter rollover, start/stop/restart, software
@@ -144,6 +198,16 @@ loading, sealed-module reload and the retained clock-read C calling convention
 (2,142 protected calls). Disabling checksum
 rejection in the binary fails the negative control. Simulator code does not
 overlap the manager fixture; the root cc65 ZP/stack is isolated from the harness.
+
+`service-request-check` executes the real `$CF30` envelope/dispatch, `$C880`
+router, bootfs reply handlers, manager, independent SDK and exact sealed C
+module together: 1,832 calls covering malformed requests, native/bootstrap
+rejection, abandoned loads, publication surviving loader exit, private ZP and
+decimal-mode restoration, and real start/poll/stop/reload. Removing the stack
+bridge fails a negative control using a poisoned wrong-stack region. Unrelated
+kernel calls trap; storage transport is a fixture. This is not disk, IRQ or
+hardware-CIA qualification. Host tests run the actual `svc.c` through 17 I/O
+failure/EOF/close/overflow/old-kernel scenarios with mocked request/file endpoints.
 
 After container `make boot`, host `make service-start-probe` boots a disposable
 D71 under Flatpak VICE. It runs ordinary `date` set/read, `xclock`, and disk
