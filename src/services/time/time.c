@@ -2,8 +2,13 @@
 #include "udeks/capability.h"
 #include "udeks/time.h"
 
+#ifdef UDEKS_TIME_MODULE
+extern volatile unsigned char udeks_time_status[UDEKS_TIME_STATUS_SIZE];
+#define STATUS_BYTE(offset) udeks_time_status[offset]
+#else
 #define STATUS_BYTE(offset) \
     (*(volatile unsigned char *)(UDEKS_TIME_STATUS_BASE + (offset)))
+#endif
 
 #define CIA1_TOD_TENTHS   (*(volatile unsigned char *)0xDC08u)
 #define CIA1_TOD_SECONDS  (*(volatile unsigned char *)0xDC09u)
@@ -117,6 +122,7 @@ unsigned char udeks_time_poll(void)
     return sample_tod();
 }
 
+#ifndef UDEKS_TIME_MODULE
 void udeks_time_now(
     unsigned char *hour, unsigned char *minute, unsigned char *second)
 {
@@ -124,3 +130,12 @@ void udeks_time_now(
     *minute = STATUS_BYTE(9);
     *second = STATUS_BYTE(10);
 }
+#else
+/* Lifecycle stop does not reset TOD or the scheduler's independent ticks.
+ * The module manager must quiesce clients before invoking this entry. */
+unsigned char udeks_time_stop(void)
+{
+    STATUS_BYTE(5) = 0;
+    return 0;
+}
+#endif

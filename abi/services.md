@@ -1,5 +1,98 @@
 # UDEKS service-module ABI 0.1
 
+## Disk-time candidate — issue #49 (2026-10-08)
+
+The first extraction target is the **time-of-day service**, not the scheduler's
+monotonic tick counter. Its C start/poll logic, assembly clock setting and BASIC
+`TI` synchronization now build as an independent `build/services/time/TIME.SVC`.
+This is a **candidate only, not installed or enabled by normal boot**. Do not
+load it into a running baseline: its provisional `$9300` address overlaps live
+resident state in that build.
+
+The module links its own required cc65 code helpers; it does not import private
+kernel function addresses or require a kernel-map-generated bridge. The fixed
+runtime zero-page layout matches UAPP 0.1 (`sp=$06`, `ptr1=$0e`, `tmp1=$16`,
+`regbank=$1a`). Calls must be serialized in the root context with its software
+stack, binary arithmetic mode and kernel-I/O map. IRQ scheduling must neither
+call the module nor depend on its lifetime. This is a loadable service module,
+not a new independently scheduled task or a memory-protection boundary.
+
+### Candidate image contract (not frozen)
+
+All words are little-endian. The disk file has no BASIC/PRG load-address prefix.
+
+| Offset | Bytes | Meaning |
+| --- | --- | --- |
+| 0 | 4 | `USVM` image magic |
+| 4 | 2 | Image ABI 0.1, implicitly 8502/cc65 root-context execution |
+| 6 | 2 | Class 4, instance 1 (time of day) |
+| 8 | 2 | Proposed load address |
+| 10 | 2 | Complete emitted image size, including this header |
+| 12 | 2 | Zero-initialized BSS immediately after the image |
+| 14 | 2 | Flags, currently zero |
+| 16 | 2 | Sum of all emitted bytes except this word, modulo 65536 |
+| 18 | 2 | Nonzero module revision, distinct from ABI version |
+| 20 | 2 | Class-specific request entry: clock set, A=hour/X=minute/Y=second |
+| 22 | 10 | Reserved, zero |
+| 32 | 16 | Existing `USVC` descriptor; flags zero and start/poll/stop required |
+| 48 | variable | Code, constants, initialized data and private runtime helpers |
+
+The independent host validator rejects wrong identity/version, reserved bits,
+truncation/trailing bytes, overflow, bad checksums and vectors pointing outside
+emitted code (including header/BSS). It never mutates its input. The checksum
+detects accidental corruption, not malicious code. Runtime validation and
+registration are **not implemented by this host validator**.
+
+### Placement and lifetime gate
+
+The measured image is **797 bytes plus 10 BSS bytes**, including its 48-byte
+header and independent runtime helpers. The compatibility kernel currently
+uses 531 bytes for `time.o` and 248 for the setter/TI assembly. Extraction alone
+therefore does not pay for the image format, private helpers and dispatch glue.
+
+A compile-only split identifies **518 startup-only registry bytes**, leaving
+223 bytes of live registry code and the same 8-byte shared registry BSS.
+The proposed lifetime is to place those startup instructions in the future
+module reservation, then replace them only after startup has permanently
+retired. The guarded/irreversible one-shot entry is a prerequisite; checking
+only a mutable READY diagnostic is not sufficient. The module must not load
+from inside a still-active startup frame.
+
+`make time-module-placement` checks the real objects and normal/panic maps.
+At the provisional `$9300-$96a7` slot it budgets **at most 364 new resident
+bytes** after the measured extraction, before the actual manager, wrappers,
+state and permanent guard are linked. That is an accounting ceiling, **not a
+successful resident-integration link**. No application slot, stack guard,
+VDC asset, VIC shadow or common-RAM gateway has moved. The normal startup
+split is disabled; both the old time service and original boot lifecycle remain.
+
+### Remaining integration and acceptance
+
+1. Link the real startup overlay, irreversible guard and callable-entry
+   dispatch within the measured budget. Retain frozen public clock vectors.
+2. Use a disk-side loader/control command and the existing bounded `/etc/rc`
+   runner. Validate the complete image and placement before publishing any
+   callable entry; initialize BSS, run start, then publish READY. Rejection or
+   interrupted loading must leave the module offline and the shell usable.
+3. Define stop/duplicate-load/client behavior: never overwrite executing code,
+   invalidate the time snapshot when unavailable, and make `date`/`xclock`
+   handle unavailability rather than consume stale time. Scheduler sleep and
+   deadlines continue independently. Qualify missing/corrupt files, restart,
+   replacement without kernel relink, and normal input/disk/graphics behavior
+   on VICE/1986 before offering physical-C128 test images.
+
+Reproduce the current independent proof in `my-distrobox`:
+`make time-module time-module-check time-module-placement`.
+The exact sealed image runs under sim6502 through all 86,400 times of day;
+173,433 entry calls check read/set/TI/BCD behavior, start/stop/restart, software
+stack balance, image/BSS guards and non-mutating invalid-set rejection. An
+altered range-check instruction is detected by a negative-control run. The
+simulator uses RAM-backed CIA addresses: this is **not** hardware TOD latching,
+interrupt, disk-loading or C128/VICE qualification. The normal D64/D71/D81
+builds remain byte-identical to merged PR #48.
+
+## Existing static descriptor contract
+
 UDEKS services are discovered through compiler-neutral 16-byte descriptors.
 The format is byte-oriented and little-endian; it is not a C structure.
 

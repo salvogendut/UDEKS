@@ -6,7 +6,47 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — writable root and file commands, 2026-10-08
+## Current handoff — disk-loaded time service, 2026-10-08
+
+Issue [#49](https://github.com/salvogendut/UDEKS/issues/49), branch
+`services-0.1-disk-module`, worktree `build/disk-service`, based on PR #48's
+merged `672110d`. Root main's unrelated edits are untouched. The user selected
+time-of-day service extraction, not scheduler timing, then authorized work.
+
+First implementation checkpoint: `make time-module` builds an independent
+797-byte image with 10-byte BSS, its own cc65 code helpers and the fixed UAPP
+0.1 zero-page contract. No private kernel-map import bridge. The assembly
+setter/TI policy moved to a shared include; normal kernel code and all three
+disk images are byte-identical to PR #48. The candidate is **NOT installed**.
+The build must not expose this provisional file as a bootable or runnable
+normal-kernel module: `$9300` still overlaps that kernel's live state.
+
+`make time-module-check` executes the sealed binary under sim6502, exercising
+all 86,400 valid times and 173,433 total calls, invalid-set atomicity, lifecycle,
+TI/BCD and memory/stack guards. An altered module range-check instruction fails
+the negative control. CIA registers are RAM in this proof, not emulated
+hardware. Host tests validate the bounded image/header and rejection cases.
+
+Placement direction: `make time-module-placement` measures 518 boot-only
+registry bytes, 223 live registry bytes and unchanged 8-byte registry BSS.
+Only the compile-only candidate enables the split. Reusing the startup code's
+region after permanent retirement gives at most 364 resident bytes for new
+manager/wrappers/state below the provisional `$9300-$96A7` reservation. This is
+NOT an actual linked resident manager yet. Do not claim those bytes are free
+in the running baseline. The irreversible startup guard and absence of live
+startup frames must be proved before overlaying them.
+
+Next: link that real overlay/guard/dispatch, add the disk-side loader and
+bounded-RC startup, and enforce fail-closed `date`/`xclock` behavior while the
+service is absent. Then qualify VICE/1986 and provide a hardware test image.
+Keep the loader/policy out of the kernel where possible; do not expand app or
+stack reservations. Candidate layout/contract and remaining lifecycle gates:
+[abi/services.md](abi/services.md#disk-time-candidate--issue-49-2026-10-08).
+No new manual or physical-hardware acceptance. Changes are not committed.
+
+## Previous handoff — writable root and file commands, 2026-10-08
+
+Merged PR #48 as `672110d`; issue #47 is closed.
 
 **Latest state (supersedes the historical checkpoints below):** full UTRQ 0.18
 service and independent `cp`/`mv`/`rm` now fit and are installed by `make boot`.
