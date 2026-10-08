@@ -13,14 +13,32 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
+**Current user-requested feature (2026-10-08):**
+[#47 — writable root and file commands](https://github.com/salvogendut/UDEKS/issues/47),
+branch `storage-0.4-file-commands`, worktree `build/storage-file-commands`.
+Make the normal device-8 `/` mount read/write by default and add independent
+disk-loaded `mv`, `cp` and `rm`. Explicit RO mounts and read-only bootfs recovery
+remain supported. Initial commands reject implicit overwrite, wildcard removal
+and directory removal; `mv` is same-filesystem rename, not copy-and-delete.
+
+1. Define generic filesystem requests and measure placement; select a bounded
+   copy mechanism (the current service has only one open descriptor).
+2. Implement the service/SDK operations, three disk commands and normal-root
+   default; preserve namespace, file types, permissions and meaningful errors.
+3. Qualify success/failure and reboot persistence on disposable images in
+   VICE/1986, then provide the C128/Pi1541 acceptance checklist.
+
+This is the next feature slice, before the first disk-loaded non-kernel service.
+No runtime changes have landed yet; current boot images still mount `/` RO.
+
 **Accepted checkpoint (2026-10-08):** the [sprite editor](XSPRDEF.md) now has
 fast pixel updates, confirmed whole-bank Save/Load (`SPRITES.SPR`), stock-BASIC
 export (`SPRITES.BSV`), a permanent sprite number and held-button draw/erase.
 Generic adjacent-allocation borrowing accommodates the larger app without
 editor-specific kernel routing: four ordinary apps, or one large app plus two
 compatible peers. See the [SDK](GRAPHICAL-APPS-SDK.md#larger-native-apps-capacity-candidate-2026-10-07).
-The user accepted each increment and requested PR/merge of
-`graphics-xspr-pixel-update`; the latest manual-test platform was unspecified.
+The user accepted each increment; [PR #46](https://github.com/salvogendut/UDEKS/pull/46)
+merged as `1a45100`. The latest manual-test platform was unspecified.
 Emulator evidence and limits are in XSPRDEF/HANDOVER. Overwrite, thumbnails,
 keyboard editing, undo and multicolor remain deferred. This is not a broad
 WM performance qualification. **Next architectural feature: the first

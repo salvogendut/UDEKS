@@ -6,7 +6,29 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — sprite number and held painting, 2026-10-08
+## Current handoff — writable root and file commands, 2026-10-08
+
+The sprite-editor checkpoint merged via PR #46 as `1a45100` after 1,366 host
+tests and the container build/graphics/placement gates passed. The user now
+requests a read/write default for device-8 `/`, plus standalone `mv`, `cp`
+and `rm`, and explicitly requested an issue/branch.
+
+Track [issue #47](https://github.com/salvogendut/UDEKS/issues/47) on
+`storage-0.4-file-commands`, worktree `build/storage-file-commands`, based on
+that merged main. Scope and the three delivery increments are at the top of
+the [roadmap](docs/ROADMAP.md). No runtime changes yet: existing disks still
+boot RO. Keep root main's unrelated edits and all original media untouched.
+
+First resolve the generic service contract and measured placement. The current
+bank-1 storage service has one open descriptor, so bounded copying requires an
+explicit mechanism, not an assumed second stream. Preserve SEQ/PRG bytes/types,
+RO enforcement, namespace resolution and owner cleanup. Initial destination
+collisions fail rather than overwrite; rename is same-filesystem only, and
+remove acts on an explicitly named regular file without wildcards. Qualify
+only disposable disk copies. Do not claim hardware acceptance of these new
+operations from the earlier create-only tests.
+
+## Earlier handoff — sprite number and held painting, 2026-10-08
 
 The user accepts the visible sprite number and held-button painting, following
 acceptance of fast pixel updates, larger-app capacity, Save/Load and BASIC
