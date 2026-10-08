@@ -39,6 +39,7 @@ def main():
     parser.add_argument('--disk', type=Path, default=ROOT/'build/boot/udeks.d64')
     parser.add_argument('--drive', choices=('1541', '1571', '1581'), default='1541')
     parser.add_argument('--output', type=Path, default=ROOT/'build/storage/public')
+    parser.add_argument('--mutations', action='store_true', help='qualify cp/mv/rm on the disposable copy')
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix='public-'+args.drive+'-', dir=args.output.resolve()))
@@ -88,6 +89,42 @@ def main():
 
         try:
             sp.wait_for_byte(port, 0xf3e0, 2, time.monotonic()+240)
+            if args.mutations:
+                if boot == 0:
+                    command('cp /NOFILE /MISSING', 'No such file or directory', 1)
+                    command('cp /hello /COPY')
+                    command('cat /COPY', 'HELLO UDEKS')
+                    command('cp /hello /COPY', 'File exists', 1)
+                    command('mv /COPY /RENAMED')
+                    command('cat /RENAMED', 'HELLO UDEKS')
+                    command('rm /RENAMED')
+                    command('cat /RENAMED', 'No such file or directory', 1)
+                    command('save /EMPTY 0', 'created and verified')
+                    command('cp /EMPTY /EMPTY2')
+                    command('save -c /EMPTY2 0', 'save: verified')
+                    command('rm /EMPTY')
+                    command('rm /EMPTY2')
+                    size = 2048 if args.drive == '1541' else 4096
+                    command(f'save /BINARY {size}', 'created and verified')
+                    command('xclock &', status=None)
+                    command('cp /BINARY /BINCP')
+                    command(f'save -c /BINCP {size}', 'save: verified')
+                    command('mv /BINCP /BINMOVE')
+                    command(f'save -c /BINMOVE {size}', 'save: verified')
+                    command('rm /BINARY')
+                    command('rm /BINMOVE')
+                    command('xclock -q', status=None)
+                    command('mount -o remount,ro 8 /', 'ready (read-only)')
+                    for line in ('cp /hello /RO', 'mv /hello /RO', 'rm /hello'):
+                        command(line, 'Read-only filesystem', 1)
+                    command('mount -o remount,rw 8 /', 'ready (read-write)')
+                    command('cp /hello /PERSIST')
+                else:
+                    command('cat /PERSIST', 'HELLO UDEKS')
+                    command('rm /PERSIST')
+                    command('cat /hello', 'HELLO UDEKS')
+                if byte(port, 0xf11b): raise AssertionError('task canary failure')
+                continue
             command('df', 'Read-write mount')
             if boot == 0:
                 command('save /BOOTRW 24', 'created and verified')
@@ -125,6 +162,7 @@ def main():
             print(monitor_command(port, 'r').decode(errors='replace'), flush=True)
             capture('failure-request', 0xf359, 38)
             capture('failure-tasks', slots, 64)
+            sp.capture_blocks(port, [(work/'failure-storage.bin', 0xe000, 0xe17f, 'worker')])
             raise
         finally:
             sp.terminate(proc, port)
@@ -134,6 +172,7 @@ def main():
         if after_files.get(name) != data: raise AssertionError(('existing file changed', name))
     expected = {name.encode(): bytes(i&255 for i in range(size)) for name, size in
                 (('BOOTRW', 24), ('WRTEST', 515), ('EMPTY', 0), ('ONE', 1), ('EXACT', 254), ('LIVE', 24))}
+    if args.mutations: expected = {}
     if {n: d for n, d in after_files.items() if n not in before_files} != expected:
         raise AssertionError('created files disagree with exact binary patterns')
     if args.disk.read_bytes() != original: raise AssertionError('source image changed')

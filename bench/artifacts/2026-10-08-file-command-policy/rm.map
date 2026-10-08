@@ -1,0 +1,265 @@
+Modules list:
+-------------
+entry.o:
+    STARTUP           Offs=000000  Size=000012  Align=00001  Fill=0000
+syscall.o:
+    CODE              Offs=000000  Size=000026  Align=00001  Fill=0000
+program.o:
+    CODE              Offs=000026  Size=000113  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000041  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000004  Align=00001  Fill=0000
+/var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.lib(filesystem.o):
+    CODE              Offs=000139  Size=0001F0  Align=00001  Fill=0000
+    BSS               Offs=000004  Size=000006  Align=00001  Fill=0000
+/var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.lib(error_string.o):
+    CODE              Offs=000329  Size=00007F  Align=00001  Fill=0000
+    RODATA            Offs=000041  Size=0000E3  Align=00001  Fill=0000
+/var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.lib(file_mutation.o):
+    CODE              Offs=0003A8  Size=00013C  Align=00001  Fill=0000
+    RODATA            Offs=000124  Size=000006  Align=00001  Fill=0000
+    BSS               Offs=00000A  Size=000005  Align=00001  Fill=0000
+/var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.lib(fs_request.o):
+    CODE              Offs=0004E4  Size=000054  Align=00001  Fill=0000
+    RODATA            Offs=00012A  Size=000006  Align=00001  Fill=0000
+/var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.lib(file_mutation_request.o):
+    CODE              Offs=000538  Size=000057  Align=00001  Fill=0000
+    RODATA            Offs=000130  Size=000006  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=00058F  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax1.o):
+    CODE              Offs=00059D  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=0005A4  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=0005AB  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=0005C1  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=0005C6  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=0005CB  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxi.o):
+    CODE              Offs=0005D0  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=0005DD  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popa.o):
+    CODE              Offs=0005E6  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=0005F2  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000600  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000616  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushw.o):
+    CODE              Offs=000630  Size=00000F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=00063F  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=00065B  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(strcmp.o):
+    CODE              Offs=000671  Size=000021  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               000200  000211  000012  00001
+CODE                  000212  0008A3  000692  00001
+RODATA                0008A4  0009D9  000136  00001
+BSS                   0009DA  0009E8  00000F  00001
+
+
+Exports list by name:
+---------------------
+__BSS_SIZE__              00000F REA    _strcmp                   000883 RLA    
+_udeks_close              000415 RLA    _udeks_errno              0009DE RLA    
+_udeks_error_string       00053B RLA    _udeks_fs_request         0006F6 RLA    
+_udeks_mutation_request   00074A RLA    _udeks_open               0003FB RLA    
+_udeks_program_entry      000200 RLA    _udeks_program_main       000238 RLA    
+_udeks_unlink             0005EA RLA    _udeks_write              00021C RLA    
+_udeks_write_byte         000212 RLA    addysp                    0007A2 RLA    
+incax1                    0007AF RLA    incsp1                    0007B6 RLA    
+incsp2                    0007C5 RLA    incsp3                    0007D3 RLA    
+incsp4                    0007D8 RLA    incsp5                    0007DD RLA    
+ldax0sp                   0007EF RLA    ldaxi                     0007E2 RLA    
+ldaxysp                   0007F1 RLA    popa                      0007F8 RLA    
+popptr1                   000804 RLA    ptr1                      00000A RLZ    
+ptr2                      00000C RLZ    pusha                     000816 RLA    
+pushax                    00082C RLA    pushwidx                  000844 RLA    
+pushwysp                  000853 RLA    sp                        000002 RLZ    
+staspidx                  00086D RLA    tmp1                      000012 RLZ    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    ptr1                      00000A RLZ    
+ptr2                      00000C RLZ    __BSS_SIZE__              00000F REA    
+tmp1                      000012 RLZ    _udeks_program_entry      000200 RLA    
+_udeks_write_byte         000212 RLA    _udeks_write              00021C RLA    
+_udeks_program_main       000238 RLA    _udeks_open               0003FB RLA    
+_udeks_close              000415 RLA    _udeks_error_string       00053B RLA    
+_udeks_unlink             0005EA RLA    _udeks_fs_request         0006F6 RLA    
+_udeks_mutation_request   00074A RLA    addysp                    0007A2 RLA    
+incax1                    0007AF RLA    incsp1                    0007B6 RLA    
+incsp2                    0007C5 RLA    incsp3                    0007D3 RLA    
+incsp4                    0007D8 RLA    incsp5                    0007DD RLA    
+ldaxi                     0007E2 RLA    ldax0sp                   0007EF RLA    
+ldaxysp                   0007F1 RLA    popa                      0007F8 RLA    
+popptr1                   000804 RLA    pusha                     000816 RLA    
+pushax                    00082C RLA    pushwidx                  000844 RLA    
+pushwysp                  000853 RLA    staspidx                  00086D RLA    
+_strcmp                   000883 RLA    _udeks_errno              0009DE RLA    
+
+
+
+Imports list:
+-------------
+__BSS_SIZE__ ([linker generated]):
+    [linker generated]       
+_strcmp (strcmp.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(13)
+_udeks_close (filesystem.o):
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(15)
+_udeks_errno (filesystem.o):
+    file_mutation_request.o   user/lib/file_mutation_request.s(5)
+    fs_request.o              user/lib/fs_request.s(5)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(13)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(14)
+_udeks_error_string (error_string.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(17)
+_udeks_fs_request (fs_request.o):
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(18)
+_udeks_mutation_request (file_mutation_request.o):
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(19)
+_udeks_open (filesystem.o):
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(14)
+_udeks_program_entry (entry.o):
+    [linker generated]       
+_udeks_program_main (program.o):
+    entry.o                   user/lib/entry.s(7)
+_udeks_unlink (file_mutation.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(19)
+_udeks_write (syscall.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(16)
+_udeks_write_byte (syscall.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(15)
+addysp (addysp.o):
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+incax1 (incax1.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(188)
+incsp1 (incsp1.o):
+    error_string.o            /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/error_string.s(117)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+incsp2 (incsp2.o):
+    popptr1.o                 runtime/popptr1.s(8)
+    staspidx.o                runtime/staspidx.s(8)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+incsp3 (incsp3.o):
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(188)
+incsp4 (incsp4.o):
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+incsp5 (incsp5.o):
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+ldax0sp (ldaxsp.o):
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(188)
+ldaxi (ldaxi.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(188)
+ldaxysp (ldaxsp.o):
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+popa (popa.o):
+    file_mutation_request.o   user/lib/file_mutation_request.s(5)
+    fs_request.o              user/lib/fs_request.s(5)
+    syscall.o                 user/lib/syscall.s(12)
+popptr1 (popptr1.o):
+    strcmp.o                  common/strcmp.s(8)
+ptr1 (zeropage.o):
+    popptr1.o                 runtime/popptr1.s(9)
+    strcmp.o                  common/strcmp.s(9)
+    staspidx.o                runtime/staspidx.s(9)
+    pushw.o                   runtime/pushw.s(9)
+    ldaxi.o                   runtime/ldaxi.s(8)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(11)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(11)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(11)
+    syscall.o                 user/lib/syscall.s(13)
+    entry.o                   user/lib/entry.s(9)
+ptr2 (zeropage.o):
+    strcmp.o                  common/strcmp.s(9)
+pusha (pusha.o):
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    error_string.o            /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/error_string.s(117)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(188)
+    entry.o                   user/lib/entry.s(8)
+pushax (pushax.o):
+    pushw.o                   runtime/pushw.s(8)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(188)
+pushwidx (pushw.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(188)
+pushwysp (pushwsp.o):
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+sp (zeropage.o):
+    popptr1.o                 runtime/popptr1.s(9)
+    addysp.o                  runtime/addysp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popa.o                    runtime/popa.s(8)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(10)
+    error_string.o            /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/error_string.s(10)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(10)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(10)
+staspidx (staspidx.o):
+    file_mutation.o           /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/file_mutation.s(220)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(347)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    filesystem.o              /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/filesystem.s(11)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/storage-file-commands/build/file-commands/rm/program.s(11)
+    syscall.o                 user/lib/syscall.s(13)
+    entry.o                   user/lib/entry.s(9)
+

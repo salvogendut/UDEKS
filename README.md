@@ -36,7 +36,8 @@ For the current disk-write and sprite-editor features, build the source and use
 `build/boot/udeks.d64`, `.d71` or `.d81`. The
 [SAVE test and writable-mount instructions](docs/GRAPHICAL-APPS-SDK.md#counted-disk-io-utrq-014)
 apply to these fresh images, **not** the older downloads below. Use disposable
-media for write testing; overwrite, append and deletion are not implemented.
+media for write testing; overwrite and append are not implemented. Fresh
+builds also have exact-file `cp`, `mv` and `rm` (see below).
 The [qualification record](bench/results/2026-10-07-storage-acceptance/README.md)
 includes the hardware acceptance. The VICE 1581 mid-write-ejection run remains
 unqualified, but the [equivalent 1986 test now passes](bench/results/2026-10-07-storage-eject-1986/README.md).
@@ -89,7 +90,8 @@ relocatable disk programs with private runtimes and stacks. Clock and wave
 resize; calculator and drawing use fixed-size layouts. Click xdraw's C button
 to clear it; `xcalc -q` / `xdraw -q` close the respective app.
 
-Fresh builds also include [`xsprdef`, the sprite editor](docs/XSPRDEF.md).
+Fresh D71/D81 builds also include [`xsprdef`, the sprite editor](docs/XSPRDEF.md)
+(omitted from D64 to leave working space for files).
 Run `xsprdef &` to edit eight 24×21 monochrome definitions with
 an 8× editor and 1× preview. It uses the same generic app slots, not a special
 kernel entry. The current sprite number stays visible beside the preview;
@@ -107,9 +109,15 @@ for safe disposable-disk testing and file-format details.
 
 Use `mount -o remount,ro 8 /` to make the system root read-only, and
 `mount -o remount,rw 8 /` to enable writes again. Recovery bootfs stays read-only;
-an unqualified `mount 9 /mnt` also remains read-only. The `mv`, `cp` and `rm`
-commands are being implemented in [issue #47](https://github.com/salvogendut/UDEKS/issues/47)
-and are not yet in the disk images.
+an unqualified `mount 9 /mnt` also remains read-only. Fresh builds include
+standalone `cp SOURCE DEST`, `mv SOURCE DEST`, and `rm FILE`
+([issue #47](https://github.com/salvogendut/UDEKS/issues/47)). These act on exact
+regular-file names on the same mounted filesystem: no overwrite, wildcard,
+recursive deletion or cross-device copy. Failures can leave partial disk work.
+Use disposable copies for acceptance testing. D64 omits the optional `xsprdef`
+sprite editor to leave **31 free blocks**; D71/D81 include it. Use those larger
+formats or a separate writable data disk for larger files. Existing published
+download snapshots are not automatically updated by a source build.
 
 A new `.BIN` launches as `name` or `name &`
 into any free **compatible-sized** allocation, without an OS name-table entry.

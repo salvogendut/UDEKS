@@ -938,6 +938,8 @@ def main() -> None:
     parser.add_argument("--xcalc", type=Path, help="disk-only banked XCALC UDEX (legacy fixtures also accepted)")
     parser.add_argument("--xdraw", type=Path, help="disk-only banked XDRAW UDEX")
     parser.add_argument("--xsprdef", type=Path, help="disk-only native XSPRDEF UDEX")
+    parser.add_argument("--d64-no-xsprdef", action="store_true",
+                        help="omit the optional sprite editor from D64 only; keep D71 complete")
     from build_bootfs import parse_entry
     parser.add_argument("--command", action="append", type=parse_entry, default=[], metavar="NAME=UDEX")
     parser.add_argument(
@@ -949,7 +951,7 @@ def main() -> None:
     args = parser.parse_args()
 
     try:
-        image = build_image(
+        inputs = (
             args.stage0.read_bytes(),
             args.stage1.read_bytes(),
             args.kernel.read_bytes(),
@@ -985,13 +987,17 @@ def main() -> None:
             b"" if args.xdraw is None else args.xdraw.read_bytes(),
             b"" if args.xsprdef is None else args.xsprdef.read_bytes(),
         )
+        image = build_image(*inputs)
+        # Rebuild from components: no scratching, shared chains or BAM edits
+        # of an existing disk. D71/D81 retain the full application selection.
+        d64_source = build_image(*inputs[:-1], b"") if args.d64_no_xsprdef else image
     except ValueError as error:
         raise SystemExit(f"cannot build D71: {error}") from error
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_bytes(image)
     if args.d64_output is not None:
         args.d64_output.parent.mkdir(parents=True, exist_ok=True)
-        args.d64_output.write_bytes(d64_compatibility_image(image))
+        args.d64_output.write_bytes(d64_compatibility_image(d64_source))
 
 
 if __name__ == "__main__":

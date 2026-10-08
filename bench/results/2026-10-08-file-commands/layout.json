@@ -1,0 +1,29 @@
+{
+  "scope": "candidate policy link only; not installed or runtime-qualified",
+  "link_passed": true,
+  "production": {
+    "CODE": 3,
+    "STORAGECODE": 5,
+    "BSS": 26,
+    "IECCODE": 0,
+    "STORAGEHIGH": 3,
+    "code_total": 11
+  },
+  "with_backend": {
+    "CODE": 3,
+    "STORAGECODE": 5,
+    "BSS": 26,
+    "IECCODE": 0,
+    "STORAGEHIGH": 3,
+    "code_total": 11
+  },
+  "inputs": {
+    "cfg/8502-storage.cfg": "915cd3f5fb857871ccfe0d22ab795f05f82ce6b6313ba038ae811e7c854a2898",
+    "src/services/filesystem/mutation_6502.s": "cad12383b2fb6b59d375e6dfe7e1f8ec44487d2b87d22081142be3083f351e27",
+    "src/services/filesystem/cbm_write.c": "aa5269127d0f5c1bb10c6a82ad50248681a6472e2e6bf2c626d5939bde432b70",
+    "src/services/filesystem/iec_slow.s": "f0aced6f82bdee7e5759369f5adb813154ce6e3fbe57be58921030432b9f8810",
+    "src/services/filesystem/namespace_6502.s": "0c090793dfc27e26808d2732a319dd262f8467431432195d2b4457912fe158fa",
+    "src/services/filesystem/iec_service.c": "1c99f85758c37cb4fc78d12f1be4ecf9ccc5c595d1d23ab518d6748616f469f3",
+    "include/udeks/file_mutation.h": "97fb27a0038802ce5396e2663c5b8aa391139737a90567dc1667e56b200dc06d"
+  }
+}

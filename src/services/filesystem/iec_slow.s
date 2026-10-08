@@ -29,7 +29,11 @@
         .export _udeks_iec_listen_file, _udeks_iec_write_byte
         .export _udeks_iec_unlisten, _udeks_iec_finish
         .ifdef UDEKS_IEC_MUTATE
+        .ifndef UDEKS_IEC_ASYNC
         .export _udeks_iec_begin_command
+        .else
+        .export _udeks_iec_begin_command, _udeks_iec_poll_status
+        .endif
 IEC_FILENAME_MAX = 38
         .else
 IEC_FILENAME_MAX = 22
@@ -176,6 +180,7 @@ wait_data_low:
 wait_data_high:
         lda #$08
         .ifdef UDEKS_IEC_MUTATE
+        .ifndef UDEKS_IEC_ASYNC
         ; DOS COPY runs inside the drive before it accepts TALK 15. This
         ; is listener-busy time, not a bit/frame acknowledgement. Bound it
         ; separately for command-only transactions; never resend a command.
@@ -184,6 +189,7 @@ wait_data_high:
         bne :+
         lda #$ff
 :
+        .endif
         .endif
         sta iec_busy_rounds
 @round:
@@ -237,7 +243,7 @@ wait_clock_high_start:
 
 ; A=byte, C=1 if the last byte of a LISTEN data stream (EOI). Returns A=0
 ; on success, A=NO_DEVICE for absent listener, A=TIMEOUT otherwise.
-send_byte:
+.proc send_byte
         .ifdef UDEKS_MUTATE_PROBE
         sta _udeks_iec_probe_sent
         .endif
@@ -255,16 +261,16 @@ send_byte:
 @ready: jsr clock_high
         inc _udeks_iec_probe_subphase
         jsr wait_data_high
-        bcs @timeout
+        bcs timeout
         lda iec_eoi
-        beq @send
+        beq bits
         ; The listener acknowledges EOI by briefly pulling DATA low when
         ; CLK has remained high beyond the inter-byte timeout.
         jsr wait_data_low
-        bcs @timeout
+        bcs timeout
         jsr wait_data_high
-        bcs @timeout
-@send: jsr clock_low
+        bcs timeout
+bits:  jsr clock_low
         inc _udeks_iec_probe_subphase
         lda #$08
         sta iec_bits
@@ -288,16 +294,17 @@ send_byte:
         plp
         inc _udeks_iec_probe_subphase
         jsr wait_data_low
-        bcs @timeout
+        bcs timeout
         lda #IEC_OK
         rts
-@timeout:
+timeout:
         lda CIA2_PRA
         sta _udeks_iec_probe_bus
         lda iec_lines
         sta _udeks_iec_probe_lines
         lda #IEC_TIMEOUT
         rts
+.endproc
 
 ; Start an ATN command sequence. Keep CLK low until the first command byte;
 ; this is the same slow-serial initial posture as the C128 KERNAL.
@@ -481,7 +488,7 @@ _udeks_iec_open_status:
         bne talk_channel
 _udeks_iec_talk_file:
         lda #2
-talk_channel:
+.proc talk_channel
         pha
         jsr attention
         lda iec_device
@@ -492,14 +499,15 @@ talk_channel:
         tax
         pla
         txa
-        jmp @failed
+        jmp failed
 :
         inc _udeks_iec_probe_phase
         pla
+secondary:
         ora #$60              ; selected secondary channel
         clc
         jsr send_byte
-        bne @failed
+        bne failed
         inc _udeks_iec_probe_phase
         jsr data_low
         jsr atn_high
@@ -513,13 +521,58 @@ talk_channel:
         rts
 @timeout:
         lda #IEC_TIMEOUT
-@failed:
+failed:
         sta iec_status
         jsr release_bus
         lda iec_saved_speed
         sta SPEED_REG
         lda iec_status
         rts
+.endproc
+
+        .ifdef UDEKS_IEC_ASYNC
+        .segment "CODE"
+; Resume only the initial TALK listener-ready handshake. While DOS is busy
+; keep ATN asserted and release CLK/DATA; no command is sent twice. Each
+; busy return restores speed and unwinds the common-RAM lease completely.
+_udeks_iec_poll_status:
+        lda iec_defer
+        cmp #3
+        beq resume_status
+        jsr attention
+        lda iec_device
+        ora #$40
+        sta iec_value
+        jsr data_high
+        jsr wait_data_low
+        bcs status_failed
+        jsr clock_high
+        lda #3
+        sta iec_defer
+resume_status:
+        bit CIA2_PRA
+        bmi status_ready
+        lda iec_saved_speed
+        sta SPEED_REG
+        lda #5                    ; private BUSY, not a DOS/transport error
+        ldx #0
+        rts
+status_ready:
+        lda SPEED_REG
+        and #$fe
+        sta SPEED_REG
+        jsr send_byte::bits
+        cmp #0
+        bne status_return
+        lda #15
+        jmp talk_channel::secondary
+status_failed:
+        lda #IEC_NO_DEVICE
+status_return:
+        ldx #0
+        rts
+        .segment "IECCODE"
+        .endif
 
 ; AX result: A=data, X=status. On EOI the returned data is still valid.
 _udeks_iec_read_byte:

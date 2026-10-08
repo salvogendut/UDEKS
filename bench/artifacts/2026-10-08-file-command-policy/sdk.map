@@ -1,0 +1,523 @@
+Modules list:
+-------------
+check.o:
+    CODE              Offs=000000  Size=00043C  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000121  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000010  Align=00001  Fill=0000
+    DATA              Offs=000000  Size=000001  Align=00001  Fill=0000
+filesystem.o:
+    CODE              Offs=00043C  Size=0001F0  Align=00001  Fill=0000
+    BSS               Offs=000010  Size=000006  Align=00001  Fill=0000
+file_mutation.o:
+    CODE              Offs=00062C  Size=00013C  Align=00001  Fill=0000
+    RODATA            Offs=000121  Size=000006  Align=00001  Fill=0000
+    BSS               Offs=000016  Size=000005  Align=00001  Fill=0000
+fs_request.o:
+    CODE              Offs=000768  Size=000054  Align=00001  Fill=0000
+    RODATA            Offs=000127  Size=000006  Align=00001  Fill=0000
+file_mutation_request.o:
+    CODE              Offs=0007BC  Size=000057  Align=00001  Fill=0000
+    RODATA            Offs=00012D  Size=000006  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(_file.o):
+    DATA              Offs=000001  Size=00001E  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(_hextab.o):
+    RODATA            Offs=000133  Size=000010  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(_longminstr.o):
+    RODATA            Offs=000143  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(_printf.o):
+    CODE              Offs=000813  Size=0003A5  Align=00001  Fill=0000
+    BSS               Offs=00001B  Size=00002B  Align=00001  Fill=0000
+    DATA              Offs=00001F  Size=000003  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(_seterrno.o):
+    CODE              Offs=000BB8  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(addysp.o):
+    CODE              Offs=000BC1  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(axlong.o):
+    CODE              Offs=000BCF  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(callmain.o):
+    CODE              Offs=000BDC  Size=000017  Align=00001  Fill=0000
+    DATA              Offs=000022  Size=000004  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(condes.o):
+    CODE              Offs=000BF3  Size=00000C  Align=00001  Fill=0000
+    DATA              Offs=000026  Size=000025  Align=00001  Fill=0000
+    ONCE              Offs=000000  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(crt0.o):
+    STARTUP           Offs=000000  Size=00001D  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(ctype.o):
+    RODATA            Offs=00014F  Size=00008B  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(ctypemask.o):
+    CODE              Offs=000BFF  Size=00001E  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(decsp4.o):
+    CODE              Offs=000C1D  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(decsp6.o):
+    CODE              Offs=000C2A  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(errno.o):
+    BSS               Offs=000046  Size=000002  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(exehdr.o):
+    EXEHDR            Offs=000000  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(fwrite.o):
+    CODE              Offs=000C37  Size=00007B  Align=00001  Fill=0000
+    BSS               Offs=000048  Size=000002  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(icmp.o):
+    CODE              Offs=000CB2  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incaxy.o):
+    CODE              Offs=000CE0  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incsp1.o):
+    CODE              Offs=000CEB  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incsp2.o):
+    CODE              Offs=000CF2  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incsp3.o):
+    CODE              Offs=000D08  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incsp4.o):
+    CODE              Offs=000D0D  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incsp5.o):
+    CODE              Offs=000D12  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incsp6.o):
+    CODE              Offs=000D17  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(ldaxsp.o):
+    CODE              Offs=000D1C  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(lneg.o):
+    CODE              Offs=000D25  Size=00001E  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(lpush.o):
+    CODE              Offs=000D43  Size=000021  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(ltoa.o):
+    CODE              Offs=000D64  Size=000095  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(mul.o):
+    CODE              Offs=000DF9  Size=000045  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(mul8.o):
+    CODE              Offs=000E3E  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(paravirt.o):
+/usr/share/cc65/lib/sim6502.lib(popa.o):
+    CODE              Offs=000E78  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(popptr1.o):
+    CODE              Offs=000E84  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(printf.o):
+    CODE              Offs=000E92  Size=000033  Align=00001  Fill=0000
+    BSS               Offs=00004A  Size=000001  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(push1.o):
+    CODE              Offs=000EC5  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(pusha.o):
+    CODE              Offs=000ECA  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(pushax.o):
+    CODE              Offs=000EE0  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(pushwsp.o):
+    CODE              Offs=000EFA  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(puts.o):
+    CODE              Offs=000F16  Size=000069  Align=00001  Fill=0000
+    DATA              Offs=00004B  Size=000001  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(staspidx.o):
+    CODE              Offs=000F7F  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(strlen.o):
+    CODE              Offs=000F95  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(strlower.o):
+    CODE              Offs=000FAB  Size=000027  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(udiv.o):
+    CODE              Offs=000FD2  Size=00004F  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(vfprintf.o):
+    CODE              Offs=001021  Size=000061  Align=00001  Fill=0000
+    DATA              Offs=00004C  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(zerobss.o):
+    CODE              Offs=001082  Size=000023  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+EXEHDR                000000  00000B  00000C  00001
+ZEROPAGE              000000  000019  00001A  00001
+STARTUP               000200  00021C  00001D  00001
+ONCE                  00021D  000228  00000C  00001
+CODE                  000229  0012CD  0010A5  00001
+RODATA                0012CE  0014A7  0001DA  00001
+DATA                  0014A8  0014FB  000054  00001
+BSS                   0014FC  001546  00004B  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               0014FC RLA    __BSS_SIZE__              00004B REA    
+__CONSTRUCTOR_COUNT__     000000 REA    __CONSTRUCTOR_TABLE__     000229 RLA    
+__DESTRUCTOR_COUNT__      000000 REA    __DESTRUCTOR_TABLE__      0014A8 RLA    
+__EXEHDR__                000001 REA    __MAIN_SIZE__             00F5F0 REA    
+__MAIN_START__            000200 RLA    __STACKSIZE__             000800 REA    
+__STARTUP__               000001 REA    __ctype                   00141D RLA    
+__ctypeidx                001428 RLA    __errno                   001542 RLA    
+__hextab                  001401 RLA    __longminstr              001411 RLA    
+__printf                  000B2F RLA    __seterrno                000DE1 RLA    
+_fwrite                   000E60 RLA    _ltoa                     000FA5 RLA    
+_main                     000452 RLA    _printf                   0010BB RLA    
+_puts                     00113F RLA    _stdout                   0014C3 RLA    
+_strlen                   0011BE RLA    _strlower                 0011D4 RLA    
+_udeks_close              00072F RLA    _udeks_copy               00086D RLA    
+_udeks_errno              00150C RLA    _udeks_fs_request         000991 RLA    
+_udeks_mutation_request   0009E5 RLA    _udeks_open               000715 RLA    
+_udeks_rename             000855 RLA    _udeks_unlink             000885 RLA    
+_ultoa                    000FE6 RLA    _vfprintf                 001282 RLA    
+_write                    00FFF7 RLA    addysp                    000DEB RLA    
+axlong                    000DF8 RLA    axulong                   000DFE RLA    
+callmain                  000E05 RLA    ctypemaskdirect           000E2C RLA    
+decsp4                    000E46 RLA    decsp6                    000E53 RLA    
+donelib                   000E1C RLA    exit                      00FFF9 RLA    
+incaxy                    000F0B RLA    incsp1                    000F14 RLA    
+incsp2                    000F23 RLA    incsp3                    000F31 RLA    
+incsp4                    000F36 RLA    incsp5                    000F3B RLA    
+incsp6                    000F40 RLA    initlib                   00021D RLA    
+ldax0sp                   000F45 RLA    ldaxysp                   000F47 RLA    
+mul8x16                   001069 RLA    mul8x16a                  001073 RLA    
+negeax                    000F4E RLA    popa                      0010A1 RLA    
+popax                     000F1B RLA    popptr1                   0010AD RLA    
+ptr1                      000008 RLZ    ptr2                      00000A RLZ    
+ptr3                      00000C RLZ    ptr4                      00000E RLZ    
+push1                     0010EE RLA    pusha                     0010F7 RLA    
+pusha0                    00110B RLA    pushax                    00110D RLA    
+pusheax                   000F75 RLA    pushwysp                  001125 RLA    
+regbank                   000014 RLZ    sp                        000000 RLZ    
+sreg                      000002 RLZ    startup                   000200 RLA    
+staspidx                  0011A8 RLA    tmp1                      000010 RLZ    
+tosicmp                   000EDD RLA    tosicmp0                  000EDB RLA    
+tosudivax                 0011FD RLA    tosumulax                 001022 RLA    
+zerobss                   0012AB RLA    
+
+
+Exports list by value:
+----------------------
+__CONSTRUCTOR_COUNT__     000000 REA    __DESTRUCTOR_COUNT__      000000 REA    
+sp                        000000 RLZ    __EXEHDR__                000001 REA    
+__STARTUP__               000001 REA    sreg                      000002 RLZ    
+ptr1                      000008 RLZ    ptr2                      00000A RLZ    
+ptr3                      00000C RLZ    ptr4                      00000E RLZ    
+tmp1                      000010 RLZ    regbank                   000014 RLZ    
+__BSS_SIZE__              00004B REA    __MAIN_START__            000200 RLA    
+startup                   000200 RLA    initlib                   00021D RLA    
+__CONSTRUCTOR_TABLE__     000229 RLA    _main                     000452 RLA    
+_udeks_open               000715 RLA    _udeks_close              00072F RLA    
+__STACKSIZE__             000800 REA    _udeks_rename             000855 RLA    
+_udeks_copy               00086D RLA    _udeks_unlink             000885 RLA    
+_udeks_fs_request         000991 RLA    _udeks_mutation_request   0009E5 RLA    
+__printf                  000B2F RLA    __seterrno                000DE1 RLA    
+addysp                    000DEB RLA    axlong                    000DF8 RLA    
+axulong                   000DFE RLA    callmain                  000E05 RLA    
+donelib                   000E1C RLA    ctypemaskdirect           000E2C RLA    
+decsp4                    000E46 RLA    decsp6                    000E53 RLA    
+_fwrite                   000E60 RLA    tosicmp0                  000EDB RLA    
+tosicmp                   000EDD RLA    incaxy                    000F0B RLA    
+incsp1                    000F14 RLA    popax                     000F1B RLA    
+incsp2                    000F23 RLA    incsp3                    000F31 RLA    
+incsp4                    000F36 RLA    incsp5                    000F3B RLA    
+incsp6                    000F40 RLA    ldax0sp                   000F45 RLA    
+ldaxysp                   000F47 RLA    negeax                    000F4E RLA    
+pusheax                   000F75 RLA    _ltoa                     000FA5 RLA    
+_ultoa                    000FE6 RLA    tosumulax                 001022 RLA    
+mul8x16                   001069 RLA    mul8x16a                  001073 RLA    
+popa                      0010A1 RLA    popptr1                   0010AD RLA    
+_printf                   0010BB RLA    push1                     0010EE RLA    
+pusha                     0010F7 RLA    pusha0                    00110B RLA    
+pushax                    00110D RLA    pushwysp                  001125 RLA    
+_puts                     00113F RLA    staspidx                  0011A8 RLA    
+_strlen                   0011BE RLA    _strlower                 0011D4 RLA    
+tosudivax                 0011FD RLA    _vfprintf                 001282 RLA    
+zerobss                   0012AB RLA    __hextab                  001401 RLA    
+__longminstr              001411 RLA    __ctype                   00141D RLA    
+__ctypeidx                001428 RLA    __DESTRUCTOR_TABLE__      0014A8 RLA    
+_stdout                   0014C3 RLA    __BSS_RUN__               0014FC RLA    
+_udeks_errno              00150C RLA    __errno                   001542 RLA    
+__MAIN_SIZE__             00F5F0 REA    _write                    00FFF7 RLA    
+exit                      00FFF9 RLA    
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    zerobss.o                 common/zerobss.s(8)
+__BSS_SIZE__ ([linker generated]):
+    zerobss.o                 common/zerobss.s(8)
+__CONSTRUCTOR_COUNT__ ([linker generated]):
+    condes.o                  runtime/condes.s(18)
+__CONSTRUCTOR_TABLE__ ([linker generated]):
+    condes.o                  runtime/condes.s(18)
+__DESTRUCTOR_COUNT__ ([linker generated]):
+    condes.o                  runtime/condes.s(19)
+__DESTRUCTOR_TABLE__ ([linker generated]):
+    condes.o                  runtime/condes.s(19)
+__EXEHDR__ (exehdr.o):
+    [linker generated]        /usr/share/cc65/cfg/sim6502.cfg(2)
+__MAIN_SIZE__ ([linker generated]):
+    crt0.o                    sim6502/crt0.s(13)
+__MAIN_START__ ([linker generated]):
+    exehdr.o                  sim6502/exehdr.s(9)
+    crt0.o                    sim6502/crt0.s(13)
+__STACKSIZE__ ([linker generated]):
+    crt0.o                    sim6502/crt0.s(14)
+    [linker generated]        /usr/share/cc65/cfg/sim6502.cfg(8)
+__STARTUP__ (crt0.o):
+    check.o                   bench/storage-mutation-sdk/check.s(13)
+__ctype (ctype.o):
+    ctypemask.o               common/ctypemask.s(23)
+__ctypeidx (ctype.o):
+    ctypemask.o               common/ctypemask.s(24)
+__errno (errno.o):
+    _seterrno.o               /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/errno.inc(7)
+__hextab (_hextab.o):
+    ltoa.o                    common/ltoa.s(10)
+__longminstr (_longminstr.o):
+    ltoa.o                    common/ltoa.s(10)
+__printf (_printf.o):
+    vfprintf.o                common/vfprintf.s(10)
+__seterrno (_seterrno.o):
+    fwrite.o                  /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/errno.inc(9)
+_fwrite (fwrite.o):
+    vfprintf.o                common/vfprintf.s(10)
+_ltoa (ltoa.o):
+    _printf.o                 common/_printf.s(12)
+_main (check.o):
+    callmain.o                runtime/callmain.s(11)
+_printf (printf.o):
+    check.o                   bench/storage-mutation-sdk/check.s(14)
+_puts (puts.o):
+    check.o                   bench/storage-mutation-sdk/check.s(15)
+_stdout (_file.o):
+    puts.o                    ../libwrk/sim6502/puts.s(13)
+    printf.o                  common/printf.s(8)
+_strlen (strlen.o):
+    _printf.o                 common/_printf.s(13)
+    puts.o                    ../libwrk/sim6502/puts.s(15)
+    check.o                   bench/storage-mutation-sdk/check.s(16)
+_strlower (strlower.o):
+    _printf.o                 common/_printf.s(13)
+_udeks_close (filesystem.o):
+    file_mutation.o           user/lib/file_mutation.s(15)
+_udeks_copy (file_mutation.o):
+    check.o                   bench/storage-mutation-sdk/check.s(19)
+_udeks_errno (filesystem.o):
+    file_mutation_request.o   user/lib/file_mutation_request.s(5)
+    fs_request.o              user/lib/fs_request.s(5)
+    file_mutation.o           user/lib/file_mutation.s(13)
+    check.o                   bench/storage-mutation-sdk/check.s(17)
+_udeks_fs_request (fs_request.o):
+    filesystem.o              user/lib/filesystem.s(18)
+_udeks_mutation_request (file_mutation_request.o):
+    file_mutation.o           user/lib/file_mutation.s(19)
+_udeks_open (filesystem.o):
+    file_mutation.o           user/lib/file_mutation.s(14)
+_udeks_rename (file_mutation.o):
+    check.o                   bench/storage-mutation-sdk/check.s(18)
+_udeks_unlink (file_mutation.o):
+    check.o                   bench/storage-mutation-sdk/check.s(20)
+_ultoa (ltoa.o):
+    _printf.o                 common/_printf.s(12)
+_vfprintf (vfprintf.o):
+    printf.o                  common/printf.s(8)
+_write (paravirt.o):
+    fwrite.o                  common/fwrite.s(10)
+    puts.o                    ../libwrk/sim6502/puts.s(16)
+addysp (addysp.o):
+    incsp6.o                  runtime/incsp6.s(8)
+    fwrite.o                  common/fwrite.s(11)
+    printf.o                  common/printf.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+axlong (axlong.o):
+    _printf.o                 common/_printf.s(11)
+axulong (axlong.o):
+    _printf.o                 common/_printf.s(11)
+callmain (callmain.o):
+    crt0.o                    sim6502/crt0.s(10)
+ctypemaskdirect (ctypemask.o):
+    strlower.o                common/strlower.s(14)
+decsp4 (decsp4.o):
+    lpush.o                   runtime/lpush.s(12)
+decsp6 (decsp6.o):
+    _printf.o                 common/_printf.s(11)
+donelib (condes.o):
+    crt0.o                    sim6502/crt0.s(11)
+exit (paravirt.o):
+    crt0.o                    sim6502/crt0.s(12)
+incaxy (incaxy.o):
+    check.o                   bench/storage-mutation-sdk/check.s(595)
+incsp1 (incsp1.o):
+    filesystem.o              user/lib/filesystem.s(347)
+incsp2 (incsp2.o):
+    popptr1.o                 runtime/popptr1.s(8)
+    staspidx.o                runtime/staspidx.s(8)
+    puts.o                    ../libwrk/sim6502/puts.s(80)
+    file_mutation.o           user/lib/file_mutation.s(220)
+incsp3 (incsp3.o):
+    filesystem.o              user/lib/filesystem.s(347)
+incsp4 (incsp4.o):
+    file_mutation.o           user/lib/file_mutation.s(220)
+    file_mutation.o           user/lib/file_mutation.s(220)
+    filesystem.o              user/lib/filesystem.s(347)
+    filesystem.o              user/lib/filesystem.s(347)
+    filesystem.o              user/lib/filesystem.s(347)
+incsp5 (incsp5.o):
+    file_mutation.o           user/lib/file_mutation.s(220)
+    filesystem.o              user/lib/filesystem.s(347)
+incsp6 (incsp6.o):
+    fwrite.o                  common/fwrite.s(11)
+    vfprintf.o                common/vfprintf.s(9)
+initlib (condes.o):
+    crt0.o                    sim6502/crt0.s(11)
+ldax0sp (ldaxsp.o):
+    file_mutation.o           user/lib/file_mutation.s(220)
+    filesystem.o              user/lib/filesystem.s(347)
+ldaxysp (ldaxsp.o):
+    fwrite.o                  common/fwrite.s(11)
+    puts.o                    ../libwrk/sim6502/puts.s(80)
+    file_mutation.o           user/lib/file_mutation.s(220)
+    file_mutation.o           user/lib/file_mutation.s(220)
+    file_mutation.o           user/lib/file_mutation.s(220)
+    filesystem.o              user/lib/filesystem.s(347)
+    filesystem.o              user/lib/filesystem.s(347)
+    filesystem.o              user/lib/filesystem.s(347)
+    filesystem.o              user/lib/filesystem.s(347)
+mul8x16 (mul8.o):
+    mul.o                     runtime/mul.s(8)
+mul8x16a (mul8.o):
+    mul.o                     runtime/mul.s(8)
+negeax (lneg.o):
+    ltoa.o                    common/ltoa.s(9)
+popa (popa.o):
+    file_mutation_request.o   user/lib/file_mutation_request.s(5)
+    fs_request.o              user/lib/fs_request.s(5)
+popax (incsp2.o):
+    ltoa.o                    common/ltoa.s(9)
+    _printf.o                 common/_printf.s(11)
+popptr1 (popptr1.o):
+    udiv.o                    runtime/udiv.s(9)
+    mul8.o                    runtime/mul8.s(9)
+    mul.o                     runtime/mul.s(9)
+    ltoa.o                    common/ltoa.s(9)
+ptr1 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    strlower.o                common/strlower.s(13)
+    popptr1.o                 runtime/popptr1.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+    ltoa.o                    common/ltoa.s(11)
+    fwrite.o                  common/fwrite.s(14)
+    _printf.o                 /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/zeropage.inc(12)
+    zerobss.o                 common/zerobss.s(9)
+    vfprintf.o                common/vfprintf.s(11)
+    staspidx.o                runtime/staspidx.s(9)
+    puts.o                    ../libwrk/sim6502/puts.s(11)
+    printf.o                  common/printf.s(9)
+    file_mutation.o           user/lib/file_mutation.s(11)
+    filesystem.o              user/lib/filesystem.s(11)
+    check.o                   bench/storage-mutation-sdk/check.s(11)
+ptr2 (zeropage.o):
+    strlower.o                common/strlower.s(13)
+    ltoa.o                    common/ltoa.s(11)
+    _printf.o                 /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/zeropage.inc(12)
+    strlen.o                  common/strlen.s(12)
+ptr3 (zeropage.o):
+    ltoa.o                    common/ltoa.s(11)
+ptr4 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+push1 (push1.o):
+    _printf.o                 common/_printf.s(11)
+    vfprintf.o                common/vfprintf.s(9)
+pusha (pusha.o):
+    file_mutation.o           user/lib/file_mutation.s(220)
+    file_mutation.o           user/lib/file_mutation.s(220)
+    file_mutation.o           user/lib/file_mutation.s(220)
+    file_mutation.o           user/lib/file_mutation.s(220)
+    filesystem.o              user/lib/filesystem.s(347)
+    filesystem.o              user/lib/filesystem.s(347)
+    filesystem.o              user/lib/filesystem.s(347)
+    filesystem.o              user/lib/filesystem.s(347)
+    filesystem.o              user/lib/filesystem.s(347)
+    filesystem.o              user/lib/filesystem.s(347)
+pusha0 (pushax.o):
+    push1.o                   runtime/push1.s(8)
+    puts.o                    ../libwrk/sim6502/puts.s(80)
+    check.o                   bench/storage-mutation-sdk/check.s(595)
+    check.o                   bench/storage-mutation-sdk/check.s(595)
+pushax (pushax.o):
+    fwrite.o                  common/fwrite.s(11)
+    callmain.o                runtime/callmain.s(11)
+    _printf.o                 common/_printf.s(11)
+    puts.o                    ../libwrk/sim6502/puts.s(80)
+    printf.o                  common/printf.s(8)
+    file_mutation.o           user/lib/file_mutation.s(220)
+    file_mutation.o           user/lib/file_mutation.s(220)
+    file_mutation.o           user/lib/file_mutation.s(220)
+    file_mutation.o           user/lib/file_mutation.s(220)
+    filesystem.o              user/lib/filesystem.s(347)
+    filesystem.o              user/lib/filesystem.s(347)
+    check.o                   bench/storage-mutation-sdk/check.s(595)
+    check.o                   bench/storage-mutation-sdk/check.s(595)
+pusheax (lpush.o):
+    _printf.o                 common/_printf.s(11)
+pushwysp (pushwsp.o):
+    fwrite.o                  common/fwrite.s(11)
+    vfprintf.o                common/vfprintf.s(9)
+    puts.o                    ../libwrk/sim6502/puts.s(80)
+    file_mutation.o           user/lib/file_mutation.s(220)
+    file_mutation.o           user/lib/file_mutation.s(220)
+    file_mutation.o           user/lib/file_mutation.s(220)
+    file_mutation.o           user/lib/file_mutation.s(220)
+    filesystem.o              user/lib/filesystem.s(347)
+regbank (zeropage.o):
+    _printf.o                 /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/zeropage.inc(14)
+sp (zeropage.o):
+    decsp4.o                  runtime/decsp4.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    lpush.o                   runtime/lpush.s(13)
+    decsp6.o                  runtime/decsp6.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    _printf.o                 /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/zeropage.inc(11)
+    vfprintf.o                common/vfprintf.s(11)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    printf.o                  common/printf.s(9)
+    popa.o                    runtime/popa.s(8)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    exehdr.o                  sim6502/exehdr.s(8)
+    crt0.o                    /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/zeropage.inc(11)
+    file_mutation.o           user/lib/file_mutation.s(10)
+    filesystem.o              user/lib/filesystem.s(10)
+sreg (zeropage.o):
+    lneg.o                    runtime/lneg.s(11)
+    udiv.o                    runtime/udiv.s(10)
+    ltoa.o                    common/ltoa.s(11)
+    lpush.o                   runtime/lpush.s(13)
+    axlong.o                  runtime/axlong.s(9)
+    _printf.o                 /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/zeropage.inc(11)
+    icmp.o                    runtime/icmp.s(9)
+startup (crt0.o):
+    exehdr.o                  sim6502/exehdr.s(10)
+staspidx (staspidx.o):
+    file_mutation.o           user/lib/file_mutation.s(220)
+    filesystem.o              user/lib/filesystem.s(347)
+    filesystem.o              user/lib/filesystem.s(347)
+    check.o                   bench/storage-mutation-sdk/check.s(595)
+tmp1 (zeropage.o):
+    mul.o                     runtime/mul.s(10)
+    ltoa.o                    common/ltoa.s(11)
+    _printf.o                 /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/zeropage.inc(13)
+    staspidx.o                runtime/staspidx.s(9)
+    incaxy.o                  runtime/incaxy.s(8)
+    filesystem.o              user/lib/filesystem.s(11)
+tosicmp (icmp.o):
+    check.o                   bench/storage-mutation-sdk/check.s(595)
+tosicmp0 (icmp.o):
+    check.o                   bench/storage-mutation-sdk/check.s(595)
+    check.o                   bench/storage-mutation-sdk/check.s(595)
+tosudivax (udiv.o):
+    fwrite.o                  common/fwrite.s(12)
+tosumulax (mul.o):
+    fwrite.o                  common/fwrite.s(12)
+zerobss (zerobss.o):
+    crt0.o                    sim6502/crt0.s(10)
+

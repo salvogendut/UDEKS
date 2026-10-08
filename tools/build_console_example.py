@@ -21,6 +21,8 @@ def main():
     parser.add_argument('--name', default='ARGS')
     parser.add_argument('--output', type=Path, default=ROOT/'build/generic-apps/console')
     parser.add_argument('--filesystem', action='store_true', help='link counted file I/O (UTRQ 0.14)')
+    parser.add_argument('--file-mutations', action='store_true',
+                        help='rename/copy/unlink SDK (requires UTRQ 0.18)')
     parser.add_argument('--static-locals', action='store_true', help='only for nonrecursive single-invocation programs')
     args = parser.parse_args()
     name = args.name.upper()
@@ -31,12 +33,17 @@ def main():
         *(['--static-locals'] if args.static_locals else []),
         '-I', 'user/include', '-I', 'include', '-o', str(out/'program.s'), str(args.source.resolve()))
     libraries=[]
-    if args.filesystem:
-        for label in ('filesystem','filesystem_meta','error_string'):
+    if args.filesystem or args.file_mutations:
+        for label in ('filesystem0','filesystem1','filesystem2','filesystem3','filesystem_meta','error_string') + (('file_mutation0','file_mutation1','file_mutation2','file_mutation3') if args.file_mutations else ()):
+            part = label[-1] if label[-1].isdigit() else None
+            source = label[:-1] if part is not None else label
             run('cc65','-t','none','--cpu','6502','--standard','c99','-Os','--static-locals',
-                '-I','user/include','-I','include','-o',str(out/(label+'.s')), 'user/lib/'+label+'.c')
+                *(['-D',('UDEKS_FS_PART=' if source=='filesystem' else 'UDEKS_MUTATION_PART=')+part] if part is not None else []),
+                '-I','user/include','-I','include','-o',str(out/(label+'.s')), 'user/lib/'+source+'.c')
             libraries.append((label,out/(label+'.s')))
         libraries.append(('fs_request','user/lib/fs_request.s'))
+        if args.file_mutations:
+            libraries.append(('file_mutation_request', 'user/lib/file_mutation_request.s'))
     objects = []; members=[]
     for label, source in (('entry', 'user/lib/entry.s'), ('syscall', 'user/lib/syscall.s'),
                           ('program', out/'program.s'), *libraries):

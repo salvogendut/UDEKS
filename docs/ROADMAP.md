@@ -28,31 +28,34 @@ and directory removal; `mv` is same-filesystem rename, not copy-and-delete.
 3. Qualify success/failure and reboot persistence on disposable images in
    VICE/1986, then provide the C128/Pi1541 acceptance checklist.
 
-**Branch progress:** normal boot now mounts `/` RW; explicit RO/remount and
-bootfs recovery still work. Fresh images pass VICE D64/D71/D81 public
-write/readback/reboot checks and native 1986 input/graphics/write regression.
-The private DOS rename/copy/scratch backend passes VICE on all three drive
-types, including collisions, missing files, write protection and exact binary
-SEQ/PRG bytes. It is not installed in the live storage service; **`mv`, `cp`
-and `rm` are not available yet**. The changed default needs user hardware
-acceptance; earlier create-only acceptance does not cover the new commands.
+**Branch progress:** the space blocker is resolved. UTRQ 0.18 and standalone
+`cp`, `mv`, `rm` are now installed in fresh D64/D71/D81 builds. Root defaults
+to RW; explicit RO/remount and recovery semantics are preserved. The compact
+DOS/status backend keeps all existing app slots and stack guards, with a C
+reference and real-6502 differential tests. Busy DOS completion is bounded and
+releases the service lease between polls; ordinary console commands remain
+synchronous. Empty copies use checked exclusive creation, not DOS's CR-inserting
+COPY behavior.
 
-The namespace capacity prerequisite is now qualified: an ABI-compatible
-compact implementation, checked against the unchanged C reference on 6502,
-recovers 1,675 code bytes and 54 state bytes. The private backend fits in a
-separate link of the real service, leaving 563 code / 19 state bytes for
-integration. App allocations, stack guards and public APIs are unchanged.
+D64 omits only the optional sprite editor (`xsprdef`), as requested, leaving
+31 free blocks; the complete D71/D81 still include it. VICE qualifies public
+commands, collision/missing/RO errors, empty and multi-sector copies, and reboot
+persistence. The native 1986 periodic timer-NMI stress exposed a loader error
+that the old harness misreported using stale console/exit state; this is a
+separate unresolved regression, not a passed gate.
+Ordinary native 1986 D64/1571 command, keyboard, RESTORE, window and reboot
+tests pass with that artificial timer stress explicitly disabled. Exact
+qualification and limits: [file-command record](../bench/results/2026-10-08-file-commands/README.md).
 
-**Next concrete delivery:** service validation, bounded DOS completion and
-request/SDK wiring, then ship the three commands together as standalone
-programs (not ush builtins). The handlers must still fit the measured budget;
-do not put raw DOS commands or filesystem policy into the command binaries.
-Use DOS COPY for nonempty same-disk sources and the existing exclusive-create
-writer for verified-empty sources (stock DOS COPY inserts CR for empty files).
-Cross-device copy is outside this first command slice. Keep atomic replacement,
-wildcards, directories and recursive deletion deferred.
+**Accepted for merge (2026-10-08):** the user confirmed the delivered images
+work and requested commit/push, PR and merge. The test platform was unspecified;
+do not infer new physical-C128 acceptance from this or the earlier create-only
+hardware test. Track the periodic-NMI loader failure separately before claiming
+that stress qualification. Cross-device copy, overwrite, directories, wildcards
+and recursive deletion stay outside this slice.
 
-This remains the next feature slice, before the first disk-loaded non-kernel service.
+After merging #47, the next architectural feature is the first disk-loaded
+non-kernel service.
 
 **Accepted checkpoint (2026-10-08):** the [sprite editor](XSPRDEF.md) now has
 fast pixel updates, confirmed whole-bank Save/Load (`SPRITES.SPR`), stock-BASIC

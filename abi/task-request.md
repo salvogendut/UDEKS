@@ -1,4 +1,73 @@
-# Bank-task request ABI 0.17
+# Bank-task request ABI 0.18
+
+## Exact-file mutations (0.18)
+
+Issue #47's boot builds enable `UDEKS_STORAGE_MUTATIONS` and minor **0.18**.
+Older operations retain their versioned behavior. Test this new functionality
+on disposable media before accepting it on physical hardware.
+
+The operations are `RENAME` 25, `COPY` 26 and `UNLINK` 27. Each takes
+the caller's existing read-only regular-file descriptor **4**, flags zero,
+and returns result zero when finished, one while pending, or errno.
+RENAME/COPY carry one counted, NUL-terminated
+destination path (1–23 bytes, terminator outside count); UNLINK has count zero.
+This uses the existing request boundary and avoids packing two maximum-sized
+paths into the 24-byte payload. The SDK opens the source and manages cleanup.
+
+Wire/version, instance ownership, regular-file type, RW permission and
+destination syntax/mount checks happen before consuming the source handle.
+Those rejections leave it usable. After validation the service **closes and
+consumes its read stream**, including when close, directory scanning or later
+disk work fails. Pending DOS completion retains descriptor 4 solely as a
+continuation owned by the same invocation and operation. Re-submission with
+flags zero is EBADF; there is no implicit retry. The SDK attempts CLOSE after
+every submitted operation, ignoring only
+the expected EBADF for an already-consumed handle and preserving the original
+mutation error. Exit cleanup handles abandoned preflight rejections and
+pending operations.
+
+Poll with the **same operation**, fd 4, **flags 1**, count zero. A nonzero
+count or reserved flags returns EINVAL; a wrong operation, owner, descriptor
+or completed continuation returns EBADF. Pending returns COMPLETE, result 1,
+errno zero; completion returns result 0 or the final errno and releases the
+descriptor. READ/WRITE on a pending descriptor returns EBUSY. Explicit CLOSE
+or owner retirement releases the bus without resending DOS or sending CLOSE
+15; this is **not rollback** of work already accepted by the drive.
+
+The transport preserves the initial TALK handshake while the drive is busy,
+restores CPU speed, and unwinds the common-RAM lease/IRQ mask on every pending
+return. A maximum of 65,535 busy observations bounds abandoned drive waits
+(not a wall-clock guarantee). The private benchmark's 255-round spin is not
+compiled into production. The SDK polls to completion; ordinary console
+commands remain synchronous and do not gain task scheduling or background I/O.
+
+Only closed, unlocked SEQ/PRG files qualify. Locked files fail EBUSY; unsupported
+types EINVAL, directories EISDIR, absent sources ENOENT, RO mounts EROFS, other
+mounted filesystems EXDEV (18). Destination matches, including case-folded or
+BIN/SH collisions and the source itself, fail EEXIST; no overwrite, wildcard,
+force, recursive or directory operations are supported. Complete destination
+scan/close must succeed before any mutating command is sent. Names beginning
+or ending with spaces are rejected to avoid DOS interpretation ambiguity.
+
+Virtual-directory translation is service-owned: `/bin` uses BIN (or SH for a
+script source), `/etc` uses ETC, and `/` or `/mnt` uses a raw name. Crossing
+virtual directories on one mount does not change the SEQ/PRG file type; the
+contents, including a PRG load-address prefix, are never interpreted by cp.
+Cross-device copy is deferred, not silently implemented as partial copy/delete.
+
+COPY reopens from byte zero to distinguish empty files from a previously
+consumed stream. Nonempty files use DOS COPY; verified-empty files use the
+exclusive-create/checked-close path with the source type, avoiding DOS's added
+CR. Failures may leave partial files; no rollback or atomic replacement claim.
+
+`make boot` includes separate CP.BIN, MV.BIN and RM.BIN in all three disk
+formats. `make file-commands-candidate` rebuilds just those independent
+commands under `build/file-commands/`. The service fits its unchanged guarded
+reservations; `make storage-mutation-policy` rejects an overflowing link.
+`make storage-mutation-backend-check` compares the compact implementation
+against independent C parsers on a simulated 6502.
+
+## Released request boundary
 
 Bank-1 8502 tasks exchange bounded requests with the resident kernel through a
 38-byte record in top common RAM. The task fills the record and calls `$FF16`.
@@ -95,6 +164,9 @@ States are idle (`0`), request (`1`), complete (`2`), and error (`$80`).
 | 22 | `GETCWD` | 0.8 | Return the root session's absolute working directory. |
 | 23 | `GRAPHICS` | 0.9 | Create/present/poll/close an owned banked-client window. |
 | 24 | `WORKER` | 0.11 | Run one bounded Z80 computation and borrow its result. |
+| 25 | `RENAME` | 0.18 | Same-filesystem rename, no overwrite; completion poll flag 1. |
+| 26 | `COPY` | 0.18 | Exact byte/type copy, no overwrite; completion poll flag 1. |
+| 27 | `UNLINK` | 0.18 | Remove one exact regular filename; completion poll flag 1. |
 
 `EXEC` (`3`) is not task creation and its meaning does not change: it remains
 the bounded command-line bridge to the executable loader. There is no resident

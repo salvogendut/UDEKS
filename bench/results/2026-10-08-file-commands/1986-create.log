@@ -1,0 +1,58 @@
+PC=FF74 drive=EAB7 jam=0 speed=1 CIA2=07/3F bus=110 via=02/1A request=00/00/00 exit=0
+PC=E3AE drive=F565 jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E49A drive=FEFE jam=0 speed=0 CIA2=47/3F bus=101 via=08/1A request=00/00/00 exit=0
+PC=E3AE drive=F7EA jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E4A0 drive=FEF6 jam=0 speed=0 CIA2=47/3F bus=110 via=07/1A request=00/00/00 exit=0
+PC=E49D drive=FEF7 jam=0 speed=0 CIA2=47/3F bus=110 via=07/1A request=00/00/00 exit=0
+PC=E4AB drive=E9A5 jam=0 speed=0 CIA2=47/3F bus=101 via=0D/1A request=00/00/00 exit=0
+PC=F686 drive=EC17 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=01/06/00 exit=0
+command: df -> accepted (Return release=977 frames)
+PASS df: Read-write mount
+command: mount -o remount,ro 8 / -> accepted (Return release=716 frames)
+PASS mount -o remount,ro 8 /: ready (read-only)
+command: save /denied 1 -> accepted (Return release=824 frames)
+PASS save /denied 1: Read-only filesystem
+command: df -> accepted (Return release=991 frames)
+PASS df: Read-only mount
+command: mount -o remount,rw 8 / -> accepted (Return release=756 frames)
+PASS mount -o remount,rw 8 /: ready (read-write)
+command: df -> accepted (Return release=1037 frames)
+PASS df: Read-write mount
+command: save /binary 515 -> accepted (Return release=1769 frames)
+PASS save /binary 515: save: created and verified
+command: save /zero 0 -> accepted (Return release=2023 frames)
+PASS save /zero 0: save: created and verified
+command: save /binary 515 -> accepted (Return release=1032 frames)
+PASS save /binary 515: File exists
+command: cp /binary /copy -> accepted (Return release=1477 frames)
+PASS cp /binary /copy: 
+command: save -c /copy 515 -> accepted (Return release=1162 frames)
+PASS save -c /copy 515: save: verified
+command: mv /copy /renamed -> accepted (Return release=1125 frames)
+PASS mv /copy /renamed: 
+command: save -c /renamed 515 -> accepted (Return release=1159 frames)
+PASS save -c /renamed 515: save: verified
+command: rm /renamed -> accepted (Return release=1071 frames)
+PASS rm /renamed: 
+command: cat /renamed -> accepted (Return release=996 frames)
+PASS cat /renamed: No such file or directory
+command: cp /zero /emptycopy -> accepted (Return release=1837 frames)
+PASS cp /zero /emptycopy: 
+command: save -c /emptycopy 0 -> accepted (Return release=1144 frames)
+PASS save -c /emptycopy 0: save: verified
+command: rm /emptycopy -> accepted (Return release=1047 frames)
+PASS rm /emptycopy: 
+command: save /nmitest 515 -> accepted (Return release=1761 frames)
+PASS save /nmitest 515: save: created and verified
+RESTORE tested; periodic timer-NMI stress explicitly skipped
+command: xclock & -> accepted (Return release=1468 frames)
+command: save /graphics 24 -> accepted (Return release=1633 frames)
+PASS save /graphics 24: save: created and verified
+command: xclock -q -> accepted (Return release=122 frames)
+command: mount -o remount,ro 8 / -> accepted (Return release=780 frames)
+PASS mount -o remount,ro 8 /: ready (read-only)
+command: save /denied 1 -> accepted (Return release=828 frames)
+PASS save /denied 1: Read-only filesystem
+command: cat /hello -> accepted (Return release=1064 frames)
+PASS cat /hello: HELLO UDEKS
+PASS native 1986 public binary/empty write/readback, native input, RW boot and explicit RO

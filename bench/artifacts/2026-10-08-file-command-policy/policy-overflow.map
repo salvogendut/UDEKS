@@ -1,0 +1,110 @@
+Modules list:
+-------------
+iec_lease.o:
+    CODE              Offs=000000  Size=00000F  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=00002A  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000015  Align=00001  Fill=0000
+    IECCODE           Offs=000000  Size=0000AB  Align=00001  Fill=0000
+    STORAGECODE       Offs=000000  Size=000054  Align=00001  Fill=0000
+iec_context.o:
+    IECCODE           Offs=0000AB  Size=00000C  Align=00001  Fill=0000
+    STORAGECODE       Offs=000054  Size=00002F  Align=00001  Fill=0000
+iec_service.o:
+    RODATA            Offs=000000  Size=000019  Align=00001  Fill=0000
+    BSS               Offs=00002A  Size=00007A  Align=00001  Fill=0000
+    STORAGECODE       Offs=000083  Size=000E1D  Align=00001  Fill=0000
+    STORAGEHIGH       Offs=000000  Size=0003BB  Align=00001  Fill=0000
+fs_namespace.o:
+    BSS               Offs=0000A4  Size=000016  Align=00001  Fill=0000
+    STORAGEHIGH       Offs=0003BB  Size=00051C  Align=00001  Fill=0000
+cbm_file.o:
+    CODE              Offs=00000F  Size=0003CD  Align=00001  Fill=0000
+    RODATA            Offs=000019  Size=00003E  Align=00001  Fill=0000
+    BSS               Offs=0000BA  Size=00004E  Align=00001  Fill=0000
+    STORAGECODE       Offs=000EA0  Size=0002A9  Align=00001  Fill=0000
+    STORAGEHIGH       Offs=0008D7  Size=00035F  Align=00001  Fill=0000
+cbm_write.o:
+    BSS               Offs=000108  Size=000023  Align=00001  Fill=0000
+    STORAGECODE       Offs=001149  Size=00042C  Align=00001  Fill=0000
+    IECCODE           Offs=0000B7  Size=00004B  Align=00001  Fill=0000
+iec_slow.o:
+    BSS               Offs=00012B  Size=000038  Align=00001  Fill=0000
+    IECCODE           Offs=000102  Size=0004EB  Align=00001  Fill=0000
+cbm_mutate.o:
+    RODATA            Offs=000057  Size=000004  Align=00001  Fill=0000
+    BSS               Offs=000163  Size=000013  Align=00001  Fill=0000
+    STORAGEHIGH       Offs=000C36  Size=0004B9  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=0003DC  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(bneg.o):
+    CODE              Offs=0003EA  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(compl.o):
+    CODE              Offs=0003F8  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decax1.o):
+    CODE              Offs=000401  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decaxy.o):
+    CODE              Offs=000408  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=000411  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax1.o):
+    CODE              Offs=00043F  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax2.o):
+    CODE              Offs=000446  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax3.o):
+    CODE              Offs=00044D  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax5.o):
+    CODE              Offs=000452  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=000457  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000462  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000469  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=00047F  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000484  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=000489  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=00048E  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxi.o):
+    CODE              Offs=000493  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=0004A0  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=0004A9  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(memcpy.o):
+    CODE              Offs=0004D5  Size=00003C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax10.o):
+    CODE              Offs=000511  Size=000019  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(or.o):
+    CODE              Offs=00052A  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=00053C  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=00054A  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000560  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=00057A  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(udiv.o):
+    CODE              Offs=000590  Size=00004F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(umod.o):
+    CODE              Offs=0005DF  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               001200  001214  000015  00001
+CODE                  001215  001804  0005F0  00001
+STORAGECODE           00B000  00C574  001575  00001
+BSS                   00E000  00E175  000176  00001
+IECCODE               00E300  00E8EC  0005ED  00001
+RODATA                00F000  00F05A  00005B  00001
+STORAGEHIGH           00F05B  010149  0010EF  00001

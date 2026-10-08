@@ -1,0 +1,116 @@
+PC=FF74 1581=AF5F jam=0 rawIEC=1 fdc=00 track=0 sector=0 request=00/00/00 exit=0
+PC=E4AE 1581=AD37 jam=0 rawIEC=1 fdc=00 track=3 sector=8 request=00/00/00 exit=0
+PC=E4B1 1581=AD38 jam=0 rawIEC=1 fdc=00 track=6 sector=6 request=00/00/00 exit=0
+PC=E3AE 1581=CD1A jam=0 rawIEC=1 fdc=81 track=0 sector=0 request=00/00/00 exit=0
+PC=F2E7 1581=909E jam=0 rawIEC=1 fdc=80 track=4 sector=4 request=00/00/00 exit=0
+PC=E4B0 1581=ADF0 jam=0 rawIEC=1 fdc=00 track=8 sector=1 request=00/00/00 exit=0
+PC=E6F8 1581=AD37 jam=0 rawIEC=1 fdc=00 track=10 sector=8 request=01/01/00 exit=0
+PC=F660 1581=B126 jam=0 rawIEC=1 fdc=00 track=11 sector=4 request=01/06/00 exit=0
+command: df -> accepted (Return release=1232 frames)
+PASS df: Read-write mount
+command: mount -o remount,ro 8 / -> accepted (Return release=912 frames)
+PASS mount -o remount,ro 8 /: ready (read-only)
+command: save /denied 1 -> accepted (Return release=950 frames)
+PASS save /denied 1: Read-only filesystem
+command: df -> accepted (Return release=1317 frames)
+PASS df: Read-only mount
+command: mount -o remount,rw 8 / -> accepted (Return release=968 frames)
+PASS mount -o remount,rw 8 /: ready (read-write)
+command: df -> accepted (Return release=1271 frames)
+PASS df: Read-write mount
+command: save /binary 515 -> accepted (Return release=2229 frames)
+PASS save /binary 515: save: created and verified
+command: save /zero 0 -> accepted (Return release=2505 frames)
+PASS save /zero 0: save: created and verified
+command: save /binary 515 -> accepted (Return release=1196 frames)
+PASS save /binary 515: File exists
+command: cp /binary /copy -> accepted (Return release=1942 frames)
+PASS cp /binary /copy: 
+command: save -c /copy 515 -> accepted (Return release=1430 frames)
+PASS save -c /copy 515: save: verified
+command: mv /copy /renamed -> accepted (Return release=1411 frames)
+PASS mv /copy /renamed: 
+command: save -c /renamed 515 -> accepted (Return release=1488 frames)
+PASS save -c /renamed 515: save: verified
+command: rm /renamed -> accepted (Return release=1307 frames)
+PASS rm /renamed: 
+command: cat /renamed -> accepted (Return release=1191 frames)
+PASS cat /renamed: No such file or directory
+command: cp /zero /emptycopy -> accepted (Return release=2429 frames)
+PASS cp /zero /emptycopy: 
+command: save -c /emptycopy 0 -> accepted (Return release=1366 frames)
+PASS save -c /emptycopy 0: save: verified
+command: rm /emptycopy -> accepted (Return release=1305 frames)
+PASS rm /emptycopy: 
+command: save /nmitest 515 -> accepted (Return release=889 frames)
+PASS save /nmitest 515: save: created and verified
+PASS RESTORE and CIA2 NMI drained, count=911
+command: xclock & -> accepted (Return release=1694 frames)
+command: save /graphics 24 -> accepted (Return release=2008 frames)
+PASS save /graphics 24: save: created and verified
+command: xclock -q -> accepted (Return release=122 frames)
+command: mount -o remount,ro 8 / -> accepted (Return release=923 frames)
+PASS mount -o remount,ro 8 /: ready (read-only)
+command: save /denied 1 -> accepted (Return release=954 frames)
+PASS save /denied 1: Read-only filesystem
+command: cat /hello -> accepted (Return release=1367 frames)
+PASS cat /hello: HELLO UDEKS
+PASS native 1986 public binary/empty write/readback, native input, RW boot and explicit RO
+
+PC=FF74 1581=AF5F jam=0 rawIEC=1 fdc=00 track=0 sector=0 request=00/00/00 exit=0
+PC=E4A8 1581=AE08 jam=0 rawIEC=1 fdc=00 track=3 sector=3 request=00/00/00 exit=0
+PC=E4AE 1581=AD0B jam=0 rawIEC=1 fdc=00 track=6 sector=8 request=00/00/00 exit=0
+PC=E3BC 1581=CD1D jam=0 rawIEC=1 fdc=81 track=0 sector=0 request=00/00/00 exit=0
+PC=E4B1 1581=AD37 jam=0 rawIEC=1 fdc=80 track=4 sector=8 request=00/00/00 exit=0
+PC=E4A0 1581=AD37 jam=0 rawIEC=1 fdc=00 track=8 sector=5 request=00/00/00 exit=0
+PC=E4F7 1581=AC99 jam=0 rawIEC=1 fdc=00 track=10 sector=3 request=01/01/00 exit=0
+PC=E4EB 1581=AE8C jam=0 rawIEC=1 fdc=00 track=11 sector=9 request=01/06/00 exit=0
+command: df -> accepted (Return release=1232 frames)
+PASS df: Read-write mount
+command: mount -o remount,ro 8 / -> accepted (Return release=912 frames)
+PASS mount -o remount,ro 8 /: ready (read-only)
+command: save /denied 1 -> accepted (Return release=951 frames)
+PASS save /denied 1: Read-only filesystem
+command: df -> accepted (Return release=1317 frames)
+PASS df: Read-only mount
+command: save -c /binary 515 -> accepted (Return release=1486 frames)
+PASS save -c /binary 515: save: verified
+command: save -c /zero 0 -> accepted (Return release=1364 frames)
+PASS save -c /zero 0: save: verified
+command: save -c /nmitest 515 -> accepted (Return release=1196 frames)
+PC=8E70 1581=B120 jam=0 rawIEC=1 fdc=00 track=39 sector=2 request=00/10/00 exit=1
+FAIL: public write command failed (frame 27984, PC $8E70, request 00/10/00)
+trace PC=$C446 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$667B drag=0 buttons=0 moves=0 finishes=0
+trace PC=$767C drag=0 buttons=0 moves=0 finishes=0
+trace PC=$8F4E drag=0 buttons=0 moves=0 finishes=0
+trace PC=$666C drag=0 buttons=0 moves=0 finishes=0
+trace PC=$63C0 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$8E70 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$6688 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$63C6 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$8E7A drag=0 buttons=0 moves=0 finishes=0
+trace PC=$C245 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$6381 drag=0 buttons=0 moves=0 finishes=0
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~> df                                                     
+Filesystem  256B-blocks  Used  Available  Mounted on            
+iec8        3160         666   2494        /                    
+Read-write mount; DOS data blocks (directory tracks excluded).  
+UDEKS:~> mount -o remount,ro 8 /                                
+mount: / ready (read-only)                                      
+UDEKS:~> save /denied 1                                         
+save: Read-only filesystem                                      
+UDEKS:~> df                                                     
+Filesystem  256B-blocks  Used  Available  Mounted on            
+iec8        3160         666   2494        /                    
+Read-only mount; DOS data blocks (directory tracks excluded).   
+UDEKS:~> save -c /binary 515                                    
+save: verified                                                  
+UDEKS:~> save -c /zero 0                                        
+save: verified                                                  
+UDEKS:~> save -c /nmitest 515                                   
+save: No such file or directory                                 
+UDEKS:~>                                                        
+

@@ -16,7 +16,13 @@
  * CR byte. After proving a source empty, use the existing exclusive-create /
  * checked-close path with its source type instead (that path fixes DOS's CR).
  * A transport/DOS failure may follow partial disk mutation: never retry it.
- * This first increment is isolated from the production storage link. */
+ * The C oracle is synchronous; the compact production backend has a bounded
+ * status continuation (below) instead of the private benchmark's long wait. */
 uint8_t udeks_cbm_mutate(uint8_t device, uint8_t operation,
     const uint8_t *source, const uint8_t *destination);
+/* Service implementation returns EAGAIN while DOS is busy. Poll only after
+ * that result, without rebuilding or resending the command. finish aborts
+ * the held transport (it cannot roll back a command already sent). */
+uint8_t udeks_cbm_mutate_poll(void);
+void udeks_cbm_mutate_abort(void);
 #endif
