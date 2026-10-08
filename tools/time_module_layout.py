@@ -22,6 +22,10 @@ def segments(path):
 
 
 def main():
+    if 'SERVICEBOOT:' in (ROOT/'cfg/8502-bootstrap.cfg').read_text():
+        from default_service_layout import main as check_current_layout
+        check_current_layout()
+        return
     out=ROOT/'build/services/time'
     (out/'placement.json').unlink(missing_ok=True)
     def run(*cmd): subprocess.run(cmd,cwd=ROOT,check=True)

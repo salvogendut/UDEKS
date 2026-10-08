@@ -5,19 +5,22 @@
 - [udeks.d81](udeks.d81?raw=true) — 1581-compatible image, 819,200 bytes
 - [SHA256SUMS](SHA256SUMS) — verify with `cd build && sha256sum -c SHA256SUMS`
 
-Published 2026-10-05 from merged main commit
-`799cc85c1632395b3d66f8a4b4f6fef76c279db9` (PR #39). The images are archived
-byte-for-byte in the [accepted native-client artifacts](../bench/artifacts/2026-10-05-native-clients/README.md);
-subsequent README/publication changes do not change the OS image. See the
-[four-native qualification record](../bench/results/2026-10-05-four-native/README.md)
-for the VICE and 1986 tests, [wave-resize](../bench/artifacts/2026-10-05-wave-resize/)
-for the resize follow-up, and the [2026-09-30 namespace record](../bench/results/2026-09-30-root-namespace/README.md)
-for the kernel baseline. It is still an experimental build, not a stable release.
+Published 2026-10-09 from the `services-0.1-default-boot` completion of issue #49,
+based on PR #50 (`9eda8ba06a2a5965c9d5ad14943838d10c2e30cf`). The
+[qualification record](../bench/results/2026-10-09-default-time/README.md) preserves
+the exact input manifest, disk hashes, normal/panic layout, clean/upgrade parity,
+VICE results and native 1986 input test. These are normal `make boot` outputs,
+not the earlier opt-in experiment. This remains an experimental build, not a
+stable release; there is no new physical-C128 acceptance claim.
+
+Includes writable root, cp/mv/rm, four generic graphical slots, and disk-loaded
+timekeeping. D64 omits only `xsprdef` (19 free blocks); D71/D81 include it.
 
 Select the disk on device 8, use native C128 mode and the 80-column display,
 then type `BOOT` if it did not autoboot. Pi1541 users should use the D64.
 Device 8 backs `/`; `/bin` commands work immediately, `/etc/rc` supplies the
-bounded startup commands, and `/mnt` is available for a separate data disk.
+bounded startup commands including `svc load /TIME.SVC`, and `/mnt` is available
+for a separate data disk. Use disposable copies: normal root is read/write.
 All images contain the same OS; these are standard CBM DOS disk formats.
 See the [main README](../README.md#download-and-boot) for a short test sequence.
 

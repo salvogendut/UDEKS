@@ -1,0 +1,13 @@
+{
+  "scope": "CPU request/router/SDK integration; RAM-backed CIA, no disk/boot qualification",
+  "negative_control": "missing private/root software-stack bridge detected",
+  "images": {
+    "module": "ee524e373c75f40647c7e36bcb670431a67544e5be4a10fce93a310eeb2601f1",
+    "request": "b2ce6481ed23cc7cc95ee9c2cc70f94081e0d1d836de0e86dc62abedea10b132",
+    "sdk": "7db0dd4ca16c6cd5412448c8f0d8a3d203d80099730c16824241c9190f145439",
+    "router": "03cb77800eafa5bb4c62c1f895e02df591807b7a9583e99feee6872759db9253",
+    "gate": "ff0df9e9f212a84ea5d9192b052bd7903cc4e1b4f42153203944441eb9639de9",
+    "common": "f9ffd2233cb76136238e9884b70183e7ac483647996481c31834c06d22f9c3f8",
+    "bootfs": "d6f6f86eac2bc56ccdafa054f78c209ad893d34b3e9e1231a6bb84afb98ca630"
+  }
+}

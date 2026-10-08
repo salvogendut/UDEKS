@@ -1025,7 +1025,7 @@ $(BUILD_8502)/kernel.s: src/8502/kernel.c include/udeks/mailbox.h \
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/service_registry.s: src/kernel/service_registry.c \
-		include/udeks/service.h | $(BUILD_8502)
+		include/udeks/service.h mk/services.mk | $(BUILD_8502)
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/task_state.s: src/kernel/task_state.c \
@@ -1330,7 +1330,7 @@ $(BUILD_8502)/bootfs_request.o: src/services/filesystem/bootfs_request.s | $(BUI
 $(BUILD_8502)/clock.o: src/8502/clock.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(BUILD_8502)/syscall_gate.o: src/8502/syscall_gate.s src/8502/app_gateway.s | $(BUILD_8502)
+$(BUILD_8502)/syscall_gate.o: src/8502/syscall_gate.s src/8502/app_gateway.s mk/services.mk | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/task_bank_gateway.o: src/8502/task_bank_gateway.s | $(BUILD_8502)
@@ -2433,7 +2433,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 check:
-	$(PYTHON) -m py_compile tools/build_service_boot.py tools/service_boot_probe.py
+	$(PYTHON) -m py_compile tools/build_service_boot.py tools/service_boot_probe.py tools/default_service_layout.py tools/check_service_migration.py
 	$(PYTHON) -m py_compile tools/check_service_request.py
 	$(PYTHON) -m py_compile tools/service_image.py tools/build_time_module.py tools/check_time_module.py tools/time_module_layout.py tools/check_time_slot.py tools/service_start_probe.py tools/build_time_overlay.py
 	$(PYTHON) -m py_compile tools/storage_lease_probe.py tools/storage_owner_probe.py

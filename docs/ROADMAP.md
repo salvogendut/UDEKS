@@ -13,38 +13,32 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
-**Active architectural feature (2026-10-08):**
+**Completed architectural feature (2026-10-09):**
 [#49 — first disk-loaded non-kernel service](https://github.com/salvogendut/UDEKS/issues/49),
-branch `services-0.1-disk-module`, worktree `build/disk-service`.
-The user selected the time-of-day service (`date`/`xclock`), with scheduler
-ticks explicitly outside its lifetime. The independent C/assembly module now
-builds and passes an exhaustive CPU-level clock/lifecycle proof; image-format
-validation and a measured startup-overlay placement direction are documented
-in the [service contract](../abi/services.md#disk-time-candidate--issue-49-2026-10-08).
-Checkpoints `2ff8c01`, `ed7a1f7`, `9e56af5` and `0e31b82` are pushed. Permanent startup retirement and
-registration/stop/reload are CPU-tested; VICE qualifies the normal boot guard.
-**Boot integration now available as isolated candidate images:** the bounded
-UTRQ operation, foreground ownership/exit cleanup, runtime bridge and independent
-`svc status|stop|load` command now pass CPU/host tests. Actual normal/panic links
-leave 2 resident bytes after that glue, without moving any app/stack/graphics
-boundary. The independent module uses 717 of its 728-byte slot. Tests retain
-all bounds, checksum and lifecycle checks; the command fits the existing console
-allocation. This candidate is **not installed by normal boot**.
+with the default-boot cutover on `services-0.1-default-boot` (`build/default-service`).
+Normal `make boot` now produces D64/D71/D81 with `SVC.BIN`, `TIME.SVC`, and
+`/etc/rc` loading the module. Resident `time.o` is gone; scheduler ticks remain
+independent. `date` reports unavailable while offline; stopping time retires
+`xclock` instead of letting it display stale data. A new module file can be
+loaded without rebuilding the kernel.
 
-`make service-boot` produces coherent D64/D71/D81 under `build/services/boot`,
-with all map-bound delivery rebuilt. `/etc/rc` loads `TIME.SVC`; `date` fails
-clearly while offline and `xclock` retires instead of displaying stale time.
-VICE passes real disk loading, stop/reload, missing/corrupt files and a disk-only
-module replacement without relinking the kernel. D64 retains 19 free blocks
-while omitting only `xsprdef`; D71/D81 retain the complete app selection.
+Clean builds and upgrades from the old resident-time build produce identical
+images without cleaning. Normal/panic placement gates keep all app/stack/display
+reservations; only 2 resident bytes and 11 module-slot bytes remain. VICE tests
+all formats, missing/corrupt modules and bootfs shell recovery. Native 1986
+qualifies keyboard/1351 drag and stop/reload. D64 omits only `xsprdef` and has
+19 blocks free; D71/D81 retain all apps. Downloads in `build/udeks.*` are refreshed.
+[Evidence and limits](../bench/results/2026-10-09-default-time/README.md).
+The user authorized merge after these automated gates. No new physical-C128
+test is inferred. This is one provisional fixed slot, not an arbitrary module
+allocator or daemon framework.
 
-Native 1986 D64/1571 also passes keyboard/1351 drag, stop/reload and console
-recovery. [Preserved evidence](../bench/results/2026-10-08-disk-service/README.md).
-**Accepted for merge:** the user confirmed "all is well" and requested PR/merge
-of this opt-in integration. The test platform was not specified; do not infer
-a new physical-C128 result. Next concrete milestone: normal-boot cutover with
-clean-build/migration qualification. Issue #49 remains open until that part is
-delivered. This first fixed time slot is not yet an arbitrary service allocator.
+**Next architectural work:** milestone 3's remaining task/service boundaries.
+Select a bounded user-facing slice (for example, independently scheduled console
+programs) and measure its memory budget before implementation. General task
+allocation, message/handle IPC and further service extraction remain open;
+preemption, scripting and app-specific optimization are separate work. Do not
+turn the completed time-service slice into an indefinite loader-tuning project.
 
 **Completed and merged (2026-10-08):**
 [#47 — writable root and file commands](https://github.com/salvogendut/UDEKS/issues/47),
@@ -253,7 +247,7 @@ mounts or applications must not require rebuilding the kernel.
 | Kernel and tasking | Cooperative root/command tasks plus four native banked allocations; general allocation, IPC and preemption due. |
 | Z80 secondary engine | Bounded task-safe worker API and cached wave computation work; broader operations and soak tests due. |
 | Graphics and input | Four generic native slots, migrated disk clients, dynamic names, foreground/background launch, targeted Ctrl+C and name-based stop accepted for merge (#35/PR #37). No new physical-platform result inferred. Repaint latency and focused-window keyboard input are separate work. |
-| Storage and applications | Disk shell, RC, graphics and disk commands (#21/#23/#25); root namespace accepted (#26/PR #28); create-only writes qualified and accepted (#44/PR #45). Next: disk-loaded service lifecycle. General scripting deferred (#27). |
+| Storage and applications | Disk shell/RC, four generic graphical slots, writable root and cp/mv/rm; first disk-loaded service (TIME.SVC) now normal boot (#49). Further service extraction and independently scheduled console programs remain open. General scripting deferred (#27). |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
@@ -341,7 +335,7 @@ Keep this feature bounded by the existing concurrency limit. The detailed
 4. Physical-C128 qualification remains recorded as pending for this candidate;
    merging it did not turn emulator evidence into a hardware result.
 
-### Following disk writes: one disk-loaded non-kernel service
+### Completed: one disk-loaded non-kernel service (#49)
 
 1. Select one existing service and inventory its dependencies, fixed entry
    points and memory lifetime. Record which minimal boot/read path must stay
@@ -534,10 +528,10 @@ only mount/unmount and ush. Disk ush owns builtin policy and graphics syntax;
 numeric deferred requests replace the resident builtin registry. See
 [the test sequence and remaining limitations](COMMAND-EXTRACTION.md).
 
-**Next, after accepted root/namespace issue #26:** choose one existing non-kernel
-service, define its load/start/stop and dependency contract, and load its ordinary
-disk image on demand without rebuilding the kernel. Preserve a boot/read recovery
-path. This is separate from expanding task capacity below. Issue #26 has
+**Completed as #49:** time-of-day has a bounded load/start/stop contract and
+loads from an ordinary disk file without rebuilding the kernel; normal boot
+and bootfs recovery are qualified. Other service classes still need extraction.
+This is separate from expanding task capacity below. Issue #26 has
 separated the system command source from data mounts: disk utilities now
 come from `/bin` on the system volume, not `/mnt`.
 

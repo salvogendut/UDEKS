@@ -1,0 +1,50 @@
+{
+  "scope": "real disk/RC service integration, ordinary keyboard commands",
+  "source": "/var/home/salvogendut/Dev/UDEKS/build/default-service",
+  "drive": "1541",
+  "mode": "shell-corrupt",
+  "source_disk_sha256": "41246ba13e41b07611ac425f3a65df4ed3a0fa94c72db5d62a57995cbdc71ac3",
+  "test_disk_sha256": "e5826f2e26b3f1c6478fd76287ec1bf221cf421ae397084d4afa548ae0d9aae6",
+  "commands": [
+    {
+      "command": "help",
+      "exit": null,
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave xcalc xdraw\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~>"
+    },
+    {
+      "command": "echo recovered",
+      "exit": null,
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave xcalc xdraw\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> echo recovered\nrecovered\nUDEKS:~>"
+    },
+    {
+      "command": "mount 8 /mnt",
+      "exit": 0,
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave xcalc xdraw\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> echo recovered\nrecovered\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/svc.bin status",
+      "exit": 0,
+      "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave xcalc xdraw\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> echo recovered\nrecovered\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> /mnt/svc.bin status\ntime: offline\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/date.bin",
+      "exit": 1,
+      "console": "Z80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave xcalc xdraw\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> echo recovered\nrecovered\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> /mnt/svc.bin status\ntime: offline\nUDEKS:~> /mnt/date.bin\ndate: time service unavailable\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/svc.bin load /mnt/TIME2.SVC",
+      "exit": 0,
+      "console": "BOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave xcalc xdraw\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> echo recovered\nrecovered\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> /mnt/svc.bin status\ntime: offline\nUDEKS:~> /mnt/date.bin\ndate: time service unavailable\nUDEKS:~> /mnt/svc.bin load /mnt/TIME2.SVC\ntime: ready\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/date.bin",
+      "exit": 0,
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave xcalc xdraw\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> echo recovered\nrecovered\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> /mnt/svc.bin status\ntime: offline\nUDEKS:~> /mnt/date.bin\ndate: time service unavailable\nUDEKS:~> /mnt/svc.bin load /mnt/TIME2.SVC\ntime: ready\nUDEKS:~> /mnt/date.bin\n01:00:03\nUDEKS:~>"
+    },
+    {
+      "command": "/mnt/cat.bin /mnt/hello",
+      "exit": 0,
+      "console": "WELCOME TO UDEKS.\n\nUDEKS:~> help\ncd clear echo help pwd xinit xclock xwave xcalc xdraw\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount\nUDEKS:~> echo recovered\nrecovered\nUDEKS:~> mount 8 /mnt\nmount: /mnt ready (read-only)\nUDEKS:~> /mnt/svc.bin status\ntime: offline\nUDEKS:~> /mnt/date.bin\ndate: time service unavailable\nUDEKS:~> /mnt/svc.bin load /mnt/TIME2.SVC\ntime: ready\nUDEKS:~> /mnt/date.bin\n01:00:03\nUDEKS:~> /mnt/cat.bin /mnt/hello\nHELLO UDEKS\nUDEKS:~>"
+    }
+  ]
+}

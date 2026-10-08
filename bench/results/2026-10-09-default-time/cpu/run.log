@@ -1,0 +1,40 @@
+python3 tools/check_time_module.py
+PASS 174459 module calls: all 86400 times, 1024 raw TOD cases, counter rollover, TI/BCD, lifecycle, guards, atomic invalid-set rejection
+PASS negative control: altered module instruction detected
+python3 tools/check_time_slot.py
+PASS startup: all 256 results, recursive entry, damaged SREG, unusable C stack
+PASS 436 independent validator cases; rejection executes no code
+PASS lifecycle: publication, abort, duplicate load, cached vectors, start/poll/stop errors
+PASS sealed TIME.SVC reload and retained clock-read C ABI; 2142 protected calls
+PASS negative control: disabled checksum rejection detected
+{
+  "scope": "sim6502 candidate only; not installed in boot",
+  "validation_cases": 436,
+  "startup_results": 256,
+  "core_segments": {
+    "CODE": 479,
+    "RODATA": 20,
+    "BSS": 1,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "core_bytes": 500,
+  "startup_segments": {
+    "CODE": 21,
+    "RODATA": 0,
+    "BSS": 0,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "negative_control": "checksum rejection disabled: detected",
+  "module_sha256": "ee524e373c75f40647c7e36bcb670431a67544e5be4a10fce93a310eeb2601f1",
+  "fixture_sha256": "268536f84bfcb0030c06123c37977a0e89d65dc8731ed728164cbec10ffc81ae",
+  "cia": "RAM-backed, not hardware timing"
+}
+python3 tools/check_service_request.py
+PASS real request envelope, reserved fields, startup and trusted caller rejection (no module/snapshot/CIA mutation)
+PASS abandoned foreground lease cleanup; other retirements leave it alone; bad COMMIT goes offline
+PASS private console ZP, live software stack and decimal flag restored; real TIME.SVC start/poll/stop/reload; 1832 calls
+PASS negative control: missing private/root software-stack bridge detected

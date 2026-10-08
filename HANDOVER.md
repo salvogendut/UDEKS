@@ -6,7 +6,50 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — disk-loaded time service, 2026-10-08
+## Current handoff — default disk-time boot, 2026-10-09
+
+Issue [#49](https://github.com/salvogendut/UDEKS/issues/49), completion branch
+`services-0.1-default-boot`, worktree `build/default-service`, based on merged
+PR #50 (`9eda8ba`). User authorized all three steps, testing and merge on success.
+Unrelated edits in the root main worktree were left untouched.
+
+1. Normal `make boot` now links the time-slot manager/read wrapper, not `time.o`.
+   Both configs reserve `SERVICEBOOT`; `/etc/rc` runs `svc load /TIME.SVC`.
+   `service-boot` aliases normal boot; obsolete `DISK_TIME=0/1` is rejected.
+   Registry, request gate and IEC router depend explicitly on `mk/services.mk`
+   so upgrades recompile every flag-sensitive object.
+2. `service-layout-check` audits both actual maps and emitted vectors;
+   `service-rebuild-check` proves fresh-copy determinism;
+   `service-migration-check` builds resident-time `9eda8ba`, copies only changed
+   source inputs over its existing outputs, upgrades without clean, and checks
+   exact three-disk parity plus a no-op next build. No frozen memory bounds move.
+3. Normal D64/D71/D81 are published under `build/udeks.*`, with current README,
+   checksums and [evidence](bench/results/2026-10-09-default-time/README.md).
+
+VICE qualifies all formats (RC, exact module bytes, date/clock, stop/reload,
+duplicate refusal and disk-only revision replacement); missing/corrupt TIME.SVC
+and missing/corrupt disk ush remain recoverable. Native 1986 qualifies D64/1571
+keyboard/1351 drag, service lifecycle and console input. CPU lifecycle/request
+proofs pass again. No new physical-C128 or arbitrary timer-NMI stress claim.
+
+The broader regression caught a prior app-size bug: offline checks made xclock
+six bytes too large for slot 4. A constant-base title copy saves eight code
+bytes; both offline checks remain and no system reservation changes. The
+actual-build graphics gate now verifies coexistence in all 24 launch orders.
+Full D81 four-app move/resize, unknown-app admission/reuse and cleanup pass.
+
+Recovery skips RC and unmounts the failed system root: use `mount 8 /mnt`, then
+explicit `/mnt/svc.bin load /mnt/TIME.SVC`, `/mnt/date.bin`, etc. Bare `svc`
+does not resolve there; the recovery mount is deliberately read-only.
+
+The original layout budgets still hold: live BSS through `$93CD` (2 bytes
+spare), startup `$93D0-$95D5`, module 710 emitted + 7 BSS of 728 reserved.
+Do not grow resident code without a placement decision. The first fixed-slot
+extraction is complete; next work is a bounded task/service feature from the
+roadmap, not open-ended optimization. Historical candidate notes below describe
+the pre-cutover build and must not be mistaken for current boot instructions.
+
+## Previous handoff — disk-loaded time service, 2026-10-08
 
 Issue [#49](https://github.com/salvogendut/UDEKS/issues/49), branch
 `services-0.1-disk-module`, worktree `build/disk-service`, based on PR #48's

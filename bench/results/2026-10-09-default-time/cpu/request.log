@@ -1,0 +1,3 @@
+PASS real request envelope, reserved fields, startup and trusted caller rejection (no module/snapshot/CIA mutation)
+PASS abandoned foreground lease cleanup; other retirements leave it alone; bad COMMIT goes offline
+PASS private console ZP, live software stack and decimal flag restored; real TIME.SVC start/poll/stop/reload; 1832 calls

@@ -1,3 +1,0 @@
-# UDEKS disk-service candidate; device 8 is root.
-# Resident startup has returned. /mnt stays free.
-svc load /TIME.SVC

@@ -76,12 +76,12 @@ class TimeSlotQualificationTests(unittest.TestCase):
         self.assertIn('0xF090u', header)
         self.assertIn('memset((void *)0xf090,0,24)', fixture)
 
-    def test_manager_is_not_linked_into_boot_or_advertised_as_syscall(self):
-        make = (ROOT/'Makefile').read_text()
-        self.assertNotIn('time-slot.o', make)
-        self.assertNotIn('time_slot.s', make)
+    def test_manager_is_linked_but_module_policy_stays_on_disk(self):
+        make = (ROOT/'mk/services.mk').read_text()
+        self.assertIn('time-slot.o', make)
+        self.assertNotIn('$(BUILD_8502)/time.o', make)
         source = (ROOT/'src/services/module/time_slot.s').read_text()
-        self.assertIn('not linked into normal boot yet', source)
+        self.assertIn('Normal boot lifecycle core', source)
         self.assertIn('received byte count', source)
 
 

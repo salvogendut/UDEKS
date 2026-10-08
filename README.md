@@ -21,10 +21,10 @@ Read the [dedication](DEDICATION.md).
 
 **[Roadmap](docs/ROADMAP.md)** · **[Documentation](docs/README.md)** · **[Build guide](docs/BUILDING.md)**
 
-Opt-in preview: a [disk-loaded time service](abi/services.md#coherent-boot-integration-and-manual-acceptance).
-`make service-boot` builds separate test images; normal `make boot` still uses
-resident timekeeping pending the default-boot cutover. This is the first service extraction,
-not yet a general-purpose module loader.
+Normal boot now loads the [time service from disk](abi/services.md#coherent-boot-integration-and-manual-acceptance).
+`/etc/rc` invokes `svc load /TIME.SVC`; `svc status`, `svc stop` and `svc load`
+manage its lifetime independently of the scheduler. This is the first service
+extraction, not yet a general-purpose module loader.
 
 > [!IMPORTANT]
 > This is an experimental native OS, not a general-purpose Unix or a finished
@@ -37,32 +37,29 @@ not yet a general-purpose module loader.
 
 ## Download and boot
 
-For the current disk-write and sprite-editor features, build the source and use
-`build/boot/udeks.d64`, `.d71` or `.d81`. The
+The current downloads include writable root, file commands, the sprite editor
+(D71/D81), and disk-loaded timekeeping. The
 [SAVE test and writable-mount instructions](docs/GRAPHICAL-APPS-SDK.md#counted-disk-io-utrq-014)
-apply to these fresh images, **not** the older downloads below. Use disposable
-media for write testing; overwrite and append are not implemented. Fresh
-builds also have exact-file `cp`, `mv` and `rm` (see below).
+apply to these images. Use disposable media for write testing; overwrite and
+append are not implemented. Exact-file `cp`, `mv` and `rm` are available (see below).
 The [qualification record](bench/results/2026-10-07-storage-acceptance/README.md)
 includes the hardware acceptance. The VICE 1581 mid-write-ejection run remains
 unqualified, but the [equivalent 1986 test now passes](bench/results/2026-10-07-storage-eject-1986/README.md).
 
-These preserved test images contain the four-generic-slot build and the xwave
-resize improvement from [PR #37](https://github.com/salvogendut/UDEKS/pull/37):
+Published 2026-10-09; ordinary `make boot` reproduces these three formats:
 
 | Image | Use |
 | --- | --- |
-| [Download D64](bench/artifacts/2026-10-05-wave-resize/udeks.d64?raw=true) | 1541-compatible drives and Pi1541; also VICE and 1986. |
-| [Download D71](bench/artifacts/2026-10-05-wave-resize/udeks.d71?raw=true) | A 1571-compatible drive or emulator configured for D71. |
-| [Download D81](bench/artifacts/2026-10-05-wave-resize/udeks.d81?raw=true) | A 1581-compatible drive or emulator configured for D81. |
+| [Download D64](build/udeks.d64?raw=true) | 1541-compatible drives and Pi1541; also VICE and 1986. Omits only `xsprdef`. |
+| [Download D71](build/udeks.d71?raw=true) | A 1571-compatible drive or emulator configured for D71; all apps. |
+| [Download D81](build/udeks.d81?raw=true) | A 1581-compatible drive or emulator configured for D81; all apps. |
 
-See [checksums](bench/artifacts/2026-10-05-wave-resize/SHA256SUMS) and
-[qualification and limits](docs/GENERIC-GRAPHICS-APPS.md#resize-latency-follow-up--2026-10-05).
-VICE qualifies all three formats; native 1986 input qualifies D64/1571.
-The user accepted the improved behavior; the latest manual-test platform was
-not specified, so no additional physical-C128 result is claimed. The older
-[published snapshots](build/README.md) in `build/udeks.*` still contain PR #28
-and have not been overwritten. All are ordinary CBM DOS disk images.
+See [checksums](build/SHA256SUMS), [provenance](build/README.md) and
+[qualification and limits](bench/results/2026-10-09-default-time/README.md).
+VICE qualifies disk-service loading in all three formats; native 1986 qualifies
+D64/1571 input and clock dragging. These checks do not establish new physical-C128
+acceptance. All are ordinary CBM DOS disk images. Local builds go to `build/boot/`;
+publishing into `build/udeks.*` is a separate, explicit step.
 
 1. Select/mount the image as device **8**.
 2. Start in native C128 mode with the **80-column VDC display** enabled.
@@ -79,6 +76,7 @@ cd /etc
 cat rc
 cd /
 df
+svc status
 xclock &
 xwave &
 cowsay hello
@@ -194,9 +192,8 @@ implemented with public UTRQ 0.14, explicit writable mounts and the standalone
 SAVE command. The manual checklist passes in 1986 and on real C128/PI1541;
 1581 mid-write ejection/recovery also passes under native 1986. The separate
 VICE limitation remains documented. [PR #45](https://github.com/salvogendut/UDEKS/pull/45)
-records the merge. The next
-architectural milestone is extracting the first non-kernel service into a
-disk-loaded program.
+records the merge. The first non-kernel service extraction is now installed
+by normal boot: `TIME.SVC`, with failure recovery and a disk-only loader.
 General scripting, broader tasking and optimization remain separate roadmap
 work. The existing `/etc/rc` command runner is not a POSIX
 `sh` or Bash implementation.

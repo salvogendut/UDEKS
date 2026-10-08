@@ -5,10 +5,18 @@ import unittest
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'tools'))
-from native_app_layout import ALLOCATIONS,ADMISSION_ORDER,check_assembly_layout,check_linked_tables
+from native_app_layout import ALLOCATIONS,ADMISSION_ORDER,check_assembly_layout,check_linked_tables,check_coexistence
 
 
 class NativeAllocationLayout(unittest.TestCase):
+    def test_coexistence_checks_all_orders_not_just_individual_admission(self):
+        fits = {'clock':[3,4,5],'wave':[3,5],'calc':[3],'draw':[3,4,5,6]}
+        self.assertEqual(check_coexistence(fits),24)
+        # Six bytes of clock growth once removed slot 4 from its fit set.
+        # Every app still fitted alone, but all four no longer coexisted.
+        with self.assertRaisesRegex(ValueError,'cannot coexist'):
+            check_coexistence(dict(fits,clock=[3,5]))
+
     def test_all_four_tables_agree_with_loader_and_initializer(self):
         text=(ROOT/'src/services/app/native_layout.inc').read_text()
         check_assembly_layout(text)
