@@ -46,6 +46,9 @@ def main():
     minimum=baseline-time-setter-split['SERVICEBOOT']
     manager=segments(out/'time-slot.o')
     manager_bytes=sum(manager.values())
+    run('cl65','-t','none','--cpu','6502','--standard','c99','-Oirs','-I','include',
+        '-c','-o',str(out/'resident.o'),'src/services/time/resident.c')
+    compatibility=segments(out/'resident.o')['CODE']
     budget=TIME_BASE-minimum
     report=dict(scope='pre-integration accounting, NOT a resident link or safe-to-load image',
                 baseline_bss_end=baseline-1, time_code=time, setter_and_ti=setter,
@@ -57,8 +60,9 @@ def main():
                 predicted_end_before_manager=minimum,
                 max_new_resident_bytes_before_slot=budget,
                 manager_segments=manager, manager_bytes=manager_bytes,
-                manager_shortfall_before_request_glue=max(0,manager_bytes-budget),
-                manager_fits_before_request_glue=manager_bytes<=budget,
+                retained_clock_read_bytes=compatibility,
+                manager_shortfall_before_request_glue=max(0,manager_bytes+compatibility-budget),
+                manager_fits_before_request_glue=manager_bytes+compatibility<=budget,
                 conditions=['remove old time code and setter',
                             'place SERVICEBOOT inside the future module slot',
                             'permanent one-shot startup guard before overwrite',

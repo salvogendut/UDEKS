@@ -6,7 +6,7 @@ The first extraction target is the **time-of-day service**, not the scheduler's
 monotonic tick counter. Its C start/poll logic, assembly clock setting and BASIC
 `TI` synchronization now build as an independent `build/services/time/TIME.SVC`.
 This is a **candidate only, not installed or enabled by normal boot**. Do not
-load it into a running baseline: its provisional `$9300` address overlaps live
+load it into a running baseline: its provisional `$93D0` address overlaps live
 resident state in that build.
 
 The module links its own required cc65 code helpers; it does not import private
@@ -74,36 +74,48 @@ production-linked; the candidate manager and startup overlay are not.
 
 ### Placement and lifetime gate
 
-The measured image is **797 bytes plus 10 BSS bytes**, including its 48-byte
-header and independent runtime helpers. The compatibility kernel currently
-uses 531 bytes for `time.o` and 248 for the setter/TI assembly. Extraction alone
-therefore does not pay for the image format, private helpers and dispatch glue.
+The measured image is **710 bytes plus 7 BSS bytes**, including its 48-byte
+header and independent runtime helpers. Fixed-field counters and a byte-valued
+BCD lookup keep its implementation in C while avoiding unnecessary generic
+pointer arithmetic/multiply helpers. Conversion still occurs between the TOD
+hours latch and the final tenths read. The normal resident implementation is
+unchanged by these candidate-only reductions.
 
-A compile-only split identifies **518 startup-only registry bytes**, leaving
-223 bytes of live registry code and the same 8-byte shared registry BSS.
-The proposed lifetime is to place those startup instructions in the future
-module reservation, then replace them only after startup has permanently
-retired. The guarded/irreversible one-shot entry is a prerequisite; checking
-only a mutable READY diagnostic is not sufficient. The module must not load
-from inside a still-active startup frame.
+`make time-module-placement` accounts for objects; **`make time-overlay-check`
+also performs the actual normal/panic kernel links**, including compatibility
+wrappers and library selection. Both variants place resident BSS through
+`$939D`, leaving **50 bytes** before the candidate slot `$93D0-$96A7`.
+The manager is 479 CODE + 20 RODATA + 1 BSS = **500 bytes**, plus the explicitly
+retained **57-byte C clock-read wrapper**. The independent module uses 717 of
+the slot's 728 bytes, leaving 11. These sizes supersede the old `$9300`/548-byte
+manager estimate and its 174-byte deficit at checkpoint `ed7a1f7`.
 
-`make time-module-placement` checks the real objects and normal/panic maps.
-At the provisional `$9300-$96a7` slot it budgets **at most 374 new resident
-bytes** after extraction and the smaller, now-linked 21-byte startup guard
-(the committed `2ff8c01` checkpoint had 364). The measured manager is
-527 CODE + 20 RODATA + 1 BSS = **548 bytes: 174 too many**, even before new
-request-boundary glue. The report explicitly says it does not fit. This is
-an accounting gate, **not a successful resident-integration link**. Resolve
-that placement/size deficit before enabling the overlay or loader. No
-application slot, stack guard,
-VDC asset, VIC shadow or common-RAM gateway has moved. The normal startup
-split is disabled; the old resident time service remains installed.
+`SERVICEBOOT` really links at `$93D0-$95D5`: **518 startup-only registry bytes**,
+with 223 live registry bytes and unchanged shared registry state. Only after
+startup's private latch indicates returned-success may loading overwrite this
+code. Checking mutable READY diagnostics or loading from an active startup
+frame remains forbidden. Cached poll/set/stop vectors are published only after
+validation and successful start; start itself runs directly through the freshly
+validated header while execution is serialized.
+
+The linker asserts the resident/overlay/VDC bounds. A real negative link
+adding one byte too much BSS fails; map checks also reject changes to any app,
+stack, VIC, VDC, zero-page or common-RAM reservation. `$CF40` and `$CF60` retain
+their published JMP addresses and conventions. The provisional base is not a
+frozen new external ABI.
+
+These isolated links deliberately redirect **every** split output and do not
+replace production disks. They are **not runnable boot artifacts**: relocated
+boot-service import bridges and remaining map-bound delivery still need a full
+candidate rebuild. The 50 resident bytes have not paid for the new request/
+ownership glue. Normal boot leaves the startup split disabled and the original
+resident time service installed.
 
 ### Remaining integration and acceptance
 
-1. Fit and link the real startup overlay and callable-entry dispatch within
-   the measured budget. The irreversible guard is implemented and tested;
-   the overlay is not. Retain frozen public clock vectors.
+1. Add the bounded request/ownership entry within the remaining budget, then
+   rebuild all map-bound boot delivery for the actually linked overlay. The
+   overlay link and irreversible guard are tested; disk integration is not.
 2. Use a disk-side loader/control command and the existing bounded `/etc/rc`
    runner. Validate the complete image and placement before publishing any
    callable entry; initialize BSS, run start, then publish READY. Rejection or
@@ -116,9 +128,10 @@ split is disabled; the old resident time service remains installed.
    on VICE/1986 before offering physical-C128 test images.
 
 Reproduce the independent proofs in `my-distrobox`:
-`make time-module time-module-check time-slot-check time-module-placement`.
+`make time-module time-module-check time-slot-check time-module-placement time-overlay-check`.
 The exact sealed image runs under sim6502 through all 86,400 times of day;
-173,433 entry calls check read/set/TI/BCD behavior, start/stop/restart, software
+174,459 entry calls check read/set/TI/BCD behavior, all 1,024 raw TOD byte
+encodings, counter rollover, start/stop/restart, software
 stack balance, image/BSS guards and non-mutating invalid-set rejection. An
 altered range-check instruction is detected by a negative-control run. The
 simulator uses RAM-backed CIA addresses: this is **not** hardware TOD latching,
@@ -127,7 +140,8 @@ interrupt, disk-loading or C128/VICE qualification.
 `time-slot-check` executes the actual manager and startup veneer: 436
 independent-validator cases, all 256 startup result values, recursive entry,
 corrupt diagnostics, BSS bounds, start/poll/stop failure, duplicate/aborted
-loading and sealed-module reload (2,138 protected calls). Disabling checksum
+loading, sealed-module reload and the retained clock-read C calling convention
+(2,142 protected calls). Disabling checksum
 rejection in the binary fails the negative control. Simulator code does not
 overlap the manager fixture; the root cc65 ZP/stack is isolated from the harness.
 

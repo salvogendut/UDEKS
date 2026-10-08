@@ -19,11 +19,34 @@ extern volatile unsigned char udeks_time_status[UDEKS_TIME_STATUS_SIZE];
 
 void udeks_time_sync_ti(void);
 
+#ifdef UDEKS_TIME_MODULE
+/* Byte-valued lookup arithmetic avoids importing a 16-bit multiply routine
+ * for these three samples. */
+/* All three call sites mask away bit 7 before indexing. */
+static const unsigned char bcd_tens[8] = {
+    0, 10, 20, 30, 40, 50, 60, 70
+};
+static unsigned char bcd_to_binary(unsigned char value)
+{
+    return (unsigned char)(bcd_tens[value >> 4] + (value & 0x0fu));
+}
+#else
 static unsigned char bcd_to_binary(unsigned char value)
 {
     return (unsigned char)(((value >> 4) * 10u) + (value & 0x0Fu));
 }
+#endif
 
+#ifdef UDEKS_TIME_MODULE
+/* Both callers use fixed fields. Avoid an out-of-line variable-offset
+ * counter (and its software-stack helpers) in the independently loaded
+ * image; the existing exhaustive clock test checks the same semantics. */
+#define increment_counter(low_offset) do { \
+    if (++STATUS_BYTE(low_offset) == 0) { \
+        ++STATUS_BYTE((low_offset) + 1u); \
+    } \
+} while (0)
+#else
 static void increment_counter(unsigned char low_offset)
 {
     ++STATUS_BYTE(low_offset);
@@ -31,12 +54,15 @@ static void increment_counter(unsigned char low_offset)
         ++STATUS_BYTE(low_offset + 1u);
     }
 }
+#endif
 
 static unsigned char sample_tod(void)
 {
     unsigned char raw_hour;
+#ifndef UDEKS_TIME_MODULE
     unsigned char raw_minute;
     unsigned char raw_second;
+#endif
     unsigned char raw_tenth;
     unsigned char hour;
     unsigned char minute;
@@ -44,12 +70,21 @@ static unsigned char sample_tod(void)
 
     /* Reading hours latches a coherent TOD value until tenths is read. */
     raw_hour = CIA1_TOD_HOURS;
+#ifdef UDEKS_TIME_MODULE
+    /* Conversion while TOD is latched is safe; tenths remains the last
+     * hardware read, so no extra raw-byte copies are needed in this image. */
+    minute = bcd_to_binary((unsigned char)(CIA1_TOD_MINUTES & 0x7fu));
+    second = bcd_to_binary((unsigned char)(CIA1_TOD_SECONDS & 0x7fu));
+    raw_tenth = CIA1_TOD_TENTHS;
+    hour = bcd_to_binary((unsigned char)(raw_hour & 0x1fu));
+#else
     raw_minute = CIA1_TOD_MINUTES;
     raw_second = CIA1_TOD_SECONDS;
     raw_tenth = CIA1_TOD_TENTHS;
     hour = bcd_to_binary((unsigned char)(raw_hour & 0x1Fu));
     minute = bcd_to_binary((unsigned char)(raw_minute & 0x7Fu));
     second = bcd_to_binary((unsigned char)(raw_second & 0x7Fu));
+#endif
     if (hour > 12u || minute > 59u || second > 59u ||
         raw_tenth > 9u) {
         return UDEKS_TIME_INVALID;
@@ -78,11 +113,21 @@ unsigned char udeks_time_start(void)
 {
     unsigned char offset;
     unsigned char control_b;
+#ifndef UDEKS_TIME_MODULE
     unsigned char tenths;
+#endif
 
+#ifdef UDEKS_TIME_MODULE
+    offset = UDEKS_TIME_STATUS_SIZE;
+    do {
+        --offset;
+        STATUS_BYTE(offset) = 0;
+    } while (offset != 0);
+#else
     for (offset = 0; offset < UDEKS_TIME_STATUS_SIZE; ++offset) {
         STATUS_BYTE(offset) = 0;
     }
+#endif
     STATUS_BYTE(0) = 'T';
     STATUS_BYTE(1) = 'I';
     STATUS_BYTE(2) = 'M';
@@ -101,8 +146,12 @@ unsigned char udeks_time_start(void)
     /* A tenths write starts a reset-stopped 6526 TOD without changing time. */
     control_b = CIA1_CRB;
     CIA1_CRB = (unsigned char)(control_b & 0x7Fu);
+#ifdef UDEKS_TIME_MODULE
+    CIA1_TOD_TENTHS &= 0x0fu;
+#else
     tenths = CIA1_TOD_TENTHS;
     CIA1_TOD_TENTHS = (unsigned char)(tenths & 0x0Fu);
+#endif
     CIA1_CRB = control_b;
 
     if (sample_tod() != UDEKS_TIME_OK) {

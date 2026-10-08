@@ -16,6 +16,7 @@ static unsigned char hh, mm, ss, result;
 static unsigned char expected_hour, expected_minute, expected_second;
 static unsigned long expected, actual, cases;
 static unsigned char saved_time[24], saved_cia[8];
+static unsigned char field, decoded, valid;
 
 static unsigned int word(unsigned char n)
 {
@@ -88,10 +89,39 @@ int main(void)
             puts("FAIL invalid setter mutated state"); return 1;
         }
     }
+    /* All raw encodings of each TOD register, including ignored flag bits
+       and invalid values. Match the pre-extraction conversion/range rules,
+       not a new stricter BCD policy. Tenths is still sampled last. */
+    for(field=0;field<4;++field) for(i=0;i<256;++i) {
+        hh=1; mm=2; ss=3;
+        TOD[3]=1; TOD[2]=2; TOD[1]=3; TOD[0]=0;
+        TOD[field]=i;
+        if(field==0) { decoded=i; valid=i<10; }
+        else {
+            decoded=i & (field==3 ? 0x1f : 0x7f);
+            decoded=((decoded>>4)*10)+(decoded&15);
+            valid=decoded <= (field==3 ? 12 : 59);
+            if(field==3 && valid) {
+                if(i & 0x80) { decoded+=12; if(decoded==24) decoded=12; }
+                else if(decoded==12) decoded=0;
+            }
+        }
+        result=invoke(44);
+        if(result!=(valid ? 0 : 1)) { puts("FAIL raw TOD range"); return 1; }
+        if(valid && TIME[11-field]!=decoded) { puts("FAIL raw TOD conversion"); return 1; }
+    }
+    /* Both fixed diagnostic counters retain their 16-bit carry semantics. */
+    module_hour=1; module_minute=2; module_second=3;
+    if(invoke(20)) return 1;
+    TIME[16]=255; TIME[17]=255; TIME[18]=255; TIME[19]=255;
+    TOD[1]=4;
+    if(invoke(44) || TIME[16] || TIME[17] || TIME[18] || TIME[19]) {
+        puts("FAIL diagnostic counter rollover"); return 1;
+    }
     if(MEM(base-1)!=0x37 || MEM(base+size+bss)!=0x73 ||
        memcmp((const void *)base,module_image,size)) {
         puts("FAIL module code/bounds"); return 1;
     }
-    printf("PASS %lu module calls: all 86400 times, TI/BCD, lifecycle, guards, atomic invalid-set rejection\n",cases);
+    printf("PASS %lu module calls: all 86400 times, 1024 raw TOD cases, counter rollover, TI/BCD, lifecycle, guards, atomic invalid-set rejection\n",cases);
     return 0;
 }

@@ -23,7 +23,12 @@
         .import _udeks_banked_graphics_request, _udeks_banked_graphics_installed
         .import _udeks_bootfs_finish_error, _udeks_bootfs_finish_ok
         .import _udeks_bootfs_request
+        .ifdef UDEKS_DISK_TIME
+        .import _udeks_time_slot_set
+clock_set_runtime = _udeks_time_slot_set
+        .else
         .export _udeks_time_sync_ti
+        .endif
         .import pusha
         .import pushax
         .importzp tmp1, ptr1
@@ -149,7 +154,9 @@ task_exec_pending:
         sta SHELL_PENDING_EXEC
         jmp task_finish_ok
 
+        .ifndef UDEKS_DISK_TIME
         .include "../services/time/clock_set.inc"
+        .endif
 
         ; The bounded implementation resides in reclaimed common boot RAM.
         ; Stage 1 installs this separately after its own common gateway exits.

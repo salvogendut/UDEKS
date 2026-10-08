@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # First disk-service candidate; not a dependency of normal boot yet.
-.PHONY: time-module time-module-check time-module-placement time-slot-check service-start-probe
+.PHONY: time-module time-module-check time-module-placement time-slot-check service-start-probe time-overlay-check
 time-module: build/services/time/TIME.SVC
 time-module-check: time-module
 	$(PYTHON) tools/check_time_module.py
@@ -10,6 +10,8 @@ time-slot-check: time-module
 	$(PYTHON) tools/check_time_slot.py
 service-start-probe:
 	$(PYTHON) tools/service_start_probe.py
+time-overlay-check: time-module $(KERNEL_BIN) $(PANIC_PROBE_KERNEL_BIN)
+	$(PYTHON) tools/build_time_overlay.py
 
 build/services/time/TIME.SVC build/services/time/time.map build/services/time/layout.json &: \
         src/services/time/time.c src/services/time/module.s \
@@ -20,6 +22,6 @@ build/services/time/TIME.SVC build/services/time/time.map build/services/time/la
 
 $(BUILD_8502)/syscall_gate.o: src/services/time/clock_set.inc
 
-build/services/time/time-slot.o: src/services/module/time_slot.s
+build/services/time/time-slot.o: src/services/module/time_slot.s src/services/module/time_slot.inc
 	mkdir -p $(@D)
 	ca65 --cpu 6502 -o $@ $<

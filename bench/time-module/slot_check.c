@@ -11,12 +11,12 @@ extern unsigned char module_hour, module_minute, module_second, module_stack_err
 unsigned char module_call(void);
 
 #define MEM(a) (*(volatile unsigned char *)(a))
-#define SLOT 0x9300u
+#define SLOT 0x93d0u
 #define LIMIT 0x96a8u
 #define TIME_STATE MEM(0xf205)
 #define CHECK(c) check((c), __LINE__)
 enum { STARTUP, PHASE, RESULT, CALLS, DESIRED, SEEN_PHASE, RECURSIVE, BEGIN_EARLY,
-       CONTROL, POLL, SET, STATE, VALIDATE, POISON_STACK };
+       CONTROL, POLL, SET, STATE, VALIDATE, POISON_STACK, LEGACY_READ };
 static unsigned int image_size, i, k, word, sum;
 static unsigned char rc, expected, width;
 static unsigned char slot_before[LIMIT-SLOT];
@@ -197,10 +197,15 @@ int main(void)
         CHECK(control(2,image_size)==0); CHECK(TIME_STATE==2);
         CHECK(invoke(SET,23,59,58)==0); CHECK(invoke(POLL,0,0,0)==0);
         CHECK(MEM(0xf208)==23 && MEM(0xf209)==59 && MEM(0xf20a)==58);
+        MEM(0xf12f)=0x3c; MEM(0xf133)=0xc3;
+        memset((void *)0xf130,0xa5,3);
+        CHECK(invoke(LEGACY_READ,0,0,0)==0);
+        CHECK(MEM(0xf130)==23 && MEM(0xf131)==59 && MEM(0xf132)==58);
+        CHECK(MEM(0xf12f)==0x3c && MEM(0xf133)==0xc3);
         CHECK(control(3,0)==0); CHECK(!TIME_STATE);
         CHECK(invoke(SET,0,0,0)==1); CHECK(invoke(POLL,0,0,0)==0);
         CHECK(!memcmp((const void *)SLOT,module_image,image_size));
     }
-    printf("PASS sealed TIME.SVC load/set/poll/stop/reload; %lu protected calls\n",calls);
+    printf("PASS sealed TIME.SVC reload and retained clock-read C ABI; %lu protected calls\n",calls);
     return 0;
 }

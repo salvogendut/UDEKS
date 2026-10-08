@@ -5,6 +5,7 @@
         .import _udeks_service_start_result, _udeks_time_slot_state
         .import _udeks_time_slot_control, _udeks_time_slot_poll, _udeks_time_slot_set
         .import time_slot_validate
+        .import _udeks_time_now, pushax
         .importzp tmp1, tmp2
         .export _udeks_service_start_all_once
         .segment "HEADER"
@@ -13,6 +14,7 @@
         .addr recursive_result, begin_result, _udeks_time_slot_control
         .addr _udeks_time_slot_poll, _udeks_time_slot_set, _udeks_time_slot_state
         .addr validate_only, poison_stack
+        .addr legacy_read
         .segment "DATA"
 calls: .byte 0
 desired: .byte 0
@@ -58,4 +60,18 @@ stack_intact:
         lda #$ef
         sta $07
         pla
+        rts
+legacy_read:
+        ; Real published C ABI: hour/minute pointers on the cc65 stack,
+        ; second pointer in AX, callee removes all six argument bytes.
+        lda #<$f130
+        ldx #>$f130
+        jsr pushax
+        lda #<$f131
+        ldx #>$f131
+        jsr pushax
+        lda #<$f132
+        ldx #>$f132
+        jsr _udeks_time_now
+        lda #0
         rts

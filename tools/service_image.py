@@ -8,7 +8,7 @@ code or install anything. Runtime registration is a separate integration gate.
 import struct
 
 HEADER_SIZE = 48
-TIME_BASE = 0x9300
+TIME_BASE = 0x93D0
 TIME_LIMIT = 0x96A8
 
 

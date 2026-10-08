@@ -88,7 +88,10 @@ def main():
         obj = out/(name+'.o')
         run('ca65', '-D', 'UDEKS_TIME_SLOT_TEST', '-o', str(obj), source)
         objects.append(str(obj))
-    run('ld65', '-C', 'bench/time-module/slot.cfg', '-m', str(out/'slot.map'),
+    run('cl65', '-t', 'none', '--cpu', '6502', '--standard', 'c99', '-Oirs',
+        '-I', 'include', '-c', '-o', str(out/'slot-resident.o'), 'src/services/time/resident.c')
+    objects.append(str(out/'slot-resident.o'))
+    run('cl65', '-t', 'none', '-C', 'bench/time-module/slot.cfg', '-m', str(out/'slot.map'),
         '-o', str(out/'slot.bin'), *objects)
     embed = out/'slot-embed.s'
     embed.write_text(
@@ -125,7 +128,9 @@ def main():
     # oracle. Disable BOTH checksum-rejection branches in the fixture binary;
     # the unchanged harness must fail at its first checksum-corruption case.
     fixture = (out/'slot.bin').read_bytes()
-    pattern = rb'\xa5\x16\xcd\x10\x93\xd0.\xa5\x17\xcd\x11\x93\xd0.\x18\x60'
+    pattern = (rb'\xa5\x16\xcd' + re.escape(struct.pack('<H', TIME_BASE+16)) +
+               rb'\xd0.\xa5\x17\xcd' + re.escape(struct.pack('<H', TIME_BASE+17)) +
+               rb'\xd0.\x18\x60')
     matches = list(re.finditer(pattern, fixture, re.DOTALL))
     if len(matches) != 1:
         raise ValueError('checksum negative-control instruction changed')

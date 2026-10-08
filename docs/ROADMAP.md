@@ -21,13 +21,14 @@ ticks explicitly outside its lifetime. The independent C/assembly module now
 builds and passes an exhaustive CPU-level clock/lifecycle proof; image-format
 validation and a measured startup-overlay placement direction are documented
 in the [service contract](../abi/services.md#disk-time-candidate--issue-49-2026-10-08).
-Checkpoint `2ff8c01` is pushed. The next increment implements permanent startup
-retirement and CPU-tests module registration/stop/reload. VICE cold boot and
-the existing `date`/`xclock` path pass with the new guard. The candidate manager
-measures 548 bytes against a 374-byte resident budget: **resolve that 174-byte
-shortfall before integration**, without moving app/stack/graphics boundaries.
-This candidate is **not installed by normal boot**. Next: fit the resident
-overlay/lifecycle link, add disk loading and unavailable-service behavior, then
+Checkpoints `2ff8c01` and `ed7a1f7` are pushed. Permanent startup retirement and
+registration/stop/reload are CPU-tested; VICE qualifies the normal boot guard.
+**Placement blocker resolved:** actual normal/panic overlay links leave 50
+resident bytes free, including the legacy clock API, without moving any
+app/stack/graphics boundary. The smaller independent module uses 717 of its
+728-byte slot. Tests retain all bounds, checksum and lifecycle checks.
+This candidate is **not installed by normal boot**. Next: connect bounded
+request/ownership handling, disk loading and unavailable-service behavior, then
 VICE/1986 and a user-testable image. Do not substitute the standalone link or
 RAM-backed simulator proof for that integration gate.
 

@@ -13,52 +13,52 @@ Issue [#49](https://github.com/salvogendut/UDEKS/issues/49), branch
 merged `672110d`. Root main's unrelated edits are untouched. The user selected
 time-of-day service extraction, not scheduler timing, then authorized work.
 
-First implementation checkpoint **committed and pushed as `2ff8c01`**:
-`make time-module` builds an independent
-797-byte image with 10-byte BSS, its own cc65 code helpers and the fixed UAPP
-0.1 zero-page contract. No private kernel-map import bridge. The assembly
-setter/TI policy moved to a shared include; normal kernel code and all three
-disk images are byte-identical to PR #48. The candidate is **NOT installed**.
-The build must not expose this provisional file as a bootable or runnable
-normal-kernel module: `$9300` still overlaps that kernel's live state.
+**Committed and pushed:** `2ff8c01` (standalone module) and `ed7a1f7`
+(permanent startup latch and CPU-tested lifecycle). The 21-byte production
+startup guard caches success/failure permanently and rejects recursive entry;
+the resident time implementation remains installed by normal boot.
 
-`make time-module-check` executes the sealed binary under sim6502, exercising
-all 86,400 valid times and 173,433 total calls, invalid-set atomicity, lifecycle,
-TI/BCD and memory/stack guards. An altered module range-check instruction fails
-the negative control. CIA registers are RAM in this proof, not emulated
-hardware. Host tests validate the bounded image/header and rejection cases.
+**Current work, uncommitted: the placement blocker is resolved in actual
+normal and panic resident links**, not merely object-size arithmetic.
+`make time-overlay-check` independently relinks those variants under
+`build/services/time/overlay/`, redirects every split output there, and checks
+all protected memory boundaries against the baseline maps. Do NOT run these
+raw kernel links: map-bound boot imports/delivery are not rebuilt for them.
 
-Placement direction: `make time-module-placement` measures 518 boot-only
-registry bytes, 223 live registry bytes and unchanged 8-byte registry BSS.
-Only the compile-only candidate enables the split. Reusing the startup code's
-region after permanent retirement originally budgeted 364 resident bytes for
-new manager/wrappers/state below `$9300-$96A7`. This is NOT an actual linked
-resident manager. Do not claim those bytes are free in the running baseline.
+- Live resident BSS ends at `$939D`; `$939E-$93CF` gives **50 bytes** before
+  the new provisional slot `$93D0-$96A7`.
+- `SERVICEBOOT` is actually linked at `$93D0-$95D5` (518 bytes). It may be
+  replaced only after the private startup latch reports returned-success.
+- The module is **710 emitted + 7 BSS = 717 bytes**, leaving 11 bytes in its
+  728-byte slot. No private kernel-map bridge; runtime ZP remains UAPP 0.1.
+- The manager is **500 bytes** (479 CODE, 20 RODATA, 1 BSS). The retained
+  C clock-read wrapper is another **57 bytes**, now explicitly charged.
+- `$CF40` targets the guarded setter; `$CF60` still uses the original C
+  calling convention. An actual one-byte-overflow negative link fails the
+  new resident-bound assertion. No app, stack, VIC, VDC or common area moved.
 
-Next increment, **uncommitted working tree**: `service_start.s` now uses a
-21-byte private one-shot latch. It caches success/failure permanently, rejects
-recursion and distinguishes active startup frames from returned startup.
-This is the only new production behavior; the resident clock remains installed.
-Normal/panic builds and graphics/placement gates pass. Current images are no
-longer byte-identical to PR #48 because of that guard change.
-`make check` passes 1,514 host tests; the standalone exhaustive clock check
-also still passes. No new app-slot, common-RAM or stack reservation is used.
+The former 174-byte deficit was at the old `$9300` base with a 548-byte
+manager and a 797+10-byte module, before charging the legacy read wrapper.
+The new fit comes from compact checked 16-bit comparisons and candidate-only
+C simplifications (fixed-field counters, byte BCD lookup, fewer raw copies),
+not omitted validation. Normal time code is unchanged. Checksums, complete
+received length, BSS bounds, unpublished start and cached post-start callbacks
+remain required. The old candidate address is not an accepted load ABI.
 
-`src/services/module/time_slot.s` is a candidate registration/lifecycle core,
-not yet linked into boot or exposed at a syscall. It validates actual received
-length separately from the header, checks metadata/checksum/vector bounds,
-zeros BSS, caches entries, starts then publishes, and supports abort/stop/reload
-with fail-closed dispatch. `make time-slot-check` executes it under sim6502:
-436 host-oracle validation cases, all 256 startup results, lifecycle errors,
-sealed-module reload and checksum negative control; 2,138 protected calls.
-The zero-page/runtime isolation and RAM-backed-CIA limitations still apply.
+Qualification: `time-module-check` executes 174,459 calls, all 86,400 times,
+1,024 raw TOD encodings, counter rollover and the existing TI/lifecycle/guard
+checks. `time-slot-check` executes 436 independent validation cases, all 256
+startup results, failure/abort/reload and the actual retained C read wrapper
+(2,142 protected calls). Both negative controls still fail as intended.
+These are real 6502 execution tests with RAM-backed CIA registers, **not** TOD
+latching, disk-loading or new physical-C128 qualification. `make check` has
+1,524 host tests; normal boot/graphics/placement gates pass.
 
-Measured integration limit: the smaller guard raises the budget to **374**;
-the candidate manager is **548** (527 CODE, 20 RODATA, 1 BSS), so it exceeds
-that by **174 bytes before request glue**. `time-module-placement` now reports
-that failure explicitly instead of treating standalone assembly as proof of
-fit. Keep app/stack/graphics reservations unchanged. Do not promote the
-candidate or merely bypass the bound to enable disk loading.
+`make boot` remains the production path and does **not** enable the overlay.
+Its D71 is byte-identical to the VICE-qualified `ed7a1f7` image below; the
+candidate must never be loaded at `$93D0` into that baseline's live RAM.
+The 50 resident bytes are before future request/ownership glue, not an
+assertion that the finished loader already fits or exists.
 
 Host `make service-start-probe` passes on a disposable D71 in Flatpak VICE:
 date set/read, background xclock, cat, clock shutdown, and re-entry after SREG
@@ -69,8 +69,8 @@ legitimately change SREG between separate monitor sessions. The final monitor
 payload is bounded to 34 bytes. These fixture issues were fixed before the
 passing run; they were not production boot failures. No VICE process remains.
 
-Next: resolve the measured manager placement, link the real overlay/dispatch,
-add request ownership/cleanup and the disk-side loader with
+Next: add the bounded request entry with ownership/cleanup and the disk-side loader,
+then rebuild the complete map-bound candidate boot chain with
 bounded-RC startup, and enforce fail-closed `date`/`xclock` behavior while the
 service is absent. Then qualify VICE/1986 and provide a hardware test image.
 Keep the loader/policy out of the kernel where possible; do not expand app or

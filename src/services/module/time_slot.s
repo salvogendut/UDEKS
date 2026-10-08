@@ -6,8 +6,7 @@
 ; claim. The disk loader must bound every write to [SLOT,LIMIT) itself.
 ; A separate disk loader fills the slot only between successful begin/commit.
         .setcpu "6502"
-        .macpack longbranch
-        .importzp ptr1, ptr2, ptr3, tmp1, tmp2, tmp3
+        .importzp ptr1, ptr2, ptr3, tmp1, tmp2
         .import _udeks_service_start_phase, _udeks_service_start_result
         .export _udeks_time_slot_control, _udeks_time_slot_poll
         .export _udeks_time_slot_set, _udeks_time_slot_state
@@ -16,9 +15,9 @@
         .export time_slot_validate = validate
         .endif
 
-SLOT = $9300
-LIMIT = $96a8
-CAPACITY = LIMIT-SLOT
+        .include "time_slot.inc"
+        .assert <(SLOT+42) <> $ff, error, "start vector hits NMOS indirect-JMP page bug"
+        .assert >(SLOT+17) = >SLOT, error, "checksum bytes must remain in the slot's first page"
 TIME_STATE = $f205
 
         .segment "BSS"
@@ -84,7 +83,12 @@ offline:
         lda #0
         sta _udeks_time_slot_state
         sta TIME_STATE
+        tax                        ; C startup callback returns AX=0
         rts
+        .ifdef UDEKS_DISK_TIME
+        .export _udeks_time_start = offline
+        .export _udeks_time_poll = _udeks_time_slot_poll
+        .endif
 commit:
         cmp #1
         bne invalid
@@ -117,8 +121,6 @@ bss_ready:
 vectors:
         lda SLOT+20,x
         sta set_entry+1,x
-        lda SLOT+42,x
-        sta start_entry+1,x
         lda SLOT+44,x
         sta poll_entry+1,x
         lda SLOT+46,x
@@ -137,13 +139,16 @@ failed_start:
 _udeks_time_slot_poll:
         lda _udeks_time_slot_state
         cmp #2
-        jne success
+        bne poll_done
         jsr poll_entry
-        jeq success
+        beq poll_done
         jsr offline
         lda #$80
         sta TIME_STATE             ; optional service failure is not panic
-        jmp success
+poll_done:
+        lda #0
+        tax
+        rts
 _udeks_time_slot_set:
         pha
         lda _udeks_time_slot_state
@@ -155,7 +160,9 @@ set_offline:
         pla
         lda #1                     ; legacy CF40 nonzero failure convention
         rts
-start_entry: jmp $0000
+; Start runs immediately after validation in serialized root context; only
+; the callbacks used AFTER publication require private cached vectors.
+start_entry: jmp (SLOT+42)
 poll_entry: jmp $0000
 stop_entry: jmp $0000
 set_entry: jmp $0000
@@ -166,18 +173,18 @@ set_entry: jmp $0000
 validate:
         lda tmp1
         cmp SLOT+10
-        jne bad_header
+        bne bad_header
         lda tmp2
         cmp SLOT+11
-        jne bad_header
+        bne bad_header
         ldx #9
 headers:
         lda SLOT,x
         cmp identity,x
-        jne bad_header
+        bne bad_header
         lda SLOT+32,x
         cmp descriptor,x
-        jne bad_header
+        bne bad_header
         dex
         bpl headers
         lda SLOT+14
@@ -192,29 +199,19 @@ reserved:
         bcs reserved
         lda SLOT+18
         ora SLOT+19
-        beq bad_header
+        bne bounds
+bad_header:
+        sec
+        rts
+bounds:
         ; Emitted size must exceed the 48-byte header.
         lda SLOT+10
         cmp #49
         lda SLOT+11
         sbc #0
         bcc bad_header
-        ; Addition must not wrap and image+BSS must fit the reservation.
-        clc
-        lda SLOT+10
-        adc SLOT+12
-        sta tmp3
-        lda SLOT+11
-        adc SLOT+13
-        bcs bad_header
-        cmp #>CAPACITY
-        bcc size_ok
-        bne bad_header
-        lda tmp3
-        cmp #<(CAPACITY+1)
-        bcs bad_header
-size_ok:
-        ; ptr3 = exclusive end of initialized image + zero BSS.
+        ; Calculate each absolute exclusive end exactly once. Reject carry
+        ; on BOTH additions; no wrapped image or BSS may enter the slot.
         clc
         lda SLOT+10
         adc #<SLOT
@@ -222,6 +219,7 @@ size_ok:
         lda SLOT+11
         adc #>SLOT
         sta ptr2+1
+        bcs bad_header
         clc
         lda ptr2
         adc SLOT+12
@@ -229,6 +227,12 @@ size_ok:
         lda ptr2+1
         adc SLOT+13
         sta ptr3+1
+        bcs bad_header
+        lda ptr3
+        cmp #<(LIMIT+1)
+        lda ptr3+1
+        sbc #>(LIMIT+1)
+        bcs bad_header
         ldx #20
         jsr vector
         bcs bad_header
@@ -241,27 +245,17 @@ next_vector:
         cpx #42
         bcs next_vector
         jmp sum_begin
-bad_header:
-        sec
-        rts
 vector:
-        lda SLOT+1,x
-        cmp #>(SLOT+48)
-        bcc vector_bad
-        bne vector_upper
         lda SLOT,x
         cmp #<(SLOT+48)
-        bcc vector_bad
-vector_upper:
         lda SLOT+1,x
-        cmp ptr2+1
-        bcc vector_ok
-        bne vector_bad
+        sbc #>(SLOT+48)
+        bcc vector_bad
         lda SLOT,x
         cmp ptr2
-        bcs vector_bad
-vector_ok:
-        clc
+        lda SLOT+1,x
+        sbc ptr2+1
+        ; The high-byte borrow is exactly the unsigned 16-bit upper bound.
         rts
 vector_bad:
         sec
