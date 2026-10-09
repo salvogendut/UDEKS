@@ -125,14 +125,21 @@ sprite editor to leave **16 free blocks**; D71/D81 include it. Use those larger
 formats or a separate writable data disk for larger files. Existing published
 download snapshots are not automatically updated by a source build.
 
-The independent [`xview` picture viewer](abi/cbm.md) displays small `.CBM` pictures.
+The independent [`xview` picture viewer](abi/cbm.md) displays `.CBM` pictures.
 It is currently packaged separately from the normal downloads; the linked
 guide shows how to build the executable and add it with pictures to a new
 D71/D81 disk. Run `xview /alex.cbm &`. It uses one ordinary slot: two viewers can display different
-photos. The smaller `/alex2.cbm` also leaves drawing memory for clock + wave;
-the larger photos plus both apps exceed the shared display pool.
+photos. `/alex2.cbm` is a small picture for testing beside clock + wave.
 Small `.CBM` pictures are displayed pixel-for-pixel with retained move/uncover
 repaint, without modifying the kernel or rereading the disk.
+
+On the packed-bitmap feature branch, `xview` also streams **128x80 and 160x100**
+pictures through UTRQ 0.20, publishing pixels only after file validation and
+close. [Build and test the separate demo disks](abi/cbm.md#build-and-demo);
+normal published downloads remain unchanged pending merge. Packed images
+still share a 2,304-byte display pool: test the 160x100 picture by itself.
+The original ALEX/CLOCKWORK conversions now each fit beside clock + wave;
+the new larger ALEX128/CLOCK160 conversions do not fit that three-app combination.
 
 A new `.BIN` launches as `name` or `name &`
 into any free **compatible-sized** allocation, without an OS name-table entry.

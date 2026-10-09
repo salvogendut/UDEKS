@@ -1113,8 +1113,9 @@ $(BUILD_8502)/vdc_console.s: src/services/console/vdc_console.c \
 		include/udeks/theme.h include/udeks/vdc.h \
 		include/udeks/vic_graphics.h include/udeks/xclock.h \
 		include/udeks/xwave.h \
-		| $(BUILD_8502)
-	$(CC65) $(CFLAGS_8502) -o $@ $<
+		Makefile | $(BUILD_8502)
+	# Serialized VDC service: no recursive entry, callbacks or task yields.
+	$(CC65) $(filter-out -Oirs,$(CFLAGS_8502)) -Ors --static-locals -o $@ $<
 
 $(BUILD_8502)/vdc_framebuffer.s: src/services/framebuffer/vdc_framebuffer.c \
 		include/udeks/boot_console.h include/udeks/capability.h \
@@ -1154,8 +1155,9 @@ $(BUILD_8502)/mouse1351.s: src/services/input/mouse1351.c \
 	$(CC65) $(CFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/line_editor.s: src/services/terminal/line_editor.c \
-		include/udeks/keyboard.h include/udeks/line_editor.h | $(BUILD_8502)
-	$(CC65) $(CFLAGS_8502) -o $@ $<
+		include/udeks/keyboard.h include/udeks/line_editor.h Makefile | $(BUILD_8502)
+	# Serialized editor; no callbacks or yields while private scratch is live.
+	$(CC65) $(filter-out -Oirs,$(CFLAGS_8502)) -Ors --static-locals -o $@ $<
 
 $(BUILD_8502)/root_terminal.s: src/services/terminal/root_terminal.c \
 		include/udeks/console.h include/udeks/keyboard.h \
@@ -1189,8 +1191,8 @@ $(BUILD_8502)/z80_worker.s: src/services/engine/z80_worker.c \
 
 $(BUILD_8502)/vic_graphics.s: src/services/display/vic_graphics.c \
 		include/udeks/memory.h include/udeks/pointer.h \
-		include/udeks/vic_graphics.h | $(BUILD_8502)
-	$(CC65) $(CFLAGS_8502) -o $@ $<
+		include/udeks/vic_graphics.h Makefile | $(BUILD_8502)
+	$(CC65) $(filter-out -Oirs,$(CFLAGS_8502)) -Ors -o $@ $<
 
 $(BUILD_8502)/framebuffer_font.s: src/services/framebuffer/font.c \
 		include/udeks/font.h | $(BUILD_8502)
@@ -1499,7 +1501,7 @@ $(BUILD_8502)/vic_clear.o: src/services/display/vic_clear.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphics.bin $(BUILD_8502)/retained-paths.bin &: \
-		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/graphics_event.o $(BUILD_8502)/banked_access.o $(BUILD_8502)/retained_paths.o \
+		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/graphics_event.o $(BUILD_8502)/banked_access.o $(BUILD_8502)/retained_paths.o $(BUILD_8502)/retained_pool.o $(BUILD_8502)/retained_bitmap.o $(BUILD_8502)/retained_bitmap_paint.o \
 		$(BUILD_8502)/kernel_entry.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
@@ -1545,7 +1547,7 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphi
 	$(CL65) -t none --cpu 6502 $(LDFLAGS_8502) \
 		$$(cat $(CAPABILITY_FORCE_IMPORTS)) \
 		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) \
-		-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok \
+		-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok -u _udeks_retained_present_image \
 		-u _udeks_line_editor_get_line -u _udeks_banked_pages_init \
 		$(TIME_LINK_IMPORTS) \
 		-o $(KERNEL_BIN) \
@@ -1705,7 +1707,7 @@ $(TASK_SWITCH_ACTIVATION_BIN): $(TASK_SWITCH_ACTIVATION_OBJ) \
 
 $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(PANIC_PROBE_PROBE_BIN) $(PANIC_PROBE_MAP) $(BUILD_8502)/banked-graphics-panic.bin $(BUILD_8502)/retained-paths-panic.bin &: \
-		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/graphics_event.o $(BUILD_8502)/banked_access.o $(BUILD_8502)/retained_paths.o \
+		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/graphics_event.o $(BUILD_8502)/banked_access.o $(BUILD_8502)/retained_paths.o $(BUILD_8502)/retained_pool.o $(BUILD_8502)/retained_bitmap.o $(BUILD_8502)/retained_bitmap_paint.o \
 		$(BUILD_8502)/kernel_entry.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
 		$(BUILD_8502)/keyboard_scan.o $(BUILD_8502)/control_ports.o \
@@ -1750,7 +1752,7 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 	$(CL65) -t none --cpu 6502 -C cfg/8502-panic-probe.cfg \
 		$$(cat $(CAPABILITY_FORCE_IMPORTS)) \
 		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) \
-		-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok \
+		-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok -u _udeks_retained_present_image \
 		-u _udeks_line_editor_get_line -u _udeks_banked_pages_init \
 		$(TIME_LINK_IMPORTS) \
 		-m $(BUILD_8502)/udeks-8502-panic-probe.map \
@@ -2159,15 +2161,23 @@ $(BUILD_BOOT)/banked-bindings.inc: $(STAGE1_GATEWAY_MAP) $(SCHEDULER_OVERLAY_MAP
 	$(PYTHON) tools/gen_banked_bindings.py $(STAGE1_GATEWAY_MAP) $(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_MAP) $(KERNEL_MAP) $@
 
 $(BUILD_8502)/banked_graphics.s: src/services/window/banked_graphics.c include/udeks/banked_graphics.h \
-		include/udeks/retained_paths.h include/udeks/window.h include/udeks/window_service.h include/udeks/vic_graphics.h | $(BUILD_8502)
+		include/udeks/retained_paths.h include/udeks/retained_bitmap.h include/udeks/bitmap_store.h include/udeks/window.h include/udeks/window_service.h include/udeks/vic_graphics.h | $(BUILD_8502)
 	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o $@ $<
 $(BUILD_8502)/banked_graphics.o: $(BUILD_8502)/banked_graphics.s
 	$(CA65) --cpu 6502 -o $@ $<
 $(BUILD_8502)/graphics_event.o: src/services/window/graphics_event.s | $(BUILD_8502)
 	$(CA65) --cpu 6502 -o $@ $<
-$(BUILD_8502)/retained_paths.s: src/services/window/retained_paths.c include/udeks/retained_paths.h include/udeks/banked_graphics.h include/udeks/vic_graphics.h | $(BUILD_8502)
-	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o $@ $<
+$(BUILD_8502)/retained_paths.s: src/services/window/retained_paths.c include/udeks/retained_paths.h include/udeks/banked_graphics.h include/udeks/vic_graphics.h Makefile | $(BUILD_8502)
+	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -D UDEKS_RETAINED_POOL_ASM -I include -o $@ $<
 $(BUILD_8502)/retained_paths.o: $(BUILD_8502)/retained_paths.s
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_8502)/retained_pool.o: src/services/window/retained_pool.s | $(BUILD_8502)
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_8502)/retained_bitmap.s: src/services/window/retained_bitmap.c include/udeks/retained_bitmap.h include/udeks/retained_paths.h include/udeks/bitmap_store.h include/udeks/task_request.h include/udeks/vic_graphics.h Makefile | $(BUILD_8502)
+	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -D UDEKS_BITMAP_RENDER_ASM -I include -o $@ $<
+$(BUILD_8502)/retained_bitmap.o: $(BUILD_8502)/retained_bitmap.s
+	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_8502)/retained_bitmap_paint.o: src/services/window/retained_bitmap_paint.s | $(BUILD_8502)
 	$(CA65) --cpu 6502 -o $@ $<
 $(BUILD_8502)/banked_access.o: src/services/window/banked_access.s src/services/app/native_layout.inc src/8502/native_args.inc src/8502/native_args_copy.inc | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
@@ -2490,8 +2500,8 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 
 xview:
 	$(PYTHON) tools/build_graphical_example.py --source user/bin/xview.c --name XVIEW \
-		--arguments --graphics-abi 14 --static-locals --require-slot 3 --require-slot 5 \
-		--output $(BUILD_DIR)/xview --export _xview_commands --export _xview_count --export _xview_ready
+		--arguments --graphics-abi 20 --static-locals --require-slot 3 --require-slot 5 \
+		--output $(BUILD_DIR)/xview --export _xview_uploaded --export _xview_ready
 .PHONY: xview
 
 # First packed-bitmap increment: qualify the private store, not a boot image.
@@ -2508,13 +2518,29 @@ bitmap-store-check: $(BUILD_DIR)/bitmap-store/store.o $(BUILD_DIR)/bitmap-store/
 	sim65 $(BUILD_DIR)/bitmap-store/check
 .PHONY: bitmap-store-check
 
+$(BUILD_DIR)/bitmap-store/retained.o: src/services/window/retained_bitmap.c include/udeks/retained_bitmap.h include/udeks/bitmap_store.h include/udeks/retained_paths.h include/udeks/task_request.h include/udeks/vic_graphics.h Makefile | $(BUILD_DIR)/bitmap-store
+	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -D UDEKS_BITMAP_RENDER_ASM -I include -o $(BUILD_DIR)/bitmap-store/retained.s $<
+	$(CA65) --cpu 6502 -o $@ $(BUILD_DIR)/bitmap-store/retained.s
+$(BUILD_DIR)/bitmap-store/pool-test.o: src/services/window/retained_pool.s | $(BUILD_DIR)/bitmap-store
+	$(CA65) --cpu 6502 -D UDEKS_POOL_TEST -o $@ $<
+$(BUILD_DIR)/bitmap-store/retained-check.o: bench/packed-bitmap/retained_check.c include/udeks/bitmap_store.h include/udeks/retained_bitmap.h include/udeks/retained_paths.h | $(BUILD_DIR)/bitmap-store
+	$(CL65) -t sim6502 --standard c99 -Os -I include -c -o $@ $<
+retained-bitmap-check: $(BUILD_DIR)/bitmap-store/store.o $(BUILD_DIR)/bitmap-store/retained.o $(BUILD_DIR)/bitmap-store/pool-test.o $(BUILD_DIR)/bitmap-store/retained-check.o $(BUILD_8502)/retained_bitmap_paint.o bench/packed-bitmap/retained_sim.cfg
+	$(CL65) -t sim6502 -C bench/packed-bitmap/retained_sim.cfg -m $(BUILD_DIR)/bitmap-store/retained-check.map -o $(BUILD_DIR)/bitmap-store/retained-check $(filter %.o,$^)
+	sim65 $(BUILD_DIR)/bitmap-store/retained-check
+.PHONY: retained-bitmap-check
+
+retained-bitmap-qualification: placement-check-guard retained-bitmap-check graphics-apps-check
+	$(PYTHON) tools/retained_bitmap_check.py
+.PHONY: retained-bitmap-qualification
+
 # Live build + real 6502 comparison, not a host fixture or a new bitmap ABI.
 graphics-code-check: placement-check-guard graphics-apps-check
 	$(PYTHON) tools/graphics_code_budget.py
 .PHONY: graphics-code-check
 
 check:
-	$(PYTHON) -m py_compile tools/png_to_cbm.py tools/add_cbm_viewer.py tools/xview_probe.py
+	$(PYTHON) -m py_compile tools/png_to_cbm.py tools/add_cbm_viewer.py tools/xview_probe.py tools/build_xview_demo.py tools/1986_xview_check.py
 	cd bench/results/2026-10-09-cbm-viewer && sha256sum -c SHA256SUMS
 	$(PYTHON) -m py_compile tools/build_native_console.py tools/native_console_probe.py tools/check_console_parser.py tools/native_console_cancel_probe.py
 	$(PYTHON) -m py_compile tools/native_console_input_probe.py tools/check_console_input.py tools/native_console_jobs_probe.py

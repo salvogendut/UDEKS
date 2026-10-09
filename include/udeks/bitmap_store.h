@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #ifndef UDEKS_BITMAP_STORE_H
 #define UDEKS_BITMAP_STORE_H
-/* Private graphics-service prototype, NOT a published syscall yet.
+/* Private storage/reference interface; public wire contract: abi/window.md.
  * The boundary adapter must authenticate the task/window before selecting
  * index. Pool pointers never cross that boundary. Existing path/command
  * images share this exact pool and retain their length/format records.
- * Production integration must replace EVERY old 0x7fff length mask. */
+ * All three format/state bits are excluded from physical byte lengths. */
 #define UDEKS_BITMAP_POOL_BYTES 2304u
 #define UDEKS_BITMAP_CLIENTS 4u
 #define UDEKS_BITMAP_HEADER 8u

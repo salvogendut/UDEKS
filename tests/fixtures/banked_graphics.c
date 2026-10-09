@@ -10,6 +10,8 @@ const unsigned char udeks_native_stack_pages[4]={0x34,0x3f,0x8f,0xcf};
 #undef P
 #undef C
 #include "../../src/services/window/retained_paths.c"
+#undef P
+#include "../../src/services/window/retained_bitmap.c"
 
 unsigned char test_task, test_state[4], test_reap_busy, test_owner[5];
 unsigned char test_load_error, test_activate_error, test_selector, test_path[17];
@@ -179,4 +181,8 @@ void udeks_vic_bitmap_line(int x,int y,int x2,int y2,unsigned char color)
         test_lines[test_draws][2]=x2;test_lines[test_draws][3]=y2;
     }
     udeks_vic_bitmap_fill(x,y,0,0,color);
+}
+void udeks_vic_bitmap_pixel(int x,int y,unsigned char color)
+{
+    udeks_vic_bitmap_fill(x,y,1,1,color);
 }

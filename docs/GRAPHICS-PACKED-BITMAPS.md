@@ -18,16 +18,65 @@ increment, not an open-ended graphics optimization project.
 
 ## Current status
 
-**Storage/transaction core implemented, not integrated into the OS.**
-`src/services/window/bitmap_store.c` is pure C, tested on the host and with
-real 6502 instructions under `sim65`. It is deliberately absent from both
-resident link recipes. No public request ABI changes: existing graphics
-operations extend through 0.17, while filesystem mutations and service control
-already use 0.18 and 0.19. The prototype operations below are private proposals,
-not available to disk applications.
-`xview` remains unchanged. The branch now builds smaller window-manager code;
-the published root downloads and `main` are untouched. There is no
-larger-picture emulator or hardware result yet.
+**All four steps complete; user-tested, commit/push authorized, merge pending.**
+UTRQ **0.20**, operation 23, suboperations 8–11 are available to independent
+native applications through the existing `$FF16` gate. The C handler uses
+the real request record and shared pool; a small graphics-service assembly
+renderer calls the ordinary clipped pixel primitive. `bitmap_store.c` remains
+an independent portable reference, not a duplicate production allocator.
+
+`xview` now streams <=19-byte chunks through the public boundary, validating
+header/rows/EOF/CLOSE before publishing. Its runtime drops to 2,519 bytes
+(2,455 image + 64 BSS); the relocatable file is 3,217 bytes and fits slots 3/5.
+VICE D71/D81 and native 1986 D81 pass exact 128x80, 160x100 and odd-width
+pictures, failed-file cleanup, OOM isolation, paired viewers, drag/uncover,
+clock/wave coexistence, input, mid-load Ctrl+C/close and stream reuse.
+[Viewer evidence and manual checklist](../bench/results/2026-10-09-packed-viewer/README.md).
+Root downloads and `main` are untouched; no new physical-hardware result.
+
+Steps 3–4 are packaged as `build/xview/demo/udeks-packed.d71` and `.d81` in
+the feature worktree. Reproduce with `make xview` in the toolchain container,
+then `python3 tools/build_xview_demo.py` after building the matching boot
+candidates. The full D64 is not modified to make room. User testing passed
+(platform unspecified); the user authorized commit/push, not
+PR/merge. Their CLOCK160/clock observation confirms the known display-pool
+limit. Expanding generic retained storage and adding clear allocation errors
+are follow-up work; the clock currently exits silently on failed presentation.
+
+## Integrated placement and boundary (2026-10-09)
+
+The former space shortfall is resolved without changing fixed reservations:
+
+- C handler: 978 code + 16 scratch bytes; assembly renderer: 196 + 13.
+  The original C renderer remains a pixel reference. Row geometry and full
+  chunk padding are validated in C before any retained-byte mutation.
+- The unchanged VDC console and line-editor C sources use `-Ors` with static
+  locals (serialized/nonrecursive, no callbacks/yields); VIC glue uses `-Ors`
+  with its existing static locals. Total object saving: 611 code bytes, with
+  29 additional scratch bytes charged to the link, not ignored.
+- The one-shot graphics installer and the pending-upload PRESENT guard live
+  in resident service CODE. The legacy path body stays in GRAPHICSPATHS; the
+  audit verifies both entry locations. No kernel policy or new overlay.
+- Complete normal/panic BSS ends at `$93AD`: **34 resident bytes free**.
+  GRAPHICSCODE has 69, GRAPHICSPATHS 22 and GRAPHICSHELP 6. The integration
+  qualification requires 16 resident bytes after all dependencies are linked.
+  The old 800-byte reclaim floor was deliberately spent on the new service.
+
+The adapter authenticates task/window ownership, checks version/envelope,
+skips pending pictures on every repaint and rejects legacy replacements while
+an upload is pending. COMMIT returns EAGAIN during drag/cache transfers so an
+app can yield/retry without silently losing damage. Abort, close, exit,
+cancellation and subsequent slot reuse release allocations and preserve peers.
+The normative wire contract is [UTRQ 0.20](../abi/window.md#packed-bitmap-surfaces-utrq-020).
+
+Qualification includes 1,685 host tests and 22,462 actual 6502 checks (production handler, allocator
+and assembly renderer), five host boundary tests in addition to the earlier
+storage/pixel tests, and the unchanged 60,702-byte WM trace. Independent VICE
+clients also verify versions 19/21 are rejected for the new operation, exact
+pixels after move/uncover, independent owners, OOM isolation, pending
+invisibility, abort/exit/Ctrl+C/close, slot reuse, console and stack guards.
+Preserved reports, maps, fixture and selected pixel captures:
+[integration evidence](../bench/results/2026-10-09-bitmap-integration/README.md).
 
 Completed:
 
@@ -41,6 +90,59 @@ Completed:
 - First service-code reclaim: the unchanged C window manager uses `-Ors`
   rather than `-Oirs`. Normal/panic maps, a complete 6502 call/state trace,
   VICE four-app tests and 1986 native-input regression pass (details below).
+- Fixed service binding and clipped rendering, checked against the independent
+  portable C core and a pixel oracle. The production shared allocator now
+  supports all three format bits; ordinary command/path clients pass VICE and
+  1986 regressions. Four host tests and 22,462 target checks cover this increment.
+
+## Previous checkpoint: shared retained store (2026-10-09)
+
+The measurements below describe the pre-integration checkpoint. Its space
+shortfall and unlinked status are superseded by the completed integration above.
+
+Following pushed checkpoint `97b8f70`, the private C transaction handler uses
+the existing service-owned request and pool directly. It introduces no second
+pool or four-entry allocation table. Ordered uploads, atomic errors, odd-row
+padding, commit and abort match the independently compiled portable core.
+The generic C renderer reads committed bits, uses the current window origin
+and clipped pixel primitive, and never paints a pending image. It reacquires
+the image address after compaction instead of retaining a stale pointer.
+
+Shared address/resize/discard primitives now live in a 154-byte assembly
+service helper, not the microkernel. The C equivalents remain test references.
+The caller still validates index, length and total capacity before mutation.
+Target tests cover 512 nonempty replacements (growth/shrink with peers), all
+format flags, pool-end guards and cc65 calls as well as bitmap transactions.
+Both normal/panic builds use the same helper; existing commands and paths are
+unchanged apart from using the new length mask and shared resize seam.
+
+Measured placement:
+
+| Region/object | Before shared helper | Now |
+|---|---:|---:|
+| Free ordinary resident bytes | 844 | 847 |
+| Free GRAPHICSCODE bytes | 0 | 80 |
+| Free GRAPHICSPATHS bytes | 3 | 22 |
+| Fixed-bound C handler + renderer (unlinked) | — | 1,386 CODE + 29 BSS |
+
+This saves 99 code bytes and 3 scratch bytes. The handler alone is 1,043 code
+bytes, versus the standalone core's 1,845; rendering adds 343. **It still does
+not fit:** installing the 1,415-byte object entirely in ordinary resident RAM
+is at least 568 bytes short, before the public adapter or any new library
+helpers. The 80/22-byte holes are separate, not one contiguous reservation.
+No app slot, pool bytes, stack guard, service slot or display memory was taken.
+
+`make retained-bitmap-qualification` runs the actual 6502 code at the real
+`$1300-$1BFF` pool addresses, checks normal/panic layout, and binds object,
+source, simulator and disk hashes to its report. The full host suite passes
+1,674 tests. VICE D71 and native 1986 D81
+four-app regressions pass with the linked shared allocator; they exercise
+legacy graphics, **not** the unlinked bitmap renderer. Preserved evidence:
+[shared-store qualification](../bench/results/2026-10-09-retained-bitmap/README.md).
+
+Next is a bounded service-code placement change, followed by the authenticated
+request/paint dispatch and cleanup in one integration increment. The user-facing
+target remains streaming `xview` at 128x80/160x100, not general optimization.
 
 ## First placement increment (2026-10-09)
 
@@ -90,27 +192,27 @@ Preserved maps, simulator programs/traces and emulator reports are in
 [the qualification record](../bench/results/2026-10-09-graphics-code-budget/README.md).
 Host tests verify its checksums and bind both emulator results to the build.
 
-## Data contract (private prototype)
+## Data contract (now exposed through UTRQ 0.20)
 
 Each image consumes `8 + ceil(width/8) * height` bytes in the same shared pool.
-No full image is required in application RAM: a future client uploads at most
+No full image is required in application RAM: a client uploads at most
 19 bytes per request, yielding between disk chunks. The eight-byte service
 header contains x LE16, y, width, height, stride, and received-byte count LE16.
 The header is internal, not another on-disk file format.
 
-| Picture | Tile representation | Proposed packed allocation, including header |
+| Picture | Tile representation | Packed allocation, including header |
 |---|---:|---:|
 | 80x80 | 1,280 | 808 |
 | 128x80 | 2,048 | 1,288 |
 | 160x100 | 3,200 | 2,008 |
 
 For the existing demos, ALEX + CLOCKWORK drop from 2,296 to **1,405 bytes**.
-They would then leave room for the 344-byte clock. A 160x100 picture by itself
+They now leave room for the 344-byte clock. A 160x100 picture by itself
 fits, but leaves only 296 bytes, insufficient for that clock. No combination
 is promised merely because each program fits a task allocation.
 
-Proposed graphics suboperations, retaining op 23 / 24-byte payload. Allocate a
-new request minor during integration; do not reuse 0.18 or 0.19:
+Graphics suboperations, retaining op 23 / 24-byte payload, require minor 0.20.
+Minors 0.18 and 0.19 remain assigned to filesystem mutations and service control:
 
 | Subop | Payload after opcode and owned window handle |
 |---|---|
@@ -133,34 +235,22 @@ never keep it across another request, allocation change or yield.
 
 ## Production integration gates
 
-1. **Qualify code placement first.** The measured core object needs 1,845
-   code bytes and 22 static-scratch bytes, excluding new library dependencies,
-   request integration and renderer. That is not a complete installation
-   budget or a final incremental size: integration should share address and
-   compaction helpers with the existing retained store, not install two pool
-   managers. After the first reclaim, ordinary resident slack is 844 bytes.
-   The live graphics segment is already 1,792/1,792 bytes. The retired
-   glyph code window has only 3 executable bytes left before live tile maps;
-   GRAPHICSHELP has 6. These are not yet a viable home for the standalone core. Keep the
-   module unlinked until a separately measured service-code placement/reclaim
-   passes both normal/panic links and lifetime gates. Do not steal an app
-   slot, shrink the pool, or assume boot staging/stack guards are free.
-2. Add the authenticated request adapter, generic clipped bitmap renderer and
-   cleanup hooks. Every retained-length consumer must use the new length
-   mask (`0x1fff`); bitmap/pending use bits 14/13 and existing paths bit 15.
-   Old `0x7fff` arithmetic would corrupt peer placement. Pending images must
-   not reach the old tile renderer. Reject PRESENT/PATHS/DELTA while an upload
-   is pending. Close, cancellation, EXIT, reap and launch reuse must release
-   it, including before COMMIT. Preserve legacy commands/paths unchanged.
-3. Change `xview` to stream file bytes into the service; validate the CBM
+1. [x] **Code placement:** complete normal/panic links and lifetime gates pass;
+   no app slot, pool, guard or fixed reservation changes.
+2. [x] **Public service:** authenticated adapter, clipped rendering, pending
+   guards, shared `0x1fff` length mask and lifecycle cleanup are implemented
+   and emulator-qualified. Existing command/path clients still pass.
+3. [x] Change `xview` to stream file bytes into the service; validate the CBM
    header first, then show at most an empty/loading frame. Check EOF and CLOSE
    before COMMIT. On any read, padding, cancellation or close failure, abort
    and close the frame; no partial picture. Remove its full tile array.
-4. Qualify cold boot D71/D81, pixel identity (including odd dimensions), larger
+4. [x] Qualify cold boot D71/D81, pixel identity (including odd dimensions), larger
    pictures, independent owners, malformed/truncated/extra bytes, OOM without
    peer damage, mid-upload Ctrl+C/close/EXIT, stream reuse, drag/uncover without
    reread, console input and the existing four-app regression. Only then offer
-   new demo disks for 1986/C128 testing and advertise the new ABI minor.
+   new viewer demo disks for 1986/C128 testing. The completed viewer and
+   file paths now pass VICE and native 1986. The user accepted the demos;
+   their test platform was not specified, so no new physical result is inferred.
 
 ## Reproduce the completed increment
 
@@ -169,9 +259,10 @@ make check
 distrobox-enter my-distrobox -- make bitmap-store-check
 distrobox-enter my-distrobox -- make -j8 boot graphics-apps-check
 distrobox-enter my-distrobox -- make graphics-code-check
+distrobox-enter my-distrobox -- make retained-bitmap-qualification
 ```
 
-The boot/layout commands qualify the **compiler-profile placement change**,
-not an integrated bitmap feature. Branch disks are rebuilt under `build/boot/`;
+The boot/layout commands qualify the **integrated bitmap service**; viewer
+qualification commands are in the linked evidence README. Branch disks are rebuilt under `build/boot/`;
 published `build/udeks.*` remain the accepted baseline. Never run `make clean`
 at the repository root (nested worktrees).

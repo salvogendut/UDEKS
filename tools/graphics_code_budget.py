@@ -90,11 +90,16 @@ def main():
     modules, _ = parse_map(normal)
     saved = compare_sizes(measured['baseline'], measured['compact'], modules['window_manager.o'])
     gap = resident_gap(segments)
-    if gap < 800:
-        raise ValueError('placement increment reclaimed less than its 800-byte floor')
-    report = dict(scope='WM code-space reclaim only; bitmap core remains unlinked',
+    integrated = 'retained_bitmap.o' in modules
+    # The qualified reclaim is now spent on the measured bitmap service.
+    # Keep the old floor for pre-integration builds; installed builds have a
+    # separate target/map qualification and retain a 16-byte safety margin.
+    floor = 16 if integrated else 800
+    if gap < floor:
+        raise ValueError('resident space below the qualified floor')
+    report = dict(scope='WM trace with installed bitmap service' if integrated else 'WM code-space reclaim only',
         profiles={'baseline': '-Oirs', 'compact': '-Ors'}, objects=measured,
-        object_code_saved=saved, resident_free_bytes=gap,
+        object_code_saved=saved, resident_free_bytes=gap,qualified_free_floor=floor,
         trace_bytes=len(traces['baseline']), trace_sha256=digest(traces['baseline']),
         simulated_cycles_including_trace_stubs=cycles,
         normal_panic_layout_equal=True,

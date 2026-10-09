@@ -1,0 +1,89 @@
+{
+  "scope": "UTRQ 0.20 bitmap service installed; xview unchanged",
+  "target_checks": 22462,
+  "pool_address": 4864,
+  "pool_bytes": 2304,
+  "linked_allocator": {
+    "BSS": 5,
+    "GRAPHICSCODE": 154
+  },
+  "linked_request": {
+    "CODE": 978,
+    "RODATA": 0,
+    "BSS": 16,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "linked_painter": {
+    "CODE": 196,
+    "RODATA": 0,
+    "BSS": 13,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "resident_free_bytes": 34,
+  "compiler_profiles": {
+    "vdc_console": {
+      "CODE": 1976,
+      "BSS": 93,
+      "HIGHBSS": 128
+    },
+    "line_editor": {
+      "CODE": 1186,
+      "BSS": 446,
+      "LOWBSS": 69
+    },
+    "vic_graphics": {
+      "CODE": 2793,
+      "BSS": 48,
+      "VICSHADOW": 8000
+    }
+  },
+  "graphics_segment_free": 69,
+  "path_segment_free": 22,
+  "normal_panic_layout_equal": true,
+  "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44",
+  "source_and_build_sha256": {
+    "Makefile": "1c13d8eb66a1db5add3841cce94402ca15403bb19e7b38dda20551d5ea00b87b",
+    "src/services/window/retained_paths.c": "00a472b28e27888c477a8106a303b98fa53718cdff9514eac7e89c8701caa7cb",
+    "src/services/window/retained_pool.s": "9c5297f2598d3f2b8d8117d72578faee19f4f46b66a76f77aecc07f8c274573b",
+    "src/services/window/retained_bitmap.c": "e79c7b08a5f7ee580a465626f852657f7f6660602ea9cc4d9a68fa020128593e",
+    "src/services/window/retained_bitmap_paint.s": "9b58c9235c659949bba68f01a33323ec6b210f109ed619d762e2897a10582d4d",
+    "src/services/window/banked_graphics.c": "e838368f515fd6825205833fe52aa3b685499e7e1f0866e66d4779d558d14e10",
+    "src/8502/syscall_gate.s": "72ed8c437b3da096d4aaa7dcc2f17cbc692c61363b37cf46811a8d8e5ea90c63",
+    "src/services/console/vdc_console.c": "fd3e0031903b9054ceac5a7100c8a18ce04296f63ba835d4fd9de58029ad3c3f",
+    "src/services/terminal/line_editor.c": "05ce243afc312d1799d95496e6a9b94c3d83c95b4673a10b2fbe1e496731a6b2",
+    "src/services/display/vic_graphics.c": "61b369c7b4d16f1e92e22bd89b1848c76efdfdd57bb20aba94034b8ddf7e9847",
+    "src/services/window/bitmap_store.c": "d6b182a6bec09124b1c2b0c838bd3f11fba8814b50dd89a289d6ef1b2f027458",
+    "include/udeks/retained_paths.h": "0332f21bce210bc3c45ef0d8d89f451a118509c2f94baa6bf9ca70a254982fc9",
+    "include/udeks/retained_bitmap.h": "a7c42df4a83211100505c5883144b5ee2014df02e0315f7de5e30bbd2543db06",
+    "include/udeks/bitmap_store.h": "b0c36a5bc56c3fc063a9d7bc3bcce4aea50bfa191e38c5685258f40719ed1842",
+    "include/udeks/task_request.h": "409fc0c2df4195f1b591c6f229825f515e505c8910dec6983e334b785ec260e6",
+    "include/udeks/vic_graphics.h": "d724c3732c279cef8b536d353dd4c1cf51bcbbc9866387fa37197b10eab96e88",
+    "bench/packed-bitmap/retained_check.c": "2c7169dcc432c83517bd5b6f83c1ccc67974cde97ee0994353c38ffae05ce101",
+    "bench/packed-bitmap/retained_sim.cfg": "b6b1e4e98b63eda1a94f2f5e831e22534aa4ccde49fbf2087bc0b90d89d727af",
+    "tools/retained_bitmap_check.py": "6b72efe9b843e2cc05872833f0218209378526f722c1824dbf8e2c5f2ddf3ec2",
+    "tools/graphics_code_budget.py": "0d683a7f5ea23d8a9a864f08014ed7ab30e2049653e56c024350796b101a5cb1",
+    "tests/test_retained_bitmap.py": "33d029a82d5e154e487f4bbe4507bfbe77387a3e8c4fbbacf90a8098eb69fe7a",
+    "tests/fixtures/retained_bitmap.c": "4caff905f245a1194a320257c4a2e5848af1f3591f41f7233c37a71994978ca1",
+    "tests/test_banked_graphics.py": "6e3424368705c907cb2aad87302d07a875ef0bbc939a21d744219288569f553f",
+    "tests/fixtures/banked_graphics.c": "3a456ffc136cca3e1a302990bda15c4f350565ecd58d7507d22473b151851724",
+    "tools/bitmap_service_probe.py": "6b6ffc49c9d1473ea29863a21e5c1efb384f2f6b38042e776f96756b61c8115c",
+    "bench/packed-bitmap/client.c": "af9a97e4be67e3b22d0d895338033ea9409bb6d3cd7600e57ed1eedd1472ffaf",
+    "build/8502/udeks-8502.map": "d55b7b0c7746e2243b7bca5b864f03a537946b47f56fdb32eb59d18dc68cca67",
+    "build/8502/udeks-8502-panic-probe.map": "f5e428009d4333dced5388358971a43158ae57e904bfa2758379e75156eee1b9",
+    "build/8502/retained_pool.o": "719a56670ba10b9d74d9aabeca4f879b1615aa8bfb817669f13dad436b927d24",
+    "build/bitmap-store/pool-test.o": "30c781a46d292a56870b15f48510e90ad8847dd03910d432a8dde6e75e192c60",
+    "build/8502/retained_bitmap_paint.o": "f48c0a166375fc533f22d2f89049fd7ce37867c5d796263149286f7f2179ccc1",
+    "build/bitmap-store/retained.o": "475f560db48b621385014489733f4790d6041ca7837913d86fc9803f07903d39",
+    "build/bitmap-store/retained-check": "73d98597e922574a3238ac7f88b5b63a8108d85d04e2d47445cb64a0080d3cb9",
+    "build/bitmap-store/retained-check.map": "2d2b03d711c636564cd3ff561824fee466e5455eb5f36d637a1b0ff3b76100e2"
+  },
+  "disk_sha256": {
+    "d64": "2c094dd4b8d38d59edbb30126b78814a35059aca98582fb0efc0c9c15dfeed09",
+    "d71": "225a527af10d18c66c153c4c2d77de87ae1b55bcfbc033a5a1f29c0f327b6cae",
+    "d81": "f5d1ec2fb6f3a9c1ca81b31aed344bb5fc5e0884cf32fcebe376d88fe5bf9c03"
+  }
+}

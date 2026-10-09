@@ -1,0 +1,211 @@
+{
+  "drive": "1571",
+  "source_sha256": "c72fdd46b5f6584480cb776692f3ebac9b895a443cc8396e6bd5a5540b9bdcfc",
+  "fixture_sha256": "7b631595a670c6c8b0330a8cf7544c78eb3de7aea39113e2bace6b34ce69a579",
+  "app_sha256": "f2eb1b3b30db0e4822bb4cb59550d447f26fed158d992ecec032473f618fb847",
+  "checks": [
+    {
+      "command": "xview"
+    },
+    {
+      "command": "xview /nofile.cbm"
+    },
+    {
+      "command": "xview /bad.cbm"
+    },
+    {
+      "command": "xview /trail.cbm"
+    },
+    {
+      "command": "xview /pad.cbm"
+    },
+    {
+      "command": "xview /trunc.cbm"
+    },
+    {
+      "command": "xview /big.cbm"
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "command": "xview /alex128.cbm &"
+    },
+    {
+      "check": "initial",
+      "pixels": 10240,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "command": "xview /clock160.cbm"
+    },
+    {
+      "check": "oom-peer-intact",
+      "pixels": 10240,
+      "shadow_matches_vic": true
+    },
+    {
+      "check": "dragged",
+      "pixels": 10240,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "xclock &"
+    },
+    {
+      "command": "xclock -q"
+    },
+    {
+      "check": "uncovered",
+      "pixels": 10240,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "command": "xview /clock160.cbm &"
+    },
+    {
+      "check": "wide-picture",
+      "pixels": 16000,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "xview -q"
+    },
+    {
+      "command": "xview /odd.cbm &"
+    },
+    {
+      "check": "odd",
+      "pixels": 63,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "xview -q"
+    },
+    {
+      "command": "xview /dense.cbm &"
+    },
+    {
+      "check": "dense",
+      "pixels": 6528,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "xview -q"
+    },
+    {
+      "command": "xview /alex2.cbm &"
+    },
+    {
+      "check": "small-picture",
+      "pixels": 3416,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "xclock &"
+    },
+    {
+      "command": "xwave &"
+    },
+    {
+      "check": "viewer-clock-wave-fully-presented",
+      "retained_bytes": [
+        1128,
+        344,
+        435,
+        0
+      ]
+    },
+    {
+      "command": "xwave -q"
+    },
+    {
+      "command": "xclock -q"
+    },
+    {
+      "check": "small-uncovered",
+      "pixels": 3416,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "xview -q"
+    },
+    {
+      "command": "xview /alex128.cbm &"
+    },
+    {
+      "check": "first-aside",
+      "pixels": 10240,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "xview /clockwork.cbm &"
+    },
+    {
+      "check": "second-picture",
+      "pixels": 5568,
+      "shadow_matches_vic": true
+    },
+    {
+      "check": "two-pictures",
+      "pixels": 10240,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "xview /alex128.cbm &"
+    },
+    {
+      "check": "after-rejected-third",
+      "pixels": 5568,
+      "shadow_matches_vic": true
+    },
+    {
+      "check": "first-survives",
+      "pixels": 10240,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "xview /clockwork.cbm"
+    },
+    {
+      "check": "background-survives-ctrl-c",
+      "pixels": 10240,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "xview -q"
+    },
+    {
+      "check": "two-independent-viewers-close-cancel-reuse",
+      "passed": true
+    },
+    {
+      "command": "xview /alex128.cbm"
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "command": "xview /alex128.cbm"
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "command": "xview /alex128.cbm"
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "check": "pending-close-cancel-stream-reuse-and-guards",
+      "passed": true
+    }
+  ]
+}

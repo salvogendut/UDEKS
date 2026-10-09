@@ -7,10 +7,13 @@
 #define UDEKS_RETAINED_CAPACITY 1280u
 #define UDEKS_RETAINED_COMMANDS 160u
 #define UDEKS_RETAINED_PATH_FLAG 0x8000u
+#define UDEKS_RETAINED_LENGTH_MASK 0x1fffu
 extern unsigned int udeks_retained_lengths[4];
 extern unsigned int udeks_graphics_origin_x;
 extern unsigned char udeks_graphics_origin_y;
 unsigned int __fastcall__ udeks_retained_address(unsigned char index);
+/* Private serialized allocator: caller validates index/capacity first. */
+void udeks_retained_resize(unsigned char index,unsigned int length);
 unsigned char __fastcall__ udeks_retained_present(unsigned char index);
 void __fastcall__ udeks_retained_discard(unsigned char index);
 void __fastcall__ udeks_retained_read(unsigned int address);

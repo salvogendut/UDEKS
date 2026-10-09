@@ -1,0 +1,117 @@
+{
+  "drive": "1571",
+  "abi_minor": 20,
+  "stage": "service integration, xview unchanged",
+  "disk_sha256": "225a527af10d18c66c153c4c2d77de87ae1b55bcfbc033a5a1f29c0f327b6cae",
+  "fixture_sha256": "97fa716d9689004b775136f2a1732d560be9cee6d7729b54433a90c3f05921ac",
+  "program_sha256": "187148a8c0d816894c30e57aa02de5f780afa410cf06a01b9755ec5cf0cab241",
+  "checks": [
+    {
+      "command": "bmap &"
+    },
+    {
+      "check": "normal",
+      "pixels": 10240,
+      "pending": false,
+      "shadow_matches_vic": true
+    },
+    {
+      "check": "moved",
+      "pixels": 10240,
+      "pending": false,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "xclock &"
+    },
+    {
+      "command": "xclock -q"
+    },
+    {
+      "check": "uncovered",
+      "pixels": 10240,
+      "pending": false,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "bpeer wide &"
+    },
+    {
+      "command": "bpeer -q"
+    },
+    {
+      "command": "bpeer small &"
+    },
+    {
+      "command": "bmap -q"
+    },
+    {
+      "check": "peer",
+      "pixels": 768,
+      "pending": false,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "bpeer -q"
+    },
+    {
+      "command": "bmap wide &"
+    },
+    {
+      "check": "wide",
+      "pixels": 16000,
+      "pending": false,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "bmap -q"
+    },
+    {
+      "command": "bmap odd &"
+    },
+    {
+      "check": "odd",
+      "pixels": 63,
+      "pending": false,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "bmap -q"
+    },
+    {
+      "command": "bmap hold"
+    },
+    {
+      "check": "pending",
+      "pixels": 10240,
+      "pending": true,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "bmap abort &"
+    },
+    {
+      "command": "bmap -q"
+    },
+    {
+      "command": "bmap exit"
+    },
+    {
+      "command": "bmap small &"
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "command": "echo bitmap API passed"
+    }
+  ],
+  "retirement": [
+    "close",
+    "abort",
+    "exit",
+    "cancel"
+  ],
+  "future_version_rejected": 21,
+  "older_bitmap_version_rejected": 19
+}

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #ifndef UDEKS_BANKED_GRAPHICS_H
 #define UDEKS_BANKED_GRAPHICS_H
-/* UTRQ 0.9..0.17, op 23, fd/flags zero, exactly 24 bytes; see abi/window.md.
+/* UTRQ 0.9..0.20, op 23, fd/flags zero, exactly 24 bytes; see abi/window.md.
  * Commands are window-relative, eight bytes each, maximum 160 per image.
  * 0: fill x,y,w,h,color,0,0; 1: line x,y,x2,y2,color,0,0;
  * 2: 2x glyph x,y,five 3-bit scanlines.
@@ -14,6 +14,10 @@
 #define UDEKS_GFX_PATHS 5u /* UTRQ 0.12: packed polylines; see window ABI */
 #define UDEKS_GFX_PRESENT_DELTA 6u /* 0.15: full retained image + two fills */
 #define UDEKS_GFX_INPUT 7u /* 0.17: EVENT plus held primary-button samples */
+#define UDEKS_GFX_BITMAP_BEGIN 8u /* 0.20: reserve header + packed rows */
+#define UDEKS_GFX_BITMAP_WRITE 9u /* ordered <=19-byte upload */
+#define UDEKS_GFX_BITMAP_COMMIT 10u /* publish a complete image */
+#define UDEKS_GFX_BITMAP_ABORT 11u /* discard a pending upload */
 #define UDEKS_GFX_COMMANDS 160u
 #define UDEKS_GFX_TILE(scale) ((scale)+2u) /* integer scales 1..8 */
 #define UDEKS_NATIVE_CLIENTS 4u

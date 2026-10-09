@@ -1,0 +1,54 @@
+{
+  "scope": "linked shared pool; bitmap request/renderer not linked or public",
+  "target_checks": 22462,
+  "pool_address": 4864,
+  "pool_bytes": 2304,
+  "linked_allocator": {
+    "BSS": 5,
+    "GRAPHICSCODE": 154
+  },
+  "prototype_request_and_renderer": {
+    "CODE": 1386,
+    "RODATA": 0,
+    "BSS": 29,
+    "DATA": 0,
+    "ZEROPAGE": 0,
+    "NULL": 0
+  },
+  "resident_free_bytes": 847,
+  "minimum_resident_shortfall_before_adapter_and_extra_helpers": 568,
+  "graphics_segment_free": 80,
+  "path_segment_free": 22,
+  "normal_panic_layout_equal": true,
+  "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44",
+  "source_and_build_sha256": {
+    "Makefile": "9e54b90b7c3e6bbbe085469a742d3771407c05113c94e98adc9cbe8411d17bd9",
+    "src/services/window/retained_paths.c": "dc9fbb5ef44ec2f1ef71a0e08a2b98fbeeddbbd8e8cb3128096018315e3cdf3f",
+    "src/services/window/retained_pool.s": "9c5297f2598d3f2b8d8117d72578faee19f4f46b66a76f77aecc07f8c274573b",
+    "src/services/window/retained_bitmap.c": "96f3bd7271198c95cf691c2ed890787ff647150649c92c25e1e0435008ac297a",
+    "src/services/window/bitmap_store.c": "d6b182a6bec09124b1c2b0c838bd3f11fba8814b50dd89a289d6ef1b2f027458",
+    "include/udeks/retained_paths.h": "0332f21bce210bc3c45ef0d8d89f451a118509c2f94baa6bf9ca70a254982fc9",
+    "include/udeks/retained_bitmap.h": "e1b4964574072c17dbb31d26be670efa19460e16d5a56bcc36cbfddd6a9ab921",
+    "include/udeks/bitmap_store.h": "208ac262cbc0fab572d7e1c8a3a2a00ee5b81539905c8785a649266d43fb01d2",
+    "include/udeks/task_request.h": "cbc4002435910506d7b82579e4e14d4f9ef46023e5e7b653523c77f981a02083",
+    "include/udeks/vic_graphics.h": "d724c3732c279cef8b536d353dd4c1cf51bcbbc9866387fa37197b10eab96e88",
+    "bench/packed-bitmap/retained_check.c": "2c7169dcc432c83517bd5b6f83c1ccc67974cde97ee0994353c38ffae05ce101",
+    "bench/packed-bitmap/retained_sim.cfg": "b6b1e4e98b63eda1a94f2f5e831e22534aa4ccde49fbf2087bc0b90d89d727af",
+    "tools/retained_bitmap_check.py": "d15ea086557cb6f1090012d311036fb7cdd817d470ad6cd995d9a1f39a0bc608",
+    "tools/graphics_code_budget.py": "01f3f2e73210f81d147cc6c46b175cebdbd98f4b5777416f83f91ad375caeb78",
+    "tests/test_retained_bitmap.py": "33d029a82d5e154e487f4bbe4507bfbe77387a3e8c4fbbacf90a8098eb69fe7a",
+    "tests/fixtures/retained_bitmap.c": "4caff905f245a1194a320257c4a2e5848af1f3591f41f7233c37a71994978ca1",
+    "build/8502/udeks-8502.map": "573f936b28986793638ee802218c5e7db4ccd19c44d33e41722519e0b1ccdaa3",
+    "build/8502/udeks-8502-panic-probe.map": "3f76d246bdf228e1d43ad34d4481baef30a9acf2737495d2ef476289ba36573b",
+    "build/8502/retained_pool.o": "719a56670ba10b9d74d9aabeca4f879b1615aa8bfb817669f13dad436b927d24",
+    "build/bitmap-store/pool-test.o": "30c781a46d292a56870b15f48510e90ad8847dd03910d432a8dde6e75e192c60",
+    "build/bitmap-store/retained.o": "8b1a80dee507e4829634108fa619259599e3836c6d3783f6f29257f3ea33f6b2",
+    "build/bitmap-store/retained-check": "b9ee0f9a77adfbe6d09e92b2434bb9cbb2b05fc3c644556c86a633b6bfc0801b",
+    "build/bitmap-store/retained-check.map": "44335103fa6e0d61c11afb4cd3de3e15dcbdb033b0171457a69d15211e38552a"
+  },
+  "disk_sha256": {
+    "d64": "f41ce9b6df2b5a37af123e289ed45eb2cfe9aeeefeb270041a2d18ed27a36849",
+    "d71": "a83263708eb6fcda42449b8c97b3dc347d76accc6da4484c2d12208346c5f538",
+    "d81": "d4175e13fdaea9c0b1958ca4955a724b26a5eb60ba8957b042d97398424fd29d"
+  }
+}

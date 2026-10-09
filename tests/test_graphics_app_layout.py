@@ -42,14 +42,18 @@ class GraphicsAppLayoutTests(unittest.TestCase):
             with self.assertRaises(ValueError): glyph_overlay_images(*args)
 
     def test_callable_entries_cannot_land_in_overlay_state(self):
-        segments={'GRAPHICSPATHS':(0x96f4,0x9a9d,938)}
-        exports={name:(0x9708,'RLA') for name in
-                 ('_udeks_retained_address','_udeks_retained_present','_udeks_retained_paths_paint')}
-        glyph_overlay_entrypoints(segments,exports)
+        segments={'GRAPHICSPATHS':(0x96f4,0x9a9d,938),'CODE':(0x2006,0x8cff,0x6cfa)}
+        exports={name:(0x2300,'RLA') for name in
+                 ('_udeks_retained_present','_udeks_retained_bitmap_request','_udeks_retained_bitmap_paint')}
+        exports['_udeks_retained_present_image']=(0x9708,'RLA')
+        glyph_overlay_entrypoints(segments,exports,split_guard=True)
         for addr in (0x96b8,0x96f3,0x9a9e):
             with self.assertRaises(ValueError):
-                glyph_overlay_entrypoints(segments,exports|{'_udeks_retained_present':(addr,'RLA')})
-        with self.assertRaises(ValueError): glyph_overlay_entrypoints(segments,{})
+                glyph_overlay_entrypoints(segments,exports|{'_udeks_retained_present_image':(addr,'RLA')},split_guard=True)
+        for addr in (0x2005,0x8d00,0x96b8):
+            with self.assertRaises(ValueError):
+                glyph_overlay_entrypoints(segments,exports|{'_udeks_retained_present':(addr,'RLA')},split_guard=True)
+        with self.assertRaises(ValueError): glyph_overlay_entrypoints(segments,{},split_guard=True)
 
     def test_proposed_slots_stacks_and_pages_are_disjoint(self):
         disjoint(list(CANDIDATE))

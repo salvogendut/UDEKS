@@ -6,14 +6,159 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — packed bitmap code-space increment, 2026-10-09
+## Current handoff — streaming viewer user-tested, 2026-10-09
+
+Issue #55, branch `graphics-packed-bitmaps`, worktree `build/packed-bitmap`.
+**All four planned increments are implemented and emulator-qualified.**
+The user reports the demos look good (test platform unspecified), understands
+the CLOCK160 display-pool limit, and authorized commit/push of this completed
+work. PR/merge is not yet authorized. Root main, published disks and the user's
+untracked PPM are unchanged. Do not restart placement/optimization work.
+
+1. [x] Fit the public service: 34 resident bytes free, all fixed reservations,
+   four task allocations and the complete 2,304-byte display pool preserved.
+2. [x] Public UTRQ 0.20 upload/render/ownership/cleanup; service tests and legacy
+   four-app/input gates passed (previous checkpoint below).
+3. [x] `xview` streams <=19-byte chunks, validates header/rows/EOF/CLOSE, then
+   commits. No full tile array; pending uploads are invisible. File and
+   surface cleanup covers errors, mid-load Ctrl+C and mouse close. Error
+   windows retire through EXIT so the shell receives the correct status.
+4. [x] VICE D71/D81 and unmodified native 1986 D81 qualify exact large/odd/dense
+   pictures, errors/OOM, paired viewers, clock/wave, drag/uncover, native input,
+   pending cancellation/close, stream reuse and guards. Demo disks and evidence
+   are preserved. **User acceptance received; no new physical-C128 result is
+   inferred from the unspecified test platform.**
+
+`XVIEW.BIN`: 3,217 bytes, 2,455 image + 64 BSS = 2,519 runtime. Ordinary slots
+3/5 still required because the relocatable file must fit at load time, not
+just image+BSS. No new allocation or application-name special case.
+
+Test images (paths relative to the root checkout):
+
+- `build/packed-bitmap/build/xview/demo/udeks-packed.d71`
+- `build/packed-bitmap/build/xview/demo/udeks-packed.d81`
+
+Use D81/1581 in 1986; D71 needs a compatible drive/emulator. No new D64 demo:
+the normal compact disk is full, and this slice removes no existing apps.
+The deterministic packager is `tools/build_xview_demo.py`; use a fresh output
+directory. `bench/results/2026-10-09-packed-viewer` preserves the exact disks,
+app, CBM files, map, reports, sources and pixel captures with checksums.
+Base hashes match the steps 1–2 qualification; every existing file is intact.
+Final gates: `make check` passes 1,695 tests; container boot/layout, retained
+bitmap qualification (22,462 actual 6502 checks) and WM trace gates pass.
+Both packaged disks reproduce byte-for-byte; no VICE session remains.
+
+Manual checklist: `xview /alex128.cbm &`, move/cover/uncover with `xclock &`,
+close both; `xview /clock160.cbm &` alone; then two independent original
+`/alex.cbm` and `/clockwork.cbm` viewers. Try foreground Ctrl+C and close-box
+cancellation during loading, followed by `cat /hello`. CLOCK160 needs 2,008
+retained bytes and cannot coexist with the 344-byte clock. `xview` reports a
+display-memory error when it cannot allocate; `xclock` currently exits silently
+on failed presentation. Empty loading frames are expected, partial pictures are not.
+See [format and demo](abi/cbm.md) and [evidence/checklist](bench/results/2026-10-09-packed-viewer/README.md).
+
+Next: request PR/merge approval; this checkpoint's commit/push is authorized.
+Follow-up identified by user testing: expand generic retained graphics storage
+and report allocation failures clearly. CLOCK160 leaves 296 of 2,304 bytes;
+the clock's 344-byte drawing is 48 bytes too large. This is a display-pool limit,
+not exhaustion of app slots. Do not hide it with app-specific reductions.
+No additional implementation is authorized in this commit/push turn. Panning,
+scaling and performance tuning remain deferred; IPC is still the proposed
+architectural milestone after this bounded feature closes.
+
+## Previous handoff — packed bitmap service integrated, 2026-10-09
 
 Viewer PR #54 is merged as `5a07408`. The user approved the packed-bitmap
 direction to support larger images. Issue #55, branch `graphics-packed-bitmaps`,
 worktree `build/packed-bitmap`; root main and its untracked PPM are untouched.
 Read [the feature plan](docs/GRAPHICS-PACKED-BITMAPS.md) before continuing.
-Storage checkpoint `482c8b8` is committed and pushed; this is the qualified
-compiler-profile reclaim checkpoint before retained-store integration.
+Storage checkpoint `482c8b8` and compiler-profile checkpoint `97b8f70` are
+committed and pushed. Shared-store work and completed steps 1–2 below are
+uncommitted. Do not discard the existing worktree changes.
+
+### Four-increment plan — steps 1 and 2 complete
+
+Goal: a testable `xview` supporting packed 128x80 and 160x100 pictures, with
+normal window movement/uncover and no disk rereads for repaint. Keep the work
+grouped into these four increments, not an open-ended series of optimizations.
+The service now works through the public ABI; the larger-picture `xview`
+client is not yet available.
+
+1. [x] **Fit the bitmap service into memory.** Normal/panic builds fit with
+   34 ordinary resident bytes free. Compact C validation plus a service ASM
+   renderer and selective service compiler settings resolve the former gap.
+   All four app slots, the 2,304-byte pool and fixed reservations survive.
+2. [x] **Connect applications to the service.** UTRQ 0.20 operation 23 now
+   supports BEGIN/WRITE/COMMIT/ABORT (8–11), owned-handle validation, clipped
+   committed rendering and retirement cleanup. COMMIT retries with EAGAIN
+   during drag/cache work; pending data never reaches legacy renderers and
+   legacy PRESENT/PATHS/DELTA cannot replace it. Live independent clients pass
+   VICE D71/D81; legacy four-app regressions pass VICE and native 1986.
+3. [ ] **Update `xview` to stream pictures.** Replace its tile array with
+   bounded uploads. Validate the CBM header, exact file length and successful
+   close before committing the picture; abort cleanly on errors/cancellation.
+   Keep file parsing in the application and retained pixels in the service.
+4. [ ] **Qualify and package test disks.** Exercise larger/odd-sized pictures,
+   multiple owners within pool capacity, malformed files, out-of-memory,
+   mid-upload cancellation, drag/uncover and existing four-app/input behavior
+   under VICE and 1986. Preserve evidence and prepare clearly identified demo
+   disks. The service fixture already proves larger pixels in VICE; it does
+   not yet prove CBM file streaming, nor a larger-picture run on 1986/C128.
+
+**User testing point:** after step 4, provide the image paths and a short
+1986/real-C128 checklist. After user acceptance, prepare the PR and merge when
+authorized. Two planned work packages remain. Full-screen backing
+storage, panning, scaling and unrelated performance work remain out of scope.
+
+### Implemented checkpoint and measurements
+
+The shared address/resize/discard helper is now linked in both normal/panic
+builds (`retained_pool.s`, 154 code + 5 scratch bytes); the original C helpers
+remain differential-test references. It saves 99 code + 3 scratch bytes.
+The pool is still `$1300-$1BFF`, 2,304 bytes, with four owners. `retained_paths.c`
+uses the new `0x1fff` mask; the ASM implementation excludes all three flags.
+Ordinary retained commands/paths still work. The dispatcher identifies bitmap
+and pending flags before legacy replay. The guarded PRESENT entry stays in
+resident CODE; its exported implementation body remains in GRAPHICSPATHS.
+The layout audit checks both locations, not just a hardcoded public address.
+
+`retained_bitmap.c` is the installed C binding (978 CODE + 16 BSS);
+`retained_bitmap_paint.s` is the 196-byte clipped renderer (13 BSS). The C
+renderer remains a host reference. The service shares the actual pool and
+request record; no second allocator/table. Tests compare full bytes/errors
+with the independent portable core and pixels with a separate oracle. New
+`make retained-bitmap-check`: 22,462 checks executing actual 6502 instructions,
+including 512 nonempty allocator replacements and real `$1300` addresses.
+`make retained-bitmap-qualification` binds these to both maps/disks and reports
+the budget. Five boundary tests additionally cover ownership, legacy/pending
+guards, busy COMMIT, cleanup and peer preservation. The unchanged WM trace
+still matches (60,702 bytes). The VDC console and line editor now use `-Ors`
+with static locals (nonrecursive, no callbacks/yields); VIC glue uses `-Ors`
+with its already-existing static locals. Actual console, mouse and drawing
+paths pass VICE four-native D71 and native 1986 four-native D81.
+
+Current BSS end `$93AD`, ordinary slack 34; low graphics has 69 bytes, paths
+22, helper 6. The integration qualification requires at least 16 resident
+bytes after the complete link; the earlier 800-byte reclaim floor is now
+explicitly spent on this service, not silently weakened. No fixed reservation
+was moved. Public contract: `abi/window.md`, request maximum minor 20.
+
+`tools/bitmap_service_probe.py` boots a separately loaded `BMAP.BIN` fixture
+on VICE D71/D81: exact 128x80/160x100/9x7 pixels, drag/uncover without changed
+retained bytes, independent owners, OOM without peer damage, pending
+invisibility, abort, pending EXIT/Ctrl+C, close-box cleanup, protocol 19/21
+rejection, console and stack guards. A wrong close-box coordinate in the first
+test driver was corrected; only complete reruns are qualified.
+The fixture is not installed in normal disks. `xview` remains unchanged;
+**next is step 3, not more placement work**. No new physical-C128 result.
+Final `make check`: 1,685 tests pass, including preserved integration hashes
+and independent pixel checks of both VICE captures. Container qualification
+and the WM trace gate pass. No VICE session remains.
+Branch D64/D71/D81 candidates are rebuilt; root published images/main stay
+unchanged. New evidence: `bench/results/2026-10-09-bitmap-integration`.
+Previous shared-store evidence: `bench/results/2026-10-09-retained-bitmap`.
+
+## Previous handoff — first packed-bitmap code-space increment
 
 Implemented the private `bitmap_store.c` C core and its header, 12 host tests,
 and `make bitmap-store-check` (4,149 checks executing real 6502 instructions).

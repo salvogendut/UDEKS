@@ -107,9 +107,11 @@ class StorageOwner(unittest.TestCase):
             self.assertIn(command,commands)
         self.assertTrue(any(c.get('check')=='four-resized-pixels' for c in result['checks']))
 
-    def test_current_boundary_rejects_future_versions_and_legacy_create(self):
+    def test_current_version_and_historical_future_version_fixture(self):
         header=(ROOT/'include/udeks/task_request.h').read_text()
-        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     18u',header)
+        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     20u',header)
+        # The preserved 0.18 artifact rejected 0.19; this is not a current
+        # boundary test. The bitmap integration proof now tests 0.21 rejection.
         fixture=(ROOT/'bench/storage-owner/foreground.c').read_text()
         self.assertIn('R[5]=19',fixture)
         self.assertIn('if(R[12]!=71)',fixture)

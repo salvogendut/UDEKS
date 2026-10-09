@@ -188,11 +188,7 @@ task_validate_signature:
         dex
         bpl task_validate_signature
         lda TREQ_BASE+$05
-        .ifdef UDEKS_DISK_TIME
-        cmp #$14
-        .else
-        cmp #$13
-        .endif
+        cmp #$15                    ; accept UTRQ 0.0..0.20 (packed bitmaps)
         bcs task_protocol_trampoline
         lda TREQ_STATE
         cmp #TREQ_REQUEST

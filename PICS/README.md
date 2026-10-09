@@ -17,6 +17,11 @@ python3 tools/png_to_cbm.py PICS/alex2.jpg PICS/ALEX2.CBM --width 56 --height 61
 leaves retained-display space for `xclock &` and `xwave &` simultaneously.
 The larger original conversions remain unchanged. Any pair of these three
 pictures fits the shared display pool; larger pictures plus other apps may not.
-All fit the viewer's tile budget even for dense pictures. See
+The packed viewer retains these three images in 701, 704 and 435 bytes,
+respectively, independent of pixel density. `tools/build_xview_demo.py` also
+generates **ALEX128.CBM (128x80)** and **CLOCK160.CBM (160x100)** into its new
+output directory without changing the source images or original conversions.
+They use 1,288 and 2,008 retained bytes. Test the 160x100 picture alone.
+See
 [the format and viewer instructions](../abi/cbm.md) for packaging a **new**
 demo disk. No source license or ownership is inferred from the supplied images.

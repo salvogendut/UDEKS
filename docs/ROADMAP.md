@@ -15,13 +15,23 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 **In progress — [#55, packed bitmap surfaces](https://github.com/salvogendut/UDEKS/issues/55):**
 make larger `xview` pictures practical within the existing 2,304-byte drawing
-pool. [Plan and gates](GRAPHICS-PACKED-BITMAPS.md). The private C storage core
-has host/6502 tests; it is not linked or advertised as an OS feature yet.
-First placement increment reclaims 804 resident bytes through a selective
-compiler setting, preserving four slots and passing VICE/1986 regressions.
-Next: share retained-store helpers, measure the complete integration budget,
-then add upload/render/cleanup and streaming `xview`. The bitmap feature is
-not available in boot images yet. Full-screen storage and panning remain later work.
+pool. [Plan and gates](GRAPHICS-PACKED-BITMAPS.md). **Steps 1–4 complete,
+user-tested; commit/push authorized, merge pending:**
+the UTRQ 0.20 bitmap upload/render/cleanup service fits in both boot variants,
+with 34 resident bytes free and all four slots/pool/guards preserved. Independent
+VICE D71/D81 clients draw exact 128x80/160x100/odd-width images; ownership,
+retirement and legacy VICE/1986 app/input regressions pass.
+`xview` now streams file bytes into pending surfaces and commits only after
+validating EOF/CLOSE. VICE D71/D81 and native 1986 D81 pass the full viewer
+checks, including real mouse/input, paired viewers and mid-load cancellation.
+The [demo disks/checklist](../bench/results/2026-10-09-packed-viewer/README.md)
+are user-accepted (platform unspecified). Published root images remain unchanged.
+User feedback confirms the next graphics-capacity limitation: CLOCK160 consumes
+2,008 bytes, leaving 296, while `xclock` needs 344 and currently exits silently
+on allocation failure. Follow-up: expand generic retained storage and provide
+clear allocation diagnostics, rather than trimming individual applications.
+PR/merge and that follow-up implementation need separate authorization.
+Full-screen storage, panning and performance tuning remain later work.
 
 **Completed application slice (2026-10-09):** standalone `xview`, developed on
 `app-cbm-viewer`. It reuses the `additional-apps` `.CBM` format/converter,
