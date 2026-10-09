@@ -1,0 +1,50 @@
+{
+  "scope": "foreground no-argument native stdout/stderr/sleep execution proof",
+  "source_disk_sha256": "41246ba13e41b07611ac425f3a65df4ed3a0fa94c72db5d62a57995cbdc71ac3",
+  "fixture_sha256": "8fde56710bfb6f30f69b815fe7b00d430d49b62188011c56f2265a03d8846206",
+  "program_sha256": "05b524e3e60fbf4393701ab6d635725b27e7944bf24146a953b6beb60cefaa0a",
+  "drive": "1541",
+  "source_disk_unchanged": true,
+  "arguments": false,
+  "stdin": false,
+  "background_policy": false,
+  "shell_exit_status": false,
+  "records": [
+    {
+      "command": "ticker",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> ticker\n"
+    },
+    {
+      "check": "solo",
+      "console": "Z80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> ticker\nticker: native task started\nticker: stderr works\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~>",
+      "private_state": true,
+      "code_and_guards": true
+    },
+    {
+      "command": "xclock &",
+      "console": "IEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> ticker\nticker: native task started\nticker: stderr works\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> xclock &\nUDEKS:~>"
+    },
+    {
+      "command": "pulse",
+      "console": "BOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> ticker\nticker: native task started\nticker: stderr works\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> xclock &\nUDEKS:~> pulse\n"
+    },
+    {
+      "check": "clock-and-drag-during-console",
+      "ticker_step": 1
+    },
+    {
+      "check": "with-clock",
+      "console": "time: ready\nUDEKS:~> ticker\nticker: native task started\nticker: stderr works\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> xclock &\nUDEKS:~> pulse\nticker: native task started\nticker: stderr works\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~>",
+      "private_state": true,
+      "code_and_guards": true
+    },
+    {
+      "command": "echo native console returned",
+      "console": "ticker: native task started\nticker: stderr works\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> xclock &\nUDEKS:~> pulse\nticker: native task started\nticker: stderr works\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> echo native console returned\nnative console returned\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "console": "ticker: stderr works\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> xclock &\nUDEKS:~> pulse\nticker: native task started\nticker: stderr works\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> echo native console returned\nnative console returned\nUDEKS:~> xclock -q\nUDEKS:~>"
+    }
+  ]
+}

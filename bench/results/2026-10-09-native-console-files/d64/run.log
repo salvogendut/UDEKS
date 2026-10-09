@@ -1,0 +1,15 @@
+PASS cat /hello
+PASS cat /empty
+PASS cat /one
+PASS cat /nofile
+PASS cat /
+PASS cat
+PASS xclock &
+PASS xwave &
+PASS cat-read-cancel
+PASS echo $?
+PASS cat /hello
+PASS xwave -q
+PASS xclock -q
+PASS echo file-sdk-ok
+PASS native console files: /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/files/d64-di2vjd9p

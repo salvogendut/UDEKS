@@ -1,0 +1,16 @@
+{
+  "scope": "production 6502 tokenizer vs C reference; no MMU emulation",
+  "comparisons": 11520,
+  "negative_control": "incorrect tab splitting rejected",
+  "argument_entry": true,
+  "inputs": {
+    "src/services/shell/parser.s": "fca6d56e7f7e8622c661a5714e381af75e48e504e701959dc69eb578708861f8",
+    "user/lib/shell_parser.c": "fe00f44985e428b0bfb54a9a353972d95bbcceae02d5ed19d548cf161cdb3faf",
+    "bench/native-console/parser_check.c": "23035a11a7cfe651061911ffcf60cc09fe0443c9e2521dda71dafd8305862577",
+    "src/8502/native_args.inc": "a896178c9597cc33bfea3b553ff2043d22d8c3b4e0fca29013d89d23b5e64f59",
+    "src/8502/native_args_copy.inc": "8bcec7ab624c6d3f1a99b3cfbad8345d63c472d1b54389b78cef94456f568ad2",
+    "user/lib/native_console_entry.s": "1596ffe55291f144a48128308d0502c15eed3c4b4a88138f2d2e23b1cab91196",
+    "bench/native-console/args_copy.s": "783386796104270d33af1b5966faec21595b1d84aeb4e83f32258f66b64cc483",
+    "bench/native-console/entry_check.c": "ca1a16d5d041a2704db76beb19e4f8aa9a693d2f4d18ac5721e14af2521e35b5"
+  }
+}

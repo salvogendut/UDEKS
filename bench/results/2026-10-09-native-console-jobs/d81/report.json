@@ -1,0 +1,58 @@
+{
+  "scope": "background argv/prompt-safe output; keyboard injection; no native mouse or hardware claim",
+  "format": "d81",
+  "source_disk_sha256": "ec2c44c73fed78865df74511f2de6f6296dd91f3d48394191e58293eeb07f6d6",
+  "fixture_sha256": "cc6ae32df5fa0c2ccb4d87054a0b79186008552ab93be14468299537281ef1f4",
+  "apps": {
+    "ASK": "749bca316a115117d463a835ef038c58eeca8d9a1f6f7c1923d418f3d6e86259",
+    "BGREAD": "7df122f9e2328fceaef2397db0bb24639bf03ccd13eb5017c7869d21f8f0398c",
+    "TICKER": "b714e1c1b2e4c1edebfc96e9c549cfbc3cc3d02872721cff9b0f42d90be822ab"
+  },
+  "checks": [
+    {
+      "check": "shell-edit",
+      "task": 6,
+      "argv": [
+        "ticker",
+        "a",
+        "B",
+        "c",
+        "D",
+        "e",
+        "F",
+        "last"
+      ],
+      "console": "\nUDEKS:~> time: ready\nUDEKS:~> ticker a B c D e F last &\nticker: native task started\nticker: stderr works\narg: ticker\narg: a\narg: B\narg: c\narg: D\narg: e\narg: F\narg: last\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\n\nUDEKS:~> echo drft",
+      "private_state": true,
+      "code_and_guards": true
+    },
+    {
+      "check": "application-edit",
+      "task": 5,
+      "argv": [
+        "ticker",
+        "Mixed-case",
+        "while-reading"
+      ],
+      "console": "0\nUDEKS:~> echo $?\n0\nUDEKS:~> xclock &\nUDEKS:~> bgread &\nUDEKS:~> ticker Mixed-case while-reading &\nticker: native task started\nticker: stderr works\narg: ticker\narg: Mixed-case\narg: while-reading\ntick 1\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\n\ninput kept",
+      "private_state": true,
+      "code_and_guards": true
+    },
+    {
+      "check": "background-after-cancel",
+      "task": 5,
+      "argv": [
+        "ticker",
+        "again"
+      ],
+      "console": "UDEKS:~> ticker again &\nticker: native task started\nticker: stderr works\narg: ticker\narg: again\ntick 1\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\ntick 2\nInterrupted\n\ndiscard\ntick 3\n\nUDEKS:~> echo $?\n130\ntick 4\ntick 5\nticker: complete\n\nUDEKS:~>",
+      "private_state": true,
+      "code_and_guards": true
+    }
+  ],
+  "foreground_input": true,
+  "background_read_errno": 5,
+  "history": true,
+  "cancellation": true,
+  "exit_status": true
+}

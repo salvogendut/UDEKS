@@ -321,7 +321,7 @@ user-sources: $(USER_COWSAY_ASM) $(USER_DATE_ASM) $(USER_LS_ASM) $(USER_USH_ASM)
 
 user-programs: $(USER_BOOTFS) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX)
 user-programs: $(USER_XSPRDEF_UDEX)
-user-programs: $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(BUILD_USER)/filetools.udx $(BUILD_USER)/sysinfo.udx $(BUILD_USER)/diagnostics.udx
+user-programs: $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_CAT_UDEX) $(BUILD_USER)/filetools.udx $(BUILD_USER)/sysinfo.udx $(BUILD_USER)/diagnostics.udx
 user-programs: $(USER_MOUNT_UDEX) $(USER_SAVE_UDEX) $(USER_MUTATION_UDEX)
 
 $(BUILD_8502)/shell.s: include/udeks/service_control.h include/udeks/task_request.h include/udeks/banked_graphics.h
@@ -423,6 +423,59 @@ graphical-example: placement-check-guard
 
 console-example: placement-check-guard
 	$(PYTHON) tools/build_console_example.py
+
+# First scheduled console SDK proof; leaves normal boot media unchanged.
+native-console: placement-check-guard
+	$(PYTHON) tools/build_native_console.py --export _ticker_step \
+		--export _ticker_failure --export _ticker_private --export _ticker_arguments
+	$(PYTHON) tools/build_native_console.py --source user/examples/argwait.c --name QUIET \
+		--output $(BUILD_DIR)/native-console/quiet --export _quiet_stage \
+		--export _quiet_failure --export _quiet_arguments
+
+# Host after `make boot native-console` in my-distrobox. Uses disposable media.
+native-console-probe:
+	$(PYTHON) tools/native_console_probe.py --format d64
+	$(PYTHON) tools/native_console_probe.py --format d81
+
+.PHONY: native-console native-console-probe
+
+native-console-input-fixtures: native-console
+	$(PYTHON) tools/build_native_console.py --source user/examples/ask.c --name ASK \
+		--output $(BUILD_DIR)/native-console/ask --export _ask_stage --export _ask_error
+	$(PYTHON) tools/build_native_console.py --source user/probes/native_background_read.c --name BGREAD \
+		--output $(BUILD_DIR)/native-console/bgread --export _input_checks --export _input_failure
+native-console-input-probe:
+	$(PYTHON) tools/native_console_input_probe.py --format d64 --warp
+	$(PYTHON) tools/native_console_input_probe.py --format d81 --warp
+.PHONY: native-console-input-fixtures native-console-input-probe
+native-console-jobs-probe:
+	$(PYTHON) tools/native_console_jobs_probe.py --format d64
+	$(PYTHON) tools/native_console_jobs_probe.py --format d81
+.PHONY: native-console-jobs-probe
+native-console-file-fixtures: placement-check-guard
+	$(PYTHON) tools/build_native_console.py --source user/probes/native_file_holder.c --name FHOLD \
+		--output $(BUILD_DIR)/native-console/fhold --export _file_stage --export _file_error --export _file_release
+	$(PYTHON) tools/build_native_console.py --source user/probes/native_file_rival.c --name FRIVAL \
+		--output $(BUILD_DIR)/native-console/frival --export _rival_stage --export _rival_error --export _rival_release
+native-console-file-probe:
+	$(PYTHON) tools/native_console_file_probe.py --format d64
+	$(PYTHON) tools/native_console_file_probe.py --format d81
+.PHONY: native-console-file-fixtures native-console-file-probe
+native-console-input-check: placement-check-guard
+	$(PYTHON) tools/check_console_input.py
+.PHONY: native-console-input-check
+
+native-console-parser-check: placement-check-guard
+	$(PYTHON) tools/check_console_parser.py
+.PHONY: native-console-parser-check
+
+native-console-cancel-fixtures: native-console
+	$(PYTHON) tools/build_native_console.py --source user/examples/nap.c --name NAP \
+		--output $(BUILD_DIR)/native-console/nap --export _nap_steps --export _nap_failure
+native-console-cancel-probe:
+	$(PYTHON) tools/native_console_cancel_probe.py --format d64
+	$(PYTHON) tools/native_console_cancel_probe.py --format d81
+.PHONY: native-console-cancel-fixtures native-console-cancel-probe
 
 # Migration candidate only: does not replace legacy XCLOCK.BIN in boot media.
 native-clock: placement-check-guard
@@ -725,7 +778,7 @@ $(USER_POLL_ENTRY_OBJ): user/lib/poll_entry.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
 
 $(USER_USH_ASM): user/bin/ush.c user/include/udeks/program.h \
-		user/include/udeks/startup.h include/udeks/memory.h include/udeks/task_request.h | $(BUILD_USER)
+		user/include/udeks/startup.h include/udeks/memory.h include/udeks/task_request.h include/udeks/shell.h | $(BUILD_USER)
 	$(CC65) $(CFLAGS_8502) --static-locals -I user/include -I include -o $@ $<
 
 $(USER_USH_OBJ): $(USER_USH_ASM) | $(BUILD_USER)
@@ -773,7 +826,7 @@ $(BUILD_USER)/ush_bounds.o: user/lib/ush_bounds.s Makefile | $(BUILD_USER)
 	$(CA65) --cpu 6502 -D UDEKS_USH_BSS=368 -o $@ $<
 $(BUILD_USER)/ush_recovery_bounds.o: user/lib/ush_bounds.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -D UDEKS_USH_BSS=80 -o $@ $<
-$(BUILD_USER)/ush-recovery.o: user/bin/ush.c include/udeks/task_request.h user/include/udeks/program.h | $(BUILD_USER)
+$(BUILD_USER)/ush-recovery.o: user/bin/ush.c include/udeks/task_request.h include/udeks/shell.h user/include/udeks/program.h | $(BUILD_USER)
 	$(CL65) $(CFLAGS_8502) -D UDEKS_RECOVERY -I user/include -c -o $@ $<
 $(BUILD_USER)/ush-recovery.bin: $(USER_POLL_ENTRY_OBJ) $(USER_TASK_STREAM_OBJ) \
 		$(BUILD_USER)/ush-recovery.o $(BUILD_USER)/ush_recovery_bounds.o cfg/8502-user-bank1.cfg
@@ -1072,7 +1125,8 @@ $(BUILD_8502)/vdc_framebuffer.s: src/services/framebuffer/vdc_framebuffer.c \
 
 $(BUILD_8502)/root_console.s: src/services/window/root_console.c \
 		include/udeks/root_console.h | $(BUILD_8502)
-	$(CC65) $(CFLAGS_8502) -o $@ $<
+	# Serialized console service; IRQs never enter its scratch state.
+	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o $@ $<
 
 $(BUILD_8502)/window_manager.s: $(WINDOW_MANAGER_SOURCE) \
 		include/udeks/pointer.h include/udeks/vic_graphics.h \
@@ -1104,8 +1158,8 @@ $(BUILD_8502)/line_editor.s: src/services/terminal/line_editor.c \
 $(BUILD_8502)/root_terminal.s: src/services/terminal/root_terminal.c \
 		include/udeks/console.h include/udeks/keyboard.h \
 		include/udeks/line_editor.h include/udeks/root_console.h \
-		include/udeks/root_terminal.h include/udeks/shell.h | $(BUILD_8502)
-	$(CC65) $(CFLAGS_8502) -o $@ $<
+		include/udeks/root_terminal.h include/udeks/shell.h include/udeks/task_request.h | $(BUILD_8502)
+	$(CC65) -t none --cpu 6502 --standard c99 -Os -I include -o $@ $<
 
 $(BUILD_8502)/terminal_stream.s: src/services/terminal/stream.c \
 		include/udeks/root_console.h include/udeks/stream.h | $(BUILD_8502)
@@ -1187,7 +1241,7 @@ $(BUILD_8502)/root_terminal.o: $(BUILD_8502)/root_terminal.s | $(BUILD_8502)
 $(BUILD_8502)/terminal_stream.o: $(BUILD_8502)/terminal_stream.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(BUILD_8502)/shell_parser.o: $(BUILD_8502)/shell_parser.s | $(BUILD_8502)
+$(BUILD_8502)/shell_parser.o: src/services/shell/parser.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/shell.o: $(BUILD_8502)/shell.s | $(BUILD_8502)
@@ -2113,8 +2167,8 @@ $(BUILD_8502)/retained_paths.s: src/services/window/retained_paths.c include/ude
 	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o $@ $<
 $(BUILD_8502)/retained_paths.o: $(BUILD_8502)/retained_paths.s
 	$(CA65) --cpu 6502 -o $@ $<
-$(BUILD_8502)/banked_access.o: src/services/window/banked_access.s src/services/app/native_layout.inc | $(BUILD_8502)
-	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_8502)/banked_access.o: src/services/window/banked_access.s src/services/app/native_layout.inc src/8502/native_args.inc src/8502/native_args_copy.inc | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_BOOT)/banked-loader.o: src/services/app/banked_loader.s src/services/app/native_layout.inc $(BUILD_BOOT)/banked-bindings.inc | $(BUILD_BOOT)
 	$(CA65) --cpu 6502 -I $(BUILD_BOOT) -o $@ $<
@@ -2161,7 +2215,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
 		tools/build_d71.py tools/build_d81.py bench/iec-directory/hello.txt $(BOOT_RC) $(SERVICE_BOOT_FILES) $(USER_SYSINFO_UDEX) \
-		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX) $(USER_XSPRDEF_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX) $(USER_MOUNT_UDEX) $(USER_SAVE_UDEX) $(USER_MUTATION_UDEX)
+		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX) $(USER_XSPRDEF_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_CAT_UDEX) $(USER_DIAGNOSTICS_UDEX) $(USER_MOUNT_UDEX) $(USER_SAVE_UDEX) $(USER_MUTATION_UDEX)
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
@@ -2186,7 +2240,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--rc $(BOOT_RC) --sysinfo $(USER_SYSINFO_UDEX) $(SERVICE_DISK_FLAGS) \
 		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) --xcalc $(USER_XCALC_UDEX) --xdraw $(USER_XDRAW_UDEX) --xsprdef $(USER_XSPRDEF_UDEX) \
 		--command COWSAY=$(USER_COWSAY_UDEX) --command DATE=$(USER_DATE_UDEX) \
-		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_FILETOOLS_UDEX) \
+		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_CAT_UDEX) \
 		--command UNAME=$(USER_DIAGNOSTICS_UDEX) --command LSHW=$(USER_DIAGNOSTICS_UDEX) \
 		--command LSMOD=$(USER_DIAGNOSTICS_UDEX) --command LSCPU=$(USER_DIAGNOSTICS_UDEX) \
 		--command Z80CTL=$(USER_DIAGNOSTICS_UDEX) \
@@ -2388,7 +2442,7 @@ $(TASK_CANCEL_PROBE_D71) $(TASK_CANCEL_PROBE_D64) &: $(STAGE0_BIN) \
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		$(USER_MOUNT_UDEX) \
 		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) \
-		$(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX) \
+		$(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_CAT_UDEX) $(USER_DIAGNOSTICS_UDEX) \
 		$(BOOT_DELIVERY_BIN) \
 		$(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) \
 		$(SCHEDULER_BIN) $(CAPABILITY_BIN) $(CAPABILITY_INSTALLER_BIN) \
@@ -2406,7 +2460,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(PANIC_PROBE_KERNEL_BIN) \
 		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) \
 		--command COWSAY=$(USER_COWSAY_UDEX) --command DATE=$(USER_DATE_UDEX) \
-		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_FILETOOLS_UDEX) \
+		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_CAT_UDEX) \
 		--command UNAME=$(USER_DIAGNOSTICS_UDEX) --command LSHW=$(USER_DIAGNOSTICS_UDEX) \
 		--command LSMOD=$(USER_DIAGNOSTICS_UDEX) --command LSCPU=$(USER_DIAGNOSTICS_UDEX) \
 		--command Z80CTL=$(USER_DIAGNOSTICS_UDEX) \
@@ -2433,6 +2487,9 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 check:
+	$(PYTHON) -m py_compile tools/build_native_console.py tools/native_console_probe.py tools/check_console_parser.py tools/native_console_cancel_probe.py
+	$(PYTHON) -m py_compile tools/native_console_input_probe.py tools/check_console_input.py tools/native_console_jobs_probe.py
+	$(PYTHON) -m py_compile tools/native_console_file_probe.py
 	$(PYTHON) -m py_compile tools/build_service_boot.py tools/service_boot_probe.py tools/default_service_layout.py tools/check_service_migration.py
 	$(PYTHON) -m py_compile tools/check_service_request.py
 	$(PYTHON) -m py_compile tools/service_image.py tools/build_time_module.py tools/check_time_module.py tools/time_module_layout.py tools/check_time_slot.py tools/service_start_probe.py tools/build_time_overlay.py

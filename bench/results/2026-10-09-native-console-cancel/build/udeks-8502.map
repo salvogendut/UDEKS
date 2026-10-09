@@ -1,0 +1,2054 @@
+Modules list:
+-------------
+banked_graphics.o:
+    CODE              Offs=000000  Size=000283  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=00009E  Align=00001  Fill=0000
+    GRAPHICSCODE      Offs=000000  Size=000491  Align=00001  Fill=0000
+    PATHSTATE         Offs=000000  Size=000005  Align=00001  Fill=0000
+    GRAPHICSHELP      Offs=000000  Size=0000AC  Align=00001  Fill=0000
+graphics_event.o:
+    CODE              Offs=000283  Size=00001F  Align=00001  Fill=0000
+    GRAPHICSHELP      Offs=0000AC  Size=00000F  Align=00001  Fill=0000
+    GRAPHICSCODE      Offs=000491  Size=0000E4  Align=00001  Fill=0000
+    MODULECODE        Offs=000000  Size=000007  Align=00001  Fill=0000
+banked_access.o:
+    GRAPHICSHELP      Offs=0000BB  Size=00001F  Align=00001  Fill=0000
+    MODULECODE        Offs=000007  Size=0000BE  Align=00001  Fill=0000
+    MODULERODATA      Offs=000000  Size=000010  Align=00001  Fill=0000
+retained_paths.o:
+    BSS               Offs=00009E  Size=000024  Align=00001  Fill=0000
+    GRAPHICSPATHS     Offs=000000  Size=0003E8  Align=00001  Fill=0000
+    GRAPHICSCODE      Offs=000575  Size=00018B  Align=00001  Fill=0000
+kernel_entry.o:
+    KERNELENTRY       Offs=000000  Size=000006  Align=00001  Fill=0000
+crt0.o:
+    STARTUP           Offs=000000  Size=0000CF  Align=00001  Fill=0000
+vdc.o:
+    CODE              Offs=0002A2  Size=0000E9  Align=00001  Fill=0000
+    BSS               Offs=0000C2  Size=000008  Align=00001  Fill=0000
+    ZEROPAGE          Offs=000000  Size=000002  Align=00001  Fill=0000
+keyboard_scan.o:
+    CODE              Offs=00038B  Size=00009A  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000008  Align=00001  Fill=0000
+    BSS               Offs=0000CA  Size=000011  Align=00001  Fill=0000
+control_ports.o:
+    CODE              Offs=000425  Size=0000EF  Align=00001  Fill=0000
+    BSS               Offs=0000DB  Size=000009  Align=00001  Fill=0000
+line_editor_read.o:
+    CODE              Offs=000514  Size=00003D  Align=00001  Fill=0000
+z80_handoff.o:
+    CODE              Offs=000551  Size=000041  Align=00001  Fill=0000
+vic_graphics_transport.o:
+    CODE              Offs=000592  Size=000411  Align=00001  Fill=0000
+    BSS               Offs=0000E4  Size=000002  Align=00001  Fill=0000
+panic.o:
+    CODE              Offs=0009A3  Size=0000FF  Align=00001  Fill=0000
+    RODATA            Offs=000008  Size=00000C  Align=00001  Fill=0000
+probe.o:
+    PROBECODE         Offs=000000  Size=0000D1  Align=00001  Fill=0000
+clock.o:
+    CODE              Offs=000AA2  Size=000095  Align=00001  Fill=0000
+syscall_gate.o:
+    CODE              Offs=000B37  Size=000079  Align=00001  Fill=0000
+    SYSCALLS          Offs=000000  Size=0000FF  Align=00001  Fill=0000
+    TASKREQUEST       Offs=000000  Size=000104  Align=00001  Fill=0000
+task_bank_gateway.o:
+    TASKGATE          Offs=000000  Size=0000C0  Align=00001  Fill=0000
+kernel.o:
+    CODE              Offs=000BB0  Size=000072  Align=00001  Fill=0000
+service_start.o:
+    CODE              Offs=000C22  Size=000015  Align=00001  Fill=0000
+boot_console_entry.o:
+service_registry.o:
+    CODE              Offs=000C37  Size=0000DF  Align=00001  Fill=0000
+    BSS               Offs=0000E6  Size=000008  Align=00001  Fill=0000
+    SERVICEBOOT       Offs=000000  Size=000206  Align=00001  Fill=0000
+service_table.o:
+    RODATA            Offs=000014  Size=000017  Align=00001  Fill=0000
+capability_descriptor.o:
+    RODATA            Offs=00002B  Size=000010  Align=00001  Fill=0000
+time_descriptor.o:
+    RODATA            Offs=00003B  Size=000010  Align=00001  Fill=0000
+clock_descriptor.o:
+    RODATA            Offs=00004B  Size=000010  Align=00001  Fill=0000
+console_descriptor.o:
+    RODATA            Offs=00005B  Size=000010  Align=00001  Fill=0000
+pointer_descriptor.o:
+    RODATA            Offs=00006B  Size=000010  Align=00001  Fill=0000
+keyboard_descriptor.o:
+    RODATA            Offs=00007B  Size=000010  Align=00001  Fill=0000
+root_terminal_descriptor.o:
+    CODE              Offs=000D16  Size=000006  Align=00001  Fill=0000
+    RODATA            Offs=00008B  Size=000010  Align=00001  Fill=0000
+init_descriptor.o:
+    CODE              Offs=000D1C  Size=000030  Align=00001  Fill=0000
+    RODATA            Offs=00009B  Size=000010  Align=00001  Fill=0000
+z80_worker_descriptor.o:
+    RODATA            Offs=0000AB  Size=000010  Align=00001  Fill=0000
+vic_graphics_descriptor.o:
+    RODATA            Offs=0000BB  Size=000010  Align=00001  Fill=0000
+window_descriptor.o:
+    RODATA            Offs=0000CB  Size=000010  Align=00001  Fill=0000
+managed_apps_descriptor.o:
+    RODATA            Offs=0000DB  Size=000010  Align=00001  Fill=0000
+bootfs_request.o:
+    BOOTFSCODE        Offs=000000  Size=00029A  Align=00001  Fill=0000
+time-slot.o:
+    CODE              Offs=000D4C  Size=0001DF  Align=00001  Fill=0000
+    RODATA            Offs=0000EB  Size=000014  Align=00001  Fill=0000
+    BSS               Offs=0000EE  Size=000001  Align=00001  Fill=0000
+time-resident.o:
+    CODE              Offs=000F2B  Size=000039  Align=00001  Fill=0000
+vdc_console.o:
+    CODE              Offs=000F64  Size=0008CD  Align=00001  Fill=0000
+    BSS               Offs=0000EF  Size=000045  Align=00001  Fill=0000
+    HIGHBSS           Offs=000000  Size=000080  Align=00001  Fill=0000
+app_panel.o:
+    BSS               Offs=000134  Size=00000F  Align=00001  Fill=0000
+    MODULERODATA      Offs=000010  Size=00003B  Align=00001  Fill=0000
+    MODULECODE        Offs=0000C5  Size=0001AA  Align=00001  Fill=0000
+root_console.o:
+    CODE              Offs=001831  Size=00058D  Align=00001  Fill=0000
+    LOWBSS            Offs=000000  Size=000597  Align=00001  Fill=0000
+window_manager.o:
+    CODE              Offs=001DBE  Size=001F77  Align=00001  Fill=0000
+    RODATA            Offs=0000FF  Size=000082  Align=00001  Fill=0000
+    BSS               Offs=000143  Size=000004  Align=00001  Fill=0000
+    HIGHBSS           Offs=000080  Size=000058  Align=00001  Fill=0000
+cache_transport.o:
+    CODE              Offs=003D35  Size=000179  Align=00001  Fill=0000
+keyboard.o:
+    CODE              Offs=003EAE  Size=0004F8  Align=00001  Fill=0000
+    RODATA            Offs=000181  Size=0000B0  Align=00001  Fill=0000
+    BSS               Offs=000147  Size=000047  Align=00001  Fill=0000
+    LOWBSS            Offs=000597  Size=000021  Align=00001  Fill=0000
+pointer.o:
+    CODE              Offs=0043A6  Size=0003EB  Align=00001  Fill=0000
+    BSS               Offs=00018E  Size=000012  Align=00001  Fill=0000
+nmi.o:
+    CODE              Offs=004791  Size=000047  Align=00001  Fill=0000
+line_editor.o:
+    CODE              Offs=0047D8  Size=0005B8  Align=00001  Fill=0000
+    BSS               Offs=0001A0  Size=0001B8  Align=00001  Fill=0000
+    LOWBSS            Offs=0005B8  Size=000045  Align=00001  Fill=0000
+root_terminal.o:
+    CODE              Offs=004D90  Size=0003FD  Align=00001  Fill=0000
+    RODATA            Offs=000231  Size=00000A  Align=00001  Fill=0000
+    BSS               Offs=000358  Size=000008  Align=00001  Fill=0000
+terminal_stream.o:
+    CODE              Offs=00518D  Size=000047  Align=00001  Fill=0000
+shell_parser.o:
+    MODULECODE        Offs=00026F  Size=00004D  Align=00001  Fill=0000
+shell.o:
+    CODE              Offs=0051D4  Size=0005FD  Align=00001  Fill=0000
+    RODATA            Offs=00023B  Size=00004C  Align=00001  Fill=0000
+    BSS               Offs=000360  Size=000010  Align=00001  Fill=0000
+    HIGHBSS           Offs=0000D8  Size=000050  Align=00001  Fill=0000
+z80_worker.o:
+    CODE              Offs=0057D1  Size=00021E  Align=00001  Fill=0000
+    RODATA            Offs=000287  Size=00002D  Align=00001  Fill=0000
+    BSS               Offs=000370  Size=000007  Align=00001  Fill=0000
+task_worker.o:
+    CODE              Offs=0059EF  Size=00009E  Align=00001  Fill=0000
+vic_graphics.o:
+    CODE              Offs=005A8D  Size=000BAC  Align=00001  Fill=0000
+    BSS               Offs=000377  Size=000030  Align=00001  Fill=0000
+    VICSHADOW         Offs=000000  Size=001F40  Align=00001  Fill=0000
+vic_span.o:
+    CODE              Offs=006639  Size=000066  Align=00001  Fill=0000
+vic_pixel.o:
+    CODE              Offs=00669F  Size=0000BE  Align=00001  Fill=0000
+vic_rectangle.o:
+    CODE              Offs=00675D  Size=0000AB  Align=00001  Fill=0000
+    BSS               Offs=0003A7  Size=000010  Align=00001  Fill=0000
+vic_clear.o:
+    CODE              Offs=006808  Size=000034  Align=00001  Fill=0000
+managed_apps.o:
+    CODE              Offs=00683C  Size=00000B  Align=00001  Fill=0000
+vdc_text_assets.o:
+    VDCASSETS         Offs=000000  Size=000458  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=006847  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=006863  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=006874  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(and.o):
+    CODE              Offs=006882  Size=000010  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax2.o):
+    CODE              Offs=006892  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax3.o):
+    CODE              Offs=00689D  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax4.o):
+    CODE              Offs=0068AB  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(bneg.o):
+    CODE              Offs=0068BC  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(call.o):
+    CODE              Offs=0068CA  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decaxy.o):
+    CODE              Offs=0068D1  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=0068DA  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=0068E3  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=0068F0  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp4.o):
+    CODE              Offs=0068FD  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp5.o):
+    CODE              Offs=00690A  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp6.o):
+    CODE              Offs=006917  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp7.o):
+    CODE              Offs=006924  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp8.o):
+    CODE              Offs=006931  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=00693E  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax1.o):
+    CODE              Offs=00696C  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=006973  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=00697E  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=006985  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=00699B  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=0069A0  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=0069A5  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=0069AA  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=0069AF  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp8.o):
+    CODE              Offs=0069B4  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(jmpvec.o):
+    DATA              Offs=000000  Size=000003  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldai.o):
+    CODE              Offs=0069B9  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxi.o):
+    CODE              Offs=0069C5  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=0069D2  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldeaxi.o):
+    CODE              Offs=0069DB  Size=000017  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=0069F2  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(memcpy.o):
+    CODE              Offs=006A1E  Size=00003C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(memmove.o):
+    CODE              Offs=006A5A  Size=000050  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul.o):
+    CODE              Offs=006AAA  Size=000045  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=006AEF  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax5.o):
+    CODE              Offs=006B29  Size=000014  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax9.o):
+    CODE              Offs=006B3D  Size=000017  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(negabs.o):
+    CODE              Offs=006B54  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=006B66  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=006B74  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=006B8A  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=006BA4  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(regswap2.o):
+    CODE              Offs=006BC0  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shl.o):
+    CODE              Offs=006BD6  Size=000033  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax1.o):
+    CODE              Offs=006C09  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax2.o):
+    CODE              Offs=006C11  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax3.o):
+    CODE              Offs=006C1C  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax4.o):
+    CODE              Offs=006C2A  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=006C3B  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=006C51  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxspi.o):
+    CODE              Offs=006C5C  Size=00001B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(steaxspi.o):
+    CODE              Offs=006C77  Size=000022  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(strcmp.o):
+    CODE              Offs=006C99  Size=000021  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(sub.o):
+    CODE              Offs=006CBA  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subeqsp.o):
+    CODE              Offs=006CCF  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=006CE4  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(udiv.o):
+    CODE              Offs=006CF1  Size=00004F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(umod.o):
+    CODE              Offs=006D40  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000002  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000004  00001F  00001C  00001
+PROBECODE             000B00  000BD0  0000D1  00001
+GRAPHICSCODE          000C00  0012FF  000700  00001
+STARTUP               001C00  001CCE  0000CF  00001
+KERNELENTRY           002000  002005  000006  00001
+CODE                  002006  008D56  006D51  00001
+RODATA                008D57  00900A  0002B4  00001
+DATA                  00900B  00900D  000003  00001
+BSS                   00900E  0093C4  0003B7  00001
+SERVICEBOOT           0093D0  0095D5  000206  00001
+VDCASSETS             0096A8  009AFF  000458  00001
+PATHSTATE             0096B8  0096BC  000005  00001
+GRAPHICSPATHS         0096BD  009AA4  0003E8  00001
+LOWBSS                009B00  00A0FC  0005FD  00001
+GRAPHICSHELP          00A100  00A1D9  0000DA  00001
+VICSHADOW             00A1E0  00C11F  001F40  00001
+SYSCALLS              00CF00  00CFFE  0000FF  00001
+HIGHBSS               00E1B8  00E2DF  000128  00001
+MODULECODE            00E300  00E5BB  0002BC  00001
+MODULERODATA          00E5BC  00E606  00004B  00001
+BOOTFSCODE            00F3EF  00F688  00029A  00001
+TASKREQUEST           00F800  00F903  000104  00001
+TASKGATE              00FF05  00FFC4  0000C0  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               00900E RLA    __BSS_SIZE__              0003B7 REA    
+__SERVICEBOOT_RUN__       0093D0 RLA    __SERVICEBOOT_SIZE__      000206 REA    
+__VICSHADOW_RUN__         00A1E0 RLA    __VICSHADOW_SIZE__        001F40 REA    
+_cache_accept_poll        005D3B RLA    _cache_accept_state       005E1C RLA    
+_cache_command            005EAE RLA    _cache_owner              005E1F RLA    
+_cache_phase              005E20 RLA    _cache_step               005E02 RLA    
+_kernel_main              002C02 RLA    _memcpy                   008A24 RLA    
+_memmove                  008A60 RLA    _strcmp                   008C9F RLA    
+_udeks_banked_call        00A1C7 RLA    _udeks_banked_graphics_exec 00E307 RLA    
+_udeks_banked_graphics_installed 009087 RLA    _udeks_banked_graphics_launch 002006 RLA    
+_udeks_banked_graphics_names 00900F RLA    _udeks_banked_graphics_poll 0020F7 RLA    
+_udeks_banked_graphics_request 000C00 RLA    _udeks_banked_graphics_running 00A14F RLA    
+_udeks_banked_graphics_selected 00900E RLA    _udeks_banked_graphics_stop 00A100 RLA    
+_udeks_banked_graphics_stop_name 0020A9 RLA    _udeks_banked_pages_init  00E335 RLA    
+_udeks_banked_read        00A1CA RLA    _udeks_boot_console_build 001600 REA    
+_udeks_bootfs_finish_error 00F65B RLA    _udeks_bootfs_finish_ok   00F667 RLA    
+_udeks_capability_service_descriptor 008D82 RLA    _udeks_clock_start        002AA8 RLA    
+_udeks_console_app_panel_initialize 00E3C5 RLA    _udeks_console_poll       00E3CD RLA    
+_udeks_console_refresh_root 002F6A RLA    _udeks_console_service_descriptor 008DB2 RLA    
+_udeks_console_start      00A1BB RLA    _udeks_console_start_once 0036B0 RLA    
+_udeks_control_ports_active 00248A RLA    _udeks_graphics_event     001091 RLA    
+_udeks_graphics_geometry  002289 RLA    _udeks_graphics_height    009088 RLA    
+_udeks_graphics_origin_x  0096B8 RLA    _udeks_graphics_origin_y  0096BA RLA    
+_udeks_graphics_record    00F359 REA    _udeks_graphics_width     0096BB RLA    
+_udeks_init_service_descriptor 008DF2 RLA    _udeks_keyboard_caps      0090E3 RLA    
+_udeks_keyboard_display_80 0090E4 RLA    _udeks_keyboard_event_get 0060F7 RLA    
+_udeks_keyboard_matrix    0090D8 RLA    _udeks_keyboard_poll      005F6E RLA    
+_udeks_keyboard_scan      002391 RLA    _udeks_keyboard_service_descriptor 008DD2 RLA    
+_udeks_keyboard_start     005EB4 RLA    _udeks_line_editor_cursor 006996 RLA    
+_udeks_line_editor_get_line 006921 RLA    _udeks_line_editor_handle 00680D RLA    
+_udeks_line_editor_history_count 0069A8 RLA    _udeks_line_editor_history_position 0069AE RLA    
+_udeks_line_editor_initialize 0067DE RLA    _udeks_line_editor_length 006990 RLA    
+_udeks_line_editor_read   00251A RLA    _udeks_line_editor_submit 0068CD RLA    
+_udeks_line_editor_submitted_cursor 00A0F9 RLA    _udeks_line_editor_submitted_length_value 00A0F7 RLA    
+_udeks_line_editor_submitted_ready_value 00A0F8 RLA    _udeks_line_editor_submitted_text 00A0B8 RLA    
+_udeks_line_editor_text   00698B RLA    _udeks_managed_apps_poll  008846 RLA    
+_udeks_managed_apps_service_descriptor 008E32 RLA    _udeks_managed_apps_start 008842 RLA    
+_udeks_native_base_pages  00E5BC RLA    _udeks_native_stack_pages 00E5C0 RLA    
+_udeks_nmi_drain          0067C0 RLA    _udeks_nmi_start          006797 RLA    
+_udeks_panic              0029A9 RLA    _udeks_pointer_buttons    006479 RLA    
+_udeks_pointer_keyboard_allowed 006457 RLA    _udeks_pointer_resynchronize 006456 RLA    
+_udeks_pointer_service_descriptor 008DC2 RLA    _udeks_pointer_start      0063AC RLA    
+_udeks_pointer_x          00646B RLA    _udeks_pointer_y          006475 RLA    
+_udeks_probe_georam       000B88 RLA    _udeks_probe_reu          000B5C RLA    
+_udeks_probe_vdc_revision 000B47 RLA    _udeks_probe_video_standard 000B04 RLA    
+_udeks_retained_address   001175 RLA    _udeks_retained_discard   009933 RLA    
+_udeks_retained_lengths   00904F RLA    _udeks_retained_paths_paint 0011C1 RLA    
+_udeks_retained_present   0096BD RLA    _udeks_retained_read      00A1AC RLA    
+_udeks_root_console_cursor_column 003B6C RLA    _udeks_root_console_cursor_row 003B72 RLA    
+_udeks_root_console_cursor_visible 003B78 RLA    _udeks_root_console_dirty_span 003AD4 RLA    
+_udeks_root_console_mark_row_clean 003B14 RLA    _udeks_root_console_put   00391F RLA    
+_udeks_root_console_reset 003837 RLA    _udeks_root_console_row   003A94 RLA    
+_udeks_root_console_set_cursor 003A59 RLA    _udeks_root_console_write 0039A0 RLA    
+_udeks_root_console_write_at 003859 RLA    _udeks_root_console_write_string 003A2A RLA    
+_udeks_root_terminal_poll 006E19 RLA    _udeks_root_terminal_prompt 006F60 RLA    
+_udeks_root_terminal_service_descriptor 008DE2 RLA    _udeks_root_terminal_start 006D96 RLA    
+_udeks_service_control_request 00740B RLA    _udeks_service_count      008D81 RLA    
+_udeks_service_poll_all   002C3D RLA    _udeks_service_start_all  002C28 RLA    
+_udeks_service_start_all_once 0094E5 RLA    _udeks_service_start_phase 002C29 REA    
+_udeks_service_start_result 002C39 REA    _udeks_service_table      008D6B RLA    
+_udeks_shell_command_line 00E290 RLA    _udeks_shell_foreground_job 00E2DF RLA    
+_udeks_shell_interrupt_foreground 0072AD RLA    _udeks_shell_native_argc  009372 RLA    
+_udeks_shell_offsets      00E2C7 RLA    _udeks_shell_poll         007238 RLA    
+_udeks_shell_read_line    00C90F REA    _udeks_shell_start        0071DA RLA    
+_udeks_shell_tokenize     00E56F RLA    _udeks_span_color         00938A RLA    
+_udeks_span_count         009387 RLA    _udeks_span_fill_row      00863F RLA    
+_udeks_span_first         009388 RLA    _udeks_span_last          009389 RLA    
+_udeks_span_offset        009385 RLA    _udeks_stream_write       0071B4 RLA    
+_udeks_stream_write_byte  007193 RLA    _udeks_task_worker_request 0079F5 RLA    
+_udeks_time_now           002F31 RLA    _udeks_time_poll          002E05 REA    
+_udeks_time_service_descriptor 008D92 RLA    _udeks_time_slot_control  002D52 RLA    
+_udeks_time_slot_request  002B3D RLA    _udeks_time_slot_reset    002DA8 REA    
+_udeks_time_slot_set      002E1D RLA    _udeks_time_slot_state    0090FC RLA    
+_udeks_time_start         002DA8 REA    _udeks_vdc_block_address  0090D4 RLA    
+_udeks_vdc_block_length   0090D6 RLA    _udeks_vdc_block_source   0090D2 RLA    
+_udeks_vdc_read_selected  0022EF RLA    _udeks_vdc_select         0022BB RLA    
+_udeks_vdc_status         0090D0 RLA    _udeks_vdc_text_assets    0096A8 RLA    
+_udeks_vdc_write_block    002305 RLA    _udeks_vdc_write_selected 0022D5 RLA    
+_udeks_vic_bitmap_commit  00821E RLA    _udeks_vic_bitmap_commit_page 002674 RLA    
+_udeks_vic_bitmap_fill    007D78 RLA    _udeks_vic_bitmap_line    007C0A RLA    
+_udeks_vic_bitmap_outline_blit 00268F RLA    _udeks_vic_bitmap_outline_move 008120 RLA    
+_udeks_vic_bitmap_outline_toggle 008098 RLA    _udeks_vic_bitmap_pixel   0086A5 RLA    
+_udeks_vic_bitmap_rectangle 008763 RLA    _udeks_vic_bitmap_reset_clip 008076 RLA    
+_udeks_vic_bitmap_set_clip 007F46 RLA    _udeks_vic_bitmap_shadow  00A1E0 RLA    
+_udeks_vic_buffer_restore 00F678 RLA    _udeks_vic_graphics_disable 0025C8 RLA    
+_udeks_vic_graphics_enable 002598 RLA    _udeks_vic_graphics_initialize 007B6C RLA    
+_udeks_vic_graphics_is_active 007BFA RLA    _udeks_vic_graphics_poll  007B59 RLA    
+_udeks_vic_graphics_service_descriptor 008E12 RLA    _udeks_vic_graphics_shutdown 007BC2 RLA    
+_udeks_vic_graphics_start 007A93 RLA    _udeks_vic_pointer_busy_begin 002611 RLA    
+_udeks_vic_pointer_busy_end 00262F RLA    _udeks_vic_pointer_busy_tick 002644 RLA    
+_udeks_vic_pointer_set_x  0025F7 RLA    _udeks_vic_pointer_set_y  00260D RLA    
+_udeks_window_begin_paint 0045F4 RLA    _udeks_window_create      00416F RLA    
+_udeks_window_destroy     004309 RLA    _udeks_window_end_paint   00469F RLA    
+_udeks_window_get_geometry 004718 RLA    _udeks_window_image_complete 0046A5 RLA    
+_udeks_window_is_dragging 0047EB RLA    _udeks_window_is_focused  004805 RLA    
+_udeks_window_manager_poll 003E10 RLA    _udeks_window_manager_reset 004126 RLA    
+_udeks_window_manager_start 003DC4 RLA    _udeks_window_manager_stop 00411F RLA    
+_udeks_window_owner       004847 RLA    _udeks_window_repaint     004451 RLA    
+_udeks_window_service_descriptor 008E22 RLA    _udeks_window_take_click  00481F RLA    
+_udeks_window_update_busy 004872 RLA    _udeks_worker_boot_chain  00F050 REA    
+_udeks_worker_mailbox     00F000 REA    _udeks_worker_status      00F190 REA    
+_udeks_z80_handoff        002578 RLA    _udeks_z80_increment_counter 002557 RLA    
+_udeks_z80_prepare        002561 RLA    _udeks_z80_submit         00784A RLA    
+_udeks_z80_worker_service_descriptor 008E02 RLA    _udeks_z80_worker_start   0077D7 RLA    
+addeq0sp                  008869 RLA    addeqysp                  00886B RLA    
+addysp                    00887B RLA    addysp1                   00887A RLA    
+aslax2                    008898 RLA    aslax4                    0088B1 RLA    
+bnega                     0088C6 RLA    booleq                    0089FE RLA    
+boolne                    0089F8 RLA    callax                    0088D0 RLA    
+decaxy                    0088D7 RLA    decsp1                    0088E0 RLA    
+decsp2                    0088E9 RLA    decsp3                    0088F6 RLA    
+decsp4                    008903 RLA    decsp5                    008910 RLA    
+decsp6                    00891D RLA    decsp7                    00892A RLA    
+decsp8                    008937 RLA    incax1                    008972 RLA    
+incaxy                    00897B RLA    incsp1                    008984 RLA    
+incsp2                    008993 RLA    incsp3                    0089A1 RLA    
+incsp4                    0089A6 RLA    incsp5                    0089AB RLA    
+incsp6                    0089B0 RLA    incsp7                    0089B5 RLA    
+incsp8                    0089BA RLA    jmpvec                    00900B RLA    
+ldaidx                    0089BF RLA    ldax0sp                   0089D8 RLA    
+ldaxi                     0089CB RLA    ldeaxi                    0089E1 RLA    
+memcpy_getparams          008A4D RLA    memcpy_upwards            008A27 RLA    
+mul8x16                   008AF7 RLA    mul8x16a                  008B01 RLA    
+mulax5                    008B2F RLA    mulax9                    008B43 RLA    
+negax                     008B5E RLA    popax                     00898B RLA    
+popptr1                   008B6C RLA    ptr1                      00000E RLZ    
+ptr2                      000010 RLZ    ptr3                      000012 RLZ    
+ptr4                      000014 RLZ    push0                     008B90 RLA    
+pusha                     008B7E RLA    pusha0                    008B92 RLA    
+pushax                    008B94 RLA    pushw0sp                  008BAA RLA    
+pushwysp                  008BAC RLA    regbank                   00001A RLZ    
+regsave                   00000A RLZ    regswap2                  008BC6 RLA    
+shlax3                    0088A3 RLA    shlax4                    0088B1 RLA    
+shlaxy                    008BE3 RLA    shrax1                    008C0F RLA    
+shrax2                    008C17 RLA    shrax3                    008C22 RLA    
+shrax4                    008C30 RLA    sp                        000006 RLZ    
+sreg                      000008 RLZ    staspidx                  008C41 RLA    
+stax0sp                   008C57 RLA    staxspidx                 008C62 RLA    
+staxysp                   008C59 RLA    steaxspidx                008C7D RLA    
+subeqysp                  008CD7 RLA    subysp                    008CEA RLA    
+tmp1                      000016 RLZ    tmp2                      000017 RLZ    
+tmp3                      000018 RLZ    tmp4                      000019 RLZ    
+tosaddax                  00884F RLA    tosandax                  00888A RLA    
+tosicmp                   008946 RLA    tosicmp0                  008944 RLA    
+tosmula0                  008AF5 RLA    tossuba0                  008CC0 RLA    
+tossubax                  008CC2 RLA    tosudiva0                 008CF7 RLA    
+tosumoda0                 008D46 RLA    tosumula0                 008AF5 RLA    
+tosumulax                 008AB0 RLA    udiv16                    008D08 RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000006 RLZ    sreg                      000008 RLZ    
+regsave                   00000A RLZ    ptr1                      00000E RLZ    
+ptr2                      000010 RLZ    ptr3                      000012 RLZ    
+ptr4                      000014 RLZ    tmp1                      000016 RLZ    
+tmp2                      000017 RLZ    tmp3                      000018 RLZ    
+tmp4                      000019 RLZ    regbank                   00001A RLZ    
+__SERVICEBOOT_SIZE__      000206 REA    __BSS_SIZE__              0003B7 REA    
+_udeks_probe_video_standard 000B04 RLA    _udeks_probe_vdc_revision 000B47 RLA    
+_udeks_probe_reu          000B5C RLA    _udeks_probe_georam       000B88 RLA    
+_udeks_banked_graphics_request 000C00 RLA    _udeks_graphics_event     001091 RLA    
+_udeks_retained_address   001175 RLA    _udeks_retained_paths_paint 0011C1 RLA    
+_udeks_boot_console_build 001600 REA    __VICSHADOW_SIZE__        001F40 REA    
+_udeks_banked_graphics_launch 002006 RLA    _udeks_banked_graphics_stop_name 0020A9 RLA    
+_udeks_banked_graphics_poll 0020F7 RLA    _udeks_graphics_geometry  002289 RLA    
+_udeks_vdc_select         0022BB RLA    _udeks_vdc_write_selected 0022D5 RLA    
+_udeks_vdc_read_selected  0022EF RLA    _udeks_vdc_write_block    002305 RLA    
+_udeks_keyboard_scan      002391 RLA    _udeks_control_ports_active 00248A RLA    
+_udeks_line_editor_read   00251A RLA    _udeks_z80_increment_counter 002557 RLA    
+_udeks_z80_prepare        002561 RLA    _udeks_z80_handoff        002578 RLA    
+_udeks_vic_graphics_enable 002598 RLA    _udeks_vic_graphics_disable 0025C8 RLA    
+_udeks_vic_pointer_set_x  0025F7 RLA    _udeks_vic_pointer_set_y  00260D RLA    
+_udeks_vic_pointer_busy_begin 002611 RLA    _udeks_vic_pointer_busy_end 00262F RLA    
+_udeks_vic_pointer_busy_tick 002644 RLA    _udeks_vic_bitmap_commit_page 002674 RLA    
+_udeks_vic_bitmap_outline_blit 00268F RLA    _udeks_panic              0029A9 RLA    
+_udeks_clock_start        002AA8 RLA    _udeks_time_slot_request  002B3D RLA    
+_kernel_main              002C02 RLA    _udeks_service_start_all  002C28 RLA    
+_udeks_service_start_phase 002C29 REA    _udeks_service_start_result 002C39 REA    
+_udeks_service_poll_all   002C3D RLA    _udeks_time_slot_control  002D52 RLA    
+_udeks_time_slot_reset    002DA8 REA    _udeks_time_start         002DA8 REA    
+_udeks_time_poll          002E05 REA    _udeks_time_slot_set      002E1D RLA    
+_udeks_time_now           002F31 RLA    _udeks_console_refresh_root 002F6A RLA    
+_udeks_console_start_once 0036B0 RLA    _udeks_root_console_reset 003837 RLA    
+_udeks_root_console_write_at 003859 RLA    _udeks_root_console_put   00391F RLA    
+_udeks_root_console_write 0039A0 RLA    _udeks_root_console_write_string 003A2A RLA    
+_udeks_root_console_set_cursor 003A59 RLA    _udeks_root_console_row   003A94 RLA    
+_udeks_root_console_dirty_span 003AD4 RLA    _udeks_root_console_mark_row_clean 003B14 RLA    
+_udeks_root_console_cursor_column 003B6C RLA    _udeks_root_console_cursor_row 003B72 RLA    
+_udeks_root_console_cursor_visible 003B78 RLA    _udeks_window_manager_start 003DC4 RLA    
+_udeks_window_manager_poll 003E10 RLA    _udeks_window_manager_stop 00411F RLA    
+_udeks_window_manager_reset 004126 RLA    _udeks_window_create      00416F RLA    
+_udeks_window_destroy     004309 RLA    _udeks_window_repaint     004451 RLA    
+_udeks_window_begin_paint 0045F4 RLA    _udeks_window_end_paint   00469F RLA    
+_udeks_window_image_complete 0046A5 RLA    _udeks_window_get_geometry 004718 RLA    
+_udeks_window_is_dragging 0047EB RLA    _udeks_window_is_focused  004805 RLA    
+_udeks_window_take_click  00481F RLA    _udeks_window_owner       004847 RLA    
+_udeks_window_update_busy 004872 RLA    _cache_accept_poll        005D3B RLA    
+_cache_step               005E02 RLA    _cache_accept_state       005E1C RLA    
+_cache_owner              005E1F RLA    _cache_phase              005E20 RLA    
+_cache_command            005EAE RLA    _udeks_keyboard_start     005EB4 RLA    
+_udeks_keyboard_poll      005F6E RLA    _udeks_keyboard_event_get 0060F7 RLA    
+_udeks_pointer_start      0063AC RLA    _udeks_pointer_resynchronize 006456 RLA    
+_udeks_pointer_keyboard_allowed 006457 RLA    _udeks_pointer_x          00646B RLA    
+_udeks_pointer_y          006475 RLA    _udeks_pointer_buttons    006479 RLA    
+_udeks_nmi_start          006797 RLA    _udeks_nmi_drain          0067C0 RLA    
+_udeks_line_editor_initialize 0067DE RLA    _udeks_line_editor_handle 00680D RLA    
+_udeks_line_editor_submit 0068CD RLA    _udeks_line_editor_get_line 006921 RLA    
+_udeks_line_editor_text   00698B RLA    _udeks_line_editor_length 006990 RLA    
+_udeks_line_editor_cursor 006996 RLA    _udeks_line_editor_history_count 0069A8 RLA    
+_udeks_line_editor_history_position 0069AE RLA    _udeks_root_terminal_start 006D96 RLA    
+_udeks_root_terminal_poll 006E19 RLA    _udeks_root_terminal_prompt 006F60 RLA    
+_udeks_stream_write_byte  007193 RLA    _udeks_stream_write       0071B4 RLA    
+_udeks_shell_start        0071DA RLA    _udeks_shell_poll         007238 RLA    
+_udeks_shell_interrupt_foreground 0072AD RLA    _udeks_service_control_request 00740B RLA    
+_udeks_z80_worker_start   0077D7 RLA    _udeks_z80_submit         00784A RLA    
+_udeks_task_worker_request 0079F5 RLA    _udeks_vic_graphics_start 007A93 RLA    
+_udeks_vic_graphics_poll  007B59 RLA    _udeks_vic_graphics_initialize 007B6C RLA    
+_udeks_vic_graphics_shutdown 007BC2 RLA    _udeks_vic_graphics_is_active 007BFA RLA    
+_udeks_vic_bitmap_line    007C0A RLA    _udeks_vic_bitmap_fill    007D78 RLA    
+_udeks_vic_bitmap_set_clip 007F46 RLA    _udeks_vic_bitmap_reset_clip 008076 RLA    
+_udeks_vic_bitmap_outline_toggle 008098 RLA    _udeks_vic_bitmap_outline_move 008120 RLA    
+_udeks_vic_bitmap_commit  00821E RLA    _udeks_span_fill_row      00863F RLA    
+_udeks_vic_bitmap_pixel   0086A5 RLA    _udeks_vic_bitmap_rectangle 008763 RLA    
+_udeks_managed_apps_start 008842 RLA    _udeks_managed_apps_poll  008846 RLA    
+tosaddax                  00884F RLA    addeq0sp                  008869 RLA    
+addeqysp                  00886B RLA    addysp1                   00887A RLA    
+addysp                    00887B RLA    tosandax                  00888A RLA    
+aslax2                    008898 RLA    shlax3                    0088A3 RLA    
+aslax4                    0088B1 RLA    shlax4                    0088B1 RLA    
+bnega                     0088C6 RLA    callax                    0088D0 RLA    
+decaxy                    0088D7 RLA    decsp1                    0088E0 RLA    
+decsp2                    0088E9 RLA    decsp3                    0088F6 RLA    
+decsp4                    008903 RLA    decsp5                    008910 RLA    
+decsp6                    00891D RLA    decsp7                    00892A RLA    
+decsp8                    008937 RLA    tosicmp0                  008944 RLA    
+tosicmp                   008946 RLA    incax1                    008972 RLA    
+incaxy                    00897B RLA    incsp1                    008984 RLA    
+popax                     00898B RLA    incsp2                    008993 RLA    
+incsp3                    0089A1 RLA    incsp4                    0089A6 RLA    
+incsp5                    0089AB RLA    incsp6                    0089B0 RLA    
+incsp7                    0089B5 RLA    incsp8                    0089BA RLA    
+ldaidx                    0089BF RLA    ldaxi                     0089CB RLA    
+ldax0sp                   0089D8 RLA    ldeaxi                    0089E1 RLA    
+boolne                    0089F8 RLA    booleq                    0089FE RLA    
+_memcpy                   008A24 RLA    memcpy_upwards            008A27 RLA    
+memcpy_getparams          008A4D RLA    _memmove                  008A60 RLA    
+tosumulax                 008AB0 RLA    tosmula0                  008AF5 RLA    
+tosumula0                 008AF5 RLA    mul8x16                   008AF7 RLA    
+mul8x16a                  008B01 RLA    mulax5                    008B2F RLA    
+mulax9                    008B43 RLA    negax                     008B5E RLA    
+popptr1                   008B6C RLA    pusha                     008B7E RLA    
+push0                     008B90 RLA    pusha0                    008B92 RLA    
+pushax                    008B94 RLA    pushw0sp                  008BAA RLA    
+pushwysp                  008BAC RLA    regswap2                  008BC6 RLA    
+shlaxy                    008BE3 RLA    shrax1                    008C0F RLA    
+shrax2                    008C17 RLA    shrax3                    008C22 RLA    
+shrax4                    008C30 RLA    staspidx                  008C41 RLA    
+stax0sp                   008C57 RLA    staxysp                   008C59 RLA    
+staxspidx                 008C62 RLA    steaxspidx                008C7D RLA    
+_strcmp                   008C9F RLA    tossuba0                  008CC0 RLA    
+tossubax                  008CC2 RLA    subeqysp                  008CD7 RLA    
+subysp                    008CEA RLA    tosudiva0                 008CF7 RLA    
+udiv16                    008D08 RLA    tosumoda0                 008D46 RLA    
+_udeks_service_table      008D6B RLA    _udeks_service_count      008D81 RLA    
+_udeks_capability_service_descriptor 008D82 RLA    _udeks_time_service_descriptor 008D92 RLA    
+_udeks_console_service_descriptor 008DB2 RLA    _udeks_pointer_service_descriptor 008DC2 RLA    
+_udeks_keyboard_service_descriptor 008DD2 RLA    _udeks_root_terminal_service_descriptor 008DE2 RLA    
+_udeks_init_service_descriptor 008DF2 RLA    _udeks_z80_worker_service_descriptor 008E02 RLA    
+_udeks_vic_graphics_service_descriptor 008E12 RLA    _udeks_window_service_descriptor 008E22 RLA    
+_udeks_managed_apps_service_descriptor 008E32 RLA    jmpvec                    00900B RLA    
+__BSS_RUN__               00900E RLA    _udeks_banked_graphics_selected 00900E RLA    
+_udeks_banked_graphics_names 00900F RLA    _udeks_retained_lengths   00904F RLA    
+_udeks_banked_graphics_installed 009087 RLA    _udeks_graphics_height    009088 RLA    
+_udeks_vdc_status         0090D0 RLA    _udeks_vdc_block_source   0090D2 RLA    
+_udeks_vdc_block_address  0090D4 RLA    _udeks_vdc_block_length   0090D6 RLA    
+_udeks_keyboard_matrix    0090D8 RLA    _udeks_keyboard_caps      0090E3 RLA    
+_udeks_keyboard_display_80 0090E4 RLA    _udeks_time_slot_state    0090FC RLA    
+_udeks_shell_native_argc  009372 RLA    _udeks_span_offset        009385 RLA    
+_udeks_span_count         009387 RLA    _udeks_span_first         009388 RLA    
+_udeks_span_last          009389 RLA    _udeks_span_color         00938A RLA    
+__SERVICEBOOT_RUN__       0093D0 RLA    _udeks_service_start_all_once 0094E5 RLA    
+_udeks_vdc_text_assets    0096A8 RLA    _udeks_graphics_origin_x  0096B8 RLA    
+_udeks_graphics_origin_y  0096BA RLA    _udeks_graphics_width     0096BB RLA    
+_udeks_retained_present   0096BD RLA    _udeks_retained_discard   009933 RLA    
+_udeks_line_editor_submitted_text 00A0B8 RLA    _udeks_line_editor_submitted_length_value 00A0F7 RLA    
+_udeks_line_editor_submitted_ready_value 00A0F8 RLA    _udeks_line_editor_submitted_cursor 00A0F9 RLA    
+_udeks_banked_graphics_stop 00A100 RLA    _udeks_banked_graphics_running 00A14F RLA    
+_udeks_retained_read      00A1AC RLA    _udeks_console_start      00A1BB RLA    
+_udeks_banked_call        00A1C7 RLA    _udeks_banked_read        00A1CA RLA    
+__VICSHADOW_RUN__         00A1E0 RLA    _udeks_vic_bitmap_shadow  00A1E0 RLA    
+_udeks_shell_read_line    00C90F REA    _udeks_shell_command_line 00E290 RLA    
+_udeks_shell_offsets      00E2C7 RLA    _udeks_shell_foreground_job 00E2DF RLA    
+_udeks_banked_graphics_exec 00E307 RLA    _udeks_banked_pages_init  00E335 RLA    
+_udeks_console_app_panel_initialize 00E3C5 RLA    _udeks_console_poll       00E3CD RLA    
+_udeks_shell_tokenize     00E56F RLA    _udeks_native_base_pages  00E5BC RLA    
+_udeks_native_stack_pages 00E5C0 RLA    _udeks_worker_mailbox     00F000 REA    
+_udeks_worker_boot_chain  00F050 REA    _udeks_worker_status      00F190 REA    
+_udeks_graphics_record    00F359 REA    _udeks_bootfs_finish_error 00F65B RLA    
+_udeks_bootfs_finish_ok   00F667 RLA    _udeks_vic_buffer_restore 00F678 RLA    
+
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    syscall_gate.o            src/8502/app_gateway.s(25)
+    crt0.o                    src/8502/crt0.s(11)
+__BSS_SIZE__ ([linker generated]):
+    syscall_gate.o            src/8502/app_gateway.s(25)
+    crt0.o                    src/8502/crt0.s(11)
+__SERVICEBOOT_RUN__ ([linker generated]):
+    syscall_gate.o            src/8502/app_gateway.s(30)
+__SERVICEBOOT_SIZE__ ([linker generated]):
+    syscall_gate.o            src/8502/app_gateway.s(30)
+__VICSHADOW_RUN__ ([linker generated]):
+    crt0.o                    src/8502/crt0.s(12)
+__VICSHADOW_SIZE__ ([linker generated]):
+    crt0.o                    src/8502/crt0.s(12)
+_cache_accept_poll (cache_transport.o):
+    window_manager.o          build/8502/window_manager.s(48)
+_cache_accept_state (cache_transport.o):
+    window_manager.o          build/8502/window_manager.s(45)
+_cache_command (cache_transport.o):
+    window_manager.o          build/8502/window_manager.s(50)
+_cache_owner (cache_transport.o):
+    window_manager.o          build/8502/window_manager.s(46)
+_cache_phase (cache_transport.o):
+    window_manager.o          build/8502/window_manager.s(47)
+_cache_step (cache_transport.o):
+    window_manager.o          build/8502/window_manager.s(49)
+_kernel_main (kernel.o):
+    kernel_entry.o            src/8502/kernel_entry.s(8)
+_memcpy (memcpy.o):
+    retained_paths.o          build/8502/retained_paths.s(25)
+    banked_graphics.o         build/8502/banked_graphics.s(43)
+_memmove (memmove.o):
+    retained_paths.o          build/8502/retained_paths.s(26)
+_strcmp (strcmp.o):
+    banked_graphics.o         build/8502/banked_graphics.s(42)
+_udeks_banked_call (banked_access.o):
+    banked_graphics.o         build/8502/banked_graphics.s(13)
+_udeks_banked_graphics_exec (banked_access.o):
+    shell.o                   build/8502/shell.s(24)
+_udeks_banked_graphics_installed (banked_graphics.o):
+    syscall_gate.o            src/8502/syscall_gate.s(23)
+    banked_access.o           src/services/window/banked_access.s(7)
+_udeks_banked_graphics_launch (banked_graphics.o):
+    banked_access.o           src/services/window/banked_access.s(6)
+_udeks_banked_graphics_names (banked_graphics.o):
+    app_panel.o               src/services/console/app_panel.s(13)
+_udeks_banked_graphics_poll (banked_graphics.o):
+    managed_apps.o            src/services/app/managed_apps.s(5)
+_udeks_banked_graphics_request (banked_graphics.o):
+    syscall_gate.o            src/8502/syscall_gate.s(23)
+_udeks_banked_graphics_running (banked_graphics.o):
+    shell.o                   build/8502/shell.s(28)
+    app_panel.o               src/services/console/app_panel.s(13)
+_udeks_banked_graphics_selected (banked_graphics.o):
+    shell.o                   build/8502/shell.s(25)
+_udeks_banked_graphics_stop (banked_graphics.o):
+    shell.o                   build/8502/shell.s(27)
+_udeks_banked_graphics_stop_name (banked_graphics.o):
+    shell.o                   build/8502/shell.s(26)
+_udeks_banked_pages_init (banked_access.o):
+    [linker generated]       
+_udeks_banked_read (banked_access.o):
+    retained_paths.o          build/8502/retained_paths.s(15)
+    banked_graphics.o         build/8502/banked_graphics.s(14)
+_udeks_boot_console_build (boot_console_entry.o):
+    vdc_console.o             build/8502/vdc_console.s(13)
+_udeks_bootfs_finish_error (bootfs_request.o):
+    syscall_gate.o            src/8502/syscall_gate.s(24)
+    [linker generated]       
+_udeks_bootfs_finish_ok (bootfs_request.o):
+    syscall_gate.o            src/8502/syscall_gate.s(24)
+    [linker generated]       
+_udeks_capability_service_descriptor (capability_descriptor.o):
+    service_table.o           src/services/table.s(7)
+_udeks_clock_start (clock.o):
+    clock_descriptor.o        src/services/clock/descriptor.s(4)
+_udeks_console_app_panel_initialize (app_panel.o):
+    vdc_console.o             build/8502/vdc_console.s(30)
+_udeks_console_poll (app_panel.o):
+    console_descriptor.o      src/services/console/descriptor.s(8)
+_udeks_console_refresh_root (vdc_console.o):
+    root_terminal.o           build/8502/root_terminal.s(13)
+_udeks_console_service_descriptor (console_descriptor.o):
+    service_table.o           src/services/table.s(10)
+_udeks_console_start (banked_access.o):
+    console_descriptor.o      src/services/console/descriptor.s(7)
+_udeks_console_start_once (vdc_console.o):
+    banked_access.o           src/services/window/banked_access.s(8)
+_udeks_control_ports_active (control_ports.o):
+    pointer.o                 src/8502/pointer_irq.s(16)
+_udeks_graphics_event (graphics_event.o):
+    banked_graphics.o         build/8502/banked_graphics.s(49)
+_udeks_graphics_geometry (graphics_event.o):
+    banked_graphics.o         build/8502/banked_graphics.s(50)
+_udeks_graphics_height (banked_graphics.o):
+    graphics_event.o          src/services/window/graphics_event.s(11)
+_udeks_graphics_origin_x (banked_graphics.o):
+    retained_paths.o          build/8502/retained_paths.s(17)
+    graphics_event.o          src/services/window/graphics_event.s(12)
+_udeks_graphics_origin_y (banked_graphics.o):
+    retained_paths.o          build/8502/retained_paths.s(18)
+    graphics_event.o          src/services/window/graphics_event.s(12)
+_udeks_graphics_record (banked_access.o):
+    task_worker.o             build/8502/task_worker.s(15)
+    retained_paths.o          build/8502/retained_paths.s(27)
+    graphics_event.o          src/services/window/graphics_event.s(8)
+    banked_graphics.o         build/8502/banked_graphics.s(44)
+_udeks_graphics_width (banked_graphics.o):
+    graphics_event.o          src/services/window/graphics_event.s(11)
+_udeks_init_service_descriptor (init_descriptor.o):
+    service_table.o           src/services/table.s(17)
+_udeks_keyboard_caps (keyboard_scan.o):
+    keyboard.o                build/8502/keyboard.s(14)
+_udeks_keyboard_display_80 (keyboard_scan.o):
+    keyboard.o                build/8502/keyboard.s(15)
+_udeks_keyboard_event_get (keyboard.o):
+    root_terminal.o           build/8502/root_terminal.s(14)
+_udeks_keyboard_matrix (keyboard_scan.o):
+    keyboard.o                build/8502/keyboard.s(13)
+_udeks_keyboard_poll (keyboard.o):
+    keyboard_descriptor.o     src/services/input/descriptor.s(5)
+_udeks_keyboard_scan (keyboard_scan.o):
+    keyboard.o                build/8502/keyboard.s(16)
+_udeks_keyboard_service_descriptor (keyboard_descriptor.o):
+    service_table.o           src/services/table.s(15)
+_udeks_keyboard_start (keyboard.o):
+    keyboard_descriptor.o     src/services/input/descriptor.s(4)
+_udeks_line_editor_cursor (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(20)
+_udeks_line_editor_get_line (line_editor.o):
+    [linker generated]       
+_udeks_line_editor_handle (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(16)
+_udeks_line_editor_history_count (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(21)
+_udeks_line_editor_history_position (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(22)
+_udeks_line_editor_initialize (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(15)
+_udeks_line_editor_length (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(19)
+_udeks_line_editor_read (line_editor_read.o):
+    syscall_gate.o            src/8502/syscall_gate.s(16)
+_udeks_line_editor_submit (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(17)
+_udeks_line_editor_submitted_cursor (line_editor.o):
+    line_editor_read.o        src/8502/line_editor_read.s(13)
+_udeks_line_editor_submitted_length_value (line_editor.o):
+    line_editor_read.o        src/8502/line_editor_read.s(11)
+_udeks_line_editor_submitted_ready_value (line_editor.o):
+    line_editor_read.o        src/8502/line_editor_read.s(12)
+_udeks_line_editor_submitted_text (line_editor.o):
+    line_editor_read.o        src/8502/line_editor_read.s(10)
+_udeks_line_editor_text (line_editor.o):
+    root_terminal.o           build/8502/root_terminal.s(18)
+_udeks_managed_apps_poll (managed_apps.o):
+    managed_apps_descriptor.o src/services/app/descriptor.s(5)
+_udeks_managed_apps_service_descriptor (managed_apps_descriptor.o):
+    service_table.o           src/services/table.s(14)
+_udeks_managed_apps_start (managed_apps.o):
+    managed_apps_descriptor.o src/services/app/descriptor.s(4)
+_udeks_native_base_pages (banked_access.o):
+    retained_paths.o          build/8502/retained_paths.s(13)
+_udeks_native_stack_pages (banked_access.o):
+    retained_paths.o          build/8502/retained_paths.s(14)
+_udeks_nmi_drain (nmi.o):
+    pointer.o                 src/8502/pointer_irq.s(17)
+    cache_transport.o         src/8502/cache_transport.s(7)
+_udeks_nmi_start (nmi.o):
+    pointer.o                 src/8502/pointer_irq.s(17)
+_udeks_panic (panic.o):
+    kernel.o                  build/8502/kernel.s(13)
+_udeks_pointer_buttons (pointer.o):
+    window_manager.o          build/8502/window_manager.s(16)
+_udeks_pointer_keyboard_allowed (pointer.o):
+    keyboard.o                build/8502/keyboard.s(21)
+_udeks_pointer_resynchronize (pointer.o):
+    window_manager.o          build/8502/window_manager.s(13)
+_udeks_pointer_service_descriptor (pointer_descriptor.o):
+    service_table.o           src/services/table.s(11)
+_udeks_pointer_start (pointer.o):
+    pointer_descriptor.o      src/services/input/pointer_descriptor.s(4)
+_udeks_pointer_x (pointer.o):
+    vic_graphics.o            build/8502/vic_graphics.s(26)
+    window_manager.o          build/8502/window_manager.s(14)
+_udeks_pointer_y (pointer.o):
+    vic_graphics.o            build/8502/vic_graphics.s(27)
+    window_manager.o          build/8502/window_manager.s(15)
+_udeks_probe_georam (probe.o):
+    [linker generated]       
+_udeks_probe_reu (probe.o):
+    [linker generated]       
+_udeks_probe_vdc_revision (probe.o):
+    [linker generated]       
+_udeks_probe_video_standard (probe.o):
+    [linker generated]       
+_udeks_retained_address (retained_paths.o):
+    banked_graphics.o         build/8502/banked_graphics.s(26)
+_udeks_retained_discard (retained_paths.o):
+    banked_graphics.o         build/8502/banked_graphics.s(28)
+_udeks_retained_lengths (banked_graphics.o):
+    retained_paths.o          build/8502/retained_paths.s(16)
+_udeks_retained_paths_paint (retained_paths.o):
+    banked_graphics.o         build/8502/banked_graphics.s(30)
+_udeks_retained_present (retained_paths.o):
+    banked_graphics.o         build/8502/banked_graphics.s(27)
+_udeks_retained_read (graphics_event.o):
+    retained_paths.o          build/8502/retained_paths.s(22)
+    banked_graphics.o         build/8502/banked_graphics.s(29)
+_udeks_root_console_cursor_column (root_console.o):
+    root_terminal.o           build/8502/root_terminal.s(27)
+    vdc_console.o             build/8502/vdc_console.s(18)
+_udeks_root_console_cursor_row (root_console.o):
+    root_terminal.o           build/8502/root_terminal.s(28)
+    vdc_console.o             build/8502/vdc_console.s(19)
+_udeks_root_console_cursor_visible (root_console.o):
+    vdc_console.o             build/8502/vdc_console.s(20)
+_udeks_root_console_dirty_span (root_console.o):
+    vdc_console.o             build/8502/vdc_console.s(16)
+_udeks_root_console_mark_row_clean (root_console.o):
+    vdc_console.o             build/8502/vdc_console.s(17)
+_udeks_root_console_put (root_console.o):
+    root_terminal.o           build/8502/root_terminal.s(23)
+_udeks_root_console_reset (root_console.o):
+    [linker generated]       
+_udeks_root_console_row (root_console.o):
+    vdc_console.o             build/8502/vdc_console.s(15)
+_udeks_root_console_set_cursor (root_console.o):
+    root_terminal.o           build/8502/root_terminal.s(26)
+    [linker generated]       
+_udeks_root_console_write (root_console.o):
+    terminal_stream.o         build/8502/terminal_stream.s(13)
+    root_terminal.o           build/8502/root_terminal.s(24)
+    syscall_gate.o            src/8502/syscall_gate.s(17)
+_udeks_root_console_write_at (root_console.o):
+    [linker generated]       
+_udeks_root_console_write_string (root_console.o):
+    terminal_stream.o         build/8502/terminal_stream.s(14)
+    root_terminal.o           build/8502/root_terminal.s(25)
+_udeks_root_terminal_poll (root_terminal.o):
+    root_terminal_descriptor.o src/services/terminal/descriptor.s(5)
+_udeks_root_terminal_prompt (root_terminal.o):
+    shell.o                   build/8502/shell.s(13)
+    syscall_gate.o            src/8502/syscall_gate.s(18)
+_udeks_root_terminal_service_descriptor (root_terminal_descriptor.o):
+    service_table.o           src/services/table.s(16)
+_udeks_root_terminal_start (root_terminal.o):
+    root_terminal_descriptor.o src/services/terminal/descriptor.s(4)
+_udeks_service_control_request (shell.o):
+    syscall_gate.o            src/8502/syscall_gate.s(21)
+_udeks_service_count (service_table.o):
+    service_registry.o        build/8502/service_registry.s(15)
+_udeks_service_poll_all (service_registry.o):
+    kernel.o                  build/8502/kernel.s(15)
+_udeks_service_start_all (service_start.o):
+    kernel.o                  build/8502/kernel.s(14)
+_udeks_service_start_all_once (service_registry.o):
+    service_start.o           src/8502/service_start.s(9)
+_udeks_service_start_phase (service_start.o):
+    time-slot.o               src/services/module/time_slot.s(10)
+    [linker generated]       
+_udeks_service_start_result (service_start.o):
+    time-slot.o               src/services/module/time_slot.s(10)
+    [linker generated]       
+_udeks_service_table (service_table.o):
+    service_registry.o        build/8502/service_registry.s(14)
+_udeks_shell_command_line (shell.o):
+    syscall_gate.o            src/8502/syscall_gate.s(19)
+    banked_access.o           src/services/window/banked_access.s(9)
+_udeks_shell_foreground_job (shell.o):
+    syscall_gate.o            src/8502/syscall_gate.s(20)
+    banked_graphics.o         build/8502/banked_graphics.s(46)
+_udeks_shell_interrupt_foreground (shell.o):
+    root_terminal.o           build/8502/root_terminal.s(32)
+_udeks_shell_native_argc (shell.o):
+    banked_access.o           src/services/window/banked_access.s(9)
+_udeks_shell_offsets (shell.o):
+    banked_access.o           src/services/window/banked_access.s(9)
+_udeks_shell_poll (shell.o):
+    init_descriptor.o         src/services/init/descriptor.s(9)
+_udeks_shell_read_line (init_descriptor.o):
+    shell.o                   build/8502/shell.s(29)
+_udeks_shell_start (shell.o):
+    init_descriptor.o         src/services/init/descriptor.s(8)
+_udeks_shell_tokenize (shell_parser.o):
+    shell.o                   build/8502/shell.s(14)
+_udeks_span_color (vic_graphics.o):
+    vic_span.o                src/services/display/vic_span.s(9)
+_udeks_span_count (vic_graphics.o):
+    vic_span.o                src/services/display/vic_span.s(8)
+_udeks_span_fill_row (vic_span.o):
+    vic_graphics.o            build/8502/vic_graphics.s(41)
+_udeks_span_first (vic_graphics.o):
+    vic_span.o                src/services/display/vic_span.s(9)
+_udeks_span_last (vic_graphics.o):
+    vic_span.o                src/services/display/vic_span.s(9)
+_udeks_span_offset (vic_graphics.o):
+    vic_span.o                src/services/display/vic_span.s(8)
+_udeks_stream_write (terminal_stream.o):
+    shell.o                   build/8502/shell.s(19)
+    syscall_gate.o            src/8502/syscall_gate.s(15)
+_udeks_stream_write_byte (terminal_stream.o):
+    shell.o                   build/8502/shell.s(18)
+    syscall_gate.o            src/8502/syscall_gate.s(14)
+_udeks_task_worker_request (task_worker.o):
+    syscall_gate.o            src/8502/syscall_gate.s(22)
+_udeks_time_now (time-resident.o):
+    syscall_gate.o            src/8502/app_gateway.s(10)
+_udeks_time_poll (time-slot.o):
+    time_descriptor.o         src/services/time/descriptor.s(5)
+_udeks_time_service_descriptor (time_descriptor.o):
+    service_table.o           src/services/table.s(8)
+_udeks_time_slot_control (time-slot.o):
+    syscall_gate.o            src/8502/../services/module/request.inc(6)
+_udeks_time_slot_request (syscall_gate.o):
+    [linker generated]       
+_udeks_time_slot_reset (time-slot.o):
+    syscall_gate.o            src/8502/../services/module/request.inc(7)
+_udeks_time_slot_set (time-slot.o):
+    syscall_gate.o            src/8502/syscall_gate.s(27)
+_udeks_time_slot_state (time-slot.o):
+    syscall_gate.o            src/8502/../services/module/request.inc(6)
+    [linker generated]       
+_udeks_time_start (time-slot.o):
+    time_descriptor.o         src/services/time/descriptor.s(4)
+_udeks_vdc_block_address (vdc.o):
+    app_panel.o               src/services/console/app_panel.s(10)
+    vdc_console.o             build/8502/vdc_console.s(23)
+_udeks_vdc_block_length (vdc.o):
+    app_panel.o               src/services/console/app_panel.s(11)
+    vdc_console.o             build/8502/vdc_console.s(24)
+_udeks_vdc_block_source (vdc.o):
+    app_panel.o               src/services/console/app_panel.s(9)
+    vdc_console.o             build/8502/vdc_console.s(22)
+_udeks_vdc_read_selected (vdc.o):
+    vdc_console.o             build/8502/vdc_console.s(27)
+    [linker generated]       
+_udeks_vdc_select (vdc.o):
+    vdc_console.o             build/8502/vdc_console.s(25)
+    [linker generated]       
+_udeks_vdc_status (vdc.o):
+    vdc_console.o             build/8502/vdc_console.s(21)
+    [linker generated]       
+_udeks_vdc_text_assets (vdc_text_assets.o):
+    app_panel.o               src/services/console/app_panel.s(12)
+    vdc_console.o             build/8502/vdc_console.s(29)
+_udeks_vdc_write_block (vdc.o):
+    app_panel.o               src/services/console/app_panel.s(8)
+    vdc_console.o             build/8502/vdc_console.s(28)
+_udeks_vdc_write_selected (vdc.o):
+    vdc_console.o             build/8502/vdc_console.s(26)
+    [linker generated]       
+_udeks_vic_bitmap_commit (vic_graphics.o):
+    window_manager.o          build/8502/window_manager.s(28)
+_udeks_vic_bitmap_commit_page (vic_graphics_transport.o):
+    vic_graphics.o            build/8502/vic_graphics.s(33)
+_udeks_vic_bitmap_fill (vic_graphics.o):
+    vic_rectangle.o           src/services/display/vic_rectangle.s(8)
+    window_manager.o          build/8502/window_manager.s(23)
+    syscall_gate.o            src/8502/app_gateway.s(11)
+    banked_graphics.o         build/8502/banked_graphics.s(41)
+_udeks_vic_bitmap_line (vic_graphics.o):
+    window_manager.o          build/8502/window_manager.s(21)
+    syscall_gate.o            src/8502/app_gateway.s(12)
+    retained_paths.o          build/8502/retained_paths.s(24)
+    banked_graphics.o         build/8502/banked_graphics.s(40)
+_udeks_vic_bitmap_outline_blit (vic_graphics_transport.o):
+    vic_graphics.o            build/8502/vic_graphics.s(34)
+_udeks_vic_bitmap_outline_move (vic_graphics.o):
+    window_manager.o          build/8502/window_manager.s(27)
+_udeks_vic_bitmap_outline_toggle (vic_graphics.o):
+    window_manager.o          build/8502/window_manager.s(26)
+_udeks_vic_bitmap_pixel (vic_pixel.o):
+    vic_graphics.o            build/8502/vic_graphics.s(18)
+    window_manager.o          build/8502/window_manager.s(20)
+    syscall_gate.o            src/8502/app_gateway.s(13)
+_udeks_vic_bitmap_rectangle (vic_rectangle.o):
+    window_manager.o          build/8502/window_manager.s(22)
+_udeks_vic_bitmap_reset_clip (vic_graphics.o):
+    window_manager.o          build/8502/window_manager.s(25)
+_udeks_vic_bitmap_set_clip (vic_graphics.o):
+    window_manager.o          build/8502/window_manager.s(24)
+_udeks_vic_bitmap_shadow (vic_graphics.o):
+    vic_clear.o               src/services/display/vic_clear.s(6)
+    vic_pixel.o               src/services/display/vic_pixel.s(7)
+    vic_span.o                src/services/display/vic_span.s(7)
+    vic_graphics_transport.o  src/8502/vic_graphics.s(18)
+_udeks_vic_buffer_restore (bootfs_request.o):
+    vic_graphics_transport.o  src/8502/vic_graphics.s(19)
+_udeks_vic_graphics_disable (vic_graphics_transport.o):
+    vic_graphics.o            build/8502/vic_graphics.s(29)
+_udeks_vic_graphics_enable (vic_graphics_transport.o):
+    vic_graphics.o            build/8502/vic_graphics.s(28)
+_udeks_vic_graphics_initialize (vic_graphics.o):
+    shell.o                   build/8502/shell.s(21)
+    banked_graphics.o         build/8502/banked_graphics.s(38)
+_udeks_vic_graphics_is_active (vic_graphics.o):
+    window_manager.o          build/8502/window_manager.s(17)
+    syscall_gate.o            src/8502/app_gateway.s(14)
+    banked_graphics.o         build/8502/banked_graphics.s(39)
+_udeks_vic_graphics_poll (vic_graphics.o):
+    vic_graphics_descriptor.o src/services/display/descriptor.s(5)
+_udeks_vic_graphics_service_descriptor (vic_graphics_descriptor.o):
+    service_table.o           src/services/table.s(12)
+_udeks_vic_graphics_shutdown (vic_graphics.o):
+    shell.o                   build/8502/shell.s(22)
+_udeks_vic_graphics_start (vic_graphics.o):
+    vic_graphics_descriptor.o src/services/display/descriptor.s(4)
+_udeks_vic_pointer_busy_begin (vic_graphics_transport.o):
+    z80_worker.o              build/8502/z80_worker.s(13)
+    window_manager.o          build/8502/window_manager.s(18)
+_udeks_vic_pointer_busy_end (vic_graphics_transport.o):
+    z80_worker.o              build/8502/z80_worker.s(14)
+    window_manager.o          build/8502/window_manager.s(19)
+_udeks_vic_pointer_busy_tick (vic_graphics_transport.o):
+    vic_graphics.o            build/8502/vic_graphics.s(32)
+_udeks_vic_pointer_set_x (vic_graphics_transport.o):
+    vic_graphics.o            build/8502/vic_graphics.s(30)
+_udeks_vic_pointer_set_y (vic_graphics_transport.o):
+    vic_graphics.o            build/8502/vic_graphics.s(31)
+_udeks_window_begin_paint (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(22)
+    banked_graphics.o         build/8502/banked_graphics.s(34)
+_udeks_window_create (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(15)
+    banked_graphics.o         build/8502/banked_graphics.s(31)
+_udeks_window_destroy (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(16)
+    banked_graphics.o         build/8502/banked_graphics.s(32)
+_udeks_window_end_paint (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(22)
+    banked_graphics.o         build/8502/banked_graphics.s(35)
+_udeks_window_get_geometry (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(17)
+    graphics_event.o          src/services/window/graphics_event.s(10)
+_udeks_window_image_complete (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(23)
+_udeks_window_is_dragging (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(18)
+    graphics_event.o          src/services/window/graphics_event.s(13)
+_udeks_window_is_focused (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(19)
+    graphics_event.o          src/services/window/graphics_event.s(14)
+_udeks_window_manager_poll (window_manager.o):
+    window_descriptor.o       src/services/window/descriptor.s(5)
+_udeks_window_manager_reset (window_manager.o):
+    shell.o                   build/8502/shell.s(23)
+_udeks_window_manager_start (window_manager.o):
+    window_descriptor.o       src/services/window/descriptor.s(4)
+_udeks_window_manager_stop (window_manager.o):
+    window_descriptor.o       src/services/window/descriptor.s(6)
+_udeks_window_owner (window_manager.o):
+    banked_graphics.o         build/8502/banked_graphics.s(36)
+_udeks_window_repaint (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(20)
+    banked_graphics.o         build/8502/banked_graphics.s(33)
+_udeks_window_service_descriptor (window_descriptor.o):
+    service_table.o           src/services/table.s(13)
+_udeks_window_take_click (window_manager.o):
+    syscall_gate.o            src/8502/app_gateway.s(24)
+    graphics_event.o          src/services/window/graphics_event.s(13)
+_udeks_window_update_busy (window_manager.o):
+    graphics_event.o          src/services/window/graphics_event.s(14)
+    banked_graphics.o         build/8502/banked_graphics.s(37)
+_udeks_worker_boot_chain (z80_handoff.o):
+    z80_worker.o              build/8502/z80_worker.s(20)
+_udeks_worker_mailbox (z80_handoff.o):
+    task_worker.o             build/8502/task_worker.s(16)
+    z80_worker.o              build/8502/z80_worker.s(18)
+_udeks_worker_status (z80_handoff.o):
+    z80_worker.o              build/8502/z80_worker.s(19)
+_udeks_z80_handoff (z80_handoff.o):
+    z80_worker.o              build/8502/z80_worker.s(22)
+_udeks_z80_increment_counter (z80_handoff.o):
+    z80_worker.o              build/8502/z80_worker.s(23)
+_udeks_z80_prepare (z80_handoff.o):
+    z80_worker.o              build/8502/z80_worker.s(21)
+_udeks_z80_submit (z80_worker.o):
+    task_worker.o             build/8502/task_worker.s(14)
+    shell.o                   build/8502/shell.s(20)
+    syscall_gate.o            src/8502/app_gateway.s(21)
+_udeks_z80_worker_service_descriptor (z80_worker_descriptor.o):
+    service_table.o           src/services/table.s(9)
+_udeks_z80_worker_start (z80_worker.o):
+    z80_worker_descriptor.o   src/services/engine/descriptor.s(4)
+addeq0sp (addeqsp.o):
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+addeqysp (addeqsp.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    window_manager.o          build/8502/window_manager.s(4797)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(35)
+addysp (addysp.o):
+    incsp8.o                  runtime/incsp8.s(8)
+    incsp7.o                  runtime/incsp7.s(8)
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    z80_worker.o              build/8502/z80_worker.s(370)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    syscall_gate.o            src/8502/app_gateway.s(35)
+    [linker generated]       
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+    and.o                     runtime/and.s(8)
+aslax2 (aslax2.o):
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    syscall_gate.o            src/8502/app_gateway.s(35)
+aslax4 (aslax4.o):
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+bnega (bneg.o):
+    retained_paths.o          build/8502/retained_paths.s(806)
+booleq (makebool.o):
+    shell.o                   build/8502/shell.s(962)
+    shell.o                   build/8502/shell.s(962)
+    retained_paths.o          build/8502/retained_paths.s(806)
+boolne (makebool.o):
+    root_console.o            build/8502/root_console.s(1013)
+callax (call.o):
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+decaxy (decaxy.o):
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+decsp1 (decsp1.o):
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+    kernel.o                  build/8502/kernel.s(93)
+    kernel.o                  build/8502/kernel.s(93)
+    syscall_gate.o            src/8502/app_gateway.s(36)
+decsp2 (decsp2.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(36)
+    [linker generated]       
+    [linker generated]       
+decsp3 (decsp3.o):
+    root_terminal.o           build/8502/root_terminal.s(643)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(36)
+    [linker generated]       
+decsp4 (decsp4.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(36)
+decsp5 (decsp5.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(36)
+decsp6 (decsp6.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    syscall_gate.o            src/8502/app_gateway.s(36)
+    [linker generated]       
+    [linker generated]       
+decsp7 (decsp7.o):
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(36)
+decsp8 (decsp8.o):
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    syscall_gate.o            src/8502/app_gateway.s(36)
+incax1 (incax1.o):
+    shell.o                   build/8502/shell.s(962)
+incaxy (incaxy.o):
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+incsp1 (incsp1.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    z80_worker.o              build/8502/z80_worker.s(370)
+    shell.o                   build/8502/shell.s(962)
+    shell.o                   build/8502/shell.s(962)
+    shell.o                   build/8502/shell.s(962)
+    shell.o                   build/8502/shell.s(962)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+    service_registry.o        build/8502/service_registry.s(408)
+    kernel.o                  build/8502/kernel.s(93)
+    syscall_gate.o            src/8502/app_gateway.s(37)
+    retained_paths.o          build/8502/retained_paths.s(806)
+    retained_paths.o          build/8502/retained_paths.s(806)
+    retained_paths.o          build/8502/retained_paths.s(806)
+    retained_paths.o          build/8502/retained_paths.s(806)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    [linker generated]       
+incsp2 (incsp2.o):
+    staxspi.o                 runtime/staxspi.s(9)
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    shell.o                   build/8502/shell.s(962)
+    shell.o                   build/8502/shell.s(962)
+    terminal_stream.o         build/8502/terminal_stream.s(78)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(37)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    [linker generated]       
+incsp3 (incsp3.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    shell.o                   build/8502/shell.s(962)
+    terminal_stream.o         build/8502/terminal_stream.s(78)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(37)
+    retained_paths.o          build/8502/retained_paths.s(806)
+    [linker generated]       
+    [linker generated]       
+incsp4 (incsp4.o):
+    vic_pixel.o               src/services/display/vic_pixel.s(7)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    shell.o                   build/8502/shell.s(962)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    root_console.o            build/8502/root_console.s(1013)
+    syscall_gate.o            src/8502/app_gateway.s(37)
+    [linker generated]       
+incsp5 (incsp5.o):
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(37)
+    [linker generated]       
+incsp6 (incsp6.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time-resident.o           src/services/time/resident.s(55)
+    syscall_gate.o            src/8502/app_gateway.s(37)
+    [linker generated]       
+    [linker generated]       
+incsp7 (incsp7.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(37)
+incsp8 (incsp8.o):
+    vic_rectangle.o           src/services/display/vic_rectangle.s(8)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+jmpvec (jmpvec.o):
+    shell.o                   build/8502/shell.s(962)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+ldaidx (ldai.o):
+    syscall_gate.o            src/8502/app_gateway.s(38)
+ldax0sp (ldaxsp.o):
+    z80_worker.o              build/8502/z80_worker.s(370)
+    retained_paths.o          build/8502/retained_paths.s(806)
+ldaxi (ldaxi.o):
+    retained_paths.o          build/8502/retained_paths.s(806)
+    retained_paths.o          build/8502/retained_paths.s(806)
+    retained_paths.o          build/8502/retained_paths.s(806)
+    retained_paths.o          build/8502/retained_paths.s(806)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+ldeaxi (ldeaxi.o):
+    keyboard.o                build/8502/keyboard.s(935)
+memcpy_getparams (memcpy.o):
+    memmove.o                 common/memmove.s(12)
+memcpy_upwards (memcpy.o):
+    memmove.o                 common/memmove.s(12)
+mul8x16 (mul8.o):
+    mul.o                     runtime/mul.s(8)
+mul8x16a (mul8.o):
+    mul.o                     runtime/mul.s(8)
+mulax5 (mulax5.o):
+    window_manager.o          build/8502/window_manager.s(4797)
+    syscall_gate.o            src/8502/app_gateway.s(38)
+mulax9 (mulax9.o):
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+negax (negabs.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+popax (incsp2.o):
+    shl.o                     runtime/shl.s(15)
+    memmove.o                 common/memmove.s(12)
+    memcpy.o                  common/memcpy.s(14)
+    shell_parser.o            src/services/shell/parser.s(7)
+    line_editor_read.o        src/8502/line_editor_read.s(14)
+popptr1 (popptr1.o):
+    umod.o                    runtime/umod.s(8)
+    udiv.o                    runtime/udiv.s(9)
+    strcmp.o                  common/strcmp.s(8)
+    steaxspi.o                runtime/steaxspi.s(9)
+    mul8.o                    runtime/mul8.s(9)
+    mul.o                     runtime/mul.s(9)
+    memcpy.o                  common/memcpy.s(14)
+ptr1 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    strcmp.o                  common/strcmp.s(9)
+    steaxspi.o                runtime/steaxspi.s(10)
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mulax9.o                  runtime/mulax9.s(10)
+    mulax5.o                  runtime/mulax5.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+    memmove.o                 common/memmove.s(13)
+    memcpy.o                  common/memcpy.s(15)
+    ldeaxi.o                  runtime/ldeaxi.s(8)
+    ldaxi.o                   runtime/ldaxi.s(8)
+    ldai.o                    runtime/ldai.s(8)
+    call.o                    runtime/call.s(8)
+    vic_clear.o               src/services/display/vic_clear.s(5)
+    vic_pixel.o               src/services/display/vic_pixel.s(6)
+    vic_span.o                src/services/display/vic_span.s(6)
+    vic_graphics.o            build/8502/vic_graphics.s(11)
+    z80_worker.o              build/8502/z80_worker.s(11)
+    shell.o                   build/8502/shell.s(11)
+    shell_parser.o            src/services/shell/parser.s(8)
+    root_terminal.o           build/8502/root_terminal.s(11)
+    line_editor.o             build/8502/line_editor.s(11)
+    keyboard.o                build/8502/keyboard.s(11)
+    window_manager.o          build/8502/window_manager.s(11)
+    root_console.o            build/8502/root_console.s(11)
+    vdc_console.o             build/8502/vdc_console.s(11)
+    time-resident.o           src/services/time/resident.s(11)
+    time-slot.o               src/services/module/time_slot.s(9)
+    service_registry.o        build/8502/service_registry.s(11)
+    kernel.o                  build/8502/kernel.s(11)
+    syscall_gate.o            src/8502/syscall_gate.s(36)
+    line_editor_read.o        src/8502/line_editor_read.s(15)
+    retained_paths.o          build/8502/retained_paths.s(11)
+    banked_access.o           src/services/window/banked_access.s(15)
+    graphics_event.o          src/services/window/graphics_event.s(15)
+    banked_graphics.o         build/8502/banked_graphics.s(11)
+ptr2 (zeropage.o):
+    strcmp.o                  common/strcmp.s(9)
+    memmove.o                 common/memmove.s(13)
+    memcpy.o                  common/memcpy.s(15)
+    shell_parser.o            src/services/shell/parser.s(8)
+    time-slot.o               src/services/module/time_slot.s(9)
+    syscall_gate.o            src/8502/app_gateway.s(48)
+ptr3 (zeropage.o):
+    memmove.o                 common/memmove.s(13)
+    memcpy.o                  common/memcpy.s(15)
+    time-slot.o               src/services/module/time_slot.s(9)
+    syscall_gate.o            src/8502/app_gateway.s(48)
+ptr4 (zeropage.o):
+    umod.o                    runtime/umod.s(9)
+    udiv.o                    runtime/udiv.s(10)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(48)
+push0 (pushax.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    z80_worker.o              build/8502/z80_worker.s(370)
+    shell.o                   build/8502/shell.s(962)
+pusha (pusha.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    task_worker.o             build/8502/task_worker.s(101)
+    z80_worker.o              build/8502/z80_worker.s(370)
+    z80_worker.o              build/8502/z80_worker.s(370)
+    shell.o                   build/8502/shell.s(962)
+    shell.o                   build/8502/shell.s(962)
+    shell.o                   build/8502/shell.s(962)
+    shell.o                   build/8502/shell.s(962)
+    shell.o                   build/8502/shell.s(962)
+    shell.o                   build/8502/shell.s(962)
+    shell.o                   build/8502/shell.s(962)
+    shell.o                   build/8502/shell.s(962)
+    shell.o                   build/8502/shell.s(962)
+    shell.o                   build/8502/shell.s(962)
+    terminal_stream.o         build/8502/terminal_stream.s(78)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    service_registry.o        build/8502/service_registry.s(408)
+    syscall_gate.o            src/8502/syscall_gate.s(34)
+    retained_paths.o          build/8502/retained_paths.s(806)
+    retained_paths.o          build/8502/retained_paths.s(806)
+    retained_paths.o          build/8502/retained_paths.s(806)
+    retained_paths.o          build/8502/retained_paths.s(806)
+    graphics_event.o          src/services/window/graphics_event.s(10)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    [linker generated]       
+    [linker generated]       
+pusha0 (pushax.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    task_worker.o             build/8502/task_worker.s(101)
+    z80_worker.o              build/8502/z80_worker.s(370)
+    shell.o                   build/8502/shell.s(962)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(38)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+pushax (pushax.o):
+    vic_rectangle.o           src/services/display/vic_rectangle.s(8)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    z80_worker.o              build/8502/z80_worker.s(370)
+    shell.o                   build/8502/shell.s(962)
+    shell.o                   build/8502/shell.s(962)
+    terminal_stream.o         build/8502/terminal_stream.s(78)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    time-resident.o           src/services/time/resident.s(55)
+    syscall_gate.o            src/8502/syscall_gate.s(35)
+    retained_paths.o          build/8502/retained_paths.s(806)
+    retained_paths.o          build/8502/retained_paths.s(806)
+    retained_paths.o          build/8502/retained_paths.s(806)
+    graphics_event.o          src/services/window/graphics_event.s(10)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    [linker generated]       
+    [linker generated]       
+pushw0sp (pushwsp.o):
+    keyboard.o                build/8502/keyboard.s(935)
+    keyboard.o                build/8502/keyboard.s(935)
+    root_console.o            build/8502/root_console.s(1013)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+    [linker generated]       
+pushwysp (pushwsp.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(38)
+regbank (zeropage.o):
+    regswap2.o                runtime/regswap2.s(8)
+    window_manager.o          build/8502/window_manager.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(47)
+regsave (zeropage.o):
+    window_manager.o          build/8502/window_manager.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(47)
+regswap2 (regswap2.o):
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+shlax3 (aslax3.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    retained_paths.o          build/8502/retained_paths.s(806)
+shlax4 (aslax4.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+shlaxy (shl.o):
+    shell.o                   build/8502/shell.s(962)
+    keyboard.o                build/8502/keyboard.s(935)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+shrax1 (shrax1.o):
+    syscall_gate.o            src/8502/app_gateway.s(39)
+shrax2 (shrax2.o):
+    syscall_gate.o            src/8502/app_gateway.s(39)
+shrax3 (shrax3.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    banked_graphics.o         build/8502/banked_graphics.s(1135)
+shrax4 (shrax4.o):
+    syscall_gate.o            src/8502/app_gateway.s(39)
+sp (zeropage.o):
+    subysp.o                  runtime/subysp.s(9)
+    subeqsp.o                 runtime/subeqsp.s(8)
+    sub.o                     runtime/sub.s(9)
+    staxspi.o                 runtime/staxspi.s(10)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    regswap2.o                runtime/regswap2.s(8)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    memcpy.o                  common/memcpy.s(15)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp8.o                  runtime/decsp8.s(8)
+    decsp7.o                  runtime/decsp7.s(8)
+    decsp6.o                  runtime/decsp6.s(8)
+    decsp5.o                  runtime/decsp5.s(8)
+    decsp4.o                  runtime/decsp4.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    and.o                     runtime/and.s(9)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    add.o                     runtime/add.s(12)
+    vic_rectangle.o           src/services/display/vic_rectangle.s(7)
+    vic_pixel.o               src/services/display/vic_pixel.s(6)
+    vic_graphics.o            build/8502/vic_graphics.s(10)
+    z80_worker.o              build/8502/z80_worker.s(10)
+    shell.o                   build/8502/shell.s(10)
+    terminal_stream.o         build/8502/terminal_stream.s(10)
+    root_terminal.o           build/8502/root_terminal.s(10)
+    line_editor.o             build/8502/line_editor.s(10)
+    keyboard.o                build/8502/keyboard.s(10)
+    window_manager.o          build/8502/window_manager.s(10)
+    root_console.o            build/8502/root_console.s(10)
+    vdc_console.o             build/8502/vdc_console.s(10)
+    time-resident.o           src/services/time/resident.s(10)
+    service_registry.o        build/8502/service_registry.s(10)
+    kernel.o                  build/8502/kernel.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(47)
+    crt0.o                    src/8502/crt0.s(13)
+    retained_paths.o          build/8502/retained_paths.s(10)
+    banked_graphics.o         build/8502/banked_graphics.s(10)
+sreg (zeropage.o):
+    umod.o                    runtime/umod.s(9)
+    udiv.o                    runtime/udiv.s(10)
+    steaxspi.o                runtime/steaxspi.s(10)
+    ldeaxi.o                  runtime/ldeaxi.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    shell.o                   build/8502/shell.s(10)
+    line_editor.o             build/8502/line_editor.s(10)
+    keyboard.o                build/8502/keyboard.s(10)
+    vdc_console.o             build/8502/vdc_console.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(47)
+staspidx (staspidx.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    keyboard.o                build/8502/keyboard.s(935)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(40)
+    [linker generated]       
+stax0sp (staxsp.o):
+    keyboard.o                build/8502/keyboard.s(935)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(40)
+    [linker generated]       
+staxspidx (staxspi.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+staxysp (staxsp.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(40)
+steaxspidx (steaxspi.o):
+    keyboard.o                build/8502/keyboard.s(935)
+subeqysp (subeqsp.o):
+    vdc_console.o             build/8502/vdc_console.s(1363)
+subysp (subysp.o):
+    syscall_gate.o            src/8502/app_gateway.s(40)
+    [linker generated]       
+tmp1 (zeropage.o):
+    steaxspi.o                runtime/steaxspi.s(10)
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    shrax4.o                  runtime/shrax4.s(8)
+    shrax3.o                  runtime/shrax3.s(8)
+    shrax2.o                  runtime/shrax2.s(8)
+    shrax1.o                  runtime/shrax1.s(8)
+    shl.o                     runtime/shl.s(16)
+    mul.o                     runtime/mul.s(10)
+    incaxy.o                  runtime/incaxy.s(8)
+    decaxy.o                  runtime/decaxy.s(8)
+    aslax4.o                  runtime/aslax4.s(8)
+    aslax3.o                  runtime/aslax3.s(8)
+    aslax2.o                  runtime/aslax2.s(8)
+    add.o                     runtime/add.s(12)
+    vic_pixel.o               src/services/display/vic_pixel.s(6)
+    vic_span.o                src/services/display/vic_span.s(6)
+    vic_graphics.o            build/8502/vic_graphics.s(11)
+    shell_parser.o            src/services/shell/parser.s(8)
+    line_editor.o             build/8502/line_editor.s(11)
+    window_manager.o          build/8502/window_manager.s(11)
+    time-slot.o               src/services/module/time_slot.s(9)
+    syscall_gate.o            src/8502/syscall_gate.s(36)
+    line_editor_read.o        src/8502/line_editor_read.s(15)
+    banked_graphics.o         build/8502/banked_graphics.s(11)
+tmp2 (zeropage.o):
+    steaxspi.o                runtime/steaxspi.s(10)
+    vic_pixel.o               src/services/display/vic_pixel.s(6)
+    shell_parser.o            src/services/shell/parser.s(8)
+    time-slot.o               src/services/module/time_slot.s(9)
+    syscall_gate.o            src/8502/app_gateway.s(49)
+tmp3 (zeropage.o):
+    steaxspi.o                runtime/steaxspi.s(10)
+    syscall_gate.o            src/8502/app_gateway.s(49)
+tmp4 (zeropage.o):
+    syscall_gate.o            src/8502/app_gateway.s(49)
+tosaddax (add.o):
+    root_terminal.o           build/8502/root_terminal.s(643)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(41)
+tosandax (and.o):
+    keyboard.o                build/8502/keyboard.s(935)
+tosicmp (icmp.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    root_terminal.o           build/8502/root_terminal.s(643)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    syscall_gate.o            src/8502/app_gateway.s(41)
+    retained_paths.o          build/8502/retained_paths.s(806)
+tosicmp0 (icmp.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    z80_worker.o              build/8502/z80_worker.s(370)
+    shell.o                   build/8502/shell.s(962)
+    line_editor.o             build/8502/line_editor.s(1072)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+tosmula0 (mul8.o):
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    line_editor.o             build/8502/line_editor.s(1072)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+    root_console.o            build/8502/root_console.s(1013)
+tossuba0 (sub.o):
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    root_console.o            build/8502/root_console.s(1013)
+    syscall_gate.o            src/8502/app_gateway.s(41)
+tossubax (sub.o):
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    vic_graphics.o            build/8502/vic_graphics.s(1849)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    window_manager.o          build/8502/window_manager.s(4797)
+    syscall_gate.o            src/8502/app_gateway.s(41)
+    retained_paths.o          build/8502/retained_paths.s(806)
+tosudiva0 (udiv.o):
+    syscall_gate.o            src/8502/app_gateway.s(42)
+tosumoda0 (umod.o):
+    syscall_gate.o            src/8502/app_gateway.s(42)
+tosumula0 (mul8.o):
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    vdc_console.o             build/8502/vdc_console.s(1363)
+    syscall_gate.o            src/8502/app_gateway.s(42)
+tosumulax (mul.o):
+    syscall_gate.o            src/8502/app_gateway.s(42)
+udiv16 (udiv.o):
+    umod.o                    runtime/umod.s(8)
+

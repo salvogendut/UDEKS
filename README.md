@@ -38,7 +38,8 @@ extraction, not yet a general-purpose module loader.
 ## Download and boot
 
 The current downloads include writable root, file commands, the sprite editor
-(D71/D81), and disk-loaded timekeeping. The
+(D71/D81), disk-loaded timekeeping, and scheduled native console programs
+including `cat`. The
 [SAVE test and writable-mount instructions](docs/GRAPHICAL-APPS-SDK.md#counted-disk-io-utrq-014)
 apply to these images. Use disposable media for write testing; overwrite and
 append are not implemented. Exact-file `cp`, `mv` and `rm` are available (see below).
@@ -55,9 +56,11 @@ Published 2026-10-09; ordinary `make boot` reproduces these three formats:
 | [Download D81](build/udeks.d81?raw=true) | A 1581-compatible drive or emulator configured for D81; all apps. |
 
 See [checksums](build/SHA256SUMS), [provenance](build/README.md) and
-[qualification and limits](bench/results/2026-10-09-default-time/README.md).
-VICE qualifies disk-service loading in all three formats; native 1986 qualifies
-D64/1571 input and clock dragging. These checks do not establish new physical-C128
+[qualification and limits](bench/results/2026-10-09-native-console-files/README.md).
+VICE qualifies native console/file operation on D64/D81; native 1986 qualifies
+D64/1571 console, graphical input and clock dragging. The earlier
+[disk-service qualification](bench/results/2026-10-09-default-time/README.md)
+remains recorded separately. These checks do not establish new physical-C128
 acceptance. All are ordinary CBM DOS disk images. Local builds go to `build/boot/`;
 publishing into `build/udeks.*` is a separate, explicit step.
 
@@ -127,10 +130,22 @@ into any free **compatible-sized** allocation, without an OS name-table entry.
 `name -q` stops a matching instance; Ctrl+C targets the foreground instance.
 See the [SDK and limits](docs/GRAPHICAL-APPS-SDK.md) and
 [four-native-slot layout](docs/GENERIC-GRAPHICS-APPS.md#four-native-slot-cutover--2026-10-05).
-The SDK also builds [independent argc/argv console commands](docs/GRAPHICAL-APPS-SDK.md#independent-console-commands)
-with stdout/stderr and an exit status. They use one fixed foreground allocation
-and pause cooperative app progress until returning; general background console
-jobs and stdin are not yet supported. Four graphical slots are available, but
+The legacy SDK builds [independent argc/argv console commands](docs/GRAPHICAL-APPS-SDK.md#independent-console-commands)
+in one fixed foreground allocation; they pause cooperative app progress until
+returning. New programs can instead use the
+[scheduled console SDK](docs/NATIVE-CONSOLE-APPS.md) now delivers private
+arguments, stdout/stderr, cooperative sleep and foreground status (`echo $?`)
+without stopping graphical peers. Foreground Ctrl+C now cancels native tasks
+with or without a window and returns status 130. Foreground programs can now
+read edited lines while peers continue; background reads fail with `EIO`.
+Native `command args &` now returns the prompt while the program runs;
+background output preserves a partly edited shell or application input line.
+Native mounted-file OPEN/READ/WRITE/CLOSE now use task-owned handles, cleaned
+on exit/Ctrl+C. `cat` is a scheduled disk program and sleeps
+between chunks; other utilities remain synchronous. Only one filesystem
+stream can be open, so start graphical peers before a long file operation.
+Published downloads include this milestone ([#52 / PR #53](https://github.com/salvogendut/UDEKS/pull/53)).
+Four graphical slots are available, but
 not every binary fits every
 slot. The loader can borrow two free adjacent allocations
 for a larger native app: up to **7,168 image+BSS bytes**, with room for two
@@ -194,7 +209,12 @@ SAVE command. The manual checklist passes in 1986 and on real C128/PI1541;
 VICE limitation remains documented. [PR #45](https://github.com/salvogendut/UDEKS/pull/45)
 records the merge. The first non-kernel service extraction is now installed
 by normal boot: `TIME.SVC`, with failure recovery and a disk-only loader.
-General scripting, broader tasking and optimization remain separate roadmap
+**Completed feature, merge approved:** [independently scheduled console programs](docs/NATIVE-CONSOLE-APPS.md)
+(#52). Private arguments, output/status, foreground stdin/Ctrl+C and bounded
+background launch/output, native file I/O and scheduled `cat` are implemented;
+the user authorized completion and merge without reporting a new hardware test.
+Bounded inter-process messaging is the recommended next milestone; general
+scripting and optimization remain separate roadmap
 work. The existing `/etc/rc` command runner is not a POSIX
 `sh` or Bash implementation.
 

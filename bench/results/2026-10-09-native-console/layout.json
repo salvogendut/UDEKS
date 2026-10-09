@@ -1,0 +1,18 @@
+{
+  "file": 1602,
+  "image": 1338,
+  "bss": 8,
+  "fits": [
+    3,
+    4,
+    5,
+    6
+  ],
+  "joined_fits": [
+    3,
+    5,
+    6
+  ],
+  "resident_bytes": 0,
+  "scope": "foreground stdout/stderr/sleep probe; no arguments or stdin yet"
+}

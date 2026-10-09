@@ -1,0 +1,232 @@
+PC=FF74 drive=EAB7 jam=0 speed=1 CIA2=07/3F bus=110 via=02/1A request=00/00/00 exit=0
+PC=E3C3 drive=D5A8 jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E468 drive=E92B jam=0 speed=0 CIA2=47/3F bus=111 via=05/1A request=00/00/00 exit=0
+PC=E3B6 drive=F879 jam=0 speed=0 CIA2=0F/3F bus=010 via=00/1A request=00/00/00 exit=0
+PC=E4B1 drive=E9AA jam=0 speed=0 CIA2=47/3F bus=101 via=0C/1A request=00/00/00 exit=0
+PC=E44D drive=F565 jam=0 speed=0 CIA2=27/3F bus=100 via=0D/1A request=00/00/00 exit=0
+PC=E4B0 drive=E9B7 jam=0 speed=0 CIA2=47/3F bus=101 via=0C/1A request=00/00/00 exit=0
+PC=E44D drive=E9DA jam=0 speed=0 CIA2=0F/3F bus=011 via=91/1A request=01/06/00 exit=0
+command svc status: PC=8B89 drive=EC75 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+BASE RAM : 128 KB                                         [ OK ]
+VDC RAM : 64 KB                                           [ OK ]
+INITIALIZING CONSOLE ...                                  [ OK ]
+VIDEO : PAL / VDC 8568                                    [ OK ]
+REU : NOT PRESENT                                         [ -- ]
+GEORAM : NOT PRESENT                                      [ -- ]
+8502 EXECUTIVE : 1 MHZ                                    [ OK ]
+Z80 WORKER : READY                                        [ OK ]
+IEC DRIVER HEADER ...                                     [ OK ]
+BOOTFS HEADER ...                                         [ OK ]
+                                                                
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~>                                                        
+svc load /TIME.SVC                                              
+time: ready                                                     
+UDEKS:~> svc status                                             
+time: ready                                                     
+UDEKS:~>                                                        
+command date 123400: PC=738F drive=EC19 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+INITIALIZING CONSOLE ...                                  [ OK ]
+VIDEO : PAL / VDC 8568                                    [ OK ]
+REU : NOT PRESENT                                         [ -- ]
+GEORAM : NOT PRESENT                                      [ -- ]
+8502 EXECUTIVE : 1 MHZ                                    [ OK ]
+Z80 WORKER : READY                                        [ OK ]
+IEC DRIVER HEADER ...                                     [ OK ]
+BOOTFS HEADER ...                                         [ OK ]
+                                                                
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~>                                                        
+svc load /TIME.SVC                                              
+time: ready                                                     
+UDEKS:~> svc status                                             
+time: ready                                                     
+UDEKS:~> date 123400                                            
+12:34:00                                                        
+UDEKS:~>                                                        
+command date: PC=609A drive=EC34 jam=0 speed=0 CIA2=07/3F bus=111 via=00/1A request=00/10/00 exit=0
+REU : NOT PRESENT                                         [ -- ]
+GEORAM : NOT PRESENT                                      [ -- ]
+8502 EXECUTIVE : 1 MHZ                                    [ OK ]
+Z80 WORKER : READY                                        [ OK ]
+IEC DRIVER HEADER ...                                     [ OK ]
+BOOTFS HEADER ...                                         [ OK ]
+                                                                
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~>                                                        
+svc load /TIME.SVC                                              
+time: ready                                                     
+UDEKS:~> svc status                                             
+time: ready                                                     
+UDEKS:~> date 123400                                            
+12:34:00                                                        
+UDEKS:~> date                                                   
+12:34:03                                                        
+UDEKS:~>                                                        
+command: xclock & -> accepted (Return release=1458 frames)
+command svc stop: PC=23B7 drive=EC17 jam=0 speed=0 CIA2=06/3F bus=111 via=00/1A request=00/10/00 exit=0
+Z80 WORKER : READY                                        [ OK ]
+IEC DRIVER HEADER ...                                     [ OK ]
+BOOTFS HEADER ...                                         [ OK ]
+                                                                
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~>                                                        
+svc load /TIME.SVC                                              
+time: ready                                                     
+UDEKS:~> svc status                                             
+time: ready                                                     
+UDEKS:~> date 123400                                            
+12:34:00                                                        
+UDEKS:~> date                                                   
+12:34:03                                                        
+UDEKS:~> xclock &                                               
+UDEKS:~> svc stop                                               
+time: offline                                                   
+UDEKS:~>                                                        
+command date: PC=898D drive=EC2D jam=0 speed=0 CIA2=06/3F bus=111 via=00/1A request=00/10/00 exit=1
+BOOTFS HEADER ...                                         [ OK ]
+                                                                
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~>                                                        
+svc load /TIME.SVC                                              
+time: ready                                                     
+UDEKS:~> svc status                                             
+time: ready                                                     
+UDEKS:~> date 123400                                            
+12:34:00                                                        
+UDEKS:~> date                                                   
+12:34:03                                                        
+UDEKS:~> xclock &                                               
+UDEKS:~> svc stop                                               
+time: offline                                                   
+UDEKS:~> date                                                   
+date: time service unavailable                                  
+UDEKS:~>                                                        
+command svc load /nofile: PC=639E drive=EC2D jam=0 speed=0 CIA2=06/3F bus=111 via=00/1A request=00/10/00 exit=1
+SYSTEM READY.                                                   
+                                                                
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~>                                                        
+svc load /TIME.SVC                                              
+time: ready                                                     
+UDEKS:~> svc status                                             
+time: ready                                                     
+UDEKS:~> date 123400                                            
+12:34:00                                                        
+UDEKS:~> date                                                   
+12:34:03                                                        
+UDEKS:~> xclock &                                               
+UDEKS:~> svc stop                                               
+time: offline                                                   
+UDEKS:~> date                                                   
+date: time service unavailable                                  
+UDEKS:~> svc load /nofile                                       
+svc: No such file or directory                                  
+UDEKS:~>                                                        
+command svc load: PC=8B8F drive=EC75 jam=0 speed=0 CIA2=06/3F bus=111 via=00/1A request=00/10/00 exit=0
+WELCOME TO UDEKS.                                               
+                                                                
+UDEKS:~>                                                        
+svc load /TIME.SVC                                              
+time: ready                                                     
+UDEKS:~> svc status                                             
+time: ready                                                     
+UDEKS:~> date 123400                                            
+12:34:00                                                        
+UDEKS:~> date                                                   
+12:34:03                                                        
+UDEKS:~> xclock &                                               
+UDEKS:~> svc stop                                               
+time: offline                                                   
+UDEKS:~> date                                                   
+date: time service unavailable                                  
+UDEKS:~> svc load /nofile                                       
+svc: No such file or directory                                  
+UDEKS:~> svc load                                               
+time: ready                                                     
+UDEKS:~>                                                        
+command svc load: PC=A14F drive=EC3B jam=0 speed=0 CIA2=06/3F bus=111 via=00/1A request=00/10/00 exit=1
+UDEKS:~>                                                        
+svc load /TIME.SVC                                              
+time: ready                                                     
+UDEKS:~> svc status                                             
+time: ready                                                     
+UDEKS:~> date 123400                                            
+12:34:00                                                        
+UDEKS:~> date                                                   
+12:34:03                                                        
+UDEKS:~> xclock &                                               
+UDEKS:~> svc stop                                               
+time: offline                                                   
+UDEKS:~> date                                                   
+date: time service unavailable                                  
+UDEKS:~> svc load /nofile                                       
+svc: No such file or directory                                  
+UDEKS:~> svc load                                               
+time: ready                                                     
+UDEKS:~> svc load                                               
+svc: Device or resource busy                                    
+UDEKS:~>                                                        
+command date: PC=73FE drive=EC17 jam=0 speed=0 CIA2=06/3F bus=111 via=00/1A request=00/10/00 exit=0
+time: ready                                                     
+UDEKS:~> svc status                                             
+time: ready                                                     
+UDEKS:~> date 123400                                            
+12:34:00                                                        
+UDEKS:~> date                                                   
+12:34:03                                                        
+UDEKS:~> xclock &                                               
+UDEKS:~> svc stop                                               
+time: offline                                                   
+UDEKS:~> date                                                   
+date: time service unavailable                                  
+UDEKS:~> svc load /nofile                                       
+svc: No such file or directory                                  
+UDEKS:~> svc load                                               
+time: ready                                                     
+UDEKS:~> svc load                                               
+svc: Device or resource busy                                    
+UDEKS:~> date                                                   
+12:36:47                                                        
+UDEKS:~>                                                        
+command: xclock & -> accepted (Return release=1450 frames)
+command: xclock -q -> accepted (Return release=122 frames)
+command cat /hello: PC=738F drive=EC17 jam=0 speed=0 CIA2=06/3F bus=111 via=00/1A request=00/10/00 exit=0
+12:34:00                                                        
+UDEKS:~> date                                                   
+12:34:03                                                        
+UDEKS:~> xclock &                                               
+UDEKS:~> svc stop                                               
+time: offline                                                   
+UDEKS:~> date                                                   
+date: time service unavailable                                  
+UDEKS:~> svc load /nofile                                       
+svc: No such file or directory                                  
+UDEKS:~> svc load                                               
+time: ready                                                     
+UDEKS:~> svc load                                               
+svc: Device or resource busy                                    
+UDEKS:~> date                                                   
+12:36:47                                                        
+UDEKS:~> xclock &                                               
+UDEKS:~> xclock -q                                              
+UDEKS:~> cat /hello                                             
+HELLO UDEKS                                                     
+UDEKS:~>                                                        
+PASS native 1986 disk-service RC/date/clock/drag/stop/reload/input

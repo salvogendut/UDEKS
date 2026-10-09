@@ -125,6 +125,37 @@ Clock and wave remain managed bank-0 images. The freed `$0C00-$11FF` portion
 of the old calculator allocation now holds the lazily installed graphics service.
 See [execution and current limits](../docs/DISK-GRAPHICS.md#four-application-support-30).
 
+## Native argument record UARG 0.1 (2026-10-09)
+
+The current native loader initializes an 81-byte record in each task's already
+allocated, relocated page zero **before publishing RUNNABLE**. These are logical
+CPU addresses, private to that task, not pointers into bank-0 shell storage:
+
+| Address | Contents |
+| --- | --- |
+| `$80-$83` | `UARG` magic |
+| `$84-$85` | Major 0, minor 1 |
+| `$86-$87` | argc (0–8), reserved zero |
+| `$88-$99` | Nine little-endian 16-bit pointers: argv plus terminating NULL |
+| `$9A-$D0` | 55 bytes of tokenized argument text, unused suffix zero |
+
+The root shell validates a maximum 54-character line and eight arguments,
+including the command name. The page initializer copies only through the last
+argument's terminator, derives pointers from validated parser offsets, and
+leaves unused entries zero. Storage lasts until task retirement and survives
+switches/sleeps. The C runtime must not allocate its own ZP objects over this
+record; existing runtime `$02-$1F`, CPU ports and C-stack bounds are unchanged.
+The record is not a general SPAWN-pointer interface or an extra task allocation.
+
+The independent console entry checks magic, exact version and count, pushes
+argc using cc65's calling convention, and passes argv at `$0088` to
+`udeks_program_main`. Missing/unsupported UARG returns 126 without calling main.
+This deliberately fails closed on old kernels; rebuild the kernel for new SDK
+apps. The UDEX header stays 0.2 and raw initial A/X/Y remain zero, preserving
+existing graphical entries that ignore the record. Ordinary return still uses
+the existing EXIT path. Foreground status is harvested before reaping; see
+[shell completion](shell.md#native-arguments-and-completion-2026-10-09).
+
 ## Page-relocatable native images (0.2, development)
 
 Issue #35 adds slot-independent execution to the private bank-1 loader.

@@ -6,8 +6,10 @@
         .import _udeks_banked_graphics_launch
         .import _udeks_banked_graphics_installed, _udeks_banked_graphics_stop
         .import _udeks_console_start_once
+        .import _udeks_shell_native_argc, _udeks_shell_command_line, _udeks_shell_offsets
         .export _udeks_console_start
         .include "../app/native_layout.inc"
+        .include "native_args.inc"
         .export _udeks_banked_pages_init
         .export _udeks_native_base_pages, _udeks_native_stack_pages
         .importzp ptr1
@@ -37,7 +39,7 @@ transfer:
 
 ; Name is a resident-session pointer, never a foreign task pointer. Build the
 ; bounded, padded loader request before borrowing the worker-bank service.
-        .segment "CODE"
+        .segment "MODULECODE"
 _udeks_banked_graphics_exec:
         sta ptr1
         stx ptr1+1
@@ -101,6 +103,10 @@ clear_native_pages:
         sta $01ff
         lda #$bf
         sta $01fe
+        ; UARG 0.1 lives at logical $80-$D0 of this task's private page zero.
+        ; No JSR/PHA/cc65 accesses while CPU pages belong to the child.
+        ; $02-$1F runtime and both guarded stacks retain their exact bounds.
+        .include "native_args_copy.inc"
         lda #0
         sta $d508
         sta $d507

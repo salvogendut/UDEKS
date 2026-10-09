@@ -1,0 +1,28 @@
+PASS cat /hello
+PASS cat /empty
+PASS cat /one
+PASS cat /nofile
+PASS cat /
+PASS cat
+PASS frival &
+PASS fhold &
+PASS foreign-read-write-close-open-denied
+PASS leaked-read-exit
+PASS cat /hello
+PASS leaked-write-exit
+PASS fhold write
+PASS cp /native-data /saved-exit
+PASS rm /native-data
+PASS leaked-write-cancel
+PASS cp /native-data /saved-cancel
+PASS rm /native-data
+PASS cat /hello
+PASS xclock &
+PASS xwave &
+PASS cat-read-cancel
+PASS echo $?
+PASS cat /hello
+PASS xwave -q
+PASS xclock -q
+PASS echo file-sdk-ok
+PASS native console files: /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/files/d81-wa4q6_tz

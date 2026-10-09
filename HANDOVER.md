@@ -6,7 +6,312 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — default disk-time boot, 2026-10-09
+## Current handoff — native file SDK and scheduled CAT, 2026-10-09
+
+Issue #52, branch `tasking-native-console`, worktree `build/native-console`.
+The accepted background-console slice is committed/pushed as `a1a3c27`.
+The user requested increment 3's file SDK, cleanup and utility migration.
+The file increment is committed/pushed as `ca0b436`. The user then explicitly
+authorized finishing and merging through PR #53; no new hardware result was
+reported. The release update publishes the exact qualified normal disks and
+archives the previous PR #51 downloads for historical tests. Root main's
+unrelated notes remain untouched; do not overwrite that dirty worktree.
+
+Implementation:
+
+- Optional `native_files.c` supplies readonly/create-exclusive SEQ OPEN and
+  checked CLOSE. Native READ/WRITE supports task-owned fd 4, counted binary
+  chunks <=24, EOF, short/error handling and no write retries. Paths <=23 bytes
+  are validated before shared-record mutation. Bootfs directory fd 3 is closed
+  immediately rather than retained unowned across a scheduling boundary.
+- Ownership already existed in the storage service: trusted task ID plus
+  generation; foreign fd use fails EBADF, competing OPEN fails EMFILE. Existing
+  EXIT/CANCEL hooks close before generation advance/reuse. No resident changes.
+- Native `user/bin/cat.c` replaces CAT.BIN in normal D64/D71/D81 and the panic
+  disk. It sleeps one tick between chunks; foreground return is 0/1/2, Ctrl+C
+  130. CAT is 2,707 file bytes, 2,263 image + 2 BSS; fits tasks 3/4/5, not 6.
+  `build_d71.validate_command` now validates native relocations/capacity as
+  well as legacy APP1 commands, without application-name special cases.
+- SLEEP/POLL republish operation/sequence/descriptor/count but not the common
+  minor byte. Initial strict version checking falsely rejected a resumed sleep;
+  the SDK now checks minor echo only for synchronous replies. Regression added.
+- 1986's storage harness checks the shell's external-command completion byte,
+  not the legacy APP1 loader's stale status, for successful command dispatch.
+  It exercises native CAT success/missing-file status beside a draggable clock.
+
+Limits: one service-wide file stream, including the disk loader. Start peers
+before a long native file operation; loading another executable while a stream
+is held may fail. Each IEC call is synchronous/IRQ-masked; cancellation and
+peer progress happen between chunks, not within a bus request. No multi-open,
+append/overwrite, native directory SDK, preemption or general job control.
+Other shipped utilities remain synchronous. Legacy multicall CAT remains in
+LS's binary for compatibility, not as resident code.
+
+Normal/panic/scheduler segment maps are unchanged from the accepted slice:
+BSS ends `$93A7`, HIGHBSS `$E2E0`, TASKREQUEST 247/265, scheduler `$C862`.
+Only CAT.BIN changes among existing shipped DOS file streams; D64 has 16 free
+blocks and drops no additional application.
+
+Qualification: host SDK/CAT tests cover bounds, exact bytes, EOF, errors,
+short writes, checked-close precedence and no retries. VICE cold-boot probes
+use real SDK clients and lifecycle paths, with keyboard/release-flag input
+only. They cover CAT plus clock/wave, foreground cancellation/reuse and private
+code/stack guards; D81 adds foreign-handle denial and leaked read/write handles,
+exclusive-create rejection and persisted binary bytes. Clock progress uses its
+private SLEEP deadline while CAT remains live, not a global timer or the
+minute-only face refresh. Native 1986 separately checks real keyboard/1351 input.
+See [exact evidence and limits](bench/results/2026-10-09-native-console-files/README.md).
+Final qualification: 1,616 host tests pass; VICE D64/D81 probes and both native
+1986 regressions pass. Placement/graphics/service-layout and parser/input/
+service-request CPU gates pass. Normal/panic builds pass, and all owned VICE
+sessions are closed. Evidence includes exact disk/app bytes and map/guard/state
+captures with checksums verified by host tests.
+
+Manual candidates: `build/native-console/files.d64` / `.d81` inside this
+worktree (normal apps plus `/long`, `/empty`, `/one` and D81-only SDK probes).
+Normal `build/boot/udeks.d64`, `.d71`, `.d81` already contain native CAT.
+Start `xclock &`, `xwave &`; test `cat /hello`, `cat /etc/rc`, `cat /nofile`
+and `echo $?` (1). On a candidate, interrupt `cat /long`, check 130, then read
+`/hello` again and drag both windows. Physical C128/Pi1541 acceptance pending.
+
+**Closeout:** PR #53 carries the completed milestone and refreshed downloads,
+with `Closes #52`. Verify its merge state before starting a follow-up. Bounded
+message/handle IPC is the recommended next issue, only when the user requests
+it. Do not extend #52 into general allocation, pipes, scripting, multi-open
+filesystems or app-specific performance work.
+
+## Previous handoff — background console arguments/output, 2026-10-09
+
+Issue #52, branch `tasking-native-console`, worktree `build/native-console`.
+User accepted the input slice (platform unspecified); committed/pushed as
+`9c9bfad`. The user also accepted this background-console slice and requested
+commit/push. The test platform was unspecified; no new hardware result is inferred.
+Root main's unrelated notes and published PR #51 downloads remain untouched.
+
+Generic native `command args &` now receives up to eight argv entries, without
+the trailing operator. A ninth parser offset recognizes the operator before
+the eight-argument limit is enforced. Bare `&`/excess tokens give status 2;
+embedded/nonfinal `&` stays text. Background launch skips the synchronous
+loader and successful launch sets 0 instead of inheriting its stale exit byte.
+
+Validated UTRQ fd 1/2 WRITE calls the terminal service, which temporarily
+routes output above the active editor row. The existing root grid retains
+prompt/input prefix, draft and cursor; output cursor persists between chunks.
+Scroll/formfeed excludes the editor; a row-zero editor moves down once. New
+input resets the output cursor; zero-count output changes nothing. No buffer,
+queue, syscall number or native ABI added. Interleaving is allowed between
+WRITEs, not within a counted request. Background stdin remains EIO; Ctrl+C
+still selects only the foreground task. Legacy utilities remain synchronous.
+
+Feature-enabling C size work shares row clear/copy and the cell writer, uses
+cc65 `-Os`/serialized static scratch, and replaces the editor's disjoint copy
+loop with resident memcpy. Normal/panic BSS ends `$93A7` (40 free), HIGHBSS
+`$E2E0` (1 free), module `$E631` (18 free), TASKREQUEST 247/265. Scheduler
+ends `$C862`. No app/stack/display/service reservation moves or shrinks.
+
+Host tests exercise 21 editor rows × 55 draft lengths, mid-line editing,
+submission, zero/full writes, wraps and formfeed; shell tests now use the real
+tokenizer rather than pre-tokenized mocks. VICE D64/D81 cold boots qualify
+eight arguments, split output, draft/cursor/history, input alongside ticker/
+clock, cancellation/reuse, exit isolation, errors, code and stack guards.
+D81 adds the BGREAD denial peer; D64 adds only ASK/TICKER because three extra
+test apps exceed its free blocks. Existing D64 apps are not removed.
+Native 1986 independently passes four-app keyboard/1351/drag/resize/Ctrl+C
+regression, not the new TICKER/ASK scenario. Existing parser/UARG, input and
+service-request CPU gates and their negative controls pass. Exact
+[evidence and limitations](bench/results/2026-10-09-native-console-jobs/README.md)
+include media, maps, sources, reports and checksummed captures.
+Final `make check`: 1,600 tests pass. Placement/graphics/service-layout gates
+pass; rebuilt D64/D81 match the qualified base media byte for byte. All owned
+VICE sessions are closed.
+
+Manual candidate: `build/native-console/jobs.d64` / `.d81` inside this
+worktree. Run `xclock &`, `ticker Alpha mixed-case &`; partially edit an
+`echo` command while it ticks, including left/right and Backspace, then Enter.
+Run ticker again, then `ask`; verify typed input survives output and Ctrl+C
+returns 130 without closing the clock or ticker. TICKER finishes itself.
+No new physical-C128 or periodic-NMI qualification is claimed.
+
+**Next:** increment 3: native filesystem ownership/SDK and one useful utility
+migration. The current request is commit/push only. Do not
+merge #52 as complete yet; keep quoting, pipes, arbitrary job control and
+performance tuning outside this feature.
+
+## Previous handoff — foreground canonical stdin, 2026-10-09
+
+Issue #52, branch `tasking-native-console`, worktree `build/native-console`.
+User accepted `98ff762` (platform unspecified), requested commit/push and the
+next part. Push confirmed already synchronized; no empty commit was made.
+Root main's unrelated notes and published PR #51 downloads remain untouched.
+
+Foreground native apps now read edited lines through owned POLL + READ, with
+24-byte private-buffer chunks, a 54-character line and newline. Background
+SDK and raw READ/POLL return EIO before editor/consumption/wait mutation. Root
+or ush owns input without a foreground child; otherwise only the selected
+native task does. Query `$C8FC` reads the actual map-bound scheduler caller.
+No public gate or executable ABI changes. SDK input is an optional archive
+member so output-only programs do not carry it.
+
+Application input cannot recall/add shell history. PROMPT resets partial and
+unread input while keeping history. Existing parent CANCEL handles blocked
+INPUT, cleans up, reaps, returns 130 and leaves peers intact. No raw/EOF mode,
+background output arbitration, argument-bearing `&` or filesystem wrappers.
+
+The small placement changes are feature-enabling: reuse line-copy code, share
+the assembly whole-line/chunk-reader adapter, and clear the contiguous private
+wait arrays with an asserted bound. Actual normal/panic BSS ends `$93CE` (1
+byte spare), module ends `$E631` (18 spare), request gate uses 264/265 bytes.
+Scheduler ends `$C862`, 29 bytes below storage; router/query uses its full 128
+bytes. No app, stack, VIC/VDC, loader or service reservation changes.
+
+ASK.BIN: 1,867 file bytes, 1,579 image + 4 BSS. BGREAD.BIN: 1,806 file bytes,
+1,518 image + 4 BSS. Both fit all four ordinary allocations. ASK echoes one
+input line; BGREAD is a silent negative-test peer, not a shipped utility.
+
+Final VICE D64/D81 all-slot input/empty/full/backspace/cancel/reuse/background
+denial suites pass, using keyboard queues and warp (no timing claim). Native
+1986 separately passes real four-app keyboard/1351/Ctrl+C/guards regression,
+not the ASK scenario. CPU ownership/reader tests pass 2,048 + 6,270 cases and
+an intentional ownership-bypass negative control. Service request/stack bridge
+CPU regression passes. Host SDK/editor/prompt tests and placement/graphics/
+service-layout gates pass; `make check` passes 1,589 tests. Final rebuilds match
+the qualified disks/apps byte for byte. [Evidence](bench/results/2026-10-09-native-console-input/README.md)
+preserves exact media, apps, maps, raw captures, sources and hashes. Probe-only
+repairs fix command synchronization, bank-explicit observation and allocation
+expectations; no failed records are presented as qualification.
+
+Manual media: `build/native-console/input.d64` / `.d81` inside this worktree.
+Earlier `try.*` files are retained. Run `xclock &`, then `ask`: edit/Enter,
+empty/long line, Ctrl+C mid-line (status 130), and drag clock during input.
+The user accepted this foreground-input slice and authorized commit/push and
+the next step. The test platform was unspecified; no new physical-C128 result
+is inferred. All owned VICE instances close.
+
+**Next:** finish increment 2 with argument-bearing background launch and
+prompt-safe output; keep filesystem ownership/utility migration in increment 3.
+Do not merge #52 as a completed feature yet.
+
+## Previous handoff — task-based foreground Ctrl+C, 2026-10-09
+
+Issue #52, branch `tasking-native-console`, worktree `build/native-console`.
+The user accepted `bca650a` (platform unspecified) and asked for commit/push and
+the next slice; it was already pushed with a clean feature worktree.
+Root main's unrelated notes and published PR #51 images remain untouched.
+
+Ctrl+C now queues a private root-session notice containing the exact foreground
+native task id. Ush consumes it while waiting, then submits the existing CANCEL
+operation as the real parent task 1. No window is required; no new syscall,
+scheduler mutation, common gate or memory reservation was introduced.
+Existing cancellation retires resources and discards pending waits; normal
+bookkeeping harvests exit 130, destroys any window, reaps and releases the
+foreground. Ush reports `Interrupted` after successful cancellation; `echo $?`
+reports 130. A natural-exit race (ESRCH) is silent and keeps the real status;
+other errors do not falsely release a live foreground job. New commands cannot
+reuse the target id before the old notice/completion is consumed.
+
+The matched disk and recovery shells implement the new private notice. Do not
+mix an older ush into this candidate. Graphical foreground Ctrl+C uses the same
+path; ordinary window Close, `name -q` and `xinit -q` remain advisory graphics
+operations. Background output/stdin policy is still unimplemented. This is
+cooperative cancellation, not an interrupt for arbitrary CPU-bound loops.
+
+Placement: resident BSS now ends `$93C4` (11 bytes before TIME), seven bytes
+smaller than the accepted checkpoint. Ush's actual BSS ends `$9F44`; its fixed
+368-byte header reservation still fits below `$A000`. Loader/RELOC/ACCESS,
+private stacks, display reservations and service module bounds are unchanged.
+NAP.BIN is an independent, silent, non-returning sleep fixture: 1,231 file
+bytes, 1,045 image + 5 BSS, fits all four allocations. It is added only to
+disposable qualification media, never normal boot contents.
+
+VICE D64/D81 passes all four foreground slots, untouched peers, status 130,
+private wait/allocation cleanup, one storage retirement each, old-deadline
+non-resumption, reuse with normal exit 37, graphical cancellation and idle
+Ctrl+C. Native 1986 passes actual four-app keyboard/1351/Ctrl+C/cleanup
+regression (not windowless NAP). Host tests cover the normal-exit race, failure
+handling, notice consumption and exact parent request. Both actual-link
+variants and graphics/service-layout gates pass. See [evidence](bench/results/2026-10-09-native-console-cancel/README.md).
+`make check` passes 1,580 tests; the final rebuilt disks match the qualified
+media byte for byte. Refreshed manual media are `build/native-console/try.d64`
+and `.d81` inside this worktree.
+Probe-only fixes made clock observations atomic and drained keyboard count,
+not queue head; only fresh successful evidence is retained. No new hardware,
+periodic-NMI or performance result is claimed. All owned VICE sessions close.
+
+**Next:** foreground stdin and explicit rejection of background reads, then
+argument-bearing background launch/prompt-safe output. Keep increment 3's
+filesystem ownership/utility migration separate. Do not merge #52 as complete.
+
+## Previous handoff — native console arguments and exit, 2026-10-09
+
+Issue [#52](https://github.com/salvogendut/UDEKS/issues/52), branch
+`tasking-native-console`, worktree `build/native-console`. The user accepted
+execution checkpoint `f56eb32` (platform unspecified) and requested commit/push
+and the next slice. It was pushed before this implementation. Root main's
+unrelated notes remain untouched; published `build/udeks.*` remain PR #51 images.
+
+**Increment 1 implemented:** 81-byte UARG 0.1 in existing private relocated
+ZP `$80-$D0`, up to eight arguments/54-character line, copied before RUNNABLE.
+No stack borrowing, header change, private kernel imports or extra allocation.
+Old graphical entry registers remain zero; the new SDK returns 126 if UARG
+is missing/unsupported. Foreground status is harvested before reap into SHLL+10;
+ush snapshots it on completion and supports exact `echo $?`. Background exit
+does not replace foreground status. Synchronous utilities are unchanged.
+
+TICKER: 2,076 file bytes (1,738 image + 91 BSS); silent peer QUIET: 1,464 file
+bytes (1,240 image + 85 BSS). Both fit all four ordinary allocations.
+Placement replaces the 237-byte C tokenizer with 77 bytes of assembly (C remains
+the test reference), and moves the 65-byte basename adapter into MODULECODE.
+No reservations move. Resident ends `$93CB` (4 free); loader CODE/RELOC/ACCESS
+have 11/18/1 free; MODULECODE has 61 free. Measure before growing any service.
+
+`make check` passes 1,571 tests. CPU differential/entry checks and normal/panic placement, graphics and
+service-layout gates pass. VICE D64/D81 proves private arguments across sleeps,
+eight tokens, foreground 37, background exit isolation, parser error 2, code/
+guards, clock scheduling and injected dragging. Four-app VICE and native 1986
+service/keyboard/mouse regressions pass. The 1986 regression is not a new
+native-console argument test; no new hardware or periodic-NMI claim is made.
+[Evidence](bench/results/2026-10-09-native-console-arguments/README.md) preserves
+candidate media, programs, raw dumps, reports and reproduction instructions.
+
+**Next: increment 2 — terminal ownership.** Start with no-window task Ctrl+C
+and foreground stdin, then argument-bearing background launch and prompt-safe
+output/read policy. Cancellation must not require a window. Bare `name &`
+is unchanged, not general console job control. Raw YIELD still lacks an owned
+reply; use SLEEP. Filesystem wrappers/utility migration remain increment 3.
+Do not merge #52 as complete. See [the plan](docs/NATIVE-CONSOLE-APPS.md).
+
+## Previous handoff — native console execution checkpoint, 2026-10-09
+
+Issue [#52](https://github.com/salvogendut/UDEKS/issues/52), branch
+`tasking-native-console`, worktree `build/native-console`, based on merged
+PR #51 (`15eddb4`). Root main's uncommitted roadmap/handover/proposal notes
+remain untouched. The [current plan](docs/NATIVE-CONSOLE-APPS.md) advances that
+saved proposal after the first disk-loaded service was completed.
+
+`make native-console` independently builds TICKER.BIN (1,602 file bytes,
+1,338 image + 8 BSS, fits all four allocations). Its private runtime copies
+stdout/stderr through UTRQ WRITE and uses owned SLEEP responses. No kernel,
+shell, loader or public ABI change; ordinary boot disks are unchanged.
+`make native-console-probe` runs disposable D64/D81 VICE proofs: no implicit
+VIC/window, output, private state, sleep/resume, retirement/reuse, unknown-name
+PULSE, peer clock scheduling and injected pointer dragging during execution.
+Host tests cover streams, bounds, short writes, error/ownership rejection and
+sequence wrap. `make check` passes 1,561 tests; actual-build placement,
+graphics and service-layout gates pass. Preserve the evidence, not just PASS labels.
+
+**Next:** bounded task-private arguments and shell completion status, then
+terminal ownership/Ctrl+C/`&`, then utility migration. This checkpoint passes
+argc=0/argv=NULL; native return 37 is not yet reported by the shell. Never call
+bank-0 pointer veneers from bank 1. Raw YIELD does not restore an owned reply;
+the new checked SDK deliberately exposes only sleep. Console/graphics share
+the existing four slots. No stdin/filesystem wrapper or extra capacity here.
+
+Resident space is only 2 bytes; loader CODE/RELOC/ACCESS have 25/18/4 bytes.
+Measure placement before adding argument delivery; preserve C-stack guards and
+the EXIT tail. Tests do not establish new 1986/native-input/physical-C128
+qualification. Do not merge the broader feature as complete on this proof.
+
+## Previous handoff — default disk-time boot, 2026-10-09
 
 Issue [#49](https://github.com/salvogendut/UDEKS/issues/49), completion branch
 `services-0.1-default-boot`, worktree `build/default-service`, based on merged

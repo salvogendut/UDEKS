@@ -1,0 +1,245 @@
+Modules list:
+-------------
+entry.o:
+    CODE              Offs=000000  Size=000003  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000027  Align=00001  Fill=0000
+program.o:
+    CODE              Offs=000003  Size=000275  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000051  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000059  Align=00001  Fill=0000
+runtime.o:
+    CODE              Offs=000278  Size=0002BB  Align=00001  Fill=0000
+    BSS               Offs=000059  Size=000002  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=000533  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000544  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=000552  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=00055B  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=000568  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=000575  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000580  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000587  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=00059D  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=0005A2  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=0005A7  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=0005AC  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxi.o):
+    CODE              Offs=0005B1  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=0005BE  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(leaaxsp.o):
+    CODE              Offs=0005C7  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=0005D3  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=0005E9  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=000603  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=00061F  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=000635  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(xor.o):
+    CODE              Offs=000640  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               001000  001026  000027  00001
+CODE                  001027  001678  000652  00001
+RODATA                001679  0016C9  000051  00001
+BSS                   0016CA  001724  00005B  00001
+
+
+Exports list by name:
+---------------------
+_ticker_arguments         0016D2 RLA    _ticker_failure           0016CB RLA    
+_ticker_private           0016CC RLA    _ticker_step              0016CA RLA    
+_udeks_native_console_gate 001027 RLA    _udeks_native_console_record 00F359 REA    
+_udeks_program_entry      001000 RLA    _udeks_program_main       00102A RLA    
+_udeks_sleep              001416 RLA    _udeks_write              0012C7 RLA    
+_udeks_write_byte         00129F RLA    addeq0sp                  00155A RLA    
+addeqysp                  00155C RLA    addysp                    00156C RLA    
+addysp1                   00156B RLA    decsp1                    001579 RLA    
+decsp2                    001582 RLA    decsp3                    00158F RLA    
+incaxy                    00159E RLA    incsp1                    0015A7 RLA    
+incsp2                    0015B6 RLA    incsp3                    0015C4 RLA    
+incsp4                    0015C9 RLA    incsp6                    0015CE RLA    
+incsp7                    0015D3 RLA    ldax0sp                   0015E5 RLA    
+ldaxi                     0015D8 RLA    ldaxysp                   0015E7 RLA    
+leaa0sp                   0015EE RLA    ptr1                      00000A RLZ    
+pusha                     0015FE RLA    pushax                    001614 RLA    
+pushwysp                  00162C RLA    sp                        000002 RLZ    
+staspidx                  001646 RLA    stax0sp                   00165C RLA    
+tmp1                      000012 RLZ    tosxora0                  001667 RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    ptr1                      00000A RLZ    
+tmp1                      000012 RLZ    _udeks_program_entry      001000 RLA    
+_udeks_native_console_gate 001027 RLA    _udeks_program_main       00102A RLA    
+_udeks_write_byte         00129F RLA    _udeks_write              0012C7 RLA    
+_udeks_sleep              001416 RLA    addeq0sp                  00155A RLA    
+addeqysp                  00155C RLA    addysp1                   00156B RLA    
+addysp                    00156C RLA    decsp1                    001579 RLA    
+decsp2                    001582 RLA    decsp3                    00158F RLA    
+incaxy                    00159E RLA    incsp1                    0015A7 RLA    
+incsp2                    0015B6 RLA    incsp3                    0015C4 RLA    
+incsp4                    0015C9 RLA    incsp6                    0015CE RLA    
+incsp7                    0015D3 RLA    ldaxi                     0015D8 RLA    
+ldax0sp                   0015E5 RLA    ldaxysp                   0015E7 RLA    
+leaa0sp                   0015EE RLA    pusha                     0015FE RLA    
+pushax                    001614 RLA    pushwysp                  00162C RLA    
+staspidx                  001646 RLA    stax0sp                   00165C RLA    
+tosxora0                  001667 RLA    _ticker_step              0016CA RLA    
+_ticker_failure           0016CB RLA    _ticker_private           0016CC RLA    
+_ticker_arguments         0016D2 RLA    _udeks_native_console_record 00F359 REA    
+
+
+
+Imports list:
+-------------
+_ticker_arguments (program.o):
+    [linker generated]       
+_ticker_failure (program.o):
+    [linker generated]       
+_ticker_private (program.o):
+    [linker generated]       
+_ticker_step (program.o):
+    [linker generated]       
+_udeks_native_console_gate (entry.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(19)
+_udeks_native_console_record (entry.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(18)
+_udeks_program_entry (entry.o):
+    [linker generated]       
+_udeks_program_main (program.o):
+    entry.o                   user/lib/native_console_entry.s(8)
+_udeks_sleep (runtime.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(16)
+_udeks_write (runtime.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(14)
+_udeks_write_byte (runtime.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(13)
+addeq0sp (addeqsp.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+addeqysp (addeqsp.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+addysp (addysp.o):
+    incsp7.o                  runtime/incsp7.s(8)
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+addysp1 (addysp.o):
+    xor.o                     runtime/xor.s(9)
+decsp1 (decsp1.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+decsp2 (decsp2.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+decsp3 (decsp3.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+incaxy (incaxy.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+incsp1 (incsp1.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+incsp3 (incsp3.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+incsp4 (incsp4.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+incsp6 (incsp6.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+incsp7 (incsp7.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+ldax0sp (ldaxsp.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+ldaxi (ldaxi.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+ldaxysp (ldaxsp.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+leaa0sp (leaaxsp.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+ptr1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    ldaxi.o                   runtime/ldaxi.s(8)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(11)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(11)
+pusha (pusha.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+    entry.o                   user/lib/native_console_entry.s(8)
+pushax (pushax.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+pushwysp (pushwsp.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+sp (zeropage.o):
+    addysp.o                  runtime/addysp.s(8)
+    xor.o                     runtime/xor.s(10)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    leaaxsp.o                 runtime/leaaxsp.s(8)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(10)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(10)
+staspidx (staspidx.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(418)
+stax0sp (staxsp.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+tmp1 (zeropage.o):
+    xor.o                     runtime/xor.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    incaxy.o                  runtime/incaxy.s(8)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/runtime.s(11)
+tosxora0 (xor.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/ticker/program.s(382)
+

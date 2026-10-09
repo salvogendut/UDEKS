@@ -1,0 +1,31 @@
+{
+  "variants": {
+    "normal": {
+      "live_end": 37836,
+      "remaining_before_slot": 4,
+      "startup_bytes": 518,
+      "slot_base": 37840,
+      "slot_limit": 38568
+    },
+    "panic": {
+      "live_end": 37836,
+      "remaining_before_slot": 4,
+      "startup_bytes": 518,
+      "slot_base": 37840,
+      "slot_limit": 38568
+    }
+  },
+  "module": {
+    "base": 37840,
+    "image_size": 710,
+    "bss_size": 7,
+    "allocation": 717,
+    "spare": 11,
+    "revision": 1,
+    "request": 37888,
+    "start": 38136,
+    "poll": 38267,
+    "stop": 38506,
+    "checksum": 16217
+  }
+}

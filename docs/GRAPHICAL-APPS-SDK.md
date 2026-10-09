@@ -366,6 +366,12 @@ The older README download snapshots do **not** contain this API or command.
 
 ## Independent console commands
 
+This section describes the **synchronous compatibility SDK**. For the new
+scheduled argc/argv/stdout/stderr/sleep/exit checkpoint, see
+[native console applications](NATIVE-CONSOLE-APPS.md). It shares the four native
+allocations with graphics and keeps peers running during sleeps. Do not
+interchange the runtimes or infer background terminal ownership from it.
+
 Console commands already use name-independent disk lookup too. The new
 [`args.c`](../user/examples/args.c) demonstrates the existing UDEX 0.1 console
 ABI: `udeks_program_main(argc, argv)`, stdout (1), stderr (2), a returned
@@ -388,8 +394,9 @@ consume any native graphical slot. Bounded console commands work
 with all four windows present, but block cooperative app progress until they
 return. Do not run an endless loop, use the bank-1 graphics veneers, or append
 `&` to these fixed-address commands. General console stdin, native background
-console jobs, pipes/redirection, and shell `$?` expansion are not implemented by
-this recipe. The example deliberately returns 37; the test reads the actual
+console jobs and pipes/redirection are not implemented by this recipe.
+The argument-enabled shell also supports the exact command `echo $?` (not
+general variable expansion). The example deliberately returns 37; the test reads the actual
 loader exit status, not a printed imitation. Programs must target UDEKS APIs;
 this does not make arbitrary Commodore PRGs or Linux binaries compatible.
 

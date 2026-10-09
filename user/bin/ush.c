@@ -3,27 +3,37 @@
 #include "udeks/memory.h"
 #include "udeks/task_request.h"
 #include "udeks/service_control.h"
+#include "udeks/shell.h"
 #ifndef UDEKS_RECOVERY
 #include "udeks/startup.h"
 static unsigned char startup_active;
 #endif
 
 #define LINE_CAPACITY 54u
-#define USH_STATUS(offset) \
-    (*(volatile unsigned char *)(UDEKS_USH_STATUS_BASE + (offset)))
+#ifdef UDEKS_USH_HOST_TEST
+extern unsigned char ush_test_memory[65536];
+#define BYTE_AT(address) ush_test_memory[address]
+#define POINTER_AT(address) (ush_test_memory+(address))
+#else
+#define BYTE_AT(address) (*(volatile unsigned char *)(address))
+#define POINTER_AT(address) ((volatile unsigned char *)(address))
+#endif
+#define USH_STATUS(offset) BYTE_AT(UDEKS_USH_STATUS_BASE + (offset))
 #define USH_COMMANDS USH_STATUS(UDEKS_USH_STATUS_COMMANDS)
 #define USH_STATE USH_STATUS(UDEKS_USH_STATUS_STATE)
-#define CWD_KIND (*(volatile unsigned char *)UDEKS_ROOT_CWD_KIND)
+#define CWD_KIND BYTE_AT(UDEKS_ROOT_CWD_KIND)
+#define COMMAND_RESULT BYTE_AT(UDEKS_SHELL_STATUS_BASE+UDEKS_SHELL_RESULT_OFFSET)
 #define CWD_ROOT 0u
 #define CWD_BIN 1u
 
 static unsigned char started;
 static unsigned char waiting_foreground;
+static unsigned char last_status;
 static unsigned char line_length;
 static unsigned char line[LINE_CAPACITY + 1u];
 extern unsigned char submit_request(unsigned char, unsigned char, unsigned char);
-#define PAYLOAD ((volatile unsigned char *)(UDEKS_TASK_REQUEST_BASE + UDEKS_TREQ_PAYLOAD))
-#define REPLY(n) (*(volatile unsigned char *)(UDEKS_CONTROL_REPLY_BASE + (n)))
+#define PAYLOAD POINTER_AT(UDEKS_TASK_REQUEST_BASE + UDEKS_TREQ_PAYLOAD)
+#define REPLY(n) BYTE_AT(UDEKS_CONTROL_REPLY_BASE + (n))
 
 static void service_notice(void)
 {
@@ -34,6 +44,19 @@ static void service_notice(void)
     /* Console writes do not replace this mailbox; no new command is issued
      * while its completion is being consumed. */
     REPLY(0) = 0;
+    if (REPLY(2) == UDEKS_CONTROL_CANCEL_PENDING) {
+        /* The real parent task sends CANCEL. Keep waiting until normal
+         * retirement/reap publishes completion, including status 130. */
+        PAYLOAD[0] = REPLY(1); PAYLOAD[1] = 0;
+        PAYLOAD[2] = UDEKS_CONTROL_INTERRUPTED;
+        if (submit_request(UDEKS_TREQ_OP_CANCEL, 0, UDEKS_TREQ_CANCEL_COUNT) == UDEKS_IO_ERROR) {
+            /* Natural exit may have won the race; retain its actual status. */
+            if (udeks_errno != UDEKS_TREQ_ESRCH)
+                udeks_write(2, (const unsigned char *)"Interrupt failed\n");
+            return;
+        }
+        result = UDEKS_CONTROL_INTERRUPTED;
+    }
     if (result == UDEKS_CONTROL_INTERRUPTED) {
         message = (const unsigned char *)"Interrupted\n";
     } else if (REPLY(1) == UDEKS_CONTROL_DESKTOP) {
@@ -95,6 +118,17 @@ static void finish_command(void)
         udeks_prompt();
 }
 
+/* Deliberately only `echo $?`, not a variable/quoting/scripting engine. */
+static void write_status(void)
+{
+    unsigned char n=last_status;
+    line[0]='0'; line[1]='0';
+    while(n>=100) { n-=100; ++line[0]; }
+    while(n>=10) { n-=10; ++line[1]; }
+    line[2]='0'+n; line[3]=0;
+    write_line(line+(last_status>=100?0:last_status>=10?1:2));
+}
+
 static void dispatch_line(void)
 {
     unsigned char command;
@@ -117,13 +151,16 @@ static void dispatch_line(void)
     rest = command_end(command, (const unsigned char *)"echo");
     if (rest != 0xFFu) {
         rest = skip_space(rest);
-        write_line(line + rest);
+        if(text_equal(rest,(const unsigned char *)"$?")) write_status();
+        else write_line(line + rest);
+        last_status=0;
         finish_command();
         return;
     }
 
     rest = command_end(command, (const unsigned char *)"help");
     if (rest != 0xFFu && line[skip_space(rest)] == 0) {
+        last_status=0;
         write_line((const unsigned char *)"cd clear echo help pwd xinit xclock xwave xcalc xdraw\nDisk: cat cowsay date df free ls lscpu lshw lsmod uname z80ctl\nRecovery: mount umount");
         finish_command();
         return;
@@ -131,6 +168,7 @@ static void dispatch_line(void)
 
     rest = command_end(command, (const unsigned char *)"clear");
     if (rest != 0xFFu && line[skip_space(rest)] == 0) {
+        last_status=0;
         udeks_write_byte(1, '\f');
         finish_command();
         return;
@@ -142,6 +180,7 @@ static void dispatch_line(void)
         PAYLOAD[0] = UDEKS_CONTROL_DESKTOP; PAYLOAD[1] = 0; PAYLOAD[2] = 0;
         if (text_equal(rest, (const unsigned char *)"-q")) PAYLOAD[1] = UDEKS_CONTROL_STOP;
         else if (line[rest]) {
+            last_status=2;
             write_line((const unsigned char *)"xinit [-q]; program [-q|&]");
             finish_command(); return;
         }
@@ -150,7 +189,8 @@ static void dispatch_line(void)
 
     rest = command_end(command, (const unsigned char *)"pwd");
     if (rest != 0xFFu && line[skip_space(rest)] == 0) {
-        if (submit_request(UDEKS_TREQ_OP_GETCWD, 0, 0) != UDEKS_IO_ERROR)
+        last_status=submit_request(UDEKS_TREQ_OP_GETCWD, 0, 0)==UDEKS_IO_ERROR;
+        if (!last_status)
             write_line((const unsigned char *)PAYLOAD);
         finish_command();
         return;
@@ -164,7 +204,9 @@ static void dispatch_line(void)
         if (!result) PAYLOAD[result++] = '/';
         PAYLOAD[result] = 0;
         if (line[rest] || submit_request(UDEKS_TREQ_OP_CHDIR, 0, result) == UDEKS_IO_ERROR)
+        {   last_status=1;
             write_line((const unsigned char *)"cd: not a directory or unavailable");
+        } else last_status=0;
         finish_command();
         return;
     }
@@ -178,6 +220,7 @@ static void dispatch_line(void)
         return;
     }
     if (result == UDEKS_IO_ERROR) {
+        last_status=126;
         write_line((const unsigned char *)"ush: failed");
     }
 #ifndef UDEKS_RECOVERY
@@ -222,6 +265,7 @@ unsigned char udeks_ush_poll(void)
             return UDEKS_EXIT_SUCCESS;
         }
         waiting_foreground = 0;
+        last_status=COMMAND_RESULT;
         finish_command();
         return UDEKS_EXIT_SUCCESS;
     }

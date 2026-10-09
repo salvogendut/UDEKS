@@ -85,6 +85,18 @@ class LineEditorBehaviorTests(unittest.TestCase):
         self.assertEqual(self.text(), b"ac")
         self.assertEqual(self.editor.udeks_line_editor_cursor(), 1)
 
+    def test_application_input_neither_recalls_nor_enters_shell_history(self):
+        self.enter(b'echo private shell command')
+        mode=ctypes.c_ubyte.in_dll(self.editor,'udeks_line_editor_application_input')
+        mode.value=1
+        self.assertEqual(self.handle(scan_code=83),0)
+        self.assertEqual(self.handle(scan_code=7,modifiers=1),0)
+        self.enter(b'application data')
+        self.assertEqual(self.editor.udeks_line_editor_history_count(),1)
+        mode.value=0
+        self.handle(scan_code=83)
+        self.assertEqual(self.text(),b'echo private shell command')
+
     def test_home_and_both_cursor_key_forms_are_bounded(self):
         for character in b"abc":
             self.handle(character=character)

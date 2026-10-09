@@ -31,6 +31,7 @@ static struct {
 unsigned int udeks_retained_lengths[UDEKS_NATIVE_CLIENTS];
 unsigned char udeks_banked_graphics_installed;
 unsigned char udeks_banked_graphics_selected;
+extern unsigned char udeks_shell_foreground_job;
 unsigned char udeks_banked_graphics_names[UDEKS_NATIVE_CLIENTS][16];
 #pragma bss-name(push, "PATHSTATE")
 unsigned int udeks_graphics_origin_x;
@@ -196,6 +197,17 @@ void udeks_banked_graphics_poll(void)
     unsigned char i,state;
     for(i=0;i<UDEKS_NATIVE_CLIENTS;++i) if(running[i]) {
         state=udeks_banked_call(0x63u+i);
+        /* Snapshot before destroying a window can borrow the request, and
+         * before reap clears the lifecycle record. Background exits cannot
+         * overwrite the foreground command's completion status. */
+        if(state==6 && udeks_shell_foreground_job==(1u<<i)) {
+#ifdef UDEKS_GRAPHICS_HOST_TEST
+            extern unsigned char graphics_foreground_exit;
+            graphics_foreground_exit=R[11];
+#else
+            *(volatile unsigned char *)0xf17a=R[11];
+#endif
+        }
         if(state==0 || state==6) {
             if(clients.handle[i]) udeks_window_destroy(clients.handle[i]);
             if(!udeks_banked_call(0xc3u+i)) running[i]=0;

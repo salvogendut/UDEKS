@@ -1,0 +1,57 @@
+{
+  "scope": "background argv/prompt-safe output; keyboard injection; no native mouse or hardware claim",
+  "format": "d64",
+  "source_disk_sha256": "6172bb3cc2f9b5aca0e4ffba606399a739813109f3841ad5571a9a9911677ba0",
+  "fixture_sha256": "85ab60a8a13b55587aeab4c0aad4d1791e3d6dc1d3ddaa61f6366c39e93b4709",
+  "apps": {
+    "ASK": "749bca316a115117d463a835ef038c58eeca8d9a1f6f7c1923d418f3d6e86259",
+    "TICKER": "b714e1c1b2e4c1edebfc96e9c549cfbc3cc3d02872721cff9b0f42d90be822ab"
+  },
+  "checks": [
+    {
+      "check": "shell-edit",
+      "task": 6,
+      "argv": [
+        "ticker",
+        "a",
+        "B",
+        "c",
+        "D",
+        "e",
+        "F",
+        "last"
+      ],
+      "console": "\nUDEKS:~> time: ready\nUDEKS:~> ticker a B c D e F last &\nticker: native task started\nticker: stderr works\narg: ticker\narg: a\narg: B\narg: c\narg: D\narg: e\narg: F\narg: last\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\n\nUDEKS:~> echo drft",
+      "private_state": true,
+      "code_and_guards": true
+    },
+    {
+      "check": "application-edit",
+      "task": 6,
+      "argv": [
+        "ticker",
+        "Mixed-case",
+        "while-reading"
+      ],
+      "console": "UDEKS:~> echo $?\n0\nUDEKS:~> echo $?\n0\nUDEKS:~> xclock &\nUDEKS:~> ticker Mixed-case while-reading &\nticker: native task started\nticker: stderr works\narg: ticker\narg: Mixed-case\narg: while-reading\ntick 1\nUDEKS:~> ask\ntick 2\nType a line (Enter), or Ctrl+C:\ntick 3\ntick 4\ntick 5\nticker: complete\n\ninput kept",
+      "private_state": true,
+      "code_and_guards": true
+    },
+    {
+      "check": "background-after-cancel",
+      "task": 6,
+      "argv": [
+        "ticker",
+        "again"
+      ],
+      "console": "UDEKS:~> ticker again &\nticker: native task started\nticker: stderr works\narg: ticker\narg: again\ntick 1\nUDEKS:~> ask\ntick 2\nType a line (Enter), or Ctrl+C:\ntick 3\nInterrupted\n\ndiscard\ntick 4\n\nUDEKS:~> echo $?\ntick 5\n130\nticker: complete\n\nUDEKS:~>",
+      "private_state": true,
+      "code_and_guards": true
+    }
+  ],
+  "foreground_input": true,
+  "background_read_errno": null,
+  "history": true,
+  "cancellation": true,
+  "exit_status": true
+}

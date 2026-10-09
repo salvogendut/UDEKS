@@ -141,6 +141,7 @@ query_state:
         clc
         adc #16
         tax
+        jsr query_exit
         jmp MEMORY_GATE
 transfer8:
         ldx #$b9                    ; LDA abs,Y
@@ -266,6 +267,19 @@ auto_error: .byte 0
 auto_fixed_header: .byte "UDEX",0,1,1,0
         .assert * <= $2000, error, "banked access reaches Z80 code"
         .segment "CODE"
+; Called only after query_state resolves a validated lifecycle slot. Retain
+; state in A's existing return convention; expose EXIT in private RESULT.
+query_exit:
+        txa
+        pha
+        inx
+        inx
+        inx
+        jsr MEMORY_GATE
+        sta REQUEST+11
+        pla
+        tax
+        rts
 invalid:
         lda #22                     ; EINVAL
         rts

@@ -17,6 +17,9 @@
 
 void udeks_line_editor_initialize(void);
 void udeks_line_editor_reset(void);
+extern unsigned char udeks_line_editor_application_input;
+extern unsigned char udeks_line_editor_submitted_ready_value;
+extern unsigned char udeks_line_editor_submitted_cursor;
 unsigned char udeks_line_editor_handle(
     unsigned char scan_code, unsigned char character,
     unsigned char modifiers);
