@@ -245,6 +245,7 @@ USER_BOOTFS := $(BUILD_USER)/bootfs.img
 include mk/window-cache.mk
 include mk/storage.mk
 include mk/services.mk
+include mk/reu.mk
 
 # Storage 0.2 positive/negative files live on DOS media, never in bootfs.
 .PHONY: disk-exec-image
@@ -2540,6 +2541,7 @@ graphics-code-check: placement-check-guard graphics-apps-check
 .PHONY: graphics-code-check
 
 check:
+	$(PYTHON) -m py_compile tools/reu_probe.py
 	$(PYTHON) -m py_compile tools/png_to_cbm.py tools/add_cbm_viewer.py tools/xview_probe.py tools/build_xview_demo.py tools/1986_xview_check.py
 	cd bench/results/2026-10-09-cbm-viewer && sha256sum -c SHA256SUMS
 	$(PYTHON) -m py_compile tools/build_native_console.py tools/native_console_probe.py tools/check_console_parser.py tools/native_console_cancel_probe.py

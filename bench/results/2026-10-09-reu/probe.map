@@ -1,0 +1,127 @@
+Modules list:
+-------------
+probe.o:
+    CODE              Offs=000000  Size=00029C  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000018  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=00001D  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000182  Align=00001  Fill=0000
+transport.o:
+    CODE              Offs=00029C  Size=000105  Align=00001  Fill=0000
+    BSS               Offs=00001D  Size=00000F  Align=00001  Fill=0000
+capacity.o:
+    CODE              Offs=0003A1  Size=000258  Align=00001  Fill=0000
+    BSS               Offs=00002C  Size=00000A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=0005F9  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=000607  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=000610  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=00061D  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=00064B  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000656  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp8.o):
+    CODE              Offs=00065D  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000662  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000678  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=000692  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               002800  002981  000182  00001
+CODE                  002982  00301E  00069D  00001
+RODATA                00301F  003036  000018  00001
+BSS                   003037  00306C  000036  00001
+
+
+Exports list by name:
+---------------------
+_udeks_reu_capacity_banks 003063 RLA    _udeks_reu_discover       002D23 RLA    
+_udeks_reu_request        003054 RLA    _udeks_reu_transfer       002C1E RLA    
+addysp                    002F7C RLA    decsp1                    002F89 RLA    
+decsp2                    002F92 RLA    incaxy                    002FCF RLA    
+incsp1                    002FD8 RLA    incsp8                    002FDF RLA    
+ptr1                      00000A RLZ    pusha                     002FE8 RLA    
+pusha0                    002FFC RLA    sp                        000002 RLZ    
+sreg                      000004 RLZ    stax0sp                   003014 RLA    
+tmp1                      000012 RLZ    tosicmp0                  002F9F RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+ptr1                      00000A RLZ    tmp1                      000012 RLZ    
+_udeks_reu_transfer       002C1E RLA    _udeks_reu_discover       002D23 RLA    
+addysp                    002F7C RLA    decsp1                    002F89 RLA    
+decsp2                    002F92 RLA    tosicmp0                  002F9F RLA    
+incaxy                    002FCF RLA    incsp1                    002FD8 RLA    
+incsp8                    002FDF RLA    pusha                     002FE8 RLA    
+pusha0                    002FFC RLA    stax0sp                   003014 RLA    
+_udeks_reu_request        003054 RLA    _udeks_reu_capacity_banks 003063 RLA    
+
+
+
+Imports list:
+-------------
+_udeks_reu_capacity_banks (capacity.o):
+    probe.o                   bench/reu/probe.s(7)
+_udeks_reu_discover (capacity.o):
+    probe.o                   bench/reu/probe.s(7)
+_udeks_reu_request (transport.o):
+    capacity.o                build/reu/capacity.s(13)
+    probe.o                   bench/reu/probe.s(6)
+_udeks_reu_transfer (transport.o):
+    capacity.o                build/reu/capacity.s(14)
+    probe.o                   bench/reu/probe.s(6)
+addysp (addysp.o):
+    incsp8.o                  runtime/incsp8.s(8)
+decsp1 (decsp1.o):
+    capacity.o                build/reu/capacity.s(330)
+decsp2 (decsp2.o):
+    capacity.o                build/reu/capacity.s(330)
+incaxy (incaxy.o):
+    capacity.o                build/reu/capacity.s(330)
+incsp1 (incsp1.o):
+    capacity.o                build/reu/capacity.s(330)
+incsp8 (incsp8.o):
+    capacity.o                build/reu/capacity.s(330)
+ptr1 (zeropage.o):
+    capacity.o                build/reu/capacity.s(11)
+pusha (pusha.o):
+    capacity.o                build/reu/capacity.s(330)
+    capacity.o                build/reu/capacity.s(330)
+pusha0 (pushax.o):
+    capacity.o                build/reu/capacity.s(330)
+sp (zeropage.o):
+    addysp.o                  runtime/addysp.s(8)
+    staxsp.o                  runtime/staxsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    capacity.o                build/reu/capacity.s(10)
+    probe.o                   bench/reu/probe.s(8)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+stax0sp (staxsp.o):
+    capacity.o                build/reu/capacity.s(330)
+tmp1 (zeropage.o):
+    incaxy.o                  runtime/incaxy.s(8)
+tosicmp0 (icmp.o):
+    capacity.o                build/reu/capacity.s(330)
+

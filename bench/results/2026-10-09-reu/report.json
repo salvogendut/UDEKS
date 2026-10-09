@@ -1,0 +1,98 @@
+{
+  "scope": "standalone transport/capacity candidate, NOT an installed graphics backend",
+  "emulator": "\nVICE - Versatile Commodore Emulator\n\n            ID: net.sf.VICE\n           Ref: app/net.sf.VICE/x86_64/stable\n          Arch: x86_64\n        Branch: stable\n       Version: 3.10\n       License: GPL-2.0+\n        Origin: flathub\n    Collection: org.flathub.Stable\n  Installation: system\nInstalled Size: 45,8\u00a0MB\n       Runtime: org.freedesktop.Platform/x86_64/25.08\n           Sdk: org.freedesktop.Sdk/x86_64/25.08\n\n        Commit: bbd997ea8cbf7e6ba06ff82136fd71069ce2011f93c006412bcda7bbde17e448\n        Parent: 68a5281bbbfb691d105e1006686691713eb0cab353a7d869f4b72c066eca18c7\n       Subject: Add desktop files for vsid, x64dtv, xcbm5x0, xscpu64 (c39f8386949f)\n          Date: 2026-01-18 14:54:47 +0000\n",
+  "records": [
+    {
+      "case": "vice-0",
+      "raw": "5245555101020000000001000000001300000000000000000000000000000000",
+      "decoded": {
+        "configured_kib": 0,
+        "usable_prefix_kib": 0,
+        "roundtrips": 0,
+        "checked_transport_calls": 1,
+        "invalid_requests_rejected": 0,
+        "distinct_banks": 0,
+        "capacity_preimages_verified": 0,
+        "capacity_errno": 19
+      }
+    },
+    {
+      "case": "vice-128",
+      "raw": "524555510102000280000f010802020002000000000000000000000000000000",
+      "decoded": {
+        "configured_kib": 128,
+        "usable_prefix_kib": 128,
+        "roundtrips": 128,
+        "checked_transport_calls": 271,
+        "invalid_requests_rejected": 8,
+        "distinct_banks": 2,
+        "capacity_preimages_verified": 2,
+        "capacity_errno": 0
+      }
+    },
+    {
+      "case": "vice-256",
+      "raw": "5245555101020004800015010804040004000000000000000000000000000000",
+      "decoded": {
+        "configured_kib": 256,
+        "usable_prefix_kib": 256,
+        "roundtrips": 128,
+        "checked_transport_calls": 277,
+        "invalid_requests_rejected": 8,
+        "distinct_banks": 4,
+        "capacity_preimages_verified": 4,
+        "capacity_errno": 0
+      }
+    },
+    {
+      "case": "vice-512",
+      "raw": "5245555101020008800021010808080008000000000000000000000000000000",
+      "decoded": {
+        "configured_kib": 512,
+        "usable_prefix_kib": 512,
+        "roundtrips": 128,
+        "checked_transport_calls": 289,
+        "invalid_requests_rejected": 8,
+        "distinct_banks": 8,
+        "capacity_preimages_verified": 8,
+        "capacity_errno": 0
+      }
+    },
+    {
+      "case": "vice-1024",
+      "raw": "5245555101020010800039010810080010000000000000000000000000000000",
+      "decoded": {
+        "configured_kib": 1024,
+        "usable_prefix_kib": 512,
+        "roundtrips": 128,
+        "checked_transport_calls": 313,
+        "invalid_requests_rejected": 8,
+        "distinct_banks": 16,
+        "capacity_preimages_verified": 16,
+        "capacity_errno": 0
+      }
+    },
+    {
+      "case": "misbanked",
+      "raw": "5245555101800a08040023000008080008000000000000000000000000000000",
+      "decoded": {
+        "negative_control": "wrong DMA bank rejected at target comparison"
+      }
+    }
+  ],
+  "source_sha256": {
+    "src/services/memory/reu.s": "6ee6247e4aeeac586b9f44b93297f56415f0028ffa052f6fc7ff2d553f1216c8",
+    "src/services/memory/reu_capacity.c": "818165aee100d61c0f61dfa08106389a09588f3ba199b73c077834b0d1705080",
+    "include/udeks/reu.h": "c09121aac9fc02a67a72d27607bc494e21e512999b0c35d05ba2f62b3a8d68b0",
+    "bench/reu/probe.s": "2bcfcdfaf4cf5f080af788fe1bfc4e4b3d27b9464c45fb925d430a5651bc5083",
+    "bench/reu/probe.cfg": "c5e66036b52f5981b7ca374d69ced33e12f6dba8e567d4d7e40f161277e477f4",
+    "mk/reu.mk": "c4b03101e7135df3df32263ba215694898b738a0542ffc2929d657aae7354c87",
+    "tools/reu_probe.py": "1db98e34f2085f2468108eeb9f76e48f04a4ebafea50fef9622d4d5e1c15f174",
+    "tools/vice_capture.py": "ee5fd28fdf1415edee6456425a98a3ae7c9c4b0a5efa4c3152dd6c54eba48e00"
+  },
+  "artifact_sha256": {
+    "probe.prg": "b7bdb551398e75219f75be6122898fedf391539224cf9c1f4b9096a972bb77e3",
+    "probe.map": "dd5648bb343307c053da91ccfef946f16d7c8e0ae45c5e38e28a029102fc0fb5",
+    "misbanked.prg": "d3c6128b534813d40cfdf008c8e13e9c16099abcfeb9e9fad8badae460c78b95"
+  }
+}

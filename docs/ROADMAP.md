@@ -13,6 +13,18 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
+**Active follow-up — optional REU graphics backing storage (2026-10-09):**
+the user selected REU and VICE. Branch `graphics-reu`, worktree
+`build/graphics-reu`, based on the committed viewer `fe57e7f`.
+[Three-package plan](GRAPHICS-REU.md): (1) transport/discovery, (2) budgeted
+generic storage integration, (3) visible coexistence/fallback qualification.
+The standalone first package passes VICE with absent/128/256/512/1024 KiB
+configurations and a wrong-bank negative control. It is not linked into boot;
+graphics capacity is unchanged until package 2. Preserve the stock fallback,
+all four app allocations and app-independent APIs. Next: actual code/buffer
+placement and storage integration, including the shared VIC/DMA bank selector.
+No merge or new published disk is implied by these prototype results.
+
 **In progress — [#55, packed bitmap surfaces](https://github.com/salvogendut/UDEKS/issues/55):**
 make larger `xview` pictures practical within the existing 2,304-byte drawing
 pool. [Plan and gates](GRAPHICS-PACKED-BITMAPS.md). **Steps 1–4 complete,
@@ -30,7 +42,7 @@ User feedback confirms the next graphics-capacity limitation: CLOCK160 consumes
 2,008 bytes, leaving 296, while `xclock` needs 344 and currently exits silently
 on allocation failure. Follow-up: expand generic retained storage and provide
 clear allocation diagnostics, rather than trimming individual applications.
-PR/merge and that follow-up implementation need separate authorization.
+PR/merge remains pending; the REU follow-up above is now authorized.
 Full-screen storage, panning and performance tuning remain later work.
 
 **Completed application slice (2026-10-09):** standalone `xview`, developed on

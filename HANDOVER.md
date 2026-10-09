@@ -6,7 +6,43 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — streaming viewer user-tested, 2026-10-09
+## Current handoff — REU foundation, 2026-10-09
+
+The user selected REU and approved starting with VICE. New local branch
+`graphics-reu`, worktree `build/graphics-reu`, based on committed/pushed
+`graphics-packed-bitmaps` at `fe57e7f`. The user authorized commit/push of this
+foundation and continuing package 2. No issue/PR or merge has been performed.
+Root main, viewer branch, published disks
+and the user's untracked screenshot are untouched.
+
+Read [the three-package REU plan](docs/GRAPHICS-REU.md). Package 1 is a
+standalone candidate: bounded 8502 stash/fetch and C capacity discovery.
+VICE absent/128/256/512/1024 KiB cases pass; larger devices publish only a
+verified 512 KiB prefix. Each present case passes 128 round trips and eight
+atomic request rejections, plus independent capacity-byte restoration checks.
+A forced wrong-bank image fails comparison as required. Initial 256 KiB runs
+exposed unpopulated-bank/bus-latch behavior; the corrected live matrix and host
+fault-injection tests pass. Evidence: `bench/results/2026-10-09-reu`.
+Final gates: **1,707 host tests pass**, fresh container `make -j8 boot
+graphics-apps-check` passes, and all three D64/D71/D81 boot images are
+byte-identical to the packed-bitmap branch. No VICE session remains.
+
+Build: container `make reu-probe-build`; host `python3 tools/reu_probe.py`.
+The runner mounts no disks and closes its own VICE sessions. This probe owns
+RAM/REU scratch space and is NOT an application to load inside UDEKS.
+
+Next is package 2, not app-specific shrinking or an optimization detour:
+budget the driver/buffer and integrate owned graphics storage behind the
+existing public bitmap operations. The resident 34-byte gap cannot fit this
+code (transport 261+15 bytes; C discovery 600+10, plus standalone helpers).
+Discovery can retire after boot. Do not steal an app slot or the time-service
+module slot. RCR selects both VIC and DMA banks, so a bank-safe staging and
+live-display/NMI strategy must be qualified, not inferred from restored
+registers. Package 3 will produce coexistence/fallback demo disks for the user.
+No larger REU-backed viewer, live desktop, 1986 or physical-hardware result is
+claimed yet. The current graphics pool is still 2,304 bytes.
+
+## Previous handoff — streaming viewer user-tested, 2026-10-09
 
 Issue #55, branch `graphics-packed-bitmaps`, worktree `build/packed-bitmap`.
 **All four planned increments are implemented and emulator-qualified.**
