@@ -50,7 +50,10 @@ class BankedLoader(unittest.TestCase):
         self.assertLess(gate.index('cmp banked_signature,x'), gate.index('jsr $d900'))
         self.assertIn('sta MMU_LCR_KERNEL_IO\n        plp', gate)
         entry = loader.split('banked_entry:', 1)[1].split('load_image:', 1)[0]
-        self.assertEqual(entry.count('jsr MEMORY_GATE'), 3)
+        self.assertEqual(entry.count('jsr MEMORY_GATE'), 4)  # includes read-only exit snapshot
+        query=entry.split('query_exit:',1)[1].split('invalid:',1)[0]
+        self.assertIn('sta REQUEST+11',query)
+        self.assertNotIn('write_address',query)
         self.assertIn('jsr read_address', entry)
         publication = loader.split('jsr validate', 1)[1].split('done:', 1)[0]
         self.assertLess(publication.index('jsr install'), publication.index('sta banked_owned,x'))

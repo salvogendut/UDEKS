@@ -17,9 +17,13 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 [#52 — independently scheduled console programs](https://github.com/salvogendut/UDEKS/issues/52),
 branch `tasking-native-console`, worktree `build/native-console`.
 The [three-increment plan](NATIVE-CONSOLE-APPS.md) covers native arguments/output/
-exit, then terminal ownership/jobs, then utility migration. The first independent
-stdout/stderr/sleep example works without kernel changes; arguments and native
-exit-status reporting are next. This is not completed console job control.
+exit, then terminal ownership/jobs, then utility migration. **Increment 1 is
+implemented:** independent C tasks receive private arguments and stdout/stderr,
+sleep while graphical peers continue, and return status through `echo $?`.
+VICE D64/D81 argument/concurrency proofs and the four-app/1986 input regressions
+pass. The user accepted the prior no-argument checkpoint (platform unspecified).
+**Next: increment 2 — terminal ownership, stdin and task-based Ctrl+C**, then
+argument-bearing background jobs. This is not completed console job control.
 
 **Completed architectural feature (2026-10-09):**
 [#49 — first disk-loaded non-kernel service](https://github.com/salvogendut/UDEKS/issues/49),
@@ -42,7 +46,8 @@ test is inferred. This is one provisional fixed slot, not an arbitrary module
 allocator or daemon framework.
 
 **Next architectural work:** milestone 3's remaining task/service boundaries,
-starting with #52 above. Measure memory before adding native argument delivery.
+starting with #52 above. Preserve the measured allocation/stack bounds while
+adding terminal ownership; only four resident bytes remain on that branch.
 General task allocation, message/handle IPC and further service extraction remain open;
 preemption, scripting and app-specific optimization are separate work. Do not
 turn the completed time-service slice into an indefinite loader-tuning project.

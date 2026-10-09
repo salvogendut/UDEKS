@@ -1,5 +1,31 @@
 # UDEKS native shell contract 0.2
 
+## Native arguments and completion (2026-10-09)
+
+The #52 native-console checkpoint extends generic foreground launch to bounded
+arguments. It retains the eight-token/54-character parser and copies private
+UARG 0.1 before making a native task runnable (see [executable ABI](executable.md)).
+Excess arguments fail before either loader is called, with status 2. The
+synchronous compatibility loader remains available; graphical entries need
+not use arguments. Bare `name &` and exact `name -q` retain their existing
+semantics. Argument-bearing background launches, foreground stdin and Ctrl+C
+for a no-window task still need terminal policy; this is not full job control.
+
+For normal native foreground exit, bookkeeping reads the task's exit byte
+before reaping and publishes it at `SHLL+10` (`$F17A`). Background retirement
+does not replace it. Once WAIT reports completion, ush snapshots that byte into
+its own `last_status` before issuing the next prompt. This is a root-shell
+completion contract, not a general wait-result pointer for arbitrary tasks.
+Existing synchronous completion/loader-error bytes use the same field.
+
+The exact command `echo $?` prints the previous eight-bit status in decimal;
+echo itself then succeeds with status 0. Empty lines preserve status. Builtin
+failures set nonzero status; this does not promise POSIX errno/exit remapping,
+general expansion, quoting, pipes or scripting. The older baseline below
+describes the original synchronous loader and graphical job interface.
+
+## Original shell baseline
+
 The root shell is a persistent bank-1 `/bin/ush` task owned and polled by init.
 The terminal owns keyboard editing and publishes one bounded, NUL-terminated
 line. `ush` reads it through the task-request ABI, implements `cd`, `echo`,

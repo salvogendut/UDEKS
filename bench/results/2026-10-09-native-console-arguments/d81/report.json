@@ -1,0 +1,76 @@
+{
+  "scope": "foreground native arguments/stdout/stderr/sleep/exit execution proof",
+  "source_disk_sha256": "5a125c609cfea8b25efa9c12aea6901791967120bc079ea89d4098c3df0ead0e",
+  "fixture_sha256": "1a7f78d1f3afc737a1a8051ffc9ddd67ecee4b59d9e8e3a513234148c981fd16",
+  "program_sha256": "9108329e445e591dc5d38b857664df92fca39a7d153dddfb8008346538f99ecd",
+  "drive": "1581",
+  "quiet_sha256": "cf4325e57159c96939f0173a2cc511feb4fc30af758f67958f4723b341dadf6e",
+  "source_disk_unchanged": true,
+  "arguments": true,
+  "stdin": false,
+  "background_policy": false,
+  "shell_exit_status": true,
+  "records": [
+    {
+      "command": "ticker Alpha mixed-case 37",
+      "console": "DETECTING MEMORY ...                                      [ OK ]\nBASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> ticker Alpha mixed-case 37\n"
+    },
+    {
+      "check": "solo",
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> ticker Alpha mixed-case 37\nticker: native task started\nticker: stderr works\narg: ticker\narg: Alpha\narg: mixed-case\narg: 37\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~>",
+      "private_state": true,
+      "code_and_guards": true
+    },
+    {
+      "command": "echo $?",
+      "console": "WELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> ticker Alpha mixed-case 37\nticker: native task started\nticker: stderr works\narg: ticker\narg: Alpha\narg: mixed-case\narg: 37\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> echo $?\n37\nUDEKS:~>"
+    },
+    {
+      "command": "echo $?",
+      "console": "UDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> ticker Alpha mixed-case 37\nticker: native task started\nticker: stderr works\narg: ticker\narg: Alpha\narg: mixed-case\narg: 37\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> echo $?\n37\nUDEKS:~> echo $?\n0\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "console": "svc load /TIME.SVC\ntime: ready\nUDEKS:~> ticker Alpha mixed-case 37\nticker: native task started\nticker: stderr works\narg: ticker\narg: Alpha\narg: mixed-case\narg: 37\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> echo $?\n37\nUDEKS:~> echo $?\n0\nUDEKS:~> xclock &\nUDEKS:~>"
+    },
+    {
+      "command": "quiet &",
+      "console": "time: ready\nUDEKS:~> ticker Alpha mixed-case 37\nticker: native task started\nticker: stderr works\narg: ticker\narg: Alpha\narg: mixed-case\narg: 37\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> echo $?\n37\nUDEKS:~> echo $?\n0\nUDEKS:~> xclock &\nUDEKS:~> quiet &\nUDEKS:~>"
+    },
+    {
+      "command": "pulse a B c D e F last",
+      "console": "UDEKS:~> ticker Alpha mixed-case 37\nticker: native task started\nticker: stderr works\narg: ticker\narg: Alpha\narg: mixed-case\narg: 37\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> echo $?\n37\nUDEKS:~> echo $?\n0\nUDEKS:~> xclock &\nUDEKS:~> quiet &\nUDEKS:~> pulse a B c D e F last\n"
+    },
+    {
+      "check": "clock-and-drag-during-console",
+      "ticker_step": 1
+    },
+    {
+      "check": "with-clock",
+      "console": "0\nUDEKS:~> xclock &\nUDEKS:~> quiet &\nUDEKS:~> pulse a B c D e F last\nticker: native task started\nticker: stderr works\narg: pulse\narg: a\narg: B\narg: c\narg: D\narg: e\narg: F\narg: last\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~>",
+      "private_state": true,
+      "code_and_guards": true
+    },
+    {
+      "check": "distinct-private-arguments",
+      "foreground_exit": 37,
+      "background_exit_expected": 67
+    },
+    {
+      "command": "echo native console returned",
+      "console": "UDEKS:~> quiet &\nUDEKS:~> pulse a B c D e F last\nticker: native task started\nticker: stderr works\narg: pulse\narg: a\narg: B\narg: c\narg: D\narg: e\narg: F\narg: last\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> echo native console returned\nnative console returned\nUDEKS:~>"
+    },
+    {
+      "command": "ticker 1 2 3 4 5 6 7 8",
+      "console": "ticker: native task started\nticker: stderr works\narg: pulse\narg: a\narg: B\narg: c\narg: D\narg: e\narg: F\narg: last\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> echo native console returned\nnative console returned\nUDEKS:~> ticker 1 2 3 4 5 6 7 8\nToo many arguments\nUDEKS:~>"
+    },
+    {
+      "command": "echo $?",
+      "console": "arg: pulse\narg: a\narg: B\narg: c\narg: D\narg: e\narg: F\narg: last\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> echo native console returned\nnative console returned\nUDEKS:~> ticker 1 2 3 4 5 6 7 8\nToo many arguments\nUDEKS:~> echo $?\n2\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "console": "arg: a\narg: B\narg: c\narg: D\narg: e\narg: F\narg: last\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> echo native console returned\nnative console returned\nUDEKS:~> ticker 1 2 3 4 5 6 7 8\nToo many arguments\nUDEKS:~> echo $?\n2\nUDEKS:~> xclock -q\nUDEKS:~>"
+    }
+  ]
+}

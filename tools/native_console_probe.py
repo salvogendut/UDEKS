@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Foreground native console execution without kernel changes (VICE proof).
+"""Foreground native console arguments, sleep and completion (VICE proof).
 
 Shell keyboard events and test-only pointer getters exercise normal dispatch.
-No monitor call starts a task or fabricates its output. Arguments, stdin,
-background arbitration and foreground exit-status reporting are not claimed.
+No monitor call starts a task or fabricates its output. Stdin and background
+terminal arbitration are not claimed.
 """
 import argparse
 import hashlib
@@ -37,8 +37,12 @@ def main():
     program=(ROOT/'build/native-console/ticker/TICKER.BIN').read_bytes()
     if 6 not in fitting_allocations(program):
         raise ValueError('probe requires the console example to fit the smallest slot')
-    _,base,limit,stack,_,_=next(row for row in ALLOCATIONS if row[0]==6)
-    fixture=add_apps(original,[('TICKER.BIN',program),('PULSE.BIN',program)])
+    task=6
+    _,base,limit,stack,_,_=next(row for row in ALLOCATIONS if row[0]==task)
+    quiet=(ROOT/'build/native-console/quiet/QUIET.BIN').read_bytes()
+    alias='pulse' if args.format=='d81' else 'ticker'
+    extra=[('PULSE.BIN',program)] if alias=='pulse' else []
+    fixture=add_apps(original,[('TICKER.BIN',program),('QUIET.BIN',quiet),*extra])
     disk=work/('test.'+args.format); disk.write_bytes(fixture)
     text=(ROOT/'build/8502/udeks-8502.map').read_text()
     exports=map_exports(text); segments=map_segments(text)
@@ -46,6 +50,7 @@ def main():
     slots=scheduler_symbols(ROOT/'build/8502/udeks-scheduler-overlay.map')['_udeks_lifecycle_slots_private']
     timer=map_exports(scheduler)['_udeks_task_wait_selector_private'][0]
     app=map_exports((ROOT/'build/native-console/ticker/program.map').read_text())
+    quiet_map=map_exports((ROOT/'build/native-console/quiet/program.map').read_text())
     queue=keyboard_queue_address(text,(ROOT/'build/8502/keyboard.s').read_text())
     scratch=pointer_test_scratch(text)
     port=choose_port(); records=[]; patched=[]
@@ -74,23 +79,35 @@ def main():
         print('PASS',line,flush=True)
     def step():
         return capture('ticker-step',app['_ticker_step'][0]-0x1000+base,1,'worker')[0]
-    def verify_ticker(tag):
+    def verify_ticker(tag,argv):
         until(lambda:step()==6,'ticker complete')
         prompt()
-        expected='ticker: native task started\nticker: stderr works\n'+''.join(
+        expected='ticker: native task started\nticker: stderr works\n'+''.join('arg: '+a+'\n' for a in argv)+''.join(
             'tick '+str(n)+'\n' for n in range(1,6))+'ticker: complete'
         if expected not in screen(): raise AssertionError('missing or reordered console output')
         for label,expected in (('_ticker_failure',b'\0'),('_ticker_private',b'1234')):
             if capture(tag+label,app[label][0]-0x1000+base,len(expected),'worker')!=expected:
                 raise AssertionError('private state failed')
-        until(lambda:capture('reaped',slots+41,1)==b'\0','native reap')
+        until(lambda:capture('reaped',slots+(task-1)*8+1,1)==b'\0','native reap')
         installed=relocate_executable(program,base,limit-base)[16:]
         if capture(tag+'-code',base,len(installed),'worker')!=installed:
             raise AssertionError('native code damaged')
         for offset in (0,0xb0):
             if capture(tag+'-guard-'+str(offset),stack+offset,16,'worker')!=b'\xa5'*16:
                 raise AssertionError('native stack guard')
+        block=capture(tag+'-arguments',app['_ticker_arguments'][0]-0x1000+base,81,'worker')
+        if block[:8]!=b'UARG\0\1'+bytes((len(argv),0)):
+            raise AssertionError(('argument header',block.hex()))
+        for i,argument in enumerate(argv):
+            address=int.from_bytes(block[8+2*i:10+2*i],'little')
+            if not 0x9a<=address<=0xd0 or block[address-0x80:].split(b'\0',1)[0]!=argument.encode():
+                raise AssertionError(('argument pointer/text',i,block.hex()))
+        if block[8+2*len(argv):26]!=bytes(18-2*len(argv)):
+            raise AssertionError('missing NULL argv sentinel/uncleared vector')
+        if byte(port,0xf17a)!=37: raise AssertionError('native exit status lost before reap')
         records.append(dict(check=tag,console=screen(),private_state=True,code_and_guards=True))
+    def quiet_data(name,size=1):
+        return capture(name,quiet_map['_'+name][0]-0x1000+0xc600,size,'worker')
     def pointer(x,y,buttons):
         if not patched:
             for name,length,offsets in (('x',10,((3,0),(6,1))),('y',4,((1,2),)),('buttons',4,((1,3),))):
@@ -111,17 +128,28 @@ def main():
         if b'Warp mode is off.' not in sp.monitor_command(port,'warp'):
             raise AssertionError('timed observation requires warp off')
         vic=capture('vic-before',0xf1b0,24)
-        command('ticker',True)
+        first=['ticker','Alpha','mixed-case','37']
+        command(' '.join(first),True)
         until(lambda:step()==1,'first private task step')
         if byte(port,0xf246)!=0: raise AssertionError('console task opened a window')
-        verify_ticker('solo')
+        verify_ticker('solo',first)
         if capture('vic-after',0xf1b0,24)!=vic: raise AssertionError('console task changed VIC state')
+        command('echo $?')
+        if '\n37\n' not in screen(): raise AssertionError('shell did not report native exit status')
+        command('echo $?')
+        if not screen().endswith('echo $?\n0\nUDEKS:~>'): raise AssertionError('echo status did not reset')
         command('xclock &')
         sp.wait_for_byte(port,0xf246,1,time.monotonic()+120)
         handle=byte(port,0xf247)
-        command('pulse',True)       # same file, independent name, clean BSS
+        command('quiet &')
+        until(lambda:quiet_data('quiet_stage')==b'\1','silent peer started')
+        task=5  # QUIET owns 6, clock owns 4; next compatible allocation is 5.
+        _,base,limit,stack,_,_=next(row for row in ALLOCATIONS if row[0]==task)
+        second=[alias,'a','B','c','D','e','F','last']
+        command(' '.join(second),True)  # maximum argc, independent name, clean BSS
         until(lambda:step()==1,'second private task step')
-        # Task 4's sleep deadline must advance WHILE task 6 owns foreground.
+        if quiet_data('quiet_stage')!=b'\1': raise AssertionError('silent peer finished before concurrency check')
+        # Task 4's sleep deadline must advance WHILE task 5 owns foreground.
         before=capture('clock-deadline',timer+3,1)
         until(lambda:capture('clock-deadline-after',timer+3,1)!=before,'clock scheduled')
         pointer(134,55,0); sp.wait_for_byte(port,0xf24d,0,time.monotonic()+30)
@@ -132,19 +160,32 @@ def main():
         pointer(150,71,0); sp.wait_for_byte(port,0xf248,0,time.monotonic()+30)
         sp.write_kernel_blocks(port,patched); patched.clear()
         records.append(dict(check='clock-and-drag-during-console',ticker_step=live_step))
-        verify_ticker('with-clock')
+        verify_ticker('with-clock',second)
+        until(lambda:quiet_data('quiet_stage')==b'\2','silent peer completed')
+        until(lambda:capture('quiet-reaped',slots+41,1)==b'\0','silent peer reaped')
+        if quiet_data('quiet_failure')!=b'\0': raise AssertionError('peer arguments changed across switches')
+        peer_args=quiet_data('quiet_arguments',81)
+        if peer_args[:10]!=b'UARG\0\1\1\0\x9a\0' or peer_args[26:32]!=b'quiet\0':
+            raise AssertionError('peer did not retain independent arguments')
+        if byte(port,0xf17a)!=37: raise AssertionError('background exit replaced foreground status')
+        records.append(dict(check='distinct-private-arguments',foreground_exit=37,background_exit_expected=67))
         if byte(port,0xf246)!=1: raise AssertionError('clock window lost')
         command('echo native console returned')
+        command('ticker 1 2 3 4 5 6 7 8')
+        if 'Too many arguments' not in screen(): raise AssertionError('argument limit not enforced')
+        command('echo $?')
+        if not screen().endswith('echo $?\n2\nUDEKS:~>'): raise AssertionError('argument rejection status')
         command('xclock -q')
         if byte(port,0xf11b): raise AssertionError('task canary failure')
         if (ROOT/f'build/boot/udeks.{args.format}').read_bytes()!=original:
             raise AssertionError('source disk changed during the probe')
-        report=dict(scope='foreground no-argument native stdout/stderr/sleep execution proof',
+        report=dict(scope='foreground native arguments/stdout/stderr/sleep/exit execution proof',
                     source_disk_sha256=hashlib.sha256(original).hexdigest(),
                     fixture_sha256=hashlib.sha256(fixture).hexdigest(),
                     program_sha256=hashlib.sha256(program).hexdigest(),drive=drive,
-                    source_disk_unchanged=True,arguments=False,stdin=False,background_policy=False,
-                    shell_exit_status=False,records=records)
+                    quiet_sha256=hashlib.sha256(quiet).hexdigest(),
+                    source_disk_unchanged=True,arguments=True,stdin=False,background_policy=False,
+                    shell_exit_status=True,records=records)
         (work/'report.json').write_text(json.dumps(report,indent=2)+'\n')
         print('PASS native console; evidence:',work,flush=True)
     finally:

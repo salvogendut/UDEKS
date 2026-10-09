@@ -12,7 +12,7 @@ HARNESS = r'''
 #define UDEKS_SESSION_HOST_TEST
 #include "src/services/shell/shell.c"
 unsigned char session_memory[65536], active, clock_run, wave_run, calls, starts, app_result;
-unsigned char token_count, init_error;
+unsigned char token_count, init_error, native_argc_seen;
 unsigned char load_error, load_exit, loads, loaded_count;
 unsigned char session_load(unsigned char count, unsigned char **args) {
     ++loads; loaded_count=count;
@@ -41,6 +41,7 @@ unsigned char udeks_xwave_is_running(void) { return wave_run; }
 unsigned char banked_run[4];
 unsigned char udeks_banked_graphics_selected;
 unsigned char udeks_banked_graphics_exec(const unsigned char *name) {
+    native_argc_seen=udeks_shell_native_argc;
     ++calls; ++starts; strncpy(last_name,(const char *)name,16);
     if(app_result) return app_result;
     for(udeks_banked_graphics_selected=0;udeks_banked_graphics_selected<4;++udeks_banked_graphics_selected)
@@ -58,7 +59,7 @@ void reset(void) {
     memset(session_memory, 0, sizeof(session_memory));
     memset(banked_run,0,sizeof(banked_run));
     active=clock_run=wave_run=calls=starts=app_result=0;
-    token_count=init_error=load_error=load_exit=loads=loaded_count=0;
+    token_count=init_error=load_error=load_exit=loads=loaded_count=native_argc_seen=0;
     memset(last_name,0,sizeof(last_name)); output[0]=0;
     udeks_shell_start(); session_memory[UDEKS_USH_STATUS_BASE+1]=UDEKS_USH_STATE_READY;
 }
@@ -150,15 +151,27 @@ class ServiceControl(unittest.TestCase):
         self.lib.udeks_shell_poll()
         self.assertEqual(self.memory[0xf184],0)
 
-    def test_other_loader_errors_and_native_arguments_do_not_fall_back(self):
+    def test_other_loader_errors_do_not_fall_back(self):
         line=(ctypes.c_ubyte*55).in_dll(self.lib,'udeks_shell_command_line')
-        for error,count in ((11,1),(3,1),(4,1),(5,2),(9,2)):
+        for error,count in ((11,1),(3,1),(4,1),(11,2),(3,2)):
             self.lib.reset()
             ctypes.c_ubyte.in_dll(self.lib,'token_count').value=count
             ctypes.c_ubyte.in_dll(self.lib,'load_error').value=error
             line[:10]=b'orbit\0arg\0'
             self.lib.udeks_shell_dispatch_line()
             self.assertEqual(self.value('starts'),0)
+
+    def test_native_arguments_are_published_only_during_serialized_load(self):
+        line=(ctypes.c_ubyte*55).in_dll(self.lib,'udeks_shell_command_line')
+        for error in (5,9):
+            self.lib.reset()
+            ctypes.c_ubyte.in_dll(self.lib,'token_count').value=2
+            ctypes.c_ubyte.in_dll(self.lib,'load_error').value=error
+            line[:10]=b'orbit\0arg\0'
+            self.lib.udeks_shell_dispatch_line()
+            self.assertEqual(self.value('native_argc_seen'),2)
+            self.assertEqual(self.value('udeks_shell_native_argc'),0)
+            self.assertEqual(self.value('starts'),1)
 
     def test_native_image_larger_than_legacy_staging_uses_native_validation(self):
         ctypes.c_ubyte.in_dll(self.lib,'token_count').value=1
@@ -212,6 +225,14 @@ class ServiceControl(unittest.TestCase):
         line[:len(data)]=data
         self.lib.udeks_shell_dispatch_line()
         self.lib.udeks_shell_poll()
+
+    def test_excess_arguments_do_not_reach_either_loader(self):
+        ctypes.c_ubyte.in_dll(self.lib,'token_count').value=255
+        self.lib.udeks_shell_dispatch_line()
+        for name in ('calls','starts','loads','native_argc_seen','udeks_shell_native_argc'):
+            self.assertEqual(self.value(name),0,name)
+        self.assertEqual(self.memory[0xf17a],2)
+        self.assertEqual(list((ctypes.c_ubyte*4).in_dll(self.lib,'banked_run')),[0]*4)
 
     def test_four_jobs_targeted_interrupt_and_desktop_shutdown(self):
         banked=(ctypes.c_ubyte*4).in_dll(self.lib,'banked_run')

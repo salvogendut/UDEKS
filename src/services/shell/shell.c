@@ -34,12 +34,16 @@ extern unsigned char session_load(unsigned char, unsigned char **);
 
 #pragma bss-name(push, "HIGHBSS")
 unsigned char udeks_shell_command_line[UDEKS_LINE_EDITOR_CAPACITY + 1u];
-static unsigned char offsets[UDEKS_SHELL_MAX_ARGUMENTS];
+unsigned char udeks_shell_offsets[UDEKS_SHELL_MAX_ARGUMENTS];
+#define offsets udeks_shell_offsets
 static unsigned char *arguments[UDEKS_SHELL_MAX_ARGUMENTS];
 unsigned char udeks_shell_foreground_job;
 #pragma bss-name(pop)
 static unsigned char queued_target, queued_action, queued_background;
 static unsigned char background_jobs;
+/* Nonzero only across the serialized native load. The page initializer
+ * copies validated parser offsets/text before publishing the task. */
+unsigned char udeks_shell_native_argc;
 #define foreground udeks_shell_foreground_job
 
 static void increment(unsigned char offset)
@@ -140,6 +144,7 @@ unsigned char udeks_shell_dispatch_line(void)
     count = udeks_shell_tokenize(udeks_shell_command_line, offsets, UDEKS_SHELL_MAX_ARGUMENTS);
     if (count == UDEKS_SHELL_PARSE_TOO_MANY) {
         increment(18);
+        S(10)=2;
         udeks_stream_write(2, (const unsigned char *)"Too many arguments\n");
         return 0;
     }
@@ -159,9 +164,11 @@ unsigned char udeks_shell_dispatch_line(void)
     } else {
         result = LOAD(count, arguments)
             == UDEKS_TASK_SLOT_OWNED ? UDEKS_TASK_BUSY : task[UDEKS_TASK_ERROR_OFFSET];
-        if((result!=UDEKS_TASK_BAD_VERSION && result!=UDEKS_TASK_BAD_SIZE) || count!=1) goto completed;
+        if(result!=UDEKS_TASK_BAD_VERSION && result!=UDEKS_TASK_BAD_SIZE) goto completed;
     }
+    udeks_shell_native_argc=count?count:1;
     result=udeks_banked_graphics_exec(arguments[0]);
+    udeks_shell_native_argc=0;
     if(!result) {
         i=1u<<udeks_banked_graphics_selected;
         if(count) foreground=i;

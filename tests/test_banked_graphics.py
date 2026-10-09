@@ -65,6 +65,18 @@ class BankedGraphics(unittest.TestCase):
         for flags in (0,8,0x18,0x96):
             self.assertEqual(self.request([1,10,0,10,104,133,flags]),22)
 
+    def test_foreground_exit_is_captured_before_reap_and_background_cannot_replace_it(self):
+        states=(c.c_ubyte*4).in_dll(self.lib,'test_state')
+        exits=(c.c_ubyte*4).in_dll(self.lib,'test_exit')
+        for foreground in range(4):
+            self.lib.test_reset()
+            for i in range(4):
+                self.lib.test_admit(i); states[i]=6; exits[i]=37+i
+            c.c_ubyte.in_dll(self.lib,'udeks_shell_foreground_job').value=1<<foreground
+            self.lib.udeks_banked_graphics_poll()
+            self.assertEqual(c.c_ubyte.in_dll(self.lib,'graphics_foreground_exit').value,37+foreground)
+            self.assertEqual(bytes(states),bytes(4))
+
     def test_cannot_draw_close_or_consume_input_for_another_owner(self):
         a=self.create(); b=self.create(4)
         self.lib.test_click(a,20,40)

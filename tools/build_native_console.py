@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Build an independent cooperative console probe; no kernel/map imports.
 
-This first SDK has stdout/stderr and bounded sleep, not argc delivery, stdin
-ownership or background output arbitration. Use a foreground bare command.
+The SDK has private arguments, stdout/stderr and bounded sleep, not stdin
+ownership or background output arbitration. Use foreground console commands.
 """
 import argparse
 import json
@@ -39,7 +39,7 @@ def main():
             '-I','user/include','-I','include','-o',str(out/(label+'.s')),str(source.resolve()))
         run('ca65','--cpu','6502','-o',str(out/(label+'.o')),str(out/(label+'.s')))
         objects.append(str(out/(label+'.o')))
-    run('ca65','--cpu','6502','-o',str(out/'entry.o'),'user/lib/native_console_entry.s')
+    run('ca65','--cpu','6502','-I','src/8502','-o',str(out/'entry.o'),'user/lib/native_console_entry.s')
     options=[p for symbol in dict.fromkeys(['_udeks_program_entry',*args.exports]) for p in ('-u',symbol)]
     run('cl65','-t','none','--cpu','6502','-C','cfg/8502-reloc-app.cfg',*options,
         '-m',str(out/'program.map'),'-o',str(out/'program.o65'),str(out/'entry.o'),*objects)
@@ -50,7 +50,7 @@ def main():
     size,bss=(int.from_bytes(image[n:n+2],'little') for n in (10,12))
     result=dict(file=len(image),image=size,bss=bss,fits=fitting_allocations(image),
                 joined_fits=fitting_allocations(image,joined=True),resident_bytes=0,
-                scope='foreground stdout/stderr/sleep probe; no arguments or stdin yet')
+                scope='native arguments/stdout/stderr/sleep; no stdin or terminal job control')
     (out/'layout.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result,indent=2))
 

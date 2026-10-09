@@ -427,7 +427,10 @@ console-example: placement-check-guard
 # First scheduled console SDK proof; leaves normal boot media unchanged.
 native-console: placement-check-guard
 	$(PYTHON) tools/build_native_console.py --export _ticker_step \
-		--export _ticker_failure --export _ticker_private
+		--export _ticker_failure --export _ticker_private --export _ticker_arguments
+	$(PYTHON) tools/build_native_console.py --source user/examples/argwait.c --name QUIET \
+		--output $(BUILD_DIR)/native-console/quiet --export _quiet_stage \
+		--export _quiet_failure --export _quiet_arguments
 
 # Host after `make boot native-console` in my-distrobox. Uses disposable media.
 native-console-probe:
@@ -435,6 +438,10 @@ native-console-probe:
 	$(PYTHON) tools/native_console_probe.py --format d81
 
 .PHONY: native-console native-console-probe
+
+native-console-parser-check: placement-check-guard
+	$(PYTHON) tools/check_console_parser.py
+.PHONY: native-console-parser-check
 
 # Migration candidate only: does not replace legacy XCLOCK.BIN in boot media.
 native-clock: placement-check-guard
@@ -737,7 +744,7 @@ $(USER_POLL_ENTRY_OBJ): user/lib/poll_entry.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -o $@ $<
 
 $(USER_USH_ASM): user/bin/ush.c user/include/udeks/program.h \
-		user/include/udeks/startup.h include/udeks/memory.h include/udeks/task_request.h | $(BUILD_USER)
+		user/include/udeks/startup.h include/udeks/memory.h include/udeks/task_request.h include/udeks/shell.h | $(BUILD_USER)
 	$(CC65) $(CFLAGS_8502) --static-locals -I user/include -I include -o $@ $<
 
 $(USER_USH_OBJ): $(USER_USH_ASM) | $(BUILD_USER)
@@ -785,7 +792,7 @@ $(BUILD_USER)/ush_bounds.o: user/lib/ush_bounds.s Makefile | $(BUILD_USER)
 	$(CA65) --cpu 6502 -D UDEKS_USH_BSS=368 -o $@ $<
 $(BUILD_USER)/ush_recovery_bounds.o: user/lib/ush_bounds.s | $(BUILD_USER)
 	$(CA65) --cpu 6502 -D UDEKS_USH_BSS=80 -o $@ $<
-$(BUILD_USER)/ush-recovery.o: user/bin/ush.c include/udeks/task_request.h user/include/udeks/program.h | $(BUILD_USER)
+$(BUILD_USER)/ush-recovery.o: user/bin/ush.c include/udeks/task_request.h include/udeks/shell.h user/include/udeks/program.h | $(BUILD_USER)
 	$(CL65) $(CFLAGS_8502) -D UDEKS_RECOVERY -I user/include -c -o $@ $<
 $(BUILD_USER)/ush-recovery.bin: $(USER_POLL_ENTRY_OBJ) $(USER_TASK_STREAM_OBJ) \
 		$(BUILD_USER)/ush-recovery.o $(BUILD_USER)/ush_recovery_bounds.o cfg/8502-user-bank1.cfg
@@ -1199,7 +1206,7 @@ $(BUILD_8502)/root_terminal.o: $(BUILD_8502)/root_terminal.s | $(BUILD_8502)
 $(BUILD_8502)/terminal_stream.o: $(BUILD_8502)/terminal_stream.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(BUILD_8502)/shell_parser.o: $(BUILD_8502)/shell_parser.s | $(BUILD_8502)
+$(BUILD_8502)/shell_parser.o: src/services/shell/parser.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_8502)/shell.o: $(BUILD_8502)/shell.s | $(BUILD_8502)
@@ -2125,8 +2132,8 @@ $(BUILD_8502)/retained_paths.s: src/services/window/retained_paths.c include/ude
 	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o $@ $<
 $(BUILD_8502)/retained_paths.o: $(BUILD_8502)/retained_paths.s
 	$(CA65) --cpu 6502 -o $@ $<
-$(BUILD_8502)/banked_access.o: src/services/window/banked_access.s src/services/app/native_layout.inc | $(BUILD_8502)
-	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_8502)/banked_access.o: src/services/window/banked_access.s src/services/app/native_layout.inc src/8502/native_args.inc src/8502/native_args_copy.inc | $(BUILD_8502)
+	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(BUILD_BOOT)/banked-loader.o: src/services/app/banked_loader.s src/services/app/native_layout.inc $(BUILD_BOOT)/banked-bindings.inc | $(BUILD_BOOT)
 	$(CA65) --cpu 6502 -I $(BUILD_BOOT) -o $@ $<
@@ -2445,7 +2452,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 check:
-	$(PYTHON) -m py_compile tools/build_native_console.py tools/native_console_probe.py
+	$(PYTHON) -m py_compile tools/build_native_console.py tools/native_console_probe.py tools/check_console_parser.py
 	$(PYTHON) -m py_compile tools/build_service_boot.py tools/service_boot_probe.py tools/default_service_layout.py tools/check_service_migration.py
 	$(PYTHON) -m py_compile tools/check_service_request.py
 	$(PYTHON) -m py_compile tools/service_image.py tools/build_time_module.py tools/check_time_module.py tools/time_module_layout.py tools/check_time_slot.py tools/service_start_probe.py tools/build_time_overlay.py

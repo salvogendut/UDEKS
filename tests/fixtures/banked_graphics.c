@@ -2,6 +2,7 @@
 #define UDEKS_GRAPHICS_HOST_TEST
 unsigned char graphics_request[38], graphics_memory[65536];
 unsigned char graphics_overlay[1008], graphics_pool[2304];
+unsigned char udeks_shell_foreground_job, graphics_foreground_exit, test_exit[4];
 const unsigned char udeks_native_base_pages[4]={0x23,0x35,0x80,0xc6};
 const unsigned char udeks_native_stack_pages[4]={0x34,0x3f,0x8f,0xcf};
 #include "../../src/services/window/banked_graphics.c"
@@ -44,6 +45,8 @@ void udeks_window_end_paint(void) { ++test_end_paints; }
 
 void test_reset(void)
 {
+    udeks_shell_foreground_job=graphics_foreground_exit=0;
+    memset(test_exit,0,sizeof(test_exit));
     memset(&clients,0,sizeof(clients));
     memset(running,0,sizeof(running));
     memset(udeks_retained_lengths,0,sizeof(udeks_retained_lengths));
@@ -84,7 +87,9 @@ unsigned char udeks_banked_call(unsigned char selector)
         return 16;
     }
     if(selector==0x30) return test_task;
-    if(selector>=0x63 && selector<=0x66) return test_state[selector-0x63];
+    if(selector>=0x63 && selector<=0x66) {
+        R[11]=test_exit[selector-0x63]; return test_state[selector-0x63];
+    }
     if(selector>=0xc3 && selector<=0xc6) {
         if(!test_reap_busy) test_state[selector-0xc3]=0;
         return test_reap_busy;

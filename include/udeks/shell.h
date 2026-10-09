@@ -4,6 +4,7 @@
 
 #define UDEKS_SHELL_STATUS_BASE          0xF170u
 #define UDEKS_SHELL_STATUS_SIZE          24u
+#define UDEKS_SHELL_RESULT_OFFSET        10u
 
 #define UDEKS_SHELL_STATE_STARTING       1u
 #define UDEKS_SHELL_STATE_READY          2u

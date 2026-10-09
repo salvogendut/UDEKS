@@ -6,7 +6,46 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — native console execution checkpoint, 2026-10-09
+## Current handoff — native console arguments and exit, 2026-10-09
+
+Issue [#52](https://github.com/salvogendut/UDEKS/issues/52), branch
+`tasking-native-console`, worktree `build/native-console`. The user accepted
+execution checkpoint `f56eb32` (platform unspecified) and requested commit/push
+and the next slice. It was pushed before this implementation. Root main's
+unrelated notes remain untouched; published `build/udeks.*` remain PR #51 images.
+
+**Increment 1 implemented:** 81-byte UARG 0.1 in existing private relocated
+ZP `$80-$D0`, up to eight arguments/54-character line, copied before RUNNABLE.
+No stack borrowing, header change, private kernel imports or extra allocation.
+Old graphical entry registers remain zero; the new SDK returns 126 if UARG
+is missing/unsupported. Foreground status is harvested before reap into SHLL+10;
+ush snapshots it on completion and supports exact `echo $?`. Background exit
+does not replace foreground status. Synchronous utilities are unchanged.
+
+TICKER: 2,076 file bytes (1,738 image + 91 BSS); silent peer QUIET: 1,464 file
+bytes (1,240 image + 85 BSS). Both fit all four ordinary allocations.
+Placement replaces the 237-byte C tokenizer with 77 bytes of assembly (C remains
+the test reference), and moves the 65-byte basename adapter into MODULECODE.
+No reservations move. Resident ends `$93CB` (4 free); loader CODE/RELOC/ACCESS
+have 11/18/1 free; MODULECODE has 61 free. Measure before growing any service.
+
+`make check` passes 1,571 tests. CPU differential/entry checks and normal/panic placement, graphics and
+service-layout gates pass. VICE D64/D81 proves private arguments across sleeps,
+eight tokens, foreground 37, background exit isolation, parser error 2, code/
+guards, clock scheduling and injected dragging. Four-app VICE and native 1986
+service/keyboard/mouse regressions pass. The 1986 regression is not a new
+native-console argument test; no new hardware or periodic-NMI claim is made.
+[Evidence](bench/results/2026-10-09-native-console-arguments/README.md) preserves
+candidate media, programs, raw dumps, reports and reproduction instructions.
+
+**Next: increment 2 — terminal ownership.** Start with no-window task Ctrl+C
+and foreground stdin, then argument-bearing background launch and prompt-safe
+output/read policy. Cancellation must not require a window. Bare `name &`
+is unchanged, not general console job control. Raw YIELD still lacks an owned
+reply; use SLEEP. Filesystem wrappers/utility migration remain increment 3.
+Do not merge #52 as complete. See [the plan](docs/NATIVE-CONSOLE-APPS.md).
+
+## Previous handoff — native console execution checkpoint, 2026-10-09
 
 Issue [#52](https://github.com/salvogendut/UDEKS/issues/52), branch
 `tasking-native-console`, worktree `build/native-console`, based on merged
