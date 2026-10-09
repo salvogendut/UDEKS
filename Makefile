@@ -2492,6 +2492,20 @@ xview:
 		--output $(BUILD_DIR)/xview --export _xview_commands --export _xview_count --export _xview_ready
 .PHONY: xview
 
+# First packed-bitmap increment: qualify the private store, not a boot image.
+# These objects are deliberately absent from both resident link recipes.
+$(BUILD_DIR)/bitmap-store:
+	mkdir -p $@
+$(BUILD_DIR)/bitmap-store/store.o: src/services/window/bitmap_store.c include/udeks/bitmap_store.h include/udeks/task_request.h | $(BUILD_DIR)/bitmap-store
+	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o $(BUILD_DIR)/bitmap-store/store.s $<
+	$(CA65) --cpu 6502 -o $@ $(BUILD_DIR)/bitmap-store/store.s
+$(BUILD_DIR)/bitmap-store/check.o: bench/packed-bitmap/check.c include/udeks/bitmap_store.h | $(BUILD_DIR)/bitmap-store
+	$(CL65) -t sim6502 --standard c99 -Os -I include -c -o $@ $<
+bitmap-store-check: $(BUILD_DIR)/bitmap-store/store.o $(BUILD_DIR)/bitmap-store/check.o
+	$(CL65) -t sim6502 -m $(BUILD_DIR)/bitmap-store/check.map -o $(BUILD_DIR)/bitmap-store/check $^
+	sim65 $(BUILD_DIR)/bitmap-store/check
+.PHONY: bitmap-store-check
+
 check:
 	$(PYTHON) -m py_compile tools/png_to_cbm.py tools/add_cbm_viewer.py tools/xview_probe.py
 	cd bench/results/2026-10-09-cbm-viewer && sha256sum -c SHA256SUMS

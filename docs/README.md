@@ -7,6 +7,7 @@ addresses or status claims do not override the current source and ABI.
 ## Start here
 
 - [Roadmap](ROADMAP.md) — accepted features, limits and next priorities
+- [Packed bitmap surfaces](GRAPHICS-PACKED-BITMAPS.md) — current #55: larger viewer pictures, storage prototype and integration gates
 - [Scheduled console applications](NATIVE-CONSOLE-APPS.md) — completed #52 / PR #53: foreground input, background jobs, native files and scheduled cat
 - [Writable root and file commands](ROADMAP.md#current-baseline) — merged baseline (#47 / PR #48)
 - [Create-only disk writes](STORAGE-0.3.md) — merged baseline (#44 / PR #45)

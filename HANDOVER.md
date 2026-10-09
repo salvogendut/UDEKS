@@ -6,7 +6,38 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — standalone CBM viewer, 2026-10-09
+## Current handoff — packed bitmap storage increment, 2026-10-09
+
+Viewer PR #54 is merged as `5a07408`. The user approved the packed-bitmap
+direction to support larger images. Issue #55, branch `graphics-packed-bitmaps`,
+worktree `build/packed-bitmap`; root main and its untracked PPM are untouched.
+Read [the feature plan](docs/GRAPHICS-PACKED-BITMAPS.md) before continuing.
+
+Implemented the private `bitmap_store.c` C core and its header, 12 host tests,
+and `make bitmap-store-check` (4,149 checks executing real 6502 instructions).
+It manages pending/committed image bytes in the existing-sized pool with
+eight-byte headers and ordered <=19-byte uploads. Failure is atomic; peers
+survive compaction; owner discard releases pending allocations. This is a
+testable storage core, NOT a published request API or installed service.
+
+The current bank-0 code layout cannot fit it: the compiled object contributes
+1,845 CODE + 22 BSS bytes before any adapter/renderer or extra libraries.
+GRAPHICSCODE is full, executable glyph slack is 3 bytes, helper slack 6, and
+ordinary resident gap 40. Do not count retired glyph metadata, boot staging,
+the scheduler tail or the C-stack guard as unowned RAM. Do not link partial
+changes into boot or expand advertised minors before placement is qualified.
+
+Next is a measured graphics-service code placement/reclaim increment, followed
+by authenticated UTRQ operations, bitmap rendering, lifecycle cleanup and the
+streaming viewer. All old length masks and renderer format checks must change
+together; the prototype's flags are explicitly unintegrated. There is no new
+VICE/1986/hardware picture result. `make boot graphics-apps-check` rebuilds
+byte-identical baseline D64/D71/D81; `make check` passes 1,661 tests. This is
+the storage-core checkpoint; do not merge yet. Reuse the retained store's pool helpers
+during integration, and allocate a new ABI minor rather than reusing 0.18
+(filesystem mutations) or 0.19 (service control).
+
+## Previous handoff — standalone CBM viewer, 2026-10-09
 
 PR #53 merged as `fe26bf1`, closing #52. Per user request, root local `main`
 was fast-forwarded to that commit, including all three published disk images;

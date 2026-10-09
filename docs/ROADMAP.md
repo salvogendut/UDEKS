@@ -13,6 +13,13 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
+**In progress — [#55, packed bitmap surfaces](https://github.com/salvogendut/UDEKS/issues/55):**
+make larger `xview` pictures practical within the existing 2,304-byte drawing
+pool. [Plan and gates](GRAPHICS-PACKED-BITMAPS.md). The private C storage core
+has host/6502 tests; it is not linked or advertised as an OS feature yet.
+Next: qualify service-code space, then integrate upload/render/cleanup and
+streaming `xview`. Full-screen backing storage and panning remain later work.
+
 **Completed application slice (2026-10-09):** standalone `xview`, developed on
 `app-cbm-viewer`. It reuses the `additional-apps` `.CBM` format/converter,
 validates small pictures before display, and supports normal move/close/uncover
