@@ -39,9 +39,9 @@ class DefaultServiceEvidence(unittest.TestCase):
         images = [(A/f'layout/udeks-8502{s}.bin').read_bytes() for s in ('','-panic-probe')]
         self.assertEqual(layouts(*maps,images),self.report('build.json')['variants'])
 
-    def test_published_files_boot_service_and_four_app_admission(self):
+    def test_archived_published_files_boot_service_and_four_app_admission(self):
         for fmt in ('d64','d71','d81'):
-            data = (ROOT/f'build/udeks.{fmt}').read_bytes()
+            data = (ROOT/f'bench/artifacts/2026-10-09-default-time-published/udeks.{fmt}').read_bytes()
             self.assertEqual(hashlib.sha256(data).hexdigest(),self.report('build.json')['disks'][fmt]['sha256'])
             files = disk_files(data,fmt)
             for name in ('SVC.BIN','TIME.SVC'):

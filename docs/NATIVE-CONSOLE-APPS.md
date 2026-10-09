@@ -1,6 +1,7 @@
 # Independently scheduled console applications
 
-Active: [issue #52](https://github.com/salvogendut/UDEKS/issues/52), branch
+Completed and merge-authorized: [issue #52](https://github.com/salvogendut/UDEKS/issues/52),
+[PR #53](https://github.com/salvogendut/UDEKS/pull/53), branch
 `tasking-native-console`, worktree `build/native-console`, 2026-10-09.
 This advances the saved proposal after PR #51 (`15eddb4`).
 The [roadmap](ROADMAP.md) remains the priority list.
@@ -18,9 +19,10 @@ name tables. Preserve synchronous utility loading and recovery during migration.
    task-based Ctrl+C, foreground stdin, EIO rejection of background reads,
    argument-bearing `&` and prompt-safe background output. Cancellation releases
    resources and restores the prompt without requiring a window or disturbing peers.
-3. **Migration/qualification — implemented, acceptance pending:** convert `cat`, handle
+3. **Migration/qualification — implemented, merge approved:** convert `cat`, handle
    shared filesystem ownership, prove failure cleanup/reuse and mixed app
-   operation in VICE, 1986 and a user hardware checklist.
+   operation in VICE and 1986. A user hardware checklist is supplied; merge
+   approval does not constitute a new physical-C128 test report.
 
 Preemption, pipes, redirection and scripting are separate work. Native and
 synchronous SDKs support file I/O. Cooperative code must sleep/yield;
@@ -86,10 +88,12 @@ foreign-handle denial and deliberately leaked READ/WRITE handles on real
 EXIT/CANCEL, including persisted binary bytes. Test flags only release the
 clients; no owner, request, result or scheduler state is patched. The native
 1986 disk-service harness checks CAT success/missing-file status beside a clock,
-with actual keyboard and 1351 drag input. Physical C128/Pi1541 acceptance is
-still requested; published PR #51 downloads are unchanged.
+with actual keyboard and 1351 drag input. The user authorized finishing and
+merging the feature; fresh physical C128/Pi1541 acceptance remains unreported.
+Published downloads now match the exact normal images in the
+[final evidence record](../bench/results/2026-10-09-native-console-files/README.md).
 
-## Current checkpoint: arguments and completion
+## Earlier checkpoint: arguments and completion
 
 The SDK copies counted fd 1/2 output through UTRQ WRITE at `$FF16`, not through
 bank-0 pointer veneers. Each task has private cc65 runtime, BSS, C stack and
@@ -115,7 +119,8 @@ BSS. Both fit all four ordinary allocations, shared with graphical tasks.
 The user accepted no-argument checkpoint `f56eb32` (platform unspecified).
 Its [evidence](../bench/results/2026-10-09-native-console/README.md) remains
 unchanged. Current [argument evidence](../bench/results/2026-10-09-native-console-arguments/README.md)
-is separate. Published download snapshots still represent PR #51.
+is separate. At that checkpoint the downloads still represented PR #51;
+those exact inputs are now archived for historical evidence tests.
 
 ## Ctrl+C checkpoint: parent-owned cancellation
 

@@ -13,9 +13,10 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
-**Active feature (2026-10-09):**
+**Completed feature, merge approved (2026-10-09):**
 [#52 — independently scheduled console programs](https://github.com/salvogendut/UDEKS/issues/52),
-branch `tasking-native-console`, worktree `build/native-console`.
+[PR #53](https://github.com/salvogendut/UDEKS/pull/53), branch
+`tasking-native-console`, worktree `build/native-console`.
 The [three-increment plan](NATIVE-CONSOLE-APPS.md) covers native arguments/output/
 exit, then terminal ownership/jobs, then utility migration. **Increment 1 is
 implemented:** independent C tasks receive private arguments and stdout/stderr,
@@ -27,15 +28,16 @@ The user also accepted the argument/status and foreground-input checkpoints.
 task-based Ctrl+C, canonical foreground stdin, background-read `EIO`,
 argument-bearing `&`, and output that preserves the active input line.
 Its manual check is `ticker Alpha &` while editing a command or using ASK.
-**Increment 3 is implemented, awaiting user acceptance:** native SDK file
+**Increment 3 is implemented and merge-authorized:** native SDK file
 OPEN/READ/WRITE/CLOSE uses existing task-generation ownership and EXIT/CANCEL
 cleanup. Normal disk images ship a scheduled `cat`; graphical peers continue
 between its bounded chunks. One shared filesystem stream remains the limit,
 and other utilities remain synchronous. Test CAT alongside clock/wave, missing
 files, Ctrl+C and subsequent reuse. VICE D64/D81, native 1986 and 1,616 host
-tests pass; the user C128/Pi1541 gate is next. After acceptance,
-close out #52 rather than extending
-this increment into general allocation or a filesystem redesign.
+tests pass. The user authorized finishing and merging; no new C128/Pi1541
+result is inferred. Published images are refreshed to this exact qualified
+build. Close out #52 rather than extending this increment into general
+allocation or a filesystem redesign.
 This is bounded cooperative task support, not full POSIX console job control.
 
 **Completed architectural feature (2026-10-09):**
@@ -58,8 +60,10 @@ The user authorized merge after these automated gates. No new physical-C128
 test is inferred. This is one provisional fixed slot, not an arbitrary module
 allocator or daemon framework.
 
-**Next architectural work:** milestone 3's remaining task/service boundaries,
-starting with #52 above. Preserve the measured allocation/stack bounds while
+**Next architectural work (proposed):** a bounded message/handle IPC slice
+under milestone 3: two independently loaded programs exchange requests and
+replies, with endpoint ownership and cleanup when either exits or is cancelled.
+Open a separate issue/branch when authorized. Preserve allocation/stack bounds while
 adding features; the background-output slice has 40 resident bytes free.
 General task allocation, message/handle IPC and further service extraction remain open;
 preemption, scripting and app-specific optimization are separate work. Do not
@@ -107,7 +111,7 @@ hardware test. Track the periodic-NMI loader failure separately before claiming
 that stress qualification. Cross-device copy, overwrite, directories, wildcards
 and recursive deletion stay outside this slice.
 
-The next architectural feature is now active as #52 above; #49 is complete.
+The console milestone #52 is complete above; #49 is also complete.
 
 **Accepted checkpoint (2026-10-08):** the [sprite editor](XSPRDEF.md) now has
 fast pixel updates, confirmed whole-bank Save/Load (`SPRITES.SPR`), stock-BASIC
@@ -272,23 +276,24 @@ mounts or applications must not require rebuilding the kernel.
 | Kernel and tasking | Cooperative root/command tasks plus four native banked allocations; general allocation, IPC and preemption due. |
 | Z80 secondary engine | Bounded task-safe worker API and cached wave computation work; broader operations and soak tests due. |
 | Graphics and input | Four generic native slots, migrated disk clients, dynamic names, foreground/background launch, targeted Ctrl+C and name-based stop accepted for merge (#35/PR #37). No new physical-platform result inferred. Repaint latency and focused-window keyboard input are separate work. |
-| Storage and applications | Disk shell/RC, four generic graphical slots, writable root and cp/mv/rm; first disk-loaded service (TIME.SVC) now normal boot (#49). Further service extraction and independently scheduled console programs remain open. General scripting deferred (#27). |
+| Storage and applications | Disk shell/RC, generic graphical and native console tasks (#52), writable root and cp/mv/rm; disk-loaded TIME.SVC (#49). Further service extraction and migration of remaining synchronous utilities are open. General scripting deferred (#27). |
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
 
-### Active: independently scheduled console programs (#52)
+### Completed: independently scheduled console programs (#52 / PR #53)
 
-1. Complete native C execution with private arguments, stdout/stderr and exit
-   status while graphics/input continue. The no-argument execution proof is
-   implemented; argument storage and completion delivery remain open.
-2. Implement foreground terminal ownership, task-based Ctrl+C and safe `&`
-   console jobs. Keep background tasks from consuming the shell's input.
-3. Migrate a small utility group and qualify failures, cleanup, slot reuse and
-   mixed workloads. Preserve synchronous utilities and boot/recovery throughout.
+1. **Done:** native C execution with private arguments, stdout/stderr and exit
+   status while graphics/input continue.
+2. **Done:** foreground terminal ownership, task-based Ctrl+C and bounded `&`
+   console jobs. Background tasks cannot consume the shell's input.
+3. **Done:** native file SDK and scheduled `cat`; qualify failures, cleanup,
+   slot reuse and mixed workloads while retaining legacy utilities/recovery.
 
 See the [scope, measured memory limits and runnable checkpoint](NATIVE-CONSOLE-APPS.md).
 This uses the shared native pool, not additional slots or a new scheduler.
+User merge approval is recorded; fresh physical-C128 confirmation remains
+unreported. Bounded IPC above is the next proposed feature, not another #52 slice.
 
 ### Completed: Storage 0.3 — create-only disk writes (#44 / PR #45)
 

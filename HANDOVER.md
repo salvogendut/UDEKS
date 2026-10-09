@@ -11,9 +11,11 @@ feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 Issue #52, branch `tasking-native-console`, worktree `build/native-console`.
 The accepted background-console slice is committed/pushed as `a1a3c27`.
 The user requested increment 3's file SDK, cleanup and utility migration.
-The user requested commit/push after delivery; no merge or new hardware
-acceptance was reported.
-Root main's unrelated notes and published PR #51 downloads remain untouched.
+The file increment is committed/pushed as `ca0b436`. The user then explicitly
+authorized finishing and merging through PR #53; no new hardware result was
+reported. The release update publishes the exact qualified normal disks and
+archives the previous PR #51 downloads for historical tests. Root main's
+unrelated notes remain untouched; do not overwrite that dirty worktree.
 
 Implementation:
 
@@ -72,9 +74,11 @@ Start `xclock &`, `xwave &`; test `cat /hello`, `cat /etc/rc`, `cat /nofile`
 and `echo $?` (1). On a candidate, interrupt `cat /long`, check 130, then read
 `/hello` again and drag both windows. Physical C128/Pi1541 acceptance pending.
 
-**Next:** user acceptance, then PR/review and close out #52 when
-authorized. Do not extend this increment into general allocation, pipes,
-scripting, multi-open filesystems or app-specific performance work.
+**Closeout:** PR #53 carries the completed milestone and refreshed downloads,
+with `Closes #52`. Verify its merge state before starting a follow-up. Bounded
+message/handle IPC is the recommended next issue, only when the user requests
+it. Do not extend #52 into general allocation, pipes, scripting, multi-open
+filesystems or app-specific performance work.
 
 ## Previous handoff — background console arguments/output, 2026-10-09
 

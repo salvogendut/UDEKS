@@ -24,7 +24,7 @@ class NativeConsoleEvidence(unittest.TestCase):
         baseline=json.loads((A.parent/'2026-10-09-default-time/build.json').read_text())
         for fmt in ('d64','d81'):
             report=json.loads((A/fmt/'report.json').read_text())
-            original=(ROOT/f'build/udeks.{fmt}').read_bytes()
+            original=(ROOT/f'bench/artifacts/2026-10-09-default-time-published/udeks.{fmt}').read_bytes()
             self.assertEqual(hashlib.sha256(original).hexdigest(),report['source_disk_sha256'])
             self.assertEqual(report['source_disk_sha256'],baseline['disks'][fmt]['sha256'])
             fixture=add_apps(original,[('TICKER.BIN',program),('PULSE.BIN',program)])

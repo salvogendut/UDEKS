@@ -5,16 +5,25 @@
 - [udeks.d81](udeks.d81?raw=true) — 1581-compatible image, 819,200 bytes
 - [SHA256SUMS](SHA256SUMS) — verify with `cd build && sha256sum -c SHA256SUMS`
 
-Published 2026-10-09 from the `services-0.1-default-boot` completion of issue #49,
-based on PR #50 (`9eda8ba06a2a5965c9d5ad14943838d10c2e30cf`). The
-[qualification record](../bench/results/2026-10-09-default-time/README.md) preserves
-the exact input manifest, disk hashes, normal/panic layout, clean/upgrade parity,
-VICE results and native 1986 input test. These are normal `make boot` outputs,
-not the earlier opt-in experiment. This remains an experimental build, not a
-stable release; there is no new physical-C128 acceptance claim.
+Published 2026-10-09 from `tasking-native-console` source `ca0b436`, completing
+issue #52 through [PR #53](https://github.com/salvogendut/UDEKS/pull/53).
+The [qualification record](../bench/results/2026-10-09-native-console-files/README.md)
+preserves these exact normal `make boot` images, maps, VICE D64/D81 checks and
+native 1986 keyboard/mouse regressions. Publication changes documentation and
+historical-test bindings, not the qualified executable bytes. The user approved
+merge; no new physical-C128/Pi1541 result is inferred.
+This is an experimental build, not a stable release.
+
+The previous PR #51 downloads are
+[archived unchanged](../bench/artifacts/2026-10-09-default-time-published/README.md)
+for their original qualification and the initial native-console proof.
 
 Includes writable root, cp/mv/rm, four generic graphical slots, and disk-loaded
-timekeeping. D64 omits only `xsprdef` (19 free blocks); D71/D81 include it.
+timekeeping, foreground native console input/Ctrl+C, bounded background jobs,
+task-owned file I/O and scheduled CAT.BIN. D64 omits only `xsprdef` (16 free
+blocks); D71/D81 include it. Console and graphical tasks share four compatible
+allocations, and only one file stream may be open system-wide. Start graphical
+peers before a long file read. Other shipped console utilities remain synchronous.
 
 Select the disk on device 8, use native C128 mode and the 80-column display,
 then type `BOOT` if it did not autoboot. Pi1541 users should use the D64.

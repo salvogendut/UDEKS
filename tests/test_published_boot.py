@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Keep downloadable snapshots reproducible and separate from local builds."""
 import hashlib
-import json
 from pathlib import Path
 import re
 import shutil
@@ -11,7 +10,7 @@ import unittest
 from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
-ACCEPTED = ROOT/'bench/results/2026-10-09-default-time'
+ACCEPTED = ROOT/'bench/results/2026-10-09-native-console-files/build'
 
 
 class PublishedBoot(unittest.TestCase):
@@ -26,8 +25,7 @@ class PublishedBoot(unittest.TestCase):
             seen.add(name)
             disk = (ROOT/'build'/name).read_bytes()
             self.assertEqual(hashlib.sha256(disk).hexdigest(), expected)
-            accepted = json.loads((ACCEPTED/'build.json').read_text())
-            self.assertEqual(expected,accepted['disks'][name.rsplit('.',1)[1]]['sha256'])
+            self.assertEqual(disk,(ACCEPTED/name).read_bytes())
             self.assertEqual(len(disk), {'udeks.d64': 174848, 'udeks.d71': 349696,
                                          'udeks.d81': 819200}[name])
 
