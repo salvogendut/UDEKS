@@ -8,11 +8,18 @@ sys.path.insert(0,str(ROOT/'tools'))
 from native_app_layout import ALLOCATIONS, JOINED_ALLOCATION, fitting_allocations
 from graphics_app_layout import graphics_lifetimes, Region, disjoint
 from native_capacity_probe import fixture, fixtures
-from build_graphical_example import check_native_capacity
+from build_graphical_example import check_native_capacity, check_required_slots
 from build_d71 import validate_native_app
 
 
 class NativeCapacity(unittest.TestCase):
+    def test_required_ordinary_slots_reject_join_only_and_runtime_overflow(self):
+        check_required_slots(fixture(3840),[3,5])
+        check_required_slots(fixture(32,3808),[3,5])
+        for image in (fixture(3841),fixture(32,3809),fixture(5000)):
+            with self.assertRaisesRegex(ValueError,'required ordinary slot'):
+                check_required_slots(image,[3,5])
+
     def test_join_is_exact_union_without_new_cpu_pages(self):
         task,base,limit,stack,zp,hp=JOINED_ALLOCATION
         self.assertEqual((task,base,zp,hp),(3,ALLOCATIONS[0][1],*ALLOCATIONS[0][4:]))

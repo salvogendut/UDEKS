@@ -6,7 +6,84 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — native file SDK and scheduled CAT, 2026-10-09
+## Current handoff — standalone CBM viewer, 2026-10-09
+
+PR #53 merged as `fe26bf1`, closing #52. Per user request, root local `main`
+was fast-forwarded to that commit, including all three published disk images;
+their checksums pass. Its four old local planning documents are preserved at
+`2755b45` on `archive/local-console-plan-2026-10-09`. Other experimental worktrees
+and the existing stash were not changed. Root `PICS/alex.png` is a subsequent
+user addition; keep it. A byte-identical copy lives on this feature branch.
+
+New branch/worktree: `app-cbm-viewer` / `build/cbm-viewer`, from current main.
+Only the `.CBM` converter/format/tests from `additional-apps` (`6b61f5c`) were
+carried forward; there was no target viewer in that experiment. The first
+viewer now uses the merged native argument/file/graphics gates with no kernel,
+ABI or app-name registration change. The user agreed to small pictures first.
+
+`xview /alex.cbm &` loads and validates, closes the stream, then opens a fixed,
+movable/closable window. Foreground Ctrl+C cancels load/display. Pixel-exact
+tiles cover pictures up to 240x175 and 160 nonblank 8x5 tiles; over-limit input
+fails rather than truncating. Repaint uses the service-owned retained image,
+not another file read. The original 4,581-byte executable needed joined slots
+3/4; the follow-up fixes that without kernel changes. It uses the existing
+small graphics/file veneer, task-private UARG entry, static nonrecursive C
+locals and row-streamed tile construction instead of linking unused console
+input/runtime code. Current file: **3,184 bytes; 2,442 image + 1,385 BSS = 3,827**.
+`make xview` enforces ordinary slots **3 and 5**. Two launches have independent
+arguments, filename titles (8 characters), code, data and window ownership.
+The 2,304-byte shared retained pool remains a separate limit: ALEX (1,144) +
+CLOCKWORK (1,152) fit together, but either plus clock + wave does not. No
+allocator/kernel/ABI change or new large-app capacity is claimed.
+
+`PICS/ALEX.CBM` is an 88x63 dithered conversion of the user's 101x72 PNG.
+The added `PICS/clockwork.png` (1020x612) is converted to `CLOCKWORK.CBM` at
+96x58 with the same shading method. New `PICS/alex2.jpg` (794x869) becomes
+56x61 `ALEX2.CBM`, small enough for clock + wave alongside it. All originals
+and the two earlier conversions remain unchanged.
+Current candidates: **`build/xview/udeks-pictures-r3.d71` and `.d81`**, containing
+all three pictures and the reduced viewer. Earlier demo disks are preserved
+but obsolete for this fix. Two viewers can coexist; use close boxes or
+foreground Ctrl+C to select an instance (`xview -q` stops one matching name).
+The published root disk images remain the accepted main build, without XVIEW.
+Normal D64 is too full for the extra viewer/photo; no existing app was removed.
+The add-app packer now uses the already-supported second-side allocation for
+D71; it previously defaulted to first-side-only despite ample second-side space.
+Both packers reject collisions and only write new output images.
+
+Host tests execute the target C viewer against a fake graphics/file veneer.
+They cover exact pixels/odd dimensions, short reads, malformed length and
+padding, density limits, busy presentation retries, file/display errors and
+cleanup. `tools/xview_probe.py` checks cold boot, console errors, exact VIC
+pixels, drag/uncover with a clock, foreground/load cancellation, stream reuse,
+and code/stack guards on disposable VICE D71/D81 disks. The expanded probe
+also checks fully presented viewer + clock + wave, two different pictures in
+ordinary slots 5/3, rejection of a third without damage, and independent
+close/cancel/reuse. Pointer hooks exercise
+the WM, not physical 1351 input. No automated 1986 or real-C128 viewer
+qualification was performed for this slice.
+The prior full host suite passed 1,640 tests and all historical checksums. Fresh
+normal D64/D71/D81 builds remain byte-identical to main's published images.
+VICE ALEX (1571/1581) and CLOCKWORK (1581) runs pass completely; selected
+artifacts and reports are preserved in `bench/results/2026-10-09-cbm-viewer`
+(historical joined-slot image, not the current candidate).
+The reduced-viewer follow-up passes the expanded VICE 1571/1581 probes,
+including actual three-app drawing publication and independent viewer
+instances. `make check` passes **1,649 tests**, `graphics-apps-check` passes,
+rebuilt normal D71/D81 remain byte-identical, and no VICE sessions remain.
+Exact program, source/probe snapshots, maps, pixel captures and
+reports are in `bench/results/2026-10-09-cbm-viewer-r2`. Candidate disk hashes:
+`6e7bca86...c555f8` (D71), `1e92b1c5...22790f` (D81). The evidence regression
+reconstructs both from the accepted main images and current demo files.
+The user supplied `screenshot/1986_1791552676.ppm` showing the viewer, clock
+and wave together, and authorized merge. README now embeds its pixel-identical
+PNG conversion, `screenshot/udeks-xview-desktop.png`; the original PPM remains
+untouched in the root worktree. This is user visual evidence, not an automated
+1986 regression or a new hardware qualification. Build with container
+`make xview`; see `abi/cbm.md`. The normal published boot downloads remain
+unchanged; the guide packages the independent viewer onto separate demo disks.
+
+## Previous handoff — native file SDK and scheduled CAT, 2026-10-09
 
 Issue #52, branch `tasking-native-console`, worktree `build/native-console`.
 The accepted background-console slice is committed/pushed as `a1a3c27`.

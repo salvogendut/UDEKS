@@ -2486,7 +2486,15 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--bootfs-request-service $(BOOTFS_REQUEST_SERVICE_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
+xview:
+	$(PYTHON) tools/build_graphical_example.py --source user/bin/xview.c --name XVIEW \
+		--arguments --graphics-abi 14 --static-locals --require-slot 3 --require-slot 5 \
+		--output $(BUILD_DIR)/xview --export _xview_commands --export _xview_count --export _xview_ready
+.PHONY: xview
+
 check:
+	$(PYTHON) -m py_compile tools/png_to_cbm.py tools/add_cbm_viewer.py tools/xview_probe.py
+	cd bench/results/2026-10-09-cbm-viewer && sha256sum -c SHA256SUMS
 	$(PYTHON) -m py_compile tools/build_native_console.py tools/native_console_probe.py tools/check_console_parser.py tools/native_console_cancel_probe.py
 	$(PYTHON) -m py_compile tools/native_console_input_probe.py tools/check_console_input.py tools/native_console_jobs_probe.py
 	$(PYTHON) -m py_compile tools/native_console_file_probe.py

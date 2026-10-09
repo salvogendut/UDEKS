@@ -13,7 +13,20 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
-**Completed feature, merge approved (2026-10-09):**
+**Completed application slice (2026-10-09):** standalone `xview`, developed on
+`app-cbm-viewer`. It reuses the `additional-apps` `.CBM` format/converter,
+validates small pictures before display, and supports normal move/close/uncover
+without disk rereads or kernel changes. The user
+supplied three pictures for the demo. The viewer fits either larger ordinary
+slot and supports independent instances; shared display memory still limits
+combinations. VICE D71/D81 qualification and 1,649 host tests pass; the user
+supplied a 1986 desktop screenshot and authorized merge. See
+[format, bounds and demo](../abi/cbm.md). The viewer remains a separately
+packaged app/demo, not an addition to the normal published boot downloads.
+IPC remains the next proposed architectural milestone; this app is a bounded
+demonstration of the merged generic-app/file SDK, not a graphics-service rewrite.
+
+**Completed and merged (2026-10-09, `fe26bf1`):**
 [#52 — independently scheduled console programs](https://github.com/salvogendut/UDEKS/issues/52),
 [PR #53](https://github.com/salvogendut/UDEKS/pull/53), branch
 `tasking-native-console`, worktree `build/native-console`.
@@ -36,8 +49,8 @@ and other utilities remain synchronous. Test CAT alongside clock/wave, missing
 files, Ctrl+C and subsequent reuse. VICE D64/D81, native 1986 and 1,616 host
 tests pass. The user authorized finishing and merging; no new C128/Pi1541
 result is inferred. Published images are refreshed to this exact qualified
-build. Close out #52 rather than extending this increment into general
-allocation or a filesystem redesign.
+build. PR #53 is merged and #52 closed; do not extend the completed increment
+into general allocation or a filesystem redesign.
 This is bounded cooperative task support, not full POSIX console job control.
 
 **Completed architectural feature (2026-10-09):**

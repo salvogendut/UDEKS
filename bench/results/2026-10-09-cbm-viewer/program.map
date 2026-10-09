@@ -1,0 +1,406 @@
+Modules list:
+-------------
+entry.o:
+    CODE              Offs=000000  Size=000003  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000027  Align=00001  Fill=0000
+program.o:
+    CODE              Offs=000003  Size=000607  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=0000C2  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=00059B  Align=00001  Fill=0000
+/var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.lib(runtime.o):
+    CODE              Offs=00060A  Size=000311  Align=00001  Fill=0000
+    BSS               Offs=00059B  Size=000002  Align=00001  Fill=0000
+/var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.lib(input.o):
+    CODE              Offs=00091B  Size=000176  Align=00001  Fill=0000
+/var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.lib(files.o):
+    CODE              Offs=000A91  Size=000141  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=000BD2  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000BE3  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax3.o):
+    CODE              Offs=000BF1  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decax1.o):
+    CODE              Offs=000BFF  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=000C06  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=000C0F  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=000C1C  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax3.o):
+    CODE              Offs=000C4A  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax7.o):
+    CODE              Offs=000C4F  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=000C54  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000C5F  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000C66  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=000C7C  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000C81  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=000C86  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=000C8B  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=000C90  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(leaaxsp.o):
+    CODE              Offs=000C99  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(memcmp.o):
+    CODE              Offs=000CA5  Size=000036  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=000CDB  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(or.o):
+    CODE              Offs=000D15  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000D27  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000D35  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000D4B  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushw.o):
+    CODE              Offs=000D65  Size=00000F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=000D74  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(return0.o):
+    CODE              Offs=000D90  Size=000004  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shr.o):
+    CODE              Offs=000D94  Size=000034  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax3.o):
+    CODE              Offs=000DC8  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000DD6  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=000DEC  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=000DF7  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               001000  001026  000027  00001
+CODE                  001027  001E2A  000E04  00001
+RODATA                001E2B  001EEC  0000C2  00001
+BSS                   001EED  002489  00059D  00001
+
+
+Exports list by name:
+---------------------
+_memcmp                   001CCC RLA    _udeks_close              001BB5 RLA    
+_udeks_errno              002488 RLA    _udeks_native_console_gate 001027 RLA    
+_udeks_native_console_record 00F359 REA    _udeks_native_failure     00181D RLA    
+_udeks_native_request     001922 RLA    _udeks_native_request_version 00182E RLA    
+_udeks_open               001AB8 RLA    _udeks_program_entry      001000 RLA    
+_udeks_program_main       00102A RLA    _udeks_read               001942 RLA    
+_udeks_sleep              0017C2 RLA    _udeks_write              001659 RLA    
+_udeks_write_byte         001631 RLA    _xview_commands           001EED RLA    
+_xview_count              0023ED RLA    _xview_ready              0023F0 RLA    
+addeqysp                  001BFB RLA    addysp                    001C0B RLA    
+addysp1                   001C0A RLA    aslax3                    001C18 RLA    
+decax1                    001C26 RLA    decsp1                    001C2D RLA    
+decsp2                    001C36 RLA    incax3                    001C71 RLA    
+incax7                    001C76 RLA    incaxy                    001C7D RLA    
+incsp1                    001C86 RLA    incsp2                    001C95 RLA    
+incsp3                    001CA3 RLA    incsp4                    001CA8 RLA    
+incsp5                    001CAD RLA    incsp6                    001CB2 RLA    
+ldax0sp                   001CB7 RLA    ldaxysp                   001CB9 RLA    
+leaa0sp                   001CC0 RLA    popax                     001C8D RLA    
+popptr1                   001D4E RLA    ptr1                      00000A RLZ    
+ptr2                      00000C RLZ    ptr3                      00000E RLZ    
+ptr4                      000010 RLZ    pusha                     001D60 RLA    
+pusha0                    001D74 RLA    pushax                    001D76 RLA    
+pushwidx                  001D8E RLA    pushwysp                  001D9D RLA    
+return0                   001DB7 RLA    shrax3                    001DEF RLA    
+shraxy                    001DC2 RLA    sp                        000002 RLZ    
+sreg                      000004 RLZ    staspidx                  001DFD RLA    
+stax0sp                   001E13 RLA    staxysp                   001E15 RLA    
+subysp                    001E1E RLA    tmp1                      000012 RLZ    
+tosicmp0                  001C43 RLA    tosmula0                  001D02 RLA    
+tosora0                   001D3C RLA    
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+ptr1                      00000A RLZ    ptr2                      00000C RLZ    
+ptr3                      00000E RLZ    ptr4                      000010 RLZ    
+tmp1                      000012 RLZ    _udeks_program_entry      001000 RLA    
+_udeks_native_console_gate 001027 RLA    _udeks_program_main       00102A RLA    
+_udeks_write_byte         001631 RLA    _udeks_write              001659 RLA    
+_udeks_sleep              0017C2 RLA    _udeks_native_failure     00181D RLA    
+_udeks_native_request_version 00182E RLA    _udeks_native_request     001922 RLA    
+_udeks_read               001942 RLA    _udeks_open               001AB8 RLA    
+_udeks_close              001BB5 RLA    addeqysp                  001BFB RLA    
+addysp1                   001C0A RLA    addysp                    001C0B RLA    
+aslax3                    001C18 RLA    decax1                    001C26 RLA    
+decsp1                    001C2D RLA    decsp2                    001C36 RLA    
+tosicmp0                  001C43 RLA    incax3                    001C71 RLA    
+incax7                    001C76 RLA    incaxy                    001C7D RLA    
+incsp1                    001C86 RLA    popax                     001C8D RLA    
+incsp2                    001C95 RLA    incsp3                    001CA3 RLA    
+incsp4                    001CA8 RLA    incsp5                    001CAD RLA    
+incsp6                    001CB2 RLA    ldax0sp                   001CB7 RLA    
+ldaxysp                   001CB9 RLA    leaa0sp                   001CC0 RLA    
+_memcmp                   001CCC RLA    tosmula0                  001D02 RLA    
+tosora0                   001D3C RLA    popptr1                   001D4E RLA    
+pusha                     001D60 RLA    pusha0                    001D74 RLA    
+pushax                    001D76 RLA    pushwidx                  001D8E RLA    
+pushwysp                  001D9D RLA    return0                   001DB7 RLA    
+shraxy                    001DC2 RLA    shrax3                    001DEF RLA    
+staspidx                  001DFD RLA    stax0sp                   001E13 RLA    
+staxysp                   001E15 RLA    subysp                    001E1E RLA    
+_xview_commands           001EED RLA    _xview_count              0023ED RLA    
+_xview_ready              0023F0 RLA    _udeks_errno              002488 RLA    
+_udeks_native_console_record 00F359 REA    
+
+
+Imports list:
+-------------
+_memcmp (memcmp.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(13)
+_udeks_close (files.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(20)
+_udeks_errno (runtime.o):
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(13)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(15)
+_udeks_native_console_gate (entry.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(19)
+_udeks_native_console_record (entry.o):
+    files.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/files.s(15)
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(16)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(18)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(23)
+_udeks_native_failure (runtime.o):
+    files.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/files.s(18)
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(18)
+_udeks_native_request (runtime.o):
+    files.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/files.s(16)
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(17)
+_udeks_native_request_version (runtime.o):
+    files.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/files.s(17)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(29)
+_udeks_open (files.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(19)
+_udeks_program_entry (entry.o):
+    [linker generated]       
+_udeks_program_main (program.o):
+    entry.o                   user/lib/native_console_entry.s(8)
+_udeks_read (input.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(18)
+_udeks_sleep (runtime.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(22)
+_udeks_write (runtime.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(17)
+_udeks_write_byte (runtime.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(16)
+_xview_commands (program.o):
+    [linker generated]       
+_xview_count (program.o):
+    [linker generated]       
+_xview_ready (program.o):
+    [linker generated]       
+addeqysp (addeqsp.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+addysp (addysp.o):
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+addysp1 (addysp.o):
+    or.o                      runtime/or.s(9)
+aslax3 (aslax3.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+decax1 (decax1.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+decsp1 (decsp1.o):
+    files.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/files.s(195)
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(222)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+decsp2 (decsp2.o):
+    files.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/files.s(195)
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(222)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+incax3 (incax3.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+incax7 (incax7.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+incaxy (incaxy.o):
+    incax7.o                  runtime/incax7.s(8)
+    incax3.o                  runtime/incax3.s(8)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+incsp1 (incsp1.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+    files.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/files.s(195)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+incsp3 (incsp3.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+incsp4 (incsp4.o):
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(222)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+incsp5 (incsp5.o):
+    files.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/files.s(195)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+incsp6 (incsp6.o):
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(222)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+ldax0sp (ldaxsp.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+ldaxysp (ldaxsp.o):
+    files.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/files.s(195)
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(222)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+leaa0sp (leaaxsp.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+popax (incsp2.o):
+    shr.o                     runtime/shr.s(15)
+    memcmp.o                  common/memcmp.s(8)
+popptr1 (popptr1.o):
+    mul8.o                    runtime/mul8.s(9)
+    memcmp.o                  common/memcmp.s(8)
+ptr1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    pushw.o                   runtime/pushw.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    memcmp.o                  common/memcmp.s(9)
+    files.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/files.s(11)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(11)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(11)
+ptr2 (zeropage.o):
+    memcmp.o                  common/memcmp.s(9)
+ptr3 (zeropage.o):
+    memcmp.o                  common/memcmp.s(9)
+ptr4 (zeropage.o):
+    mul8.o                    runtime/mul8.s(10)
+pusha (pusha.o):
+    files.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/files.s(195)
+    files.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/files.s(195)
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(222)
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(222)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    entry.o                   user/lib/native_console_entry.s(8)
+pusha0 (pushax.o):
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(222)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+pushax (pushax.o):
+    pushw.o                   runtime/pushw.s(8)
+    files.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/files.s(195)
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(222)
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(222)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+pushwidx (pushw.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+pushwysp (pushwsp.o):
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+return0 (return0.o):
+    memcmp.o                  common/memcmp.s(8)
+shrax3 (shrax3.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+shraxy (shr.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+sp (zeropage.o):
+    subysp.o                  runtime/subysp.s(9)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    or.o                      runtime/or.s(10)
+    leaaxsp.o                 runtime/leaaxsp.s(8)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    files.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/files.s(10)
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(10)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(10)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(10)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+staspidx (staspidx.o):
+    files.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/files.s(195)
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(222)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(472)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+stax0sp (staxsp.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+staxysp (staxsp.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+subysp (subysp.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    shrax3.o                  runtime/shrax3.s(8)
+    shr.o                     runtime/shr.s(16)
+    or.o                      runtime/or.s(10)
+    incaxy.o                  runtime/incaxy.s(8)
+    aslax3.o                  runtime/aslax3.s(8)
+    runtime.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/runtime.s(11)
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(11)
+tosicmp0 (icmp.o):
+    input.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/input.s(222)
+tosmula0 (mul8.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+tosora0 (or.o):
+    program.o                 /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/program.s(878)
+

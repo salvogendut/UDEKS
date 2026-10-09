@@ -21,6 +21,10 @@ def check_native_capacity(image):
     if not fitting_allocations(image) and not fitting_allocations(image,joined=True):
         raise ValueError('executable exceeds native capacity (7168 image+BSS / 7424 file bytes) or is invalid')
 
+def check_required_slots(image,slots):
+    if any(slot not in fitting_allocations(image) for slot in slots):
+        raise ValueError('executable does not fit every required ordinary slot')
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, default=ROOT/'build/generic-apps/example')
@@ -31,6 +35,10 @@ def main():
                         help='minimum request ABI; 10 resize, 11 worker calls, 12 retained paths, 13 bitmap tiles, 14 file I/O, 15 delta present, 16 PRG create, 17 held input')
     parser.add_argument('--static-locals', action='store_true',
                         help='cc65 private static locals; only for nonrecursive programs')
+    parser.add_argument('--arguments',action='store_true',
+                        help='enter udeks_program_main(argc,argv) using task-private UARG')
+    parser.add_argument('--require-slot',type=int,choices=(3,4,5,6),action='append',default=[],
+                        help='require a fit in this ordinary allocation (repeatable)')
     parser.add_argument('--capacity',type=int,help='require both file and image+BSS to fit this many bytes')
     parser.add_argument('--export', action='append', default=[], dest='exports',
                         help='additional linker symbol to retain in the map')
@@ -53,11 +61,11 @@ def main():
             '-I','include','-I','user/include',
             '-o',str(out/(label+'.s')),str(source.resolve()))
     objects=[]
-    for name,path in (('entry','user/lib/native_graphics_entry.s'),
+    for name,path in (('entry','user/lib/native_console_entry.s' if args.arguments else 'user/lib/native_graphics_entry.s'),
                       ('request','user/lib/graphics_request.s'),
                       *((label,out/(label+'.s')) for label in labels)):
         obj=out/(name+'.o'); objects.append(str(obj))
-        run('ca65','--cpu','6502','-D','UDEKS_GFX_ABI='+str(args.graphics_abi),
+        run('ca65','--cpu','6502','-I','src/8502','-D','UDEKS_GFX_ABI='+str(args.graphics_abi),
             '-o',str(obj),str(path))
     stem=labels[0]
     options=[option for symbol in dict.fromkeys(exports) for option in ('-u',symbol)]
@@ -66,6 +74,7 @@ def main():
     entry=map_exports((out/(stem+'.map')).read_text())['_udeks_program_entry'][0]
     image=pack_o65((out/(stem+'.o65')).read_bytes(), entry)
     check_native_capacity(image)
+    check_required_slots(image,args.require_slot)
     check_capacity(image,args.capacity)
     filename=args.name.upper()+'.BIN'
     (out/filename).write_bytes(image)
