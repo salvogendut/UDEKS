@@ -14,9 +14,9 @@ name tables. Preserve synchronous utility loading and recovery during migration.
 1. **Native execution — implemented:** independent C runtime, private arguments,
    stdout/stderr, exit status, no implicit window or VIC startup. Arguments
    survive sleeps while clock updates/input continue, then ush gets the result.
-2. **Terminal ownership/jobs — in progress:** task-based Ctrl+C is implemented;
-   next are foreground stdin, argument-bearing `&`, prompt-safe output and rejection/suspension of
-   background reads. Cancellation must release resources and restore the
+2. **Terminal ownership/jobs — in progress:** task-based Ctrl+C, foreground
+   stdin and EIO rejection of background reads are implemented. Next are
+   argument-bearing `&` and prompt-safe background output. Cancellation must release resources and restore the
    prompt without requiring a window or disturbing peers.
 3. **Migration/qualification:** convert a useful small utility group, handle
    shared filesystem ownership, prove failure cleanup/reuse and mixed app
@@ -45,8 +45,8 @@ completion. Exact `echo $?` prints that byte; echo itself then succeeds (0).
 Background exit does not overwrite it. This is not general variable expansion.
 
 `tools/build_native_console.py` independently links UDEX 0.2 without private
-kernel-map imports. TICKER.BIN is 2,076 file bytes, 1,738 image + 91 BSS.
-QUIET.BIN, a silent qualification peer, is 1,464 file bytes, 1,240 image + 85
+kernel-map imports. TICKER.BIN is 2,077 file bytes, 1,739 image + 91 BSS.
+QUIET.BIN, a silent qualification peer, is 1,465 file bytes, 1,241 image + 85
 BSS. Both fit all four ordinary allocations, shared with graphical tasks.
 
 The user accepted no-argument checkpoint `f56eb32` (platform unspecified).
@@ -74,7 +74,7 @@ while waiting for the old foreground completion, before another launch.
 
 This remains cooperative, **not preemption**: a program that never sleeps,
 yields or otherwise returns to the scheduler can still prevent input polling.
-Stdin and background terminal arbitration remain the next work in increment 2.
+Foreground stdin is implemented below; background output remains in increment 2.
 Bare `name -q` and `xinit -q` still use their existing graphical close policy;
 this slice changes foreground Ctrl+C only. System disk/recovery ush are rebuilt
 together with the private notice producer; do not mix in an older shell binary.
@@ -88,6 +88,59 @@ regression. [Preserved evidence and limits](../bench/results/2026-10-09-native-c
 do not imply physical-hardware qualification or a native 1986 NAP run.
 
 ## Try the checkpoint
+
+The user accepted Ctrl+C checkpoint `98ff762` (platform unspecified); its push
+was confirmed before this foreground-input slice. The new SDK implements
+`udeks_read(0, buffer, count)` as owned POLL + nonblocking READ, copying up to
+24 bytes into private task memory after resumption. `udeks_poll(0, timeout)`
+supports 0–600 ticks or `UDEKS_TREQ_POLL_FOREVER`. An empty line returns newline,
+not EOF; zero-length SDK reads are immediate no-ops. No Ctrl+D/raw input yet.
+
+The trusted current-task query and foreground allocation determine ownership.
+Background READ/POLL returns EIO (5), including raw READ requests, without
+consumption, editor activation or wait registration. The editor is armed on
+the first permitted read/poll; an existing submitted line remains available
+across short reads. Shell history cannot be recalled or modified by application
+input. On return/cancellation, PROMPT discards partial/unread input but retains
+command history. Background output arbitration is **not** implemented yet.
+
+The independent `ASK.BIN` example is 1,867 file bytes (1,579 image + 4 BSS),
+fits all four allocations and echoes one edited line. Its input runtime is
+pulled from an SDK archive only for programs that read/poll, so TICKER/QUIET
+do not pay for unused input code. No kernel application-name table changes.
+
+Build an ASK/TICKER test disk from this worktree:
+
+```sh
+distrobox-enter my-distrobox -- make -j8 boot native-console-input-fixtures
+python3 tools/add_disk_apps.py --disk build/boot/udeks.d64 \
+  --output build/native-console/input.d64 \
+  build/native-console/ask/ASK.BIN build/native-console/ticker/TICKER.BIN
+```
+
+Cold-boot it in 1986 or on C128/Pi1541, then:
+
+```text
+xclock &
+ask
+```
+
+Type a mixed-case line, correct it with Backspace, and press Enter. ASK echoes
+it and returns; `echo $?` should print 0. Run `ask` again, type a partial line
+and press Ctrl+C: expect the shell prompt and status 130, with no leftover
+input executed. The clock should remain usable throughout. Try an empty line
+and a long line; Up in ASK must not reveal old shell commands.
+
+Qualification uses `make native-console-input-check` in the container (real
+6502 owner/reader guards and a deliberate bypass negative control) and host
+`make native-console-input-probe` (disposable D64/D81, all slots, background
+denial, partial-input cancellation/reuse, no implicit VIC startup). The latter
+uses keyboard-queue injection and warp for functional checks, not timing or
+native keyboard transport qualification. The independent native 1986 four-app
+regression covers keyboard/1351 input, not ASK itself.
+[Exact input evidence and limits](../bench/results/2026-10-09-native-console-input/README.md).
+
+### Earlier output/argument checks
 
 From the feature worktree, build and add TICKER to a **new disposable** disk:
 
@@ -119,7 +172,7 @@ be draggable. Launch TICKER again to check slot reuse. The separate test-only
 `NAP.BIN` sleeps indefinitely without a window and is used to prove cancellation
 cannot be mistaken for natural return.
 
-Quoting/escaping, stdin, argument-bearing background
+Quoting/escaping, argument-bearing background
 launch, background terminal arbitration and native file calls remain unimplemented.
 The demo finishes by itself; QUIET is a silent test, not a background utility.
 
@@ -143,11 +196,20 @@ Actual normal/panic link gates establish:
 
 | Area | Used end / capacity | Remaining |
 | --- | --- | --- |
-| Resident BSS before TIME slot `$93D0` (Ctrl+C slice) | `$93C4` | 11 bytes |
+| Resident BSS before TIME slot `$93D0` (stdin slice) | `$93CE` | 1 byte |
 | Native loader CODE | `$DFF4` / `$E000` | 11 bytes |
 | Relocator | `$19ED` / `$1A00` | 18 bytes |
 | Access bridge | `$1FFE` / `$2000` | 1 byte |
-| Bank-0 module | 775 / 836 bytes | 61 bytes |
+| Bank-0 module | 818 / 836 bytes | 18 bytes |
+
+Foreground input adds one editor-mode byte. It fits by sharing the existing
+line-copy helper and using a guarded assembly whole-line reader alongside the
+chunk reader; C remains the host reference. The contiguous ten wait arrays
+use a link-asserted reset loop, recovering scheduler space without changing
+snapshot fields. Scheduler code/RODATA/BSS ends `$C862`, 29 bytes below the
+storage router. Its private caller query at `$C8FC` fills that existing router
+reservation; it is not a public syscall. The common request gate uses 264/265
+bytes. No app, software/hardware stack, display or service reservation moves.
 
 Container `make native-console-parser-check` runs 11,520 real-6502 comparisons
 against C, an incorrect-separator negative control, and actual argument-copy/

@@ -439,6 +439,19 @@ native-console-probe:
 
 .PHONY: native-console native-console-probe
 
+native-console-input-fixtures: native-console
+	$(PYTHON) tools/build_native_console.py --source user/examples/ask.c --name ASK \
+		--output $(BUILD_DIR)/native-console/ask --export _ask_stage --export _ask_error
+	$(PYTHON) tools/build_native_console.py --source user/probes/native_background_read.c --name BGREAD \
+		--output $(BUILD_DIR)/native-console/bgread --export _input_checks --export _input_failure
+native-console-input-probe:
+	$(PYTHON) tools/native_console_input_probe.py --format d64 --warp
+	$(PYTHON) tools/native_console_input_probe.py --format d81 --warp
+.PHONY: native-console-input-fixtures native-console-input-probe
+native-console-input-check: placement-check-guard
+	$(PYTHON) tools/check_console_input.py
+.PHONY: native-console-input-check
+
 native-console-parser-check: placement-check-guard
 	$(PYTHON) tools/check_console_parser.py
 .PHONY: native-console-parser-check
@@ -2461,6 +2474,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 
 check:
 	$(PYTHON) -m py_compile tools/build_native_console.py tools/native_console_probe.py tools/check_console_parser.py tools/native_console_cancel_probe.py
+	$(PYTHON) -m py_compile tools/native_console_input_probe.py tools/check_console_input.py
 	$(PYTHON) -m py_compile tools/build_service_boot.py tools/service_boot_probe.py tools/default_service_layout.py tools/check_service_migration.py
 	$(PYTHON) -m py_compile tools/check_service_request.py
 	$(PYTHON) -m py_compile tools/service_image.py tools/build_time_module.py tools/check_time_module.py tools/time_module_layout.py tools/check_time_slot.py tools/service_start_probe.py tools/build_time_overlay.py

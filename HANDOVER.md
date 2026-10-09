@@ -6,7 +6,61 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — task-based foreground Ctrl+C, 2026-10-09
+## Current handoff — foreground canonical stdin, 2026-10-09
+
+Issue #52, branch `tasking-native-console`, worktree `build/native-console`.
+User accepted `98ff762` (platform unspecified), requested commit/push and the
+next part. Push confirmed already synchronized; no empty commit was made.
+Root main's unrelated notes and published PR #51 downloads remain untouched.
+
+Foreground native apps now read edited lines through owned POLL + READ, with
+24-byte private-buffer chunks, a 54-character line and newline. Background
+SDK and raw READ/POLL return EIO before editor/consumption/wait mutation. Root
+or ush owns input without a foreground child; otherwise only the selected
+native task does. Query `$C8FC` reads the actual map-bound scheduler caller.
+No public gate or executable ABI changes. SDK input is an optional archive
+member so output-only programs do not carry it.
+
+Application input cannot recall/add shell history. PROMPT resets partial and
+unread input while keeping history. Existing parent CANCEL handles blocked
+INPUT, cleans up, reaps, returns 130 and leaves peers intact. No raw/EOF mode,
+background output arbitration, argument-bearing `&` or filesystem wrappers.
+
+The small placement changes are feature-enabling: reuse line-copy code, share
+the assembly whole-line/chunk-reader adapter, and clear the contiguous private
+wait arrays with an asserted bound. Actual normal/panic BSS ends `$93CE` (1
+byte spare), module ends `$E631` (18 spare), request gate uses 264/265 bytes.
+Scheduler ends `$C862`, 29 bytes below storage; router/query uses its full 128
+bytes. No app, stack, VIC/VDC, loader or service reservation changes.
+
+ASK.BIN: 1,867 file bytes, 1,579 image + 4 BSS. BGREAD.BIN: 1,806 file bytes,
+1,518 image + 4 BSS. Both fit all four ordinary allocations. ASK echoes one
+input line; BGREAD is a silent negative-test peer, not a shipped utility.
+
+Final VICE D64/D81 all-slot input/empty/full/backspace/cancel/reuse/background
+denial suites pass, using keyboard queues and warp (no timing claim). Native
+1986 separately passes real four-app keyboard/1351/Ctrl+C/guards regression,
+not the ASK scenario. CPU ownership/reader tests pass 2,048 + 6,270 cases and
+an intentional ownership-bypass negative control. Service request/stack bridge
+CPU regression passes. Host SDK/editor/prompt tests and placement/graphics/
+service-layout gates pass; `make check` passes 1,589 tests. Final rebuilds match
+the qualified disks/apps byte for byte. [Evidence](bench/results/2026-10-09-native-console-input/README.md)
+preserves exact media, apps, maps, raw captures, sources and hashes. Probe-only
+repairs fix command synchronization, bank-explicit observation and allocation
+expectations; no failed records are presented as qualification.
+
+Manual media: `build/native-console/input.d64` / `.d81` inside this worktree.
+Earlier `try.*` files are retained. Run `xclock &`, then `ask`: edit/Enter,
+empty/long line, Ctrl+C mid-line (status 130), and drag clock during input.
+The user accepted this foreground-input slice and authorized commit/push and
+the next step. The test platform was unspecified; no new physical-C128 result
+is inferred. All owned VICE instances close.
+
+**Next:** finish increment 2 with argument-bearing background launch and
+prompt-safe output; keep filesystem ownership/utility migration in increment 3.
+Do not merge #52 as a completed feature yet.
+
+## Previous handoff — task-based foreground Ctrl+C, 2026-10-09
 
 Issue #52, branch `tasking-native-console`, worktree `build/native-console`.
 The user accepted `bca650a` (platform unspecified) and asked for commit/push and

@@ -1,0 +1,6 @@
+{
+  "ownership_cases": 2048,
+  "reader_cases": 6270,
+  "negative_control": "background ownership bypass rejected",
+  "scope": "6502 adapter, query stub; no MMU"
+}

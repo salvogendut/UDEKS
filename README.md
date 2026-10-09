@@ -134,8 +134,10 @@ jobs and stdin are not yet supported. On the active #52 branch, the separate
 [scheduled console SDK](docs/NATIVE-CONSOLE-APPS.md) now delivers private
 arguments, stdout/stderr, cooperative sleep and foreground status (`echo $?`)
 without stopping graphical peers. Foreground Ctrl+C now cancels native tasks
-with or without a window and returns status 130; stdin and background terminal
-policy remain next. Published downloads do not yet contain this checkpoint.
+with or without a window and returns status 130. Foreground programs can now
+read edited lines while peers continue; background reads fail with `EIO`.
+Argument-bearing background jobs and prompt-safe background output remain next.
+Published downloads do not yet contain this checkpoint.
 Four graphical slots are available, but
 not every binary fits every
 slot. The loader can borrow two free adjacent allocations

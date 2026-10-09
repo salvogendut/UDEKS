@@ -8,8 +8,9 @@ UARG 0.1 before making a native task runnable (see [executable ABI](executable.m
 Excess arguments fail before either loader is called, with status 2. The
 synchronous compatibility loader remains available; graphical entries need
 not use arguments. Bare `name &` and exact `name -q` retain their existing
-semantics. Argument-bearing background launches and foreground stdin still
-need terminal policy; this is not full job control. Task-based Ctrl+C is below.
+semantics. Argument-bearing background launches and background output still
+need terminal policy; this is not full job control. Foreground stdin and Ctrl+C
+are described below.
 
 For normal native foreground exit, bookkeeping reads the task's exit byte
 before reaping and publishes it at `SHLL+10` (`$F17A`). Background retirement
@@ -48,7 +49,30 @@ command; repeated Ctrl+C cannot follow a reused task id into a later launch.
 Background tasks and Ctrl+C at an idle prompt are not cancellation targets.
 This remains cooperative: tight loops that never return to the scheduler are
 not interruptible by this mechanism. `name -q`/`xinit -q` retain their graphical
-close semantics, and background I/O/stdin policy is not added by this slice.
+close semantics. Background output arbitration remains separate.
+
+## Foreground canonical input (2026-10-09)
+
+Native foreground programs can use `udeks_read(0, buffer, count)` from the
+scheduled console SDK. It blocks cooperatively through existing POLL, then
+copies READ's response into the caller's private buffer (1–24 bytes). The raw
+READ request remains nonblocking/EAGAIN. The editor accepts up to 54 printable
+characters, with backspace/cursor editing and Enter returning a final newline;
+an empty line is a one-byte newline, not EOF. There is no Ctrl+D/raw mode yet.
+
+READ/POLL authorize the actual scheduler caller: root/ush when no foreground
+child exists, otherwise only that child. Background callers receive EIO (5)
+before any editor change, consumption or wait registration. There is no
+SIGTTIN/task suspension. A permitted foreground read/poll opens an unprefixed
+editor at the current output cursor (or a new row if needed for 55 cells).
+Partially consumed lines remain readable without reopening the editor.
+
+Application input cannot recall shell history and is never saved into it.
+The shell's next PROMPT discards partial or unread application input, clears
+editor state and restores command history. Ctrl+C uses the existing parent
+cancellation even while POLL is blocked; no window is necessary. A graphical
+background peer continues while input is awaited. Background output is still
+uncoordinated: do not treat arbitrary `name &` as safe interactive job control.
 
 ## Original shell baseline
 

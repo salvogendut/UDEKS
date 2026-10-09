@@ -16,6 +16,7 @@ class TerminalPrompt(unittest.TestCase):
             subprocess.run(['cc', '-std=c99', '-ffunction-sections', '-fdata-sections',
                 '-Wno-int-to-pointer-cast', '-I'+str(ROOT/'include'),
                 str(ROOT/'src/services/terminal/root_terminal.c'),
+                str(ROOT/'src/services/terminal/line_editor.c'),
                 str(ROOT/'src/services/window/root_console.c'),
                 str(ROOT/'tests/fixtures/terminal_prompt.c'), '-Wl,--gc-sections',
                 '-o', str(executable)], check=True)

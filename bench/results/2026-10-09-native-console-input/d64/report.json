@@ -1,0 +1,99 @@
+{
+  "scope": "canonical foreground stdin; keyboard-queue injection, no native mouse/hardware claim",
+  "format": "d64",
+  "warp": true,
+  "source_disk_sha256": "d60e588db49270da1ec9386167d90e870932e4b476fbf8cf9b5fd1287818dfd9",
+  "fixture_sha256": "438eacfc5365ca41b17643d17e5e5b9a5e320926385fa0f0bd7db908fb59a58e",
+  "apps": {
+    "ASK": "749bca316a115117d463a835ef038c58eeca8d9a1f6f7c1923d418f3d6e86259",
+    "BGREAD": "7df122f9e2328fceaef2397db0bb24639bf03ccd13eb5017c7869d21f8f0398c"
+  },
+  "checks": [
+    {
+      "check": "input",
+      "tag": "input-0",
+      "task": 6,
+      "text": "MiXeD input 123",
+      "status": 0,
+      "console": "REU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\nMiXeD input 123\nMiXeD input 123\nUDEKS:~> echo $?\n0\nUDEKS:~>"
+    },
+    {
+      "check": "input",
+      "tag": "input-1",
+      "task": 6,
+      "text": "edit me",
+      "status": 0,
+      "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\nMiXeD input 123\nMiXeD input 123\nUDEKS:~> echo $?\n0\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\nedit me\nedit me\nUDEKS:~> echo $?\n0\nUDEKS:~>"
+    },
+    {
+      "check": "input",
+      "tag": "input-2",
+      "task": 6,
+      "text": "",
+      "status": 0,
+      "console": "svc load /TIME.SVC\ntime: ready\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\nMiXeD input 123\nMiXeD input 123\nUDEKS:~> echo $?\n0\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\nedit me\nedit me\nUDEKS:~> echo $?\n0\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\n\n\nUDEKS:~> echo $?\n0\nUDEKS:~>"
+    },
+    {
+      "check": "input",
+      "tag": "input-3",
+      "task": 6,
+      "text": "01234567890123456789012345678901234567890123456789abcd",
+      "status": 0,
+      "console": "UDEKS:~> echo $?\n0\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\nedit me\nedit me\nUDEKS:~> echo $?\n0\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\n\n\nUDEKS:~> echo $?\n0\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\n01234567890123456789012345678901234567890123456789abcd\n01234567890123456789012345678901234567890123456789abcd\nUDEKS:~> echo $?\n0\nUDEKS:~>"
+    },
+    {
+      "check": "cancel",
+      "task": 6,
+      "partial": "do not execute this",
+      "status": 130
+    },
+    {
+      "check": "input",
+      "tag": "input-5",
+      "task": 5,
+      "text": "reader with peers",
+      "status": 0,
+      "console": "Type a line (Enter), or Ctrl+C:\n01234567890123456789012345678901234567890123456789abcd\n01234567890123456789012345678901234567890123456789abcd\nUDEKS:~> echo $?\n0\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\ndo not execute thisInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~> bgread &\nUDEKS:~> echo retained\nretained\nUDEKS:~> xclock &\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\nreader with peers\nreader with peers\nUDEKS:~> echo $?\n0\nUDEKS:~>"
+    },
+    {
+      "check": "input",
+      "tag": "input-6",
+      "task": 3,
+      "text": "third allocation",
+      "status": 0,
+      "console": "do not execute thisInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~> bgread &\nUDEKS:~> echo retained\nretained\nUDEKS:~> xclock &\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\nreader with peers\nreader with peers\nUDEKS:~> echo $?\n0\nUDEKS:~> xdraw &\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\nthird allocation\nthird allocation\nUDEKS:~> echo $?\n0\nUDEKS:~>"
+    },
+    {
+      "check": "input",
+      "tag": "input-7",
+      "task": 4,
+      "text": "fourth allocation",
+      "status": 0,
+      "console": "UDEKS:~> ask\nType a line (Enter), or Ctrl+C:\nreader with peers\nreader with peers\nUDEKS:~> echo $?\n0\nUDEKS:~> xdraw &\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\nthird allocation\nthird allocation\nUDEKS:~> echo $?\n0\nUDEKS:~> xclock -q\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\nfourth allocation\nfourth allocation\nUDEKS:~> echo $?\n0\nUDEKS:~>"
+    },
+    {
+      "check": "cancel",
+      "task": 4,
+      "partial": "discard me",
+      "status": 130
+    },
+    {
+      "check": "input",
+      "tag": "input-9",
+      "task": 3,
+      "text": "two background readers",
+      "status": 0,
+      "console": "0\nUDEKS:~> xclock -q\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\nfourth allocation\nfourth allocation\nUDEKS:~> echo $?\n0\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\ndiscard meInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~> bgread &\nUDEKS:~> ask\nType a line (Enter), or Ctrl+C:\ntwo background readers\ntwo background readers\nUDEKS:~> echo $?\n0\nUDEKS:~>"
+    },
+    {
+      "check": "background-denial",
+      "tasks": [
+        4,
+        6
+      ],
+      "errno": 5,
+      "raw_read": true,
+      "poll": true
+    }
+  ]
+}

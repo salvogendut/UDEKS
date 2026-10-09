@@ -614,6 +614,14 @@ job path has restored the prompt. `PROMPT` rearms the root terminal input
 field. The boundary uses `EIO` (5), `EBADF` (9), `EAGAIN` (11), `EINVAL` (22),
 `ENOSYS` (38), and `EPROTO` (71) exactly as documented in ABI 0.2.
 
+The #52 terminal-owner implementation additionally rejects background stdin
+READ/POLL with EIO, before consuming input or registering a wait. Owner is
+derived from the trusted scheduler caller and root foreground allocation,
+not a caller-supplied id. It permits root/ush without a foreground child, or
+that specific child. First permitted foreground READ/POLL activates canonical
+editing without printing a shell prompt. The SDK wraps READ in an infinite
+POLL; the wire-level READ remains nonblocking. See [shell input](shell.md#foreground-canonical-input-2026-10-09).
+
 ## Scheduling and record ownership
 
 ### POLL (16, introduced in 0.4)
@@ -631,7 +639,10 @@ field. The boundary uses `EIO` (5), `EBADF` (9), `EAGAIN` (11), `EINVAL` (22),
   lifecycle, allocation, or subscription mutation.
 - A submitted line is readable through its final newline, including an empty
   line. `POLL` does not consume or reserve input: another permitted reader can
-  drain it before `READ`, which may then return `EAGAIN`.
+  drain it before `READ`, which may then return `EAGAIN`. The active root
+  terminal now permits only its selected owner; background subscriptions are
+  rejected with EIO after envelope validation. Historical multiple-waiter
+  proofs below tested the wake machinery, not permission for background input.
 - Registration snapshots into the existing private per-task arrays and
   releases the shared request. A bounded eight-slot service scan observes
   readiness before finite expiry, marks the response ready once, and publishes
@@ -662,23 +673,27 @@ then reads the submitted line. It retains `YIELD` between bounded work passes
 and the compatibility foreground-job `WAIT` path. The resident shell still
 dispatches pending `EXEC` and graphical jobs, but its private input bridge
 returns `EMPTY` while native ush advertises `READY` at `$F3D9`. Init resets
-that ownership byte at boot; lifecycle-driven terminal ownership is deferred.
+that ownership byte at boot. Root foreground ownership now also gates native
+READ/POLL; arbitrary terminal/process groups remain deferred.
 Other legacy UDEX entries
 retain their existing return convention until they migrate to lifecycle tasks.
 
 ## Placement note
 
-The fixed `$F800` request gateway uses **265 of 265** reserved bytes with the
-0.14 file-WRITE route (262 at the 0.3 checkpoint). The host-testable policy
+The fixed `$F800` request gateway uses **264 of 265** reserved bytes at the
+#52 foreground-input checkpoint. A private, map-bound caller query occupies
+`$C8FC-$C8FF` in the existing storage-router reservation; it is not a new
+public syscall. The host-testable policy
 compiles to 2,245 bytes (about 2.2 KiB) of
 cc65 code without long-arithmetic helpers. The active scheduler core occupies
-1,721 emitted bytes plus 154 bytes of BSS at `$C120-$C872`; the permanent
+1,705 emitted bytes plus 154 bytes of BSS at `$C120-$C862`; the permanent
 1,163-byte lifecycle request handler occupies `$C900-$CD8A` outside both
 application slots. Its per-task wait snapshots preserve blocking requests
 while the shared record is released. The policy module remains
 compile-qualified but nonresident. ABI 0.4 uses bounded assembly equivalent to
 the host-tested POLL policy; it adds no BSS. The measured remaining gaps are
-141 bytes before `$C900` and 50 bytes before the fixed `$CDBD` context binding.
+29 bytes before the `$C880` storage router and 50 bytes before the fixed
+`$CDBD` context binding.
 
 The preferred direction is to keep validation, lifecycle policy, and
 scheduling in bank 0 and retain only a small MMU/context-switch tail in

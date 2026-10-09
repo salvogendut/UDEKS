@@ -16,5 +16,6 @@
 unsigned char udeks_root_terminal_start(void);
 unsigned char udeks_root_terminal_poll(void);
 unsigned char udeks_root_terminal_prompt(void);
+unsigned char udeks_root_terminal_input(void);
 
 #endif
