@@ -138,7 +138,10 @@ with or without a window and returns status 130. Foreground programs can now
 read edited lines while peers continue; background reads fail with `EIO`.
 Native `command args &` now returns the prompt while the program runs;
 background output preserves a partly edited shell or application input line.
-Native filesystem calls and utility migration are next, not general job control.
+Native mounted-file OPEN/READ/WRITE/CLOSE now use task-owned handles, cleaned
+on exit/Ctrl+C. The branch's `cat` is a scheduled disk program and sleeps
+between chunks; other utilities remain synchronous. Only one filesystem
+stream can be open, so start graphical peers before a long file operation.
 Published downloads do not yet contain this checkpoint.
 Four graphical slots are available, but
 not every binary fits every
@@ -206,8 +209,8 @@ records the merge. The first non-kernel service extraction is now installed
 by normal boot: `TIME.SVC`, with failure recovery and a disk-only loader.
 **Active next feature:** [independently scheduled console programs](docs/NATIVE-CONSOLE-APPS.md)
 (#52). Private arguments, output/status, foreground stdin/Ctrl+C and bounded
-background launch/output are implemented; native filesystem ownership and
-utility migration remain. General scripting and optimization remain separate roadmap
+background launch/output, native file I/O and scheduled `cat` are implemented;
+the final user acceptance gate remains. General scripting and optimization remain separate roadmap
 work. The existing `/etc/rc` command runner is not a POSIX
 `sh` or Bash implementation.
 

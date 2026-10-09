@@ -5,12 +5,17 @@
 #include "udeks/program.h"
 
 /* Experimental cooperative console runtime, using existing UTRQ operations.
- * WRITE accepts descriptors 1/2 only and copies at most 24 bytes per request.
+ * WRITE accepts stdout/stderr or mounted-file fd 4, up to 24 bytes per request.
  * SLEEP accepts 1..600 logical 1/60-second ticks; returns 0 or IO_ERROR.
- * READ is canonical foreground stdin (54 characters plus newline), in chunks
- * of 1..24 bytes. It sleeps through POLL, without stopping other tasks.
+ * READ is canonical foreground stdin (54 characters plus newline) or fd 4,
+ * in chunks of 1..24 bytes. Only stdin sleeps through POLL.
  * POLL accepts 0..600 ticks or POLL_FOREVER; background READ/POLL returns EIO.
- * No raw input, EOF key, background output policy, filesystem or bank-0 veneers.
+ * OPEN supports RDONLY/CREATE_EXCL paths of 1..23 bytes. File READ returns 0
+ * at EOF; CLOSE must be checked, even after a failed/short WRITE. No write
+ * retries/overwrite. One service-wide file stream: contention returns EMFILE.
+ * Sleep between file chunks to let peers run. An individual IEC request is
+ * synchronous; EXIT/CANCEL closes owned files before task-slot reuse.
+ * No raw input, EOF key, native directory enumeration or bank-0 veneers.
  * Entry receives bounded task-private argc/argv via UARG 0.1 (see executable
  * ABI): at most 8 arguments, within the shell's 54-character input line.
  * Ordinary foreground return becomes the shell's eight-bit exit status.

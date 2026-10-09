@@ -321,7 +321,7 @@ user-sources: $(USER_COWSAY_ASM) $(USER_DATE_ASM) $(USER_LS_ASM) $(USER_USH_ASM)
 
 user-programs: $(USER_BOOTFS) $(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX)
 user-programs: $(USER_XSPRDEF_UDEX)
-user-programs: $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(BUILD_USER)/filetools.udx $(BUILD_USER)/sysinfo.udx $(BUILD_USER)/diagnostics.udx
+user-programs: $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_CAT_UDEX) $(BUILD_USER)/filetools.udx $(BUILD_USER)/sysinfo.udx $(BUILD_USER)/diagnostics.udx
 user-programs: $(USER_MOUNT_UDEX) $(USER_SAVE_UDEX) $(USER_MUTATION_UDEX)
 
 $(BUILD_8502)/shell.s: include/udeks/service_control.h include/udeks/task_request.h include/udeks/banked_graphics.h
@@ -452,6 +452,15 @@ native-console-jobs-probe:
 	$(PYTHON) tools/native_console_jobs_probe.py --format d64
 	$(PYTHON) tools/native_console_jobs_probe.py --format d81
 .PHONY: native-console-jobs-probe
+native-console-file-fixtures: placement-check-guard
+	$(PYTHON) tools/build_native_console.py --source user/probes/native_file_holder.c --name FHOLD \
+		--output $(BUILD_DIR)/native-console/fhold --export _file_stage --export _file_error --export _file_release
+	$(PYTHON) tools/build_native_console.py --source user/probes/native_file_rival.c --name FRIVAL \
+		--output $(BUILD_DIR)/native-console/frival --export _rival_stage --export _rival_error --export _rival_release
+native-console-file-probe:
+	$(PYTHON) tools/native_console_file_probe.py --format d64
+	$(PYTHON) tools/native_console_file_probe.py --format d81
+.PHONY: native-console-file-fixtures native-console-file-probe
 native-console-input-check: placement-check-guard
 	$(PYTHON) tools/check_console_input.py
 .PHONY: native-console-input-check
@@ -2206,7 +2215,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		$(BOOTFS_REQUEST_SERVICE_BIN) \
 		$(TASK_BANK_GATE_BIN) \
 		tools/build_d71.py tools/build_d81.py bench/iec-directory/hello.txt $(BOOT_RC) $(SERVICE_BOOT_FILES) $(USER_SYSINFO_UDEX) \
-		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX) $(USER_XSPRDEF_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX) $(USER_MOUNT_UDEX) $(USER_SAVE_UDEX) $(USER_MUTATION_UDEX)
+		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) $(USER_XCALC_UDEX) $(USER_XDRAW_UDEX) $(USER_XSPRDEF_UDEX) $(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_CAT_UDEX) $(USER_DIAGNOSTICS_UDEX) $(USER_MOUNT_UDEX) $(USER_SAVE_UDEX) $(USER_MUTATION_UDEX)
 	$(PYTHON) tools/build_d71.py --stage0 $(STAGE0_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(KERNEL_BIN) --z80 $(Z80_BIN) \
 		--boot-delivery $(BOOT_DELIVERY_BIN) \
@@ -2231,7 +2240,7 @@ $(BOOT_D71) $(BOOT_D64) &: $(STAGE0_BIN) $(STAGE1_BIN) $(KERNEL_BIN) \
 		--rc $(BOOT_RC) --sysinfo $(USER_SYSINFO_UDEX) $(SERVICE_DISK_FLAGS) \
 		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) --xcalc $(USER_XCALC_UDEX) --xdraw $(USER_XDRAW_UDEX) --xsprdef $(USER_XSPRDEF_UDEX) \
 		--command COWSAY=$(USER_COWSAY_UDEX) --command DATE=$(USER_DATE_UDEX) \
-		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_FILETOOLS_UDEX) \
+		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_CAT_UDEX) \
 		--command UNAME=$(USER_DIAGNOSTICS_UDEX) --command LSHW=$(USER_DIAGNOSTICS_UDEX) \
 		--command LSMOD=$(USER_DIAGNOSTICS_UDEX) --command LSCPU=$(USER_DIAGNOSTICS_UDEX) \
 		--command Z80CTL=$(USER_DIAGNOSTICS_UDEX) \
@@ -2433,7 +2442,7 @@ $(TASK_CANCEL_PROBE_D71) $(TASK_CANCEL_PROBE_D64) &: $(STAGE0_BIN) \
 $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		$(USER_MOUNT_UDEX) \
 		$(USER_XCLOCK_UDEX) $(USER_XWAVE_UDEX) \
-		$(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_DIAGNOSTICS_UDEX) \
+		$(USER_COWSAY_UDEX) $(USER_DATE_UDEX) $(USER_FILETOOLS_UDEX) $(USER_CAT_UDEX) $(USER_DIAGNOSTICS_UDEX) \
 		$(BOOT_DELIVERY_BIN) \
 		$(PANIC_PROBE_CRT0_BIN) $(PANIC_PROBE_PROBE_BIN) \
 		$(SCHEDULER_BIN) $(CAPABILITY_BIN) $(CAPABILITY_INSTALLER_BIN) \
@@ -2451,7 +2460,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--stage1 $(STAGE1_BIN) --kernel $(PANIC_PROBE_KERNEL_BIN) \
 		--xclock $(USER_XCLOCK_UDEX) --xwave $(USER_XWAVE_UDEX) \
 		--command COWSAY=$(USER_COWSAY_UDEX) --command DATE=$(USER_DATE_UDEX) \
-		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_FILETOOLS_UDEX) \
+		--command LS=$(USER_FILETOOLS_UDEX) --command CAT=$(USER_CAT_UDEX) \
 		--command UNAME=$(USER_DIAGNOSTICS_UDEX) --command LSHW=$(USER_DIAGNOSTICS_UDEX) \
 		--command LSMOD=$(USER_DIAGNOSTICS_UDEX) --command LSCPU=$(USER_DIAGNOSTICS_UDEX) \
 		--command Z80CTL=$(USER_DIAGNOSTICS_UDEX) \
@@ -2480,6 +2489,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 check:
 	$(PYTHON) -m py_compile tools/build_native_console.py tools/native_console_probe.py tools/check_console_parser.py tools/native_console_cancel_probe.py
 	$(PYTHON) -m py_compile tools/native_console_input_probe.py tools/check_console_input.py tools/native_console_jobs_probe.py
+	$(PYTHON) -m py_compile tools/native_console_file_probe.py
 	$(PYTHON) -m py_compile tools/build_service_boot.py tools/service_boot_probe.py tools/default_service_layout.py tools/check_service_migration.py
 	$(PYTHON) -m py_compile tools/check_service_request.py
 	$(PYTHON) -m py_compile tools/service_image.py tools/build_time_module.py tools/check_time_module.py tools/time_module_layout.py tools/check_time_slot.py tools/service_start_probe.py tools/build_time_overlay.py

@@ -6,7 +6,77 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — background console arguments/output, 2026-10-09
+## Current handoff — native file SDK and scheduled CAT, 2026-10-09
+
+Issue #52, branch `tasking-native-console`, worktree `build/native-console`.
+The accepted background-console slice is committed/pushed as `a1a3c27`.
+The user requested increment 3's file SDK, cleanup and utility migration.
+The user requested commit/push after delivery; no merge or new hardware
+acceptance was reported.
+Root main's unrelated notes and published PR #51 downloads remain untouched.
+
+Implementation:
+
+- Optional `native_files.c` supplies readonly/create-exclusive SEQ OPEN and
+  checked CLOSE. Native READ/WRITE supports task-owned fd 4, counted binary
+  chunks <=24, EOF, short/error handling and no write retries. Paths <=23 bytes
+  are validated before shared-record mutation. Bootfs directory fd 3 is closed
+  immediately rather than retained unowned across a scheduling boundary.
+- Ownership already existed in the storage service: trusted task ID plus
+  generation; foreign fd use fails EBADF, competing OPEN fails EMFILE. Existing
+  EXIT/CANCEL hooks close before generation advance/reuse. No resident changes.
+- Native `user/bin/cat.c` replaces CAT.BIN in normal D64/D71/D81 and the panic
+  disk. It sleeps one tick between chunks; foreground return is 0/1/2, Ctrl+C
+  130. CAT is 2,707 file bytes, 2,263 image + 2 BSS; fits tasks 3/4/5, not 6.
+  `build_d71.validate_command` now validates native relocations/capacity as
+  well as legacy APP1 commands, without application-name special cases.
+- SLEEP/POLL republish operation/sequence/descriptor/count but not the common
+  minor byte. Initial strict version checking falsely rejected a resumed sleep;
+  the SDK now checks minor echo only for synchronous replies. Regression added.
+- 1986's storage harness checks the shell's external-command completion byte,
+  not the legacy APP1 loader's stale status, for successful command dispatch.
+  It exercises native CAT success/missing-file status beside a draggable clock.
+
+Limits: one service-wide file stream, including the disk loader. Start peers
+before a long native file operation; loading another executable while a stream
+is held may fail. Each IEC call is synchronous/IRQ-masked; cancellation and
+peer progress happen between chunks, not within a bus request. No multi-open,
+append/overwrite, native directory SDK, preemption or general job control.
+Other shipped utilities remain synchronous. Legacy multicall CAT remains in
+LS's binary for compatibility, not as resident code.
+
+Normal/panic/scheduler segment maps are unchanged from the accepted slice:
+BSS ends `$93A7`, HIGHBSS `$E2E0`, TASKREQUEST 247/265, scheduler `$C862`.
+Only CAT.BIN changes among existing shipped DOS file streams; D64 has 16 free
+blocks and drops no additional application.
+
+Qualification: host SDK/CAT tests cover bounds, exact bytes, EOF, errors,
+short writes, checked-close precedence and no retries. VICE cold-boot probes
+use real SDK clients and lifecycle paths, with keyboard/release-flag input
+only. They cover CAT plus clock/wave, foreground cancellation/reuse and private
+code/stack guards; D81 adds foreign-handle denial and leaked read/write handles,
+exclusive-create rejection and persisted binary bytes. Clock progress uses its
+private SLEEP deadline while CAT remains live, not a global timer or the
+minute-only face refresh. Native 1986 separately checks real keyboard/1351 input.
+See [exact evidence and limits](bench/results/2026-10-09-native-console-files/README.md).
+Final qualification: 1,616 host tests pass; VICE D64/D81 probes and both native
+1986 regressions pass. Placement/graphics/service-layout and parser/input/
+service-request CPU gates pass. Normal/panic builds pass, and all owned VICE
+sessions are closed. Evidence includes exact disk/app bytes and map/guard/state
+captures with checksums verified by host tests.
+
+Manual candidates: `build/native-console/files.d64` / `.d81` inside this
+worktree (normal apps plus `/long`, `/empty`, `/one` and D81-only SDK probes).
+Normal `build/boot/udeks.d64`, `.d71`, `.d81` already contain native CAT.
+Start `xclock &`, `xwave &`; test `cat /hello`, `cat /etc/rc`, `cat /nofile`
+and `echo $?` (1). On a candidate, interrupt `cat /long`, check 130, then read
+`/hello` again and drag both windows. Physical C128/Pi1541 acceptance pending.
+
+**Next:** user acceptance, then PR/review and close out #52 when
+authorized. Do not extend this increment into general allocation, pipes,
+scripting, multi-open filesystems or app-specific performance work.
+
+## Previous handoff — background console arguments/output, 2026-10-09
 
 Issue #52, branch `tasking-native-console`, worktree `build/native-console`.
 User accepted the input slice (platform unspecified); committed/pushed as

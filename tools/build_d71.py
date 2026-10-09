@@ -639,7 +639,10 @@ def validate_ush(bootfs: bytes, executable: bytes) -> None:
 
 
 def validate_command(executable: bytes) -> None:
-    """Ordinary APP1 executable, independent of a particular utility name."""
+    """Fixed APP1 or relocatable native command, without a name catalogue."""
+    if executable[5:6] == b'\x02':
+        validate_native_app(executable)
+        return
     if (len(executable) < 17 or executable[:4] != b'UDEX' or
             executable[4] != 0 or executable[5] > 1 or executable[6:8] != b'\x01\0'):
         raise ValueError('invalid ordinary command header')

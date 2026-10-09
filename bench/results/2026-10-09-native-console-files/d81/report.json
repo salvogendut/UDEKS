@@ -1,0 +1,166 @@
+{
+  "format": "d81",
+  "source_disk_sha256": "406979f783afc696f222c24d739bb86cb724f1acf57406c07dab7986271d4766",
+  "fixture_sha256": "089652ebea793b28b3a79e7b86ba4d42da67868267b942665917a974c95357fe",
+  "apps": {
+    "FHOLD": "07b7c350a9f26a57878976c4fa9692a63c9bb7bc103b39bf672c702ff756fdc3",
+    "FRIVAL": "122bd2334035aead1373766aef9adfe52118db54516803a6c8a70b48ad92ed0c"
+  },
+  "checks": [
+    {
+      "command": "cat /hello",
+      "status": 0,
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "command": "cat /empty",
+      "status": 0,
+      "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /empty\nUDEKS:~>"
+    },
+    {
+      "command": "cat /one",
+      "status": 0,
+      "console": "REU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /empty\nUDEKS:~> cat /one\nQ\nUDEKS:~>"
+    },
+    {
+      "command": "cat /nofile",
+      "status": 1,
+      "console": "8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /empty\nUDEKS:~> cat /one\nQ\nUDEKS:~> cat /nofile\ncat: No such file or directory\nUDEKS:~>"
+    },
+    {
+      "command": "cat /",
+      "status": 1,
+      "console": "IEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /empty\nUDEKS:~> cat /one\nQ\nUDEKS:~> cat /nofile\ncat: No such file or directory\nUDEKS:~> cat /\ncat: Is a directory\nUDEKS:~>"
+    },
+    {
+      "command": "cat",
+      "status": 2,
+      "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /empty\nUDEKS:~> cat /one\nQ\nUDEKS:~> cat /nofile\ncat: No such file or directory\nUDEKS:~> cat /\ncat: Is a directory\nUDEKS:~> cat\ncat FILE\nUDEKS:~>"
+    },
+    {
+      "command": "frival &",
+      "status": 0,
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /empty\nUDEKS:~> cat /one\nQ\nUDEKS:~> cat /nofile\ncat: No such file or directory\nUDEKS:~> cat /\ncat: Is a directory\nUDEKS:~> cat\ncat FILE\nUDEKS:~> frival &\nUDEKS:~>"
+    },
+    {
+      "command": "fhold &",
+      "status": 0,
+      "console": "\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /empty\nUDEKS:~> cat /one\nQ\nUDEKS:~> cat /nofile\ncat: No such file or directory\nUDEKS:~> cat /\ncat: Is a directory\nUDEKS:~> cat\ncat FILE\nUDEKS:~> frival &\nUDEKS:~> fhold &\nUDEKS:~>"
+    },
+    {
+      "check": "foreign-read-write-close-open-denied",
+      "task": 6,
+      "before": 1,
+      "after": 2,
+      "cleanup": 0
+    },
+    {
+      "check": "leaked-read-exit",
+      "task": 4,
+      "before": 7,
+      "after": 8,
+      "cleanup": 0
+    },
+    {
+      "command": "cat /hello",
+      "status": 0,
+      "console": "\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /empty\nUDEKS:~> cat /one\nQ\nUDEKS:~> cat /nofile\ncat: No such file or directory\nUDEKS:~> cat /\ncat: Is a directory\nUDEKS:~> cat\ncat FILE\nUDEKS:~> frival &\nUDEKS:~> fhold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "check": "leaked-write-exit",
+      "task": 6,
+      "before": 2,
+      "after": 3,
+      "cleanup": 0
+    },
+    {
+      "command": "fhold write",
+      "status": 1,
+      "console": "svc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /empty\nUDEKS:~> cat /one\nQ\nUDEKS:~> cat /nofile\ncat: No such file or directory\nUDEKS:~> cat /\ncat: Is a directory\nUDEKS:~> cat\ncat FILE\nUDEKS:~> frival &\nUDEKS:~> fhold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> fhold write\nUDEKS:~> fhold write\nUDEKS:~>"
+    },
+    {
+      "command": "cp /native-data /saved-exit",
+      "status": 0,
+      "console": "\nUDEKS:~> time: ready\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /empty\nUDEKS:~> cat /one\nQ\nUDEKS:~> cat /nofile\ncat: No such file or directory\nUDEKS:~> cat /\ncat: Is a directory\nUDEKS:~> cat\ncat FILE\nUDEKS:~> frival &\nUDEKS:~> fhold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> fhold write\nUDEKS:~> fhold write\nUDEKS:~> cp /native-data /saved-exit\nUDEKS:~>"
+    },
+    {
+      "command": "rm /native-data",
+      "status": 0,
+      "console": "UDEKS:~> time: ready\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> cat /empty\nUDEKS:~> cat /one\nQ\nUDEKS:~> cat /nofile\ncat: No such file or directory\nUDEKS:~> cat /\ncat: Is a directory\nUDEKS:~> cat\ncat FILE\nUDEKS:~> frival &\nUDEKS:~> fhold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> fhold write\nUDEKS:~> fhold write\nUDEKS:~> cp /native-data /saved-exit\nUDEKS:~> rm /native-data\nUDEKS:~>"
+    },
+    {
+      "check": "leaked-write-cancel",
+      "task": 6,
+      "before": 4,
+      "after": 5,
+      "cleanup": 0
+    },
+    {
+      "command": "cp /native-data /saved-cancel",
+      "status": 0,
+      "console": "UDEKS:~> cat /empty\nUDEKS:~> cat /one\nQ\nUDEKS:~> cat /nofile\ncat: No such file or directory\nUDEKS:~> cat /\ncat: Is a directory\nUDEKS:~> cat\ncat FILE\nUDEKS:~> frival &\nUDEKS:~> fhold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> fhold write\nUDEKS:~> fhold write\nUDEKS:~> cp /native-data /saved-exit\nUDEKS:~> rm /native-data\nUDEKS:~> fhold write\nInterrupted\nUDEKS:~> cp /native-data /saved-cancel\nUDEKS:~>"
+    },
+    {
+      "command": "rm /native-data",
+      "status": 0,
+      "console": "UDEKS:~> cat /one\nQ\nUDEKS:~> cat /nofile\ncat: No such file or directory\nUDEKS:~> cat /\ncat: Is a directory\nUDEKS:~> cat\ncat FILE\nUDEKS:~> frival &\nUDEKS:~> fhold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> fhold write\nUDEKS:~> fhold write\nUDEKS:~> cp /native-data /saved-exit\nUDEKS:~> rm /native-data\nUDEKS:~> fhold write\nInterrupted\nUDEKS:~> cp /native-data /saved-cancel\nUDEKS:~> rm /native-data\nUDEKS:~>"
+    },
+    {
+      "command": "cat /hello",
+      "status": 0,
+      "console": "UDEKS:~> cat /nofile\ncat: No such file or directory\nUDEKS:~> cat /\ncat: Is a directory\nUDEKS:~> cat\ncat FILE\nUDEKS:~> frival &\nUDEKS:~> fhold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> fhold write\nUDEKS:~> fhold write\nUDEKS:~> cp /native-data /saved-exit\nUDEKS:~> rm /native-data\nUDEKS:~> fhold write\nInterrupted\nUDEKS:~> cp /native-data /saved-cancel\nUDEKS:~> rm /native-data\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "status": 0,
+      "console": "cat: No such file or directory\nUDEKS:~> cat /\ncat: Is a directory\nUDEKS:~> cat\ncat FILE\nUDEKS:~> frival &\nUDEKS:~> fhold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> fhold write\nUDEKS:~> fhold write\nUDEKS:~> cp /native-data /saved-exit\nUDEKS:~> rm /native-data\nUDEKS:~> fhold write\nInterrupted\nUDEKS:~> cp /native-data /saved-cancel\nUDEKS:~> rm /native-data\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> xclock &\nUDEKS:~>"
+    },
+    {
+      "command": "xwave &",
+      "status": 0,
+      "console": "UDEKS:~> cat /\ncat: Is a directory\nUDEKS:~> cat\ncat FILE\nUDEKS:~> frival &\nUDEKS:~> fhold &\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> fhold write\nUDEKS:~> fhold write\nUDEKS:~> cp /native-data /saved-exit\nUDEKS:~> rm /native-data\nUDEKS:~> fhold write\nInterrupted\nUDEKS:~> cp /native-data /saved-cancel\nUDEKS:~> rm /native-data\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> xclock &\nUDEKS:~> xwave &\nUDEKS:~>"
+    },
+    {
+      "check": "cat-read-cancel",
+      "task": 3,
+      "before": 1,
+      "after": 2,
+      "cleanup": 0
+    },
+    {
+      "command": "echo $?",
+      "status": 130,
+      "console": "UDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~> xclock &\nUDEKS:~> xwave &\nUDEKS:~> cat /long\nline 000 - native cat\nline 001 - native cat\nline 002 - native cat\nline 003 - native cat\nline 004 - native cat\nline 005 - native cat\nline 006 - native cat\nline 007 - native cat\nline 008 - native cat\nline 009 - native cat\nline 010 - native cat\nline 011 - native cat\nInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~>"
+    },
+    {
+      "command": "cat /hello",
+      "status": 0,
+      "console": "UDEKS:~> xclock &\nUDEKS:~> xwave &\nUDEKS:~> cat /long\nline 000 - native cat\nline 001 - native cat\nline 002 - native cat\nline 003 - native cat\nline 004 - native cat\nline 005 - native cat\nline 006 - native cat\nline 007 - native cat\nline 008 - native cat\nline 009 - native cat\nline 010 - native cat\nline 011 - native cat\nInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~> cat /hello\nHELLO UDEKS\nUDEKS:~>"
+    },
+    {
+      "check": "clock-progress-during-cat",
+      "before": 6618,
+      "after": 6623
+    },
+    {
+      "command": "cat /long",
+      "status": 0,
+      "console": "line 076 - native cat\nline 077 - native cat\nline 078 - native cat\nline 079 - native cat\nline 080 - native cat\nline 081 - native cat\nline 082 - native cat\nline 083 - native cat\nline 084 - native cat\nline 085 - native cat\nline 086 - native cat\nline 087 - native cat\nline 088 - native cat\nline 089 - native cat\nline 090 - native cat\nline 091 - native cat\nline 092 - native cat\nline 093 - native cat\nline 094 - native cat\nline 095 - native cat\nUDEKS:~>"
+    },
+    {
+      "command": "xwave -q",
+      "status": 0,
+      "console": "line 077 - native cat\nline 078 - native cat\nline 079 - native cat\nline 080 - native cat\nline 081 - native cat\nline 082 - native cat\nline 083 - native cat\nline 084 - native cat\nline 085 - native cat\nline 086 - native cat\nline 087 - native cat\nline 088 - native cat\nline 089 - native cat\nline 090 - native cat\nline 091 - native cat\nline 092 - native cat\nline 093 - native cat\nline 094 - native cat\nline 095 - native cat\nUDEKS:~> xwave -q\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "status": 0,
+      "console": "line 078 - native cat\nline 079 - native cat\nline 080 - native cat\nline 081 - native cat\nline 082 - native cat\nline 083 - native cat\nline 084 - native cat\nline 085 - native cat\nline 086 - native cat\nline 087 - native cat\nline 088 - native cat\nline 089 - native cat\nline 090 - native cat\nline 091 - native cat\nline 092 - native cat\nline 093 - native cat\nline 094 - native cat\nline 095 - native cat\nUDEKS:~> xwave -q\nUDEKS:~> xclock -q\nUDEKS:~>"
+    },
+    {
+      "command": "echo file-sdk-ok",
+      "status": 0,
+      "console": "line 080 - native cat\nline 081 - native cat\nline 082 - native cat\nline 083 - native cat\nline 084 - native cat\nline 085 - native cat\nline 086 - native cat\nline 087 - native cat\nline 088 - native cat\nline 089 - native cat\nline 090 - native cat\nline 091 - native cat\nline 092 - native cat\nline 093 - native cat\nline 094 - native cat\nline 095 - native cat\nUDEKS:~> xwave -q\nUDEKS:~> xclock -q\nUDEKS:~> echo file-sdk-ok\nfile-sdk-ok\nUDEKS:~>"
+    }
+  ]
+}

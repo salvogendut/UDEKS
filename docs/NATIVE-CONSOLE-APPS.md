@@ -18,13 +18,76 @@ name tables. Preserve synchronous utility loading and recovery during migration.
    task-based Ctrl+C, foreground stdin, EIO rejection of background reads,
    argument-bearing `&` and prompt-safe background output. Cancellation releases
    resources and restores the prompt without requiring a window or disturbing peers.
-3. **Migration/qualification:** convert a useful small utility group, handle
+3. **Migration/qualification — implemented, acceptance pending:** convert `cat`, handle
    shared filesystem ownership, prove failure cleanup/reuse and mixed app
    operation in VICE, 1986 and a user hardware checklist.
 
-Preemption, pipes, redirection and scripting are separate work. Disk writes
-remain available in the synchronous SDK; the native runtime has no filesystem
-calls yet. Cooperative code must sleep/yield; tight loops can still starve peers.
+Preemption, pipes, redirection and scripting are separate work. Native and
+synchronous SDKs support file I/O. Cooperative code must sleep/yield;
+tight loops can still starve peers.
+
+## Current checkpoint: native files and CAT
+
+`user/lib/native_files.c` adds optional OPEN/CLOSE to the independent native
+runtime. READ/WRITE now also accept mounted-file descriptor 4: paths contain
+1–23 bytes, transfers at most 24 bytes, and READ returns zero at EOF. Modes
+are `UDEKS_O_RDONLY` and create-only SEQ `UDEKS_O_CREATE_EXCL`; no overwrite,
+append, directory enumeration or file POLL in this SDK slice. Counted writes
+preserve binary bytes. Check CLOSE after any short/error WRITE; do not retry.
+Only stdin performs the blocking POLL before READ.
+
+The existing service already owns streams by trusted task ID **and generation**.
+Foreign READ/WRITE/CLOSE returns EBADF. Validated EXIT/CANCEL invokes cleanup
+before changing the generation or reusing the allocation. The SDK does not
+claim ownership or hold the MMU/IEC lease across SLEEP. No resident code,
+allocation reservation, syscall number or executable ABI is added here.
+SLEEP/POLL restore owned reply fields, but not the common ABI-minor byte;
+SDK validation respects that distinction while checking synchronous versions.
+
+**One stream is available system-wide.** Competing OPEN returns EMFILE, not a
+shared handle. That also means loading a disk application can fail while a
+native file reader/writer has a stream open. Start graphical peers first.
+Each IEC operation is still synchronous; cancellation is serviced between
+chunks, not halfway through a disk request. This is not asynchronous disk I/O.
+Recovery bootfs has no file READ path: any directory handle returned by its
+OPEN is immediately closed by the native SDK and reported as EISDIR.
+
+Normal D64/D71/D81 now package `CAT.BIN` from `user/bin/cat.c`, a relocatable
+native command, rather than the fixed APP1 multicall utility. `cat FILE`
+sleeps one logical tick between chunks, reports meaningful errors, closes on
+ordinary completion, and returns 0/1/2 for success/I/O-or-open failure/usage.
+Ctrl+C yields 130 via the normal parent-owned cancellation path. CAT has
+2,707 file bytes, 2,263 image + 2 BSS, fitting tasks 3/4/5 (not the smallest
+task-6 allocation). It shares the four allocations with graphical programs;
+there is no additional console slot. Other shipped utilities remain on the
+synchronous path; the legacy multicall CAT implementation stays for compatibility.
+
+Build with `distrobox-enter my-distrobox -- make -j8 boot` in this worktree.
+Boot `build/boot/udeks.d64`, `.d71` or `.d81` and try:
+
+```text
+xclock &
+xwave &
+cat /hello
+cat /etc/rc
+cat /nofile
+echo $?
+```
+
+The last command should print 1. Both windows should remain usable afterwards.
+The disposable `build/native-console/files.d64` / `.d81` candidates also
+include `/long`, `/empty`, `/one`. Run `cat /long`, interrupt with Ctrl+C,
+check `echo $?` = 130, then `cat /hello` again. `cat /long &` may print above
+an edited prompt; wait for it to finish before loading another disk app.
+
+Container `make native-console-file-fixtures` builds two SDK clients;
+host `make native-console-file-probe` qualifies disposable D64/D81. D81 adds
+foreign-handle denial and deliberately leaked READ/WRITE handles on real
+EXIT/CANCEL, including persisted binary bytes. Test flags only release the
+clients; no owner, request, result or scheduler state is patched. The native
+1986 disk-service harness checks CAT success/missing-file status beside a clock,
+with actual keyboard and 1351 drag input. Physical C128/Pi1541 acceptance is
+still requested; published PR #51 downloads are unchanged.
 
 ## Current checkpoint: arguments and completion
 
@@ -218,7 +281,7 @@ invalid launches and code/stack guards. D81 adds a silent BGREAD denial peer;
 the D64 test adds only ASK/TICKER to fit without deleting existing apps.
 The exact records and limits are in the
 [background-job evidence](../bench/results/2026-10-09-native-console-jobs/README.md).
-Next is increment 3's native filesystem ownership and utility migration.
+Increment 3's native filesystem ownership and utility migration are above.
 
 ## Placement and validation
 

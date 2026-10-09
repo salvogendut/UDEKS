@@ -10,6 +10,19 @@ from managed_app_fixture import dos_file
 
 
 class DiskCommands(unittest.TestCase):
+    def test_native_command_packaging_validates_relocations_and_capacity(self):
+        exe = bytearray(build_executable(b'\x60', cpu=1, load_address=0x1000, entry_address=0x1000))
+        exe[5] = 2
+        exe = bytes(exe)+b'\0\0'
+        validate_command(exe)
+        image = build_image(b'CBM\0\x1c\0\xd4'+bytes(25), b'', b'', b'', commands=(('NEWCMD', exe),))
+        for view in (image, d64_compatibility_image(image)):
+            _, offsets = dos_file(view, 'NEWCMD.BIN')
+            self.assertEqual(bytes(view[p] for p in offsets), exe)
+        for bad in (exe[:-1], exe+b'x', exe[:7]+b'\x02'+exe[8:],
+                    exe[:12]+b'\xff\xff'+exe[14:], exe[:-2]+b'\1\0\2\0'):
+            with self.assertRaises(ValueError): validate_command(bad)
+
     def test_pack_and_reject_invalid_commands(self):
         exe = build_executable(b'\x60', cpu=1, load_address=0x200, entry_address=0x200)
         validate_command(exe)

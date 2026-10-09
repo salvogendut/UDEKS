@@ -217,6 +217,15 @@ USER_RECOVERY_MOUNT_UDEX := $(BUILD_USER)/mount-recovery.udx
 USER_SAVE_UDEX := $(BUILD_USER)/save.udx
 USER_FILETOOLS_BIN := $(BUILD_USER)/filetools.bin
 USER_FILETOOLS_UDEX := $(BUILD_USER)/filetools.udx
+USER_CAT_UDEX := $(BUILD_DIR)/native-console/cat/CAT.BIN
+$(USER_CAT_UDEX): user/bin/cat.c user/lib/native_console.c user/lib/native_input.c \
+		user/lib/native_files.c user/lib/native_console_entry.s \
+		user/include/udeks/native_console.h user/include/udeks/program.h \
+		include/udeks/task_request.h src/8502/native_args.inc cfg/8502-reloc-app.cfg \
+		tools/build_native_console.py tools/o65_to_udex.py tools/native_app_layout.py \
+		tools/build_graphical_example.py tools/build_udex.py tools/gen_capability_imports.py
+	$(PYTHON) tools/build_native_console.py --source user/bin/cat.c --name CAT \
+		--output $(BUILD_DIR)/native-console/cat
 USER_SYSINFO_UDEX := $(BUILD_USER)/sysinfo.udx
 USER_DIAGNOSTICS_UDEX := $(BUILD_USER)/diagnostics.udx
 $(BUILD_USER)/diagnostics.o $(BUILD_USER)/filetools.o: mk/storage.mk

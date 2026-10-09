@@ -15,7 +15,7 @@ class NativeConsoleSDK(unittest.TestCase):
         binary=Path(cls.temp.name)/'sdk.so'
         subprocess.run(['cc','-std=c99','-Wall','-Wextra','-Werror','-shared','-fPIC',
             '-DUDEKS_NATIVE_CONSOLE_HOST_TEST','-Iuser/include','-Iinclude',
-            'user/lib/native_console.c','user/lib/native_input.c',
+            'user/lib/native_console.c','user/lib/native_input.c','user/lib/native_files.c',
             'tests/fixtures/native_console.c','-o',str(binary)],cwd=ROOT,check=True)
         cls.lib=c.CDLL(str(binary))
         cls.lib.udeks_write_bytes.argtypes=[c.c_uint8,c.c_void_p,c.c_uint8]
@@ -24,15 +24,19 @@ class NativeConsoleSDK(unittest.TestCase):
         cls.lib.udeks_sleep.argtypes=[c.c_uint16]
         cls.lib.udeks_poll.argtypes=[c.c_uint8,c.c_uint16]
         cls.lib.udeks_read.argtypes=[c.c_uint8,c.c_void_p,c.c_uint8]
-        for name in ('write_bytes','write','write_byte','sleep','read','poll'):
+        cls.lib.udeks_open.argtypes=[c.c_char_p,c.c_uint8]
+        cls.lib.udeks_close.argtypes=[c.c_uint8]
+        for name in ('write_bytes','write','write_byte','sleep','read','poll','open','close'):
             getattr(cls.lib,'udeks_'+name).restype=c.c_uint8
 
     @classmethod
     def tearDownClass(cls): cls.temp.cleanup()
     def value(self,name): return c.c_uint8.in_dll(self.lib,name)
     def setUp(self):
-        for name in ('test_mode','test_calls','udeks_errno','test_read_mode','test_read_count'): self.value(name).value=0
+        for name in ('test_mode','test_calls','udeks_errno','test_read_mode','test_read_count',
+                     'test_close_result','test_file_error'): self.value(name).value=0
         self.value('test_poll_result').value=1
+        self.value('test_open_result').value=4
         c.c_uint16.in_dll(self.lib,'test_output_size').value=0
     def output(self):
         return bytes((c.c_uint8*256).in_dll(self.lib,'test_output'))[:c.c_uint16.in_dll(self.lib,'test_output_size').value]
@@ -88,7 +92,7 @@ class NativeConsoleSDK(unittest.TestCase):
         self.assertEqual(self.value('test_calls').value,3)
 
     def test_malformed_and_unowned_replies_are_not_accepted(self):
-        for mode in range(3,13):
+        for mode in range(3,14):
             with self.subTest(mode=mode):
                 self.value('test_mode').value=mode
                 self.assertEqual(self.lib.udeks_write_bytes(1,b'abc',3),255)
@@ -158,6 +162,78 @@ class NativeConsoleSDK(unittest.TestCase):
         self.assertEqual(self.lib.udeks_read(0,data,2),255)
         self.assertEqual(self.value('udeks_errno').value,71)
         self.assertEqual(bytes(data),b'\xa5'*2)
+
+    def test_file_open_validates_path_and_mode_without_mutating_record(self):
+        record=(c.c_uint8*38).in_dll(self.lib,'native_console_request')
+        for path,mode in ((None,0),(b'',0),(b'a'*24,0),(b'file',1),(b'file',2),(b'file',4),(b'file',255)):
+            record[:]=b'\xa5'*38
+            self.assertEqual(self.lib.udeks_open(path,mode),255)
+            self.assertEqual(self.value('udeks_errno').value,22)
+            self.assertEqual(bytes(record),b'\xa5'*38)
+        self.assertEqual(self.value('test_calls').value,0)
+
+    def test_blocked_reply_identity_does_not_include_common_minor_byte(self):
+        self.value('test_mode').value=13
+        self.assertEqual(self.lib.udeks_sleep(1),0)
+        self.assertEqual(self.lib.udeks_poll(0,1),1)
+
+    def test_file_versions_and_paths_are_counted_with_nul(self):
+        for path,mode,minor in ((b'/hello',0,8),(b'a'*23,0,8),(b'/new',3,14)):
+            self.assertEqual(self.lib.udeks_open(path,mode),4)
+            self.assertEqual([self.value(n).value for n in ('test_op','test_fd','test_count','test_minor')],
+                             [6,mode,len(path),minor])
+            self.assertEqual(bytes((c.c_uint8*24).in_dll(self.lib,'test_payload'))[:len(path)+1],path+b'\0')
+        self.assertEqual(self.lib.udeks_write_bytes(4,b'\x00\xff\x80',3),3)
+        self.assertEqual(self.value('test_minor').value,14)
+        self.assertEqual(self.lib.udeks_close(4),0)
+        self.assertEqual([self.value(n).value for n in ('test_op','test_fd','test_count')],[9,4,0])
+
+    def test_file_read_does_not_poll_and_copies_only_owned_result(self):
+        buffer=(c.c_uint8*26)(*([165]*26))
+        data=(c.c_uint8*24).in_dll(self.lib,'test_input'); data[:]=bytes(range(24))
+        self.value('test_read_count').value=24
+        self.assertEqual(self.lib.udeks_read(4,c.byref(buffer,1),24),24)
+        self.assertEqual(bytes(buffer),b'\xa5'+bytes(range(24))+b'\xa5')
+        self.assertEqual(self.value('test_calls').value,1)
+        self.assertEqual(self.value('test_op').value,1)
+        self.value('test_read_count').value=0
+        self.assertEqual(self.lib.udeks_read(4,buffer,24),0)
+        self.assertEqual(self.lib.udeks_poll(4,0),255)
+        self.assertEqual(self.value('udeks_errno').value,9)
+        for error in (5,9,19):
+            before=bytes(buffer); self.value('test_file_error').value=error
+            self.assertEqual(self.lib.udeks_read(4,buffer,24),255)
+            self.assertEqual(bytes(buffer),before)
+            self.assertEqual(self.value('udeks_errno').value,error)
+
+    def test_file_errors_short_writes_and_close_are_never_retried(self):
+        for error in (2,5,16,17,19,21,24,28,30):
+            self.setUp(); self.value('test_file_error').value=error
+            self.assertEqual(self.lib.udeks_open(b'/data',0),255)
+            self.assertEqual(self.value('udeks_errno').value,error)
+            self.assertEqual(self.value('test_calls').value,1)
+        self.setUp(); self.value('test_mode').value=2
+        self.assertEqual(self.lib.udeks_write_bytes(4,b'abc',3),2)
+        self.assertEqual(self.value('test_calls').value,1)
+        self.setUp(); self.value('test_file_error').value=5
+        self.assertEqual(self.lib.udeks_close(4),255)
+        self.assertEqual(self.value('udeks_errno').value,5)
+        self.assertEqual(self.value('test_calls').value,1)
+
+    def test_file_reply_validation_and_bootfs_directory_release(self):
+        for fd in (0,1,2,5,254):
+            self.setUp(); self.value('test_open_result').value=fd
+            self.assertEqual(self.lib.udeks_open(b'/file',0),255)
+            self.assertEqual(self.value('udeks_errno').value,71)
+        self.setUp(); self.value('test_open_result').value=3
+        self.assertEqual(self.lib.udeks_open(b'/',0),255)
+        self.assertEqual(self.value('udeks_errno').value,21)
+        self.assertEqual(self.value('test_calls').value,2)
+        self.assertEqual((self.value('test_op').value,self.value('test_fd').value),(9,3))
+        self.setUp(); self.value('test_close_result').value=1
+        self.assertEqual(self.lib.udeks_close(4),255)
+        self.assertEqual(self.value('udeks_errno').value,71)
+        for fd in (0,1,2,3,255): self.assertEqual(self.lib.udeks_close(fd),255)
 
 
 if __name__=='__main__': unittest.main()

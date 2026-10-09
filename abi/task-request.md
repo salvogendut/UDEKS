@@ -255,6 +255,9 @@ system-disk swapping safe.
 The transient SDK `udeks_write_bytes()` is counted file I/O; `udeks_write()`
 continues to mean NUL-terminated console output. See the
 [SDK example](../docs/GRAPHICAL-APPS-SDK.md#counted-disk-io-utrq-014).
+The independent [native console SDK](../docs/NATIVE-CONSOLE-APPS.md#current-checkpoint-native-files-and-cat)
+also supports mounted-file OPEN/READ/WRITE/CLOSE through this same boundary.
+Its counted WRITE supports descriptor 4; no new filesystem ABI is introduced.
 
 ## Bounded worker (0.11)
 
@@ -450,7 +453,9 @@ This initial single-handle service is synchronous and IRQ-masked per request,
 with finite transport waits and a maximum of 19 directory sectors per lookup
 and 1,366 data sectors per file (also bounded by its directory block count). It does
 not schedule, yield, call KERNAL, or call window code while its bank is mapped.
-It is not yet per-process descriptor ownership or cancellation-aware I/O.
+The single descriptor is now task-generation-owned and released on EXIT/CANCEL,
+as specified above. Individual bus requests still cannot be cancelled mid-call;
+native clients must give the scheduler a turn between chunks.
 
 ## Flags
 
@@ -629,6 +634,13 @@ writers may interleave between requests; no line-atomicity guarantee is added.
 See [background output](shell.md#background-launch-and-output-2026-10-09).
 
 ## Scheduling and record ownership
+
+On SLEEP/POLL resumption the implementation republishes the owned operation,
+sequence, descriptor, count, flags, result/error and operation-specific payload.
+It does **not** snapshot/restore the shared ABI-minor byte. That byte can reflect
+another client's compatible request and is not part of a blocked reply's
+identity. Native SDK clients check their version on synchronous responses only;
+the scheduler-resumed response is matched using the restored identity fields.
 
 ### POLL (16, introduced in 0.4)
 

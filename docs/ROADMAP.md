@@ -27,7 +27,15 @@ The user also accepted the argument/status and foreground-input checkpoints.
 task-based Ctrl+C, canonical foreground stdin, background-read `EIO`,
 argument-bearing `&`, and output that preserves the active input line.
 Its manual check is `ticker Alpha &` while editing a command or using ASK.
-**Next: increment 3 — native filesystem ownership and a useful disk utility.**
+**Increment 3 is implemented, awaiting user acceptance:** native SDK file
+OPEN/READ/WRITE/CLOSE uses existing task-generation ownership and EXIT/CANCEL
+cleanup. Normal disk images ship a scheduled `cat`; graphical peers continue
+between its bounded chunks. One shared filesystem stream remains the limit,
+and other utilities remain synchronous. Test CAT alongside clock/wave, missing
+files, Ctrl+C and subsequent reuse. VICE D64/D81, native 1986 and 1,616 host
+tests pass; the user C128/Pi1541 gate is next. After acceptance,
+close out #52 rather than extending
+this increment into general allocation or a filesystem redesign.
 This is bounded cooperative task support, not full POSIX console job control.
 
 **Completed architectural feature (2026-10-09):**
