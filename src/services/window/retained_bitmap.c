@@ -7,6 +7,9 @@
 #include "udeks/retained_paths.h"
 #include "udeks/task_request.h"
 #include "udeks/vic_graphics.h"
+#ifdef UDEKS_BITMAP_REU
+#include "udeks/reu_bitmap.h"
+#endif
 
 #if UDEKS_BITMAP_LENGTH != UDEKS_RETAINED_LENGTH_MASK || \
     UDEKS_BITMAP_POOL_BYTES != UDEKS_RETAINED_POOL_SIZE || \
@@ -36,6 +39,9 @@ unsigned char __fastcall__ udeks_retained_bitmap_request(unsigned char index)
     unsigned int *record;
     unsigned char *header;
     unsigned char i,count,stride,padding;
+#ifdef UDEKS_BITMAP_REU
+    unsigned char external,error;
+#endif
     if(index>=UDEKS_BITMAP_CLIENTS) return UDEKS_TREQ_EINVAL;
     record=udeks_retained_lengths+index;
     if(P[0]==UDEKS_BITMAP_BEGIN) {
@@ -46,8 +52,20 @@ unsigned char __fastcall__ udeks_retained_bitmap_request(unsigned char index)
         if(*record) return UDEKS_TREQ_EBUSY;
         stride=(unsigned char)(P[2]+7u)>>3;
         size=UDEKS_BITMAP_HEADER+(unsigned int)stride*P[4];
+#ifdef UDEKS_BITMAP_REU
+        external=udeks_reu_store.device==1;
+        if(external) size=UDEKS_BITMAP_HEADER;
+#endif
         if(size>UDEKS_RETAINED_BASE+UDEKS_RETAINED_POOL_SIZE-
                 udeks_retained_address(UDEKS_BITMAP_CLIENTS)) return UDEKS_TREQ_ENOMEM;
+#ifdef UDEKS_BITMAP_REU
+        if(external) {
+            error=udeks_reu_store_begin(index+1u,(unsigned int)stride*P[4],
+                udeks_bitmap_handles+index);
+            if(error) return error;
+            stride|=UDEKS_BITMAP_REU_STRIDE;
+        }
+#endif
         udeks_retained_resize(index,size);
         header=POOL(udeks_retained_address(index));
         memcpy(header,(const void *)(P+5),3);
@@ -61,15 +79,29 @@ unsigned char __fastcall__ udeks_retained_bitmap_request(unsigned char index)
         return UDEKS_TREQ_EINVAL;
     size=(size&UDEKS_BITMAP_LENGTH)-UDEKS_BITMAP_HEADER;
     header=POOL(udeks_retained_address(index));
+#ifdef UDEKS_BITMAP_REU
+    external=header[5]&UDEKS_BITMAP_REU_STRIDE;
+    if(external) size=(unsigned int)(header[5]&127u)*header[4];
+#endif
     received=header[6]|((unsigned int)header[7]<<8);
     if(P[0]==UDEKS_BITMAP_WRITE) {
         at=P[2]|((unsigned int)P[3]<<8);count=P[4];
         if(!count || count>UDEKS_BITMAP_CHUNK || at!=received || at>size ||
            count>size-at || !zeroes(5u+count)) return UDEKS_TREQ_EINVAL;
         stride=header[5];padding=header[3]&7u;
+#ifdef UDEKS_BITMAP_REU
+        stride&=127u;
+#endif
         if(padding) padding=(1u<<(8u-padding))-1u;
         for(i=0;i<count;++i)
             if((at+i+1u)%stride==0 && (P[5+i]&padding)) return UDEKS_TREQ_EINVAL;
+#ifdef UDEKS_BITMAP_REU
+        if(external) {
+            error=udeks_reu_store_write(index+1u,udeks_bitmap_handles[index],at,
+                (unsigned char *)(P+5),count);
+            if(error) return error;
+        } else
+#endif
         memcpy(header+UDEKS_BITMAP_HEADER+at,(const void *)(P+5),count);
         received+=count;header[6]=received;header[7]=received>>8;
         return 0;
@@ -77,11 +109,22 @@ unsigned char __fastcall__ udeks_retained_bitmap_request(unsigned char index)
     if(!zeroes(2)) return UDEKS_TREQ_EINVAL;
     if(P[0]==UDEKS_BITMAP_COMMIT) {
         if(received!=size) return UDEKS_TREQ_EINVAL;
+#ifdef UDEKS_BITMAP_REU
+        if(external) {
+            error=udeks_reu_store_commit(index+1u,udeks_bitmap_handles[index]);
+            if(error) return error;
+        }
+#endif
         *record&=~UDEKS_BITMAP_PENDING;
         return 0;
     }
     if(P[0]==UDEKS_BITMAP_ABORT) {
+#ifdef UDEKS_BITMAP_REU
+        udeks_bitmap_release_hidden(index);
+        udeks_retained_resize(index,0);
+#else
         udeks_retained_discard(index);
+#endif
         return 0;
     }
     return UDEKS_TREQ_EINVAL;
@@ -100,8 +143,19 @@ void __fastcall__ udeks_retained_bitmap_paint(unsigned char index)
     header=POOL(udeks_retained_address(index));
     left=udeks_graphics_origin_x+header[0]+((unsigned int)header[1]<<8);
     y=udeks_graphics_origin_y+header[2];stride=header[5];height=header[4];
+#ifdef UDEKS_BITMAP_REU
+    stride&=127u;
+    udeks_bitmap_row_stride=stride;udeks_bitmap_row_offset=0;
+#endif
     pixels=header+UDEKS_BITMAP_HEADER;
     for(row=0;row<height;++row,++y) {
+#ifdef UDEKS_BITMAP_REU
+        if(header[5]&UDEKS_BITMAP_REU_STRIDE) {
+            if(udeks_bitmap_fetch_row(index)) return;
+            pixels=udeks_bitmap_row_buffer;
+            udeks_bitmap_row_offset+=stride;
+        }
+#endif
         for(col=0;col<stride;++col) {
             byte=*pixels++;x=left+(unsigned int)col*8;
             while(byte) {

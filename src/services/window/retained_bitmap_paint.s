@@ -4,22 +4,39 @@
 ; bits, MSB first; row padding was checked before the image was committed.
         .setcpu "6502"
         .macpack longbranch
+        .ifdef UDEKS_BITMAP_REU
+        .export _udeks_bitmap_paint_hidden, _udeks_bitmap_row_stride
+_udeks_bitmap_paint_hidden = _udeks_retained_bitmap_paint
+        .import _udeks_bitmap_fetch_row, _udeks_bitmap_row_buffer
+        .import _udeks_bitmap_row_offset
+        .segment "BITMAPSTATE"
+index:  .res 1
+external:.res 1
+        .else
         .export _udeks_retained_bitmap_paint
+        .segment "BSS"
+        .endif
         .import _udeks_retained_lengths, _udeks_retained_address
         .import _udeks_graphics_origin_x, _udeks_graphics_origin_y
         .import _udeks_vic_bitmap_pixel, pushax
         .importzp ptr1
-        .segment "BSS"
 left:   .res 2
 px:     .res 2
 py:     .res 2
 pixels: .res 2
 stride: .res 1
+        .ifdef UDEKS_BITMAP_REU
+_udeks_bitmap_row_stride = stride
+        .endif
 columns:.res 1
 rows:   .res 1
 bits:   .res 1
 count:  .res 1
+        .ifdef UDEKS_BITMAP_REU
+        .segment "BITMAPCODE"
+        .else
         .segment "CODE"
+        .endif
 _udeks_retained_bitmap_paint:
         cmp #4
         jcs done
@@ -34,6 +51,9 @@ _udeks_retained_bitmap_paint:
         rts
 committed:
         pla
+        .ifdef UDEKS_BITMAP_REU
+        sta index
+        .endif
         jsr _udeks_retained_address
         ; Address helper returns the header in AX and ptr1.
         clc
@@ -64,8 +84,36 @@ committed:
         sta rows
         iny
         lda (ptr1),y
+        .ifdef UDEKS_BITMAP_REU
+        sta external
+        and #$7f
+        .endif
         sta stride
+        .ifdef UDEKS_BITMAP_REU
+        lda #0
+        sta _udeks_bitmap_row_offset
+        sta _udeks_bitmap_row_offset+1
+        .endif
 row:
+        .ifdef UDEKS_BITMAP_REU
+        bit external
+        bpl local_row
+        lda index
+        jsr _udeks_bitmap_fetch_row
+        cmp #0
+        jne done                  ; never plot a partially fetched row
+        lda #<_udeks_bitmap_row_buffer
+        sta pixels
+        lda #>_udeks_bitmap_row_buffer
+        sta pixels+1
+        clc
+        lda _udeks_bitmap_row_offset
+        adc stride
+        sta _udeks_bitmap_row_offset
+        bcc local_row
+        inc _udeks_bitmap_row_offset+1
+local_row:
+        .endif
         lda left
         sta px
         lda left+1
@@ -109,5 +157,5 @@ advance:
         bne :+
         inc py+1
 :       dec rows
-        bne row
+        jne row
 done:   rts

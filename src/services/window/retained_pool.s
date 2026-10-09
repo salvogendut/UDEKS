@@ -5,6 +5,9 @@
         .setcpu "6502"
         .import _udeks_retained_lengths, _memmove, pushax, pusha, incsp1
         .importzp ptr1, sp
+        .ifdef UDEKS_BITMAP_REU
+        .import _udeks_bitmap_release
+        .endif
         .export _udeks_retained_address, _udeks_retained_resize, _udeks_retained_discard
         .ifndef UDEKS_POOL_TEST
 POOL = $1300
@@ -96,6 +99,11 @@ _udeks_retained_resize:
         jmp incsp1
 
 _udeks_retained_discard:
+        .ifdef UDEKS_BITMAP_REU
+        pha
+        jsr _udeks_bitmap_release
+        pla
+        .endif
         jsr pusha
         lda #0
         tax

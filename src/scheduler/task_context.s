@@ -75,8 +75,10 @@ clear_contexts:
         sta MMU_PAGE0_PAGE
         lda #TASK_PAGE1
         sta MMU_PAGE1_PAGE
-        ldy #$00
-        tya
+        ; $00/$01 are CPU ports even with relocated page zero. Writes can
+        ; also disturb RAM under the port; never include them in task clears.
+        ldy #$02
+        lda #$00
 clear_task_pages:
         sta $0000,y
         sta $0100,y
@@ -95,7 +97,7 @@ clear_task_pages:
         sta MMU_PAGE0_PAGE
         lda #$01
         sta MMU_PAGE1_PAGE
-        lda #$00
+        tya                         ; clear loop finished with Y=0
         rts
 
 ; Return a selected task id in A and copy its record into common RAM. The

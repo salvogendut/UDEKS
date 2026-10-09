@@ -47,7 +47,9 @@ The [qualification record](bench/results/2026-10-07-storage-acceptance/README.md
 includes the hardware acceptance. The VICE 1581 mid-write-ejection run remains
 unqualified, but the [equivalent 1986 test now passes](bench/results/2026-10-07-storage-eject-1986/README.md).
 
-Published 2026-10-09; ordinary `make boot` reproduces these three formats:
+Published baseline snapshots, 2026-10-09. Ordinary `make boot` builds these
+three formats from the current source; the newer packed-bitmap/REU demo is
+linked below and is not yet part of these download snapshots:
 
 | Image | Use |
 | --- | --- |
@@ -133,13 +135,21 @@ photos. `/alex2.cbm` is a small picture for testing beside clock + wave.
 Small `.CBM` pictures are displayed pixel-for-pixel with retained move/uncover
 repaint, without modifying the kernel or rereading the disk.
 
-On the packed-bitmap feature branch, `xview` also streams **128x80 and 160x100**
+`xview` also streams **128x80 and 160x100**
 pictures through UTRQ 0.20, publishing pixels only after file validation and
 close. [Build and test the separate demo disks](abi/cbm.md#build-and-demo);
-normal published downloads remain unchanged pending merge. Packed images
-still share a 2,304-byte display pool: test the 160x100 picture by itself.
-The original ALEX/CLOCKWORK conversions now each fit beside clock + wave;
-the new larger ALEX128/CLOCK160 conversions do not fit that three-app combination.
+normal published download snapshots remain unchanged. On a stock machine,
+packed images share a 2,304-byte display pool: test the 160x100 picture by itself.
+
+With an optional **REU**, bitmap pixels use expansion memory, leaving only an
+8-byte header per image in that pool. CLOCK160 can now coexist with clock and
+wave, and independent viewers can retain different large pictures. This uses
+the same app API and preserves the stock-machine fallback. The initial backend
+offers four 8 KiB objects (32 KiB total); it does not add executable task slots.
+See the [REU design and limits](docs/GRAPHICS-REU.md) and the user-accepted
+[demo disks and test instructions](bench/results/2026-10-09-reu-graphics/README.md).
+VICE qualification covers the integrated desktop with 512 KiB REU and without
+REU; physical C128/REU acceptance and broader interaction checks remain open.
 
 A new `.BIN` launches as `name` or `name &`
 into any free **compatible-sized** allocation, without an OS name-table entry.
@@ -203,6 +213,8 @@ open files also keep it busy. System commands remain available afterward.
   ordinary filenames. `.SH` is reserved and readable, but execution is deferred.
 - Overlapping, focused, movable and resizable VIC-IIe windows. Drag/resize uses
   outlines until release; a retained cache assists repainting.
+- Transactional packed bitmap surfaces, streaming `.CBM` pictures and optional
+  REU-backed bitmap storage, without REU-specific application code.
 - `xclock` uses the same TI/TI$-compatible timebase as `date`. `xwave` uses
   the Z80 for sinc-surface heights and the 8502 for projection and plotting;
   computed heights survive moves and resizes.
@@ -261,6 +273,13 @@ may contain messages or command paths that differ from the current images.
 
 `xview`, `xclock`, and `xwave` sharing the VIC-IIe desktop in 1986
 (user-supplied screenshot, October 2026).
+
+<p align="center">
+  <img src="screenshot/udeks-reu-desktop.png" alt="UDEKS desktop with a larger Clockwork picture in xview, an analog clock, and the wireframe wave in overlapping windows" width="576">
+</p>
+
+The expanded-picture desktop: `xview`, `xclock`, and `xwave` together after
+REU bitmap integration (user-supplied screenshot, 9 October 2026).
 
 <p align="center">
   <img src="screenshot/udeks-dual-display.gif" alt="Animated UDEKS session with both displays working together" width="720">

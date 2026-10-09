@@ -6,7 +6,61 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — owned REU store component, 2026-10-09
+## Current handoff — integrated REU bitmap backend, 2026-10-09
+
+The user asked to commit/push and continue. The owned-store checkpoint is
+committed/pushed as **`3cb8ae0`**, `graphics-reu`, worktree `build/graphics-reu`.
+The user has tested the integration, reports that it works beautifully, and
+authorized commit/push/PR/merge on 2026-10-09. The merge includes the underlying
+packed-bitmap work from issue #55. README now includes the supplied expanded
+desktop screenshot as `screenshot/udeks-reu-desktop.png`; the original PPM is
+preserved. Published download snapshots remain unchanged; use the linked demo
+disks for this milestone. No new physical-C128/REU result is inferred.
+
+**Package 2 is implemented, with live VICE coexistence/fallback checks.**
+Read [GRAPHICS-REU.md](docs/GRAPHICS-REU.md) and preserved
+[evidence/test disks](bench/results/2026-10-09-reu-graphics/README.md).
+The existing UTRQ bitmap API now routes bulk image bytes into four private
+8 KiB REU extents, retaining just 8 bytes per object in the internal pool.
+Small command/path drawings remain internal; stock machines use the unchanged
+full bitmap allocation. No app changes, new public ABI or app-slot reductions.
+
+- Production bitmap code/state lives in bank-0 `$D000-$DFFF`, delivered from
+  boot-only bank-1 `$7300-$82FF` before VIC/native apps take that space.
+  Checksum/identity and map parity are enforced. Long calls keep IRQs enabled;
+  bounded copies/DMA borrow backed-up common `$F400`, use bank-1 `$4180-$419D`,
+  then restore the common service page. No live VIC bank change during DMA.
+- Hidden CODE 3,232 bytes, state 114, trailer 16; ordinary BSS ends `$9397`,
+  56 bytes before the live `$93D0` service reservation. Pool/slots/stacks stay
+  fixed. Normal and panic module images match.
+- VICE exposed two real integration bugs, both fixed: shell/foreground page
+  initialization wrote CPU ports `$00/$01` and corrupted hidden RAM; it now
+  skips them like the native graphical initializer. The REU transport preserves
+  P, so its caller must compare returned A explicitly before branching.
+- Host tests cover four maximum-size objects, pending invisibility, padding,
+  allocation failures, legacy replacement, partial-read faults, retirement and
+  reuse. VICE checks exact pixels, clock + wave + CLOCK160, independent images,
+  uncover, close/reuse, shell/disk activity, code integrity, DMA guards and the
+  restored bootfs page. The entire saved REU image proves owned bytes and
+  untouched expansion outside them. Stock fallback passes on the same build.
+- Full forced parallel build (`make -B -j8`, no clean) reproduced all three
+  normal disks and the hidden module byte-for-byte. Boot/layout/placement/
+  sim6502 bitmap gates and **1,734 host tests** pass. D71/D81 picture demos are in
+  `build/reu-graphics/qualified`; D81 is the live-qualified medium. The normal
+  compact D64 is built but does not include the extra viewer/pictures.
+
+**Next is package 3, not another placement project:** broader pointer drag,
+resize/occlusion, RESTORE during transfer/render, mid-upload cancellation,
+exhaustion, then physical-C128-with-REU acceptance. The user accepted the
+working desktop, but did not enumerate those remaining scenarios or a hardware
+configuration. Do not claim those
+interaction/hardware gates from this coexistence proof. There is no 1986 pass
+for this integration. Test in VICE with 512 KiB REU and a 1581 drive for D81.
+Wave's joined task allocation still matters: with clock + wave + viewer, CAT
+needs wave closed first. REU is bitmap storage, not extra executable capacity.
+IPC remains the next proposed architecture milestone after this graphics work.
+
+## Previous handoff — owned REU store component, 2026-10-09
 
 On the user's "commit push and do next", the qualified foundation was
 committed/pushed as **`79d0d25`** on `graphics-reu`. Package 2 has begun;

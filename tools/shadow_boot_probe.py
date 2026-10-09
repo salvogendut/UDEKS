@@ -360,8 +360,13 @@ def capture_blocks(
         saved: list[bytes] = []
         for path, start, end, profile in blocks:
             path.unlink(missing_ok=True)
-            selector = 0x01 if profile == "kernel" else 0x04
-            run(f"> ff{selector:02x} 00", None)
+            if profile == "kernel-flat":
+                # Physical RAM avoids the currently running task's relocated
+                # page-zero/CPU-port aliases (notably $D100/$D101 for ush).
+                run("bank ram00", None)
+            else:
+                selector = {"kernel": 0x01, "worker": 0x04}[profile]
+                run(f"> ff{selector:02x} 00", None)
             reply = run(
                 f'save "{path.resolve()}" 0 {start:04x} {end:04x}',
                 b"Saving file",
@@ -369,6 +374,8 @@ def capture_blocks(
             if b"Saving file" not in reply:
                 raise RuntimeError(f"VICE refused to save ${start:04X}")
             saved.append(path.read_bytes()[2:])
+            if profile == "kernel-flat":
+                run("bank cpu", None)
         run(f"> ff00 {mcr:02x}", None)
         connection.sendall(b"x\n")
     return saved

@@ -4,6 +4,9 @@
 #include "udeks/retained_paths.h"
 #include "udeks/vic_graphics.h"
 #include <string.h>
+#ifdef UDEKS_BITMAP_REU
+#include "udeks/reu_bitmap.h"
+#endif
 #ifdef UDEKS_GRAPHICS_HOST_TEST
 extern unsigned char graphics_request[38];
 #define R graphics_request
@@ -62,6 +65,9 @@ void udeks_retained_resize(unsigned char index,unsigned int length)
 #pragma code-name(push, "GRAPHICSPATHS")
 void __fastcall__ udeks_retained_discard(unsigned char index)
 {
+#ifdef UDEKS_BITMAP_REU
+    udeks_bitmap_release(index);
+#endif
     udeks_retained_resize(index,0);
 }
 #pragma code-name(pop)
@@ -152,9 +158,20 @@ unsigned char __fastcall__ udeks_retained_present_image(unsigned char index)
 #pragma code-name(push, "CODE")
 unsigned char __fastcall__ udeks_retained_present(unsigned char index)
 {
+#ifdef UDEKS_BITMAP_REU
+    unsigned char error;
+#endif
     /* Pending upload bytes are never a legacy image replacement. Keep this
      * guard in resident service glue, outside the fixed path-code overlay. */
     if(udeks_retained_lengths[index]&0x2000u) return 16;
+#ifdef UDEKS_BITMAP_REU
+    error=udeks_retained_present_image(index);
+    /* Release only after a successful, fully validated legacy replacement.
+     * Rejections must retain the old bitmap, including its REU ownership. */
+    if(!error) udeks_bitmap_release(index);
+    return error;
+#else
     return udeks_retained_present_image(index);
+#endif
 }
 #pragma code-name(pop)

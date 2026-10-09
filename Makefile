@@ -247,6 +247,7 @@ include mk/storage.mk
 include mk/services.mk
 include mk/reu.mk
 include mk/reu_store.mk
+include mk/reu_graphics.mk
 
 # Storage 0.2 positive/negative files live on DOS media, never in bootfs.
 .PHONY: disk-exec-image
@@ -1502,7 +1503,8 @@ $(BUILD_8502)/vic_pixel.o: src/services/display/vic_pixel.s | $(BUILD_8502)
 $(BUILD_8502)/vic_clear.o: src/services/display/vic_clear.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
-$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphics.bin $(BUILD_8502)/retained-paths.bin &: \
+$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphics.bin $(BUILD_8502)/retained-paths.bin $(BUILD_8502)/bitmap-hidden.bin &: \
+		$(REU_GRAPHICS_OBJECTS) \
 		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/graphics_event.o $(BUILD_8502)/banked_access.o $(BUILD_8502)/retained_paths.o $(BUILD_8502)/retained_pool.o $(BUILD_8502)/retained_bitmap.o $(BUILD_8502)/retained_bitmap_paint.o \
 		$(BUILD_8502)/kernel_entry.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
@@ -1684,6 +1686,7 @@ $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS) &: \
 		$(SCHEDULER_OVERLAY_MAP) $(TASK_CONTEXT_BIN) $(TASK_CONTEXT_MAP) \
 		$(TASK_CONTEXT_VECTORS_BIN) $(TASK_SWITCH_TAIL_BIN) \
 		$(TASK_YIELD_HANDLER_BIN) $(BANKED_LOADER_BIN) $(BANKED_RELOC_BIN) $(BANKED_ACCESS_BIN) $(BUILD_8502)/banked-graphics.bin $(BUILD_8502)/retained-paths.bin \
+		$(BUILD_8502)/bitmap-hidden-sealed.bin \
 		tools/build_scheduler_overlay.py tools/build_window_cache.py tools/build_storage.py | $(BUILD_BOOT)
 	$(PYTHON) tools/build_scheduler_overlay.py \
 		$(SCHEDULER_OVERLAY_PAGE_BIN) $(SCHEDULER_OVERLAY_TAIL_BIN) \
@@ -1697,7 +1700,8 @@ $(SCHEDULER_OVERLAY_PAYLOAD) $(SCHEDULER_OVERLAY_CONSTANTS) &: \
 		--storage $(STORAGE_BUILD) --ush $(USER_USH_BIN) --task-lookup $(TASK_LOOKUP_BIN) \
 		--banked-loader $(BANKED_LOADER_BIN) --banked-reloc $(BANKED_RELOC_BIN) \
 		--banked-access $(BANKED_ACCESS_BIN) \
-		--banked-graphics $(BUILD_8502)/banked-graphics.bin --retained-paths $(BUILD_8502)/retained-paths.bin
+		--banked-graphics $(BUILD_8502)/banked-graphics.bin --retained-paths $(BUILD_8502)/retained-paths.bin \
+		--bitmap-hidden $(BUILD_8502)/bitmap-hidden-sealed.bin
 
 $(TASK_SWITCH_ACTIVATION_OBJ): src/boot/task-switch-activation.s \
 		$(SCHEDULER_OVERLAY_CONSTANTS) | $(BUILD_BOOT)
@@ -1708,7 +1712,8 @@ $(TASK_SWITCH_ACTIVATION_BIN): $(TASK_SWITCH_ACTIVATION_OBJ) \
 	$(LD65) -C cfg/8502-task-switch-activation.cfg -o $@ $<
 
 $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
-		$(PANIC_PROBE_PROBE_BIN) $(PANIC_PROBE_MAP) $(BUILD_8502)/banked-graphics-panic.bin $(BUILD_8502)/retained-paths-panic.bin &: \
+		$(PANIC_PROBE_PROBE_BIN) $(PANIC_PROBE_MAP) $(BUILD_8502)/banked-graphics-panic.bin $(BUILD_8502)/retained-paths-panic.bin $(BUILD_8502)/bitmap-hidden-panic.bin &: \
+		$(REU_GRAPHICS_OBJECTS) \
 		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/graphics_event.o $(BUILD_8502)/banked_access.o $(BUILD_8502)/retained_paths.o $(BUILD_8502)/retained_pool.o $(BUILD_8502)/retained_bitmap.o $(BUILD_8502)/retained_bitmap_paint.o \
 		$(BUILD_8502)/kernel_entry.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
@@ -2169,18 +2174,18 @@ $(BUILD_8502)/banked_graphics.o: $(BUILD_8502)/banked_graphics.s
 	$(CA65) --cpu 6502 -o $@ $<
 $(BUILD_8502)/graphics_event.o: src/services/window/graphics_event.s | $(BUILD_8502)
 	$(CA65) --cpu 6502 -o $@ $<
-$(BUILD_8502)/retained_paths.s: src/services/window/retained_paths.c include/udeks/retained_paths.h include/udeks/banked_graphics.h include/udeks/vic_graphics.h Makefile | $(BUILD_8502)
-	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -D UDEKS_RETAINED_POOL_ASM -I include -o $@ $<
+$(BUILD_8502)/retained_paths.s: src/services/window/retained_paths.c include/udeks/retained_paths.h include/udeks/banked_graphics.h include/udeks/vic_graphics.h include/udeks/reu_bitmap.h include/udeks/reu_store.h Makefile | $(BUILD_8502)
+	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -D UDEKS_RETAINED_POOL_ASM -D UDEKS_BITMAP_REU -I include -o $@ $<
 $(BUILD_8502)/retained_paths.o: $(BUILD_8502)/retained_paths.s
 	$(CA65) --cpu 6502 -o $@ $<
-$(BUILD_8502)/retained_pool.o: src/services/window/retained_pool.s | $(BUILD_8502)
-	$(CA65) --cpu 6502 -o $@ $<
-$(BUILD_8502)/retained_bitmap.s: src/services/window/retained_bitmap.c include/udeks/retained_bitmap.h include/udeks/retained_paths.h include/udeks/bitmap_store.h include/udeks/task_request.h include/udeks/vic_graphics.h Makefile | $(BUILD_8502)
-	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -D UDEKS_BITMAP_RENDER_ASM -I include -o $@ $<
+$(BUILD_8502)/retained_pool.o: src/services/window/retained_pool.s Makefile | $(BUILD_8502)
+	$(CA65) --cpu 6502 -D UDEKS_BITMAP_REU -o $@ $<
+$(BUILD_8502)/retained_bitmap.s: src/services/window/retained_bitmap.c include/udeks/retained_bitmap.h include/udeks/retained_paths.h include/udeks/bitmap_store.h include/udeks/task_request.h include/udeks/vic_graphics.h include/udeks/reu_bitmap.h include/udeks/reu_store.h Makefile | $(BUILD_8502)
+	$(CC65) -t none --cpu 6502 --standard c99 -Os --static-locals -D UDEKS_BITMAP_RENDER_ASM -D UDEKS_BITMAP_REU -D udeks_retained_bitmap_request=udeks_bitmap_request_hidden --code-name BITMAPCODE --bss-name BITMAPSTATE -I include -o $@ $<
 $(BUILD_8502)/retained_bitmap.o: $(BUILD_8502)/retained_bitmap.s
 	$(CA65) --cpu 6502 -o $@ $<
-$(BUILD_8502)/retained_bitmap_paint.o: src/services/window/retained_bitmap_paint.s | $(BUILD_8502)
-	$(CA65) --cpu 6502 -o $@ $<
+$(BUILD_8502)/retained_bitmap_paint.o: src/services/window/retained_bitmap_paint.s Makefile | $(BUILD_8502)
+	$(CA65) --cpu 6502 -D UDEKS_BITMAP_REU -o $@ $<
 $(BUILD_8502)/banked_access.o: src/services/window/banked_access.s src/services/app/native_layout.inc src/8502/native_args.inc src/8502/native_args_copy.inc | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
@@ -2527,7 +2532,9 @@ $(BUILD_DIR)/bitmap-store/pool-test.o: src/services/window/retained_pool.s | $(B
 	$(CA65) --cpu 6502 -D UDEKS_POOL_TEST -o $@ $<
 $(BUILD_DIR)/bitmap-store/retained-check.o: bench/packed-bitmap/retained_check.c include/udeks/bitmap_store.h include/udeks/retained_bitmap.h include/udeks/retained_paths.h | $(BUILD_DIR)/bitmap-store
 	$(CL65) -t sim6502 --standard c99 -Os -I include -c -o $@ $<
-retained-bitmap-check: $(BUILD_DIR)/bitmap-store/store.o $(BUILD_DIR)/bitmap-store/retained.o $(BUILD_DIR)/bitmap-store/pool-test.o $(BUILD_DIR)/bitmap-store/retained-check.o $(BUILD_8502)/retained_bitmap_paint.o bench/packed-bitmap/retained_sim.cfg
+$(BUILD_DIR)/bitmap-store/paint-test.o: src/services/window/retained_bitmap_paint.s | $(BUILD_DIR)/bitmap-store
+	$(CA65) --cpu 6502 -o $@ $<
+retained-bitmap-check: $(BUILD_DIR)/bitmap-store/store.o $(BUILD_DIR)/bitmap-store/retained.o $(BUILD_DIR)/bitmap-store/pool-test.o $(BUILD_DIR)/bitmap-store/retained-check.o $(BUILD_DIR)/bitmap-store/paint-test.o bench/packed-bitmap/retained_sim.cfg
 	$(CL65) -t sim6502 -C bench/packed-bitmap/retained_sim.cfg -m $(BUILD_DIR)/bitmap-store/retained-check.map -o $(BUILD_DIR)/bitmap-store/retained-check $(filter %.o,$^)
 	sim65 $(BUILD_DIR)/bitmap-store/retained-check
 .PHONY: retained-bitmap-check

@@ -158,6 +158,10 @@ def baseline_regions(kernel, storage, worker):
                Region('banked image loader', 1, 0xD900, 0xE000),
                Region('storage state/software stack', 1, 0xE000, 0xE200),
                Region('IEC driver and ush stack', 1, 0xE300, 0xF000), STORAGE_HIDDEN]
+    if 'BITMAPCODE' in kernel:
+        from reu_graphics_layout import layout
+        layout(kernel)
+        regions.append(Region('bitmap service under I/O', 0, 0xD000, 0xE000))
     allowed = {'ZEROPAGE', 'STARTUP', 'CODE', 'RODATA', 'BSS', 'STORAGECODE', 'IECCODE', 'STORAGEHIGH'}
     if storage.keys() != allowed:
         raise ValueError('storage segments changed; review ownership')

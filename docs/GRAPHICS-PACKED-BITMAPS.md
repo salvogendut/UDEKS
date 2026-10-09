@@ -18,7 +18,9 @@ increment, not an open-ended graphics optimization project.
 
 ## Current status
 
-**All four steps complete; user-tested, commit/push authorized, merge pending.**
+**All four steps complete and user-tested; included in the authorized
+`graphics-reu` PR/merge.** Optional expansion-backed storage is now implemented
+on top of this milestone; see [REU integration](GRAPHICS-REU.md).
 UTRQ **0.20**, operation 23, suboperations 8–11 are available to independent
 native applications through the existing `$FF16` gate. The C handler uses
 the real request record and shared pool; a small graphics-service assembly
@@ -32,16 +34,18 @@ VICE D71/D81 and native 1986 D81 pass exact 128x80, 160x100 and odd-width
 pictures, failed-file cleanup, OOM isolation, paired viewers, drag/uncover,
 clock/wave coexistence, input, mid-load Ctrl+C/close and stream reuse.
 [Viewer evidence and manual checklist](../bench/results/2026-10-09-packed-viewer/README.md).
-Root downloads and `main` are untouched; no new physical-hardware result.
+Root published downloads remain at their earlier snapshot; no new
+physical-hardware result is inferred.
 
 Steps 3–4 are packaged as `build/xview/demo/udeks-packed.d71` and `.d81` in
 the feature worktree. Reproduce with `make xview` in the toolchain container,
 then `python3 tools/build_xview_demo.py` after building the matching boot
 candidates. The full D64 is not modified to make room. User testing passed
-(platform unspecified); the user authorized commit/push, not
-PR/merge. Their CLOCK160/clock observation confirms the known display-pool
-limit. Expanding generic retained storage and adding clear allocation errors
-are follow-up work; the clock currently exits silently on failed presentation.
+(platform unspecified), and the user subsequently authorized PR/merge with
+the REU integration on 2026-10-09. Their CLOCK160/clock observation identified
+the stock display-pool limit; optional REU storage now permits that combination.
+Clear clock allocation diagnostics remain follow-up work for stock machines,
+where the clock still exits silently on failed presentation.
 
 ## Integrated placement and boundary (2026-10-09)
 

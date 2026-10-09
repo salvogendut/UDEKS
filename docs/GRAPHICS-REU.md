@@ -2,8 +2,10 @@
 
 Branch `graphics-reu`, worktree `build/graphics-reu`, based on the committed
 packed-bitmap viewer (`fe57e7f`). The user selected REU and VICE for this
-follow-up on 2026-10-09. No PR, merge, issue creation or publication has been
-performed for this slice. The viewer branch and root `main` remain unchanged.
+follow-up on 2026-10-09. The user has accepted the working desktop and authorized
+commit/push/PR/merge, including the underlying packed-bitmap work. The README
+shows the supplied screenshot. Root published disk snapshots are not refreshed;
+the milestone's D71/D81 demos are preserved with its qualification evidence.
 
 ## Feature target
 
@@ -16,33 +18,102 @@ allocations and the existing internal-RAM backend on stock machines.
 Do not promise more task slots, larger executable allocations, full-screen
 pictures, scaling, panning, or faster drawing as part of this feature.
 
+## Integrated bitmap service — package 2
+
+The owned-store component was committed/pushed as `3cb8ae0`; this worktree
+now installs it behind UTRQ 0.20 BEGIN/WRITE/COMMIT/ABORT and the renderer.
+Applications are unchanged. A committed REU bitmap retains only its 8-byte
+header in the internal pool; command/path drawings keep their original backend.
+Without a successfully discovered REU, the original full internal bitmap is
+used. The store still offers only four 8 KiB extents, not all expansion memory.
+
+Production ownership and delivery (normal and panic maps must agree):
+
+| Physical region | Owner/lifetime |
+| --- | --- |
+| Bank 0 `$D000-$DFFF` | Bitmap policy/store/renderer/state; exposed only in kernel-flat mode, after Z80 boot staging is retired |
+| Bank 1 `$7300-$82FF` | Boot-only 4 KiB source in the secondary payload; copied before VIC bitmap or native slot 5 can use it |
+| Bank 1 `$4180-$419D` | Bounded 30-byte DMA buffer, after both sprite templates and before cache code |
+| Common `$F400-$F4FF` | Borrowed only for bounded cross-bank copies; restored from existing immutable bank-1 `$4000` backup before returning |
+| REU `$000000-$007FFF` | Four independent owned 8 KiB bitmap extents |
+
+The hidden image has a checked identity and 16-bit checksum, explicit zero
+state, and a linker-bounded trailer. No stage-1/common reservation grows.
+Moving the existing bitmap handler/renderer funds the resident driver and
+gates. Current measured sizes: **3,232 hidden CODE + 114 state bytes**, 16-byte
+identity/trailer; ordinary BSS ends `$9397`, leaving 56 bytes before `$93D0`.
+No app code allocation, software stack, retained pool or VIC shadow moves.
+
+Long rendering calls keep IRQs enabled. The existing IRQ trampoline restores
+the interrupted MMU configuration; the common NMI stub only queues an event.
+Each short copy/DMA masks IRQs, drains pending NMI with I/O visible, then
+returns to the hidden caller in kernel-flat mode. DMA uses the already-active
+VIC bank 1; discovery runs before VIC graphics activation. The transport
+preserves P, so the caller explicitly compares its returned errno instead of
+branching on inherited Z. This distinction was caught by exact-pixel VICE
+qualification (uploads alone were correct but fetched rows initially blank).
+
+The shell/native foreground page initializers now skip `$00/$01`, matching
+the graphical-app initializer: these are CPU ports, not task scratch. Their
+old clear loop corrupted two hidden-code bytes during shell startup in VICE.
+The live test compares installed code before and after applications run.
+
+Owner cleanup releases REU state on close/cancel/slot reuse and on successful
+replacement by a legacy command/path list. Rejected replacements leave the
+old object intact; pending uploads remain invisible. Host tests cover four
+maximum-size images, compaction, row padding, failed reads and stock fallback.
+
+The user accepted the integrated desktop on 2026-10-09, without specifying a
+hardware configuration or exhaustive checklist. Package 3 still includes
+broader interaction and real C128/REU acceptance.
+REU does **not** add task slots: clock + wave + CLOCK160 fills the existing
+allocation set because wave needs the joined allocation. A new native CAT can
+run after closing wave; the VDC shell itself remains interactive throughout.
+The demo supports two independent CLOCK160 viewers without consuming two
+full images in the 2,304-byte pool. Repaint is still pixel rendering from
+backing storage, not a promised hardware blit or performance improvement.
+
+Build candidates with container `make -j8 boot graphics-apps-check
+retained-bitmap-check placement-check`; then host `tools/build_xview_demo.py
+--output build/reu-graphics/demo-N`. Run `tools/reu_graphics_probe.py --disk
+build/reu-graphics/demo-N/udeks-packed.d81 --picture
+build/reu-graphics/demo-N/CLOCK160.CBM --reu 512` (repeat `--reu 0`). Only
+disposable media/REU files are used and each owned VICE session is closed.
+Native boot disks are required; the direct early-bring-up PRG does not deliver
+the secondary image. Root published downloads remain untouched.
+
 ## Three implementation packages
 
-1. **Transport and discovery — standalone VICE-qualified.** Private 8502 DMA
+1. **Transport and discovery — qualified.** Private 8502 DMA
    primitive, C capacity policy, bounded requests, absent-device behavior,
    bank/speed/processor-state preservation and reproducible failure controls.
-   This is a candidate service component, NOT a module installed at boot.
-2. **Generic backing store and actual service integration.** Budget the code,
+   The standalone foundation is now bound into boot by package 2.
+2. **Generic backing store and actual service integration — implemented.** Budget the code,
    metadata, boot delivery and transfer buffer from the real normal/panic
    maps. Add owned storage handles behind the existing bitmap operations;
    keep BEGIN/WRITE/COMMIT/ABORT semantics, pending invisibility, renderer
    clipping, retirement and allocation failure atomicity. Prefer moving the
    bulk bitmap payloads first, leaving small command/path lists internal.
    The existing public app API should not need REU-specific calls.
-3. **Visible qualification and test disks.** CLOCK160 + clock + wave where
+3. **Visible qualification and test disks — partly complete.** CLOCK160 + clock + wave where
    task allocations permit; independent viewers; move/resize/cover/uncover;
    input, Ctrl+C, RESTORE, Z80 work, load cancellation, exhaustion, close and
    slot reuse. Repeat without REU to prove stock fallback. Preserve VICE
    evidence and provide demo disks, then request real-C128/REU qualification.
+   Coexistence, independent images, exact pixels, cleanup/reuse and stock
+   fallback now pass VICE; broader interaction/hardware gates remain.
 
 Keep these as feature-sized packages, not a new long sequence of unrelated
 micro-optimizations. IPC remains the proposed architectural milestone after
 this user-requested graphics-capacity extension.
 
-## Implemented transport contract (private)
+## Foundation checkpoint: transport contract (private)
 
-`include/udeks/reu.h`, `src/services/memory/reu.s` and `reu_capacity.c` are not
-in the normal or panic resident links. `make reu-probe-build` links a separate
+At the foundation checkpoint, `include/udeks/reu.h`, `src/services/memory/reu.s`
+and `reu_capacity.c` were not in the normal or panic resident links. They are
+now bound by the production integration above; their preserved candidate
+source comments and standalone evidence describe that earlier checkpoint.
+`make reu-probe-build` still links a separate
 program at `$2800`; its addresses are **not** a production placement proposal.
 
 - Serialized 8502 caller, kernel IO profile `$3E`; never called by IRQ/NMI or
@@ -75,7 +146,7 @@ The 1764's unpopulated upper banks can echo the REC bus latch, not a constant
 those banks. Initial assumptions of wrapping/constant-FF upper banks failed
 the live 256 KiB gate and were corrected before this checkpoint.
 
-## Placement and display gates for package 2
+## Historical placement investigation (before integration)
 
 The completed bitmap service leaves only **34 ordinary resident bytes**. The
 candidate transport is 261 CODE + 15 BSS; C discovery is 600 CODE + 10 BSS,
@@ -107,10 +178,11 @@ allocations stay within the discovered prefix and each transfer must fit its
 allocation and capacity; do not interpret the 24-bit field as permission to
 cross a 512 KiB hardware counter boundary on a larger REU.
 
-## Owned backing store — package 2 component qualified
+## Foundation checkpoint: owned backing store component
 
-`reu_store.c` / `reu_store.h` implement a private C storage component, still
-**not installed behind the bitmap API**. It reserves four independent 8 KiB
+`reu_store.c` / `reu_store.h` were qualified as a private C storage component
+before bitmap integration. The production binding is described above.
+The component reserves four independent 8 KiB
 extents in REU `$000000-$007FFF`: 32 KiB offered on every supported REU.
 This covers four maximum current bitmap objects (5,258 bytes each), without
 allocating a large bitmap/page allocator in precious C128 RAM. It does not

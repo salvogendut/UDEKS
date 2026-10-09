@@ -34,7 +34,9 @@ class VicGraphicsSourceTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn(".byte $03, $01", descriptor)
-        self.assertIn(".addr _udeks_vic_graphics_start", descriptor)
+        self.assertIn(".addr _udeks_bitmap_display_start", descriptor)
+        runtime = (ROOT / "src/services/window/reu_runtime.s").read_text()
+        self.assertIn("jmp _udeks_vic_graphics_start", runtime)
         self.assertIn(".addr _udeks_vic_graphics_poll", descriptor)
 
     def test_transport_uses_reserved_bank1_window_and_common_gateway(self):

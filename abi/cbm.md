@@ -55,7 +55,8 @@ validation and a successful file CLOSE. `xview /picture.cbm &` returns the
 console prompt; foreground Ctrl+C cancels loading or closes the displayed app.
 There is no zoom, resizing, browsing dialog or full-screen mode in this slice.
 
-The packed viewer accepts dimensions up to **240x175**, subject to the shared
+The packed viewer accepts dimensions up to **240x175**. On stock machines,
+allocation is subject to the shared
 display pool: `8 + ceil(width/8) * height` bytes per image. **128x80 uses 1,288
 bytes; 160x100 uses 2,008.** Dense pictures no longer hit the old 160-tile limit.
 Sparse images cost the same as dense images of the same dimensions; there is
@@ -63,6 +64,12 @@ no compression. Oversized/over-budget files fail explicitly, never crop,
 truncate or downsample.
 Every accepted CBM pixel is displayed 1:1, black on the standard yellow paper.
 Conversion/resizing/dithering happens on the host, not inside the viewer.
+
+With the optional [REU bitmap backend](../docs/GRAPHICS-REU.md), only the 8-byte
+header stays in the internal pool; pixels occupy one of four private 8 KiB
+expansion objects. The file format, application API and viewer dimension limits
+are unchanged. CLOCK160 can coexist with clock and wave, while executable
+allocation limits still apply. No REU automatically selects the stock backend.
 
 The generic UDEX 0.2 executable uses private arguments and native mounted-file
 I/O; there is no resident app ID, special launch path or kernel change. The
@@ -73,8 +80,8 @@ arguments, decoder state and window ownership. Window titles show the first
 eight basename characters. Close the desired window, or use foreground Ctrl+C;
 `xview -q` stops one matching instance, not a filename-selected instance.
 
-Slot compatibility and drawing memory are separate limits. Retained surfaces
-share the existing **2,304-byte display pool**. ALEX uses 701 bytes and
+Slot compatibility and drawing memory are separate limits. On stock machines,
+retained surfaces share the existing **2,304-byte display pool**. ALEX uses 701 bytes and
 CLOCKWORK uses 704, so they fit together (1,405), also leaving room for a clock.
 The smaller ALEX2 demo leaves room for both clock and wave. There is no new
 four-large-app guarantee or memory compaction of running programs. BEGIN
@@ -91,7 +98,8 @@ preserving the diagnostic/exit status. Requires **UTRQ 0.20**, not older disks.
 
 ## Build and demo
 
-From the feature worktree `build/packed-bitmap`, branch `graphics-packed-bitmaps`:
+From the current source worktree (the original packed-bitmap checkpoint is
+also retained in `build/packed-bitmap`):
 
 ```sh
 distrobox-enter my-distrobox -- make -j8 boot xview graphics-apps-check
@@ -105,7 +113,9 @@ applications are removed. The demo disks leave the kernel and existing files
 unchanged. Packed demo candidates are
 **`build/packed-bitmap/build/xview/demo/udeks-packed.d71`** and **`.d81`**
 relative to the root checkout. Both are generated from the matching UTRQ 0.20
-boot candidates; root published downloads remain unchanged until acceptance.
+boot candidates. The [newer REU-enabled D71/D81 demos and checklist](../bench/results/2026-10-09-reu-graphics/README.md)
+include the user-accepted expansion-backed implementation. Root published
+download snapshots remain unchanged; rebuilding and publication are separate.
 The packager includes the three original pictures plus new 128x80 ALEX128 and
 160x100 CLOCK160 conversions. Graphics initializes on demand.
 
