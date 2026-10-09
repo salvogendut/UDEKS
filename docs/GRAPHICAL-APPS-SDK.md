@@ -366,6 +366,12 @@ The older README download snapshots do **not** contain this API or command.
 
 ## Independent console commands
 
+This section describes the **synchronous compatibility SDK**. For the new
+scheduled stdout/stderr/sleep checkpoint, see
+[native console applications](NATIVE-CONSOLE-APPS.md). That experimental entry
+does not yet deliver arguments or shell-visible native exit status; do not
+interchange the runtimes or infer background terminal ownership from it.
+
 Console commands already use name-independent disk lookup too. The new
 [`args.c`](../user/examples/args.c) demonstrates the existing UDEX 0.1 console
 ABI: `udeks_program_main(argc, argv)`, stdout (1), stderr (2), a returned

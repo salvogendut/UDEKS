@@ -7,9 +7,10 @@ addresses or status claims do not override the current source and ABI.
 ## Start here
 
 - [Roadmap](ROADMAP.md) — accepted features, limits and next priorities
-- [Writable root and file commands](ROADMAP.md#current-baseline) — active feature (#47)
+- [Scheduled console applications](NATIVE-CONSOLE-APPS.md) — active feature (#52), plan and first execution checkpoint
+- [Writable root and file commands](ROADMAP.md#current-baseline) — merged baseline (#47 / PR #48)
 - [Create-only disk writes](STORAGE-0.3.md) — merged baseline (#44 / PR #45)
-- [Generic graphical-app plan](GENERIC-GRAPHICS-APPS.md) — current feature (#35)
+- [Generic graphical-app plan](GENERIC-GRAPHICS-APPS.md) — merged baseline (#35)
 - [Independent apps SDK](GRAPHICAL-APPS-SDK.md) — console C commands and foreground/background graphical apps
 - [D81 / 1581 image](D81.md) — third build format, filesystem support and tests
 - [Architecture plan](PLAN.md) — the intended system and microkernel boundary

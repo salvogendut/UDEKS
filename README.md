@@ -194,7 +194,10 @@ SAVE command. The manual checklist passes in 1986 and on real C128/PI1541;
 VICE limitation remains documented. [PR #45](https://github.com/salvogendut/UDEKS/pull/45)
 records the merge. The first non-kernel service extraction is now installed
 by normal boot: `TIME.SVC`, with failure recovery and a disk-only loader.
-General scripting, broader tasking and optimization remain separate roadmap
+**Active next feature:** [independently scheduled console programs](docs/NATIVE-CONSOLE-APPS.md)
+(#52). The first no-window stdout/stderr/sleep example works alongside graphics;
+private arguments, native exit-status reporting and terminal job control remain
+in progress. General scripting and optimization remain separate roadmap
 work. The existing `/etc/rc` command runner is not a POSIX
 `sh` or Bash implementation.
 

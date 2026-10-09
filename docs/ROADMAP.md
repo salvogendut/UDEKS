@@ -13,6 +13,14 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
+**Active feature (2026-10-09):**
+[#52 — independently scheduled console programs](https://github.com/salvogendut/UDEKS/issues/52),
+branch `tasking-native-console`, worktree `build/native-console`.
+The [three-increment plan](NATIVE-CONSOLE-APPS.md) covers native arguments/output/
+exit, then terminal ownership/jobs, then utility migration. The first independent
+stdout/stderr/sleep example works without kernel changes; arguments and native
+exit-status reporting are next. This is not completed console job control.
+
 **Completed architectural feature (2026-10-09):**
 [#49 — first disk-loaded non-kernel service](https://github.com/salvogendut/UDEKS/issues/49),
 with the default-boot cutover on `services-0.1-default-boot` (`build/default-service`).
@@ -33,10 +41,9 @@ The user authorized merge after these automated gates. No new physical-C128
 test is inferred. This is one provisional fixed slot, not an arbitrary module
 allocator or daemon framework.
 
-**Next architectural work:** milestone 3's remaining task/service boundaries.
-Select a bounded user-facing slice (for example, independently scheduled console
-programs) and measure its memory budget before implementation. General task
-allocation, message/handle IPC and further service extraction remain open;
+**Next architectural work:** milestone 3's remaining task/service boundaries,
+starting with #52 above. Measure memory before adding native argument delivery.
+General task allocation, message/handle IPC and further service extraction remain open;
 preemption, scripting and app-specific optimization are separate work. Do not
 turn the completed time-service slice into an indefinite loader-tuning project.
 
@@ -82,7 +89,7 @@ hardware test. Track the periodic-NMI loader failure separately before claiming
 that stress qualification. Cross-device copy, overwrite, directories, wildcards
 and recursive deletion stay outside this slice.
 
-The next architectural feature is now active as #49 above.
+The next architectural feature is now active as #52 above; #49 is complete.
 
 **Accepted checkpoint (2026-10-08):** the [sprite editor](XSPRDEF.md) now has
 fast pixel updates, confirmed whole-bank Save/Load (`SPRITES.SPR`), stock-BASIC
@@ -251,6 +258,19 @@ mounts or applications must not require rebuilding the kernel.
 | Release | No 1.0 claim; compatibility, recovery, documentation, and provenance due. |
 
 ## Next endeavours, in order
+
+### Active: independently scheduled console programs (#52)
+
+1. Complete native C execution with private arguments, stdout/stderr and exit
+   status while graphics/input continue. The no-argument execution proof is
+   implemented; argument storage and completion delivery remain open.
+2. Implement foreground terminal ownership, task-based Ctrl+C and safe `&`
+   console jobs. Keep background tasks from consuming the shell's input.
+3. Migrate a small utility group and qualify failures, cleanup, slot reuse and
+   mixed workloads. Preserve synchronous utilities and boot/recovery throughout.
+
+See the [scope, measured memory limits and runnable checkpoint](NATIVE-CONSOLE-APPS.md).
+This uses the shared native pool, not additional slots or a new scheduler.
 
 ### Completed: Storage 0.3 — create-only disk writes (#44 / PR #45)
 

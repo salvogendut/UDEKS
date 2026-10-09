@@ -1,0 +1,14 @@
+python3 tools/native_console_probe.py --format d64
+PASS ticker
+PASS xclock &
+PASS pulse
+PASS echo native console returned
+PASS xclock -q
+PASS native console; evidence: /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/vice/d64-t64vk_kc
+python3 tools/native_console_probe.py --format d81
+PASS ticker
+PASS xclock &
+PASS pulse
+PASS echo native console returned
+PASS xclock -q
+PASS native console; evidence: /var/home/salvogendut/Dev/UDEKS/build/native-console/build/native-console/vice/d81-azz_m6o9

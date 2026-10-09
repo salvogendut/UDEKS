@@ -6,7 +6,38 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — default disk-time boot, 2026-10-09
+## Current handoff — native console execution checkpoint, 2026-10-09
+
+Issue [#52](https://github.com/salvogendut/UDEKS/issues/52), branch
+`tasking-native-console`, worktree `build/native-console`, based on merged
+PR #51 (`15eddb4`). Root main's uncommitted roadmap/handover/proposal notes
+remain untouched. The [current plan](docs/NATIVE-CONSOLE-APPS.md) advances that
+saved proposal after the first disk-loaded service was completed.
+
+`make native-console` independently builds TICKER.BIN (1,602 file bytes,
+1,338 image + 8 BSS, fits all four allocations). Its private runtime copies
+stdout/stderr through UTRQ WRITE and uses owned SLEEP responses. No kernel,
+shell, loader or public ABI change; ordinary boot disks are unchanged.
+`make native-console-probe` runs disposable D64/D81 VICE proofs: no implicit
+VIC/window, output, private state, sleep/resume, retirement/reuse, unknown-name
+PULSE, peer clock scheduling and injected pointer dragging during execution.
+Host tests cover streams, bounds, short writes, error/ownership rejection and
+sequence wrap. `make check` passes 1,561 tests; actual-build placement,
+graphics and service-layout gates pass. Preserve the evidence, not just PASS labels.
+
+**Next:** bounded task-private arguments and shell completion status, then
+terminal ownership/Ctrl+C/`&`, then utility migration. This checkpoint passes
+argc=0/argv=NULL; native return 37 is not yet reported by the shell. Never call
+bank-0 pointer veneers from bank 1. Raw YIELD does not restore an owned reply;
+the new checked SDK deliberately exposes only sleep. Console/graphics share
+the existing four slots. No stdin/filesystem wrapper or extra capacity here.
+
+Resident space is only 2 bytes; loader CODE/RELOC/ACCESS have 25/18/4 bytes.
+Measure placement before adding argument delivery; preserve C-stack guards and
+the EXIT tail. Tests do not establish new 1986/native-input/physical-C128
+qualification. Do not merge the broader feature as complete on this proof.
+
+## Previous handoff — default disk-time boot, 2026-10-09
 
 Issue [#49](https://github.com/salvogendut/UDEKS/issues/49), completion branch
 `services-0.1-default-boot`, worktree `build/default-service`, based on merged

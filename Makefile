@@ -424,6 +424,18 @@ graphical-example: placement-check-guard
 console-example: placement-check-guard
 	$(PYTHON) tools/build_console_example.py
 
+# First scheduled console SDK proof; leaves normal boot media unchanged.
+native-console: placement-check-guard
+	$(PYTHON) tools/build_native_console.py --export _ticker_step \
+		--export _ticker_failure --export _ticker_private
+
+# Host after `make boot native-console` in my-distrobox. Uses disposable media.
+native-console-probe:
+	$(PYTHON) tools/native_console_probe.py --format d64
+	$(PYTHON) tools/native_console_probe.py --format d81
+
+.PHONY: native-console native-console-probe
+
 # Migration candidate only: does not replace legacy XCLOCK.BIN in boot media.
 native-clock: placement-check-guard
 	$(PYTHON) tools/build_graphical_example.py --source user/bin/xclock_native.c \
@@ -2433,6 +2445,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 check:
+	$(PYTHON) -m py_compile tools/build_native_console.py tools/native_console_probe.py
 	$(PYTHON) -m py_compile tools/build_service_boot.py tools/service_boot_probe.py tools/default_service_layout.py tools/check_service_migration.py
 	$(PYTHON) -m py_compile tools/check_service_request.py
 	$(PYTHON) -m py_compile tools/service_image.py tools/build_time_module.py tools/check_time_module.py tools/time_module_layout.py tools/check_time_slot.py tools/service_start_probe.py tools/build_time_overlay.py
