@@ -6,7 +6,57 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — native console arguments and exit, 2026-10-09
+## Current handoff — task-based foreground Ctrl+C, 2026-10-09
+
+Issue #52, branch `tasking-native-console`, worktree `build/native-console`.
+The user accepted `bca650a` (platform unspecified) and asked for commit/push and
+the next slice; it was already pushed with a clean feature worktree.
+Root main's unrelated notes and published PR #51 images remain untouched.
+
+Ctrl+C now queues a private root-session notice containing the exact foreground
+native task id. Ush consumes it while waiting, then submits the existing CANCEL
+operation as the real parent task 1. No window is required; no new syscall,
+scheduler mutation, common gate or memory reservation was introduced.
+Existing cancellation retires resources and discards pending waits; normal
+bookkeeping harvests exit 130, destroys any window, reaps and releases the
+foreground. Ush reports `Interrupted` after successful cancellation; `echo $?`
+reports 130. A natural-exit race (ESRCH) is silent and keeps the real status;
+other errors do not falsely release a live foreground job. New commands cannot
+reuse the target id before the old notice/completion is consumed.
+
+The matched disk and recovery shells implement the new private notice. Do not
+mix an older ush into this candidate. Graphical foreground Ctrl+C uses the same
+path; ordinary window Close, `name -q` and `xinit -q` remain advisory graphics
+operations. Background output/stdin policy is still unimplemented. This is
+cooperative cancellation, not an interrupt for arbitrary CPU-bound loops.
+
+Placement: resident BSS now ends `$93C4` (11 bytes before TIME), seven bytes
+smaller than the accepted checkpoint. Ush's actual BSS ends `$9F44`; its fixed
+368-byte header reservation still fits below `$A000`. Loader/RELOC/ACCESS,
+private stacks, display reservations and service module bounds are unchanged.
+NAP.BIN is an independent, silent, non-returning sleep fixture: 1,231 file
+bytes, 1,045 image + 5 BSS, fits all four allocations. It is added only to
+disposable qualification media, never normal boot contents.
+
+VICE D64/D81 passes all four foreground slots, untouched peers, status 130,
+private wait/allocation cleanup, one storage retirement each, old-deadline
+non-resumption, reuse with normal exit 37, graphical cancellation and idle
+Ctrl+C. Native 1986 passes actual four-app keyboard/1351/Ctrl+C/cleanup
+regression (not windowless NAP). Host tests cover the normal-exit race, failure
+handling, notice consumption and exact parent request. Both actual-link
+variants and graphics/service-layout gates pass. See [evidence](bench/results/2026-10-09-native-console-cancel/README.md).
+`make check` passes 1,580 tests; the final rebuilt disks match the qualified
+media byte for byte. Refreshed manual media are `build/native-console/try.d64`
+and `.d81` inside this worktree.
+Probe-only fixes made clock observations atomic and drained keyboard count,
+not queue head; only fresh successful evidence is retained. No new hardware,
+periodic-NMI or performance result is claimed. All owned VICE sessions close.
+
+**Next:** foreground stdin and explicit rejection of background reads, then
+argument-bearing background launch/prompt-safe output. Keep increment 3's
+filesystem ownership/utility migration separate. Do not merge #52 as complete.
+
+## Previous handoff — native console arguments and exit, 2026-10-09
 
 Issue [#52](https://github.com/salvogendut/UDEKS/issues/52), branch
 `tasking-native-console`, worktree `build/native-console`. The user accepted

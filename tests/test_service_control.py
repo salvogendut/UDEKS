@@ -149,6 +149,10 @@ class ServiceControl(unittest.TestCase):
         self.assertEqual(self.value('active'),0)
         self.assertEqual(self.lib.udeks_shell_interrupt_foreground(),1)
         self.lib.udeks_shell_poll()
+        self.assertEqual(self.memory[0xf184],1) # parent has not cancelled/reaped yet
+        self.assertEqual(bytes(self.memory[0xf3a0:0xf3a5]),bytes((165,3,3,0,0)))
+        (ctypes.c_ubyte*4).in_dll(self.lib,'banked_run')[0]=0
+        self.lib.udeks_shell_poll()
         self.assertEqual(self.memory[0xf184],0)
 
     def test_other_loader_errors_do_not_fall_back(self):
@@ -242,8 +246,9 @@ class ServiceControl(unittest.TestCase):
         self.assertEqual(self.memory[0xf184],8)
         self.assertEqual(list(banked),[1,1,1,1])
         self.assertEqual(self.lib.udeks_shell_interrupt_foreground(),1)
-        self.assertEqual(list(banked),[1,1,1,0])
-        self.assertEqual(self.memory[0xf3a4],130)
+        self.assertEqual(list(banked),[1,1,1,1])
+        self.assertEqual(bytes(self.memory[0xf3a0:0xf3a5]),bytes((165,6,3,0,0)))
+        banked[3]=0 # normal poll observes scheduler cancellation and reaps
         self.lib.udeks_shell_poll()
         self.assertEqual(self.memory[0xf184],0)
         self.launch(b'reused')
@@ -252,6 +257,29 @@ class ServiceControl(unittest.TestCase):
         self.lib.udeks_shell_poll()
         self.assertEqual(list(banked),[0,0,0,0])
         self.assertEqual(self.memory[0xf185],0)
+
+    def test_interrupt_notice_targets_each_slot_without_stopping_any_peer(self):
+        for foreground in range(4):
+            self.lib.reset()
+            for i in range(foreground): self.launch(b'peer')
+            self.launch(b'front',False)
+            banked=(ctypes.c_ubyte*4).in_dll(self.lib,'banked_run')
+            before=list(banked); calls=self.value('calls')
+            for _ in range(2):
+                self.assertEqual(self.lib.udeks_shell_interrupt_foreground(),1)
+                self.assertEqual(list(banked),before)
+                self.assertEqual(self.value('calls'),calls)
+                self.assertEqual(bytes(self.memory[0xf3a0:0xf3a5]),bytes((165,foreground+3,3,0,0)))
+                self.assertEqual(self.memory[0xf184],1<<foreground)
+            self.assertEqual(self.memory[0xf186],2)
+
+    def test_no_interrupt_notice_at_prompt_or_without_native_shell(self):
+        self.assertEqual(self.lib.udeks_shell_interrupt_foreground(),0)
+        self.launch(b'front',False)
+        self.memory[0xf3d9]=0
+        before=bytes(self.memory)
+        self.assertEqual(self.lib.udeks_shell_interrupt_foreground(),0)
+        self.assertEqual(bytes(self.memory),before)
 
     def test_engine_runs_only_at_poll_boundary(self):
         self.assertEqual(self.request(target=4,action=2),0)

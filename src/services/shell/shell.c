@@ -228,9 +228,10 @@ unsigned char udeks_shell_poll(void)
 
 unsigned char udeks_shell_interrupt_foreground(void)
 {
-    if (!foreground || udeks_shell_stop_app(foreground)) return 0;
-    control_reply(foreground == 8 ? UDEKS_CONTROL_DRAW : foreground + 1u,
-        UDEKS_CONTROL_STOP, 0, UDEKS_CONTROL_INTERRUPTED);
+    /* This poll is not running as the child's parent. Queue for native ush;
+     * do not forge current-task state or rely on a graphical CLOSE event. */
+    if (!foreground || !USH_READY) return 0;
+    control_reply(slot_index(foreground)+3u, UDEKS_CONTROL_CANCEL_PENDING, 0, 0);
     ++S(22);
     return 1;
 }

@@ -1,0 +1,64 @@
+{
+  "scope": "task-based Ctrl+C; keyboard-queue input, no task/request injection",
+  "format": "d64",
+  "source_disk_sha256": "b55bceb9aac2cfa945bb383300cb131da5a7edcab946902fdc85b38002fc9c03",
+  "fixture_sha256": "a04e30937e776645403ccb43a81112e113d833c2e172df63c608f67e93af9277",
+  "nap_sha256": "e58908b3185f6d97887f397e57540fe7cc81ab34536fe16a641a18f3a88f31a2",
+  "ticker_sha256": "9108329e445e591dc5d38b857664df92fca39a7d153dddfb8008346538f99ecd",
+  "stdin": false,
+  "background_policy": false,
+  "checks": [
+    {
+      "check": "slot6",
+      "task": 6,
+      "peers": [],
+      "status": 130,
+      "console": "INITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\nUDEKS:~>\nsvc load /TIME.SVC\ntime: ready\nUDEKS:~> nap alpha\nInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~>"
+    },
+    {
+      "check": "reuse-natural-exit",
+      "status": 37
+    },
+    {
+      "check": "slot5",
+      "task": 5,
+      "peers": [
+        4,
+        6
+      ],
+      "status": 130,
+      "console": "130\nUDEKS:~> ticker normal\nticker: native task started\nticker: stderr works\narg: ticker\narg: normal\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> echo $?\n37\nUDEKS:~> xclock &\nUDEKS:~> nap &\nUDEKS:~> nap second\nInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~>"
+    },
+    {
+      "check": "slot3",
+      "task": 3,
+      "peers": [
+        4,
+        5,
+        6
+      ],
+      "status": 130,
+      "console": "arg: normal\ntick 1\ntick 2\ntick 3\ntick 4\ntick 5\nticker: complete\nUDEKS:~> echo $?\n37\nUDEKS:~> xclock &\nUDEKS:~> nap &\nUDEKS:~> nap second\nInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~> xdraw &\nUDEKS:~> nap third\nInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~>"
+    },
+    {
+      "check": "slot4",
+      "task": 4,
+      "peers": [
+        5,
+        6
+      ],
+      "status": 130,
+      "console": "tick 5\nticker: complete\nUDEKS:~> echo $?\n37\nUDEKS:~> xclock &\nUDEKS:~> nap &\nUDEKS:~> nap second\nInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~> xdraw &\nUDEKS:~> nap third\nInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~> xclock -q\nUDEKS:~> nap fourth\nInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~>"
+    },
+    {
+      "check": "clock",
+      "task": 4,
+      "peers": [
+        5,
+        6
+      ],
+      "status": 130,
+      "console": "UDEKS:~> xclock &\nUDEKS:~> nap &\nUDEKS:~> nap second\nInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~> xdraw &\nUDEKS:~> nap third\nInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~> xclock -q\nUDEKS:~> nap fourth\nInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~> xclock\nInterrupted\nUDEKS:~> echo $?\n130\nUDEKS:~>"
+    }
+  ]
+}

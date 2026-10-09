@@ -1,0 +1,18 @@
+{
+  "file": 1231,
+  "image": 1045,
+  "bss": 5,
+  "fits": [
+    3,
+    4,
+    5,
+    6
+  ],
+  "joined_fits": [
+    3,
+    5,
+    6
+  ],
+  "resident_bytes": 0,
+  "scope": "native arguments/stdout/stderr/sleep; no stdin or terminal job control"
+}

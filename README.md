@@ -133,8 +133,9 @@ and pause cooperative app progress until returning; general background console
 jobs and stdin are not yet supported. On the active #52 branch, the separate
 [scheduled console SDK](docs/NATIVE-CONSOLE-APPS.md) now delivers private
 arguments, stdout/stderr, cooperative sleep and foreground status (`echo $?`)
-without stopping graphical peers. Terminal ownership and Ctrl+C for no-window
-tasks are next; published download snapshots do not yet contain this checkpoint.
+without stopping graphical peers. Foreground Ctrl+C now cancels native tasks
+with or without a window and returns status 130; stdin and background terminal
+policy remain next. Published downloads do not yet contain this checkpoint.
 Four graphical slots are available, but
 not every binary fits every
 slot. The loader can borrow two free adjacent allocations

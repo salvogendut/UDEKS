@@ -19,6 +19,10 @@
 #define UDEKS_CONTROL_REPLY_BASE UDEKS_TASK_COMMAND_BASE
 #define UDEKS_CONTROL_REPLY_READY 0xA5u
 #define UDEKS_CONTROL_INTERRUPTED 130u
+/* Private root->ush notice, not a CONTROL request action. target is a native
+ * child id (3..6); ush submits CANCEL as its real parent, then waits for reap.
+ * No new launch can reuse the id while that foreground completion is pending. */
+#define UDEKS_CONTROL_CANCEL_PENDING 3u
 /* Managed-app completion results; 1/2 retain the app's existing meanings.
  * NOT_FOUND also covers an unmounted command disk. Not POSIX errno values. */
 #define UDEKS_CONTROL_NOT_READY       1u

@@ -14,8 +14,8 @@ name tables. Preserve synchronous utility loading and recovery during migration.
 1. **Native execution — implemented:** independent C runtime, private arguments,
    stdout/stderr, exit status, no implicit window or VIC startup. Arguments
    survive sleeps while clock updates/input continue, then ush gets the result.
-2. **Terminal ownership/jobs — next:** foreground stdin, task-based Ctrl+C,
-   argument-bearing `&`, prompt-safe output and rejection/suspension of
+2. **Terminal ownership/jobs — in progress:** task-based Ctrl+C is implemented;
+   next are foreground stdin, argument-bearing `&`, prompt-safe output and rejection/suspension of
    background reads. Cancellation must release resources and restore the
    prompt without requiring a window or disturbing peers.
 3. **Migration/qualification:** convert a useful small utility group, handle
@@ -54,6 +54,39 @@ Its [evidence](../bench/results/2026-10-09-native-console/README.md) remains
 unchanged. Current [argument evidence](../bench/results/2026-10-09-native-console-arguments/README.md)
 is separate. Published download snapshots still represent PR #51.
 
+## Ctrl+C checkpoint: parent-owned cancellation
+
+The user also accepted the argument/exit slice `bca650a` (platform unspecified).
+The next slice replaces Ctrl+C's graphical close notification with a real
+task cancellation, without modifying the scheduler, loader or common switch.
+The terminal queues a private notice identifying the foreground task; ush,
+running as its actual parent, submits existing UTRQ CANCEL with status 130.
+Normal retirement clears the blocked request, destroys any owned window, reaps
+the allocation and only then releases foreground ownership and the prompt.
+No program cooperation with a graphical EVENT is required.
+
+The same route handles graphical foreground tasks. Background peers are not
+selected, and Ctrl+C with no foreground job cancels nothing. A natural exit
+that wins the race retains its actual exit status; an ESRCH cancellation reply
+is silent. Other cancellation errors are reported without pretending the task
+stopped. Repeated keys cannot retarget a reused slot: ush consumes the notice
+while waiting for the old foreground completion, before another launch.
+
+This remains cooperative, **not preemption**: a program that never sleeps,
+yields or otherwise returns to the scheduler can still prevent input polling.
+Stdin and background terminal arbitration remain the next work in increment 2.
+Bare `name -q` and `xinit -q` still use their existing graphical close policy;
+this slice changes foreground Ctrl+C only. System disk/recovery ush are rebuilt
+together with the private notice producer; do not mix in an older shell binary.
+
+`make native-console-cancel-fixtures` builds NAP and TICKER; host
+`make native-console-cancel-probe` tests all four foreground slots, peer
+survival, status 130, private-wait cleanup, one retirement per task, slot reuse,
+old-deadline non-resumption, graphical cancellation and idle-prompt behavior on
+VICE D64/D81. Native 1986 separately passes four-app keyboard/mouse/Ctrl+C
+regression. [Preserved evidence and limits](../bench/results/2026-10-09-native-console-cancel/README.md)
+do not imply physical-hardware qualification or a native 1986 NAP run.
+
 ## Try the checkpoint
 
 From the feature worktree, build and add TICKER to a **new disposable** disk:
@@ -80,7 +113,13 @@ with no window of its own. Both status queries should print 37. During the
 second run, drag the clock while the shell waits.
 `ticker a b c d e f g h` has nine tokens: expect `Too many arguments`, then
 `echo $?` prints 2. A second consecutive status query prints 0.
-Quoting/escaping, stdin, Ctrl+C for no-window tasks, argument-bearing background
+Now run `ticker stop-me` and press Ctrl+C while it ticks: expect `Interrupted`,
+the prompt and `echo $?` equal to 130. A background clock must survive and still
+be draggable. Launch TICKER again to check slot reuse. The separate test-only
+`NAP.BIN` sleeps indefinitely without a window and is used to prove cancellation
+cannot be mistaken for natural return.
+
+Quoting/escaping, stdin, argument-bearing background
 launch, background terminal arbitration and native file calls remain unimplemented.
 The demo finishes by itself; QUIET is a silent test, not a background utility.
 
@@ -104,7 +143,7 @@ Actual normal/panic link gates establish:
 
 | Area | Used end / capacity | Remaining |
 | --- | --- | --- |
-| Resident BSS before TIME slot `$93D0` | `$93CB` | 4 bytes |
+| Resident BSS before TIME slot `$93D0` (Ctrl+C slice) | `$93C4` | 11 bytes |
 | Native loader CODE | `$DFF4` / `$E000` | 11 bytes |
 | Relocator | `$19ED` / `$1A00` | 18 bytes |
 | Access bridge | `$1FFE` / `$2000` | 1 byte |

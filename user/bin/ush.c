@@ -44,6 +44,19 @@ static void service_notice(void)
     /* Console writes do not replace this mailbox; no new command is issued
      * while its completion is being consumed. */
     REPLY(0) = 0;
+    if (REPLY(2) == UDEKS_CONTROL_CANCEL_PENDING) {
+        /* The real parent task sends CANCEL. Keep waiting until normal
+         * retirement/reap publishes completion, including status 130. */
+        PAYLOAD[0] = REPLY(1); PAYLOAD[1] = 0;
+        PAYLOAD[2] = UDEKS_CONTROL_INTERRUPTED;
+        if (submit_request(UDEKS_TREQ_OP_CANCEL, 0, UDEKS_TREQ_CANCEL_COUNT) == UDEKS_IO_ERROR) {
+            /* Natural exit may have won the race; retain its actual status. */
+            if (udeks_errno != UDEKS_TREQ_ESRCH)
+                udeks_write(2, (const unsigned char *)"Interrupt failed\n");
+            return;
+        }
+        result = UDEKS_CONTROL_INTERRUPTED;
+    }
     if (result == UDEKS_CONTROL_INTERRUPTED) {
         message = (const unsigned char *)"Interrupted\n";
     } else if (REPLY(1) == UDEKS_CONTROL_DESKTOP) {

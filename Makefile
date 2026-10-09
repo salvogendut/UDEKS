@@ -443,6 +443,14 @@ native-console-parser-check: placement-check-guard
 	$(PYTHON) tools/check_console_parser.py
 .PHONY: native-console-parser-check
 
+native-console-cancel-fixtures: native-console
+	$(PYTHON) tools/build_native_console.py --source user/examples/nap.c --name NAP \
+		--output $(BUILD_DIR)/native-console/nap --export _nap_steps --export _nap_failure
+native-console-cancel-probe:
+	$(PYTHON) tools/native_console_cancel_probe.py --format d64
+	$(PYTHON) tools/native_console_cancel_probe.py --format d81
+.PHONY: native-console-cancel-fixtures native-console-cancel-probe
+
 # Migration candidate only: does not replace legacy XCLOCK.BIN in boot media.
 native-clock: placement-check-guard
 	$(PYTHON) tools/build_graphical_example.py --source user/bin/xclock_native.c \
@@ -2452,7 +2460,7 @@ $(PANIC_PROBE_D71): $(STAGE0_BIN) $(STAGE1_BIN) $(PANIC_PROBE_KERNEL_BIN) \
 		--task-bank-gateway $(TASK_BANK_GATE_BIN) $@
 
 check:
-	$(PYTHON) -m py_compile tools/build_native_console.py tools/native_console_probe.py tools/check_console_parser.py
+	$(PYTHON) -m py_compile tools/build_native_console.py tools/native_console_probe.py tools/check_console_parser.py tools/native_console_cancel_probe.py
 	$(PYTHON) -m py_compile tools/build_service_boot.py tools/service_boot_probe.py tools/default_service_layout.py tools/check_service_migration.py
 	$(PYTHON) -m py_compile tools/check_service_request.py
 	$(PYTHON) -m py_compile tools/service_image.py tools/build_time_module.py tools/check_time_module.py tools/time_module_layout.py tools/check_time_slot.py tools/service_start_probe.py tools/build_time_overlay.py

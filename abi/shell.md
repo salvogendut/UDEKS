@@ -8,8 +8,8 @@ UARG 0.1 before making a native task runnable (see [executable ABI](executable.m
 Excess arguments fail before either loader is called, with status 2. The
 synchronous compatibility loader remains available; graphical entries need
 not use arguments. Bare `name &` and exact `name -q` retain their existing
-semantics. Argument-bearing background launches, foreground stdin and Ctrl+C
-for a no-window task still need terminal policy; this is not full job control.
+semantics. Argument-bearing background launches and foreground stdin still
+need terminal policy; this is not full job control. Task-based Ctrl+C is below.
 
 For normal native foreground exit, bookkeeping reads the task's exit byte
 before reaping and publishes it at `SHLL+10` (`$F17A`). Background retirement
@@ -23,6 +23,32 @@ echo itself then succeeds with status 0. Empty lines preserve status. Builtin
 failures set nonzero status; this does not promise POSIX errno/exit remapping,
 general expansion, quoting, pipes or scripting. The older baseline below
 describes the original synchronous loader and graphical job interface.
+
+## Foreground interruption (2026-10-09)
+
+On Ctrl+C the root terminal queues a private notice in the existing control
+reply mailbox: `[READY, child-id, CANCEL_PENDING=3, 0, 0]`. Child ids 3–6 are
+derived from the root session's foreground bit, not pointer focus or an app
+name. This is not a public CONTROL action. Native ush consumes READY before
+I/O and issues existing UTRQ CANCEL (op 14, descriptor/flags 0, three bytes:
+child LE16 and status 130), while executing as the child's real parent task 1.
+The resident service does not impersonate a RUNNING parent or edit scheduler
+state. Match the private notice producer with the rebuilt disk/recovery ush.
+
+A successful CANCEL retires the child through existing resource cleanup,
+clears any private blocked request and publishes ZOMBIE(130). Root bookkeeping
+harvests the status and releases windows/allocation before WAIT completes.
+Ush reports `Interrupted` only after successful cancellation, and `echo $?`
+then returns 130. The same path works with or without a graphical window.
+ESRCH when normal exit wins is silent and preserves its actual completion.
+Other errors report `Interrupt failed` without releasing a still-live job.
+
+The notice is consumed during the old foreground wait, before accepting a new
+command; repeated Ctrl+C cannot follow a reused task id into a later launch.
+Background tasks and Ctrl+C at an idle prompt are not cancellation targets.
+This remains cooperative: tight loops that never return to the scheduler are
+not interruptible by this mechanism. `name -q`/`xinit -q` retain their graphical
+close semantics, and background I/O/stdin policy is not added by this slice.
 
 ## Original shell baseline
 
