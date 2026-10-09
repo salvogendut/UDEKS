@@ -1,0 +1,78 @@
+{
+  "drive": "1581",
+  "source_sha256": "ecfd1edc973bc83a54446685e6d780e58e2b2c6f3bd64e8b9d10e83ac9ccd09b",
+  "fixture_sha256": "32446d12f506fb57d92122cab6996c166d9c9298b84752ab6d714555f52690b9",
+  "app_sha256": "7d6e2bb46477aea890e903f87afbcb43b7debae305b39cdd4da9f2eaafa6c7d5",
+  "checks": [
+    {
+      "command": "xview"
+    },
+    {
+      "command": "xview /nofile.cbm"
+    },
+    {
+      "command": "xview /bad.cbm"
+    },
+    {
+      "command": "xview /trail.cbm"
+    },
+    {
+      "command": "xview /pad.cbm"
+    },
+    {
+      "command": "xview /big.cbm"
+    },
+    {
+      "command": "xview /dense.cbm"
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "command": "xview /clockwork.cbm &"
+    },
+    {
+      "check": "initial",
+      "pixels": 5568,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "check": "dragged",
+      "pixels": 5568,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "xclock &"
+    },
+    {
+      "command": "xclock -q"
+    },
+    {
+      "check": "uncovered",
+      "pixels": 5568,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "command": "xview /clockwork.cbm"
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "command": "xview /clockwork.cbm"
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "check": "close-cancel-reuse-and-guards",
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,199 @@
+Modules list:
+-------------
+entry.o:
+    CODE              Offs=000000  Size=000003  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000027  Align=00001  Fill=0000
+request.o:
+    CODE              Offs=000003  Size=000056  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000006  Align=00001  Fill=0000
+xview.o:
+    CODE              Offs=000059  Size=00076A  Align=00001  Fill=0000
+    RODATA            Offs=000006  Size=0000C4  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000569  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=0007C3  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax3.o):
+    CODE              Offs=0007D1  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decax1.o):
+    CODE              Offs=0007DF  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax1.o):
+    CODE              Offs=0007E6  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax3.o):
+    CODE              Offs=0007ED  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax7.o):
+    CODE              Offs=0007F2  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=0007F7  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000802  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000809  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=00081F  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxi.o):
+    CODE              Offs=000824  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=000831  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=00083A  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000850  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax3.o):
+    CODE              Offs=00086A  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000878  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=00088E  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               001000  001026  000027  00001
+CODE                  001027  0018BF  000899  00001
+RODATA                0018C0  001989  0000CA  00001
+BSS                   00198A  001EF2  000569  00001
+
+
+Exports list by name:
+---------------------
+_gfx_request              001033 RLA    _gfx_sleep                00103F RLA    
+_native_file_request      00105C RLA    _udeks_graphics_record    00F359 REA    
+_udeks_program_entry      001000 RLA    _udeks_program_main       001080 RLA    
+_xview_commands           00198A RLA    _xview_count              001E8A RLA    
+_xview_ready              001E8D RLA    addysp                    0017EB RLA    
+aslax3                    0017F8 RLA    decax1                    001806 RLA    
+incax1                    00180D RLA    incax3                    001814 RLA    
+incax7                    001819 RLA    incaxy                    001820 RLA    
+incsp1                    001829 RLA    incsp2                    001838 RLA    
+incsp3                    001846 RLA    ldax0sp                   001858 RLA    
+ldaxidx                   00184D RLA    ldaxysp                   00185A RLA    
+ptr1                      00000A RLZ    pusha                     001865 RLA    
+pushax                    00187B RLA    regsave                   000006 RLZ    
+shrax3                    001891 RLA    sp                        000002 RLZ    
+sreg                      000004 RLZ    staspidx                  00189F RLA    
+staxysp                   0018B7 RLA    tmp1                      000012 RLZ    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+regsave                   000006 RLZ    ptr1                      00000A RLZ    
+tmp1                      000012 RLZ    _udeks_program_entry      001000 RLA    
+_gfx_request              001033 RLA    _gfx_sleep                00103F RLA    
+_native_file_request      00105C RLA    _udeks_program_main       001080 RLA    
+addysp                    0017EB RLA    aslax3                    0017F8 RLA    
+decax1                    001806 RLA    incax1                    00180D RLA    
+incax3                    001814 RLA    incax7                    001819 RLA    
+incaxy                    001820 RLA    incsp1                    001829 RLA    
+incsp2                    001838 RLA    incsp3                    001846 RLA    
+ldaxidx                   00184D RLA    ldax0sp                   001858 RLA    
+ldaxysp                   00185A RLA    pusha                     001865 RLA    
+pushax                    00187B RLA    shrax3                    001891 RLA    
+staspidx                  00189F RLA    staxysp                   0018B7 RLA    
+_xview_commands           00198A RLA    _xview_count              001E8A RLA    
+_xview_ready              001E8D RLA    _udeks_graphics_record    00F359 REA    
+
+
+
+Imports list:
+-------------
+_gfx_request (request.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(22)
+_gfx_sleep (request.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(23)
+_native_file_request (request.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(16)
+_udeks_graphics_record (request.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(15)
+_udeks_program_entry (entry.o):
+    [linker generated]       
+_udeks_program_main (xview.o):
+    entry.o                   user/lib/native_console_entry.s(8)
+_xview_commands (xview.o):
+    [linker generated]       
+_xview_count (xview.o):
+    [linker generated]       
+_xview_ready (xview.o):
+    [linker generated]       
+addysp (addysp.o):
+    incsp3.o                  runtime/incsp3.s(8)
+aslax3 (aslax3.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+decax1 (decax1.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+incax1 (incax1.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+incax3 (incax3.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+incax7 (incax7.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+incaxy (incaxy.o):
+    incax7.o                  runtime/incax7.s(8)
+    incax3.o                  runtime/incax3.s(8)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+incsp1 (incsp1.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+incsp3 (incsp3.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+ldax0sp (ldaxsp.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+ldaxidx (ldaxi.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+ldaxysp (ldaxsp.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+ptr1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    ldaxi.o                   runtime/ldaxi.s(8)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(11)
+pusha (pusha.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+    entry.o                   user/lib/native_console_entry.s(8)
+pushax (pushax.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+regsave (zeropage.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(10)
+shrax3 (shrax3.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+sp (zeropage.o):
+    addysp.o                  runtime/addysp.s(8)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(10)
+sreg (zeropage.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(10)
+staspidx (staspidx.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+staxysp (staxsp.o):
+    xview.o                   /var/home/salvogendut/Dev/UDEKS/build/cbm-viewer/build/xview/xview.s(1074)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    shrax3.o                  runtime/shrax3.s(8)
+    incaxy.o                  runtime/incaxy.s(8)
+    aslax3.o                  runtime/aslax3.s(8)
+

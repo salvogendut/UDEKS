@@ -51,9 +51,12 @@ def add_apps(image, files):
         names.add(key)
         pending.append((name, data))
     result = bytearray(image)
-    install = build_d81.install_file if len(image) == build_d81.SIZE else install_prg_file
     for name, data in pending:
-        install(result, name, data, file_type=0x81)
+        if len(image) == build_d81.SIZE:
+            build_d81.install_file(result, name, data, file_type=0x81)
+        else:
+            install_prg_file(result, name, data, file_type=0x81,
+                             max_track=35 if len(image)==D64_SIZE else 70)
     return bytes(result)
 
 

@@ -108,8 +108,8 @@ existing files are never overwritten. B keeps edits while returning to the list.
 The list's **E** button exports `SPRITES.BSV` for stock C128 BASIC:
 `BLOAD "SPRITES.BSV",B0,P3584`. It creates a genuine PRG file without changing
 the compact `SPRITES.SPR` format.
-Use a freshly built image from `build/boot/`; the published downloads above
-do not include these editor features. The larger editor joins two free allocations,
+The published D71/D81 downloads above include these editor features.
+The larger editor joins two free allocations,
 leaving room for two compatible-sized peers; launch it first. See its guide
 for safe disposable-disk testing and file-format details.
 
@@ -121,9 +121,18 @@ standalone `cp SOURCE DEST`, `mv SOURCE DEST`, and `rm FILE`
 regular-file names on the same mounted filesystem: no overwrite, wildcard,
 recursive deletion or cross-device copy. Failures can leave partial disk work.
 Use disposable copies for acceptance testing. D64 omits the optional `xsprdef`
-sprite editor to leave **31 free blocks**; D71/D81 include it. Use those larger
+sprite editor to leave **16 free blocks**; D71/D81 include it. Use those larger
 formats or a separate writable data disk for larger files. Existing published
 download snapshots are not automatically updated by a source build.
+
+The independent [`xview` picture viewer](abi/cbm.md) displays small `.CBM` pictures.
+It is currently packaged separately from the normal downloads; the linked
+guide shows how to build the executable and add it with pictures to a new
+D71/D81 disk. Run `xview /alex.cbm &`. It uses one ordinary slot: two viewers can display different
+photos. The smaller `/alex2.cbm` also leaves drawing memory for clock + wave;
+the larger photos plus both apps exceed the shared display pool.
+Small `.CBM` pictures are displayed pixel-for-pixel with retained move/uncover
+repaint, without modifying the kernel or rereading the disk.
 
 A new `.BIN` launches as `name` or `name &`
 into any free **compatible-sized** allocation, without an OS name-table entry.
@@ -238,6 +247,13 @@ may contain messages or command paths that differ from the current images.
 <p align="center">
   <img src="screenshot/udeks-xwave-xclock.png" alt="Resizable xwave and xclock windows sharing the VIC-IIe display" width="384">
 </p>
+
+<p align="center">
+  <img src="screenshot/udeks-xview-desktop.png" alt="xview displaying a CBM picture alongside xclock and xwave in the 1986 emulator" width="384">
+</p>
+
+`xview`, `xclock`, and `xwave` sharing the VIC-IIe desktop in 1986
+(user-supplied screenshot, October 2026).
 
 <p align="center">
   <img src="screenshot/udeks-dual-display.gif" alt="Animated UDEKS session with both displays working together" width="720">

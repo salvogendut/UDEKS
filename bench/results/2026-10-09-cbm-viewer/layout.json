@@ -1,0 +1,11 @@
+{
+  "file": 4581,
+  "image": 3821,
+  "bss": 1437,
+  "fits": [],
+  "joined_fits": [
+    3
+  ],
+  "resident_bytes": 0,
+  "scope": "native arguments/streams/sleep/foreground stdin/task-owned mounted-file I/O"
+}

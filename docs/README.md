@@ -69,6 +69,7 @@ Use the [filesystem contract](../abi/filesystem.md) for the current behavior.
 - [Disk shell and startup](BOOT-STARTUP.md)
 - [Disk-loaded graphical apps](DISK-GRAPHICS.md)
 - [`xsprdef` session sprite editor](XSPRDEF.md)
+- [`.CBM` pictures and `xview`](../abi/cbm.md) — standalone small-picture viewer and demo build
 - [Command extraction](COMMAND-EXTRACTION.md)
 - [Retained-window cache integration](WINDOW-CACHE-INTEGRATION.md)
 - [Window-manager milestone](WINDOW-MANAGER-MILESTONE.md)

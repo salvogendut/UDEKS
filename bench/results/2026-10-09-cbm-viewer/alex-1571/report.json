@@ -1,0 +1,78 @@
+{
+  "drive": "1571",
+  "source_sha256": "8237b482583f0a67429614ee75eb456c9e27f6f0e756bdfc1f142aa083828b1a",
+  "fixture_sha256": "0356ed394995251c13769dbb73c45aae2401ac527b8d1cb234e40cbf41582cb2",
+  "app_sha256": "7d6e2bb46477aea890e903f87afbcb43b7debae305b39cdd4da9f2eaafa6c7d5",
+  "checks": [
+    {
+      "command": "xview"
+    },
+    {
+      "command": "xview /nofile.cbm"
+    },
+    {
+      "command": "xview /bad.cbm"
+    },
+    {
+      "command": "xview /trail.cbm"
+    },
+    {
+      "command": "xview /pad.cbm"
+    },
+    {
+      "command": "xview /big.cbm"
+    },
+    {
+      "command": "xview /dense.cbm"
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "command": "xview /alex.cbm &"
+    },
+    {
+      "check": "initial",
+      "pixels": 5544,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "check": "dragged",
+      "pixels": 5544,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "xclock &"
+    },
+    {
+      "command": "xclock -q"
+    },
+    {
+      "check": "uncovered",
+      "pixels": 5544,
+      "shadow_matches_vic": true
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "command": "xview /alex.cbm"
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "command": "xview /alex.cbm"
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "check": "close-cancel-reuse-and-guards",
+      "passed": true
+    }
+  ]
+}
