@@ -85,6 +85,15 @@ map. Discovery is boot-only; the transport must remain callable after boot.
 No application allocation, time-service slot, stack guard, staging lifetime,
 common-RAM reservation, or visible bitmap space may be silently appropriated.
 
+The package-2 investigation confirmed that bank-0 `$0200-$0BFF` still serves
+synchronous console programs, bank-1 `$4000-$40FF` is the live bootfs gateway
+backup, and `$F68A-$F7EF` is shared gateway/stack workspace, not free storage.
+None is appropriated by this increment. RAM under bank-0 I/O (`$D000-$DFFF`)
+is a possible **unqualified** service home after bootstrap, not a selected
+placement: ownership/delivery, flat-map entry, I/O calls, NMI and buffer homes
+still need a complete production proof. Do not equate an unlisted range with
+free RAM or load the standalone program into the live system.
+
 DMA and VIC use the same RCR bank selection. Restoring it after a transfer
 does **not** prove an artifact-free active display while it was changed.
 Prefer a service-owned staging buffer in the already VIC-selected bank and a
@@ -98,7 +107,65 @@ allocations stay within the discovered prefix and each transfer must fit its
 allocation and capacity; do not interpret the 24-bit field as permission to
 cross a 512 KiB hardware counter boundary on a larger REU.
 
-## Reproduce the current gate
+## Owned backing store — package 2 component qualified
+
+`reu_store.c` / `reu_store.h` implement a private C storage component, still
+**not installed behind the bitmap API**. It reserves four independent 8 KiB
+extents in REU `$000000-$007FFF`: 32 KiB offered on every supported REU.
+This covers four maximum current bitmap objects (5,258 bytes each), without
+allocating a large bitmap/page allocator in precious C128 RAM. It does not
+claim to offer all detected expansion memory. The app-independent storage
+policy knows owner IDs and byte counts, not `xview` or image filenames.
+
+- One object per authenticated owner; service-private nonzero handles.
+- Sequential writes of 1–256 bytes; pending objects cannot be read; commit
+  requires every declared byte. The future bitmap adapter still validates
+  geometry, row padding and the public <=19-byte request chunks.
+- Reject ownership/state/size/offset errors before touching metadata or DMA.
+  New allocations fail atomically and leave the output handle untouched.
+- Four disjoint extents avoid compaction and preserve every peer on reuse.
+  Release clears all metadata without reading stale expansion contents.
+  New owners cannot read old contents: full upload/commit is required first.
+- Owner retirement must release storage before recycling a task ID. Handles
+  never repeat during a boot; after 65,535 successful allocations, fail with
+  ENOMEM until reboot instead of accepting stale handles after wrap.
+- A DMA error can mean a partial transfer. The entire store goes offline;
+  no reads, writes or commits succeed, but cleanup remains available. Release
+  every object and rediscover successfully before reinitialization. This is
+  not a promise of atomic recovery from damaged physical memory.
+- No REU returns ENODEV without any allocation or store DMA. Choosing the
+  existing RAM backend remains the integration adapter's responsibility.
+
+The module measures **1,372 CODE + 39 BSS bytes** with cc65 `-Os`, excluding
+transport, compiler helpers and the production adapter/buffer. The store
+accepts only trusted synchronous service calls; it is not a foreign-pointer
+syscall, a scheduler, a general REU allocator, or a loadable service yet.
+
+Host tests exercise CLOCK160-sized and maximum-size peers, ordered 19-byte
+uploads, capacity/owner/handle rejection, random lifecycles, every failing
+write position before/after a partial DMA, read failures and handle exhaustion.
+The actual cc65 build passes VICE absent/128/256/512/1024 KiB cases. Each
+present case verifies four full 8 KiB objects plus reuse (32,769 bytes),
+1,861 bounded transfers, 14 rejections and injected partial-write recovery.
+A deliberately corrupted read fails independent byte comparison.
+
+The standalone fixture uses a bank-1 staging buffer and keeps RCR `$49`
+during store transfers; guards and untouched bank-0 peers are checked. Its
+`$6000` buffer and `$F100` copy gate are **scratch-only proof addresses**,
+occupied by live services/display in UDEKS. Discovery still uses bank 0.
+Interrupt sources are disabled: this is not live desktop, raster artifact,
+RESTORE, scheduler, 1986 or physical-hardware qualification.
+
+Evidence: [owned-store qualification](../bench/results/2026-10-09-reu-store/README.md).
+Build with container `make reu-store-build`, run host
+`python3 tools/reu_store_probe.py`. Its temporary VICE sessions mount no disks
+and close automatically. Never run this destructive scratch probe inside
+UDEKS. **1,721 host tests pass**; normal boot/layout builds pass and the three
+`build/boot` disk images remain byte-identical to the foundation baseline.
+Package 2 remains open for placement/delivery and bitmap-service
+integration; package 3 remains the user-visible coexistence/fallback gate.
+
+## Reproduce the foundation gate
 
 From this worktree:
 

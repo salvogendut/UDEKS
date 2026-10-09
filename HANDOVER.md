@@ -6,7 +6,54 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — REU foundation, 2026-10-09
+## Current handoff — owned REU store component, 2026-10-09
+
+On the user's "commit push and do next", the qualified foundation was
+committed/pushed as **`79d0d25`** on `graphics-reu`. Package 2 has begun;
+the following store component is implemented and qualified. The user authorized
+committing/pushing it and continuing integration on 2026-10-09.
+No issue/PR/merge, publication or changes to the viewer branch/root main.
+
+- `src/services/memory/reu_store.c`, `include/udeks/reu_store.h`: pure private
+  C service policy, four fixed 8 KiB objects in REU `$000000-$007FFF`. Offers
+  32 KiB on any supported REU, enough for four current maximum-size bitmaps.
+  No app-specific names, heap, compaction, public ABI change or extra slots.
+- Validates ownership, handles, size, upload order and bounds before DMA or
+  metadata changes. Pending is unreadable; full upload required to commit;
+  owner retirement clears records. Monotonic 16-bit handles never wrap.
+  Partial DMA faults take the store offline; release all objects and rediscover
+  successfully before re-init. Buffers/callers are trusted service bindings,
+  not foreign task pointers. Future adapter still authenticates task/window
+  and validates bitmap geometry and padding.
+- cc65: **1,372 CODE + 39 BSS**, excluding transport/helpers/adapter/buffer.
+  No production placement is claimed. `mk/reu_store.mk` only builds a separate
+  PRG, leaving the source-hash-qualified foundation files unmodified.
+- VICE absent/128/256/512/1024 KiB matrix passes. Present cases compare four
+  full 8 KiB objects after all writes plus reuse: **32,769 bytes, 1,861 store
+  I/O calls, 14 rejections**. Partial write fault, offline cleanup, fresh
+  discovery and reuse pass; corrupted-read negative fails comparison.
+  Evidence: `bench/results/2026-10-09-reu-store`. The fixture keeps RCR `$49`
+  for store DMA via a bank-1 buffer and verifies both host banks' guards.
+  Interrupts disabled, scratch-only addresses: NOT a desktop/NMI/1986/HW test.
+- Container `make reu-store-build`; host `python3 tools/reu_store_probe.py`.
+  Never run either standalone probe inside UDEKS. No disk mounted; all owned
+  sessions close automatically. **1,721 host tests pass**; existing disk
+  build/layout gate passes, with
+  `build/boot/udeks.d64/.d71/.d81` matching the foundation hashes below.
+
+**Continue package 2 with actual placement/delivery and bitmap binding, not
+more unrelated tests or optimizations.** Live graphics still has only 2,304
+bytes: do not offer the user new demo disks until integration works. Preserve
+all four app slots and stock fallback. Bank-0 `$0200-$0BFF` is still used by
+synchronous console utilities; bank-1 `$4000` backs up the live bootfs gateway;
+common gateway/stack space is not free. A bank-0 RAM-under-I/O service at
+`$D000-$DFFF` is a possible next investigation, **not an approved/free/proved
+placement**. Boot delivery, flat-map calls, I/O and NMI transitions, metadata
+and a real bank-1 display-safe buffer all need bounded homes. Moving existing
+bitmap service code there could help fund the adapter, but has not been done.
+Package 3 remains live coexistence/fallback/input and user-test disks.
+
+## Previous handoff — REU foundation, 2026-10-09
 
 The user selected REU and approved starting with VICE. New local branch
 `graphics-reu`, worktree `build/graphics-reu`, based on committed/pushed

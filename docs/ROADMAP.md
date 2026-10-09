@@ -19,10 +19,14 @@ the user selected REU and VICE. Branch `graphics-reu`, worktree
 [Three-package plan](GRAPHICS-REU.md): (1) transport/discovery, (2) budgeted
 generic storage integration, (3) visible coexistence/fallback qualification.
 The standalone first package passes VICE with absent/128/256/512/1024 KiB
-configurations and a wrong-bank negative control. It is not linked into boot;
-graphics capacity is unchanged until package 2. Preserve the stock fallback,
-all four app allocations and app-independent APIs. Next: actual code/buffer
-placement and storage integration, including the shared VIC/DMA bank selector.
+configurations and a wrong-bank negative control; committed/pushed `79d0d25`.
+Package 2's owned C store is now standalone-qualified: four 8 KiB objects,
+pending/commit semantics, retirement/reuse and fail-closed DMA errors. VICE
+verifies 32,769 bytes per present-device case using a bank-1 transfer buffer.
+**Package 2 is not complete:** this is not linked into boot and live graphics
+capacity is unchanged. Preserve the stock fallback, all four app allocations
+and app-independent APIs. Next: actual code/buffer placement, delivery and
+bitmap-service integration, including the shared VIC/DMA bank selector.
 No merge or new published disk is implied by these prototype results.
 
 **In progress — [#55, packed bitmap surfaces](https://github.com/salvogendut/UDEKS/issues/55):**

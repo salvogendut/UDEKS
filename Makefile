@@ -246,6 +246,7 @@ include mk/window-cache.mk
 include mk/storage.mk
 include mk/services.mk
 include mk/reu.mk
+include mk/reu_store.mk
 
 # Storage 0.2 positive/negative files live on DOS media, never in bootfs.
 .PHONY: disk-exec-image
