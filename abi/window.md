@@ -122,8 +122,9 @@ The 32-byte `WMGR` record begins at `$F240`:
 
 Banked ordinary UDEX programs do not call UAPP's resident paint functions or
 register foreign-bank callbacks. They submit operation 23 through the existing
-`$FF16` request boundary: descriptor/flags zero, count 24. Unused payload bytes
-are ignored; clients should clear them. Each registered task owns at most one
+`$FF16` request boundary: descriptor/flags zero, count 24. Legacy operations
+ignore unused payload bytes; clients should clear them. Packed bitmap
+operations (0.20) require unused bytes to be zero. Each registered task owns at most one
 window. The service derives the task from the scheduler, binds owners `$83`–`$86`
 to tasks 3–6, and copies titles into its own storage.
 
@@ -320,3 +321,54 @@ exits. The service retires any remaining window before reaping an exited task.
 It never frees a live task. Root-session `xcalc -q`, `xdraw -q` and foreground Ctrl+C use
 this same graceful close path. A noncooperating native program is not protected
 or forcibly terminated by this interface; these are trusted cooperative apps.
+
+## Packed bitmap surfaces (UTRQ 0.20)
+
+Operation 23, minor 20, descriptor/flags zero, count exactly 24. The current
+scheduler task must own the supplied window handle. No application pointers
+or app-specific registrations cross this interface. Success is COMPLETE,
+errno 0, result 0; errors preserve sequence and return result 0.
+
+| Suboperation | Payload bytes after opcode and handle |
+|---|---|
+| 8 BEGIN | 2–3 width LE16; 4 height; 5–6 x LE16; 7 y; 8–23 zero |
+| 9 WRITE | 2–3 sequential byte offset LE16; 4 count 1–19; 5 onward data; unused bytes zero |
+| 10 COMMIT | 2–23 zero |
+| 11 ABORT | 2–23 zero |
+
+Coordinates are relative to the window origin, including its title area,
+like legacy drawing commands. Width is 1–240, height 1–175, and the rectangle
+must fit within 320x200 relative coordinates. Repaint applies the window's
+current client clip; it does not scale pixels when geometry changes.
+Rows are `ceil(width/8)` bytes, MSB-first, black ink with transparent zero
+bits. Unused low bits in each final row byte must be zero.
+
+BEGIN requires an empty retained record (`EBUSY` otherwise). It immediately
+reserves `8 + ceil(width/8)*height` bytes in the **same 2,304-byte pool** used
+by all four clients' commands, paths and bitmaps. `ENOMEM` leaves peers and
+the caller unchanged. A 128x80 image uses 1,288 bytes; 160x100 uses 2,008.
+App-slot availability and retained-image capacity remain distinct limits.
+
+WRITE accepts only the next expected offset, rejects overruns and checks the
+whole chunk's row padding before mutation. COMMIT requires every byte to have
+arrived; incomplete input is `EINVAL`. During a drag or cache transfer,
+COMMIT returns `EAGAIN` without publishing: sleep/yield and retry COMMIT.
+Successful commit publishes the image and requests a managed repaint, including
+occluded windows. Pending data is never drawn, even on unrelated repaints.
+
+ABORT discards a pending upload but leaves the window open. It does not erase
+a committed image (`EINVAL`). BEGIN/WRITE/COMMIT/ABORT validation failures
+leave the retained pool and all allocation records unchanged. Repeating a
+committed COMMIT, writing without BEGIN, nonzero reserved fields or foreign
+handles is `EINVAL`; pre-0.20 clients with an owned handle get `ENOSYS` for
+the new operations. The record payload is scratch after return.
+
+Legacy PRESENT/PATHS/DELTA cannot replace a pending upload (`EBUSY`, or DELTA's
+earlier busy/retry result). After commit, a full legacy PRESENT/PATHS may
+replace it normally. Close, task exit/cancellation and slot reuse release
+pending or committed allocations and preserve peers through compaction.
+
+The renderer and allocator are graphics-service code, not microkernel policy.
+`xview` streams CBM files through this API. It commits only after validating
+the header, payload, EOF and successful file CLOSE; task retirement releases
+the surface on cancellation or exit. File parsing remains application policy.

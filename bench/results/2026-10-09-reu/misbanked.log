@@ -1,0 +1,4 @@
+(C:$2953)   ADDR A  X  Y  SP 00 01 NV-BDIZC LIN CYC  STOPWATCH
+.;2953 80 01 00 fd 2f 73 10110100 000 001  291144673
+(C:$2953) 
+captured 32 bytes from $7000 to /var/home/salvogendut/Dev/UDEKS/build/graphics-reu/build/reu/vice-97euecc8/misbanked.bin

@@ -1,0 +1,106 @@
+{
+  "scope": "standalone owned REU store; NOT installed, no live desktop/IRQ/NMI claim",
+  "emulator": "\nVICE - Versatile Commodore Emulator\n\n            ID: net.sf.VICE\n           Ref: app/net.sf.VICE/x86_64/stable\n          Arch: x86_64\n        Branch: stable\n       Version: 3.10\n       License: GPL-2.0+\n        Origin: flathub\n    Collection: org.flathub.Stable\n  Installation: system\nInstalled Size: 45,8\u00a0MB\n       Runtime: org.freedesktop.Platform/x86_64/25.08\n           Sdk: org.freedesktop.Sdk/x86_64/25.08\n\n        Commit: bbd997ea8cbf7e6ba06ff82136fd71069ce2011f93c006412bcda7bbde17e448\n        Parent: 68a5281bbbfb691d105e1006686691713eb0cab353a7d869f4b72c066eca18c7\n       Subject: Add desktop files for vsid, x64dtv, xcbm5x0, xscpu64 (c39f8386949f)\n          Date: 2026-01-18 14:54:47 +0000\n",
+  "records": [
+    {
+      "case": "vice-0",
+      "raw": "5253545101020000000100000000010000000027000000000000000000000000",
+      "decoded": {
+        "configured_kib": 0,
+        "verified_prefix_kib": 0,
+        "offered_kib": 0,
+        "checked_io_calls": 0,
+        "verified_bytes": 0,
+        "rejections": 1,
+        "injected_partial_faults": 0,
+        "host_banks_guarded": 0,
+        "metadata_bytes": 39
+      }
+    },
+    {
+      "case": "vice-128",
+      "raw": "52535451010200020207450701800e0102060027000000000000000000000000",
+      "decoded": {
+        "configured_kib": 128,
+        "verified_prefix_kib": 128,
+        "offered_kib": 32,
+        "checked_io_calls": 1861,
+        "verified_bytes": 32769,
+        "rejections": 14,
+        "injected_partial_faults": 1,
+        "host_banks_guarded": 2,
+        "metadata_bytes": 39
+      }
+    },
+    {
+      "case": "vice-256",
+      "raw": "52535451010200040407450701800e0102060027000000000000000000000000",
+      "decoded": {
+        "configured_kib": 256,
+        "verified_prefix_kib": 256,
+        "offered_kib": 32,
+        "checked_io_calls": 1861,
+        "verified_bytes": 32769,
+        "rejections": 14,
+        "injected_partial_faults": 1,
+        "host_banks_guarded": 2,
+        "metadata_bytes": 39
+      }
+    },
+    {
+      "case": "vice-512",
+      "raw": "52535451010200080807450701800e0102060027000000000000000000000000",
+      "decoded": {
+        "configured_kib": 512,
+        "verified_prefix_kib": 512,
+        "offered_kib": 32,
+        "checked_io_calls": 1861,
+        "verified_bytes": 32769,
+        "rejections": 14,
+        "injected_partial_faults": 1,
+        "host_banks_guarded": 2,
+        "metadata_bytes": 39
+      }
+    },
+    {
+      "case": "vice-1024",
+      "raw": "52535451010200100807450701800e0102060027000000000000000000000000",
+      "decoded": {
+        "configured_kib": 1024,
+        "verified_prefix_kib": 512,
+        "offered_kib": 32,
+        "checked_io_calls": 1861,
+        "verified_bytes": 32769,
+        "rejections": 14,
+        "injected_partial_faults": 1,
+        "host_banks_guarded": 2,
+        "metadata_bytes": 39
+      }
+    },
+    {
+      "case": "corrupt-read",
+      "raw": "52535451018009080801fb020000080000000027000000000000000000000000",
+      "decoded": {
+        "negative_control": "corrupt readback rejected at independent comparison"
+      }
+    }
+  ],
+  "source_sha256": {
+    "src/services/memory/reu.s": "6ee6247e4aeeac586b9f44b93297f56415f0028ffa052f6fc7ff2d553f1216c8",
+    "src/services/memory/reu_capacity.c": "818165aee100d61c0f61dfa08106389a09588f3ba199b73c077834b0d1705080",
+    "src/services/memory/reu_store.c": "7d6f6c7d14d9f031ca15209aa88ce539f19fd8ee0d8f06367c0d9b17f2008ceb",
+    "include/udeks/reu.h": "c09121aac9fc02a67a72d27607bc494e21e512999b0c35d05ba2f62b3a8d68b0",
+    "include/udeks/reu_store.h": "1b8ca15e8b77e2a3f4e38d00802acab4ffaf36d1d26e0824106a33e23bbae8e9",
+    "bench/reu/store_probe.s": "48af5d90cbc537bfefeafe2d9c182cd4f3f7dec468fb70e9781a3246ba832401",
+    "bench/reu/store_probe.c": "fd0051b3e5a4985458affdf6303318715609afa601151104e4ce618480996e1c",
+    "bench/reu/store_probe.cfg": "9c4f774075312aab662b3b320f0343c13938448abd6c4d819bbe11a039ff5d72",
+    "mk/reu.mk": "c4b03101e7135df3df32263ba215694898b738a0542ffc2929d657aae7354c87",
+    "mk/reu_store.mk": "851f8a0e9f6d93aa5774631994a5bd10acb98df64587b1b2195cf5da2305f5e2",
+    "tools/reu_store_probe.py": "74acc7413301fafa9a8ad5ae93d93a1463ba4dfc660e4f2089a047789bf6f982",
+    "tools/vice_capture.py": "ee5fd28fdf1415edee6456425a98a3ae7c9c4b0a5efa4c3152dd6c54eba48e00"
+  },
+  "artifact_sha256": {
+    "probe.prg": "39ddb781f32809850532c31ee1f0d71cad43ae026439e738963e994aa6256f6d",
+    "probe.map": "c5a3afdf58796605323e926df808b16cca29138c707212007c54bec6aa08b41f"
+  }
+}

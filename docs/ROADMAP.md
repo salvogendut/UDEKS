@@ -13,6 +13,50 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
+**Implemented and user-accepted — optional REU graphics backing storage (2026-10-09):**
+the user selected REU and VICE. Branch `graphics-reu`, worktree
+`build/graphics-reu`, based on the committed viewer `fe57e7f`.
+[Three-package plan](GRAPHICS-REU.md): (1) transport/discovery, (2) budgeted
+generic storage integration, (3) visible coexistence/fallback qualification.
+The standalone first package passes VICE with absent/128/256/512/1024 KiB
+configurations and a wrong-bank negative control; committed/pushed `79d0d25`.
+Package 2's owned C store is now standalone-qualified: four 8 KiB objects,
+pending/commit semantics, retirement/reuse and fail-closed DMA errors. VICE
+verifies 32,769 bytes per present-device case using a bank-1 transfer buffer.
+The owned-store checkpoint is committed/pushed as `3cb8ae0`. **Package 2 is now
+implemented:** the generic bitmap service uses optional REU
+storage through the unchanged public API, with 8-byte internal headers and
+four 8 KiB REU extents. Code lives under bank-0 I/O; bounded transfers use a
+bank-1 buffer without changing the live VIC bank. Stock fallback and all four
+app allocations are preserved. VICE now renders CLOCK160 alongside clock and
+wave, and independent large-picture viewers. The user reports that it works
+beautifully and authorized commit/push/PR/merge, with a new README screenshot.
+Next: package 3's broader move/resize/RESTORE/cancellation and physical-REU
+acceptance; no exhaustive scenario list or hardware configuration was reported.
+The linked demo disks contain this milestone; root published snapshots are
+unchanged. IPC remains the next architectural feature after graphics acceptance.
+
+**Implemented and user-accepted — [#55, packed bitmap surfaces](https://github.com/salvogendut/UDEKS/issues/55):**
+make larger `xview` pictures practical within the existing 2,304-byte drawing
+pool. [Plan and gates](GRAPHICS-PACKED-BITMAPS.md). **Steps 1–4 complete,
+user-tested; included in the authorized `graphics-reu` merge:**
+the UTRQ 0.20 bitmap upload/render/cleanup service fits in both boot variants,
+with 34 resident bytes free and all four slots/pool/guards preserved. Independent
+VICE D71/D81 clients draw exact 128x80/160x100/odd-width images; ownership,
+retirement and legacy VICE/1986 app/input regressions pass.
+`xview` now streams file bytes into pending surfaces and commits only after
+validating EOF/CLOSE. VICE D71/D81 and native 1986 D81 pass the full viewer
+checks, including real mouse/input, paired viewers and mid-load cancellation.
+The [demo disks/checklist](../bench/results/2026-10-09-packed-viewer/README.md)
+are user-accepted (platform unspecified). Published root images remain unchanged.
+User feedback confirms the next graphics-capacity limitation: CLOCK160 consumes
+2,008 bytes, leaving 296, while `xclock` needs 344 and currently exits silently
+on allocation failure. Follow-up: expand generic retained storage and provide
+clear allocation diagnostics, rather than trimming individual applications.
+The REU integration above resolves that bitmap-capacity limit on expanded
+machines; it preserves the same stock-machine limit and executable allocations.
+Full-screen storage, panning and performance tuning remain later work.
+
 **Completed application slice (2026-10-09):** standalone `xview`, developed on
 `app-cbm-viewer`. It reuses the `additional-apps` `.CBM` format/converter,
 validates small pictures before display, and supports normal move/close/uncover

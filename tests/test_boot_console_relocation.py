@@ -75,7 +75,7 @@ class BootConsoleRelocationContractTests(unittest.TestCase):
     def test_resident_links_use_binding_not_console_object(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
         normal = makefile.split(
-            "$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphics.bin $(BUILD_8502)/retained-paths.bin &:", 1
+            "$(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphics.bin $(BUILD_8502)/retained-paths.bin $(BUILD_8502)/bitmap-hidden.bin &:", 1
         )[1].split("$(SCHEDULER_BIN):", 1)[0]
         panic = makefile.split(
             "$(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN)", 1

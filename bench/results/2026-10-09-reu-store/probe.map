@@ -1,0 +1,471 @@
+Modules list:
+-------------
+entry.o:
+    CODE              Offs=000000  Size=000064  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=00006D  Align=00001  Fill=0000
+probe.o:
+    CODE              Offs=000064  Size=0008EE  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000011  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000109  Align=00001  Fill=0000
+store.o:
+    CODE              Offs=000952  Size=00055C  Align=00001  Fill=0000
+    BSS               Offs=000109  Size=000027  Align=00001  Fill=0000
+transport.o:
+    CODE              Offs=000EAE  Size=000105  Align=00001  Fill=0000
+    BSS               Offs=000130  Size=00000F  Align=00001  Fill=0000
+capacity.o:
+    CODE              Offs=000FB3  Size=000258  Align=00001  Fill=0000
+    BSS               Offs=00013F  Size=00000A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=00120B  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=00121C  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax1.o):
+    CODE              Offs=00122A  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax4.o):
+    CODE              Offs=001232  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(bneg.o):
+    CODE              Offs=001243  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=001251  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=00125A  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=001267  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp8.o):
+    CODE              Offs=001274  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(div.o):
+    CODE              Offs=001281  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=001296  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax1.o):
+    CODE              Offs=0012C4  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=0012CB  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=0012D6  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=0012DD  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=0012F3  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=0012F8  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=0012FD  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=001302  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp8.o):
+    CODE              Offs=001307  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxi.o):
+    CODE              Offs=00130C  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=001319  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(leaaxsp.o):
+    CODE              Offs=001322  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=00132E  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax9.o):
+    CODE              Offs=001368  Size=000017  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(negabs.o):
+    CODE              Offs=00137F  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=001391  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=00139F  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=0013B5  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushw.o):
+    CODE              Offs=0013CF  Size=00000F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=0013DE  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shelp.o):
+    CODE              Offs=0013FA  Size=000020  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax1.o):
+    CODE              Offs=00141A  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=001422  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=001438  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxspi.o):
+    CODE              Offs=001443  Size=00001B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(udiv.o):
+    CODE              Offs=00145E  Size=00004F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zerobss.o):
+    CODE              Offs=0014AD  Size=000023  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               002800  00286C  00006D  00001
+CODE                  00286D  003D3C  0014D0  00001
+RODATA                003D3D  003D4D  000011  00001
+BSS                   003D4E  003E96  000149  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               003D4E RLA    __BSS_SIZE__              000149 REA    
+_store_bank1_guards       00287B RLA    _store_from_bank1         002874 RLA    
+_store_probe              002A51 RLA    _store_result             007000 RLA    
+_store_to_bank1           00286D RLA    _udeks_reu_capacity_banks 003E8D RLA    
+_udeks_reu_discover       003820 RLA    _udeks_reu_request        003E7E RLA    
+_udeks_reu_store          003E57 RLA    _udeks_reu_store_begin    003221 RLA    
+_udeks_reu_store_commit   00342B RLA    _udeks_reu_store_init     0031BF RLA    
+_udeks_reu_store_io       0028D1 RLA    _udeks_reu_store_read     0034B0 RLA    
+_udeks_reu_store_release  00350C RLA    _udeks_reu_store_release_owner 003547 RLA    
+_udeks_reu_store_write    003380 RLA    _udeks_reu_transfer       00371B RLA    
+addeqysp                  003A7A RLA    addysp                    003A8A RLA    
+bnega                     003AB4 RLA    decsp1                    003ABE RLA    
+decsp2                    003AC7 RLA    decsp3                    003AD4 RLA    
+decsp8                    003AE1 RLA    incax1                    003B31 RLA    
+incaxy                    003B3A RLA    incsp1                    003B43 RLA    
+incsp2                    003B52 RLA    incsp3                    003B60 RLA    
+incsp5                    003B65 RLA    incsp6                    003B6A RLA    
+incsp7                    003B6F RLA    incsp8                    003B74 RLA    
+ldax0sp                   003B86 RLA    ldaxi                     003B79 RLA    
+ldaxidx                   003B7B RLA    ldaxysp                   003B88 RLA    
+leaa0sp                   003B8F RLA    mulax9                    003BD5 RLA    
+negax                     003BF0 RLA    popax                     003B4A RLA    
+popptr1                   003BFE RLA    popsargsudiv16            003C67 RLA    
+ptr1                      00000A RLZ    ptr4                      000010 RLZ    
+push0                     003C22 RLA    pusha                     003C10 RLA    
+pusha0                    003C24 RLA    pushax                    003C26 RLA    
+pushw                     003C3C RLA    pushwysp                  003C4D RLA    
+shlax1                    003A97 RLA    shlax4                    003A9F RLA    
+shrax1                    003C87 RLA    sp                        000002 RLZ    
+sreg                      000004 RLZ    staspidx                  003C8F RLA    
+stax0sp                   003CA5 RLA    staxspidx                 003CB0 RLA    
+staxysp                   003CA7 RLA    tmp1                      000012 RLZ    
+tmp2                      000013 RLZ    tosdiva0                  003AEE RLA    
+tosicmp                   003B05 RLA    tosicmp0                  003B03 RLA    
+tosumula0                 003B9B RLA    udiv16                    003CDC RLA    
+zerobss                   003D1A RLA    
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+ptr1                      00000A RLZ    ptr4                      000010 RLZ    
+tmp1                      000012 RLZ    tmp2                      000013 RLZ    
+__BSS_SIZE__              000149 REA    _store_to_bank1           00286D RLA    
+_store_from_bank1         002874 RLA    _store_bank1_guards       00287B RLA    
+_udeks_reu_store_io       0028D1 RLA    _store_probe              002A51 RLA    
+_udeks_reu_store_init     0031BF RLA    _udeks_reu_store_begin    003221 RLA    
+_udeks_reu_store_write    003380 RLA    _udeks_reu_store_commit   00342B RLA    
+_udeks_reu_store_read     0034B0 RLA    _udeks_reu_store_release  00350C RLA    
+_udeks_reu_store_release_owner 003547 RLA    _udeks_reu_transfer       00371B RLA    
+_udeks_reu_discover       003820 RLA    addeqysp                  003A7A RLA    
+addysp                    003A8A RLA    shlax1                    003A97 RLA    
+shlax4                    003A9F RLA    bnega                     003AB4 RLA    
+decsp1                    003ABE RLA    decsp2                    003AC7 RLA    
+decsp3                    003AD4 RLA    decsp8                    003AE1 RLA    
+tosdiva0                  003AEE RLA    tosicmp0                  003B03 RLA    
+tosicmp                   003B05 RLA    incax1                    003B31 RLA    
+incaxy                    003B3A RLA    incsp1                    003B43 RLA    
+popax                     003B4A RLA    incsp2                    003B52 RLA    
+incsp3                    003B60 RLA    incsp5                    003B65 RLA    
+incsp6                    003B6A RLA    incsp7                    003B6F RLA    
+incsp8                    003B74 RLA    ldaxi                     003B79 RLA    
+ldaxidx                   003B7B RLA    ldax0sp                   003B86 RLA    
+ldaxysp                   003B88 RLA    leaa0sp                   003B8F RLA    
+tosumula0                 003B9B RLA    mulax9                    003BD5 RLA    
+negax                     003BF0 RLA    popptr1                   003BFE RLA    
+pusha                     003C10 RLA    push0                     003C22 RLA    
+pusha0                    003C24 RLA    pushax                    003C26 RLA    
+pushw                     003C3C RLA    pushwysp                  003C4D RLA    
+popsargsudiv16            003C67 RLA    shrax1                    003C87 RLA    
+staspidx                  003C8F RLA    stax0sp                   003CA5 RLA    
+staxysp                   003CA7 RLA    staxspidx                 003CB0 RLA    
+udiv16                    003CDC RLA    zerobss                   003D1A RLA    
+__BSS_RUN__               003D4E RLA    _udeks_reu_store          003E57 RLA    
+_udeks_reu_request        003E7E RLA    _udeks_reu_capacity_banks 003E8D RLA    
+_store_result             007000 RLA    
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    zerobss.o                 common/zerobss.s(8)
+__BSS_SIZE__ ([linker generated]):
+    zerobss.o                 common/zerobss.s(8)
+_store_bank1_guards (entry.o):
+    probe.o                   build/reu-store/probe.s(31)
+_store_from_bank1 (entry.o):
+    probe.o                   build/reu-store/probe.s(30)
+_store_probe (probe.o):
+    entry.o                   bench/reu/store_probe.s(4)
+_store_result (entry.o):
+    probe.o                   build/reu-store/probe.s(28)
+_store_to_bank1 (entry.o):
+    probe.o                   build/reu-store/probe.s(29)
+_udeks_reu_capacity_banks (capacity.o):
+    probe.o                   build/reu-store/probe.s(17)
+_udeks_reu_discover (capacity.o):
+    probe.o                   build/reu-store/probe.s(18)
+_udeks_reu_request (transport.o):
+    capacity.o                build/reu/capacity.s(13)
+    probe.o                   build/reu-store/probe.s(15)
+    entry.o                   bench/reu/store_probe.s(5)
+_udeks_reu_store (store.o):
+    probe.o                   build/reu-store/probe.s(19)
+_udeks_reu_store_begin (store.o):
+    probe.o                   build/reu-store/probe.s(21)
+_udeks_reu_store_commit (store.o):
+    probe.o                   build/reu-store/probe.s(23)
+_udeks_reu_store_init (store.o):
+    probe.o                   build/reu-store/probe.s(20)
+_udeks_reu_store_io (probe.o):
+    store.o                   build/reu-store/store.s(22)
+_udeks_reu_store_read (store.o):
+    probe.o                   build/reu-store/probe.s(24)
+_udeks_reu_store_release (store.o):
+    probe.o                   build/reu-store/probe.s(25)
+_udeks_reu_store_release_owner (store.o):
+    probe.o                   build/reu-store/probe.s(26)
+_udeks_reu_store_write (store.o):
+    probe.o                   build/reu-store/probe.s(22)
+_udeks_reu_transfer (transport.o):
+    capacity.o                build/reu/capacity.s(14)
+    probe.o                   build/reu-store/probe.s(16)
+addeqysp (addeqsp.o):
+    probe.o                   build/reu-store/probe.s(1172)
+addysp (addysp.o):
+    incsp8.o                  runtime/incsp8.s(8)
+    incsp7.o                  runtime/incsp7.s(8)
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    probe.o                   build/reu-store/probe.s(1172)
+    probe.o                   build/reu-store/probe.s(1172)
+bnega (bneg.o):
+    probe.o                   build/reu-store/probe.s(1172)
+decsp1 (decsp1.o):
+    capacity.o                build/reu/capacity.s(330)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+decsp2 (decsp2.o):
+    capacity.o                build/reu/capacity.s(330)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+decsp3 (decsp3.o):
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    probe.o                   build/reu-store/probe.s(1172)
+decsp8 (decsp8.o):
+    probe.o                   build/reu-store/probe.s(1172)
+incax1 (incax1.o):
+    probe.o                   build/reu-store/probe.s(1172)
+    probe.o                   build/reu-store/probe.s(1172)
+incaxy (incaxy.o):
+    capacity.o                build/reu/capacity.s(330)
+incsp1 (incsp1.o):
+    capacity.o                build/reu/capacity.s(330)
+    probe.o                   build/reu-store/probe.s(1172)
+incsp2 (incsp2.o):
+    staxspi.o                 runtime/staxspi.s(9)
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+    store.o                   build/reu-store/store.s(829)
+    probe.o                   build/reu-store/probe.s(1172)
+incsp3 (incsp3.o):
+    store.o                   build/reu-store/store.s(829)
+    probe.o                   build/reu-store/probe.s(1172)
+incsp5 (incsp5.o):
+    store.o                   build/reu-store/store.s(829)
+incsp6 (incsp6.o):
+    store.o                   build/reu-store/store.s(829)
+incsp7 (incsp7.o):
+    store.o                   build/reu-store/store.s(829)
+incsp8 (incsp8.o):
+    capacity.o                build/reu/capacity.s(330)
+ldax0sp (ldaxsp.o):
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    probe.o                   build/reu-store/probe.s(1172)
+ldaxi (ldaxi.o):
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    probe.o                   build/reu-store/probe.s(1172)
+ldaxidx (ldaxi.o):
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+ldaxysp (ldaxsp.o):
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    probe.o                   build/reu-store/probe.s(1172)
+    probe.o                   build/reu-store/probe.s(1172)
+leaa0sp (leaaxsp.o):
+    probe.o                   build/reu-store/probe.s(1172)
+mulax9 (mulax9.o):
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+negax (negabs.o):
+    shelp.o                   runtime/shelp.s(11)
+    div.o                     runtime/div.s(11)
+popax (incsp2.o):
+    shelp.o                   runtime/shelp.s(11)
+popptr1 (popptr1.o):
+    udiv.o                    runtime/udiv.s(9)
+    mul8.o                    runtime/mul8.s(9)
+popsargsudiv16 (shelp.o):
+    div.o                     runtime/div.s(11)
+ptr1 (zeropage.o):
+    zerobss.o                 common/zerobss.s(9)
+    udiv.o                    runtime/udiv.s(10)
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    shelp.o                   runtime/shelp.s(12)
+    pushw.o                   runtime/pushw.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mulax9.o                  runtime/mulax9.s(10)
+    mul8.o                    runtime/mul8.s(10)
+    ldaxi.o                   runtime/ldaxi.s(8)
+    div.o                     runtime/div.s(12)
+    capacity.o                build/reu/capacity.s(11)
+    store.o                   build/reu-store/store.s(11)
+    probe.o                   build/reu-store/probe.s(11)
+    entry.o                   bench/reu/store_probe.s(6)
+ptr4 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    shelp.o                   runtime/shelp.s(12)
+    mul8.o                    runtime/mul8.s(10)
+push0 (pushax.o):
+    probe.o                   build/reu-store/probe.s(1172)
+pusha (pusha.o):
+    capacity.o                build/reu/capacity.s(330)
+    capacity.o                build/reu/capacity.s(330)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    probe.o                   build/reu-store/probe.s(1172)
+    probe.o                   build/reu-store/probe.s(1172)
+    probe.o                   build/reu-store/probe.s(1172)
+    probe.o                   build/reu-store/probe.s(1172)
+pusha0 (pushax.o):
+    capacity.o                build/reu/capacity.s(330)
+    probe.o                   build/reu-store/probe.s(1172)
+    probe.o                   build/reu-store/probe.s(1172)
+pushax (pushax.o):
+    pushw.o                   runtime/pushw.s(8)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    probe.o                   build/reu-store/probe.s(1172)
+    probe.o                   build/reu-store/probe.s(1172)
+    probe.o                   build/reu-store/probe.s(1172)
+pushw (pushw.o):
+    probe.o                   build/reu-store/probe.s(1172)
+pushwysp (pushwsp.o):
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    probe.o                   build/reu-store/probe.s(1172)
+shlax1 (aslax1.o):
+    store.o                   build/reu-store/store.s(829)
+shlax4 (aslax4.o):
+    store.o                   build/reu-store/store.s(829)
+shrax1 (shrax1.o):
+    probe.o                   build/reu-store/probe.s(1172)
+sp (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    leaaxsp.o                 runtime/leaaxsp.s(8)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp8.o                  runtime/decsp8.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    capacity.o                build/reu/capacity.s(10)
+    store.o                   build/reu-store/store.s(10)
+    probe.o                   build/reu-store/probe.s(10)
+    entry.o                   bench/reu/store_probe.s(6)
+sreg (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    icmp.o                    runtime/icmp.s(9)
+    store.o                   build/reu-store/store.s(10)
+staspidx (staspidx.o):
+    probe.o                   build/reu-store/probe.s(1172)
+stax0sp (staxsp.o):
+    capacity.o                build/reu/capacity.s(330)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    probe.o                   build/reu-store/probe.s(1172)
+staxspidx (staxspi.o):
+    store.o                   build/reu-store/store.s(829)
+staxysp (staxsp.o):
+    store.o                   build/reu-store/store.s(829)
+    store.o                   build/reu-store/store.s(829)
+    probe.o                   build/reu-store/probe.s(1172)
+tmp1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    shrax1.o                  runtime/shrax1.s(8)
+    shelp.o                   runtime/shelp.s(12)
+    incaxy.o                  runtime/incaxy.s(8)
+    div.o                     runtime/div.s(12)
+    aslax4.o                  runtime/aslax4.s(8)
+    aslax1.o                  runtime/aslax1.s(8)
+    store.o                   build/reu-store/store.s(11)
+tmp2 (zeropage.o):
+    shelp.o                   runtime/shelp.s(12)
+    div.o                     runtime/div.s(12)
+tosdiva0 (div.o):
+    store.o                   build/reu-store/store.s(829)
+tosicmp (icmp.o):
+    store.o                   build/reu-store/store.s(829)
+    probe.o                   build/reu-store/probe.s(1172)
+tosicmp0 (icmp.o):
+    capacity.o                build/reu/capacity.s(330)
+    probe.o                   build/reu-store/probe.s(1172)
+tosumula0 (mul8.o):
+    probe.o                   build/reu-store/probe.s(1172)
+udiv16 (udiv.o):
+    shelp.o                   runtime/shelp.s(11)
+zerobss (zerobss.o):
+    entry.o                   bench/reu/store_probe.s(4)
+

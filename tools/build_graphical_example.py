@@ -31,8 +31,8 @@ def main():
     parser.add_argument('--source', type=Path, action='append',
                         help='C translation unit; repeat for a multi-file program')
     parser.add_argument('--name', default='HELLO', help='portable disk basename')
-    parser.add_argument('--graphics-abi', type=int, choices=(9,10,11,12,13,14,15,16,17), default=9,
-                        help='minimum request ABI; 10 resize, 11 worker calls, 12 retained paths, 13 bitmap tiles, 14 file I/O, 15 delta present, 16 PRG create, 17 held input')
+    parser.add_argument('--graphics-abi', type=int, choices=(9,10,11,12,13,14,15,16,17,20), default=9,
+                        help='minimum request ABI; 10 resize, 11 worker calls, 12 retained paths, 13 bitmap tiles, 14 file I/O, 15 delta present, 16 PRG create, 17 held input, 20 packed bitmaps')
     parser.add_argument('--static-locals', action='store_true',
                         help='cc65 private static locals; only for nonrecursive programs')
     parser.add_argument('--arguments',action='store_true',

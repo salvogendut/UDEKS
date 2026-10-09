@@ -1,0 +1,9 @@
+{
+  "exit_status": 0,
+  "drive": 1581,
+  "disk_sha256": "9836121b04e5cc14ff00e6c322702e5c6c355c498c465eda07606f59bea174b1",
+  "fixture_sha256": "5313275dd6472ea3747e279f45b037c4e7d36921db963c2e9f7e214082579eb0",
+  "app_sha256": "f2eb1b3b30db0e4822bb4cb59550d447f26fed158d992ecec032473f618fb847",
+  "emulator_revision": "d360c114e33216bf38a086f65af27533f581f6ba",
+  "emulator_tracked_changes": ""
+}

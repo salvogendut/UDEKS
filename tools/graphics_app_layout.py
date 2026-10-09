@@ -158,6 +158,10 @@ def baseline_regions(kernel, storage, worker):
                Region('banked image loader', 1, 0xD900, 0xE000),
                Region('storage state/software stack', 1, 0xE000, 0xE200),
                Region('IEC driver and ush stack', 1, 0xE300, 0xF000), STORAGE_HIDDEN]
+    if 'BITMAPCODE' in kernel:
+        from reu_graphics_layout import layout
+        layout(kernel)
+        regions.append(Region('bitmap service under I/O', 0, 0xD000, 0xE000))
     allowed = {'ZEROPAGE', 'STARTUP', 'CODE', 'RODATA', 'BSS', 'STORAGECODE', 'IECCODE', 'STORAGEHIGH'}
     if storage.keys() != allowed:
         raise ValueError('storage segments changed; review ownership')
@@ -214,11 +218,17 @@ def glyph_overlay_images(assets, paths, kernel, delivery):
         raise ValueError('paths secondary delivery differs')
 
 
-def glyph_overlay_entrypoints(segments,exports):
+def glyph_overlay_entrypoints(segments,exports, *, split_guard=False):
     start,end,_=segments['GRAPHICSPATHS']
-    for name in ('_udeks_retained_present',):
+    for name in ('_udeks_retained_present_image' if split_guard else '_udeks_retained_present',):
         if name not in exports or not start<=exports[name][0]<=end:
             raise ValueError('paths entry is outside executable code: '+name)
+    if not split_guard: return  # preserved pre-bitmap maps have no resident guard
+    start,end,_=segments['CODE']
+    for name in ('_udeks_retained_present','_udeks_retained_bitmap_request',
+                 '_udeks_retained_bitmap_paint'):
+        if name not in exports or not start<=exports[name][0]<=end:
+            raise ValueError('retained service entry is outside resident code: '+name)
 
 
 def audit(build):
@@ -235,7 +245,7 @@ def audit(build):
     regions = baseline_regions(normal, storage, worker)
     phases=graphics_lifetimes(regions)
     glyph_overlay_layout(normal)
-    glyph_overlay_entrypoints(normal,map_exports((build/'8502/udeks-8502.map').read_text()))
+    glyph_overlay_entrypoints(normal,map_exports((build/'8502/udeks-8502.map').read_text()),split_guard=True)
     paths=(build/'8502/retained-paths.bin').read_bytes()
     if paths!=(build/'8502/retained-paths-panic.bin').read_bytes():
         raise ValueError('normal/panic paths modules differ')

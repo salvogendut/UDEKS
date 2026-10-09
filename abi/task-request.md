@@ -1,14 +1,24 @@
-# Bank-task request ABI 0.18
+# Bank-task request ABI 0.20
 
-## Experimental service control (0.19, not normal boot)
+## Packed bitmap surfaces (0.20)
 
-Issue #49's isolated `UDEKS_DISK_TIME` candidate extends the existing record
-and `$CF30` gate with operation **28**, without renumbering older operations.
-Normal boot still accepts only minors 0–18. The candidate accepts 0–19;
-operation 28 requires minor 19 specifically. Its contract and the foreground
-runtime bridge are in [services.md](services.md#candidate-request-and-disk-command).
-Do not load the new service into a baseline kernel: its provisional reservation
-overlaps baseline live data. The standalone command probes support first.
+The request boundary accepts minors 0–20; future minors return `EPROTO`.
+Graphics operation **23** adds suboperations 8–11 for transactional packed
+bitmap upload, commit and abort. These require minor 20 and an owned native
+window, using the same descriptor/flags-zero, 24-byte record and `$FF16` gate.
+See [the window contract](window.md#packed-bitmap-surfaces-utrq-020)
+for geometry, capacity, retry and cleanup rules. No older operation is
+renumbered. The service is installed; the streaming `xview` client is pending.
+
+## Service control (0.19)
+
+Issue #49's `UDEKS_DISK_TIME` implementation is now the default boot path and
+extends the existing record with operation **28**. That operation still
+requires minor 19 specifically; its standalone command uses that version.
+Its contract and foreground runtime bridge are in
+[services.md](services.md#candidate-request-and-disk-command). The service
+reservation and boot installer are required; do not load it into historical
+pre-extraction kernels whose live data occupies that range.
 
 ## Exact-file mutations (0.18)
 

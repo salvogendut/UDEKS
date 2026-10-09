@@ -316,8 +316,9 @@ spawn_clear_context:
         sta MMU_PAGE0_PAGE
         lda #TASK2_PAGE1
         sta MMU_PAGE1_PAGE
-        ldy #$00
-        tya
+        ; Match native-app initialization: do not write the CPU ports.
+        ldy #$02
+        lda #$00
 spawn_clear_pages:
         sta $0000,y
         sta $0100,y

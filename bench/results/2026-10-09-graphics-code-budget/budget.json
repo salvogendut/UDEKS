@@ -1,0 +1,53 @@
+{
+  "scope": "WM code-space reclaim only; bitmap core remains unlinked",
+  "profiles": {
+    "baseline": "-Oirs",
+    "compact": "-Ors"
+  },
+  "objects": {
+    "baseline": {
+      "CODE": 8055,
+      "RODATA": 130,
+      "BSS": 4,
+      "DATA": 0,
+      "ZEROPAGE": 0,
+      "NULL": 0,
+      "HIGHBSS": 88
+    },
+    "compact": {
+      "CODE": 7142,
+      "RODATA": 130,
+      "BSS": 4,
+      "DATA": 0,
+      "ZEROPAGE": 0,
+      "NULL": 0,
+      "HIGHBSS": 88
+    }
+  },
+  "object_code_saved": 913,
+  "resident_free_bytes": 844,
+  "trace_bytes": 60702,
+  "trace_sha256": "b29a85fdcf0a345ea1531b3f397c57fd23d3184e75ccc1f5ca9166ec82889e71",
+  "simulated_cycles_including_trace_stubs": {
+    "baseline": 53244222,
+    "compact": 53755797
+  },
+  "normal_panic_layout_equal": true,
+  "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44",
+  "input_sha256": {
+    "src/services/window/window_manager_cached.c": "ed7e29e999a18b30ddc30754980b3a9d8fca51d894a013d51f35c216aff48433",
+    "Makefile": "ef408cc647a2008831d0fc2378ff9cbf9661ec85fd6718ad42561a67e5eb6b2e",
+    "tools/graphics_code_budget.py": "01f3f2e73210f81d147cc6c46b175cebdbd98f4b5777416f83f91ad375caeb78",
+    "bench/packed-bitmap/wm_unit.c": "c9e4ffb1a9799157fd9fa5bca01d15c044fd66168fdea6b53142872bbd89cdfb",
+    "bench/packed-bitmap/wm_trace.c": "ced9cecd869f9616c1c1f04721d19e772bea5e74aaf59e4e7cc499a2a95296b6",
+    "bench/packed-bitmap/wm_sim.cfg": "fc3f3eb89c97d54cacd19cf14036a880858caf284e6c1bcb530492e0bb8b7684",
+    "src/services/window/move_cache_state.c": "64944eda2cf7e396ecfb4742b67ec6ef7f19e9f0d967913ed11969dcaade0c97",
+    "build/8502/udeks-8502.map": "5647555c3970c3835f706a189c50c5a680e793b38cab9044915a85ff8cce8371",
+    "build/8502/udeks-8502-panic-probe.map": "087aff3f97c647bbe1d249f487f9e8bb68203cc163e3305f8ecbb7e5aa295722"
+  },
+  "disk_sha256": {
+    "d64": "789fb97077b7033dc784956ff5ecdb31f80c7f07e93a57472d6be382ce536e64",
+    "d71": "046dd59b918c32e4fcab3f22f8d60dc825057f955cb48ee29b561f4966119ad6",
+    "d81": "18d4edd7bb5d674c5332d967055309c89cba117a45cf0924d4f65df24e18fccb"
+  }
+}

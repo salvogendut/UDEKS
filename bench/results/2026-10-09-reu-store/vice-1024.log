@@ -1,0 +1,4 @@
+(C:$2869)   ADDR A  X  Y  SP 00 01 NV-BDIZC LIN CYC  STOPWATCH
+.;2869 02 00 0a ff 2f 73 00110101 000 000  395400096
+(C:$2869) 
+captured 32 bytes from $7000 to /var/home/salvogendut/Dev/UDEKS/build/graphics-reu/bench/results/2026-10-09-reu-store/vice-1024.bin

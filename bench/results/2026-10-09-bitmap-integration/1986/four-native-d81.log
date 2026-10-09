@@ -1,0 +1,41 @@
+PC=FF74 1581=AF5F jam=0 rawIEC=1 fdc=00 track=0 sector=0 request=00/00/00 exit=0
+PC=E450 1581=AD21 jam=0 rawIEC=1 fdc=80 track=3 sector=10 request=00/00/00 exit=0
+PC=E56C 1581=AD15 jam=0 rawIEC=1 fdc=00 track=6 sector=8 request=00/00/00 exit=0
+PC=E3B6 1581=CD1A jam=0 rawIEC=1 fdc=81 track=0 sector=0 request=00/00/00 exit=0
+PC=E5AC 1581=905F jam=0 rawIEC=1 fdc=80 track=4 sector=6 request=00/00/00 exit=0
+PC=E4AB 1581=AD03 jam=0 rawIEC=1 fdc=00 track=8 sector=4 request=00/00/00 exit=0
+PC=E6F0 1581=AE28 jam=0 rawIEC=1 fdc=00 track=10 sector=6 request=01/01/00 exit=0
+PC=E51C 1581=DB00 jam=0 rawIEC=1 fdc=00 track=11 sector=2 request=01/06/00 exit=0
+command: xclock & -> accepted (Return release=1593 frames)
+command: xwave & -> accepted (Return release=1733 frames)
+resize progress: 100 frames, projected 838 bytes, done 0, drag 0, focused 2, time 2:19, compositions 12
+resize progress: 200 frames, projected 1128 bytes, done 1, drag 0, focused 2, time 2:20, compositions 12
+resize progress: 300 frames, projected 1128 bytes, done 1, drag 0, focused 2, time 2:20, compositions 12
+resize progress: 400 frames, projected 1128 bytes, done 1, drag 0, focused 2, time 2:20, compositions 12
+resize published without further input after 449 PAL frames (projection 138, maximum input-poll gap 6)
+command: xcalc & -> accepted (Return release=44 frames)
+calculator 1.25+2.75= => 400 (expected 400)
+command: xdraw & -> accepted (Return release=46 frames)
+resize progress: 100 frames, projected 457 bytes, done 0, drag 0, focused 2, time 5:52, compositions 34
+resize progress: 200 frames, projected 948 bytes, done 0, drag 0, focused 2, time 5:55, compositions 34
+resize progress: 300 frames, projected 1128 bytes, done 1, drag 0, focused 2, time 5:55, compositions 34
+resize progress: 400 frames, projected 1128 bytes, done 1, drag 0, focused 2, time 5:55, compositions 34
+resize progress: 500 frames, projected 1128 bytes, done 1, drag 0, focused 2, time 5:55, compositions 34
+resize progress: 600 frames, projected 1128 bytes, done 1, drag 0, focused 2, time 5:55, compositions 34
+resize published without further input after 621 PAL frames (projection 235, maximum input-poll gap 6)
+command: cowsay four native -> accepted (Return release=780 frames)
+command: xclock & -> accepted (Return release=46 frames)
+command: xclock -q -> accepted (Return release=45 frames)
+command: xclock & -> accepted (Return release=45 frames)
+command: xwave -q -> accepted (Return release=47 frames)
+command: xwave & -> accepted (Return release=885 frames)
+command: xcalc -q -> accepted (Return release=45 frames)
+command: xcalc & -> accepted (Return release=1159 frames)
+command: xdraw -q -> accepted (Return release=45 frames)
+command: xdraw & -> accepted (Return release=751 frames)
+command: xdraw -q -> accepted (Return release=45 frames)
+command: xdraw -> accepted (Return release=1392 frames)
+command: xdraw & -> accepted (Return release=45 frames)
+command: xinit -q -> accepted (Return release=45 frames)
+command: echo input survived -> accepted (Return release=45 frames)
+PASS four native: mouse drag/resize, held outline, worker reuse, arithmetic, drawing, console, capacity, reload, Ctrl+C, guards, canvas

@@ -6,7 +6,331 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — standalone CBM viewer, 2026-10-09
+## Current handoff — integrated REU bitmap backend, 2026-10-09
+
+The user asked to commit/push and continue. The owned-store checkpoint is
+committed/pushed as **`3cb8ae0`**, `graphics-reu`, worktree `build/graphics-reu`.
+The user has tested the integration, reports that it works beautifully, and
+authorized commit/push/PR/merge on 2026-10-09. The merge includes the underlying
+packed-bitmap work from issue #55. README now includes the supplied expanded
+desktop screenshot as `screenshot/udeks-reu-desktop.png`; the original PPM is
+preserved. Published download snapshots remain unchanged; use the linked demo
+disks for this milestone. No new physical-C128/REU result is inferred.
+
+**Package 2 is implemented, with live VICE coexistence/fallback checks.**
+Read [GRAPHICS-REU.md](docs/GRAPHICS-REU.md) and preserved
+[evidence/test disks](bench/results/2026-10-09-reu-graphics/README.md).
+The existing UTRQ bitmap API now routes bulk image bytes into four private
+8 KiB REU extents, retaining just 8 bytes per object in the internal pool.
+Small command/path drawings remain internal; stock machines use the unchanged
+full bitmap allocation. No app changes, new public ABI or app-slot reductions.
+
+- Production bitmap code/state lives in bank-0 `$D000-$DFFF`, delivered from
+  boot-only bank-1 `$7300-$82FF` before VIC/native apps take that space.
+  Checksum/identity and map parity are enforced. Long calls keep IRQs enabled;
+  bounded copies/DMA borrow backed-up common `$F400`, use bank-1 `$4180-$419D`,
+  then restore the common service page. No live VIC bank change during DMA.
+- Hidden CODE 3,232 bytes, state 114, trailer 16; ordinary BSS ends `$9397`,
+  56 bytes before the live `$93D0` service reservation. Pool/slots/stacks stay
+  fixed. Normal and panic module images match.
+- VICE exposed two real integration bugs, both fixed: shell/foreground page
+  initialization wrote CPU ports `$00/$01` and corrupted hidden RAM; it now
+  skips them like the native graphical initializer. The REU transport preserves
+  P, so its caller must compare returned A explicitly before branching.
+- Host tests cover four maximum-size objects, pending invisibility, padding,
+  allocation failures, legacy replacement, partial-read faults, retirement and
+  reuse. VICE checks exact pixels, clock + wave + CLOCK160, independent images,
+  uncover, close/reuse, shell/disk activity, code integrity, DMA guards and the
+  restored bootfs page. The entire saved REU image proves owned bytes and
+  untouched expansion outside them. Stock fallback passes on the same build.
+- Full forced parallel build (`make -B -j8`, no clean) reproduced all three
+  normal disks and the hidden module byte-for-byte. Boot/layout/placement/
+  sim6502 bitmap gates and **1,734 host tests** pass. D71/D81 picture demos are in
+  `build/reu-graphics/qualified`; D81 is the live-qualified medium. The normal
+  compact D64 is built but does not include the extra viewer/pictures.
+
+**Next is package 3, not another placement project:** broader pointer drag,
+resize/occlusion, RESTORE during transfer/render, mid-upload cancellation,
+exhaustion, then physical-C128-with-REU acceptance. The user accepted the
+working desktop, but did not enumerate those remaining scenarios or a hardware
+configuration. Do not claim those
+interaction/hardware gates from this coexistence proof. There is no 1986 pass
+for this integration. Test in VICE with 512 KiB REU and a 1581 drive for D81.
+Wave's joined task allocation still matters: with clock + wave + viewer, CAT
+needs wave closed first. REU is bitmap storage, not extra executable capacity.
+IPC remains the next proposed architecture milestone after this graphics work.
+
+## Previous handoff — owned REU store component, 2026-10-09
+
+On the user's "commit push and do next", the qualified foundation was
+committed/pushed as **`79d0d25`** on `graphics-reu`. Package 2 has begun;
+the following store component is implemented and qualified. The user authorized
+committing/pushing it and continuing integration on 2026-10-09.
+No issue/PR/merge, publication or changes to the viewer branch/root main.
+
+- `src/services/memory/reu_store.c`, `include/udeks/reu_store.h`: pure private
+  C service policy, four fixed 8 KiB objects in REU `$000000-$007FFF`. Offers
+  32 KiB on any supported REU, enough for four current maximum-size bitmaps.
+  No app-specific names, heap, compaction, public ABI change or extra slots.
+- Validates ownership, handles, size, upload order and bounds before DMA or
+  metadata changes. Pending is unreadable; full upload required to commit;
+  owner retirement clears records. Monotonic 16-bit handles never wrap.
+  Partial DMA faults take the store offline; release all objects and rediscover
+  successfully before re-init. Buffers/callers are trusted service bindings,
+  not foreign task pointers. Future adapter still authenticates task/window
+  and validates bitmap geometry and padding.
+- cc65: **1,372 CODE + 39 BSS**, excluding transport/helpers/adapter/buffer.
+  No production placement is claimed. `mk/reu_store.mk` only builds a separate
+  PRG, leaving the source-hash-qualified foundation files unmodified.
+- VICE absent/128/256/512/1024 KiB matrix passes. Present cases compare four
+  full 8 KiB objects after all writes plus reuse: **32,769 bytes, 1,861 store
+  I/O calls, 14 rejections**. Partial write fault, offline cleanup, fresh
+  discovery and reuse pass; corrupted-read negative fails comparison.
+  Evidence: `bench/results/2026-10-09-reu-store`. The fixture keeps RCR `$49`
+  for store DMA via a bank-1 buffer and verifies both host banks' guards.
+  Interrupts disabled, scratch-only addresses: NOT a desktop/NMI/1986/HW test.
+- Container `make reu-store-build`; host `python3 tools/reu_store_probe.py`.
+  Never run either standalone probe inside UDEKS. No disk mounted; all owned
+  sessions close automatically. **1,721 host tests pass**; existing disk
+  build/layout gate passes, with
+  `build/boot/udeks.d64/.d71/.d81` matching the foundation hashes below.
+
+**Continue package 2 with actual placement/delivery and bitmap binding, not
+more unrelated tests or optimizations.** Live graphics still has only 2,304
+bytes: do not offer the user new demo disks until integration works. Preserve
+all four app slots and stock fallback. Bank-0 `$0200-$0BFF` is still used by
+synchronous console utilities; bank-1 `$4000` backs up the live bootfs gateway;
+common gateway/stack space is not free. A bank-0 RAM-under-I/O service at
+`$D000-$DFFF` is a possible next investigation, **not an approved/free/proved
+placement**. Boot delivery, flat-map calls, I/O and NMI transitions, metadata
+and a real bank-1 display-safe buffer all need bounded homes. Moving existing
+bitmap service code there could help fund the adapter, but has not been done.
+Package 3 remains live coexistence/fallback/input and user-test disks.
+
+## Previous handoff — REU foundation, 2026-10-09
+
+The user selected REU and approved starting with VICE. New local branch
+`graphics-reu`, worktree `build/graphics-reu`, based on committed/pushed
+`graphics-packed-bitmaps` at `fe57e7f`. The user authorized commit/push of this
+foundation and continuing package 2. No issue/PR or merge has been performed.
+Root main, viewer branch, published disks
+and the user's untracked screenshot are untouched.
+
+Read [the three-package REU plan](docs/GRAPHICS-REU.md). Package 1 is a
+standalone candidate: bounded 8502 stash/fetch and C capacity discovery.
+VICE absent/128/256/512/1024 KiB cases pass; larger devices publish only a
+verified 512 KiB prefix. Each present case passes 128 round trips and eight
+atomic request rejections, plus independent capacity-byte restoration checks.
+A forced wrong-bank image fails comparison as required. Initial 256 KiB runs
+exposed unpopulated-bank/bus-latch behavior; the corrected live matrix and host
+fault-injection tests pass. Evidence: `bench/results/2026-10-09-reu`.
+Final gates: **1,707 host tests pass**, fresh container `make -j8 boot
+graphics-apps-check` passes, and all three D64/D71/D81 boot images are
+byte-identical to the packed-bitmap branch. No VICE session remains.
+
+Build: container `make reu-probe-build`; host `python3 tools/reu_probe.py`.
+The runner mounts no disks and closes its own VICE sessions. This probe owns
+RAM/REU scratch space and is NOT an application to load inside UDEKS.
+
+Next is package 2, not app-specific shrinking or an optimization detour:
+budget the driver/buffer and integrate owned graphics storage behind the
+existing public bitmap operations. The resident 34-byte gap cannot fit this
+code (transport 261+15 bytes; C discovery 600+10, plus standalone helpers).
+Discovery can retire after boot. Do not steal an app slot or the time-service
+module slot. RCR selects both VIC and DMA banks, so a bank-safe staging and
+live-display/NMI strategy must be qualified, not inferred from restored
+registers. Package 3 will produce coexistence/fallback demo disks for the user.
+No larger REU-backed viewer, live desktop, 1986 or physical-hardware result is
+claimed yet. The current graphics pool is still 2,304 bytes.
+
+## Previous handoff — streaming viewer user-tested, 2026-10-09
+
+Issue #55, branch `graphics-packed-bitmaps`, worktree `build/packed-bitmap`.
+**All four planned increments are implemented and emulator-qualified.**
+The user reports the demos look good (test platform unspecified), understands
+the CLOCK160 display-pool limit, and authorized commit/push of this completed
+work. PR/merge is not yet authorized. Root main, published disks and the user's
+untracked PPM are unchanged. Do not restart placement/optimization work.
+
+1. [x] Fit the public service: 34 resident bytes free, all fixed reservations,
+   four task allocations and the complete 2,304-byte display pool preserved.
+2. [x] Public UTRQ 0.20 upload/render/ownership/cleanup; service tests and legacy
+   four-app/input gates passed (previous checkpoint below).
+3. [x] `xview` streams <=19-byte chunks, validates header/rows/EOF/CLOSE, then
+   commits. No full tile array; pending uploads are invisible. File and
+   surface cleanup covers errors, mid-load Ctrl+C and mouse close. Error
+   windows retire through EXIT so the shell receives the correct status.
+4. [x] VICE D71/D81 and unmodified native 1986 D81 qualify exact large/odd/dense
+   pictures, errors/OOM, paired viewers, clock/wave, drag/uncover, native input,
+   pending cancellation/close, stream reuse and guards. Demo disks and evidence
+   are preserved. **User acceptance received; no new physical-C128 result is
+   inferred from the unspecified test platform.**
+
+`XVIEW.BIN`: 3,217 bytes, 2,455 image + 64 BSS = 2,519 runtime. Ordinary slots
+3/5 still required because the relocatable file must fit at load time, not
+just image+BSS. No new allocation or application-name special case.
+
+Test images (paths relative to the root checkout):
+
+- `build/packed-bitmap/build/xview/demo/udeks-packed.d71`
+- `build/packed-bitmap/build/xview/demo/udeks-packed.d81`
+
+Use D81/1581 in 1986; D71 needs a compatible drive/emulator. No new D64 demo:
+the normal compact disk is full, and this slice removes no existing apps.
+The deterministic packager is `tools/build_xview_demo.py`; use a fresh output
+directory. `bench/results/2026-10-09-packed-viewer` preserves the exact disks,
+app, CBM files, map, reports, sources and pixel captures with checksums.
+Base hashes match the steps 1–2 qualification; every existing file is intact.
+Final gates: `make check` passes 1,695 tests; container boot/layout, retained
+bitmap qualification (22,462 actual 6502 checks) and WM trace gates pass.
+Both packaged disks reproduce byte-for-byte; no VICE session remains.
+
+Manual checklist: `xview /alex128.cbm &`, move/cover/uncover with `xclock &`,
+close both; `xview /clock160.cbm &` alone; then two independent original
+`/alex.cbm` and `/clockwork.cbm` viewers. Try foreground Ctrl+C and close-box
+cancellation during loading, followed by `cat /hello`. CLOCK160 needs 2,008
+retained bytes and cannot coexist with the 344-byte clock. `xview` reports a
+display-memory error when it cannot allocate; `xclock` currently exits silently
+on failed presentation. Empty loading frames are expected, partial pictures are not.
+See [format and demo](abi/cbm.md) and [evidence/checklist](bench/results/2026-10-09-packed-viewer/README.md).
+
+Next: request PR/merge approval; this checkpoint's commit/push is authorized.
+Follow-up identified by user testing: expand generic retained graphics storage
+and report allocation failures clearly. CLOCK160 leaves 296 of 2,304 bytes;
+the clock's 344-byte drawing is 48 bytes too large. This is a display-pool limit,
+not exhaustion of app slots. Do not hide it with app-specific reductions.
+No additional implementation is authorized in this commit/push turn. Panning,
+scaling and performance tuning remain deferred; IPC is still the proposed
+architectural milestone after this bounded feature closes.
+
+## Previous handoff — packed bitmap service integrated, 2026-10-09
+
+Viewer PR #54 is merged as `5a07408`. The user approved the packed-bitmap
+direction to support larger images. Issue #55, branch `graphics-packed-bitmaps`,
+worktree `build/packed-bitmap`; root main and its untracked PPM are untouched.
+Read [the feature plan](docs/GRAPHICS-PACKED-BITMAPS.md) before continuing.
+Storage checkpoint `482c8b8` and compiler-profile checkpoint `97b8f70` are
+committed and pushed. Shared-store work and completed steps 1–2 below are
+uncommitted. Do not discard the existing worktree changes.
+
+### Four-increment plan — steps 1 and 2 complete
+
+Goal: a testable `xview` supporting packed 128x80 and 160x100 pictures, with
+normal window movement/uncover and no disk rereads for repaint. Keep the work
+grouped into these four increments, not an open-ended series of optimizations.
+The service now works through the public ABI; the larger-picture `xview`
+client is not yet available.
+
+1. [x] **Fit the bitmap service into memory.** Normal/panic builds fit with
+   34 ordinary resident bytes free. Compact C validation plus a service ASM
+   renderer and selective service compiler settings resolve the former gap.
+   All four app slots, the 2,304-byte pool and fixed reservations survive.
+2. [x] **Connect applications to the service.** UTRQ 0.20 operation 23 now
+   supports BEGIN/WRITE/COMMIT/ABORT (8–11), owned-handle validation, clipped
+   committed rendering and retirement cleanup. COMMIT retries with EAGAIN
+   during drag/cache work; pending data never reaches legacy renderers and
+   legacy PRESENT/PATHS/DELTA cannot replace it. Live independent clients pass
+   VICE D71/D81; legacy four-app regressions pass VICE and native 1986.
+3. [ ] **Update `xview` to stream pictures.** Replace its tile array with
+   bounded uploads. Validate the CBM header, exact file length and successful
+   close before committing the picture; abort cleanly on errors/cancellation.
+   Keep file parsing in the application and retained pixels in the service.
+4. [ ] **Qualify and package test disks.** Exercise larger/odd-sized pictures,
+   multiple owners within pool capacity, malformed files, out-of-memory,
+   mid-upload cancellation, drag/uncover and existing four-app/input behavior
+   under VICE and 1986. Preserve evidence and prepare clearly identified demo
+   disks. The service fixture already proves larger pixels in VICE; it does
+   not yet prove CBM file streaming, nor a larger-picture run on 1986/C128.
+
+**User testing point:** after step 4, provide the image paths and a short
+1986/real-C128 checklist. After user acceptance, prepare the PR and merge when
+authorized. Two planned work packages remain. Full-screen backing
+storage, panning, scaling and unrelated performance work remain out of scope.
+
+### Implemented checkpoint and measurements
+
+The shared address/resize/discard helper is now linked in both normal/panic
+builds (`retained_pool.s`, 154 code + 5 scratch bytes); the original C helpers
+remain differential-test references. It saves 99 code + 3 scratch bytes.
+The pool is still `$1300-$1BFF`, 2,304 bytes, with four owners. `retained_paths.c`
+uses the new `0x1fff` mask; the ASM implementation excludes all three flags.
+Ordinary retained commands/paths still work. The dispatcher identifies bitmap
+and pending flags before legacy replay. The guarded PRESENT entry stays in
+resident CODE; its exported implementation body remains in GRAPHICSPATHS.
+The layout audit checks both locations, not just a hardcoded public address.
+
+`retained_bitmap.c` is the installed C binding (978 CODE + 16 BSS);
+`retained_bitmap_paint.s` is the 196-byte clipped renderer (13 BSS). The C
+renderer remains a host reference. The service shares the actual pool and
+request record; no second allocator/table. Tests compare full bytes/errors
+with the independent portable core and pixels with a separate oracle. New
+`make retained-bitmap-check`: 22,462 checks executing actual 6502 instructions,
+including 512 nonempty allocator replacements and real `$1300` addresses.
+`make retained-bitmap-qualification` binds these to both maps/disks and reports
+the budget. Five boundary tests additionally cover ownership, legacy/pending
+guards, busy COMMIT, cleanup and peer preservation. The unchanged WM trace
+still matches (60,702 bytes). The VDC console and line editor now use `-Ors`
+with static locals (nonrecursive, no callbacks/yields); VIC glue uses `-Ors`
+with its already-existing static locals. Actual console, mouse and drawing
+paths pass VICE four-native D71 and native 1986 four-native D81.
+
+Current BSS end `$93AD`, ordinary slack 34; low graphics has 69 bytes, paths
+22, helper 6. The integration qualification requires at least 16 resident
+bytes after the complete link; the earlier 800-byte reclaim floor is now
+explicitly spent on this service, not silently weakened. No fixed reservation
+was moved. Public contract: `abi/window.md`, request maximum minor 20.
+
+`tools/bitmap_service_probe.py` boots a separately loaded `BMAP.BIN` fixture
+on VICE D71/D81: exact 128x80/160x100/9x7 pixels, drag/uncover without changed
+retained bytes, independent owners, OOM without peer damage, pending
+invisibility, abort, pending EXIT/Ctrl+C, close-box cleanup, protocol 19/21
+rejection, console and stack guards. A wrong close-box coordinate in the first
+test driver was corrected; only complete reruns are qualified.
+The fixture is not installed in normal disks. `xview` remains unchanged;
+**next is step 3, not more placement work**. No new physical-C128 result.
+Final `make check`: 1,685 tests pass, including preserved integration hashes
+and independent pixel checks of both VICE captures. Container qualification
+and the WM trace gate pass. No VICE session remains.
+Branch D64/D71/D81 candidates are rebuilt; root published images/main stay
+unchanged. New evidence: `bench/results/2026-10-09-bitmap-integration`.
+Previous shared-store evidence: `bench/results/2026-10-09-retained-bitmap`.
+
+## Previous handoff — first packed-bitmap code-space increment
+
+Implemented the private `bitmap_store.c` C core and its header, 12 host tests,
+and `make bitmap-store-check` (4,149 checks executing real 6502 instructions).
+It manages pending/committed image bytes in the existing-sized pool with
+eight-byte headers and ordered <=19-byte uploads. Failure is atomic; peers
+survive compaction; owner discard releases pending allocations. This is a
+testable storage core, NOT a published request API or installed service.
+
+The standalone core does not fit yet: the compiled object contributes
+1,845 CODE + 22 BSS bytes before any adapter/renderer or extra libraries.
+GRAPHICSCODE is full, executable glyph slack is 3 bytes, helper slack 6, and
+ordinary resident gap was 40. The current follow-up changes only the WM compile
+profile from `-Oirs` to `-Ors`: object CODE 8055 -> 7142, unchanged state/data,
+net linked reclaim 804 (109 bytes of additional helpers), BSS end `$9083`,
+resident gap now 844. Both maps/layout gates pass. Do not count retired glyph metadata, boot staging,
+the scheduler tail or the C-stack guard as unowned RAM. Do not link partial
+changes into boot or expand advertised minors before placement is qualified.
+
+Next share pool helpers and measure the actual integration budget, followed
+by authenticated UTRQ operations, bitmap rendering, lifecycle cleanup and the
+streaming viewer. All old length masks and renderer format checks must change
+together; the prototype's flags are explicitly unintegrated. There is no new
+VICE/1986/hardware larger-picture result. `make boot graphics-apps-check`
+rebuilds the smaller-WM candidate D64/D71/D81; published root images stay
+unchanged. `make check` passes 1,667 tests. `make graphics-code-check` compares
+60,702-byte complete traces under real 6502 instructions; VICE four-native D71
+and unmodified 1986 four-native D81 input/resize/cancel/guard/canvas tests pass.
+The 1986 D71 attempt stopped before boot because its fixture packer filled
+side one: this is not a native-D71 pass. No VICE session remains. Do not merge
+or advertise larger pictures yet. Reuse the retained store's pool helpers
+during integration, and allocate a new ABI minor rather than reusing 0.18
+(filesystem mutations) or 0.19 (service control).
+Preserved qualification: `bench/results/2026-10-09-graphics-code-budget`.
+
+## Previous handoff — standalone CBM viewer, 2026-10-09
 
 PR #53 merged as `fe26bf1`, closing #52. Per user request, root local `main`
 was fast-forwarded to that commit, including all three published disk images;

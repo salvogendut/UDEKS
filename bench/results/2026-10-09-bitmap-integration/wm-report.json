@@ -1,0 +1,54 @@
+{
+  "scope": "WM trace with installed bitmap service",
+  "profiles": {
+    "baseline": "-Oirs",
+    "compact": "-Ors"
+  },
+  "objects": {
+    "baseline": {
+      "CODE": 8055,
+      "RODATA": 130,
+      "BSS": 4,
+      "DATA": 0,
+      "ZEROPAGE": 0,
+      "NULL": 0,
+      "HIGHBSS": 88
+    },
+    "compact": {
+      "CODE": 7142,
+      "RODATA": 130,
+      "BSS": 4,
+      "DATA": 0,
+      "ZEROPAGE": 0,
+      "NULL": 0,
+      "HIGHBSS": 88
+    }
+  },
+  "object_code_saved": 913,
+  "resident_free_bytes": 34,
+  "qualified_free_floor": 16,
+  "trace_bytes": 60702,
+  "trace_sha256": "b29a85fdcf0a345ea1531b3f397c57fd23d3184e75ccc1f5ca9166ec82889e71",
+  "simulated_cycles_including_trace_stubs": {
+    "baseline": 53244222,
+    "compact": 53755797
+  },
+  "normal_panic_layout_equal": true,
+  "cc65": "cc65 V2.18 - Fedora 2.19-15.fc44",
+  "input_sha256": {
+    "src/services/window/window_manager_cached.c": "ed7e29e999a18b30ddc30754980b3a9d8fca51d894a013d51f35c216aff48433",
+    "Makefile": "1c13d8eb66a1db5add3841cce94402ca15403bb19e7b38dda20551d5ea00b87b",
+    "tools/graphics_code_budget.py": "0d683a7f5ea23d8a9a864f08014ed7ab30e2049653e56c024350796b101a5cb1",
+    "bench/packed-bitmap/wm_unit.c": "c9e4ffb1a9799157fd9fa5bca01d15c044fd66168fdea6b53142872bbd89cdfb",
+    "bench/packed-bitmap/wm_trace.c": "ced9cecd869f9616c1c1f04721d19e772bea5e74aaf59e4e7cc499a2a95296b6",
+    "bench/packed-bitmap/wm_sim.cfg": "fc3f3eb89c97d54cacd19cf14036a880858caf284e6c1bcb530492e0bb8b7684",
+    "src/services/window/move_cache_state.c": "64944eda2cf7e396ecfb4742b67ec6ef7f19e9f0d967913ed11969dcaade0c97",
+    "build/8502/udeks-8502.map": "d55b7b0c7746e2243b7bca5b864f03a537946b47f56fdb32eb59d18dc68cca67",
+    "build/8502/udeks-8502-panic-probe.map": "f5e428009d4333dced5388358971a43158ae57e904bfa2758379e75156eee1b9"
+  },
+  "disk_sha256": {
+    "d64": "2c094dd4b8d38d59edbb30126b78814a35059aca98582fb0efc0c9c15dfeed09",
+    "d71": "225a527af10d18c66c153c4c2d77de87ae1b55bcfbc033a5a1f29c0f327b6cae",
+    "d81": "f5d1ec2fb6f3a9c1ca81b31aed344bb5fc5e0884cf32fcebe376d88fe5bf9c03"
+  }
+}

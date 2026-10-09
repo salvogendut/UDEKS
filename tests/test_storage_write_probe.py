@@ -40,7 +40,7 @@ class WriteProbe(unittest.TestCase):
         self.assertIn('cbm_write', objects)
         rule = rules.index('$(STORAGE_BUILD)/iec_slow.o: src/services/filesystem/iec_slow.s | $(STORAGE_BUILD)')
         self.assertIn('UDEKS_IEC_WRITE', rules[rule+1])
-        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     18u', (ROOT/'include/udeks/task_request.h').read_text())
+        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     20u', (ROOT/'include/udeks/task_request.h').read_text())
 
     def test_preserved_probe_records_and_exact_program(self):
         results = ROOT/'bench/results/2026-10-07-iec-write'

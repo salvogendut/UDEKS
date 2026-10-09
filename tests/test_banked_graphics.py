@@ -527,3 +527,84 @@ class BankedGraphics(unittest.TestCase):
             config=(ROOT/path).read_text()
             self.assertIn('PATHSTATE: load = PATHS, type = ro;',config)
             self.assertIn('GRAPHICSPATHS: load = PATHS, type = ro;',config)
+
+    def bitmap(self, payload, **fields):
+        return self.request(payload, **({'5':20}|fields))
+
+    def test_bitmap_version_envelope_and_foreign_owner_reject_atomically(self):
+        a=self.create(); b=self.create(4)
+        lengths=(c.c_uint*4).in_dll(self.lib,'udeks_retained_lengths')
+        before=bytes(self.pool),tuple(lengths)
+        for fields in ({'5':19},{'9':1},{'10':23},{'13':1}):
+            self.assertEqual(self.bitmap([8,b,9,0,7,4,0,14],**fields),38 if '5' in fields else 22)
+            self.assertEqual((bytes(self.pool),tuple(lengths)),before)
+        self.assertEqual(self.bitmap([8,a,9,0,7,4,0,14]),22)
+        self.assertEqual(self.bitmap([8,b,9,0,7,4,0,14]),0)
+        self.scalar('task',3)
+        for op in (9,10,11):
+            snapshot=bytes(self.pool),tuple(lengths)
+            self.assertEqual(self.bitmap([op,b]),22)
+            self.assertEqual((bytes(self.pool),tuple(lengths)),snapshot)
+
+    def test_pending_bitmap_blocks_all_legacy_presents_and_never_paints(self):
+        h=self.create()
+        self.assertEqual(self.bitmap([8,h,8,0,1,4,0,14]),0)
+        self.assertEqual(self.bitmap([9,h,0,0,1,255]),0)
+        before=bytes(self.pool)
+        for op in (2,5,6):
+            self.assertEqual(self.bitmap([op,h,0,0x23,1]),16)
+            self.assertEqual(bytes(self.pool),before)
+        self.lib.test_move(h,200,60)
+        self.assertEqual(self.scalar('draws',kind=c.c_uint),0)
+
+    def test_bitmap_commit_busy_preserves_transaction_then_repaints(self):
+        h=self.create()
+        self.assertEqual(self.bitmap([8,h,8,0,1,4,0,14]),0)
+        self.assertEqual(self.bitmap([10,h]),22)
+        self.assertEqual(self.bitmap([9,h,0,0,1,255]),0)
+        lengths=(c.c_uint*4).in_dll(self.lib,'udeks_retained_lengths')
+        before=bytes(self.pool),tuple(lengths)
+        for busy in ('busy','dragging'):
+            self.scalar(busy,1)
+            self.assertEqual(self.bitmap([10,h]),11)
+            self.assertEqual((bytes(self.pool),tuple(lengths)),before)
+            self.scalar(busy,0)
+        self.assertEqual(self.scalar('repaints',kind=c.c_uint),0)
+        self.assertEqual(self.bitmap([10,h]),0)
+        self.assertEqual(lengths[0],0x4009)
+        self.assertEqual(self.scalar('repaints',kind=c.c_uint),1)
+        self.assertEqual(self.scalar('draws',kind=c.c_uint),8)
+        self.assertEqual(self.bitmap([10,h]),22)  # cannot recommit a visible image
+
+    def test_pending_close_and_exit_release_bytes_without_damaging_peer(self):
+        a=self.create(); self.assertEqual(self.bitmap([8,a,16,0,20,4,0,14]),0)
+        b=self.create(4); self.assertEqual(self.bitmap([8,b,8,0,1,4,0,14]),0)
+        self.assertEqual(self.bitmap([9,b,0,0,1,129]),0)
+        self.assertEqual(self.bitmap([10,b]),0)
+        lengths=(c.c_uint*4).in_dll(self.lib,'udeks_retained_lengths')
+        peer=bytes(self.pool[48:57])
+        self.scalar('task',3); self.assertEqual(self.bitmap([4,a]),0)
+        self.assertEqual(tuple(lengths),(0,0x4009,0,0))
+        self.assertEqual(bytes(self.pool[:9]),peer)
+        self.lib.test_admit(0)
+        # Start a new instance through the real launch path, which clears the
+        # old closing state and any retained reservation before publishing it.
+        states=(c.c_ubyte*4).in_dll(self.lib,'test_state'); states[0]=0
+        self.assertEqual(self.lib.udeks_banked_graphics_exec(b'new'),0)
+        self.assertEqual(self.bitmap([1,20,0,20,64,48,0x16]),0)
+        a=self.r[11]; self.assertEqual(self.bitmap([8,a,8,0,1,4,0,14]),0)
+        states[0]=6; self.lib.udeks_banked_graphics_poll()
+        self.assertEqual(tuple(lengths),(0,0x4009,0,0))
+        self.assertEqual(bytes(self.pool[:9]),peer)
+
+    def test_abort_keeps_window_and_capacity_failure_preserves_other_image(self):
+        a=self.create(); self.assertEqual(self.bitmap([8,a,160,0,100,4,0,14]),0)
+        b=self.create(4)
+        lengths=(c.c_uint*4).in_dll(self.lib,'udeks_retained_lengths')
+        before=bytes(self.pool),tuple(lengths)
+        self.assertEqual(self.bitmap([8,b,128,0,80,4,0,14]),12)
+        self.assertEqual((bytes(self.pool),tuple(lengths)),before)
+        self.scalar('task',3); self.assertEqual(self.bitmap([11,a]),0)
+        self.assertEqual(self.owners[a],0x83)
+        self.assertEqual(tuple(lengths),(0,0,0,0))
+        self.assertEqual(self.bitmap([8,a,8,0,1,4,0,14]),0)

@@ -4,6 +4,9 @@
 #include "udeks/retained_paths.h"
 #include "udeks/vic_graphics.h"
 #include <string.h>
+#ifdef UDEKS_BITMAP_REU
+#include "udeks/reu_bitmap.h"
+#endif
 #ifdef UDEKS_GRAPHICS_HOST_TEST
 extern unsigned char graphics_request[38];
 #define R graphics_request
@@ -29,12 +32,14 @@ static unsigned char byte_index,bad,draw;
 static int x,y,old_x,old_y;
 
 #pragma code-name(push, "GRAPHICSCODE")
+#ifndef UDEKS_RETAINED_POOL_ASM
 unsigned int __fastcall__ udeks_retained_address(unsigned char index)
 {
     unsigned int address=UDEKS_RETAINED_BASE;
-    while(index) address+=udeks_retained_lengths[--index]&0x7fffu;
+    while(index) address+=udeks_retained_lengths[--index]&UDEKS_RETAINED_LENGTH_MASK;
     return address;
 }
+#endif
 /* Shared transport helper lives with the resident glue, leaving the fixed
  * lazy-install module space for the renderer. No reservation moves. */
 #pragma code-name(push, "CODE")
@@ -47,11 +52,12 @@ void __fastcall__ udeks_retained_read(unsigned int address)
 #pragma code-name(pop)
 /* All images stay packed in slot order. Admission is serialized, and only
  * validated replacements reach this compaction; no foreign pointers remain. */
-static void resize_image(unsigned char index,unsigned int length)
+#ifndef UDEKS_RETAINED_POOL_ASM
+void udeks_retained_resize(unsigned char index,unsigned int length)
 {
     unsigned int start,old,end;
     start=udeks_retained_address(index);
-    old=udeks_retained_lengths[index]&0x7fffu;
+    old=udeks_retained_lengths[index]&UDEKS_RETAINED_LENGTH_MASK;
     end=udeks_retained_address(UDEKS_NATIVE_CLIENTS);
     memmove(POOL(start+length),POOL(start+old),end-start-old);
     udeks_retained_lengths[index]=length;
@@ -59,9 +65,13 @@ static void resize_image(unsigned char index,unsigned int length)
 #pragma code-name(push, "GRAPHICSPATHS")
 void __fastcall__ udeks_retained_discard(unsigned char index)
 {
-    resize_image(index,0);
+#ifdef UDEKS_BITMAP_REU
+    udeks_bitmap_release(index);
+#endif
+    udeks_retained_resize(index,0);
 }
 #pragma code-name(pop)
+#endif
 #pragma code-name(pop)
 #pragma code-name(push, "GRAPHICSCODE")
 static unsigned char next_byte(void)
@@ -105,11 +115,11 @@ static unsigned char paths(void)
 void __fastcall__ udeks_retained_paths_paint(unsigned char index)
 {
     cursor=udeks_retained_address(index);
-    remaining=udeks_retained_lengths[index]&0x7fffu;
+    remaining=udeks_retained_lengths[index]&UDEKS_RETAINED_LENGTH_MASK;
     draw=1; paths();
 }
 #pragma code-name(pop)
-unsigned char __fastcall__ udeks_retained_present(unsigned char index)
+unsigned char __fastcall__ udeks_retained_present_image(unsigned char index)
 {
     unsigned int source,length,limit,destination,offset;
     unsigned char format;
@@ -127,7 +137,7 @@ unsigned char __fastcall__ udeks_retained_present(unsigned char index)
     limit=(unsigned int)udeks_native_stack_pages[index]<<8;
     if(source<((unsigned int)udeks_native_base_pages[index]<<8) || source>=limit || length>limit-source) return 22;
     if(length>UDEKS_RETAINED_POOL_SIZE-(udeks_retained_address(UDEKS_NATIVE_CLIENTS)-
-        UDEKS_RETAINED_BASE-(udeks_retained_lengths[index]&0x7fffu))) return 12;
+        UDEKS_RETAINED_BASE-(udeks_retained_lengths[index]&UDEKS_RETAINED_LENGTH_MASK))) return 12;
     if(format) {
         cursor=source;remaining=length;draw=0;
         if(!paths()) return 22;
@@ -138,10 +148,30 @@ unsigned char __fastcall__ udeks_retained_present(unsigned char index)
         }
     }
     destination=udeks_retained_address(index);
-    resize_image(index,length);
+    udeks_retained_resize(index,length);
     for(offset=0;offset<length;offset+=8) {
         udeks_banked_read(source+offset);memcpy(POOL(destination+offset),(const void *)C,8);
     }
     udeks_retained_lengths[index]=length|(format?0x8000u:0);
     return 0;
 }
+#pragma code-name(push, "CODE")
+unsigned char __fastcall__ udeks_retained_present(unsigned char index)
+{
+#ifdef UDEKS_BITMAP_REU
+    unsigned char error;
+#endif
+    /* Pending upload bytes are never a legacy image replacement. Keep this
+     * guard in resident service glue, outside the fixed path-code overlay. */
+    if(udeks_retained_lengths[index]&0x2000u) return 16;
+#ifdef UDEKS_BITMAP_REU
+    error=udeks_retained_present_image(index);
+    /* Release only after a successful, fully validated legacy replacement.
+     * Rejections must retain the old bitmap, including its REU ownership. */
+    if(!error) udeks_bitmap_release(index);
+    return error;
+#else
+    return udeks_retained_present_image(index);
+#endif
+}
+#pragma code-name(pop)

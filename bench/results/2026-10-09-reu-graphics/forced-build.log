@@ -1,0 +1,1042 @@
+mkdir -p build/boot
+mkdir -p build/8502
+mkdir -p build/reu
+mkdir -p build/window-cache
+mkdir -p build/assets
+cc65 -t none --cpu 6502 --standard c99 -Oirs -I include -o build/8502/boot_console.s src/services/window/boot_console.c
+ca65 --cpu 6502 -I src/8502 -D UDEKS_FAULT_SERVICE_MAGIC -o build/8502/console_descriptor_fault.o src/services/console/descriptor.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/boot_delivery.o src/8502/boot_delivery.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/scheduler.o src/scheduler/scheduler.s
+cc65 -t none --cpu 6502 --standard c99 -Oirs -I include -o build/8502/task_state.s src/kernel/task_state.c
+cc65 -t none --cpu 6502 --standard c99 -Oirs -I include -o build/8502/task_scheduler.s src/kernel/task_scheduler.c
+ca65 --cpu 6502 -I src/8502 -o build/8502/task-wait-state.o src/scheduler/task_wait_state.s
+mkdir -p build/8502/scheduler-runtime
+ca65 --cpu 6502 -I src/8502 -o build/8502/task_context.o src/scheduler/task_context.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/task_context_vectors.o src/scheduler/task_context_vectors.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/task_switch_tail.o src/8502/task_switch_tail.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/task-yield-handler.o src/scheduler/task_yield_handler.s
+cd build/8502/scheduler-runtime && ar65 x /usr/share/cc65/lib/none.lib \
+	and.o aslax2.o
+mkdir -p build/storage
+mkdir -p build/user
+ld65 -C cfg/8502-scheduler.cfg -o build/8502/udeks-scheduler.bin build/8502/scheduler.o
+python3 tools/png_to_vic_sprite.py assets/24x21-pipe-sprite.png build/assets/24x21-pipe-sprite.vic
+mkdir -p build/z80
+python3 tools/build_console_example.py --source user/bin/svc.c --name SVC --services --static-locals --output build/services/command
+python3 tools/build_time_module.py
+cl65 -t none --cpu 6502 --standard c99 -Oirs -I include --static-locals -I user/include -c -o build/user/sysinfo.o user/bin/sysinfo.c
+ca65 --cpu 6502 -D UDEKS_FILE_REQUEST_MINOR=6 -o build/user/sysinfo_request.o user/lib/file_request.s
+python3 tools/build_graphical_example.py --source user/bin/xclock_native.c --source user/lib/clock_face.c \
+	--name XCLOCK --output build/user/native-clock --graphics-abi 10 --static-locals --capacity 2816 \
+	--export _udeks_native_clock_commands --export _udeks_native_clock_presents
+python3 tools/build_graphical_example.py --source user/bin/xwave_native.c --source user/lib/wave_paths.c \
+	--name XWAVE --output build/user/native-wave --graphics-abi 12 --static-locals --capacity 4096 \
+	--export _native_wave_samples --export _native_wave_paths --export _native_wave_rows \
+	--export _native_wave_presents --export _native_wave_failure --export _native_wave_width --export _native_wave_height
+python3 tools/build_graphical_example.py --source user/bin/xcalc_native.c --source src/apps/calc.c \
+	--name XCALC --output build/user/native-calc --capacity 4608 --export _udeks_calc_value --export _udeks_calc_error
+python3 tools/build_graphical_example.py --source user/bin/xdraw.c --name XDRAW \
+	--output build/user/native-draw --capacity 2560 --export _udeks_xdraw_cells
+python3 tools/build_graphical_example.py --source user/bin/xsprdef.c --source user/bin/xspr_file.c --name XSPRDEF \
+	--graphics-abi 17 --output build/user/native-xsprdef --static-locals --capacity 7424 \
+	--export _udeks_xsprdef_pixels --export _udeks_xsprdef_bank --export _udeks_xsprdef_dialog --export _udeks_xsprdef_file_error
+{
+  "base": 37840,
+  "image_size": 710,
+  "bss_size": 7,
+  "allocation": 717,
+  "spare": 11,
+  "revision": 1,
+  "request": 37888,
+  "start": 38136,
+  "poll": 38267,
+  "stop": 38506,
+  "checksum": 16217,
+  "sha256": "ee524e373c75f40647c7e36bcb670431a67544e5be4a10fce93a310eeb2601f1",
+  "scope": "independent module candidate; not installed in normal boot"
+}
+Independent XDRAW.BIN: 1781 bytes
+Independent XCLOCK.BIN: 2775 bytes
+Independent XWAVE.BIN: 2483 bytes
+Independent XCALC.BIN: 4599 bytes
+cc65 -t none --cpu 6502 --standard c99 -Oirs -I include -I user/include -o build/user/cowsay.s user/bin/cowsay.c
+cp build/user/native-draw/XDRAW.BIN build/user/xdraw.udx
+cc65 -t none --cpu 6502 --standard c99 -Oirs -I include -I user/include -I include -o build/user/date.s user/bin/date.c
+cp build/user/native-clock/XCLOCK.BIN build/user/xclock.udx
+cl65 -t none --cpu 6502 --standard c99 -I include -Os --static-locals -I user/include -c -o build/user/filetools.o user/bin/filetools.c
+Independent SVC.BIN: 2198 bytes
+cp build/user/native-wave/XWAVE.BIN build/user/xwave.udx
+ca65 --cpu 6502 -o build/user/file_request.o user/lib/file_request.s
+cp build/user/native-calc/XCALC.BIN build/user/xcalc.udx
+python3 tools/build_native_console.py --source user/bin/cat.c --name CAT \
+	--output build/native-console/cat
+cl65 -t none --cpu 6502 --standard c99 -I include -Os --static-locals -I user/include -c -o build/user/diagnostics.o user/bin/diagnostics.c
+ca65 --cpu 6502 -D UDEKS_FILE_REQUEST_MINOR=7 -o build/user/diagnostics_request.o user/lib/file_request.s
+cl65 -t none --cpu 6502 --standard c99 -Oirs -I include -I user/include -c -o build/user/mount_rw.o user/bin/mount_rw.c
+ca65 --cpu 6502 -o build/user/mount_rw_request.o user/lib/mount_rw_request.s
+cl65 -t none --cpu 6502 --standard c99 -Oirs -I include -I user/include -c -o build/user/error_string.o user/lib/error_string.c
+python3 tools/build_console_example.py --filesystem --static-locals --source user/bin/save.c --name SAVE --output build/user/save
+python3 tools/build_console_example.py --file-mutations --static-locals --source user/bin/cp.c --name CP --output build/file-commands/cp
+python3 tools/build_console_example.py --file-mutations --static-locals --source user/bin/mv.c --name MV --output build/file-commands/mv
+python3 tools/build_console_example.py --file-mutations --static-locals --source user/bin/rm.c --name RM --output build/file-commands/rm
+Independent XSPRDEF.BIN: 6920 bytes
+mkdir -p build/bitmap-store
+ca65 --cpu 6502 -o build/boot/stage0.o src/boot/stage0.s
+cc65 -t none --cpu 6502 --standard c99 -Oirs -I include -o build/8502/hardware_capability.s src/services/capability/hardware.c
+cp build/user/native-xsprdef/XSPRDEF.BIN build/user/xsprdef.udx
+cc65 -t none --cpu 6502 --standard c99 -Os --code-name BITMAPCODE --bss-name BITMAPSTATE -I include -o build/8502/reu_store.s src/services/memory/reu_store.c
+cc65 -t none --cpu 6502 --standard c99 -Os --static-locals --code-name BITMAPCODE --bss-name BITMAPSTATE -I include -o build/8502/reu_bitmap.s src/services/window/reu_bitmap.c
+ca65 --cpu 6502 -o build/8502/reu_bitmap.o build/8502/reu_bitmap.s
+ca65 --cpu 6502 -o build/8502/reu_store.o build/8502/reu_store.s
+ca65 --cpu 6502 -o build/8502/reu_runtime.o src/services/window/reu_runtime.s
+ca65 --cpu 6502 -o build/reu/transport.o src/services/memory/reu.s
+cc65 -t none --cpu 6502 --standard c99 -Os -I include -o build/reu/capacity.s src/services/memory/reu_capacity.c
+cc65 -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o build/8502/banked_graphics.s src/services/window/banked_graphics.c
+ca65 --cpu 6502 -o build/reu/capacity.o build/reu/capacity.s
+ca65 --cpu 6502 -o build/8502/graphics_event.o src/services/window/graphics_event.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/banked_access.o src/services/window/banked_access.s
+cc65 -t none --cpu 6502 --standard c99 -Os --static-locals -D UDEKS_RETAINED_POOL_ASM -D UDEKS_BITMAP_REU -I include -o build/8502/retained_paths.s src/services/window/retained_paths.c
+ca65 --cpu 6502 -D UDEKS_BITMAP_REU -o build/8502/retained_pool.o src/services/window/retained_pool.s
+cc65 -t none --cpu 6502 --standard c99 -Os --static-locals -D UDEKS_BITMAP_RENDER_ASM -D UDEKS_BITMAP_REU -D udeks_retained_bitmap_request=udeks_bitmap_request_hidden --code-name BITMAPCODE --bss-name BITMAPSTATE -I include -o build/8502/retained_bitmap.s src/services/window/retained_bitmap.c
+ca65 --cpu 6502 -D UDEKS_BITMAP_REU -o build/8502/retained_bitmap_paint.o src/services/window/retained_bitmap_paint.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/kernel_entry.o src/8502/kernel_entry.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/crt0.o src/8502/crt0.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/vdc.o src/8502/vdc.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/keyboard_scan.o src/8502/keyboard_scan.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/control_ports.o src/8502/control_ports.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/line_editor_read.o src/8502/line_editor_read.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/z80_handoff.o src/8502/z80_handoff.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/panic.o src/8502/panic.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/probe.o src/8502/probe.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/clock.o src/8502/clock.s
+ca65 --cpu 6502 -I src/8502 -D UDEKS_DISK_TIME -o build/8502/syscall_gate.o src/8502/syscall_gate.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/task_bank_gateway.o src/8502/task_bank_gateway.s
+cc65 -t none --cpu 6502 --standard c99 -Oirs -I include -o build/8502/kernel.s src/8502/kernel.c
+ca65 --cpu 6502 -I src/8502 -o build/8502/service_start.o src/8502/service_start.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/boot_console_entry.o src/8502/boot_console_entry.s
+cc65 -t none --cpu 6502 --standard c99 -Oirs -I include -D UDEKS_SERVICE_BOOT_SPLIT -o build/8502/service_registry.s src/kernel/service_registry.c
+{
+  "file": 2707,
+  "image": 2263,
+  "bss": 2,
+  "fits": [
+    3,
+    4,
+    5
+  ],
+  "joined_fits": [
+    3,
+    5
+  ],
+  "resident_bytes": 0,
+  "scope": "native arguments/streams/sleep/foreground stdin/task-owned mounted-file I/O"
+}
+ca65 --cpu 6502 -I src/8502 -o build/8502/service_table.o src/services/table.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/capability_descriptor.o src/services/capability/descriptor.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/time_descriptor.o src/services/time/descriptor.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/clock_descriptor.o src/services/clock/descriptor.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/console_descriptor.o src/services/console/descriptor.s
+Independent SAVE.BIN: 2497 bytes
+ca65 --cpu 6502 -I src/8502 -o build/8502/pointer_descriptor.o src/services/input/pointer_descriptor.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/keyboard_descriptor.o src/services/input/descriptor.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/root_terminal_descriptor.o src/services/terminal/descriptor.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/init_descriptor.o src/services/init/descriptor.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/z80_worker_descriptor.o src/services/engine/descriptor.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/vic_graphics_descriptor.o src/services/display/descriptor.s
+Independent CP.BIN: 1747 bytes
+ca65 --cpu 6502 -I src/8502 -o build/8502/window_descriptor.o src/services/window/descriptor.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/managed_apps_descriptor.o src/services/app/descriptor.s
+Independent RM.BIN: 1674 bytes
+cp build/user/save/SAVE.BIN build/user/save.udx
+ca65 --cpu 6502 -I src/8502 -o build/8502/bootfs_request.o src/services/filesystem/bootfs_request.s
+Independent MV.BIN: 1747 bytes
+ca65 --cpu 6502 -D UDEKS_DISK_TIME -o build/8502/time-slot.o src/services/module/time_slot.s
+cl65 -t none --cpu 6502 --standard c99 -Oirs -I include -c -o build/8502/time-resident.o src/services/time/resident.c
+# Serialized VDC service: no recursive entry, callbacks or task yields.
+ca65 --cpu 6502 -I src/8502 -o build/8502/app_panel.o src/services/console/app_panel.s
+cc65 -t none --cpu 6502 --standard c99 -I include -Ors --static-locals -o build/8502/vdc_console.s src/services/console/vdc_console.c
+# Serialized console service; IRQs never enter its scratch state.
+ca65 --cpu 6502 -I src/services/window/cache -o build/window-cache/core.o src/services/window/cache/core.s
+ca65 --cpu 6502 -I src/services/window/cache -o build/window-cache/module.o src/services/window/cache/module.s
+cc65 -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o build/8502/root_console.s src/services/window/root_console.c
+cl65 -t none --cpu 6502 --standard c99 -Oirs -I include -D UDEKS_CACHE_LEASE_ADDRESS=0x5220u -D UDEKS_CACHE_ROW_ADDRESS=0x522Du -D UDEKS_CACHE_FLOW_ADDRESS=0x5236u -D UDEKS_CACHE_IMAGE_ADDRESS=0x5350u -D UDEKS_CACHE_IMAGE_CAPACITY=2224u -D UDEKS_CACHE_FLOW_IN_BANK -c -o build/window-cache/policy.o src/services/window/cache/policy.c
+cl65 -t none --cpu 6502 --standard c99 -Oirs -I include -D UDEKS_CACHE_LEASE_ADDRESS=0x5220u -D UDEKS_CACHE_ROW_ADDRESS=0x522Du -D UDEKS_CACHE_FLOW_ADDRESS=0x5236u -D UDEKS_CACHE_IMAGE_ADDRESS=0x5350u -D UDEKS_CACHE_IMAGE_CAPACITY=2224u -D UDEKS_CACHE_FLOW_IN_BANK -c -o build/window-cache/command.o src/services/window/cache/command.c
+cl65 -t none --cpu 6502 --standard c99 -Oirs -I include -D UDEKS_CACHE_LEASE_ADDRESS=0x5220u -D UDEKS_CACHE_ROW_ADDRESS=0x522Du -D UDEKS_CACHE_FLOW_ADDRESS=0x5236u -D UDEKS_CACHE_IMAGE_ADDRESS=0x5350u -D UDEKS_CACHE_IMAGE_CAPACITY=2224u -D UDEKS_CACHE_FLOW_IN_BANK -c -o build/window-cache/flow.o src/services/window/cache/flow.c
+cl65 -t none --cpu 6502 --standard c99 -Oirs -I include -D UDEKS_CACHE_LEASE_ADDRESS=0x5220u -D UDEKS_CACHE_ROW_ADDRESS=0x522Du -D UDEKS_CACHE_FLOW_ADDRESS=0x5236u -D UDEKS_CACHE_IMAGE_ADDRESS=0x5350u -D UDEKS_CACHE_IMAGE_CAPACITY=2224u -D UDEKS_CACHE_FLOW_IN_BANK -c -o build/window-cache/controller.o src/services/window/cache/controller.c
+ca65 --cpu 6502 -I src/services/window/cache -o build/window-cache/gateway.o src/services/window/cache/gateway.s
+cc65 -t none --cpu 6502 --standard c99 -Oirs -I include -o build/8502/keyboard.s src/services/input/keyboard.c
+ca65 --cpu 6502 -I src/8502 -o build/8502/pointer.o src/8502/pointer_irq.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/nmi.o src/8502/nmi.s
+# Serialized editor; no callbacks or yields while private scratch is live.
+cc65 -t none --cpu 6502 --standard c99 -Os -I include -o build/8502/root_terminal.s src/services/terminal/root_terminal.c
+cc65 -t none --cpu 6502 --standard c99 -Oirs -I include -o build/8502/terminal_stream.s src/services/terminal/stream.c
+ca65 --cpu 6502 -I src/8502 -o build/8502/shell_parser.o src/services/shell/parser.s
+cc65 -t none --cpu 6502 --standard c99 -Os -I include -o build/8502/shell.s src/services/shell/shell.c
+cc65 -t none --cpu 6502 --standard c99 -I include -Ors --static-locals -o build/8502/line_editor.s src/services/terminal/line_editor.c
+# Serialized/nonrecursive service; never entered concurrently or from IRQ.
+cc65 -t none --cpu 6502 --standard c99 -Os -I include -o build/8502/task_worker.s src/services/engine/task_worker.c
+cc65 -t none --cpu 6502 --standard c99 -I include -Ors -o build/8502/vic_graphics.s src/services/display/vic_graphics.c
+ca65 --cpu 6502 -I src/8502 -o build/8502/vic_span.o src/services/display/vic_span.s
+cc65 -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o build/8502/z80_worker.s src/services/engine/z80_worker.c
+ca65 --cpu 6502 -I src/8502 -o build/8502/vic_pixel.o src/services/display/vic_pixel.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/vic_rectangle.o src/services/display/vic_rectangle.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/vic_clear.o src/services/display/vic_clear.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/managed_apps.o src/services/app/managed_apps.s
+python3 tools/xpm_to_vdc_text.py \
+	assets/udekspipe-64.xpm assets/udekusu-64.xpm build/assets/udeks-vdc-text.bin
+ca65 --cpu 6502 -I src/8502 -o build/8502/boot_console.o build/8502/boot_console.s
+ld65 -C cfg/8502-boot-delivery.cfg -m build/8502/8502-boot-delivery.map \
+	-o build/boot/8502-boot-delivery.bin build/8502/boot_delivery.o
+ca65 --cpu 6502 -I src/8502 -o build/8502/task_state.o build/8502/task_state.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/task_scheduler.o build/8502/task_scheduler.s
+ld65 -C cfg/8502-task-switch-tail.cfg \
+	-m build/8502/task-switch-tail.map -o build/8502/task-switch-tail.bin build/8502/task_switch_tail.o
+ca65 --cpu 6502 -D UDEKS_STORAGE_CONTEXT -o build/storage/iec_lease.o src/services/filesystem/iec_lease.s
+ca65 --cpu 6502 -o build/storage/iec_context.o src/services/filesystem/iec_context.s
+cl65 -t none --cpu 6502 --standard c99 -Os -I include --static-locals -D UDEKS_IEC_WRITE -D UDEKS_STORAGE_WRITES -D UDEKS_IEC_MUTATE -D UDEKS_STORAGE_MUTATIONS -D UDEKS_STORAGE_LEASE --code-name STORAGECODE -c -o build/storage/iec_service.o src/services/filesystem/iec_service.c
+ca65 --cpu 6502 -o build/storage/fs_namespace.o src/services/filesystem/namespace_6502.s
+cl65 -t none --cpu 6502 --standard c99 -Os -I include --static-locals -D UDEKS_IEC_WRITE -D UDEKS_STORAGE_HIGH -c -o build/storage/cbm_file.o src/services/filesystem/cbm_file.c
+cl65 -t none --cpu 6502 --standard c99 -Os -I include --static-locals -D UDEKS_IEC_WRITE -D UDEKS_STORAGE_HIGH -D UDEKS_COMPACT_STATUS --code-name STORAGECODE -c -o build/storage/cbm_write.o src/services/filesystem/cbm_write.c
+ca65 --cpu 6502 -D UDEKS_STORAGE_MODULE -D UDEKS_IEC_WRITE -D UDEKS_IEC_MUTATE -D UDEKS_IEC_ASYNC -o build/storage/iec_slow.o src/services/filesystem/iec_slow.s
+ca65 --cpu 6502 -D UDEKS_IEC_ASYNC -o build/storage/cbm_mutate.o src/services/filesystem/mutation_6502.s
+ca65 --cpu 6502 -o build/storage/install.o src/boot/storage-install.s
+ca65 --cpu 6502 -o build/user/poll_entry.o user/lib/poll_entry.s
+cc65 -t none --cpu 6502 --standard c99 -Oirs -I include -I user/include -I include -o build/user/task_stream.s user/lib/task_stream.c
+cc65 -t none --cpu 6502 --standard c99 -Oirs -I include --static-locals -I user/include -I include -o build/user/ush.s user/bin/ush.c
+cl65 -t none --cpu 6502 --standard c99 -Oirs -I include --static-locals -I user/include -c -o build/user/startup.o user/lib/startup.c
+ca65 --cpu 6502 -D UDEKS_USH_BSS=368 -o build/user/ush_bounds.o user/lib/ush_bounds.s
+sdasz80 -o build/z80/crt0.rel src/z80/crt0.s
+sdasz80 -o build/z80/handoff.rel src/z80/handoff.s
+sdcc -mz80 --std-c11 --opt-code-size -I include -c -o build/z80/worker.rel src/z80/worker.c
+ca65 --cpu 6502 -o build/user/entry.o user/lib/entry.s
+ca65 --cpu 6502 -o build/user/syscall.o user/lib/syscall.s
+cl65 -t none --cpu 6502 --standard c99 -Oirs -I include -I user/include -c -o build/user/mount.o user/bin/mount.c
+ca65 --cpu 6502 -o build/user/mount_request.o user/lib/mount_request.s
+cl65 -t none --cpu 6502 --standard c99 -Oirs -I include -D UDEKS_RECOVERY -I user/include -c -o build/user/ush-recovery.o user/bin/ush.c
+ca65 --cpu 6502 -D UDEKS_USH_BSS=80 -o build/user/ush_recovery_bounds.o user/lib/ush_bounds.s
+cl65 -t none -C cfg/8502-user-app1.cfg -m build/user/sysinfo.map -o build/user/sysinfo.bin build/user/entry.o build/user/syscall.o build/user/sysinfo.o build/user/sysinfo_request.o
+ca65 --cpu 6502 -o build/user/cowsay.o build/user/cowsay.s
+ca65 --cpu 6502 -o build/user/date.o build/user/date.s
+cl65 -t none -C cfg/8502-user-app1.cfg -m build/user/filetools.map -o build/user/filetools.bin build/user/entry.o build/user/syscall.o build/user/filetools.o build/user/file_request.o
+cl65 -t none -C cfg/8502-user-app1.cfg -m build/user/diagnostics.map -o build/user/diagnostics.bin build/user/entry.o build/user/syscall.o build/user/diagnostics.o build/user/diagnostics_request.o
+cl65 -t none -C cfg/8502-user-app1.cfg -m build/user/mount-rw.map -o build/user/mount-rw.bin build/user/entry.o build/user/syscall.o build/user/mount_rw.o build/user/mount_rw_request.o build/user/error_string.o
+cl65 -t sim6502 --standard c99 -Os -I include -c -o build/8502/rectangle-test.o bench/graphics-delta/rectangle.c
+cl65 -t sim6502 --standard c99 -Os -I include -c -o build/8502/input-test.o bench/graphics-input/check.c
+cc65 -t none --cpu 6502 --standard c99 -Os --static-locals -I include -o build/bitmap-store/store.s src/services/window/bitmap_store.c
+ca65 -o build/8502/rectangle-test-stack.o bench/graphics-delta/stack.s
+cc65 -t none --cpu 6502 --standard c99 -Os --static-locals -D UDEKS_BITMAP_RENDER_ASM -I include -o build/bitmap-store/retained.s src/services/window/retained_bitmap.c
+ca65 --cpu 6502 -D UDEKS_POOL_TEST -o build/bitmap-store/pool-test.o src/services/window/retained_pool.s
+ca65 -o build/8502/rectangle-test-asm.o src/services/display/vic_rectangle.s
+ca65 -D UDEKS_INPUT_TEST -o build/8502/input-test-asm.o src/services/window/graphics_event.s
+cl65 -t sim6502 --standard c99 -Os -I include -c -o build/bitmap-store/retained-check.o bench/packed-bitmap/retained_check.c
+cl65 -t sim6502 -o build/8502/rectangle-test build/8502/rectangle-test.o \
+	build/8502/rectangle-test-stack.o build/8502/rectangle-test-asm.o
+cl65 -t sim6502 -o build/8502/input-test build/8502/input-test.o build/8502/input-test-asm.o
+ca65 --cpu 6502 -o build/bitmap-store/retained.o build/bitmap-store/retained.s
+packed 63 custom VDC glyphs into 1112 bytes
+ca65 --cpu 6502 -o build/bitmap-store/store.o build/bitmap-store/store.s
+ca65 --cpu 6502 -o build/bitmap-store/paint-test.o src/services/window/retained_bitmap_paint.s
+ld65 -C cfg/8502-stage0.cfg -o build/boot/stage0.bin build/boot/stage0.o
+ca65 --cpu 6502 -I src/8502 -o build/8502/hardware_capability.o build/8502/hardware_capability.s
+ca65 --cpu 6502 -o build/8502/banked_graphics.o build/8502/banked_graphics.s
+sim65 build/8502/rectangle-test
+ca65 --cpu 6502 -o build/8502/retained_paths.o build/8502/retained_paths.s
+ca65 --cpu 6502 -o build/8502/retained_bitmap.o build/8502/retained_bitmap.s
+sim65 build/8502/input-test
+ca65 --cpu 6502 -I src/8502 -D UDEKS_WINDOW_CACHE -o build/8502/vic_graphics_transport.o src/8502/vic_graphics.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/kernel.o build/8502/kernel.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/service_registry.o build/8502/service_registry.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/vdc_console.o build/8502/vdc_console.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/root_console.o build/8502/root_console.s
+# Keep register allocation, but call cc65 helpers instead of inlining them.
+ld65 -C cfg/8502-window-cache-gateway.cfg -o build/window-cache/gateway.bin build/window-cache/gateway.o
+# Reclaims graphics-service code space without new static state or ABI changes.
+ca65 --cpu 6502 -I src/8502 -o build/8502/keyboard.o build/8502/keyboard.s
+cc65 -t none --cpu 6502 --standard c99 -I include -Ors -o build/8502/window_manager.s src/services/window/window_manager_cached.c
+ca65 --cpu 6502 -I src/8502 -o build/8502/line_editor.o build/8502/line_editor.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/root_terminal.o build/8502/root_terminal.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/terminal_stream.o build/8502/terminal_stream.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/shell.o build/8502/shell.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/z80_worker.o build/8502/z80_worker.s
+PASS 1028 production rectangle calls: arguments and cc65 stack
+ca65 --cpu 6502 -I src/8502 -o build/8502/task_worker.o build/8502/task_worker.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/vic_graphics.o build/8502/vic_graphics.s
+PASS 2048 real-6502 input cases, geometry, copy and request guards
+ca65 --cpu 6502 -I src/8502 -o build/8502/vdc_text_assets.o src/assets/vdc_text_assets.s
+python3 tools/gen_capability_imports.py flags build/8502/hardware_capability.o build/8502/capability-force-imports.txt
+python3 tools/gen_boot_console_imports.py flags build/8502/boot_console.o build/8502/boot-console-force-imports.txt
+cl65 -t none -C cfg/8502-storage.cfg -u _udeks_cbm_dos_error -u _udeks_storage_generations -u _udeks_storage_cleanup_error -m build/storage/module.map \
+	-o build/storage/module.bin build/storage/iec_lease.o build/storage/iec_context.o build/storage/iec_service.o build/storage/fs_namespace.o build/storage/cbm_file.o build/storage/cbm_write.o build/storage/iec_slow.o build/storage/cbm_mutate.o
+ld65 -C cfg/8502-storage-install.cfg -o build/storage/install.bin build/storage/install.o
+ca65 --cpu 6502 -o build/user/task_stream.o build/user/task_stream.s
+ca65 --cpu 6502 -o build/user/ush.o build/user/ush.s
+cl65 -t none -C cfg/8502-user-app1.cfg -m build/user/mount.map -o build/user/mount.bin build/user/entry.o build/user/syscall.o build/user/mount.o build/user/mount_request.o
+cl65 -t none --cpu 6502 -C cfg/8502-user-bank1.cfg \
+	-m build/user/ush-recovery.map -o build/user/ush-recovery.bin build/user/poll_entry.o build/user/task_stream.o build/user/ush-recovery.o build/user/ush_recovery_bounds.o
+python3 tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 --bss-size 0x0040 build/user/sysinfo.bin build/user/sysinfo.udx
+cl65 -t none --cpu 6502 -C cfg/8502-user-app1.cfg \
+	-m build/user/cowsay.map -o build/user/cowsay.bin build/user/entry.o build/user/syscall.o build/user/cowsay.o
+cl65 -t none --cpu 6502 -C cfg/8502-user-app1.cfg \
+	-m build/user/date.map -o build/user/date.bin build/user/entry.o build/user/syscall.o build/user/date.o
+python3 tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 --bss-size 0x0040 build/user/filetools.bin build/user/filetools.udx
+python3 tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 --bss-size 0x0040 build/user/diagnostics.bin build/user/diagnostics.udx
+python3 tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 build/user/mount-rw.bin build/user/mount.udx
+cl65 -t sim6502 -C bench/packed-bitmap/retained_sim.cfg -m build/bitmap-store/retained-check.map -o build/bitmap-store/retained-check build/bitmap-store/store.o build/bitmap-store/retained.o build/bitmap-store/pool-test.o build/bitmap-store/retained-check.o build/bitmap-store/paint-test.o
+ca65 --cpu 6502 -I src/8502 -o build/8502/window_manager.o build/8502/window_manager.s
+ca65 --cpu 6502 -I src/services/window/cache -o build/window-cache/gateway_image.o src/services/window/cache/gateway_image.s
+cl65 -t none --cpu 6502 -C cfg/8502-user-bank1.cfg \
+	-m build/user/ush.map -o build/user/ush.bin build/user/poll_entry.o build/user/task_stream.o build/user/ush.o build/user/startup.o build/user/ush_bounds.o
+sim65 build/bitmap-store/retained-check
+python3 tools/build_udex.py --cpu 8502 --load-address 0x0200 --entry-address 0x0200 build/user/mount.bin build/user/mount-recovery.udx
+python3 tools/build_udex.py --cpu 8502 --load-address 0x9000 \
+	--entry-address 0x9000 --bss-size 0x0050 --flags 0x01 build/user/ush-recovery.bin build/user/ush-recovery.udx
+python3 tools/build_udex.py --cpu 8502 --load-address 0x9000 \
+	--entry-address 0x9000 --bss-size 0x0170 --flags 0x01 build/user/ush.bin build/user/ush.udx
+python3 tools/build_udex.py --cpu 8502 --load-address 0x0200 \
+	--entry-address 0x0200 build/user/cowsay.bin build/user/cowsay.udx
+python3 tools/build_udex.py --cpu 8502 --load-address 0x0200 \
+	--entry-address 0x0200 build/user/date.bin build/user/date.udx
+cl65 -t none -C cfg/8502-window-cache.cfg -m build/window-cache/module.map \
+	-o build/window-cache/module.bin build/window-cache/core.o build/window-cache/module.o build/window-cache/policy.o build/window-cache/command.o build/window-cache/flow.o build/window-cache/controller.o build/window-cache/gateway_image.o
+python3 tools/build_bootfs.py --max-size 0x1000 \
+	--entry mount=build/user/mount-recovery.udx --entry umount=build/user/mount-recovery.udx \
+	--entry ush=build/user/ush-recovery.udx build/user/bootfs.img
+python3 tools/build_window_cache.py bindings build/window-cache/module.bin build/window-cache/gateway.bin build/window-cache/module.map build/window-cache
+ca65 --cpu 6502 -I src/services/window/cache -I build/window-cache -o build/window-cache/validator.o src/services/window/cache/validator.s
+ld65 -C cfg/8502-window-cache-gateway.cfg -o build/window-cache/validator.bin build/window-cache/validator.o
+ca65 --cpu 6502 -I src/8502 -I src/services/window/cache -I build/window-cache -o build/8502/cache_transport.o src/8502/cache_transport.s
+cl65 -t none --cpu 6502 -C cfg/8502-bootstrap.cfg -m build/8502/udeks-8502.map \
+	$(cat build/8502/capability-force-imports.txt) \
+	$(cat build/8502/boot-console-force-imports.txt) \
+	-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok -u _udeks_retained_present_image \
+	-u _udeks_line_editor_get_line -u _udeks_banked_pages_init \
+	-u _udeks_time_slot_request -u _udeks_time_slot_state -u _udeks_service_start_phase -u _udeks_service_start_result \
+	-o build/8502/udeks-8502.bin \
+	build/8502/reu_store.o build/8502/reu_bitmap.o build/8502/reu_runtime.o build/reu/transport.o build/reu/capacity.o build/8502/banked_graphics.o build/8502/graphics_event.o build/8502/banked_access.o build/8502/retained_paths.o build/8502/retained_pool.o build/8502/retained_bitmap.o build/8502/retained_bitmap_paint.o build/8502/kernel_entry.o build/8502/crt0.o build/8502/vdc.o build/8502/keyboard_scan.o build/8502/control_ports.o build/8502/line_editor_read.o build/8502/z80_handoff.o build/8502/vic_graphics_transport.o build/8502/panic.o build/8502/probe.o build/8502/clock.o build/8502/syscall_gate.o build/8502/task_bank_gateway.o build/8502/kernel.o build/8502/service_start.o build/8502/boot_console_entry.o build/8502/service_registry.o build/8502/service_table.o build/8502/capability_descriptor.o build/8502/time_descriptor.o build/8502/clock_descriptor.o build/8502/console_descriptor.o build/8502/pointer_descriptor.o build/8502/keyboard_descriptor.o build/8502/root_terminal_descriptor.o build/8502/init_descriptor.o build/8502/z80_worker_descriptor.o build/8502/vic_graphics_descriptor.o build/8502/window_descriptor.o build/8502/managed_apps_descriptor.o build/8502/bootfs_request.o build/8502/time-slot.o build/8502/time-resident.o build/8502/vdc_console.o build/8502/app_panel.o build/8502/root_console.o build/8502/window_manager.o build/8502/cache_transport.o build/8502/keyboard.o build/8502/pointer.o build/8502/nmi.o build/8502/line_editor.o build/8502/root_terminal.o build/8502/terminal_stream.o build/8502/shell_parser.o build/8502/shell.o build/8502/z80_worker.o build/8502/task_worker.o build/8502/vic_graphics.o build/8502/vic_span.o build/8502/vic_pixel.o build/8502/vic_rectangle.o build/8502/vic_clear.o build/8502/managed_apps.o build/8502/vdc_text_assets.o
+cl65 -t none --cpu 6502 -C cfg/8502-panic-probe.cfg \
+	$(cat build/8502/capability-force-imports.txt) \
+	$(cat build/8502/boot-console-force-imports.txt) \
+	-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok -u _udeks_retained_present_image \
+	-u _udeks_line_editor_get_line -u _udeks_banked_pages_init \
+	-u _udeks_time_slot_request -u _udeks_time_slot_state -u _udeks_service_start_phase -u _udeks_service_start_result \
+	-m build/8502/udeks-8502-panic-probe.map \
+	-o build/8502/udeks-8502-panic-probe.bin \
+	build/8502/reu_store.o build/8502/reu_bitmap.o build/8502/reu_runtime.o build/reu/transport.o build/reu/capacity.o build/8502/banked_graphics.o build/8502/graphics_event.o build/8502/banked_access.o build/8502/retained_paths.o build/8502/retained_pool.o build/8502/retained_bitmap.o build/8502/retained_bitmap_paint.o build/8502/kernel_entry.o build/8502/crt0.o build/8502/vdc.o build/8502/keyboard_scan.o build/8502/control_ports.o build/8502/line_editor_read.o build/8502/z80_handoff.o build/8502/vic_graphics_transport.o build/8502/panic.o build/8502/probe.o build/8502/clock.o build/8502/syscall_gate.o build/8502/task_bank_gateway.o build/8502/kernel.o build/8502/service_start.o build/8502/boot_console_entry.o build/8502/service_registry.o build/8502/service_table.o build/8502/capability_descriptor.o build/8502/time_descriptor.o build/8502/clock_descriptor.o build/8502/console_descriptor_fault.o build/8502/pointer_descriptor.o build/8502/keyboard_descriptor.o build/8502/root_terminal_descriptor.o build/8502/init_descriptor.o build/8502/z80_worker_descriptor.o build/8502/vic_graphics_descriptor.o build/8502/window_descriptor.o build/8502/managed_apps_descriptor.o build/8502/bootfs_request.o build/8502/time-slot.o build/8502/time-resident.o build/8502/vdc_console.o build/8502/app_panel.o build/8502/root_console.o build/8502/window_manager.o build/8502/cache_transport.o build/8502/keyboard.o build/8502/pointer.o build/8502/nmi.o build/8502/line_editor.o build/8502/root_terminal.o build/8502/terminal_stream.o build/8502/shell_parser.o build/8502/shell.o build/8502/z80_worker.o build/8502/task_worker.o build/8502/vic_graphics.o build/8502/vic_span.o build/8502/vic_pixel.o build/8502/vic_rectangle.o build/8502/vic_clear.o build/8502/managed_apps.o build/8502/vdc_text_assets.o
+PASS 22462 retained bitmap checks: shared allocator, request parity and pixels
+python3 tools/gen_capability_imports.py bridge build/8502/hardware_capability.o \
+	build/8502/udeks-8502.map build/8502/udeks-8502-panic-probe.map build/8502/capability-bridge.s
+python3 tools/gen_scheduler_overlay_imports.py bridge \
+	build/8502/task_state.o \
+	build/8502/task_scheduler.o build/8502/task-wait-state.o \
+	build/8502/scheduler-runtime/and.o build/8502/scheduler-runtime/aslax2.o \
+	--maps build/8502/udeks-8502.map build/8502/udeks-8502-panic-probe.map build/8502/scheduler-overlay-bridge.s
+python3 tools/reu_graphics_layout.py build/8502/bitmap-hidden.bin build/8502/udeks-8502.map build/8502/bitmap-hidden-panic.bin build/8502/udeks-8502-panic-probe.map build/8502/bitmap-hidden-sealed.bin
+python3 tools/gen_boot_console_imports.py bridge build/8502/boot_console.o \
+	build/8502/udeks-8502.map build/8502/udeks-8502-panic-probe.map build/8502/boot-console-bridge.s
+test -s build/8502/udeks-module.bin
+test -s build/boot/task-request-gateway.bin
+test -s build/boot/bootfs-request-service.bin
+test -s build/boot/task-bank-gateway.bin
+python3 tools/build_window_cache.py layout build/8502/udeks-8502.map build/8502/udeks-8502-panic-probe.map build/window-cache/layout.json
+ca65 --cpu 6502 -I src/8502 -o build/8502/capability-bridge.o build/8502/capability-bridge.s
+ca65 --cpu 6502 -I src/8502 -o build/8502/boot-console-bridge.o build/8502/boot-console-bridge.s
+ld65 -C cfg/8502-boot-capability.cfg -m build/8502/8502-capability.map \
+	-o build/boot/8502-capability.bin build/8502/hardware_capability.o \
+	build/8502/capability-bridge.o
+ld65 -C cfg/8502-boot-console.cfg -m build/8502/8502-boot-console.map \
+	-o build/boot/8502-boot-console.bin build/8502/boot_console.o \
+	build/8502/boot-console-bridge.o
+python3 tools/gen_capability_imports.py constants build/boot/8502-capability.bin \
+	build/boot/8502-boot-delivery.bin \
+	build/8502/udeks-8502.map build/8502/udeks-8502-panic-probe.map build/8502/capability-delivery.inc \
+	build/8502/capability-installer.cfg
+ca65 --cpu 6502 -I src/8502 -o build/8502/scheduler-overlay-bridge.o build/8502/scheduler-overlay-bridge.s
+ld65 -C cfg/8502-scheduler-overlay.cfg \
+	-m build/8502/udeks-scheduler-overlay.map -o build/8502/udeks-scheduler-overlay-page.bin \
+	-u _udeks_lifecycle_apply -u _udeks_scheduler_select_next \
+	-u _udeks_lifecycle_slots_private \
+	-u _udeks_lifecycle_current_private \
+	-u _udeks_lifecycle_last_event_private \
+	-u _udeks_lifecycle_rejected_private \
+	-u _udeks_task_wait_reset \
+	-u _udeks_task_wait_publish_current \
+	-u _udeks_task_wait_state_private \
+	-u _udeks_task_wait_operation_private \
+	-u _udeks_task_wait_sequence_private \
+	-u _udeks_task_wait_descriptor_private \
+	-u _udeks_task_wait_count_private \
+	-u _udeks_task_wait_flags_private \
+	-u _udeks_task_wait_selector_private \
+	-u _udeks_task_wait_selector_high_private \
+	-u _udeks_task_wait_child_private \
+	-u _udeks_task_wait_status_private \
+	-u _udeks_task_cancel_request \
+	-u _udeks_task_poll_request \
+	-u _udeks_task_console_get_line \
+	-u _udeks_task_sleep_poll \
+	-u _udeks_task_tick_advance \
+	-u _udeks_monotonic_ticks_low -u _udeks_monotonic_ticks_high \
+	build/8502/scheduler.o build/8502/task_state.o \
+	build/8502/task_scheduler.o build/8502/task-wait-state.o \
+	build/8502/scheduler-runtime/and.o \
+	build/8502/scheduler-runtime/aslax2.o build/8502/scheduler-overlay-bridge.o
+hidden bitmap: code/state fit; normal/panic parity; 4096-byte delivery sealed
+python3 tools/gen_disk_loader_bindings.py build/8502/udeks-scheduler-overlay.map build/8502/disk-loader-bindings.inc --kernel-map build/8502/udeks-8502.map
+python3 tools/gen_task_context_imports.py \
+	build/8502/task_context.o build/8502/udeks-scheduler-overlay.map build/8502/task-context-bridge.s
+ca65 --cpu 6502 -I build/8502 -o build/boot/capability-installer.o src/boot/capability-installer.s
+ld65 -C build/8502/capability-installer.cfg -o build/boot/capability-installer.bin build/boot/capability-installer.o
+ca65 --cpu 6502 -I src/8502 -o build/8502/task-context-bridge.o build/8502/task-context-bridge.s
+ld65 -C cfg/8502-task-context.cfg -m build/8502/task-context-binding.map \
+	-u _udeks_task_context_save_current \
+	-u _udeks_task_contexts_private \
+	-u _udeks_task_context_current_private \
+	-o build/8502/task-context-binding.bin build/8502/task_context.o \
+	build/8502/task-context-bridge.o build/8502/task_context_vectors.o
+python3 tools/gen_task_yield_imports.py build/8502/task-yield-handler.o \
+	build/8502/udeks-scheduler-overlay.map build/8502/task-context-binding.map \
+	build/8502/udeks-8502.map build/8502/udeks-8502-panic-probe.map build/8502/task-yield-bridge.s
+ca65 --cpu 6502 -I build/8502 -o build/boot/stage1-gateway.o src/boot/stage1-gateway.s
+ca65 --cpu 6502 -D UDEKS_DISK_TIME -I build/8502 -o build/storage/router.o src/services/filesystem/iec_router.s
+ld65 -C cfg/8502-storage-router.cfg -o build/storage/router.bin build/storage/router.o
+ld65 -C cfg/8502-stage1-gateway.cfg \
+	-m build/boot/stage1-gateway.map -u banked_access -o build/boot/stage1-gateway.bin build/boot/stage1-gateway.o
+python3 tools/gen_banked_bindings.py build/boot/stage1-gateway.map build/8502/udeks-scheduler-overlay.map build/8502/task-context-binding.map build/8502/udeks-8502.map build/boot/banked-bindings.inc
+ca65 --cpu 6502 -I src/8502 -o build/8502/task-yield-bridge.o build/8502/task-yield-bridge.s
+ld65 -C cfg/8502-task-yield-handler.cfg -o build/8502/task-yield-handler.bin \
+	build/8502/task-yield-handler.o build/8502/task-yield-bridge.o
+sdcc -mz80 --no-std-crt0 --code-loc 0x2000 --data-loc 0x3000 -o build/z80/udeks-z80.ihx build/z80/crt0.rel build/z80/handoff.rel build/z80/worker.rel
+ca65 --cpu 6502 -I build/boot -o build/boot/banked-loader.o src/services/app/banked_loader.s
+python3 tools/ihx_to_bin.py --start 0x2000 --end 0x4000 build/z80/udeks-z80.ihx build/z80/udeks-z80.bin
+ld65 -C cfg/8502-banked-loader.cfg -m build/boot/banked-loader.map \
+	-u banked_owned -u banked_headers -u banked_end -o build/boot/banked-loader.bin build/boot/banked-loader.o
+python3 tools/build_scheduler_overlay.py \
+	build/8502/udeks-scheduler-overlay-page.bin build/8502/udeks-scheduler-overlay-tail.bin \
+	build/8502/udeks-scheduler-overlay.map build/boot/scheduler-overlay.prg \
+	build/8502/scheduler-overlay-delivery.inc \
+	--activation-context build/8502/task-context-binding.bin \
+	--activation-context-map build/8502/task-context-binding.map \
+	--activation-tail build/8502/task-switch-tail.bin \
+	--activation-yield-handler build/8502/task-yield-handler.bin \
+	--activation-vectors build/8502/task-context-vectors.bin --window-cache build/window-cache/module.bin \
+	--storage build/storage --ush build/user/ush.bin --task-lookup build/boot/task-lookup.bin \
+	--banked-loader build/boot/banked-loader.bin --banked-reloc build/boot/banked-reloc.bin \
+	--banked-access build/boot/banked-access.bin \
+	--banked-graphics build/8502/banked-graphics.bin --retained-paths build/8502/retained-paths.bin \
+	--bitmap-hidden build/8502/bitmap-hidden-sealed.bin
+ca65 --cpu 6502 -D UDEKS_WINDOW_CACHE -I build/8502 -o build/boot/stage1.o src/boot/stage1.s
+ca65 --cpu 6502 -I build/8502 -o build/boot/task-switch-activation.o src/boot/task-switch-activation.s
+ca65 --cpu 6502 -I build/8502 -o build/boot/scheduler-tail-installer.o src/boot/scheduler-tail-installer.s
+python3 tools/placement_audit.py --verify
+ld65 -C cfg/8502-task-switch-activation.cfg -o build/boot/task-switch-activation.bin build/boot/task-switch-activation.o
+ld65 -C cfg/8502-stage1.cfg -o build/boot/stage1.bin build/boot/stage1.o
+ld65 -C cfg/8502-scheduler-tail-installer.cfg -o build/boot/scheduler-tail-installer.bin build/boot/scheduler-tail-installer.o
+python3 tools/gen_boot_console_imports.py constants \
+	build/boot/8502-boot-console.bin build/boot/8502-boot-delivery.bin \
+	build/boot/8502-capability.bin build/boot/capability-installer.bin \
+	build/boot/task-switch-activation.bin \
+	build/8502/udeks-8502.map build/8502/udeks-8502-panic-probe.map build/8502/boot-console-delivery.inc
+ca65 --cpu 6502 -I build/8502 -o build/boot/boot-console-installer.o src/boot/boot-console-installer.s
+ld65 -C cfg/8502-boot-console-installer.cfg -o build/boot/boot-console-installer.bin build/boot/boot-console-installer.o
+placement audit OK
+python3 tools/build_d71.py --stage0 build/boot/stage0.bin \
+	--stage1 build/boot/stage1.bin --kernel build/8502/udeks-8502.bin --z80 build/z80/udeks-z80.bin \
+	--boot-delivery build/boot/8502-boot-delivery.bin \
+	--crt0 build/boot/8502-crt0.bin --probe build/boot/8502-probe.bin \
+	--map build/8502/udeks-8502.map \
+	--scheduler-overlay build/boot/scheduler-overlay.prg --secondary-bootfs \
+	--scheduler-tail-installer build/boot/scheduler-tail-installer.bin \
+	--busy-sprite build/assets/24x21-pipe-sprite.vic \
+	--capability build/boot/8502-capability.bin \
+	--capability-installer build/boot/capability-installer.bin \
+	--boot-console build/boot/8502-boot-console.bin \
+	--task-switch-activation build/boot/task-switch-activation.bin \
+	--boot-console-installer build/boot/boot-console-installer.bin \
+	--bootfs build/user/bootfs.img \
+	--module build/8502/udeks-module.bin \
+	--ush build/user/ush.udx \
+	--task-loader build/boot/task-loader.bin \
+	--task-request-gateway build/boot/task-request-gateway.bin \
+	--bootfs-request-service build/boot/bootfs-request-service.bin \
+	--task-bank-gateway build/boot/task-bank-gateway.bin \
+	--hello bench/iec-directory/hello.txt \
+	--rc user/etc/rc --sysinfo build/user/sysinfo.udx --command SVC=build/services/command/SVC.BIN --data-file TIME.SVC=build/services/time/TIME.SVC --d71-full-capacity \
+	--xclock build/user/xclock.udx --xwave build/user/xwave.udx --xcalc build/user/xcalc.udx --xdraw build/user/xdraw.udx --xsprdef build/user/xsprdef.udx \
+	--command COWSAY=build/user/cowsay.udx --command DATE=build/user/date.udx \
+	--command LS=build/user/filetools.udx --command CAT=build/native-console/cat/CAT.BIN \
+	--command UNAME=build/user/diagnostics.udx --command LSHW=build/user/diagnostics.udx \
+	--command LSMOD=build/user/diagnostics.udx --command LSCPU=build/user/diagnostics.udx \
+	--command Z80CTL=build/user/diagnostics.udx \
+	--command MOUNT=build/user/mount.udx --command UMOUNT=build/user/mount.udx \
+	--command SAVE=build/user/save.udx \
+	--command CP=build/file-commands/cp/CP.BIN --command MV=build/file-commands/mv/MV.BIN --command RM=build/file-commands/rm/RM.BIN \
+	--d64-no-xsprdef --d64-output build/boot/udeks.d64 build/boot/udeks.d71
+python3 tools/build_d81.py build/boot/udeks.d71 build/boot/udeks.d81
+python3 tools/graphics_app_layout.py --build build \
+	--output build/four-apps/layout.json
+{
+  "status": "four independent graphical executables; placement verified",
+  "baseline_apps": {
+    "xclock": {
+      "file": 2775,
+      "image": 2189,
+      "bss": 369,
+      "allocation": 2558,
+      "fits": [
+        3,
+        4,
+        5
+      ]
+    },
+    "xwave": {
+      "file": 2483,
+      "image": 1891,
+      "bss": 1857,
+      "allocation": 3748,
+      "fits": [
+        3,
+        5
+      ]
+    },
+    "xcalc": {
+      "file": 4599,
+      "image": 3747,
+      "bss": 412,
+      "allocation": 4159,
+      "fits": [
+        3
+      ]
+    },
+    "xdraw": {
+      "file": 1781,
+      "image": 1479,
+      "bss": 354,
+      "allocation": 1833,
+      "fits": [
+        3,
+        4,
+        5,
+        6
+      ]
+    }
+  },
+  "coexistence_launch_orders": 24,
+  "proposed": [
+    {
+      "name": "app 3 image+BSS",
+      "bank": 1,
+      "start": 8960,
+      "limit": 13312
+    },
+    {
+      "name": "app 3 software stack/guards/exit",
+      "bank": 1,
+      "start": 13312,
+      "limit": 13568
+    },
+    {
+      "name": "app 3 zero page",
+      "bank": 1,
+      "start": 54528,
+      "limit": 54784
+    },
+    {
+      "name": "app 3 hardware stack",
+      "bank": 1,
+      "start": 54784,
+      "limit": 55040
+    },
+    {
+      "name": "app 4 image+BSS",
+      "bank": 1,
+      "start": 13568,
+      "limit": 16128
+    },
+    {
+      "name": "app 4 software stack/guards/exit",
+      "bank": 1,
+      "start": 16128,
+      "limit": 16384
+    },
+    {
+      "name": "app 4 zero page",
+      "bank": 1,
+      "start": 55040,
+      "limit": 55296
+    },
+    {
+      "name": "app 4 hardware stack",
+      "bank": 1,
+      "start": 55296,
+      "limit": 55552
+    },
+    {
+      "name": "app 5 image+BSS",
+      "bank": 1,
+      "start": 32768,
+      "limit": 36608
+    },
+    {
+      "name": "app 5 software stack/guards/exit",
+      "bank": 1,
+      "start": 36608,
+      "limit": 36864
+    },
+    {
+      "name": "app 5 zero page",
+      "bank": 1,
+      "start": 53248,
+      "limit": 53504
+    },
+    {
+      "name": "app 5 hardware stack",
+      "bank": 1,
+      "start": 57856,
+      "limit": 58112
+    },
+    {
+      "name": "app 6 image+BSS",
+      "bank": 1,
+      "start": 50688,
+      "limit": 52992
+    },
+    {
+      "name": "app 6 software stack/guards/exit",
+      "bank": 1,
+      "start": 52992,
+      "limit": 53248
+    },
+    {
+      "name": "app 6 zero page",
+      "bank": 1,
+      "start": 0,
+      "limit": 256
+    },
+    {
+      "name": "app 6 hardware stack",
+      "bank": 1,
+      "start": 256,
+      "limit": 512
+    }
+  ],
+  "existing": [
+    {
+      "name": "kernel pages",
+      "bank": 0,
+      "start": 0,
+      "limit": 512
+    },
+    {
+      "name": "transient console slot",
+      "bank": 0,
+      "start": 512,
+      "limit": 3072
+    },
+    {
+      "name": "banked graphics service",
+      "bank": 0,
+      "start": 3072,
+      "limit": 4864
+    },
+    {
+      "name": "retained drawing pool",
+      "bank": 0,
+      "start": 4864,
+      "limit": 7168
+    },
+    {
+      "name": "scheduler page",
+      "bank": 0,
+      "start": 7168,
+      "limit": 8192
+    },
+    {
+      "name": "resident and scheduler tail",
+      "bank": 0,
+      "start": 8192,
+      "limit": 53248
+    },
+    {
+      "name": "resident high state and C stack",
+      "bank": 0,
+      "start": 57344,
+      "limit": 61440
+    },
+    {
+      "name": "common RAM",
+      "bank": 0,
+      "start": 61440,
+      "limit": 65536
+    },
+    {
+      "name": "native child and disk staging/stack",
+      "bank": 1,
+      "start": 512,
+      "limit": 4608
+    },
+    {
+      "name": "storage module",
+      "bank": 1,
+      "start": 4608,
+      "limit": 6272
+    },
+    {
+      "name": "relocation module",
+      "bank": 1,
+      "start": 6272,
+      "limit": 6656
+    },
+    {
+      "name": "task lookup module",
+      "bank": 1,
+      "start": 6656,
+      "limit": 7936
+    },
+    {
+      "name": "banked access module",
+      "bank": 1,
+      "start": 7936,
+      "limit": 8192
+    },
+    {
+      "name": "display/cache/bitmap/sprite",
+      "bank": 1,
+      "start": 16384,
+      "limit": 32768
+    },
+    {
+      "name": "ush",
+      "bank": 1,
+      "start": 36864,
+      "limit": 40960
+    },
+    {
+      "name": "recovery bootfs",
+      "bank": 1,
+      "start": 40960,
+      "limit": 45056
+    },
+    {
+      "name": "filesystem policy",
+      "bank": 1,
+      "start": 45056,
+      "limit": 50688
+    },
+    {
+      "name": "banked image loader",
+      "bank": 1,
+      "start": 55552,
+      "limit": 57344
+    },
+    {
+      "name": "storage state/software stack",
+      "bank": 1,
+      "start": 57344,
+      "limit": 57856
+    },
+    {
+      "name": "IEC driver and ush stack",
+      "bank": 1,
+      "start": 58112,
+      "limit": 61440
+    },
+    {
+      "name": "guarded storage high",
+      "bank": 1,
+      "start": 61440,
+      "limit": 65280
+    },
+    {
+      "name": "bitmap service under I/O",
+      "bank": 0,
+      "start": 53248,
+      "limit": 57344
+    },
+    {
+      "name": "TASK zero page",
+      "bank": 1,
+      "start": 53504,
+      "limit": 53760
+    },
+    {
+      "name": "TASK hardware stack",
+      "bank": 1,
+      "start": 53760,
+      "limit": 54016
+    },
+    {
+      "name": "TASK2 zero page",
+      "bank": 1,
+      "start": 54016,
+      "limit": 54272
+    },
+    {
+      "name": "TASK2 hardware stack",
+      "bank": 1,
+      "start": 54272,
+      "limit": 54528
+    },
+    {
+      "name": "Z80 CODE",
+      "bank": 1,
+      "start": 8192,
+      "limit": 8855
+    }
+  ],
+  "calculator_current_allocation_spare": 193,
+  "fourth_app_capacity": 2560,
+  "fourth_app_allocation_spare": 471,
+  "private_stack_reservation_per_banked_app": 256,
+  "private_usable_stack_bytes": 160,
+  "shared_retained_capacity": 2304,
+  "resident_bridge_headroom": 784,
+  "graphics_delivery_and_retention_lifetimes": {
+    "before_first_native_launch": [
+      {
+        "name": "base graphics delivery",
+        "bank": 1,
+        "start": 50688,
+        "limit": 52480
+      },
+      {
+        "name": "paths delivery/container",
+        "bank": 1,
+        "start": 52480,
+        "limit": 53504
+      },
+      {
+        "name": "retired bootstrap context",
+        "bank": 1,
+        "start": 58082,
+        "limit": 58112
+      }
+    ],
+    "after_both_modules_installed": [
+      {
+        "name": "app 3 image+BSS",
+        "bank": 1,
+        "start": 8960,
+        "limit": 13312
+      },
+      {
+        "name": "app 3 software stack/guards/exit",
+        "bank": 1,
+        "start": 13312,
+        "limit": 13568
+      },
+      {
+        "name": "app 3 zero page",
+        "bank": 1,
+        "start": 54528,
+        "limit": 54784
+      },
+      {
+        "name": "app 3 hardware stack",
+        "bank": 1,
+        "start": 54784,
+        "limit": 55040
+      },
+      {
+        "name": "app 4 image+BSS",
+        "bank": 1,
+        "start": 13568,
+        "limit": 16128
+      },
+      {
+        "name": "app 4 software stack/guards/exit",
+        "bank": 1,
+        "start": 16128,
+        "limit": 16384
+      },
+      {
+        "name": "app 4 zero page",
+        "bank": 1,
+        "start": 55040,
+        "limit": 55296
+      },
+      {
+        "name": "app 4 hardware stack",
+        "bank": 1,
+        "start": 55296,
+        "limit": 55552
+      },
+      {
+        "name": "app 5 image+BSS",
+        "bank": 1,
+        "start": 32768,
+        "limit": 36608
+      },
+      {
+        "name": "app 5 software stack/guards/exit",
+        "bank": 1,
+        "start": 36608,
+        "limit": 36864
+      },
+      {
+        "name": "app 5 zero page",
+        "bank": 1,
+        "start": 53248,
+        "limit": 53504
+      },
+      {
+        "name": "app 5 hardware stack",
+        "bank": 1,
+        "start": 57856,
+        "limit": 58112
+      },
+      {
+        "name": "app 6 image+BSS",
+        "bank": 1,
+        "start": 50688,
+        "limit": 52992
+      },
+      {
+        "name": "app 6 software stack/guards/exit",
+        "bank": 1,
+        "start": 52992,
+        "limit": 53248
+      },
+      {
+        "name": "app 6 zero page",
+        "bank": 1,
+        "start": 0,
+        "limit": 256
+      },
+      {
+        "name": "app 6 hardware stack",
+        "bank": 1,
+        "start": 256,
+        "limit": 512
+      }
+    ],
+    "joined_3_4_excludes_donor": [
+      {
+        "name": "app 3 image+BSS",
+        "bank": 1,
+        "start": 8960,
+        "limit": 16128
+      },
+      {
+        "name": "app 3 software stack/guards/exit",
+        "bank": 1,
+        "start": 16128,
+        "limit": 16384
+      },
+      {
+        "name": "app 3 zero page",
+        "bank": 1,
+        "start": 54528,
+        "limit": 54784
+      },
+      {
+        "name": "app 3 hardware stack",
+        "bank": 1,
+        "start": 54784,
+        "limit": 55040
+      },
+      {
+        "name": "app 5 image+BSS",
+        "bank": 1,
+        "start": 32768,
+        "limit": 36608
+      },
+      {
+        "name": "app 5 software stack/guards/exit",
+        "bank": 1,
+        "start": 36608,
+        "limit": 36864
+      },
+      {
+        "name": "app 5 zero page",
+        "bank": 1,
+        "start": 53248,
+        "limit": 53504
+      },
+      {
+        "name": "app 5 hardware stack",
+        "bank": 1,
+        "start": 57856,
+        "limit": 58112
+      },
+      {
+        "name": "app 6 image+BSS",
+        "bank": 1,
+        "start": 50688,
+        "limit": 52992
+      },
+      {
+        "name": "app 6 software stack/guards/exit",
+        "bank": 1,
+        "start": 52992,
+        "limit": 53248
+      },
+      {
+        "name": "app 6 zero page",
+        "bank": 1,
+        "start": 0,
+        "limit": 256
+      },
+      {
+        "name": "app 6 hardware stack",
+        "bank": 1,
+        "start": 256,
+        "limit": 512
+      },
+      {
+        "name": "parked donor zero page",
+        "bank": 1,
+        "start": 55040,
+        "limit": 55296
+      },
+      {
+        "name": "parked donor hardware stack",
+        "bank": 1,
+        "start": 55296,
+        "limit": 55552
+      }
+    ]
+  },
+  "glyph_overlay": {
+    "start": 38584,
+    "bytes": 1008,
+    "live_header": 16,
+    "live_tile_maps": 88
+  },
+  "source_sha256": {
+    "include/udeks/memory.h": "a56a603ae2e1e4219c15a0bbe35dc674489933bd1a707444ad7662ed8213e74f",
+    "src/scheduler/task_context.s": "3603cc716ee3dba5ab1e2cf37550b28677d8e4c44cc79467120d596b7b46066a",
+    "src/scheduler/task_yield_handler.s": "509bae9ca49f0e0e975418ea85d7e2069274e67dc91fb70d38518bf3acdc4994",
+    "tools/graphics_app_layout.py": "db7907c905d6bb79ab3fefbd484758a84f43b5cb06363ac4e9bc6745c0a141e7",
+    "src/services/app/banked_loader.s": "31d95a97061c22764d496426981084d0f0647a60bd66354350216617cf15c86c",
+    "src/boot/stage1-gateway.s": "7c6c70240f5bc80b134bdcf9520b25b8a9e0705f8d202283f79b9b442b8c799e",
+    "src/services/window/banked_graphics.c": "e838368f515fd6825205833fe52aa3b685499e7e1f0866e66d4779d558d14e10",
+    "src/services/window/banked_access.s": "9a80724b79a3a3535852cbb3d613647ba58311bbfe44628bbad5ec9b6535c2a7",
+    "src/services/window/retained_paths.c": "f43de2ea9a314f922765a605c79bbecfbbfbe65be753626988af0f5ca5098e4b",
+    "include/udeks/retained_paths.h": "0332f21bce210bc3c45ef0d8d89f451a118509c2f94baa6bf9ca70a254982fc9",
+    "user/bin/xcalc_native.c": "272bbbeea82f28254c6f7ca7456145d7736877e008e643ea368c3c10b89799f9",
+    "user/bin/xdraw.c": "c81cfcf34b2b85d80543e3e7b7e69011ba95aa08796f49ee99c0441d9bfa0d08",
+    "user/lib/graphics_request.s": "48c48a98ccace6ab8a9f6d048cb6dee829c628f61b8350ca86c979c7306ad067"
+  },
+  "input_sha256": {
+    "8502/udeks-8502.map": "579985e8dcd9976a6bfb55d0a86cba00a97d6820009b87442c131924a88c5efe",
+    "8502/udeks-8502-panic-probe.map": "8824727ebcc091d01ef4d885844c2283cf4aa37943235dc566895446d984cb6f",
+    "storage/module.map": "7db347ed7b1eeea687d119690c25f9c89cc97d411b692817c32a6f90f5c552d9",
+    "z80/udeks-z80.map": "522aa699273bbcd3103e2cf42fe05f610d5743166fc6f22e6c9ba3e7cdb5b250",
+    "z80/udeks-z80.bin": "2e755ea96ae87507fd7c21199db117f99dbcbf223e58afd29d1613668469516f",
+    "z80/udeks-z80.ihx": "0425524e4393fedfb78dd60825b283ab03283e740f7defe3ca5d089acd89244e",
+    "boot/task-lookup.bin": "1c3ca1c606c93e16a3caa76b5ea599c89f3fb26c761d75fc097b9030868e7123",
+    "boot/banked-loader.bin": "86f50995d812545a33ec0ec88f52e44b8c87b4edf38ae97870a8f6a01edc7b06",
+    "boot/banked-loader.map": "1073eacc2cfa10014c382568149087c6639d567307a44269823bc908a9299f8b",
+    "boot/banked-reloc.bin": "a4e9c3a3996546bd4d89540d6cec1b7a17e1f8089a01a735fea12b821eedf762",
+    "boot/banked-access.bin": "b8bab1925d528d50f589904d0b58660ab8144006cb4981de78d58df3e4da4f3c",
+    "8502/banked-graphics.bin": "967b3e4df6c44f0274b56eb1cdec040ca647b528b728eea8a7b65e6fc764c323",
+    "8502/retained-paths.bin": "9aa038ef96dbd4d605a2411c4bb9aae995415491ace3c80c89bb3ce5f37e5f30",
+    "assets/udeks-vdc-text.bin": "9495ff45ad086e50b8824fe7dc93480efb88cfdf40adb7cb369c52248f63420a",
+    "boot/scheduler-overlay.prg": "4479e715c8e55b2279d33ff839c61876be006c9cc46e405810618ff5b0779617",
+    "8502/banked-graphics-panic.bin": "967b3e4df6c44f0274b56eb1cdec040ca647b528b728eea8a7b65e6fc764c323",
+    "user/xclock.udx": "f44a740aeb49d7e2bc4172bcbdf91b20134cb7d478f83954feb2bd3128ac5968",
+    "user/xwave.udx": "80e97883ff8b796501a4efae76f0bb0bcc3bbb8fc4bf513ab3a60a173e5c37f2",
+    "user/xcalc.udx": "30e83b911cbe17c8f5d1062a96e53e6c1f1ddc8e0a64d897a2ffff663cd77b0c",
+    "user/xdraw.udx": "49bd1da2105e6da906354ad5c42692ff97eea964e4115b35bb0399ae4e07502b"
+  }
+}

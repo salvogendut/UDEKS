@@ -136,7 +136,7 @@ def main():
                 if capture(tag+'-'+str(task)+'-guard-'+str(offset),stack+offset,16,'worker')!=b'\xa5'*16:
                     raise AssertionError(('software stack guard',task,offset))
         lengths=capture(tag+'-lengths',exports['_udeks_retained_lengths'][0],8)
-        total=sum(int.from_bytes(lengths[n:n+2],'little')&0x7fff for n in range(0,8,2))
+        total=sum(int.from_bytes(lengths[n:n+2],'little')&0x1fff for n in range(0,8,2))
         if total>RETAINED_LIMIT-RETAINED_BASE: raise AssertionError('retained pool overflow')
         capture(tag+'-pool',RETAINED_BASE,RETAINED_LIMIT-RETAINED_BASE)
         records.append(dict(check=tag,retained_bytes=total,live=dict(names)))
@@ -167,7 +167,7 @@ def main():
 
     def retained(task,tag):
         lengths=capture(tag+'-lengths',exports['_udeks_retained_lengths'][0],8)
-        sizes=[int.from_bytes(lengths[i:i+2],'little')&0x7fff for i in range(0,8,2)]
+        sizes=[int.from_bytes(lengths[i:i+2],'little')&0x1fff for i in range(0,8,2)]
         length=sizes[task-3]
         return capture(tag+'-retained',RETAINED_BASE+sum(sizes[:task-3]),length) if length else b''
     def leases(tag):

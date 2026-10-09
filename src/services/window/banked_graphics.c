@@ -3,6 +3,7 @@
  * images share bank-0 $1300-$1BFF, not the client's runtime. */
 #include "udeks/banked_graphics.h"
 #include "udeks/retained_paths.h"
+#include "udeks/retained_bitmap.h"
 #include "udeks/window.h"
 #include "udeks/window_service.h"
 #include "udeks/vic_graphics.h"
@@ -67,6 +68,7 @@ static unsigned char desktop(void)
 #pragma code-name(pop)
 /* Runs exactly once after the base module copy. Preserve the pending launch
  * name: the private eight-byte transport borrows request payload bytes 0..9. */
+#pragma code-name(push, "CODE")
 static void complete_install(void)
 {
     unsigned char saved[10];
@@ -83,6 +85,7 @@ static void complete_install(void)
     }
     memcpy((void *)P,saved,10);
 }
+#pragma code-name(pop)
 void __fastcall__ udeks_graphics_geometry(unsigned char handle);
 #define geometry udeks_graphics_geometry
 static void paint(unsigned char handle)
@@ -92,6 +95,9 @@ static void paint(unsigned char handle)
     index = udeks_window_owner(handle)-0x83u;
     if (index >= UDEKS_NATIVE_CLIENTS) return;
     geometry(handle);
+    if(udeks_retained_lengths[index] & (UDEKS_BITMAP_FORMAT|UDEKS_BITMAP_PENDING)) {
+        udeks_retained_bitmap_paint(index); return;
+    }
     if(udeks_retained_lengths[index]&UDEKS_RETAINED_PATH_FLAG) {
         udeks_retained_paths_paint(index); return;
     }
@@ -169,7 +175,17 @@ void udeks_banked_graphics_request(void)
     } else {
         if(op==UDEKS_GFX_EVENT && clients.closing[index]) { P[0]=0; R[11]=R[5]>=10?7:4; error=0; goto done; }
         if(!handle || handle!=clients.handle[index] || udeks_window_owner(handle)!=task+0x80u) goto done;
-        if(op==UDEKS_GFX_PRESENT_DELTA) {
+        if(op>=UDEKS_BITMAP_BEGIN && op<=UDEKS_BITMAP_ABORT) {
+            if(R[5]<20) { error=38; goto done; }
+            /* Repaint can be deferred during a drag/cache operation. Keep the
+             * upload pending and retry COMMIT instead of losing its damage. */
+            if(op==UDEKS_BITMAP_COMMIT && udeks_window_update_busy()) {
+                error=11; goto done;
+            }
+            error=udeks_retained_bitmap_request(index);
+            if(!error && op==UDEKS_BITMAP_COMMIT) udeks_window_repaint(handle);
+            R[11]=0;
+        } else if(op==UDEKS_GFX_PRESENT_DELTA) {
             error=present_delta(index,handle);
             R[11]=0;
         } else if(op==UDEKS_GFX_PRESENT || op==UDEKS_GFX_PATHS) {

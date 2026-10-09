@@ -1,0 +1,228 @@
+Modules list:
+-------------
+entry.o:
+    CODE              Offs=000000  Size=000003  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000027  Align=00001  Fill=0000
+request.o:
+    CODE              Offs=000003  Size=000056  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000006  Align=00001  Fill=0000
+client.o:
+    CODE              Offs=000059  Size=0003D2  Align=00001  Fill=0000
+    RODATA            Offs=000006  Size=000019  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=00000F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=00042B  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(and.o):
+    CODE              Offs=000439  Size=000010  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax1.o):
+    CODE              Offs=000449  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax5.o):
+    CODE              Offs=000450  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax7.o):
+    CODE              Offs=000455  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=00045A  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000465  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=00046C  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=000482  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxi.o):
+    CODE              Offs=000487  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=000494  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=00049D  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=0004D7  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=0004E5  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=0004FB  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shl.o):
+    CODE              Offs=000515  Size=000033  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax3.o):
+    CODE              Offs=000548  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000556  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(sub.o):
+    CODE              Offs=00056C  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(udiv.o):
+    CODE              Offs=000581  Size=00004F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(umod.o):
+    CODE              Offs=0005D0  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               001000  001026  000027  00001
+CODE                  001027  001607  0005E1  00001
+RODATA                001608  001626  00001F  00001
+BSS                   001627  001635  00000F  00001
+
+
+Exports list by name:
+---------------------
+_bitmap_error             001628 RLA    _bitmap_handle            00162A RLA    
+_bitmap_protocol          001629 RLA    _bitmap_stage             001627 RLA    
+_bitmap_uploaded          00162B RLA    _gfx_request              001033 RLA    
+_gfx_sleep                00103F RLA    _udeks_native_console_gate 001027 RLA    
+_udeks_program_entry      001000 RLA    _udeks_program_main       001080 RLA    
+addysp                    001453 RLA    addysp1                   001452 RLA    
+incax1                    001470 RLA    incax5                    001477 RLA    
+incax7                    00147C RLA    incaxy                    001483 RLA    
+incsp1                    00148C RLA    incsp2                    00149B RLA    
+incsp3                    0014A9 RLA    ldax0sp                   0014BB RLA    
+ldaxidx                   0014B0 RLA    popax                     001493 RLA    
+popptr1                   0014FE RLA    ptr1                      00000A RLZ    
+ptr4                      000010 RLZ    pusha                     001510 RLA    
+pusha0                    001524 RLA    pushax                    001526 RLA    
+shrax3                    00156F RLA    sp                        000002 RLZ    
+sreg                      000004 RLZ    staspidx                  00157D RLA    
+tmp1                      000012 RLZ    tosanda0                  001460 RLA    
+tosshlax                  00153C RLA    tossuba0                  001593 RLA    
+tosumoda0                 0015F7 RLA    tosumula0                 0014C4 RLA    
+udiv16                    0015B9 RLA    
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+ptr1                      00000A RLZ    ptr4                      000010 RLZ    
+tmp1                      000012 RLZ    _udeks_program_entry      001000 RLA    
+_udeks_native_console_gate 001027 RLA    _gfx_request              001033 RLA    
+_gfx_sleep                00103F RLA    _udeks_program_main       001080 RLA    
+addysp1                   001452 RLA    addysp                    001453 RLA    
+tosanda0                  001460 RLA    incax1                    001470 RLA    
+incax5                    001477 RLA    incax7                    00147C RLA    
+incaxy                    001483 RLA    incsp1                    00148C RLA    
+popax                     001493 RLA    incsp2                    00149B RLA    
+incsp3                    0014A9 RLA    ldaxidx                   0014B0 RLA    
+ldax0sp                   0014BB RLA    tosumula0                 0014C4 RLA    
+popptr1                   0014FE RLA    pusha                     001510 RLA    
+pusha0                    001524 RLA    pushax                    001526 RLA    
+tosshlax                  00153C RLA    shrax3                    00156F RLA    
+staspidx                  00157D RLA    tossuba0                  001593 RLA    
+udiv16                    0015B9 RLA    tosumoda0                 0015F7 RLA    
+_bitmap_stage             001627 RLA    _bitmap_error             001628 RLA    
+_bitmap_protocol          001629 RLA    _bitmap_handle            00162A RLA    
+_bitmap_uploaded          00162B RLA    
+
+
+Imports list:
+-------------
+_bitmap_error (client.o):
+    [linker generated]       
+_bitmap_handle (client.o):
+    [linker generated]       
+_bitmap_protocol (client.o):
+    [linker generated]       
+_bitmap_stage (client.o):
+    [linker generated]       
+_bitmap_uploaded (client.o):
+    [linker generated]       
+_gfx_request (request.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(16)
+_gfx_sleep (request.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(17)
+_udeks_native_console_gate (entry.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(18)
+_udeks_program_entry (entry.o):
+    [linker generated]       
+_udeks_program_main (client.o):
+    entry.o                   user/lib/native_console_entry.s(8)
+addysp (addysp.o):
+    incsp3.o                  runtime/incsp3.s(8)
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+    and.o                     runtime/and.s(8)
+incax1 (incax1.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+incax5 (incax5.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+incax7 (incax7.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+incaxy (incaxy.o):
+    incax7.o                  runtime/incax7.s(8)
+    incax5.o                  runtime/incax5.s(8)
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+incsp1 (incsp1.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+incsp3 (incsp3.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+ldax0sp (ldaxsp.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+ldaxidx (ldaxi.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+popax (incsp2.o):
+    shl.o                     runtime/shl.s(15)
+popptr1 (popptr1.o):
+    udiv.o                    runtime/udiv.s(9)
+    umod.o                    runtime/umod.s(8)
+    mul8.o                    runtime/mul8.s(9)
+ptr1 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    ldaxi.o                   runtime/ldaxi.s(8)
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(11)
+ptr4 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    umod.o                    runtime/umod.s(9)
+    mul8.o                    runtime/mul8.s(10)
+pusha (pusha.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+    entry.o                   user/lib/native_console_entry.s(8)
+pusha0 (pushax.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+pushax (pushax.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+shrax3 (shrax3.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+sp (zeropage.o):
+    incsp2.o                  runtime/incsp2.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    sub.o                     runtime/sub.s(9)
+    staspidx.o                runtime/staspidx.s(9)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    and.o                     runtime/and.s(9)
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(10)
+sreg (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    umod.o                    runtime/umod.s(9)
+staspidx (staspidx.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    shrax3.o                  runtime/shrax3.s(8)
+    shl.o                     runtime/shl.s(16)
+    incaxy.o                  runtime/incaxy.s(8)
+tosanda0 (and.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+tosshlax (shl.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+tossuba0 (sub.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+tosumoda0 (umod.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+tosumula0 (mul8.o):
+    client.o                  /var/home/salvogendut/Dev/UDEKS/build/packed-bitmap/build/bitmap-store/client/client.s(556)
+udiv16 (udiv.o):
+    umod.o                    runtime/umod.s(8)
+

@@ -170,7 +170,9 @@ artifact is a fixed 8 KiB raw window covering `$2000`–`$3FFF`; only its leadin
 bytes currently contain code. `make boot` packages both into a deterministic
 D71 and a side-one D64 compatibility image implementing the stage-0/stage-1 path in
 [ADR 0003](decisions/0003-memory-bootstrap.md). The direct-load PRG remains
-useful for focused bring-up tests. Use `build/boot/udeks.d64` with Pi1541 and
+useful for focused early bring-up tests, not a complete desktop boot: it does
+not deliver the bank-1 secondary payload, including the hidden bitmap module.
+Use native boot disks for the complete system. Use `build/boot/udeks.d64` with Pi1541 and
 other drives that do not boot D71 images; its boot payload is identical to the
 one in `build/boot/udeks.d71`.
 

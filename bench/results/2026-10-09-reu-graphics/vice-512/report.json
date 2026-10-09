@@ -1,0 +1,111 @@
+{
+  "reu_kib": 512,
+  "checks": [
+    {
+      "command": "xview /clock160.cbm &"
+    },
+    {
+      "pixels": 16000,
+      "image": "initial"
+    },
+    {
+      "command": "xclock &"
+    },
+    {
+      "command": "xwave &"
+    },
+    {
+      "coexistence": "CLOCK160 + clock + wave",
+      "retained_lengths": [
+        33896,
+        344,
+        16392,
+        0
+      ]
+    },
+    {
+      "command": "echo REU desktop alive"
+    },
+    {
+      "command": "xwave -q"
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "command": "xclock -q"
+    },
+    {
+      "pixels": 16000,
+      "image": "uncovered"
+    },
+    {
+      "command": "xview /alex128.cbm &"
+    },
+    {
+      "pixels": 10240,
+      "image": "two-large"
+    },
+    {
+      "coexistence": "two independent bitmap objects",
+      "pictures": [
+        "CLOCK160.CBM",
+        "ALEX128.CBM"
+      ],
+      "store": "03000100d007d00702010002000005000502000000000000000000000000000000000000020001"
+    },
+    {
+      "command": "xview -q"
+    },
+    {
+      "pixels": 16000,
+      "image": "peer-after-close"
+    },
+    {
+      "command": "xview -q"
+    },
+    {
+      "command": "xview /clock160.cbm &"
+    },
+    {
+      "pixels": 16000,
+      "image": "reuse"
+    },
+    {
+      "command": "xview -q"
+    },
+    {
+      "command": "cat /hello"
+    },
+    {
+      "reu_extents_exact": 2,
+      "unowned_expansion_bytes_untouched": true
+    }
+  ],
+  "disk_sha256": "2b5788853531e658c1dbd7cf4605e217815cfc4cee15f6abfafa185d9905ff7a",
+  "pictures": {
+    "CLOCK160.CBM": "9dd632a45297aff853768a105eb6c88640938b85717429b809de422e8288bbd2",
+    "ALEX128.CBM": "351d0bc8eafaa791bcc57c0fbe160a609b2a21e306f67718808c566ed1f27660"
+  },
+  "emulator": "\nVICE - Versatile Commodore Emulator\n\n            ID: net.sf.VICE\n           Ref: app/net.sf.VICE/x86_64/stable\n          Arch: x86_64\n        Branch: stable\n       Version: 3.10\n       License: GPL-2.0+\n        Origin: flathub\n    Collection: org.flathub.Stable\n  Installation: system\nInstalled Size: 45,8\u00a0MB\n       Runtime: org.freedesktop.Platform/x86_64/25.08\n           Sdk: org.freedesktop.Sdk/x86_64/25.08\n\n        Commit: bbd997ea8cbf7e6ba06ff82136fd71069ce2011f93c006412bcda7bbde17e448\n        Parent: 68a5281bbbfb691d105e1006686691713eb0cab353a7d869f4b72c066eca18c7\n       Subject: Add desktop files for vsid, x64dtv, xcbm5x0, xscpu64 (c39f8386949f)\n          Date: 2026-01-18 14:54:47 +0000\n",
+  "source_sha256": {
+    "Makefile": "005256bc617d62f56c70c581caa71cbe96d9bf6cd1b7b15798933e1258d85794",
+    "mk/reu_graphics.mk": "1d09c1da52eb8db3d88e2356102014dffe49a6aa08be82b5befdbbc21ac5ff87",
+    "cfg/8502-bootstrap.cfg": "3cb18995871f8cf5dc0921c33c2ee1969a2416a83d4094ab72495d98731e4af7",
+    "cfg/8502-panic-probe.cfg": "3066f19a4542695406a07aa77fee245a0eeeeea5b05c736d87fa7a38729daa3f",
+    "src/services/window/reu_runtime.s": "fbf99d27ea48d26d32222cbeb5e075a17b288d8258546e7d743ef8080e47d1db",
+    "src/services/window/reu_bitmap.c": "1cb766824d5a793fc90e7a17b388639003ccb3f10c812818266913c2a6c8a909",
+    "src/services/window/retained_bitmap.c": "04c693c8461f3a9c334663dca6f41985145e01790625d913660b2de499410413",
+    "src/services/window/retained_bitmap_paint.s": "5da4cde448fc8ee4e36ee53b99f5db96e87571986c17f569b40d371fd60034bc",
+    "src/services/window/retained_pool.s": "517462cc341899313b3a02989262916444cdebd193cf131369c1f78505f08e3f",
+    "src/services/window/retained_paths.c": "f43de2ea9a314f922765a605c79bbecfbbfbe65be753626988af0f5ca5098e4b",
+    "src/services/memory/reu.s": "6ee6247e4aeeac586b9f44b93297f56415f0028ffa052f6fc7ff2d553f1216c8",
+    "src/services/memory/reu_capacity.c": "818165aee100d61c0f61dfa08106389a09588f3ba199b73c077834b0d1705080",
+    "src/services/memory/reu_store.c": "7d6f6c7d14d9f031ca15209aa88ce539f19fd8ee0d8f06367c0d9b17f2008ceb",
+    "src/scheduler/task_context.s": "3603cc716ee3dba5ab1e2cf37550b28677d8e4c44cc79467120d596b7b46066a",
+    "src/scheduler/task_yield_handler.s": "509bae9ca49f0e0e975418ea85d7e2069274e67dc91fb70d38518bf3acdc4994",
+    "tools/reu_graphics_probe.py": "2cf344ff7382e1f1c6b1fe9a93e00de87337b9fd40d08e68d454b6cdfe4f8949",
+    "tools/reu_graphics_layout.py": "29700ee3ece40c270bcb06736c7b31411fd49dc71126eebeabd49d340d1b27b6",
+    "tools/shadow_boot_probe.py": "40ed703ea8c5024867ee73125cf9ffe708e4ffe18f7f1692381cb39693424e83"
+  }
+}

@@ -28,11 +28,14 @@ def wrap_storage(payload: bytes, constants: str, module: bytes,
                  lookup: bytes, banked_loader: bytes = b'',
                  banked_graphics: bytes = b'', banked_reloc: bytes = b'',
                  banked_access: bytes = b'', retained_paths: bytes = b'',
-                 hidden: bytes = b'', installer: bytes = b'') -> tuple[bytes, str]:
+                 hidden: bytes = b'', installer: bytes = b'',
+                 bitmap_hidden: bytes = b'') -> tuple[bytes, str]:
     start = int.from_bytes(payload[:2], 'little')
     end = start + len(payload) - 2
     if start not in (0x4200, 0x5000) or end > 0x8000:
         raise ValueError('unexpected cache/scheduler envelope')
+    if bitmap_hidden and end > 0x7300:
+        raise ValueError('scheduler delivery reaches hidden-bitmap source')
     identity = b'UIEC\0\3' if hidden or installer else b'UIEC\0\1'
     if not module or len(module) > 0x800 or module[3:9] != identity:
         raise ValueError('invalid $1200 storage module')
@@ -97,7 +100,11 @@ def wrap_storage(payload: bytes, constants: str, module: bytes,
     # Keep SCHEDULER_OVERLAY_END as the USOV source end: activation uses it.
     constants += (f'SECONDARY_PAYLOAD_LOAD = ${load:04x}\n'
                   f'SECONDARY_PAYLOAD_END = ${limit:04x}\n')
-    return load.to_bytes(2, 'little') + image, constants
+    payload = load.to_bytes(2, 'little') + image
+    if bitmap_hidden:
+        from reu_graphics_layout import install
+        payload = install(payload, bitmap_hidden)
+    return payload, constants
 
 
 def install_bootfs(payload: bytes, bootfs: bytes) -> bytes:

@@ -1,0 +1,407 @@
+python3 -m py_compile tools/reu_probe.py
+python3 -m py_compile tools/png_to_cbm.py tools/add_cbm_viewer.py tools/xview_probe.py tools/build_xview_demo.py tools/1986_xview_check.py
+cd bench/results/2026-10-09-cbm-viewer && sha256sum -c SHA256SUMS
+XVIEW.BIN: OK
+program.map: OK
+layout.json: OK
+alex-1571/dragged-bitmap.bin: OK
+alex-1571/initial-bitmap.bin: OK
+alex-1571/initial.png: OK
+alex-1571/report.json: OK
+alex-1571/stack-0.bin: OK
+alex-1571/stack-176.bin: OK
+alex-1571/uncovered-bitmap.bin: OK
+alex-1581/dragged-bitmap.bin: OK
+alex-1581/initial-bitmap.bin: OK
+alex-1581/initial.png: OK
+alex-1581/report.json: OK
+alex-1581/stack-0.bin: OK
+alex-1581/stack-176.bin: OK
+alex-1581/uncovered-bitmap.bin: OK
+clockwork-1581/dragged-bitmap.bin: OK
+clockwork-1581/initial-bitmap.bin: OK
+clockwork-1581/initial.png: OK
+clockwork-1581/report.json: OK
+clockwork-1581/stack-0.bin: OK
+clockwork-1581/stack-176.bin: OK
+clockwork-1581/uncovered-bitmap.bin: OK
+python3 -m py_compile tools/build_native_console.py tools/native_console_probe.py tools/check_console_parser.py tools/native_console_cancel_probe.py
+python3 -m py_compile tools/native_console_input_probe.py tools/check_console_input.py tools/native_console_jobs_probe.py
+python3 -m py_compile tools/native_console_file_probe.py
+python3 -m py_compile tools/build_service_boot.py tools/service_boot_probe.py tools/default_service_layout.py tools/check_service_migration.py
+python3 -m py_compile tools/check_service_request.py
+python3 -m py_compile tools/service_image.py tools/build_time_module.py tools/check_time_module.py tools/time_module_layout.py tools/check_time_slot.py tools/service_start_probe.py tools/build_time_overlay.py
+python3 -m py_compile tools/storage_lease_probe.py tools/storage_owner_probe.py
+python3 -m py_compile tools/storage_public_probe.py
+python3 -m py_compile tools/storage_mutate_probe.py
+python3 -m py_compile tools/storage_mutation_layout.py
+python3 -m py_compile tools/storage_failure_probe.py
+python3 -m py_compile tools/storage_window_probe.py
+python3 -m py_compile tools/storage_write_probe.py
+python3 -m py_compile tools/four_native_probe.py tools/native_app_layout.py
+python3 -m py_compile tools/xsprdef_probe.py tools/xsprdef_files_probe.py tools/xsprdef_basic_probe.py
+python3 -m py_compile tools/banked_loader_probe.py tools/gen_banked_bindings.py tools/build_banked_execution.py
+python3 -m py_compile tools/o65_to_udex.py tools/build_reloc_fixture.py
+python3 -m py_compile tools/build_graphical_example.py tools/generic_launch_probe.py tools/add_disk_apps.py
+python3 -m py_compile tools/build_d81.py tools/build_console_example.py tools/console_apps_probe.py
+python3 -m py_compile tools/native_clock_probe.py tools/native_worker_probe.py tools/native_wave_probe.py
+python3 -m unittest discover -s tests -p 'test_*.py'
+......................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 1734 tests in 15.712s
+
+OK
+python3 -m py_compile tools/xcalc_probe.py tools/pack_native.py tools/four_apps_rejection_probe.py
+python3 -m py_compile tools/managed_app_fixture.py tools/managed_disk_probe.py
+python3 -m py_compile tools/startup_probe.py tools/root_namespace_probe.py
+python3 -m py_compile tools/boot_entry_probe.py tools/boot_diagnostic.py tools/boot_banner_probe.py
+python3 -m py_compile tools/build_storage.py tools/storage_service_probe.py tools/storage_shell_probe.py tools/iec_eof_reference.py tools/disk_exec_fixture.py tools/disk_exec_probe.py tools/gen_disk_loader_bindings.py tools/1986_storage_smoke_build.py tools/disk_shell_fixture.py tools/disk_shell_probe.py
+python3 -m py_compile tools/ihx_to_bin.py tools/bin_to_prg.py \
+	tools/bench_decode.py tools/irq_probe_decode.py \
+	tools/irq_service_decode.py tools/context_decode.py \
+	tools/context_switch_decode.py \
+	tools/compiled_context_decode.py \
+	tools/kernel_decode.py tools/handoff_decode.py \
+	tools/offload_decode.py tools/boot_status_decode.py \
+	tools/memory_map_decode.py tools/boot_chain_decode.py \
+	tools/vdc_console_decode.py tools/service_registry_decode.py \
+	tools/panic_decode.py tools/capability_decode.py \
+	tools/framebuffer_decode.py tools/clock_decode.py tools/xpm_to_vdc.py \
+	tools/xpm_to_vdc_text.py tools/png_to_vic_sprite.py \
+	tools/keyboard_decode.py \
+	tools/root_terminal_decode.py \
+	tools/z80_worker_decode.py \
+	tools/vic_graphics_decode.py \
+	tools/pointer_decode.py \
+	tools/time_decode.py tools/window_decode.py tools/xclock_decode.py \
+	tools/xwave_decode.py \
+	tools/build_udex.py \
+	tools/build_bootfs.py \
+	tools/build_d71.py \
+	tools/boot_staging_map.py \
+	tools/boot_console_relocation_probe.py \
+	tools/capability_relocation_probe.py \
+	tools/scheduler_delivery_probe.py \
+	tools/snapshot_extract.py \
+	tools/1986_input_smoke_build.py \
+	tools/graphics_raster_audit.py tools/graphics_raster_link_audit.py \
+	tools/graphics_raster_bench_build.py tools/graphics_raster_bench_run.py \
+	tools/graphics_raster_bench_decode.py \
+	tools/window_move_cache_spike.py tools/window_cache_bench.py tools/window_cache_compare.py \
+	tools/window_cache_padding_fault.py tools/window_cache_overlay.py \
+	tools/window_cache_c_runtime.py tools/window_cache_command.py tools/window_cache_nmi.py \
+	tools/nmi_integration_probe.py \
+	tools/window_manager_budget.py tools/window_cache_controller.py \
+	tools/window_cache_controller_delivery.py tools/window_cache_acceptance.py \
+	tools/window_cache_compact.py \
+	tools/window_cache_compact_delivery.py \
+	tools/window_cache_resident_link.py \
+	tools/window_cache_manager.py tools/window_cache_live.py \
+	tools/window_cache_repaint.py tools/window_cache_occlusion.py \
+	tools/window_cache_partial.py tools/window_cache_partial_manager.py \
+	tools/window_drag_start.py tools/window_drag_latency.py \
+	tools/build_window_cache.py tools/window_cache_integration_probe.py tools/window_cache_runtime_probe.py \
+	tools/graphics_cache_delivery.py \
+	tools/graphics_cache_placement.py \
+	tools/graphics_span_bench.py \
+	tools/graphics_pixel_bench.py \
+	tools/graphics_primitives_qualify.py \
+	tools/graphics_shared_bench.py \
+	tools/join_boot_crt0.py \
+	tools/placement_audit.py \
+	tools/gen_capability_imports.py \
+	tools/gen_boot_console_imports.py \
+	tools/gen_scheduler_overlay_imports.py \
+	tools/gen_task_context_imports.py \
+	tools/gen_task_yield_imports.py \
+	tools/build_scheduler_overlay.py \
+	tools/shadow_boot_probe.py \
+	tools/shadow_clear_decode.py \
+	tools/task_state_decode.py tools/task_yield_probe.py \
+	tools/task_exit_probe.py tools/task_waitpid_probe.py \
+	tools/task_spawn_loader_probe.py tools/task_spawn_probe.py \
+	tools/task_sleep_probe.py tools/task_cancel_probe.py tools/task_poll_probe.py \
+	tools/vice_capture.py tools/iec_directory_probe.py
+cd bench/artifacts/2026-09-24 && sha256sum -c SHA256SUMS
+context-8502.prg: OK
+context-z80.prg: OK
+handoff-dual.prg: OK
+irq-entry-8502.prg: OK
+irq-entry-z80.prg: OK
+irq-service-8502.prg: OK
+irq-service-z80.prg: OK
+kernel-8502.prg: OK
+kernel-z80.prg: OK
+offload-dual.prg: OK
+shared-c-8502.prg: OK
+shared-c-z80.prg: OK
+cd bench/artifacts/2026-09-24-r2 && sha256sum -c SHA256SUMS
+context-8502.prg: OK
+context-z80.prg: OK
+handoff-dual.prg: OK
+irq-entry-8502.prg: OK
+irq-entry-z80.prg: OK
+irq-service-8502.prg: OK
+irq-service-z80.prg: OK
+kernel-8502.prg: OK
+kernel-z80.prg: OK
+offload-dual.prg: OK
+shared-c-8502.prg: OK
+shared-c-z80.prg: OK
+cd bench/results/vice-3.10-2026-09-24-r1/raw && sha256sum -c SHA256SUMS
+context-8502-1mhz.bin: OK
+context-8502-2mhz.bin: OK
+context-z80-stock.bin: OK
+handoff-1mhz.bin: OK
+handoff-2mhz.bin: OK
+irq-entry-8502-1mhz.bin: OK
+irq-entry-8502-2mhz.bin: OK
+irq-entry-z80-stock.bin: OK
+irq-service-8502-1mhz.bin: OK
+irq-service-8502-2mhz.bin: OK
+irq-service-z80-stock-incomplete.bin: OK
+kernel-8502-1mhz.bin: OK
+kernel-8502-2mhz.bin: OK
+kernel-z80-stock.bin: OK
+offload-1mhz.bin: OK
+offload-2mhz.bin: OK
+shared-c-8502-1mhz.bin: OK
+shared-c-8502-2mhz.bin: OK
+shared-c-z80-stock.bin: OK
+cd bench/results/vice-3.10-2026-09-24-r2/raw && sha256sum -c SHA256SUMS
+context-8502-1mhz.bin: OK
+context-8502-2mhz.bin: OK
+context-z80-stock.bin: OK
+handoff-1mhz.bin: OK
+handoff-2mhz.bin: OK
+irq-entry-8502-1mhz.bin: OK
+irq-entry-8502-2mhz.bin: OK
+irq-entry-z80-stock.bin: OK
+irq-service-8502-1mhz.bin: OK
+irq-service-8502-2mhz.bin: OK
+irq-service-z80-stock.bin: OK
+kernel-8502-1mhz.bin: OK
+kernel-8502-2mhz.bin: OK
+kernel-z80-stock.bin: OK
+offload-1mhz.bin: OK
+offload-2mhz.bin: OK
+shared-c-8502-1mhz.bin: OK
+shared-c-8502-2mhz.bin: OK
+shared-c-z80-stock.bin: OK
+cd bench/results/vice-3.10-2026-09-24-r2/repeats && sha256sum -c SHA256SUMS
+irq-service-8502-1mhz-run2.bin: OK
+irq-service-8502-1mhz-run3.bin: OK
+irq-service-8502-2mhz-run2.bin: OK
+irq-service-8502-2mhz-run3.bin: OK
+irq-service-z80-stock-run2.bin: OK
+irq-service-z80-stock-run3.bin: OK
+offload-1mhz-run2.bin: OK
+offload-1mhz-run3.bin: OK
+offload-2mhz-run2.bin: OK
+offload-2mhz-run3.bin: OK
+cd bench/results/1986-7556c23-2026-09-24-r2/raw && sha256sum -c SHA256SUMS
+context-8502-1mhz.bin: OK
+context-8502-2mhz.bin: OK
+context-z80-stock.bin: OK
+handoff-1mhz.bin: OK
+handoff-2mhz.bin: OK
+irq-entry-8502-1mhz.bin: OK
+irq-entry-8502-2mhz.bin: OK
+irq-entry-z80-stock.bin: OK
+irq-service-8502-1mhz.bin: OK
+irq-service-8502-2mhz.bin: OK
+irq-service-z80-stock.bin: OK
+kernel-8502-1mhz.bin: OK
+kernel-8502-2mhz.bin: OK
+kernel-z80-stock.bin: OK
+offload-1mhz.bin: OK
+offload-2mhz.bin: OK
+shared-c-8502-1mhz.bin: OK
+shared-c-8502-2mhz.bin: OK
+shared-c-z80-stock.bin: OK
+cd bench/results/1986-7556c23-2026-09-24-r2/repeats && sha256sum -c SHA256SUMS
+irq-service-8502-1mhz-run2.bin: OK
+irq-service-8502-1mhz-run3.bin: OK
+irq-service-8502-2mhz-run2.bin: OK
+irq-service-8502-2mhz-run3.bin: OK
+irq-service-z80-stock-run2.bin: OK
+irq-service-z80-stock-run3.bin: OK
+offload-1mhz-run2.bin: OK
+offload-1mhz-run3.bin: OK
+offload-2mhz-run2.bin: OK
+offload-2mhz-run3.bin: OK
+cd bench/results/1986-7556c23-2026-09-24-r2/diagnostics && sha256sum -c SHA256SUMS
+irq-service-8502-1mhz-uncontrolled-timer-b.bin: OK
+irq-service-8502-2mhz-uncontrolled-timer-b.bin: OK
+cd bench/results/2026-09-24-memory-map-smoke/raw && sha256sum -c SHA256SUMS
+1986-7556c23.bin: OK
+vice-3.10.bin: OK
+cd bench/results/2026-09-26-shadow-clear/raw && sha256sum -c SHA256SUMS
+shadow-after-boot.bin: OK
+shadow-drawn.bin: OK
+shadow-preimage.bin: OK
+vic-bitmap.bin: OK
+capability-record.bin: OK
+1986-f9c6a24-hcap.bin: OK
+1986-f9c6a24-boot-chain.bin: OK
+cd bench/artifacts/2026-09-27-event-waits && sha256sum -c SHA256SUMS
+scheduler-overlay.prg: OK
+task-poll-probe.udx: OK
+udeks-task-poll-probe.d64: OK
+udeks-task-poll-probe.d71: OK
+cd bench/results/2026-09-27-event-waits/raw && sha256sum -c SHA256SUMS
+poll-d64-cleared-waits.bin: OK
+poll-d64-complete.bin: OK
+poll-d64-extra-ready.bin: OK
+poll-d64-extra-slots.bin: OK
+poll-d64-extra-waits.bin: OK
+poll-d64-stopped.bin: OK
+poll-d71-cleared-waits.bin: OK
+poll-d71-complete.bin: OK
+poll-d71-extra-ready.bin: OK
+poll-d71-extra-slots.bin: OK
+poll-d71-extra-waits.bin: OK
+poll-d71-stopped.bin: OK
+cd bench/results/2026-09-26-scheduler-delivery/raw && sha256sum -c SHA256SUMS
+udeks-scheduler.bin: OK
+d71-installed.bin: OK
+d64-installed.bin: OK
+1986-f9c6a24-installed.bin: OK
+cd bench/results/2026-09-27-capability-relocation/raw && sha256sum -c SHA256SUMS
+1986-boot-chain.bin: OK
+1986-hcap.bin: OK
+1986-slot1-at-start.bin: OK
+8502-capability.bin: OK
+capability-installer.bin: OK
+vice-d64-hcap.bin: OK
+vice-d64-slot1-at-start.bin: OK
+vice-d71-hcap.bin: OK
+vice-d71-slot1-at-start.bin: OK
+vice-d71-xclock-after-reentry.bin: OK
+vice-d71-xclock-before-reentry.bin: OK
+cd bench/artifacts/2026-09-26-scheduler-delivery && sha256sum -c SHA256SUMS
+scatter.s: OK
+scatter.cfg: OK
+cd bench/artifacts/2026-09-26-context-switch-r1 && sha256sum -c SHA256SUMS
+context-switch.prg: OK
+cd bench/artifacts/2026-09-26-context-switch-r2 && sha256sum -c SHA256SUMS
+context-switch.prg: OK
+cd bench/artifacts/2026-09-26-context-switch-r3 && sha256sum -c SHA256SUMS
+context-switch.prg: OK
+cd bench/artifacts/2026-09-26-context-switch-r4 && sha256sum -c SHA256SUMS
+context-switch.prg: OK
+cd bench/artifacts/2026-09-26-context-switch-r5 && sha256sum -c SHA256SUMS
+context-switch.prg: OK
+cd bench/results/2026-09-26-context-switch/raw && sha256sum -c SHA256SUMS
+1986.bin: OK
+vice-3.10.bin: OK
+cd bench/artifacts/2026-09-27-context-switch-c-r1 && sha256sum -c SHA256SUMS
+context-switch-c.prg: OK
+cd bench/results/2026-09-27-context-switch-c/raw && sha256sum -c SHA256SUMS
+1986.bin: OK
+vice-1mhz.bin: OK
+vice-2mhz.bin: OK
+cd bench/artifacts/2026-09-24-memory-map-r1 && sha256sum -c SHA256SUMS
+memory-map-8502.prg: OK
+cd bench/results/2026-09-24-memory-map-profiles/raw && sha256sum -c SHA256SUMS
+1986-7556c23.bin: OK
+vice-3.10.bin: OK
+cd bench/artifacts/2026-09-24-native-boot-r1 && sha256sum -c SHA256SUMS
+udeks.d71: OK
+cd bench/results/2026-09-24-native-boot/raw && sha256sum -c SHA256SUMS
+1986-7556c23.bin: OK
+vice-3.10.bin: OK
+cd bench/artifacts/2026-09-24-vdc-console-r1 && sha256sum -c SHA256SUMS
+udeks.d71: OK
+cd bench/results/2026-09-24-vdc-console/raw && sha256sum -c SHA256SUMS
+1986-7556c23.bin: OK
+vice-3.10.bin: OK
+cd bench/artifacts/2026-09-24-service-registry-r1 && sha256sum -c SHA256SUMS
+udeks.d71: OK
+cd bench/results/2026-09-24-service-registry/raw && sha256sum -c SHA256SUMS
+1986-7556c23.bin: OK
+vice-3.10.bin: OK
+cd bench/artifacts/2026-09-24-panic-r1 && sha256sum -c SHA256SUMS
+udeks-panic-probe.d71: OK
+udeks.d71: OK
+cd bench/results/2026-09-24-panic/raw && sha256sum -c SHA256SUMS
+1986-7556c23.bin: OK
+vice-3.10.bin: OK
+cd bench/artifacts/2026-09-24-capabilities-r1 && sha256sum -c SHA256SUMS
+udeks.d71: OK
+cd bench/results/2026-09-24-capabilities/raw && sha256sum -c SHA256SUMS
+1986-16.bin: OK
+1986-64.bin: OK
+vice-georam512.bin: OK
+vice-ntsc16.bin: OK
+vice-pal64.bin: OK
+vice-reu512.bin: OK
+cd bench/artifacts/2026-09-24-vdc-framebuffer-r1 && sha256sum -c SHA256SUMS
+udeks.d71: OK
+cd bench/results/2026-09-24-vdc-framebuffer/raw && sha256sum -c SHA256SUMS
+1986-16.bin: OK
+1986-64.bin: OK
+vice-16.bin: OK
+vice-64.bin: OK
+cd bench/artifacts/2026-09-24-vdc-font-r1 && sha256sum -c SHA256SUMS
+udeks.d71: OK
+cd bench/results/2026-09-24-vdc-font/raw && sha256sum -c SHA256SUMS
+1986-16.bin: OK
+1986-64.bin: OK
+vice-16.bin: OK
+vice-64.bin: OK
+cd bench/artifacts/2026-09-24-vdc-pipe-logo-r1 && sha256sum -c SHA256SUMS
+udeks.d71: OK
+cd bench/results/2026-09-24-vdc-pipe-logo/raw && sha256sum -c SHA256SUMS
+1986-16.bin: OK
+1986-64.bin: OK
+vice-16.bin: OK
+vice-64.bin: OK
+cd bench/artifacts/2026-09-24-framebuffer-api-r1 && sha256sum -c SHA256SUMS
+udeks.d71: OK
+cd bench/results/2026-09-24-framebuffer-api/raw && sha256sum -c SHA256SUMS
+1986-16.bin: OK
+1986-64.bin: OK
+vice-16.bin: OK
+vice-64.bin: OK
+cd bench/artifacts/2026-09-24-reference-bootscreen-r1 && sha256sum -c SHA256SUMS
+udeks.d71: OK
+cd bench/results/2026-09-24-reference-bootscreen/raw && sha256sum -c SHA256SUMS
+1986-16.bin: OK
+1986-64.bin: OK
+vice-16.bin: OK
+vice-64.bin: OK
+cd bench/artifacts/2026-09-24-root-console-r1 && sha256sum -c SHA256SUMS
+udeks.d71: OK
+cd bench/results/2026-09-24-root-console/raw && sha256sum -c SHA256SUMS
+1986-16.bin: OK
+1986-64.bin: OK
+vice-16.bin: OK
+vice-64.bin: OK
+cd bench/artifacts/2026-09-24-clock-2mhz-r1 && sha256sum -c SHA256SUMS
+udeks-1mhz.d71: OK
+udeks-2mhz.d71: OK
+cd bench/results/2026-09-24-clock-2mhz/raw && sha256sum -c SHA256SUMS
+clock-1986-16.bin: OK
+clock-1986-64.bin: OK
+clock-vice-16.bin: OK
+clock-vice-64.bin: OK
+framebuffer-1986-16.bin: OK
+framebuffer-1986-64.bin: OK
+framebuffer-vice-16.bin: OK
+framebuffer-vice-64.bin: OK
+cd bench/results/2026-09-24-clock-2mhz/timing && sha256sum -c SHA256SUMS
+1mhz-frame1547.bin: OK
+1mhz-frame1552.bin: OK
+2mhz-frame1025.bin: OK
+2mhz-frame1038.bin: OK
+cd bench/artifacts/2026-09-24-atomic-framebuffer-r1 && sha256sum -c SHA256SUMS
+udeks.d71: OK
+cd bench/results/2026-09-24-atomic-framebuffer/raw && sha256sum -c SHA256SUMS
+1986-16.bin: OK
+1986-64.bin: OK
+vice-16.bin: OK
+vice-64.bin: OK
+cd bench/results/2026-09-24-atomic-framebuffer/timing && sha256sum -c SHA256SUMS
+frame-645.bin: OK
+frame-650.bin: OK

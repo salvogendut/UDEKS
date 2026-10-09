@@ -47,6 +47,12 @@ def layout_maps(normal, panic):
     # move. Require normal/panic parity and prove each flexible reservation.
     flexible = {'CODE', 'RODATA', 'DATA', 'BSS', 'HIGHBSS', 'TASKREQUEST', 'MODULECODE', 'MODULERODATA'}
     actual = map_segments(normal)
+    hidden = {'BITMAPCODE', 'BITMAPSTATE', 'BITMAPID'} & actual.keys()
+    if hidden:
+        from reu_graphics_layout import layout
+        if len(hidden) != 3:
+            raise ValueError('incomplete hidden bitmap module')
+        layout(actual)
     extra = {'GRAPHICSCODE', 'GRAPHICSHELP'} & actual.keys()
     if extra and extra != {'GRAPHICSCODE', 'GRAPHICSHELP'}:
         raise ValueError('incomplete banked graphics module layout')
@@ -71,7 +77,7 @@ def layout_maps(normal, panic):
         extra.add('SERVICEBOOT')
     for label, text in (('normal', normal), ('panic', panic)):
         current = map_segments(text)
-        if current.keys() != expected.keys() | extra or current != actual or any(
+        if current.keys() != expected.keys() | extra | hidden or current != actual or any(
                 current[name] != bounds for name, bounds in expected.items()
                 if name not in flexible):
             raise ValueError('frozen cache integration layout changed: ' + label)

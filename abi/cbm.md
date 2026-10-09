@@ -44,65 +44,94 @@ it with `xview /pic.cbm`. The container supports 320x200; the initial viewer
 has smaller bounds below. The converter does not silently enforce those bounds.
 
 The reference decoder used by the tests is `parse()` in the same tool; the
-on-target viewer must enforce the same validation before opening a window.
+on-target viewer enforces the same validation before publishing any pixels.
 
 ## Display model
 
-`xview /picture.cbm` validates the complete file, closes it, then opens a
-fixed-size movable/closable VIC-II window. `xview /picture.cbm &` returns the
+`xview /picture.cbm` validates the header, opens a fixed-size movable/closable
+VIC-II window, and streams into a pending retained bitmap. The empty frame
+may appear during loading; no picture pixels appear until exact payload/EOF
+validation and a successful file CLOSE. `xview /picture.cbm &` returns the
 console prompt; foreground Ctrl+C cancels loading or closes the displayed app.
 There is no zoom, resizing, browsing dialog or full-screen mode in this slice.
 
-The first viewer accepts dimensions up to **240x175**, with at most **160
-nonblank 8x5 tiles**. Blank tiles are omitted losslessly. Thus 88x63, 80x80 or
-128x50 fit regardless of pixel content; a larger sparse drawing may also fit.
-A dense image can exceed the tile limit even when its dimensions fit.
-Oversized/over-budget files fail explicitly, never crop, truncate or downsample.
+The packed viewer accepts dimensions up to **240x175**. On stock machines,
+allocation is subject to the shared
+display pool: `8 + ceil(width/8) * height` bytes per image. **128x80 uses 1,288
+bytes; 160x100 uses 2,008.** Dense pictures no longer hit the old 160-tile limit.
+Sparse images cost the same as dense images of the same dimensions; there is
+no compression. Oversized/over-budget files fail explicitly, never crop,
+truncate or downsample.
 Every accepted CBM pixel is displayed 1:1, black on the standard yellow paper.
 Conversion/resizing/dithering happens on the host, not inside the viewer.
 
+With the optional [REU bitmap backend](../docs/GRAPHICS-REU.md), only the 8-byte
+header stays in the internal pool; pixels occupy one of four private 8 KiB
+expansion objects. The file format, application API and viewer dimension limits
+are unchanged. CLOCK160 can coexist with clock and wave, while executable
+allocation limits still apply. No REU automatically selects the stock backend.
+
 The generic UDEX 0.2 executable uses private arguments and native mounted-file
 I/O; there is no resident app ID, special launch path or kernel change. The
-3,184-byte executable has 2,442 image + 1,385 BSS bytes: **3,827 runtime bytes**.
+3,217-byte executable has 2,455 image + 64 BSS bytes: **2,519 runtime bytes**.
 It fits ordinary slots 3 and 5, without borrowing slot 4. The build enforces
 both fits. Two `xview` instances can show different pictures with private
 arguments, decoder state and window ownership. Window titles show the first
 eight basename characters. Close the desired window, or use foreground Ctrl+C;
 `xview -q` stops one matching instance, not a filename-selected instance.
 
-Slot compatibility and drawing memory are separate limits. Retained commands
-share the existing **2,304-byte display pool**. ALEX uses 1,144 bytes and
-CLOCKWORK uses 1,152, so they fit together (2,296); adding a clock does not.
+Slot compatibility and drawing memory are separate limits. On stock machines,
+retained surfaces share the existing **2,304-byte display pool**. ALEX uses 701 bytes and
+CLOCKWORK uses 704, so they fit together (1,405), also leaving room for a clock.
 The smaller ALEX2 demo leaves room for both clock and wave. There is no new
-four-large-app guarantee or memory compaction of running programs. PRESENT
+four-large-app guarantee or memory compaction of running programs. BEGIN
 fails with a clear display-memory error if peers leave insufficient room.
 
 Loading yields between bounded reads. The single filesystem stream is owned
 only during loading and is closed on errors as well as success; task retirement
-handles cancellation. A one-row staging buffer, tile indices and at most 1,280 command bytes
-replace a full 8 KiB framebuffer. Move/uncover repaints use the service's
-retained command copy, without opening or reading the file again.
+handles cancellation. A **19-byte application buffer** replaces the full tile
+array. Header/payload data is copied out of the shared request before yielding.
+Move/uncover repaints use the service's retained packed pixels, without opening
+or reading the file again. Closing while loading cancels quietly and releases
+the stream; errors abort the transaction and task exit retires the frame while
+preserving the diagnostic/exit status. Requires **UTRQ 0.20**, not older disks.
 
 ## Build and demo
 
-From the repository checkout (the original qualification worktree was
-`build/cbm-viewer`, branch `app-cbm-viewer`):
+From the current source worktree (the original packed-bitmap checkpoint is
+also retained in `build/packed-bitmap`):
 
 ```sh
-distrobox-enter my-distrobox -- make xview
-python3 tools/add_cbm_viewer.py --disk build/udeks.d81 \
-    --output build/xview/udeks-pictures-new.d81 PICS/ALEX.CBM PICS/CLOCKWORK.CBM PICS/ALEX2.CBM
+distrobox-enter my-distrobox -- make -j8 boot xview graphics-apps-check
+python3 tools/build_xview_demo.py --output build/xview/demo
 ```
 
-Use a new output name on repeat runs; the packaging tool refuses overwrite.
+Use a new output directory on repeat runs; the packaging tool refuses overwrite.
 D71 uses both sides; D64 is supported by the tool but the normal compact image
 has insufficient free space for this additional app and photo. No existing
 applications are removed. The demo disks leave the kernel and existing files
-unchanged. The qualified candidates remain at
-**`build/cbm-viewer/build/xview/udeks-pictures-r3.d71`** and **`.d81`** in the
-original development workspace, not in a fresh clone. The commands above
-recreate the D81 from tracked inputs; use `--disk build/udeks.d71` and a fresh
-`.d71` output path for D71. Graphics initializes on demand.
+unchanged. Packed demo candidates are
+**`build/packed-bitmap/build/xview/demo/udeks-packed.d71`** and **`.d81`**
+relative to the root checkout. Both are generated from the matching UTRQ 0.20
+boot candidates. The [newer REU-enabled D71/D81 demos and checklist](../bench/results/2026-10-09-reu-graphics/README.md)
+include the user-accepted expansion-backed implementation. Root published
+download snapshots remain unchanged; rebuilding and publication are separate.
+The packager includes the three original pictures plus new 128x80 ALEX128 and
+160x100 CLOCK160 conversions. Graphics initializes on demand.
+
+Test the larger pictures separately (close the first before opening the second):
+
+```text
+xview /alex128.cbm &
+xview -q
+xview /clock160.cbm &
+xview -q
+```
+
+CLOCK160 leaves only 296 display bytes, insufficient for a clock. This is a
+display-pool limit, not a lost app slot. Try it alone; errors must leave other
+windows intact and release the loading stream. Use `cat /hello` after cancelling
+an in-progress foreground load with Ctrl+C or its close box.
 
 Try two independent pictures:
 
@@ -122,8 +151,9 @@ xwave &
 
 Try dragging, covering/uncovering, closing either viewer independently, and
 launching a second viewer in the foreground to verify Ctrl+C leaves the
-background one alive. Use the smaller ALEX2 for the three-app combination:
-the larger photos plus clock + wave exceed the shared display pool.
+background one alive. ALEX2 is a small three-app example; the original ALEX
+and CLOCKWORK conversions also now fit beside clock + wave. The new larger
+ALEX128/CLOCK160 pictures plus both apps exceed the shared display pool.
 
 Provenance: the container and converter began on `additional-apps` at `6b61f5c`.
 This branch corrects row padding/dimension validation, transparent backgrounds,

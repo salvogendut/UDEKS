@@ -1,0 +1,864 @@
+Modules list:
+-------------
+store.o:
+    CODE              Offs=000000  Size=000735  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000016  Align=00001  Fill=0000
+retained.o:
+    CODE              Offs=000735  Size=0003D2  Align=00001  Fill=0000
+    BSS               Offs=000016  Size=000010  Align=00001  Fill=0000
+pool-test.o:
+    CODE              Offs=000B07  Size=00009A  Align=00001  Fill=0000
+    BSS               Offs=000026  Size=000005  Align=00001  Fill=0000
+retained-check.o:
+    CODE              Offs=000BA1  Size=000AE1  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000073  Align=00001  Fill=0000
+    BSS               Offs=00002B  Size=0047D4  Align=00001  Fill=0000
+    DATA              Offs=000000  Size=000004  Align=00001  Fill=0000
+    POOL              Offs=000000  Size=000900  Align=00001  Fill=0000
+retained_bitmap_paint.o:
+    CODE              Offs=001682  Size=0000C4  Align=00001  Fill=0000
+    BSS               Offs=0047FF  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(_file.o):
+    DATA              Offs=000004  Size=00001E  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(_hextab.o):
+    RODATA            Offs=000073  Size=000010  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(_longminstr.o):
+    RODATA            Offs=000083  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(_printf.o):
+    CODE              Offs=001746  Size=0003A5  Align=00001  Fill=0000
+    BSS               Offs=00480C  Size=00002B  Align=00001  Fill=0000
+    DATA              Offs=000022  Size=000003  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(_seterrno.o):
+    CODE              Offs=001AEB  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(add.o):
+    CODE              Offs=001AF4  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(addeqsp.o):
+    CODE              Offs=001B10  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(addysp.o):
+    CODE              Offs=001B21  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(and.o):
+    CODE              Offs=001B2F  Size=000010  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(axlong.o):
+    CODE              Offs=001B3F  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(bneg.o):
+    CODE              Offs=001B4C  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(callmain.o):
+    CODE              Offs=001B5A  Size=000017  Align=00001  Fill=0000
+    DATA              Offs=000025  Size=000004  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(condes.o):
+    CODE              Offs=001B71  Size=00000C  Align=00001  Fill=0000
+    DATA              Offs=000029  Size=000025  Align=00001  Fill=0000
+    ONCE              Offs=000000  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(crt0.o):
+    STARTUP           Offs=000000  Size=00001D  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(ctype.o):
+    RODATA            Offs=00008F  Size=00008B  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(ctypemask.o):
+    CODE              Offs=001B7D  Size=00001E  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(decax8.o):
+    CODE              Offs=001B9B  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(decsp1.o):
+    CODE              Offs=001BA2  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(decsp2.o):
+    CODE              Offs=001BAB  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(decsp4.o):
+    CODE              Offs=001BB8  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(decsp6.o):
+    CODE              Offs=001BC5  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(decsp8.o):
+    CODE              Offs=001BD2  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(errno.o):
+    BSS               Offs=004837  Size=000002  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(exehdr.o):
+    EXEHDR            Offs=000000  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(fwrite.o):
+    CODE              Offs=001BDF  Size=00007B  Align=00001  Fill=0000
+    BSS               Offs=004839  Size=000002  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(icmp.o):
+    CODE              Offs=001C5A  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incax1.o):
+    CODE              Offs=001C88  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incax2.o):
+    CODE              Offs=001C8F  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incax5.o):
+    CODE              Offs=001C96  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incax6.o):
+    CODE              Offs=001C9B  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incax7.o):
+    CODE              Offs=001CA0  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incax8.o):
+    CODE              Offs=001CA5  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incaxy.o):
+    CODE              Offs=001CAA  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incsp1.o):
+    CODE              Offs=001CB5  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incsp2.o):
+    CODE              Offs=001CBC  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incsp3.o):
+    CODE              Offs=001CD2  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incsp4.o):
+    CODE              Offs=001CD7  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incsp5.o):
+    CODE              Offs=001CDC  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incsp6.o):
+    CODE              Offs=001CE1  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(incsp7.o):
+    CODE              Offs=001CE6  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(ldaxi.o):
+    CODE              Offs=001CEB  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(ldaxsp.o):
+    CODE              Offs=001CF8  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(lneg.o):
+    CODE              Offs=001D01  Size=00001E  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(lpush.o):
+    CODE              Offs=001D1F  Size=000021  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(ltoa.o):
+    CODE              Offs=001D40  Size=000095  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(makebool.o):
+    CODE              Offs=001DD5  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(memcmp.o):
+    CODE              Offs=001E01  Size=000036  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(memcpy.o):
+    CODE              Offs=001E37  Size=00003C  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(memmove.o):
+    CODE              Offs=001E73  Size=000050  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(memset.o):
+    CODE              Offs=001EC3  Size=00005D  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(mul.o):
+    CODE              Offs=001F20  Size=000045  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(mul8.o):
+    CODE              Offs=001F65  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(or.o):
+    CODE              Offs=001F9F  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(paravirt.o):
+/usr/share/cc65/lib/sim6502.lib(popptr1.o):
+    CODE              Offs=001FB1  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(printf.o):
+    CODE              Offs=001FBF  Size=000033  Align=00001  Fill=0000
+    BSS               Offs=00483B  Size=000001  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(push1.o):
+    CODE              Offs=001FF2  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(pusha.o):
+    CODE              Offs=001FF7  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(pushax.o):
+    CODE              Offs=00200D  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(pushw.o):
+    CODE              Offs=002027  Size=00000F  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(pushwsp.o):
+    CODE              Offs=002036  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(return0.o):
+    CODE              Offs=002052  Size=000004  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(shl.o):
+    CODE              Offs=002056  Size=000033  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(shr.o):
+    CODE              Offs=002089  Size=000034  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(shrax3.o):
+    CODE              Offs=0020BD  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(staspidx.o):
+    CODE              Offs=0020CB  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(staxsp.o):
+    CODE              Offs=0020E1  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(staxspi.o):
+    CODE              Offs=0020EC  Size=00001B  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(strlen.o):
+    CODE              Offs=002107  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(strlower.o):
+    CODE              Offs=00211D  Size=000027  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(sub.o):
+    CODE              Offs=002144  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(subysp.o):
+    CODE              Offs=002159  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(udiv.o):
+    CODE              Offs=002166  Size=00004F  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(umod.o):
+    CODE              Offs=0021B5  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(vfprintf.o):
+    CODE              Offs=0021C6  Size=000061  Align=00001  Fill=0000
+    DATA              Offs=00004E  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(zerobss.o):
+    CODE              Offs=002227  Size=000023  Align=00001  Fill=0000
+/usr/share/cc65/lib/sim6502.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+EXEHDR                000000  00000B  00000C  00001
+ZEROPAGE              000000  000019  00001A  00001
+POOL                  001300  001BFF  000900  00001
+STARTUP               002000  00201C  00001D  00001
+ONCE                  00201D  002028  00000C  00001
+CODE                  002029  004272  00224A  00001
+RODATA                004273  00438C  00011A  00001
+DATA                  00438D  0043E2  000056  00001
+BSS                   0043E3  008C1E  00483C  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               0043E3 RLA    __BSS_SIZE__              00483C REA    
+__CONSTRUCTOR_COUNT__     000000 REA    __CONSTRUCTOR_TABLE__     002029 RLA    
+__DESTRUCTOR_COUNT__      000000 REA    __DESTRUCTOR_TABLE__      00438D RLA    
+__EXEHDR__                000001 REA    __MAIN_SIZE__             00D5F0 REA    
+__MAIN_START__            002000 RLA    __STACKSIZE__             000800 REA    
+__STARTUP__               000001 REA    __bzero                   003EEC RLA    
+__ctype                   004302 RLA    __ctypeidx                00430D RLA    
+__errno                   008C1A RLA    __hextab                  0042E6 RLA    
+__longminstr              0042F6 RLA    __printf                  003862 RLA    
+__seterrno                003B14 RLA    _fwrite                   003C08 RLA    
+_graphics_pool            001300 RLA    _ltoa                     003D81 RLA    
+_main                     0033A4 RLA    _memcmp                   003E2A RLA    
+_memcpy                   003E60 RLA    _memmove                  003E9C RLA    
+_memset                   003EF4 RLA    _printf                   003FE8 RLA    
+_stdout                   0043AB RLA    _strlen                   004130 RLA    
+_strlower                 004146 RLA    _udeks_bitmap_discard     0025AE RLA    
+_udeks_bitmap_request     002029 RLA    _udeks_graphics_origin_x  004416 RLA    
+_udeks_graphics_origin_y  004418 RLA    _udeks_graphics_record    004419 RLA    
+_udeks_retained_address   002B30 RLA    _udeks_retained_bitmap_paint 0036AB RLA    
+_udeks_retained_bitmap_request 00275E RLA    _udeks_retained_discard   002BC1 RLA    
+_udeks_retained_lengths   00440E RLA    _udeks_retained_resize    002B5A RLA    
+_udeks_vic_bitmap_pixel   002BCA RLA    _ultoa                    003DC2 RLA    
+_vfprintf                 004227 RLA    _write                    00FFF7 RLA    
+addeqysp                  003B3B RLA    addysp                    003B4B RLA    
+addysp1                   003B4A RLA    axlong                    003B68 RLA    
+axulong                   003B6E RLA    bnega                     003B79 RLA    
+bnegax                    003B75 RLA    booleq                    003E04 RLA    
+callmain                  003B83 RLA    ctypemaskdirect           003BAA RLA    
+decax8                    003BC4 RLA    decsp1                    003BCB RLA    
+decsp2                    003BD4 RLA    decsp4                    003BE1 RLA    
+decsp6                    003BEE RLA    decsp8                    003BFB RLA    
+donelib                   003B9A RLA    exit                      00FFF9 RLA    
+incax1                    003CB1 RLA    incax2                    003CB8 RLA    
+incax4                    003CD3 RLA    incax5                    003CBF RLA    
+incax6                    003CC4 RLA    incax7                    003CC9 RLA    
+incax8                    003CCE RLA    incaxy                    003CD5 RLA    
+incsp1                    003CDE RLA    incsp2                    003CED RLA    
+incsp3                    003CFB RLA    incsp4                    003D00 RLA    
+incsp5                    003D05 RLA    incsp6                    003D0A RLA    
+incsp7                    003D0F RLA    initlib                   00201D RLA    
+ldax0sp                   003D21 RLA    ldaxi                     003D14 RLA    
+ldaxidx                   003D16 RLA    ldaxysp                   003D23 RLA    
+memcpy_getparams          003E89 RLA    memcpy_upwards            003E63 RLA    
+mul8x16                   003F90 RLA    mul8x16a                  003F9A RLA    
+negeax                    003D2A RLA    popax                     003CE5 RLA    
+popptr1                   003FDA RLA    ptr1                      000008 RLZ    
+ptr2                      00000A RLZ    ptr3                      00000C RLZ    
+ptr4                      00000E RLZ    push0                     004036 RLA    
+push1                     00401B RLA    pusha                     004024 RLA    
+pusha0                    004038 RLA    pushax                    00403A RLA    
+pusheax                   003D51 RLA    pushw                     004050 RLA    
+pushw0sp                  00405F RLA    pushwidx                  004052 RLA    
+pushwysp                  004061 RLA    regbank                   000014 RLZ    
+return0                   00407B RLA    shlaxy                    004086 RLA    
+shrax3                    0040E6 RLA    shraxy                    0040B9 RLA    
+sp                        000000 RLZ    sreg                      000002 RLZ    
+startup                   002000 RLA    staspidx                  0040F4 RLA    
+stax0sp                   00410A RLA    staxspidx                 004115 RLA    
+staxysp                   00410C RLA    subysp                    004182 RLA    
+tmp1                      000010 RLZ    tosadda0                  003B1D RLA    
+tosaddax                  003B1F RLA    tosandax                  003B5A RLA    
+tosicmp                   003C85 RLA    tosicmp0                  003C83 RLA    
+tosorax                   003FCA RLA    tossuba0                  00416D RLA    
+tossubax                  00416F RLA    tosudivax                 004191 RLA    
+tosumoda0                 0041DE RLA    tosumula0                 003F8E RLA    
+tosumulax                 003F49 RLA    udiv16                    0041A0 RLA    
+zerobss                   004250 RLA    
+
+
+Exports list by value:
+----------------------
+__CONSTRUCTOR_COUNT__     000000 REA    __DESTRUCTOR_COUNT__      000000 REA    
+sp                        000000 RLZ    __EXEHDR__                000001 REA    
+__STARTUP__               000001 REA    sreg                      000002 RLZ    
+ptr1                      000008 RLZ    ptr2                      00000A RLZ    
+ptr3                      00000C RLZ    ptr4                      00000E RLZ    
+tmp1                      000010 RLZ    regbank                   000014 RLZ    
+__STACKSIZE__             000800 REA    _graphics_pool            001300 RLA    
+__MAIN_START__            002000 RLA    startup                   002000 RLA    
+initlib                   00201D RLA    __CONSTRUCTOR_TABLE__     002029 RLA    
+_udeks_bitmap_request     002029 RLA    _udeks_bitmap_discard     0025AE RLA    
+_udeks_retained_bitmap_request 00275E RLA    _udeks_retained_address   002B30 RLA    
+_udeks_retained_resize    002B5A RLA    _udeks_retained_discard   002BC1 RLA    
+_udeks_vic_bitmap_pixel   002BCA RLA    _main                     0033A4 RLA    
+_udeks_retained_bitmap_paint 0036AB RLA    __printf                  003862 RLA    
+__seterrno                003B14 RLA    tosadda0                  003B1D RLA    
+tosaddax                  003B1F RLA    addeqysp                  003B3B RLA    
+addysp1                   003B4A RLA    addysp                    003B4B RLA    
+tosandax                  003B5A RLA    axlong                    003B68 RLA    
+axulong                   003B6E RLA    bnegax                    003B75 RLA    
+bnega                     003B79 RLA    callmain                  003B83 RLA    
+donelib                   003B9A RLA    ctypemaskdirect           003BAA RLA    
+decax8                    003BC4 RLA    decsp1                    003BCB RLA    
+decsp2                    003BD4 RLA    decsp4                    003BE1 RLA    
+decsp6                    003BEE RLA    decsp8                    003BFB RLA    
+_fwrite                   003C08 RLA    tosicmp0                  003C83 RLA    
+tosicmp                   003C85 RLA    incax1                    003CB1 RLA    
+incax2                    003CB8 RLA    incax5                    003CBF RLA    
+incax6                    003CC4 RLA    incax7                    003CC9 RLA    
+incax8                    003CCE RLA    incax4                    003CD3 RLA    
+incaxy                    003CD5 RLA    incsp1                    003CDE RLA    
+popax                     003CE5 RLA    incsp2                    003CED RLA    
+incsp3                    003CFB RLA    incsp4                    003D00 RLA    
+incsp5                    003D05 RLA    incsp6                    003D0A RLA    
+incsp7                    003D0F RLA    ldaxi                     003D14 RLA    
+ldaxidx                   003D16 RLA    ldax0sp                   003D21 RLA    
+ldaxysp                   003D23 RLA    negeax                    003D2A RLA    
+pusheax                   003D51 RLA    _ltoa                     003D81 RLA    
+_ultoa                    003DC2 RLA    booleq                    003E04 RLA    
+_memcmp                   003E2A RLA    _memcpy                   003E60 RLA    
+memcpy_upwards            003E63 RLA    memcpy_getparams          003E89 RLA    
+_memmove                  003E9C RLA    __bzero                   003EEC RLA    
+_memset                   003EF4 RLA    tosumulax                 003F49 RLA    
+tosumula0                 003F8E RLA    mul8x16                   003F90 RLA    
+mul8x16a                  003F9A RLA    tosorax                   003FCA RLA    
+popptr1                   003FDA RLA    _printf                   003FE8 RLA    
+push1                     00401B RLA    pusha                     004024 RLA    
+push0                     004036 RLA    pusha0                    004038 RLA    
+pushax                    00403A RLA    pushw                     004050 RLA    
+pushwidx                  004052 RLA    pushw0sp                  00405F RLA    
+pushwysp                  004061 RLA    return0                   00407B RLA    
+shlaxy                    004086 RLA    shraxy                    0040B9 RLA    
+shrax3                    0040E6 RLA    staspidx                  0040F4 RLA    
+stax0sp                   00410A RLA    staxysp                   00410C RLA    
+staxspidx                 004115 RLA    _strlen                   004130 RLA    
+_strlower                 004146 RLA    tossuba0                  00416D RLA    
+tossubax                  00416F RLA    subysp                    004182 RLA    
+tosudivax                 004191 RLA    udiv16                    0041A0 RLA    
+tosumoda0                 0041DE RLA    _vfprintf                 004227 RLA    
+zerobss                   004250 RLA    __hextab                  0042E6 RLA    
+__longminstr              0042F6 RLA    __ctype                   004302 RLA    
+__ctypeidx                00430D RLA    __DESTRUCTOR_TABLE__      00438D RLA    
+_stdout                   0043AB RLA    __BSS_RUN__               0043E3 RLA    
+_udeks_retained_lengths   00440E RLA    _udeks_graphics_origin_x  004416 RLA    
+_udeks_graphics_origin_y  004418 RLA    _udeks_graphics_record    004419 RLA    
+__BSS_SIZE__              00483C REA    __errno                   008C1A RLA    
+__MAIN_SIZE__             00D5F0 REA    _write                    00FFF7 RLA    
+exit                      00FFF9 RLA    
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    zerobss.o                 common/zerobss.s(8)
+__BSS_SIZE__ ([linker generated]):
+    zerobss.o                 common/zerobss.s(8)
+__CONSTRUCTOR_COUNT__ ([linker generated]):
+    condes.o                  runtime/condes.s(18)
+__CONSTRUCTOR_TABLE__ ([linker generated]):
+    condes.o                  runtime/condes.s(18)
+__DESTRUCTOR_COUNT__ ([linker generated]):
+    condes.o                  runtime/condes.s(19)
+__DESTRUCTOR_TABLE__ ([linker generated]):
+    condes.o                  runtime/condes.s(19)
+__EXEHDR__ (exehdr.o):
+    [linker generated]        bench/packed-bitmap/retained_sim.cfg(4)
+__MAIN_SIZE__ ([linker generated]):
+    crt0.o                    sim6502/crt0.s(13)
+__MAIN_START__ ([linker generated]):
+    exehdr.o                  sim6502/exehdr.s(9)
+    crt0.o                    sim6502/crt0.s(13)
+__STACKSIZE__ ([linker generated]):
+    crt0.o                    sim6502/crt0.s(14)
+    [linker generated]        bench/packed-bitmap/retained_sim.cfg(11)
+__STARTUP__ (crt0.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(13)
+__bzero (memset.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+__ctype (ctype.o):
+    ctypemask.o               common/ctypemask.s(23)
+__ctypeidx (ctype.o):
+    ctypemask.o               common/ctypemask.s(24)
+__errno (errno.o):
+    _seterrno.o               /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/errno.inc(7)
+__hextab (_hextab.o):
+    ltoa.o                    common/ltoa.s(10)
+__longminstr (_longminstr.o):
+    ltoa.o                    common/ltoa.s(10)
+__printf (_printf.o):
+    vfprintf.o                common/vfprintf.s(10)
+__seterrno (_seterrno.o):
+    fwrite.o                  /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/errno.inc(9)
+_fwrite (fwrite.o):
+    vfprintf.o                common/vfprintf.s(10)
+_graphics_pool (retained-check.o):
+    pool-test.o               src/services/window/retained_pool.s(12)
+_ltoa (ltoa.o):
+    _printf.o                 common/_printf.s(12)
+_main (retained-check.o):
+    callmain.o                runtime/callmain.s(11)
+_memcmp (memcmp.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(15)
+_memcpy (memcpy.o):
+    retained.o                build/bitmap-store/retained.s(13)
+    store.o                   build/bitmap-store/store.s(13)
+_memmove (memmove.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(17)
+    pool-test.o               src/services/window/retained_pool.s(6)
+    store.o                   build/bitmap-store/store.s(14)
+_memset (memset.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(18)
+_printf (printf.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(14)
+_stdout (_file.o):
+    printf.o                  common/printf.s(8)
+_strlen (strlen.o):
+    _printf.o                 common/_printf.s(13)
+_strlower (strlower.o):
+    _printf.o                 common/_printf.s(13)
+_udeks_bitmap_discard (store.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(20)
+_udeks_bitmap_request (store.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(19)
+_udeks_graphics_origin_x (retained-check.o):
+    retained_bitmap_paint.o   src/services/window/retained_bitmap_paint.s(9)
+_udeks_graphics_origin_y (retained-check.o):
+    retained_bitmap_paint.o   src/services/window/retained_bitmap_paint.s(9)
+_udeks_graphics_record (retained-check.o):
+    retained.o                build/bitmap-store/retained.s(19)
+_udeks_retained_address (pool-test.o):
+    retained_bitmap_paint.o   src/services/window/retained_bitmap_paint.s(8)
+    retained-check.o          bench/packed-bitmap/retained_check.s(26)
+    retained.o                build/bitmap-store/retained.s(16)
+_udeks_retained_bitmap_paint (retained_bitmap_paint.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(22)
+_udeks_retained_bitmap_request (retained.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(21)
+_udeks_retained_discard (pool-test.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(28)
+    retained.o                build/bitmap-store/retained.s(18)
+_udeks_retained_lengths (retained-check.o):
+    retained_bitmap_paint.o   src/services/window/retained_bitmap_paint.s(8)
+    pool-test.o               src/services/window/retained_pool.s(6)
+    retained.o                build/bitmap-store/retained.s(15)
+_udeks_retained_resize (pool-test.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(27)
+    retained.o                build/bitmap-store/retained.s(17)
+_udeks_vic_bitmap_pixel (retained-check.o):
+    retained_bitmap_paint.o   src/services/window/retained_bitmap_paint.s(10)
+_ultoa (ltoa.o):
+    _printf.o                 common/_printf.s(12)
+_vfprintf (vfprintf.o):
+    printf.o                  common/printf.s(8)
+_write (paravirt.o):
+    fwrite.o                  common/fwrite.s(10)
+addeqysp (addeqsp.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+addysp (addysp.o):
+    incsp6.o                  runtime/incsp6.s(8)
+    fwrite.o                  common/fwrite.s(11)
+    printf.o                  common/printf.s(8)
+    incsp7.o                  runtime/incsp7.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+    or.o                      runtime/or.s(9)
+    and.o                     runtime/and.s(8)
+axlong (axlong.o):
+    _printf.o                 common/_printf.s(11)
+axulong (axlong.o):
+    _printf.o                 common/_printf.s(11)
+bnega (bneg.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+bnegax (bneg.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+booleq (makebool.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+callmain (callmain.o):
+    crt0.o                    sim6502/crt0.s(10)
+ctypemaskdirect (ctypemask.o):
+    strlower.o                common/strlower.s(14)
+decax8 (decax8.o):
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+decsp1 (decsp1.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+decsp2 (decsp2.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+decsp4 (decsp4.o):
+    lpush.o                   runtime/lpush.s(12)
+decsp6 (decsp6.o):
+    _printf.o                 common/_printf.s(11)
+decsp8 (decsp8.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+donelib (condes.o):
+    crt0.o                    sim6502/crt0.s(11)
+exit (paravirt.o):
+    crt0.o                    sim6502/crt0.s(12)
+incax1 (incax1.o):
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+incax2 (incax2.o):
+    store.o                   build/bitmap-store/store.s(983)
+incax4 (incaxy.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+incax5 (incax5.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+incax6 (incax6.o):
+    store.o                   build/bitmap-store/store.s(983)
+incax7 (incax7.o):
+    store.o                   build/bitmap-store/store.s(983)
+incax8 (incax8.o):
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+incaxy (incaxy.o):
+    incax8.o                  runtime/incax8.s(8)
+    incax7.o                  runtime/incax7.s(8)
+    incax6.o                  runtime/incax6.s(8)
+    incax5.o                  runtime/incax5.s(8)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+incsp1 (incsp1.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    pool-test.o               src/services/window/retained_pool.s(6)
+    retained.o                build/bitmap-store/retained.s(491)
+    retained.o                build/bitmap-store/retained.s(491)
+incsp2 (incsp2.o):
+    staxspi.o                 runtime/staxspi.s(9)
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+    store.o                   build/bitmap-store/store.s(983)
+incsp3 (incsp3.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+incsp4 (incsp4.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+incsp5 (incsp5.o):
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+incsp6 (incsp6.o):
+    fwrite.o                  common/fwrite.s(11)
+    vfprintf.o                common/vfprintf.s(9)
+incsp7 (incsp7.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+initlib (condes.o):
+    crt0.o                    sim6502/crt0.s(11)
+ldax0sp (ldaxsp.o):
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+ldaxi (ldaxi.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+ldaxidx (ldaxi.o):
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+ldaxysp (ldaxsp.o):
+    fwrite.o                  common/fwrite.s(11)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+memcpy_getparams (memcpy.o):
+    memmove.o                 common/memmove.s(12)
+memcpy_upwards (memcpy.o):
+    memmove.o                 common/memmove.s(12)
+mul8x16 (mul8.o):
+    mul.o                     runtime/mul.s(8)
+mul8x16a (mul8.o):
+    mul.o                     runtime/mul.s(8)
+negeax (lneg.o):
+    ltoa.o                    common/ltoa.s(9)
+popax (incsp2.o):
+    ltoa.o                    common/ltoa.s(9)
+    _printf.o                 common/_printf.s(11)
+    shr.o                     runtime/shr.s(15)
+    shl.o                     runtime/shl.s(15)
+    memset.o                  common/memset.s(19)
+    memmove.o                 common/memmove.s(12)
+    memcpy.o                  common/memcpy.s(14)
+    memcmp.o                  common/memcmp.s(8)
+popptr1 (popptr1.o):
+    udiv.o                    runtime/udiv.s(9)
+    ltoa.o                    common/ltoa.s(9)
+    umod.o                    runtime/umod.s(8)
+    mul8.o                    runtime/mul8.s(9)
+    mul.o                     runtime/mul.s(9)
+    memcpy.o                  common/memcpy.s(14)
+    memcmp.o                  common/memcmp.s(8)
+ptr1 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    strlower.o                common/strlower.s(13)
+    ltoa.o                    common/ltoa.s(11)
+    fwrite.o                  common/fwrite.s(14)
+    _printf.o                 /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/zeropage.inc(12)
+    zerobss.o                 common/zerobss.s(9)
+    vfprintf.o                common/vfprintf.s(11)
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    pushw.o                   runtime/pushw.s(9)
+    printf.o                  common/printf.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+    memset.o                  common/memset.s(20)
+    memmove.o                 common/memmove.s(13)
+    memcpy.o                  common/memcpy.s(15)
+    memcmp.o                  common/memcmp.s(9)
+    ldaxi.o                   runtime/ldaxi.s(8)
+    retained_bitmap_paint.o   src/services/window/retained_bitmap_paint.s(11)
+    retained-check.o          bench/packed-bitmap/retained_check.s(11)
+    pool-test.o               src/services/window/retained_pool.s(7)
+    retained.o                build/bitmap-store/retained.s(11)
+    store.o                   build/bitmap-store/store.s(11)
+ptr2 (zeropage.o):
+    strlower.o                common/strlower.s(13)
+    strlen.o                  common/strlen.s(12)
+    ltoa.o                    common/ltoa.s(11)
+    _printf.o                 /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/zeropage.inc(12)
+    memset.o                  common/memset.s(20)
+    memmove.o                 common/memmove.s(13)
+    memcpy.o                  common/memcpy.s(15)
+    memcmp.o                  common/memcmp.s(9)
+ptr3 (zeropage.o):
+    ltoa.o                    common/ltoa.s(11)
+    memset.o                  common/memset.s(20)
+    memmove.o                 common/memmove.s(13)
+    memcpy.o                  common/memcpy.s(15)
+    memcmp.o                  common/memcmp.s(9)
+ptr4 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    umod.o                    runtime/umod.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+push0 (pushax.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+push1 (push1.o):
+    _printf.o                 common/_printf.s(11)
+    vfprintf.o                common/vfprintf.s(9)
+pusha (pusha.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    pool-test.o               src/services/window/retained_pool.s(6)
+    retained.o                build/bitmap-store/retained.s(491)
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+pusha0 (pushax.o):
+    push1.o                   runtime/push1.s(8)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+pushax (pushax.o):
+    fwrite.o                  common/fwrite.s(11)
+    callmain.o                runtime/callmain.s(11)
+    _printf.o                 common/_printf.s(11)
+    pushw.o                   runtime/pushw.s(8)
+    printf.o                  common/printf.s(8)
+    retained_bitmap_paint.o   src/services/window/retained_bitmap_paint.s(10)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    pool-test.o               src/services/window/retained_pool.s(6)
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+pusheax (lpush.o):
+    _printf.o                 common/_printf.s(11)
+pushw (pushw.o):
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+pushw0sp (pushwsp.o):
+    store.o                   build/bitmap-store/store.s(983)
+pushwidx (pushw.o):
+    store.o                   build/bitmap-store/store.s(983)
+pushwysp (pushwsp.o):
+    fwrite.o                  common/fwrite.s(11)
+    vfprintf.o                common/vfprintf.s(9)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+regbank (zeropage.o):
+    _printf.o                 /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/zeropage.inc(14)
+return0 (return0.o):
+    memcmp.o                  common/memcmp.s(8)
+shlaxy (shl.o):
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+shrax3 (shrax3.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    store.o                   build/bitmap-store/store.s(983)
+shraxy (shr.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+sp (zeropage.o):
+    decsp4.o                  runtime/decsp4.s(8)
+    lpush.o                   runtime/lpush.s(13)
+    decsp6.o                  runtime/decsp6.s(8)
+    _printf.o                 /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/zeropage.inc(11)
+    vfprintf.o                common/vfprintf.s(11)
+    subysp.o                  runtime/subysp.s(9)
+    sub.o                     runtime/sub.s(9)
+    staxspi.o                 runtime/staxspi.s(10)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    printf.o                  common/printf.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    or.o                      runtime/or.s(10)
+    memset.o                  common/memset.s(20)
+    memcpy.o                  common/memcpy.s(15)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    exehdr.o                  sim6502/exehdr.s(8)
+    decsp8.o                  runtime/decsp8.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    crt0.o                    /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/zeropage.inc(11)
+    and.o                     runtime/and.s(9)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    add.o                     runtime/add.s(12)
+    retained-check.o          bench/packed-bitmap/retained_check.s(10)
+    pool-test.o               src/services/window/retained_pool.s(7)
+    retained.o                build/bitmap-store/retained.s(10)
+    store.o                   build/bitmap-store/store.s(10)
+sreg (zeropage.o):
+    lneg.o                    runtime/lneg.s(11)
+    udiv.o                    runtime/udiv.s(10)
+    ltoa.o                    common/ltoa.s(11)
+    lpush.o                   runtime/lpush.s(13)
+    axlong.o                  runtime/axlong.s(9)
+    _printf.o                 /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/zeropage.inc(11)
+    umod.o                    runtime/umod.s(9)
+    icmp.o                    runtime/icmp.s(9)
+    retained-check.o          bench/packed-bitmap/retained_check.s(10)
+startup (crt0.o):
+    exehdr.o                  sim6502/exehdr.s(10)
+staspidx (staspidx.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+stax0sp (staxsp.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+staxspidx (staxspi.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+staxysp (staxsp.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+subysp (subysp.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+tmp1 (zeropage.o):
+    ltoa.o                    common/ltoa.s(11)
+    _printf.o                 /builddir/build/BUILD/cc65-2.19-build/cc65-2.19/asminc/zeropage.inc(13)
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    shrax3.o                  runtime/shrax3.s(8)
+    shr.o                     runtime/shr.s(16)
+    shl.o                     runtime/shl.s(16)
+    or.o                      runtime/or.s(10)
+    mul.o                     runtime/mul.s(10)
+    incaxy.o                  runtime/incaxy.s(8)
+    add.o                     runtime/add.s(12)
+    retained-check.o          bench/packed-bitmap/retained_check.s(11)
+    retained.o                build/bitmap-store/retained.s(11)
+    store.o                   build/bitmap-store/store.s(11)
+tosadda0 (add.o):
+    store.o                   build/bitmap-store/store.s(983)
+tosaddax (add.o):
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+    store.o                   build/bitmap-store/store.s(983)
+tosandax (and.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+tosicmp (icmp.o):
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+tosicmp0 (icmp.o):
+    retained.o                build/bitmap-store/retained.s(491)
+tosorax (or.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+tossuba0 (sub.o):
+    store.o                   build/bitmap-store/store.s(983)
+tossubax (sub.o):
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+tosudivax (udiv.o):
+    fwrite.o                  common/fwrite.s(12)
+tosumoda0 (umod.o):
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+tosumula0 (mul8.o):
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained.o                build/bitmap-store/retained.s(491)
+    store.o                   build/bitmap-store/store.s(983)
+tosumulax (mul.o):
+    fwrite.o                  common/fwrite.s(12)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+    retained-check.o          bench/packed-bitmap/retained_check.s(1516)
+udiv16 (udiv.o):
+    umod.o                    runtime/umod.s(8)
+zerobss (zerobss.o):
+    crt0.o                    sim6502/crt0.s(10)
+

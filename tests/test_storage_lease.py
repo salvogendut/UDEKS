@@ -106,7 +106,7 @@ class StorageLease(unittest.TestCase):
         self.assertIn('iec_lease', objects)
         self.assertIn('iec_context', objects)
         self.assertIn('cbm_write', objects)
-        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     18u', (ROOT/'include/udeks/task_request.h').read_text())
+        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     20u', (ROOT/'include/udeks/task_request.h').read_text())
 
 
 if __name__ == '__main__': unittest.main()
