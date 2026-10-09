@@ -622,6 +622,12 @@ that specific child. First permitted foreground READ/POLL activates canonical
 editing without printing a shell prompt. The SDK wraps READ in an infinite
 POLL; the wire-level READ remains nonblocking. See [shell input](shell.md#foreground-canonical-input-2026-10-09).
 
+Validated fd 1/2 WRITE now preserves any active editor row and uses an output
+cursor above it, retaining byte-stream continuity across request chunks.
+Zero-count writes are no-ops. Each request is serialized, but different
+writers may interleave between requests; no line-atomicity guarantee is added.
+See [background output](shell.md#background-launch-and-output-2026-10-09).
+
 ## Scheduling and record ownership
 
 ### POLL (16, introduced in 0.4)
@@ -680,8 +686,8 @@ retain their existing return convention until they migrate to lifecycle tasks.
 
 ## Placement note
 
-The fixed `$F800` request gateway uses **264 of 265** reserved bytes at the
-#52 foreground-input checkpoint. A private, map-bound caller query occupies
+The fixed `$F800` request gateway uses **247 of 265** reserved bytes at the
+#52 background-output checkpoint. A private, map-bound caller query occupies
 `$C8FC-$C8FF` in the existing storage-router reservation; it is not a new
 public syscall. The host-testable policy
 compiles to 2,245 bytes (about 2.2 KiB) of

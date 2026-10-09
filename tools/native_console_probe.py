@@ -172,7 +172,7 @@ def main():
         if byte(port,0xf246)!=1: raise AssertionError('clock window lost')
         command('echo native console returned')
         command('ticker 1 2 3 4 5 6 7 8')
-        if 'Too many arguments' not in screen(): raise AssertionError('argument limit not enforced')
+        if 'Invalid command' not in screen(): raise AssertionError('argument limit not enforced')
         command('echo $?')
         if not screen().endswith('echo $?\n2\nUDEKS:~>'): raise AssertionError('argument rejection status')
         command('xclock -q')

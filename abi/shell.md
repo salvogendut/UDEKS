@@ -7,10 +7,9 @@ arguments. It retains the eight-token/54-character parser and copies private
 UARG 0.1 before making a native task runnable (see [executable ABI](executable.md)).
 Excess arguments fail before either loader is called, with status 2. The
 synchronous compatibility loader remains available; graphical entries need
-not use arguments. Bare `name &` and exact `name -q` retain their existing
-semantics. Argument-bearing background launches and background output still
-need terminal policy; this is not full job control. Foreground stdin and Ctrl+C
-are described below.
+not use arguments. Exact `name -q` retains its existing close semantics.
+Argument-bearing background launch and terminal output are described below;
+this is not full job control.
 
 For normal native foreground exit, bookkeeping reads the task's exit byte
 before reaping and publishes it at `SHLL+10` (`$F17A`). Background retirement
@@ -49,7 +48,7 @@ command; repeated Ctrl+C cannot follow a reused task id into a later launch.
 Background tasks and Ctrl+C at an idle prompt are not cancellation targets.
 This remains cooperative: tight loops that never return to the scheduler are
 not interruptible by this mechanism. `name -q`/`xinit -q` retain their graphical
-close semantics. Background output arbitration remains separate.
+close semantics.
 
 ## Foreground canonical input (2026-10-09)
 
@@ -71,8 +70,35 @@ Application input cannot recall shell history and is never saved into it.
 The shell's next PROMPT discards partial or unread application input, clears
 editor state and restores command history. Ctrl+C uses the existing parent
 cancellation even while POLL is blocked; no window is necessary. A graphical
-background peer continues while input is awaited. Background output is still
-uncoordinated: do not treat arbitrary `name &` as safe interactive job control.
+background peer continues while input is awaited. Counted output preserves
+that active editor as described below.
+
+## Background launch and output (2026-10-09)
+
+A whitespace-separated final `&` launches a native UDEX 0.2 command in a free
+compatible allocation without taking foreground ownership. For example,
+`ticker Alpha mixed-case &` supplies three argv entries; `&` is not one of
+them. The eight-argument limit still includes the program name, but excludes
+the operator. Trailing spaces/tabs are allowed. Embedded or nonfinal `&` is
+ordinary argument text. A bare `&` or too many arguments fails with
+`Invalid command` and status 2 before either loader runs. Successful background
+launch reports 0, not a stale synchronous exit byte. Legacy synchronous images
+are not silently run in the background; they fail native-image validation.
+
+Each validated UTRQ WRITE to fd 1/2 is a synchronous byte-stream transaction.
+While a shell or application line is being edited, output uses a separate
+cursor in the rows above it. Only those rows scroll or clear: the prompt/input
+prefix, draft, edit cursor and history survive. If the editor is at row zero,
+its complete row moves down once to make room. Output cursor state persists
+between WRITE chunks and resets when a new editor session starts. No newline
+is inserted between chunks. A zero-count WRITE changes nothing. Outside
+editing, ordinary full-console stream behavior remains unchanged.
+
+Multiple writers may interleave between requests, including the shell's own
+output. There is no whole-line atomicity, output queue, per-app terminal or
+POSIX process group. Foreground READ ownership/EIO rejection and targeted
+Ctrl+C remain unchanged. This does not add `jobs`, `fg`, `bg`, arbitrary
+background cancellation, native file calls, preemption, quoting or pipelines.
 
 ## Original shell baseline
 

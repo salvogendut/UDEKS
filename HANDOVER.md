@@ -6,7 +6,64 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — foreground canonical stdin, 2026-10-09
+## Current handoff — background console arguments/output, 2026-10-09
+
+Issue #52, branch `tasking-native-console`, worktree `build/native-console`.
+User accepted the input slice (platform unspecified); committed/pushed as
+`9c9bfad`. The user also accepted this background-console slice and requested
+commit/push. The test platform was unspecified; no new hardware result is inferred.
+Root main's unrelated notes and published PR #51 downloads remain untouched.
+
+Generic native `command args &` now receives up to eight argv entries, without
+the trailing operator. A ninth parser offset recognizes the operator before
+the eight-argument limit is enforced. Bare `&`/excess tokens give status 2;
+embedded/nonfinal `&` stays text. Background launch skips the synchronous
+loader and successful launch sets 0 instead of inheriting its stale exit byte.
+
+Validated UTRQ fd 1/2 WRITE calls the terminal service, which temporarily
+routes output above the active editor row. The existing root grid retains
+prompt/input prefix, draft and cursor; output cursor persists between chunks.
+Scroll/formfeed excludes the editor; a row-zero editor moves down once. New
+input resets the output cursor; zero-count output changes nothing. No buffer,
+queue, syscall number or native ABI added. Interleaving is allowed between
+WRITEs, not within a counted request. Background stdin remains EIO; Ctrl+C
+still selects only the foreground task. Legacy utilities remain synchronous.
+
+Feature-enabling C size work shares row clear/copy and the cell writer, uses
+cc65 `-Os`/serialized static scratch, and replaces the editor's disjoint copy
+loop with resident memcpy. Normal/panic BSS ends `$93A7` (40 free), HIGHBSS
+`$E2E0` (1 free), module `$E631` (18 free), TASKREQUEST 247/265. Scheduler
+ends `$C862`. No app/stack/display/service reservation moves or shrinks.
+
+Host tests exercise 21 editor rows × 55 draft lengths, mid-line editing,
+submission, zero/full writes, wraps and formfeed; shell tests now use the real
+tokenizer rather than pre-tokenized mocks. VICE D64/D81 cold boots qualify
+eight arguments, split output, draft/cursor/history, input alongside ticker/
+clock, cancellation/reuse, exit isolation, errors, code and stack guards.
+D81 adds the BGREAD denial peer; D64 adds only ASK/TICKER because three extra
+test apps exceed its free blocks. Existing D64 apps are not removed.
+Native 1986 independently passes four-app keyboard/1351/drag/resize/Ctrl+C
+regression, not the new TICKER/ASK scenario. Existing parser/UARG, input and
+service-request CPU gates and their negative controls pass. Exact
+[evidence and limitations](bench/results/2026-10-09-native-console-jobs/README.md)
+include media, maps, sources, reports and checksummed captures.
+Final `make check`: 1,600 tests pass. Placement/graphics/service-layout gates
+pass; rebuilt D64/D81 match the qualified base media byte for byte. All owned
+VICE sessions are closed.
+
+Manual candidate: `build/native-console/jobs.d64` / `.d81` inside this
+worktree. Run `xclock &`, `ticker Alpha mixed-case &`; partially edit an
+`echo` command while it ticks, including left/right and Backspace, then Enter.
+Run ticker again, then `ask`; verify typed input survives output and Ctrl+C
+returns 130 without closing the clock or ticker. TICKER finishes itself.
+No new physical-C128 or periodic-NMI qualification is claimed.
+
+**Next:** increment 3: native filesystem ownership/SDK and one useful utility
+migration. The current request is commit/push only. Do not
+merge #52 as complete yet; keep quoting, pipes, arbitrary job control and
+performance tuning outside this feature.
+
+## Previous handoff — foreground canonical stdin, 2026-10-09
 
 Issue #52, branch `tasking-native-console`, worktree `build/native-console`.
 User accepted `98ff762` (platform unspecified), requested commit/push and the

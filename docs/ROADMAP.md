@@ -22,11 +22,13 @@ implemented:** independent C tasks receive private arguments and stdout/stderr,
 sleep while graphical peers continue, and return status through `echo $?`.
 VICE D64/D81 argument/concurrency proofs and the four-app/1986 input regressions
 pass. The user accepted the prior no-argument checkpoint (platform unspecified).
-The user also accepted that argument/status checkpoint. **Increment 2 is in
-progress:** task-based foreground Ctrl+C and canonical foreground stdin are
-implemented. Background reads fail with `EIO` without consuming input.
-**Next are argument-bearing background jobs and prompt-safe background output.**
-This is not completed console job control; the ASK demo is the new manual gate.
+The user also accepted the argument/status and foreground-input checkpoints.
+**Increment 2 is implemented and user-accepted (test platform unspecified):**
+task-based Ctrl+C, canonical foreground stdin, background-read `EIO`,
+argument-bearing `&`, and output that preserves the active input line.
+Its manual check is `ticker Alpha &` while editing a command or using ASK.
+**Next: increment 3 — native filesystem ownership and a useful disk utility.**
+This is bounded cooperative task support, not full POSIX console job control.
 
 **Completed architectural feature (2026-10-09):**
 [#49 — first disk-loaded non-kernel service](https://github.com/salvogendut/UDEKS/issues/49),
@@ -50,7 +52,7 @@ allocator or daemon framework.
 
 **Next architectural work:** milestone 3's remaining task/service boundaries,
 starting with #52 above. Preserve the measured allocation/stack bounds while
-adding terminal ownership; only one resident byte remains on that branch.
+adding features; the background-output slice has 40 resident bytes free.
 General task allocation, message/handle IPC and further service extraction remain open;
 preemption, scripting and app-specific optimization are separate work. Do not
 turn the completed time-service slice into an indefinite loader-tuning project.

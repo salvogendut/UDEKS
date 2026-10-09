@@ -16,6 +16,8 @@
 unsigned char udeks_root_terminal_start(void);
 unsigned char udeks_root_terminal_poll(void);
 unsigned char udeks_root_terminal_prompt(void);
+/* Internal counted WRITE after request-envelope/fd/count validation. */
+void udeks_root_terminal_write_request(void);
 unsigned char udeks_root_terminal_input(void);
 
 #endif

@@ -7,7 +7,7 @@ addresses or status claims do not override the current source and ABI.
 ## Start here
 
 - [Roadmap](ROADMAP.md) — accepted features, limits and next priorities
-- [Scheduled console applications](NATIVE-CONSOLE-APPS.md) — active feature (#52), plan and first execution checkpoint
+- [Scheduled console applications](NATIVE-CONSOLE-APPS.md) — active feature (#52), foreground input and background jobs; filesystem migration next
 - [Writable root and file commands](ROADMAP.md#current-baseline) — merged baseline (#47 / PR #48)
 - [Create-only disk writes](STORAGE-0.3.md) — merged baseline (#44 / PR #45)
 - [Generic graphical-app plan](GENERIC-GRAPHICS-APPS.md) — merged baseline (#35)

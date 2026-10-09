@@ -18,6 +18,11 @@ unsigned char udeks_root_console_put(
     unsigned char column, unsigned char row, unsigned char character);
 void udeks_root_console_write(unsigned char character);
 void udeks_root_console_write_string(const unsigned char *text);
+/* Private terminal transaction: retain a byte-stream output cursor above the
+ * pinned editor row. Caller must pair begin/end and restore the edit cursor. */
+void udeks_root_console_output_reset(void);
+unsigned char udeks_root_console_output_begin(unsigned char editor_row);
+void udeks_root_console_output_end(void);
 unsigned char udeks_root_console_set_cursor(
     unsigned char column, unsigned char row, unsigned char visible);
 const unsigned char *udeks_root_console_row(unsigned char row);

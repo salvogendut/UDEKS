@@ -24,3 +24,16 @@ class TerminalPrompt(unittest.TestCase):
 
     def test_fixed_prompt_leaves_room_for_editor(self):
         self.assertLessEqual(len('UDEKS:~> ') + 55, 64)
+
+    def test_counted_write_retains_editor_draft_cursor_and_submission(self):
+        with tempfile.TemporaryDirectory() as work:
+            executable=Path(work)/'jobs'
+            subprocess.run(['cc', '-std=c99', '-ffunction-sections', '-fdata-sections',
+                '-DUDEKS_TERMINAL_HOST_TEST', '-D__fastcall__=',
+                '-Wno-int-to-pointer-cast', '-I'+str(ROOT/'include'),
+                str(ROOT/'src/services/terminal/root_terminal.c'),
+                str(ROOT/'src/services/terminal/line_editor.c'),
+                str(ROOT/'src/services/window/root_console.c'),
+                str(ROOT/'tests/fixtures/terminal_jobs.c'), '-Wl,--gc-sections',
+                '-o', str(executable)],check=True)
+            subprocess.run([str(executable)],check=True)

@@ -14,10 +14,10 @@ name tables. Preserve synchronous utility loading and recovery during migration.
 1. **Native execution — implemented:** independent C runtime, private arguments,
    stdout/stderr, exit status, no implicit window or VIC startup. Arguments
    survive sleeps while clock updates/input continue, then ush gets the result.
-2. **Terminal ownership/jobs — in progress:** task-based Ctrl+C, foreground
-   stdin and EIO rejection of background reads are implemented. Next are
-   argument-bearing `&` and prompt-safe background output. Cancellation must release resources and restore the
-   prompt without requiring a window or disturbing peers.
+2. **Terminal ownership/jobs — implemented and user-accepted:**
+   task-based Ctrl+C, foreground stdin, EIO rejection of background reads,
+   argument-bearing `&` and prompt-safe background output. Cancellation releases
+   resources and restores the prompt without requiring a window or disturbing peers.
 3. **Migration/qualification:** convert a useful small utility group, handle
    shared filesystem ownership, prove failure cleanup/reuse and mixed app
    operation in VICE, 1986 and a user hardware checklist.
@@ -74,7 +74,7 @@ while waiting for the old foreground completion, before another launch.
 
 This remains cooperative, **not preemption**: a program that never sleeps,
 yields or otherwise returns to the scheduler can still prevent input polling.
-Foreground stdin is implemented below; background output remains in increment 2.
+Foreground stdin and background output are implemented below.
 Bare `name -q` and `xinit -q` still use their existing graphical close policy;
 this slice changes foreground Ctrl+C only. System disk/recovery ush are rebuilt
 together with the private notice producer; do not mix in an older shell binary.
@@ -102,7 +102,7 @@ consumption, editor activation or wait registration. The editor is armed on
 the first permitted read/poll; an existing submitted line remains available
 across short reads. Shell history cannot be recalled or modified by application
 input. On return/cancellation, PROMPT discards partial/unread input but retains
-command history. Background output arbitration is **not** implemented yet.
+command history. Counted background output now preserves the editor row.
 
 The independent `ASK.BIN` example is 1,867 file bytes (1,579 image + 4 BSS),
 fits all four allocations and echoes one edited line. Its input runtime is
@@ -114,7 +114,7 @@ Build an ASK/TICKER test disk from this worktree:
 ```sh
 distrobox-enter my-distrobox -- make -j8 boot native-console-input-fixtures
 python3 tools/add_disk_apps.py --disk build/boot/udeks.d64 \
-  --output build/native-console/input.d64 \
+  --output build/native-console/jobs.d64 \
   build/native-console/ask/ASK.BIN build/native-console/ticker/TICKER.BIN
 ```
 
@@ -164,7 +164,7 @@ xclock -q
 TICKER prints its arguments, ticks 1–5 and completion over about ten seconds,
 with no window of its own. Both status queries should print 37. During the
 second run, drag the clock while the shell waits.
-`ticker a b c d e f g h` has nine tokens: expect `Too many arguments`, then
+`ticker a b c d e f g h` has nine tokens: expect `Invalid command`, then
 `echo $?` prints 2. A second consecutive status query prints 0.
 Now run `ticker stop-me` and press Ctrl+C while it ticks: expect `Interrupted`,
 the prompt and `echo $?` equal to 130. A background clock must survive and still
@@ -172,8 +172,7 @@ be draggable. Launch TICKER again to check slot reuse. The separate test-only
 `NAP.BIN` sleeps indefinitely without a window and is used to prove cancellation
 cannot be mistaken for natural return.
 
-Quoting/escaping, argument-bearing background
-launch, background terminal arbitration and native file calls remain unimplemented.
+Quoting/escaping and native file calls remain unimplemented.
 The demo finishes by itself; QUIET is a silent test, not a background utility.
 
 `make native-console-probe` runs disposable D64/D81 in Flatpak VICE: ordinary
@@ -183,6 +182,43 @@ It injects keyboard queues/pointer getters, not native mouse transport.
 Separate four-app VICE and native 1986 service/keyboard/1351 regressions pass;
 the 1986 run does not test native arguments. No new physical-C128 or periodic-NMI
 stress qualification is inferred.
+
+## Background jobs checkpoint
+
+The accepted input slice was committed/pushed as `9c9bfad`. This slice completes
+increment 2's bounded launch/output behavior, not general Unix job control.
+The user accepted the delivered candidate and requested commit/push; the test
+platform was unspecified, so this does not add physical-C128 qualification.
+Try the new `build/native-console/jobs.d64` or `.d81` in this worktree:
+
+```text
+xclock &
+ticker Alpha mixed-case &
+```
+
+While it ticks, type `echo draft` **without Enter**, move the cursor left, and
+wait for more ticks. The line/cursor should stay intact; finish editing and
+press Enter. `ticker a B c D e F last &` exercises all eight arguments without
+passing the operator to the program. Background completion must not replace
+the shell's last status. Then run `ticker hello &`, followed by `ask`; type a
+partial line while ticker continues, and try Enter and Ctrl+C on separate runs.
+Clock dragging and the VDC input should still work. TICKER stops itself.
+
+Each counted WRITE is serialized, but separate writes from different programs
+may interleave. The editor row is pinned below the output area; it moves down
+once if initially at row zero. Output scrolls/clears above that row and retains
+its cursor across chunks, without inserting per-request newlines. This uses
+the existing console cells, not another text buffer. Synchronous legacy
+utilities do not gain background execution, and bg stdin still fails EIO.
+
+`make native-console-jobs-probe` cold-boots disposable VICE D64/D81 media:
+eight-argument launch, mid-line cursor/draft preservation, Enter/history,
+foreground input beside output, targeted cancellation/reuse, status isolation,
+invalid launches and code/stack guards. D81 adds a silent BGREAD denial peer;
+the D64 test adds only ASK/TICKER to fit without deleting existing apps.
+The exact records and limits are in the
+[background-job evidence](../bench/results/2026-10-09-native-console-jobs/README.md).
+Next is increment 3's native filesystem ownership and utility migration.
 
 ## Placement and validation
 

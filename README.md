@@ -136,7 +136,9 @@ arguments, stdout/stderr, cooperative sleep and foreground status (`echo $?`)
 without stopping graphical peers. Foreground Ctrl+C now cancels native tasks
 with or without a window and returns status 130. Foreground programs can now
 read edited lines while peers continue; background reads fail with `EIO`.
-Argument-bearing background jobs and prompt-safe background output remain next.
+Native `command args &` now returns the prompt while the program runs;
+background output preserves a partly edited shell or application input line.
+Native filesystem calls and utility migration are next, not general job control.
 Published downloads do not yet contain this checkpoint.
 Four graphical slots are available, but
 not every binary fits every
@@ -203,9 +205,9 @@ VICE limitation remains documented. [PR #45](https://github.com/salvogendut/UDEK
 records the merge. The first non-kernel service extraction is now installed
 by normal boot: `TIME.SVC`, with failure recovery and a disk-only loader.
 **Active next feature:** [independently scheduled console programs](docs/NATIVE-CONSOLE-APPS.md)
-(#52). The first no-window stdout/stderr/sleep example works alongside graphics;
-private arguments, native exit-status reporting and terminal job control remain
-in progress. General scripting and optimization remain separate roadmap
+(#52). Private arguments, output/status, foreground stdin/Ctrl+C and bounded
+background launch/output are implemented; native filesystem ownership and
+utility migration remain. General scripting and optimization remain separate roadmap
 work. The existing `/etc/rc` command runner is not a POSIX
 `sh` or Bash implementation.
 

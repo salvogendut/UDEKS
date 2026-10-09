@@ -187,7 +187,7 @@ class TaskRequestAbiTests(unittest.TestCase):
                       "eproto                71u"):
             self.assertIn(value, header)
         self.assertIn("jsr _udeks_line_editor_read", dispatcher)
-        self.assertIn("jsr _udeks_root_console_write", dispatcher)
+        self.assertIn("jsr _udeks_root_terminal_write_request", dispatcher)
         self.assertNotIn("jsr _udeks_shell_dispatch_line", dispatcher)
         self.assertIn("sta shell_pending_exec", dispatcher)
         shell = (ROOT / "src/services/shell/shell.c").read_text().lower()
