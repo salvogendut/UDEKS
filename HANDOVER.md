@@ -6,12 +6,14 @@ as the current priority list. The [roadmap](docs/ROADMAP.md) now sets the next
 feature milestones; [PLAN.md](docs/PLAN.md) remains the architecture and ADR
 0007 remains authoritative about the resident-core boundary.
 
-## Current handoff — packed bitmap storage increment, 2026-10-09
+## Current handoff — packed bitmap code-space increment, 2026-10-09
 
 Viewer PR #54 is merged as `5a07408`. The user approved the packed-bitmap
 direction to support larger images. Issue #55, branch `graphics-packed-bitmaps`,
 worktree `build/packed-bitmap`; root main and its untracked PPM are untouched.
 Read [the feature plan](docs/GRAPHICS-PACKED-BITMAPS.md) before continuing.
+Storage checkpoint `482c8b8` is committed and pushed; this is the qualified
+compiler-profile reclaim checkpoint before retained-store integration.
 
 Implemented the private `bitmap_store.c` C core and its header, 12 host tests,
 and `make bitmap-store-check` (4,149 checks executing real 6502 instructions).
@@ -20,22 +22,31 @@ eight-byte headers and ordered <=19-byte uploads. Failure is atomic; peers
 survive compaction; owner discard releases pending allocations. This is a
 testable storage core, NOT a published request API or installed service.
 
-The current bank-0 code layout cannot fit it: the compiled object contributes
+The standalone core does not fit yet: the compiled object contributes
 1,845 CODE + 22 BSS bytes before any adapter/renderer or extra libraries.
 GRAPHICSCODE is full, executable glyph slack is 3 bytes, helper slack 6, and
-ordinary resident gap 40. Do not count retired glyph metadata, boot staging,
+ordinary resident gap was 40. The current follow-up changes only the WM compile
+profile from `-Oirs` to `-Ors`: object CODE 8055 -> 7142, unchanged state/data,
+net linked reclaim 804 (109 bytes of additional helpers), BSS end `$9083`,
+resident gap now 844. Both maps/layout gates pass. Do not count retired glyph metadata, boot staging,
 the scheduler tail or the C-stack guard as unowned RAM. Do not link partial
 changes into boot or expand advertised minors before placement is qualified.
 
-Next is a measured graphics-service code placement/reclaim increment, followed
+Next share pool helpers and measure the actual integration budget, followed
 by authenticated UTRQ operations, bitmap rendering, lifecycle cleanup and the
 streaming viewer. All old length masks and renderer format checks must change
 together; the prototype's flags are explicitly unintegrated. There is no new
-VICE/1986/hardware picture result. `make boot graphics-apps-check` rebuilds
-byte-identical baseline D64/D71/D81; `make check` passes 1,661 tests. This is
-the storage-core checkpoint; do not merge yet. Reuse the retained store's pool helpers
+VICE/1986/hardware larger-picture result. `make boot graphics-apps-check`
+rebuilds the smaller-WM candidate D64/D71/D81; published root images stay
+unchanged. `make check` passes 1,667 tests. `make graphics-code-check` compares
+60,702-byte complete traces under real 6502 instructions; VICE four-native D71
+and unmodified 1986 four-native D81 input/resize/cancel/guard/canvas tests pass.
+The 1986 D71 attempt stopped before boot because its fixture packer filled
+side one: this is not a native-D71 pass. No VICE session remains. Do not merge
+or advertise larger pictures yet. Reuse the retained store's pool helpers
 during integration, and allocate a new ABI minor rather than reusing 0.18
 (filesystem mutations) or 0.19 (service control).
+Preserved qualification: `bench/results/2026-10-09-graphics-code-budget`.
 
 ## Previous handoff — standalone CBM viewer, 2026-10-09
 

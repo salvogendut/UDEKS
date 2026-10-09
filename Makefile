@@ -1130,8 +1130,10 @@ $(BUILD_8502)/root_console.s: src/services/window/root_console.c \
 
 $(BUILD_8502)/window_manager.s: $(WINDOW_MANAGER_SOURCE) \
 		include/udeks/pointer.h include/udeks/vic_graphics.h \
-		include/udeks/window.h include/udeks/window_service.h | $(BUILD_8502)
-	$(CC65) $(CFLAGS_8502) -o $@ $(WINDOW_MANAGER_SOURCE)
+		include/udeks/window.h include/udeks/window_service.h Makefile | $(BUILD_8502)
+	# Keep register allocation, but call cc65 helpers instead of inlining them.
+	# Reclaims graphics-service code space without new static state or ABI changes.
+	$(CC65) $(filter-out -Oirs,$(CFLAGS_8502)) -Ors -o $@ $(WINDOW_MANAGER_SOURCE)
 
 $(BUILD_8502)/boot_console.s: src/services/window/boot_console.c \
 		include/udeks/boot_console.h include/udeks/capability.h \
@@ -2505,6 +2507,11 @@ bitmap-store-check: $(BUILD_DIR)/bitmap-store/store.o $(BUILD_DIR)/bitmap-store/
 	$(CL65) -t sim6502 -m $(BUILD_DIR)/bitmap-store/check.map -o $(BUILD_DIR)/bitmap-store/check $^
 	sim65 $(BUILD_DIR)/bitmap-store/check
 .PHONY: bitmap-store-check
+
+# Live build + real 6502 comparison, not a host fixture or a new bitmap ABI.
+graphics-code-check: placement-check-guard graphics-apps-check
+	$(PYTHON) tools/graphics_code_budget.py
+.PHONY: graphics-code-check
 
 check:
 	$(PYTHON) -m py_compile tools/png_to_cbm.py tools/add_cbm_viewer.py tools/xview_probe.py

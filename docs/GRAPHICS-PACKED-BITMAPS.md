@@ -25,8 +25,9 @@ resident link recipes. No public request ABI changes: existing graphics
 operations extend through 0.17, while filesystem mutations and service control
 already use 0.18 and 0.19. The prototype operations below are private proposals,
 not available to disk applications.
-`xview` and all boot images remain unchanged. There is no larger-picture
-emulator or hardware result yet.
+`xview` remains unchanged. The branch now builds smaller window-manager code;
+the published root downloads and `main` are untouched. There is no
+larger-picture emulator or hardware result yet.
 
 Completed:
 
@@ -37,6 +38,57 @@ Completed:
 - Exact row padding, geometry/capacity checks, independent in-progress images.
 - 12 host tests plus 4,149 6502 checks, including a 2,000-byte image, exact pool
   exhaustion, 16-bit flags/arithmetic, interleaved owners and buffer guards.
+- First service-code reclaim: the unchanged C window manager uses `-Ors`
+  rather than `-Oirs`. Normal/panic maps, a complete 6502 call/state trace,
+  VICE four-app tests and 1986 native-input regression pass (details below).
+
+## First placement increment (2026-10-09)
+
+Only the window-manager compile rule changes. It retains register allocation
+and ordinary automatic locals, but stops inlining cc65 runtime helpers.
+No C algorithm, public address, app slot, display reservation, polling budget
+or static-state size changes. The Makefile is a prerequisite so an existing
+build cannot silently retain the old object.
+
+| Measurement | Before | After |
+|---|---:|---:|
+| Window-manager CODE | 8,055 | 7,142 |
+| Window-manager RODATA / BSS / HIGHBSS | 130 / 4 / 88 | 130 / 4 / 88 |
+| Resident BSS end (inclusive) | `$93A7` | `$9083` |
+| Free before fixed service slot `$93D0` | 40 | 844 |
+
+The object saves 913 bytes, but additional linked runtime helpers cost 109:
+**net reclaim is 804 bytes**. No other gap, overlay or stack guard is counted.
+This is useful room, **not yet enough for the standalone 1,845-byte core**.
+Next integrate the shared address/compaction helpers and measure the complete
+request/renderer cost before deciding whether more code reclaim is needed.
+
+`make graphics-code-check` compiles both profiles from the same production
+source, checks unchanged non-code segment sizes, matches the compact object
+against the actual kernel map, and runs both under sim65. Their complete
+60,702-byte drawing/transport/public-state traces are identical. The driver
+and cache lease implementation are compiled once and shared between runs.
+The simulated cycle totals include trace stubs; **they are not a claim about
+real mouse latency**. VICE/1986 additionally exercise the actual rasterizer,
+cache transport, task runtime and input path.
+
+Qualification:
+
+- Full host suite: 1,667 tests. Normal/panic placement and all three disk builds
+  pass. The pure-C bitmap core remains unlinked.
+- VICE 1571/D71: four native apps, wave drag/resize and exact pixels, independent
+  unknown apps, bad-load rejection, slot reuse, Ctrl+C and console cleanup.
+- Native 1986 `d360c114`, 1581/D81: actual keyboard/1351 input, four-app
+  drag/resize, no extra Z80 work on moves, arithmetic/drawing, console,
+  cancellation, reload, stack guards and shadow/VIC equality.
+- The initial 1986 D71 attempt failed **before boot**: the harness's extra
+  EMPTY/ONE files still use side-one-only packing. It is not a D71 runtime
+  failure or a passed native-D71 test; VICE D71 and native D81 are the gates
+  actually run. No new real-C128 qualification is claimed.
+
+Preserved maps, simulator programs/traces and emulator reports are in
+[the qualification record](../bench/results/2026-10-09-graphics-code-budget/README.md).
+Host tests verify its checksums and bind both emulator results to the build.
 
 ## Data contract (private prototype)
 
@@ -86,10 +138,10 @@ never keep it across another request, allocation change or yield.
    request integration and renderer. That is not a complete installation
    budget or a final incremental size: integration should share address and
    compaction helpers with the existing retained store, not install two pool
-   managers. The live graphics segment is already 1,792/1,792 bytes. The retired
+   managers. After the first reclaim, ordinary resident slack is 844 bytes.
+   The live graphics segment is already 1,792/1,792 bytes. The retired
    glyph code window has only 3 executable bytes left before live tile maps;
-   GRAPHICSHELP has 6 and ordinary resident code/state has 40 before the
-   time-service slot. These are not a viable home for this core. Keep the
+   GRAPHICSHELP has 6. These are not yet a viable home for the standalone core. Keep the
    module unlinked until a separately measured service-code placement/reclaim
    passes both normal/panic links and lifetime gates. Do not steal an app
    slot, shrink the pool, or assume boot staging/stack guards are free.
@@ -116,9 +168,10 @@ never keep it across another request, allocation change or yield.
 make check
 distrobox-enter my-distrobox -- make bitmap-store-check
 distrobox-enter my-distrobox -- make -j8 boot graphics-apps-check
+distrobox-enter my-distrobox -- make graphics-code-check
 ```
 
-The last command qualifies the **unchanged production baseline**, not this
-unlinked prototype. All three rebuilt disks match the published baseline
-byte-for-byte. Never run `make clean` at the repository root (nested worktrees).
-The complete host suite passes 1,661 tests, including the 12 new store tests.
+The boot/layout commands qualify the **compiler-profile placement change**,
+not an integrated bitmap feature. Branch disks are rebuilt under `build/boot/`;
+published `build/udeks.*` remain the accepted baseline. Never run `make clean`
+at the repository root (nested worktrees).

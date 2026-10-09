@@ -17,8 +17,11 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 make larger `xview` pictures practical within the existing 2,304-byte drawing
 pool. [Plan and gates](GRAPHICS-PACKED-BITMAPS.md). The private C storage core
 has host/6502 tests; it is not linked or advertised as an OS feature yet.
-Next: qualify service-code space, then integrate upload/render/cleanup and
-streaming `xview`. Full-screen backing storage and panning remain later work.
+First placement increment reclaims 804 resident bytes through a selective
+compiler setting, preserving four slots and passing VICE/1986 regressions.
+Next: share retained-store helpers, measure the complete integration budget,
+then add upload/render/cleanup and streaming `xview`. The bitmap feature is
+not available in boot images yet. Full-screen storage and panning remain later work.
 
 **Completed application slice (2026-10-09):** standalone `xview`, developed on
 `app-cbm-viewer`. It reuses the `additional-apps` `.CBM` format/converter,
