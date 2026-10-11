@@ -88,3 +88,5 @@ D64 lacks space and is skipped by user agreement.
 [SDK usage](IPC-SDK.md) and [candidate media/evidence](../bench/results/2026-10-11-ipc-examples/README.md).
 Broader cancellation, soak, native 1986 and physical-C128 acceptance remain
 slice 3.
+
+Slice 3 has started on `ipc-0.1-qualification`: [qualification work](IPC-QUALIFICATION.md).

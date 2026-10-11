@@ -28,3 +28,8 @@ ipc-demo: boot ipc-examples
 ipc-demo-probe:
 	$(PYTHON) tools/ipc_demo_probe.py --format d71
 	$(PYTHON) tools/ipc_demo_probe.py --format d81
+
+.PHONY: ipc-lifecycle-probe
+ipc-lifecycle-probe:
+	$(PYTHON) tools/ipc_demo_probe.py --format d81 --lifecycle-only --restart-cycles 3
+	$(PYTHON) tools/ipc_demo_probe.py --format d71 --lifecycle-only --restart-cycles 3

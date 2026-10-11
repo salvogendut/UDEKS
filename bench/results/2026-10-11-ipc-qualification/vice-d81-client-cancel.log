@@ -1,0 +1,20 @@
+PASS xclock &
+PASS xdraw &
+PASS ipcsrv &
+PASS ipcping CancelMe
+PASS Ctrl-C during pending request
+PASS ipcping AfterCancel
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle0
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle1
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle2
+PASS ipcping --stop
+PASS xdraw -q
+PASS xclock -q
+PASS echo IPC demo returned
+PASS IPC demo: /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/demo-vice/d81-bi8dqzf8

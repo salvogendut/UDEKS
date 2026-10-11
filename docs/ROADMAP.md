@@ -13,9 +13,9 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
-**IPC foundation implemented locally (2026-10-11):**
+**IPC slices 1–2 committed and pushed (2026-10-11):**
 [#57](https://github.com/salvogendut/UDEKS/issues/57), branch
-`ipc-0.1-foundation`, worktree `build/ipc-foundation`. Slice 1 provides two
+`ipc-0.1-foundation`, commit `1de24a4`. Slice 1 provides two
 named endpoints, copied 16-byte messages and EXIT/CANCEL cleanup with handles
 that never repeat within a boot. Normal/panic placement and VICE D64/D81
 raw-gate checks pass; 1,735 host tests pass. Slice 2 implements the [SDK and public request/reply demo](IPC-SDK.md),
@@ -24,6 +24,11 @@ programs and is skipped. [Slice-2 evidence](../bench/results/2026-10-11-ipc-exam
 acceptance remains slice 3. Native 1986 IPC
 and physical-C128 qualification remain open. [Contract](../abi/ipc.md),
 [plan](IPC.md), [candidate disks and evidence](../bench/results/2026-10-11-ipc-foundation/README.md).
+
+Slice 3 has started under [#58](https://github.com/salvogendut/UDEKS/issues/58)
+on `ipc-0.1-qualification`, worktree `build/ipc-foundation`. The first increment
+covers cancellation of each public peer during a pending request and repeated
+restarts. [Qualification status and remaining gates](IPC-QUALIFICATION.md).
 
 **Implemented and user-accepted — optional REU graphics backing storage (2026-10-09):**
 the user selected REU and VICE. Branch `graphics-reu`, worktree

@@ -1,0 +1,23 @@
+{
+  "base_commit": "1de24a4",
+  "issue": 58,
+  "branch": "ipc-0.1-qualification",
+  "scope": "first slice-3 increment: real parent CANCEL of foreground client and three restarts",
+  "qualified": [
+    "VICE D81 client cancellation/recovery and 3 restarts"
+  ],
+  "open": [
+    "D71 lifecycle",
+    "background server cancellation",
+    "long mixed soak",
+    "1986 IPC",
+    "manual acceptance",
+    "physical C128"
+  ],
+  "disk_sha256": "b87c0d09721f3a4667ecc1b6443211e0c160f3c609115480486bc5f7897105f2",
+  "source_sha256": {
+    "tools/ipc_demo_probe.py": "a69dce9459e37b2a27748b82ec6ad1f9c968aa896177ad466f6bcd82e2f9bfd6",
+    "mk/ipc.mk": "b3197666d8eefed58c9f4b846e66ea21b7c8920104f6eb98c9aad3f698cf27d9",
+    "docs/IPC-QUALIFICATION.md": "455335ca971d3091795984a27bd7a433b5a93987af43272037e7f710ebb26071"
+  }
+}

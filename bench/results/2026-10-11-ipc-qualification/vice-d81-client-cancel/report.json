@@ -1,0 +1,171 @@
+{
+  "format": "d81",
+  "scope": "Cold-boot public IPC examples through ordinary shell/disk/native SDK paths.\n\nKeyboard events launch each program. A temporary pointer-getter patch exercises\nwindow movement, and an acknowledged WM click exercises drawing. No IPC reply,\nendpoint, task or application state is fabricated by the monitor.\n",
+  "disk_sha256": "b87c0d09721f3a4667ecc1b6443211e0c160f3c609115480486bc5f7897105f2",
+  "programs": {
+    "server": "ef076a7dff3e0e379e9bde2f9682faaa47ca6227ab4c67b2e880b519f7647b06",
+    "client": "2dc27bcd2203134b623d88984ca5a5e8425e8fbd2bd5ec2ce406282a1970324c"
+  },
+  "records": [
+    {
+      "command": "xclock &",
+      "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~>"
+    },
+    {
+      "command": "xdraw &",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~>"
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping CancelMe",
+      "console": "REU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\n"
+    },
+    {
+      "input": "Ctrl-C",
+      "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~>",
+      "input_queued_while_request_pending": true,
+      "exit_status": 130
+    },
+    {
+      "command": "ipcping AfterCancel",
+      "console": "Z80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "AfterCancel",
+      "authenticated_source": 1,
+      "reply_hex": "02414654455243414e43454c",
+      "client_task": 3
+    },
+    {
+      "check": "cancel-client-during-request",
+      "server_handle": 1,
+      "recovered": true
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 1,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Cycle0",
+      "console": "\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Cycle0",
+      "authenticated_source": 5,
+      "reply_hex": "024359434c4530",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 5,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "check": "restart-cycle",
+      "cycle": 0,
+      "server_handle": 5
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "UDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Cycle1",
+      "console": "UDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Cycle1",
+      "authenticated_source": 8,
+      "reply_hex": "024359434c4531",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "Interrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 8,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "check": "restart-cycle",
+      "cycle": 1,
+      "server_handle": 8
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "reply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Cycle2",
+      "console": "ipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle2\nreply: CYCLE2\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Cycle2",
+      "authenticated_source": 11,
+      "reply_hex": "024359434c4532",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "ipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle2\nreply: CYCLE2\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 11,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "check": "restart-cycle",
+      "cycle": 2,
+      "server_handle": 11
+    },
+    {
+      "command": "xdraw -q",
+      "console": "UDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle2\nreply: CYCLE2\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> xdraw -q\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "console": "reply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle2\nreply: CYCLE2\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> xdraw -q\nUDEKS:~> xclock -q\nUDEKS:~>"
+    },
+    {
+      "command": "echo IPC demo returned",
+      "console": "ipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle2\nreply: CYCLE2\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> xdraw -q\nUDEKS:~> xclock -q\nUDEKS:~> echo IPC demo returned\nIPC demo returned\nUDEKS:~>"
+    }
+  ],
+  "native_1986": false,
+  "physical_c128": false,
+  "public_sdk": true,
+  "independent_programs": true,
+  "lifecycle": true,
+  "restart_cycles": 3
+}
