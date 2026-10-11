@@ -31,6 +31,10 @@ selected:
         ldx $f360
         cpx #28
         beq module_request
+        .ifdef UDEKS_IPC
+        cpx #29
+        beq ipc_request
+        .endif
         .endif
         ldy #$0f                    ; private context request at $120F
         jsr $fe20
@@ -48,6 +52,11 @@ unavailable:
 fallback:
         jmp $f3ef
         .ifdef UDEKS_DISK_TIME
+        .ifdef UDEKS_IPC
+ipc_request:
+        plp
+        jmp IPC_REQUEST
+        .endif
 module_request:
         plp                         ; C service runs with caller's IRQ state
         jmp TIME_MODULE_REQUEST     ; A retains the trusted context tag
@@ -68,6 +77,11 @@ retire:
         jsr $cf33                   ; abort ONLY a loading foreground lease
         lda #9
 :
+        .endif
+        .ifdef UDEKS_IPC
+        jsr IPC_RETIRE
+        tsx
+        lda $0103,x                 ; restore trusted tag after IPC scratch use
         .endif
         ldy #$12                    ; retire before slot/storage is reclaimed
         jsr $fe20

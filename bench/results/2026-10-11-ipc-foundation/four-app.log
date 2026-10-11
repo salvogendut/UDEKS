@@ -1,0 +1,32 @@
+PASS xclock &
+PASS xwave &
+PASS initial-wave
+PASS moved-wave
+PASS before-resize
+PASS resized-wave
+PASS before-resize
+PASS resized-wave
+PASS xcalc &
+PASS xdraw &
+PASS before-resize
+PASS resized-wave
+PASS before-resize
+PASS resized-wave
+PASS date 03:15:00
+PASS cowsay four native
+PASS ls /bin
+PASS xclock &
+PASS xwave -q
+PASS xwave &
+PASS reloaded-wave
+PASS xinit -q
+PASS orbit &
+PASS canvas &
+PASS hello &
+PASS fourth &
+PASS extra &
+PASS canvas -q
+PASS badpatch &
+PASS extra &
+PASS xinit -q
+PASS echo four-slot cleanup passed

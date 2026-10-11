@@ -1,0 +1,30 @@
+{
+  "scope": "slice 2 independent IPC SDK/server/client; no kernel change",
+  "programs": {
+    "IPCSRV": {
+      "sha256": "ef076a7dff3e0e379e9bde2f9682faaa47ca6227ab4c67b2e880b519f7647b06",
+      "fits": [
+        3,
+        5
+      ]
+    },
+    "IPCPING": {
+      "sha256": "2dc27bcd2203134b623d88984ca5a5e8425e8fbd2bd5ec2ce406282a1970324c",
+      "fits": [
+        3
+      ]
+    }
+  },
+  "four_task_launch_orders": 24,
+  "disks": {
+    "d71": {
+      "source_sha256": "347106b99f8b39509c0cdeaa5c4bb3df773b6c120cb79966689e36196ec2fe4b",
+      "sha256": "cb014060fa75a3315500196df71020343b214bb90fa3f26c6273afa3c314522a"
+    },
+    "d81": {
+      "source_sha256": "dc6f08069b71bcb59630e22b76679564a9f34378c69afaada46eb4624a9b383e",
+      "sha256": "b87c0d09721f3a4667ecc1b6443211e0c160f3c609115480486bc5f7897105f2"
+    }
+  },
+  "d64": "Full baseline has 16 free blocks; examples need 33; D64 is unchanged"
+}

@@ -1,0 +1,38 @@
+{
+  "baseline": "4644a4c",
+  "issue": 57,
+  "branch": "ipc-0.1-foundation",
+  "scope": "slice 1 foundation; raw-gate fixture, no public IPC SDK/demo",
+  "host_tests": 1735,
+  "qualification": [
+    "VICE 1541 D64",
+    "VICE 1581 D81",
+    "sim6502 policy/dispatcher/retirement"
+  ],
+  "unqualified": [
+    "native 1986 IPC",
+    "physical C128 IPC"
+  ],
+  "source_sha256": {
+    "src/kernel/ipc.s": "3418c0bf4f463abe36b8e6fe1fbba6fc05ddb2b73396e623f9daf0bfdb91d3ed",
+    "src/8502/syscall_gate.s": "640f22ddac9fdbcedf3f0d62bd1d4a89f741501b2d9db3a46fb9c264410ab483",
+    "src/services/filesystem/iec_router.s": "9280f049f24881927b424ce19d2e55c1f4f90915a7740ba35724f7d5b10c6b53",
+    "include/udeks/task_request.h": "f47c48d37f2299f074644fe7fa2e344f4790bcc6f8f7c1aebec4563e3a9fa2ea",
+    "include/udeks/ipc.h": "ec97349d1656a6b672096c78b6a4040b2f865de8c7176b95a0a2fa157eb326a5",
+    "mk/ipc.mk": "d70ad79817d5215b046e574721efe9efa0d68f2464a9198da1c980388135cd35",
+    "mk/services.mk": "f5d293dca7988523cf23093f5d1f419ebeea62af1c1b595d1f32523e4bccec57",
+    "Makefile": "3503c9fe33e3194c6c2604ab3e97baad162d283ab545871a462d1016b5d6515d",
+    "tools/gen_disk_loader_bindings.py": "dc53eb6f12a4bfbb080ee049e2b503d758d2d246136860de1200902f9f830e24",
+    "tools/check_ipc.py": "a51c6f43cf4a305de143132abe29dc1e97bfaa289245935ff6c5805a99012dd3",
+    "tools/ipc_probe.py": "d1b17d55066bfad45aea1eea8eb883acad654bb19c1b5f086733a34ce0a2db9e",
+    "tools/ipc_layout.py": "bf22b35755005b0ed599877608bb8d0ec2f5a2b2948f31125ab3f2eb5d2d435f",
+    "bench/ipc/check.c": "0bfac42727a1e01dcf80e629e720684230214681d5fbf245bdbf242d8e6d8a75",
+    "bench/ipc/call.s": "69f75b0d8403067441ace266a55e589a83ae20b6ac005585bbecb47bc44e5541",
+    "bench/ipc/native.c": "634b01fa470721371ebdf5f8d8ac083034293dc85c02ebc43aebf6459385e066",
+    "tools/four_native_probe.py": "9bec521645879bb0f342c68921e7d7dca8192349e448a08a65a86d99ff2f83f7"
+  },
+  "regressions": [
+    "native console D81",
+    "four native graphical clients D81 with acknowledged click injection"
+  ]
+}

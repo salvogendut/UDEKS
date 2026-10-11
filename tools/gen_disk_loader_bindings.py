@@ -25,6 +25,11 @@ def render(text, kernel_text=None):
         if kind != 'RLA' or not 0x2006 <= entry < TIME_BASE:
             raise ValueError('unexpected module request placement/type')
         result += f'TIME_MODULE_REQUEST = ${entry:04x}\n'
+        for name in ('request', 'retire'):
+            entry, kind = map_exports(kernel_text)['_udeks_ipc_' + name]
+            if kind != 'RLA' or not 0x2006 <= entry < TIME_BASE:
+                raise ValueError('unexpected IPC binding placement/type')
+            result += f'IPC_{name.upper()} = ${entry:04x}\n'
     return result
 
 

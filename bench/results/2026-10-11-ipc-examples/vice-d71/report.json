@@ -1,0 +1,151 @@
+{
+  "format": "d71",
+  "scope": "Cold-boot public IPC examples through ordinary shell/disk/native SDK paths.\n\nKeyboard events launch each program. A temporary pointer-getter patch exercises\nwindow movement, and an acknowledged WM click exercises drawing. No IPC reply,\nendpoint, task or application state is fabricated by the monitor.\n",
+  "disk_sha256": "cb014060fa75a3315500196df71020343b214bb90fa3f26c6273afa3c314522a",
+  "programs": {
+    "server": "ef076a7dff3e0e379e9bde2f9682faaa47ca6227ab4c67b2e880b519f7647b06",
+    "client": "2dc27bcd2203134b623d88984ca5a5e8425e8fbd2bd5ec2ce406282a1970324c"
+  },
+  "records": [
+    {
+      "command": "ipcping hello",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~>"
+    },
+    {
+      "command": "echo $?",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~>"
+    },
+    {
+      "command": "xclock &",
+      "console": "REU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~> xclock &\nUDEKS:~>"
+    },
+    {
+      "command": "xdraw &",
+      "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~>"
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "Z80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Mixed-case &",
+      "console": "IEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Mixed-case &\nUDEKS:~>"
+    },
+    {
+      "check": "four-native-tasks-during-request",
+      "tasks": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "server_work_ticks": 60
+    },
+    {
+      "check": "request-reply",
+      "text": "Mixed-case",
+      "authenticated_source": 1,
+      "reply_hex": "024d495845442d43415345",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping 1234567890abcde",
+      "console": "\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Mixed-case &\nreply: MIXED-CASE\n\nUDEKS:~> ipcping 1234567890abcde\nreply: 1234567890ABCDE\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "1234567890abcde",
+      "authenticated_source": 1,
+      "reply_hex": "02313233343536373839304142434445",
+      "client_task": 3
+    },
+    {
+      "command": "echo $?",
+      "console": "\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Mixed-case &\nreply: MIXED-CASE\n\nUDEKS:~> ipcping 1234567890abcde\nreply: 1234567890ABCDE\nUDEKS:~> echo $?\n0\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping 1234567890abcdef",
+      "console": "svc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Mixed-case &\nreply: MIXED-CASE\n\nUDEKS:~> ipcping 1234567890abcde\nreply: 1234567890ABCDE\nUDEKS:~> echo $?\n0\nUDEKS:~> ipcping 1234567890abcdef\nipcping: use 1-15 bytes\nUDEKS:~>"
+    },
+    {
+      "command": "echo $?",
+      "console": "UDEKS:~> time: ready\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Mixed-case &\nreply: MIXED-CASE\n\nUDEKS:~> ipcping 1234567890abcde\nreply: 1234567890ABCDE\nUDEKS:~> echo $?\n0\nUDEKS:~> ipcping 1234567890abcdef\nipcping: use 1-15 bytes\nUDEKS:~> echo $?\n2\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Again",
+      "console": "ipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Mixed-case &\nreply: MIXED-CASE\n\nUDEKS:~> ipcping 1234567890abcde\nreply: 1234567890ABCDE\nUDEKS:~> echo $?\n0\nUDEKS:~> ipcping 1234567890abcdef\nipcping: use 1-15 bytes\nUDEKS:~> echo $?\n2\nUDEKS:~> ipcping Again\nreply: AGAIN\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Again",
+      "authenticated_source": 1,
+      "reply_hex": "02414741494e",
+      "client_task": 3
+    },
+    {
+      "command": "echo IPC and graphics alive",
+      "console": "2\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Mixed-case &\nreply: MIXED-CASE\n\nUDEKS:~> ipcping 1234567890abcde\nreply: 1234567890ABCDE\nUDEKS:~> echo $?\n0\nUDEKS:~> ipcping 1234567890abcdef\nipcping: use 1-15 bytes\nUDEKS:~> echo $?\n2\nUDEKS:~> ipcping Again\nreply: AGAIN\nUDEKS:~> echo IPC and graphics alive\nIPC and graphics alive\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "UDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Mixed-case &\nreply: MIXED-CASE\n\nUDEKS:~> ipcping 1234567890abcde\nreply: 1234567890ABCDE\nUDEKS:~> echo $?\n0\nUDEKS:~> ipcping 1234567890abcdef\nipcping: use 1-15 bytes\nUDEKS:~> echo $?\n2\nUDEKS:~> ipcping Again\nreply: AGAIN\nUDEKS:~> echo IPC and graphics alive\nIPC and graphics alive\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 1,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping hello",
+      "console": "UDEKS:~> ipcping Mixed-case &\nreply: MIXED-CASE\n\nUDEKS:~> ipcping 1234567890abcde\nreply: 1234567890ABCDE\nUDEKS:~> echo $?\n0\nUDEKS:~> ipcping 1234567890abcdef\nipcping: use 1-15 bytes\nUDEKS:~> echo $?\n2\nUDEKS:~> ipcping Again\nreply: AGAIN\nUDEKS:~> echo IPC and graphics alive\nIPC and graphics alive\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~>"
+    },
+    {
+      "command": "echo $?",
+      "console": "\nUDEKS:~> ipcping 1234567890abcde\nreply: 1234567890ABCDE\nUDEKS:~> echo $?\n0\nUDEKS:~> ipcping 1234567890abcdef\nipcping: use 1-15 bytes\nUDEKS:~> echo $?\n2\nUDEKS:~> ipcping Again\nreply: AGAIN\nUDEKS:~> echo IPC and graphics alive\nIPC and graphics alive\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~>"
+    },
+    {
+      "command": "ipcsrv demo &",
+      "console": "reply: 1234567890ABCDE\nUDEKS:~> echo $?\n0\nUDEKS:~> ipcping 1234567890abcdef\nipcping: use 1-15 bytes\nUDEKS:~> echo $?\n2\nUDEKS:~> ipcping Again\nreply: AGAIN\nUDEKS:~> echo IPC and graphics alive\nIPC and graphics alive\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~> ipcsrv demo &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping demo Zebra",
+      "console": "0\nUDEKS:~> ipcping 1234567890abcdef\nipcping: use 1-15 bytes\nUDEKS:~> echo $?\n2\nUDEKS:~> ipcping Again\nreply: AGAIN\nUDEKS:~> echo IPC and graphics alive\nIPC and graphics alive\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~> ipcsrv demo &\nipcsrv: ready\nUDEKS:~> ipcping demo Zebra\nreply: ZEBRA\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Zebra",
+      "authenticated_source": 6,
+      "reply_hex": "025a45425241",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping demo --stop",
+      "console": "UDEKS:~> echo $?\n2\nUDEKS:~> ipcping Again\nreply: AGAIN\nUDEKS:~> echo IPC and graphics alive\nIPC and graphics alive\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~> ipcsrv demo &\nipcsrv: ready\nUDEKS:~> ipcping demo Zebra\nreply: ZEBRA\nUDEKS:~> ipcping demo --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 6,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "command": "xdraw -q",
+      "console": "2\nUDEKS:~> ipcping Again\nreply: AGAIN\nUDEKS:~> echo IPC and graphics alive\nIPC and graphics alive\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~> ipcsrv demo &\nipcsrv: ready\nUDEKS:~> ipcping demo Zebra\nreply: ZEBRA\nUDEKS:~> ipcping demo --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> xdraw -q\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "console": "UDEKS:~> ipcping Again\nreply: AGAIN\nUDEKS:~> echo IPC and graphics alive\nIPC and graphics alive\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~> ipcsrv demo &\nipcsrv: ready\nUDEKS:~> ipcping demo Zebra\nreply: ZEBRA\nUDEKS:~> ipcping demo --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> xdraw -q\nUDEKS:~> xclock -q\nUDEKS:~>"
+    },
+    {
+      "command": "echo IPC demo returned",
+      "console": "UDEKS:~> echo IPC and graphics alive\nIPC and graphics alive\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcping hello\nipcping: IPC error\nUDEKS:~> echo $?\n2\nUDEKS:~> ipcsrv demo &\nipcsrv: ready\nUDEKS:~> ipcping demo Zebra\nreply: ZEBRA\nUDEKS:~> ipcping demo --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> xdraw -q\nUDEKS:~> xclock -q\nUDEKS:~> echo IPC demo returned\nIPC demo returned\nUDEKS:~>"
+    }
+  ],
+  "native_1986": false,
+  "physical_c128": false,
+  "public_sdk": true,
+  "independent_programs": true
+}

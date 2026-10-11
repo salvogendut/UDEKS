@@ -188,7 +188,7 @@ task_validate_signature:
         dex
         bpl task_validate_signature
         lda TREQ_BASE+$05
-        cmp #$15                    ; accept UTRQ 0.0..0.20 (packed bitmaps)
+        cmp #$16                    ; accept UTRQ 0.0..0.21 (bounded IPC)
         bcs task_protocol_trampoline
         lda TREQ_STATE
         cmp #TREQ_REQUEST

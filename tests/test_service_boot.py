@@ -81,7 +81,8 @@ class ServiceBindingsTests(unittest.TestCase):
     def test_module_private_binding_is_required_only_for_candidate(self):
         symbols = {'_udeks_lifecycle_slots_private':(0xc100,'RLA'),
                    '_udeks_lifecycle_current_private':(0xc200,'RLA'),
-                   '_udeks_bootfs_finish_error':(0xf400,'REA')}
+                   '_udeks_bootfs_finish_error':(0xf400,'REA'),
+                   '_udeks_ipc_request':(0x3000,'RLA'), '_udeks_ipc_retire':(0x3020,'RLA')}
         with patch('gen_disk_loader_bindings.map_exports',return_value=symbols):
             self.assertNotIn('TIME_MODULE_REQUEST',render('map'))
             with self.assertRaises(KeyError): render('map','candidate')

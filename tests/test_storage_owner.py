@@ -109,7 +109,7 @@ class StorageOwner(unittest.TestCase):
 
     def test_current_version_and_historical_future_version_fixture(self):
         header=(ROOT/'include/udeks/task_request.h').read_text()
-        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     20u',header)
+        self.assertIn('UDEKS_TASK_REQUEST_ABI_MINOR     21u',header)
         # The preserved 0.18 artifact rejected 0.19; this is not a current
         # boundary test. The bitmap integration proof now tests 0.21 rejection.
         fixture=(ROOT/'bench/storage-owner/foreground.c').read_text()

@@ -1,0 +1,61 @@
+{
+  "baseline": "4644a4c",
+  "issue": 57,
+  "branch": "ipc-0.1-foundation",
+  "scope": "slice 2 public SDK and independent examples",
+  "host_tests": 1746,
+  "sdk_tests": 11,
+  "qualification": [
+    "VICE 1571 D71",
+    "VICE 1581 D81"
+  ],
+  "unqualified": [
+    "native 1986 IPC",
+    "physical C128 IPC",
+    "broader lifecycle/soak acceptance"
+  ],
+  "checks": {
+    "d71": {
+      "programs_only_added": true,
+      "four_native_states": [
+        2,
+        3,
+        4,
+        2
+      ],
+      "reply_checks": 4,
+      "shutdown_checks": 2,
+      "sha256": "9dfc52db3de6afd8c55f4e2c3c1c97f37bf01a91fec91772815aecebf1ba72b8"
+    },
+    "d81": {
+      "programs_only_added": true,
+      "four_native_states": [
+        2,
+        4,
+        4,
+        4
+      ],
+      "reply_checks": 4,
+      "shutdown_checks": 2,
+      "sha256": "339e30b629a90f6aeb6522dd68a7242d9f788e223ab0f6ec653052abb976cdb1"
+    }
+  },
+  "source_sha256": {
+    "user/include/udeks/native_ipc.h": "d996d94198ce3b359e830ce8243e01a526fc41a2fc68bec01f7ce5e8c7912859",
+    "user/lib/native_ipc.c": "64ef54c0a3d4afea4f5e8992f2884f0ee65f7077ca5fc7b0f9e37229eb0f0c96",
+    "user/examples/ipc/protocol.h": "8c41b1660e6f51ce0d0631dc1897af459a375e3bcf57882e43668380bba3819e",
+    "user/examples/ipc/server.c": "ddd20d5d4e068ddc9828f5ecb756ef04306c1767d0404f588aabad5d3e7c29cd",
+    "user/examples/ipc/client.c": "55c1a6410df0b65c71b58042bf8696769de000eb6ff505b51e48d5e11ad93435",
+    "tools/build_native_console.py": "5cb6aa520850ce28fced1b4f8e8dc498c2d4921bacb69b8e5052d9ef2e5869a3",
+    "tools/build_ipc_demo.py": "8d7e1b5ea39502ade7a6fcfa61986890c6a4967083725cc54e924830166d26dc",
+    "tools/ipc_demo_probe.py": "feccf68932d8d7c537efef1028fdc8fa44b95f56a699a261a8b85cde0f217291",
+    "tests/test_native_ipc.py": "df5a5d040339690f80e8f598d28cbafa80fef9f981400754b6d2369c47f6c169",
+    "tests/fixtures/native_ipc.c": "1a705bd04565c2b82b2e66fcf6c3523eb0ec7a1851bf2ca4ea1494740e8d529b",
+    "mk/ipc.mk": "917bf2080ccef4dd4722dd0210d0ad0b4dfa94b95bb5dc9707d420476c1a1716",
+    "docs/IPC-SDK.md": "c488a5ec2bd905476bda19b6dcf6e84af43ffbbc67fcadbfe4b96acfd5c7c1f5",
+    "docs/IPC.md": "21665fb460909070d899367e1a190969d5db7a8321a4aa1d32937601130c5c68",
+    "docs/ROADMAP.md": "e91ab48395182db8db53b11cbfe6aa489bf79b8b30812672072fe18b7f289007",
+    "docs/BUILDING.md": "676ccb87b3286fd81b8a75a4062256fa8db8200197ef8da07279bfa1ee473b92",
+    "abi/ipc.md": "11ba5881d7c68705c7f5239d50098ad3e86c0a7af18a8b778fcced29c655987d"
+  }
+}

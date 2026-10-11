@@ -1,0 +1,304 @@
+Modules list:
+-------------
+entry.o:
+    CODE              Offs=000000  Size=000003  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000027  Align=00001  Fill=0000
+program.o:
+    CODE              Offs=000003  Size=000603  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000010  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=000008  Align=00001  Fill=0000
+/home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.lib(runtime.o):
+    CODE              Offs=000606  Size=000311  Align=00001  Fill=0000
+    BSS               Offs=000008  Size=000002  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=000917  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000928  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(bneg.o):
+    CODE              Offs=000936  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=000944  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=00094D  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(eq.o):
+    CODE              Offs=00095A  Size=00000A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=000964  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax1.o):
+    CODE              Offs=000992  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax2.o):
+    CODE              Offs=000999  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=0009A0  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=0009AB  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=0009B2  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=0009C8  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=0009CD  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=0009D2  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=0009D7  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxi.o):
+    CODE              Offs=0009DC  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=0009E9  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(leaaxsp.o):
+    CODE              Offs=0009F2  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(makebool.o):
+    CODE              Offs=0009FE  Size=00002C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=000A2A  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(or.o):
+    CODE              Offs=000A64  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000A76  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000A84  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000A9A  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=000AB4  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000AD0  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(strlen.o):
+    CODE              Offs=000AE6  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               001000  001026  000027  00001
+CODE                  001027  001B22  000AFC  00001
+RODATA                001B23  001B32  000010  00001
+BSS                   001B33  001B3C  00000A  00001
+
+
+Exports list by name:
+---------------------
+_ipc_failure              001B34 RLA    _ipc_handle               001B36 RLA    
+_ipc_peer                 001B38 RLA    _ipc_phase                001B33 RLA    
+_ipc_release              001B35 RLA    _strlen                   001B0D RLA    
+_udeks_native_console_gate 001027 RLA    _udeks_native_console_record 00F359 REA    
+_udeks_program_entry      001000 RLA    _udeks_program_main       00102A RLA    
+_udeks_sleep              0017BE RLA    addeqysp                  001940 RLA    
+addysp                    001950 RLA    addysp1                   00194F RLA    
+bnega                     001961 RLA    booleq                    001A2B RLA    
+boolne                    001A25 RLA    decsp1                    00196B RLA    
+decsp2                    001974 RLA    incax1                    0019B9 RLA    
+incax2                    0019C0 RLA    incax4                    0019C7 RLA    
+incsp1                    0019D2 RLA    incsp2                    0019E1 RLA    
+incsp3                    0019EF RLA    incsp4                    0019F4 RLA    
+incsp5                    0019F9 RLA    incsp6                    0019FE RLA    
+ldax0sp                   001A10 RLA    ldaxidx                   001A05 RLA    
+ldaxysp                   001A12 RLA    leaa0sp                   001A19 RLA    
+popptr1                   001A9D RLA    ptr1                      00000A RLZ    
+ptr2                      00000C RLZ    ptr4                      000010 RLZ    
+pusha                     001AAF RLA    pusha0                    001AC3 RLA    
+pushax                    001AC5 RLA    pushwysp                  001ADD RLA    
+sp                        000002 RLZ    sreg                      000004 RLZ    
+staspidx                  001AF7 RLA    tmp1                      000012 RLZ    
+toseqa0                   001983 RLA    tosicmp                   00198D RLA    
+tosorax                   001A8D RLA    tosumula0                 001A51 RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+ptr1                      00000A RLZ    ptr2                      00000C RLZ    
+ptr4                      000010 RLZ    tmp1                      000012 RLZ    
+_udeks_program_entry      001000 RLA    _udeks_native_console_gate 001027 RLA    
+_udeks_program_main       00102A RLA    _udeks_sleep              0017BE RLA    
+addeqysp                  001940 RLA    addysp1                   00194F RLA    
+addysp                    001950 RLA    bnega                     001961 RLA    
+decsp1                    00196B RLA    decsp2                    001974 RLA    
+toseqa0                   001983 RLA    tosicmp                   00198D RLA    
+incax1                    0019B9 RLA    incax2                    0019C0 RLA    
+incax4                    0019C7 RLA    incsp1                    0019D2 RLA    
+incsp2                    0019E1 RLA    incsp3                    0019EF RLA    
+incsp4                    0019F4 RLA    incsp5                    0019F9 RLA    
+incsp6                    0019FE RLA    ldaxidx                   001A05 RLA    
+ldax0sp                   001A10 RLA    ldaxysp                   001A12 RLA    
+leaa0sp                   001A19 RLA    boolne                    001A25 RLA    
+booleq                    001A2B RLA    tosumula0                 001A51 RLA    
+tosorax                   001A8D RLA    popptr1                   001A9D RLA    
+pusha                     001AAF RLA    pusha0                    001AC3 RLA    
+pushax                    001AC5 RLA    pushwysp                  001ADD RLA    
+staspidx                  001AF7 RLA    _strlen                   001B0D RLA    
+_ipc_phase                001B33 RLA    _ipc_failure              001B34 RLA    
+_ipc_release              001B35 RLA    _ipc_handle               001B36 RLA    
+_ipc_peer                 001B38 RLA    _udeks_native_console_record 00F359 REA    
+
+
+
+Imports list:
+-------------
+_ipc_failure (program.o):
+    [linker generated]       
+_ipc_handle (program.o):
+    [linker generated]       
+_ipc_peer (program.o):
+    [linker generated]       
+_ipc_phase (program.o):
+    [linker generated]       
+_ipc_release (program.o):
+    [linker generated]       
+_strlen (strlen.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(15)
+_udeks_native_console_gate (entry.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(19)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(17)
+_udeks_native_console_record (entry.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(18)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(16)
+_udeks_program_entry (entry.o):
+    [linker generated]       
+_udeks_program_main (program.o):
+    entry.o                   user/lib/native_console_entry.s(8)
+_udeks_sleep (runtime.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(14)
+addeqysp (addeqsp.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+addysp (addysp.o):
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+addysp1 (addysp.o):
+    or.o                      runtime/or.s(9)
+bnega (bneg.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+booleq (makebool.o):
+    eq.o                      runtime/eq.s(8)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+boolne (makebool.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+decsp1 (decsp1.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+decsp2 (decsp2.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+incax1 (incax1.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+incax2 (incax2.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+incax4 (incaxy.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+incsp1 (incsp1.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+incsp3 (incsp3.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+incsp4 (incsp4.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+incsp5 (incsp5.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+incsp6 (incsp6.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+ldax0sp (ldaxsp.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+ldaxidx (ldaxi.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+ldaxysp (ldaxsp.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+leaa0sp (leaaxsp.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+popptr1 (popptr1.o):
+    mul8.o                    runtime/mul8.s(9)
+ptr1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    ldaxi.o                   runtime/ldaxi.s(8)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(11)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(11)
+ptr2 (zeropage.o):
+    strlen.o                  common/strlen.s(12)
+ptr4 (zeropage.o):
+    mul8.o                    runtime/mul8.s(10)
+pusha (pusha.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+    entry.o                   user/lib/native_console_entry.s(8)
+pusha0 (pushax.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+pushax (pushax.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+pushwysp (pushwsp.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+sp (zeropage.o):
+    addysp.o                  runtime/addysp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    or.o                      runtime/or.s(10)
+    leaaxsp.o                 runtime/leaaxsp.s(8)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(10)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(10)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+staspidx (staspidx.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(472)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    or.o                      runtime/or.s(10)
+    incaxy.o                  runtime/incaxy.s(8)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/runtime.s(11)
+toseqa0 (eq.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+tosicmp (icmp.o):
+    eq.o                      runtime/eq.s(8)
+tosorax (or.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+tosumula0 (mul8.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/native/program.s(759)
+

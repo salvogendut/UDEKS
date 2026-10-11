@@ -248,6 +248,7 @@ include mk/services.mk
 include mk/reu.mk
 include mk/reu_store.mk
 include mk/reu_graphics.mk
+include mk/ipc.mk
 
 # Storage 0.2 positive/negative files live on DOS media, never in bootfs.
 .PHONY: disk-exec-image
@@ -1504,7 +1505,7 @@ $(BUILD_8502)/vic_clear.o: src/services/display/vic_clear.s | $(BUILD_8502)
 	$(CA65) $(ASFLAGS_8502) -o $@ $<
 
 $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphics.bin $(BUILD_8502)/retained-paths.bin $(BUILD_8502)/bitmap-hidden.bin &: \
-		$(REU_GRAPHICS_OBJECTS) \
+		$(REU_GRAPHICS_OBJECTS) $(IPC_OBJECTS) \
 		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/graphics_event.o $(BUILD_8502)/banked_access.o $(BUILD_8502)/retained_paths.o $(BUILD_8502)/retained_pool.o $(BUILD_8502)/retained_bitmap.o $(BUILD_8502)/retained_bitmap_paint.o \
 		$(BUILD_8502)/kernel_entry.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
@@ -1552,7 +1553,7 @@ $(KERNEL_BIN) $(CRT0_BIN) $(PROBE_BIN) $(KERNEL_MAP) $(BUILD_8502)/banked-graphi
 		$$(cat $(CAPABILITY_FORCE_IMPORTS)) \
 		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) \
 		-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok -u _udeks_retained_present_image \
-		-u _udeks_line_editor_get_line -u _udeks_banked_pages_init \
+		-u _udeks_line_editor_get_line -u _udeks_banked_pages_init -u _udeks_ipc_request -u _udeks_ipc_retire -u _udeks_ipc_state \
 		$(TIME_LINK_IMPORTS) \
 		-o $(KERNEL_BIN) \
 		$(filter %.o,$^)
@@ -1713,7 +1714,7 @@ $(TASK_SWITCH_ACTIVATION_BIN): $(TASK_SWITCH_ACTIVATION_OBJ) \
 
 $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$(PANIC_PROBE_PROBE_BIN) $(PANIC_PROBE_MAP) $(BUILD_8502)/banked-graphics-panic.bin $(BUILD_8502)/retained-paths-panic.bin $(BUILD_8502)/bitmap-hidden-panic.bin &: \
-		$(REU_GRAPHICS_OBJECTS) \
+		$(REU_GRAPHICS_OBJECTS) $(IPC_OBJECTS) \
 		$(BUILD_8502)/banked_graphics.o $(BUILD_8502)/graphics_event.o $(BUILD_8502)/banked_access.o $(BUILD_8502)/retained_paths.o $(BUILD_8502)/retained_pool.o $(BUILD_8502)/retained_bitmap.o $(BUILD_8502)/retained_bitmap_paint.o \
 		$(BUILD_8502)/kernel_entry.o \
 		$(BUILD_8502)/crt0.o $(BUILD_8502)/vdc.o \
@@ -1760,7 +1761,7 @@ $(PANIC_PROBE_KERNEL_BIN) $(PANIC_PROBE_CRT0_BIN) \
 		$$(cat $(CAPABILITY_FORCE_IMPORTS)) \
 		$$(cat $(BOOT_CONSOLE_FORCE_IMPORTS)) \
 		-u _udeks_bootfs_finish_error -u _udeks_bootfs_finish_ok -u _udeks_retained_present_image \
-		-u _udeks_line_editor_get_line -u _udeks_banked_pages_init \
+		-u _udeks_line_editor_get_line -u _udeks_banked_pages_init -u _udeks_ipc_request -u _udeks_ipc_retire -u _udeks_ipc_state \
 		$(TIME_LINK_IMPORTS) \
 		-m $(BUILD_8502)/udeks-8502-panic-probe.map \
 		-o $(PANIC_PROBE_KERNEL_BIN) \

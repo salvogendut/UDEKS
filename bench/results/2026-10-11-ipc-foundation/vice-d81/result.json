@@ -1,0 +1,18 @@
+{
+  "format": "d81",
+  "scope": "Disk-loaded raw IPC fixtures through FF16; real EXIT/CANCEL retirement.",
+  "checks": [
+    "foreign access",
+    "16 exact copied bytes",
+    "full/empty/short receive",
+    "stale handle",
+    "sender EXIT purges peer queue",
+    "normal EXIT",
+    "foreground CANCEL",
+    "reuse",
+    "clock coexistence",
+    "graphics stopped"
+  ],
+  "disk_sha256": "9f7b183f198454f8aeca4127e90870fa62dd857651c20c762c16228294b37547",
+  "fixture_sha256": "9ac47abc346d300c803f8ec748add52895528a0ef6f1c80afcc42780a35ba902"
+}

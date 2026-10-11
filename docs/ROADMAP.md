@@ -13,6 +13,18 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
+**IPC foundation implemented locally (2026-10-11):**
+[#57](https://github.com/salvogendut/UDEKS/issues/57), branch
+`ipc-0.1-foundation`, worktree `build/ipc-foundation`. Slice 1 provides two
+named endpoints, copied 16-byte messages and EXIT/CANCEL cleanup with handles
+that never repeat within a boot. Normal/panic placement and VICE D64/D81
+raw-gate checks pass; 1,735 host tests pass. Slice 2 implements the [SDK and public request/reply demo](IPC-SDK.md),
+with passing VICE D71/D81 checks and 1,746 host tests; D64 lacks room for both
+programs and is skipped. [Slice-2 evidence](../bench/results/2026-10-11-ipc-examples/README.md). Broader
+acceptance remains slice 3. Native 1986 IPC
+and physical-C128 qualification remain open. [Contract](../abi/ipc.md),
+[plan](IPC.md), [candidate disks and evidence](../bench/results/2026-10-11-ipc-foundation/README.md).
+
 **Implemented and user-accepted — optional REU graphics backing storage (2026-10-09):**
 the user selected REU and VICE. Branch `graphics-reu`, worktree
 `build/graphics-reu`, based on the committed viewer `fe57e7f`.
@@ -117,11 +129,17 @@ The user authorized merge after these automated gates. No new physical-C128
 test is inferred. This is one provisional fixed slot, not an arbitrary module
 allocator or daemon framework.
 
-**Next architectural work (proposed):** a bounded message/handle IPC slice
+**Active architectural work ([plan](IPC.md), [#57](https://github.com/salvogendut/UDEKS/issues/57)):** a bounded message/handle IPC slice
 under milestone 3: two independently loaded programs exchange requests and
 replies, with endpoint ownership and cleanup when either exits or is cancelled.
-Open a separate issue/branch when authorized. Preserve allocation/stack bounds while
-adding features; the background-output slice has 40 resident bytes free.
+Slice 1 is implemented on `ipc-0.1-foundation`, worktree `build/ipc-foundation`:
+two named endpoints, copied 16-byte messages, nonblocking operations and trusted
+EXIT/CANCEL cleanup, with handles that never repeat during a boot. Normal/panic
+placement preserves all allocations and leaves 24 resident and 68 hidden bytes
+free. The raw-gate VICE D64/D81 checks and host suite pass. Slice 2 implements the [SDK and public request/reply demo](IPC-SDK.md)
+on D71/D81 media, with passing VICE probes and 1,746 host tests; slice 3 supplies
+broader acceptance. Native 1986
+IPC and physical-C128 qualification remain open.
 General task allocation, message/handle IPC and further service extraction remain open;
 preemption, scripting and app-specific optimization are separate work. Do not
 turn the completed time-service slice into an indefinite loader-tuning project.

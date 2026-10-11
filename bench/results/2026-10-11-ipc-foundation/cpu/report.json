@@ -1,0 +1,12 @@
+{
+  "scope": "Execute production IPC, syscall dispatch, replies and retirement on sim6502.\n\nMMU registers are simulator RAM; bank switching and native scheduling require\nseparate emulator qualification. Unrelated services trap if unexpectedly used.\n",
+  "negative_control": "missing IPC retirement hook detected",
+  "images": {
+    "root": "cfb18e5b9a58b4057b1d4cc167c75fceee65c39cfee19e2a8411172aa021da92",
+    "router": "a21bed58829dad54963fbbdaa1780b92f81838a21b0fc17f6c8c5b9cd54753d3",
+    "vectors": "f4ca084d12bc80f1adb06c6f9e1adb0cd18d144e1a3c506920d8506204d6a329",
+    "hidden": "9fda7d0036b03a19a44400eb8abf53fc0653d3505d2e85b7fb180f289b2bf68d",
+    "bootfs": "627ea0dda31a87886968e5f360f2c3616f00a4e61ac05d095e51105e4ca4082e",
+    "common": "fa0bf15ee3564db608238a159cda148aa2d73407c93eb9dcd8ed39f783b24d6c"
+  }
+}
