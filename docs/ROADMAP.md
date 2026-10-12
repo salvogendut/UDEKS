@@ -26,6 +26,7 @@ qualification, and the user confirmed manual emulator acceptance on
 [plan](IPC.md), [candidate disks and evidence](../bench/results/2026-10-11-ipc-foundation/README.md).
 
 **IPC slices 1–3 implemented and emulator-accepted:**
+[Delivery PR #59](https://github.com/salvogendut/UDEKS/pull/59),
 [#58](https://github.com/salvogendut/UDEKS/issues/58), branch
 `ipc-0.1-qualification`, worktree `build/ipc-foundation`. VICE D71/D81 pass
 cancellation of either peer, recovery, twelve restarts each and expanded raw

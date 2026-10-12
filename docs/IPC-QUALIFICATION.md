@@ -4,6 +4,7 @@ Tracking: [issue #58](https://github.com/salvogendut/UDEKS/issues/58), branch
 `ipc-0.1-qualification`, current worktree `build/ipc-foundation`, based on
 pushed commit `1de24a4`. Slices 1 and 2 are preserved in their dated archives.
 Full public demo images remain D71/D81; D64 is skipped by user agreement.
+Delivery: [PR #59](https://github.com/salvogendut/UDEKS/pull/59).
 
 ## Automated qualification scope
 
