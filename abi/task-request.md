@@ -1,8 +1,17 @@
-# Bank-task request ABI 0.20
+# Bank-task request ABI 0.21
+
+## Bounded message IPC (0.21)
+
+Operation **29** provides two named endpoints with one copied 16-byte message
+per endpoint, nonblocking send/receive and owner-checked close. Handles never
+repeat within a boot; EXIT/CANCEL retire endpoints and queued messages before
+allocation reuse. [Wire contract and errors](ipc.md). The request boundary now
+accepts minors 0–21; operation 29 requires minor 21. Public gates and all earlier
+operation numbers remain unchanged.
 
 ## Packed bitmap surfaces (0.20)
 
-The request boundary accepts minors 0–20; future minors return `EPROTO`.
+Packed bitmap operations require minor 20 or later; future minors return `EPROTO` at the common gate.
 Graphics operation **23** adds suboperations 8–11 for transactional packed
 bitmap upload, commit and abort. These require minor 20 and an owned native
 window, using the same descriptor/flags-zero, 24-byte record and `$FF16` gate.

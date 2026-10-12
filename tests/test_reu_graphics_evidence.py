@@ -21,7 +21,7 @@ class ReuGraphicsEvidence(unittest.TestCase):
             for name,digest in report['pictures'].items():
                 self.assertEqual(hashlib.sha256((E/'artifacts'/name).read_bytes()).hexdigest(),digest)
             for path,digest in report['source_sha256'].items():
-                self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),digest,path)
+                self.assertEqual(hashlib.sha256((E/'sources'/path).read_bytes()).hexdigest(),digest,path)
     def test_independent_pixels_backing_bytes_code_guards_and_cleanup(self):
         picture=(E/'artifacts/CLOCK160.CBM').read_bytes()[11:]
         reu=(E/'vice-512/reu.img').read_bytes();expected=bytearray([165])*len(reu)

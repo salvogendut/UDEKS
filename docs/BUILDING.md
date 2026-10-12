@@ -31,6 +31,22 @@ sudo dnf install cc65
 SDCC and RASM are currently provided through paths shared with the host. A clean
 environment bootstrap will be added before the Phase 0 exit gate.
 
+## Debian machine for IPC development
+
+The IPC foundation work uses native `gh`, cc65 and SDCC on Debian 12, without
+`my-distrobox`. Install its build and host-test dependencies with:
+
+```sh
+sudo apt install cc65 sdcc build-essential python3-pil python3-pytest libsdl2-dev
+```
+
+The installed target compilers are Debian cc65 2.19-1 (reports V2.18) and SDCC
+4.2.0 revision 13081. VICE is the `net.sf.VICE` Flatpak (3.8 here). The installed
+1986 Flatpak uses a flat ROM bundle assembled from `../vice-roms`, rather than
+VICE's directory layout. The sibling emulator source needed by the native
+1986 harness is absent on this machine. RASM is required only for the separate
+RASM targets; it is not needed for the boot/IPC gates described here.
+
 ## Targets
 
 ```sh
@@ -402,3 +418,20 @@ alone did not leave the benchmark in 2 MHz mode. IRQ qualification also stops
 the otherwise unused CIA1 Timer B and reads CIA1 ICR before entering the
 preserved PRG. The exact commands and rationale are in the
 [`1986` r2 report](../bench/results/1986-7556c23-2026-09-24-r2/README.md).
+
+## IPC SDK examples
+
+`make ipc-demo` builds independent IPC server/client executables and packages
+full D71/D81 demonstration disks. D64 is skipped because both programs do not
+fit alongside the standard applications. `make ipc-demo-probe` qualifies both
+formats in VICE. See the [SDK guide and manual commands](IPC-SDK.md) and
+[slice-2 candidate evidence](../bench/results/2026-10-11-ipc-examples/README.md).
+
+`make ipc-boundary-probe` exercises the expanded raw fixture on D71/D81.
+`make ipc-lifecycle-probe` checks actual parent cancellation of both peers,
+orphan timeout/stale handles, recovery and twelve restarts per medium. Its
+WAITPING fixture is added only to disposable test disks.
+`make ipc-native-1986-probe` builds the pinned installed-version emulator
+source against local static SDL3 and runs native D81 IPC/keyboard/1351 checks.
+See [source setup, evidence and separate acceptance runs](IPC-QUALIFICATION.md).
+ROMs and ROM-bearing boot checkpoints stay private under ignored `build/`.

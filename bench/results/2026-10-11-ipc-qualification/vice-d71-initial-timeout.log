@@ -1,0 +1,22 @@
+PASS xclock &
+PASS xdraw &
+PASS ipcsrv &
+PASS ipcping CancelMe
+PASS Ctrl-C during pending request
+PASS ipcping AfterCancel
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle0
+Traceback (most recent call last):
+  File "/home/sbognann/Development/UDEKS/build/ipc-foundation/tools/ipc_demo_probe.py", line 255, in <module>
+    raise AssertionError('orphaned peer stale handle/cleanup')
+            ^^^^^^
+  File "/home/sbognann/Development/UDEKS/build/ipc-foundation/tools/ipc_demo_probe.py", line 238, in main
+    records.append(dict(check='cancel-client-during-request',server_handle=handle,recovered=True))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sbognann/Development/UDEKS/build/ipc-foundation/tools/ipc_demo_probe.py", line 72, in command
+    def wait(test,label,seconds=120):
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sbognann/Development/UDEKS/build/ipc-foundation/tools/shadow_boot_probe.py", line 393, in wait_for_byte
+    raise TimeoutError(f"${address:04X} never reached ${value:02X}")
+TimeoutError: $F3D8 never reached $11

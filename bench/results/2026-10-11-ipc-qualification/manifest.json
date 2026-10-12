@@ -1,0 +1,53 @@
+{
+  "base_commit": "1de24a4",
+  "first_increment": "0a696a3",
+  "issue": 58,
+  "branch": "ipc-0.1-qualification",
+  "scope": "slice 3 automated lifecycle, boundary and native input qualification",
+  "host_tests": 1750,
+  "evidence_tests": 4,
+  "qualified": [
+    "VICE D71/D81 both-peer cancellation and recovery",
+    "VICE D71/D81 twelve restarts per medium",
+    "VICE D71/D81 expanded raw boundary/lifecycle coverage",
+    "native pinned-source 1986 D81 IPC and real keyboard/1351 input"
+  ],
+  "open": [
+    "physical C128 testing (separate run)"
+  ],
+  "flatpak_qualified": false,
+  "physical_c128": false,
+  "first_increment_source_sha256": {
+    "tools/ipc_demo_probe.py": "a69dce9459e37b2a27748b82ec6ad1f9c968aa896177ad466f6bcd82e2f9bfd6",
+    "mk/ipc.mk": "b3197666d8eefed58c9f4b846e66ea21b7c8920104f6eb98c9aad3f698cf27d9",
+    "docs/IPC-QUALIFICATION.md": "455335ca971d3091795984a27bd7a433b5a93987af43272037e7f710ebb26071"
+  },
+  "source_sha256": {
+    "AGENTS.md": "7565b50fab161f739f16b9e4d69482d41ef1cb2cc683dca4c3be3528998bb6ac",
+    "bench/ipc/native.c": "560bf59309587f412a494a38a0ac9a724a6ef0c1be3bf97c5ca124a41192dfb8",
+    "bench/ipc/waiting_client.c": "d520fe2ad30d3cc4a5fceeea6ed4afaaca0c26c6480638cf0be6afa717f06dc1",
+    "tools/ipc_demo_probe.py": "40f2d6f1f24c8847dacf3927a78984629797381488f34153420806819fa04c51",
+    "tools/ipc_probe.py": "c2deaf3ebc98a2868ee5b4a7bd1b514322d17b981fcf3a19758567bc9b3de081",
+    "tools/ipc_1986_probe.py": "5c61df465c899d4d5f0871eafd87cdc750884953583bfb173f5d60eb4b74c56a",
+    "tools/1986_ipc_smoke.c": "50118735c2f7a0447885bb33c89433912a996a95af9c9920407479f40d2d009f",
+    "tools/1986_input_smoke.c": "254daae37a479a9a8466351e1dd52bc740acb2c54a04f4cfa3c3e5d33b89d63b",
+    "tests/test_ipc_qualification_evidence.py": "76c79c644137b3e1120d5667733a3203d14ea6d2910d173fa16a60d1e6f9a870",
+    "mk/ipc.mk": "3a0da54285f3ab1fcb58af5f98a9a5712f9085902ce67a89471d5b4abcadc89b",
+    "docs/IPC-QUALIFICATION.md": "57bc9f378afb35b9082860e2442b0991ab579be0a01893e788d37fe75b5815d9",
+    "docs/IPC.md": "511a391d2fa44500faf4206e11d46c5e3a1f3a9696e78b2bbc6f71cb13904e90",
+    "docs/IPC-SDK.md": "5136d3afcd047e304b6e6ea7f6ca31f758d0a7aaa53dda5ca6cdcf58d6e1a45e",
+    "docs/ROADMAP.md": "4099a0c1fcfad0bf181913b71e9e97979642e0854af07f183cfdf56e9daeda95",
+    "docs/BUILDING.md": "4b2ce77648436717605ade756d95860f7a8a5d7740eb5699845a16a2b1d604b9"
+  },
+  "kernel_sha256": {
+    "udeks-8502.bin": "24a06c7b21b4dba49d868716a486a779b1ed219c3039dbcf4c304d58dd1cb194",
+    "udeks-8502-panic-probe.bin": "bd4909e4c31a6e1576f59a270e7d70b8f53ba76c0151a152b12eeb29cc4dc70e",
+    "bitmap-hidden-sealed.bin": "be43a3cde0d28d811b76476426f9f634d8e69efb5c0aa51fa11e677fe1f54a7f"
+  },
+  "manual_acceptance": {
+    "date": "2026-10-12",
+    "result": "user reports all is well after installed 1986 instructions",
+    "record": "manual-acceptance.md",
+    "merge_authorized": true
+  }
+}

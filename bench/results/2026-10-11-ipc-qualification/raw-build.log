@@ -1,0 +1,17 @@
+python3 tools/build_native_console.py --source bench/ipc/native.c --name IPCTEST --output build/ipc/native \
+	--export _ipc_phase --export _ipc_failure --export _ipc_release --export _ipc_handle --export _ipc_peer
+{
+  "file": 3883,
+  "image": 3071,
+  "bss": 10,
+  "fits": [
+    3,
+    5
+  ],
+  "joined_fits": [
+    3,
+    5
+  ],
+  "resident_bytes": 0,
+  "scope": "native arguments/streams/sleep/foreground stdin/task-owned mounted-file I/O"
+}

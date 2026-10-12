@@ -203,7 +203,12 @@ def main():
         if wave('resized-wave',nw,nh)!=before+1 or leases('leases-resized')!=count:
             raise AssertionError('resize repeated projection or worker computation')
     def injected_click(handle,x,y):
+        # The event slot is a single pending click. Host wall time does not
+        # guarantee that a slower emulator has scheduled the client; wait for
+        # consumption rather than overwriting another unprocessed event.
+        sp.wait_for_byte(port,click,0,time.monotonic()+90)
         sp.write_kernel_blocks(port,[(click,bytes((handle,x&255,x>>8,y)))])
+        sp.wait_for_byte(port,click,0,time.monotonic()+90)
     def wait_value(tag,address,expected):
         deadline=time.monotonic()+90
         while capture(tag,address,len(expected),'worker')!=expected:
@@ -234,7 +239,7 @@ def main():
         calc_handle=byte(port,0xf247)
         for key in '12+34=':
             i='789/456*123-C0=+.N  '.index(key)
-            injected_click(calc_handle,11+(i%4)*25,40+(i//4)*20);time.sleep(.3)
+            injected_click(calc_handle,11+(i%4)*25,40+(i//4)*20)
         wait_value('calc-46',app_address('xcalc','_udeks_calc_value',3),(4600).to_bytes(4,'little'))
         command('xdraw &');windows(4)
         draw_handle=byte(port,0xf247)

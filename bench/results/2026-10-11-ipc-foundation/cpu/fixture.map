@@ -1,0 +1,473 @@
+Modules list:
+-------------
+gate.o:
+    CODE              Offs=000000  Size=000079  Align=00001  Fill=0000
+    SYSCALLS          Offs=000000  Size=0000FF  Align=00001  Fill=0000
+    TASKREQUEST       Offs=000000  Size=0000F7  Align=00001  Fill=0000
+ipc.o:
+    CODE              Offs=000079  Size=000020  Align=00001  Fill=0000
+    BITMAPSTATE       Offs=000000  Size=000040  Align=00001  Fill=0000
+    BITMAPCODE        Offs=000000  Size=00025A  Align=00001  Fill=0000
+traps.o:
+    CODE              Offs=000099  Size=000001  Align=00001  Fill=0000
+router.o:
+    ROUTER            Offs=000000  Size=000080  Align=00001  Fill=0000
+bootfs.o:
+    BOOTFSCODE        Offs=000000  Size=00029A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(add.o):
+    CODE              Offs=00009A  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=0000B6  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=0000C7  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(aslax2.o):
+    CODE              Offs=0000D5  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=0000E0  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=0000E9  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=0000F6  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp4.o):
+    CODE              Offs=000103  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp5.o):
+    CODE              Offs=000110  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp6.o):
+    CODE              Offs=00011D  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp7.o):
+    CODE              Offs=00012A  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp8.o):
+    CODE              Offs=000137  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=000144  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000172  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000179  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=00018F  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000194  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=000199  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=00019E  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp7.o):
+    CODE              Offs=0001A3  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldai.o):
+    CODE              Offs=0001A8  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul.o):
+    CODE              Offs=0001B4  Size=000045  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mul8.o):
+    CODE              Offs=0001F9  Size=00003A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(mulax5.o):
+    CODE              Offs=000233  Size=000014  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(popptr1.o):
+    CODE              Offs=000247  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000255  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=00026B  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=000285  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax1.o):
+    CODE              Offs=0002A1  Size=000008  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax2.o):
+    CODE              Offs=0002A9  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(shrax4.o):
+    CODE              Offs=0002B4  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=0002C5  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=0002DB  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(sub.o):
+    CODE              Offs=0002E6  Size=000015  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(subysp.o):
+    CODE              Offs=0002FB  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(udiv.o):
+    CODE              Offs=000308  Size=00004F  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(umod.o):
+    CODE              Offs=000357  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000006  00001F  00001A  00001
+CODE                  008000  008367  000368  00001
+ROUTER                00C880  00C8FF  000080  00001
+SYSCALLS              00CF00  00CFFE  0000FF  00001
+BITMAPCODE            00D000  00D259  00025A  00001
+BITMAPSTATE           00D25A  00D299  000040  00001
+BOOTFSCODE            00F3EF  00F688  00029A  00001
+TASKREQUEST           00F800  00F8F6  0000F7  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               008368 RLA    __BSS_SIZE__              000000 REA    
+__SERVICEBOOT_RUN__       0093D0 REA    __SERVICEBOOT_SIZE__      000000 REA    
+_udeks_banked_graphics_installed 008099 REA    _udeks_banked_graphics_request 008099 REA    
+_udeks_bootfs_finish_error 00F65B RLA    _udeks_bootfs_finish_ok   00F667 RLA    
+_udeks_ipc_request        008079 RLA    _udeks_ipc_retire         00808F RLA    
+_udeks_ipc_serial         00D296 RLA    _udeks_ipc_state          00D25A RLA    
+_udeks_line_editor_read   008099 REA    _udeks_root_terminal_prompt 008099 REA    
+_udeks_root_terminal_write_request 008099 REA    _udeks_service_control_request 008099 REA    
+_udeks_shell_command_line 008099 REA    _udeks_shell_foreground_job 008099 REA    
+_udeks_stream_write       008099 REA    _udeks_stream_write_byte  008099 REA    
+_udeks_task_worker_request 008099 REA    _udeks_terminal_input_access 008099 REA    
+_udeks_time_now           008099 REA    _udeks_time_slot_control  008099 REA    
+_udeks_time_slot_request  008000 RLA    _udeks_time_slot_reset    008099 REA    
+_udeks_time_slot_set      008099 REA    _udeks_time_slot_state    008099 REA    
+_udeks_vic_bitmap_fill    008099 REA    _udeks_vic_bitmap_line    008099 REA    
+_udeks_vic_bitmap_pixel   008099 REA    _udeks_vic_graphics_is_active 008099 REA    
+_udeks_window_begin_paint 008099 REA    _udeks_window_create      008099 REA    
+_udeks_window_destroy     008099 REA    _udeks_window_end_paint   008099 REA    
+_udeks_window_get_geometry 008099 REA    _udeks_window_image_complete 008099 REA    
+_udeks_window_is_dragging 008099 REA    _udeks_window_is_focused  008099 REA    
+_udeks_window_repaint     008099 REA    _udeks_window_take_click  008099 REA    
+_udeks_z80_submit         008099 REA    addeqysp                  0080B8 RLA    
+addysp                    0080C8 RLA    addysp1                   0080C7 RLA    
+aslax2                    0080D5 RLA    decsp1                    0080E0 RLA    
+decsp2                    0080E9 RLA    decsp3                    0080F6 RLA    
+decsp4                    008103 RLA    decsp5                    008110 RLA    
+decsp6                    00811D RLA    decsp7                    00812A RLA    
+decsp8                    008137 RLA    incsp1                    008172 RLA    
+incsp2                    008181 RLA    incsp3                    00818F RLA    
+incsp4                    008194 RLA    incsp5                    008199 RLA    
+incsp6                    00819E RLA    incsp7                    0081A3 RLA    
+ldaidx                    0081A8 RLA    mul8x16                   0081FB RLA    
+mul8x16a                  008205 RLA    mulax5                    008233 RLA    
+popptr1                   008247 RLA    ptr1                      00000E RLZ    
+ptr2                      000010 RLZ    ptr3                      000012 RLZ    
+ptr4                      000014 RLZ    pusha                     008259 RLA    
+pusha0                    00826D RLA    pushax                    00826F RLA    
+pushwysp                  008287 RLA    regbank                   00001A RLZ    
+regsave                   00000A RLZ    shrax1                    0082A1 RLA    
+shrax2                    0082A9 RLA    shrax4                    0082B4 RLA    
+sp                        000006 RLZ    sreg                      000008 RLZ    
+staspidx                  0082C5 RLA    stax0sp                   0082DB RLA    
+staxysp                   0082DD RLA    subysp                    0082FB RLA    
+tmp1                      000016 RLZ    tmp2                      000017 RLZ    
+tmp3                      000018 RLZ    tmp4                      000019 RLZ    
+tosaddax                  00809C RLA    tosicmp                   008146 RLA    
+tossuba0                  0082E6 RLA    tossubax                  0082E8 RLA    
+tosudiva0                 008308 RLA    tosumoda0                 008357 RLA    
+tosumula0                 0081F9 RLA    tosumulax                 0081B4 RLA    
+udiv16                    008319 RLA    
+
+
+Exports list by value:
+----------------------
+__BSS_SIZE__              000000 REA    __SERVICEBOOT_SIZE__      000000 REA    
+sp                        000006 RLZ    sreg                      000008 RLZ    
+regsave                   00000A RLZ    ptr1                      00000E RLZ    
+ptr2                      000010 RLZ    ptr3                      000012 RLZ    
+ptr4                      000014 RLZ    tmp1                      000016 RLZ    
+tmp2                      000017 RLZ    tmp3                      000018 RLZ    
+tmp4                      000019 RLZ    regbank                   00001A RLZ    
+_udeks_time_slot_request  008000 RLA    _udeks_ipc_request        008079 RLA    
+_udeks_ipc_retire         00808F RLA    _udeks_banked_graphics_installed 008099 REA    
+_udeks_banked_graphics_request 008099 REA    _udeks_line_editor_read   008099 REA    
+_udeks_root_terminal_prompt 008099 REA    _udeks_root_terminal_write_request 008099 REA    
+_udeks_service_control_request 008099 REA    _udeks_shell_command_line 008099 REA    
+_udeks_shell_foreground_job 008099 REA    _udeks_stream_write       008099 REA    
+_udeks_stream_write_byte  008099 REA    _udeks_task_worker_request 008099 REA    
+_udeks_terminal_input_access 008099 REA    _udeks_time_now           008099 REA    
+_udeks_time_slot_control  008099 REA    _udeks_time_slot_reset    008099 REA    
+_udeks_time_slot_set      008099 REA    _udeks_time_slot_state    008099 REA    
+_udeks_vic_bitmap_fill    008099 REA    _udeks_vic_bitmap_line    008099 REA    
+_udeks_vic_bitmap_pixel   008099 REA    _udeks_vic_graphics_is_active 008099 REA    
+_udeks_window_begin_paint 008099 REA    _udeks_window_create      008099 REA    
+_udeks_window_destroy     008099 REA    _udeks_window_end_paint   008099 REA    
+_udeks_window_get_geometry 008099 REA    _udeks_window_image_complete 008099 REA    
+_udeks_window_is_dragging 008099 REA    _udeks_window_is_focused  008099 REA    
+_udeks_window_repaint     008099 REA    _udeks_window_take_click  008099 REA    
+_udeks_z80_submit         008099 REA    tosaddax                  00809C RLA    
+addeqysp                  0080B8 RLA    addysp1                   0080C7 RLA    
+addysp                    0080C8 RLA    aslax2                    0080D5 RLA    
+decsp1                    0080E0 RLA    decsp2                    0080E9 RLA    
+decsp3                    0080F6 RLA    decsp4                    008103 RLA    
+decsp5                    008110 RLA    decsp6                    00811D RLA    
+decsp7                    00812A RLA    decsp8                    008137 RLA    
+tosicmp                   008146 RLA    incsp1                    008172 RLA    
+incsp2                    008181 RLA    incsp3                    00818F RLA    
+incsp4                    008194 RLA    incsp5                    008199 RLA    
+incsp6                    00819E RLA    incsp7                    0081A3 RLA    
+ldaidx                    0081A8 RLA    tosumulax                 0081B4 RLA    
+tosumula0                 0081F9 RLA    mul8x16                   0081FB RLA    
+mul8x16a                  008205 RLA    mulax5                    008233 RLA    
+popptr1                   008247 RLA    pusha                     008259 RLA    
+pusha0                    00826D RLA    pushax                    00826F RLA    
+pushwysp                  008287 RLA    shrax1                    0082A1 RLA    
+shrax2                    0082A9 RLA    shrax4                    0082B4 RLA    
+staspidx                  0082C5 RLA    stax0sp                   0082DB RLA    
+staxysp                   0082DD RLA    tossuba0                  0082E6 RLA    
+tossubax                  0082E8 RLA    subysp                    0082FB RLA    
+tosudiva0                 008308 RLA    udiv16                    008319 RLA    
+tosumoda0                 008357 RLA    __BSS_RUN__               008368 RLA    
+__SERVICEBOOT_RUN__       0093D0 REA    _udeks_ipc_state          00D25A RLA    
+_udeks_ipc_serial         00D296 RLA    _udeks_bootfs_finish_error 00F65B RLA    
+_udeks_bootfs_finish_ok   00F667 RLA    
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    gate.o                    src/8502/app_gateway.s(25)
+__BSS_SIZE__ ([linker generated]):
+    gate.o                    src/8502/app_gateway.s(25)
+__SERVICEBOOT_RUN__ (traps.o):
+    gate.o                    src/8502/app_gateway.s(30)
+__SERVICEBOOT_SIZE__ (traps.o):
+    gate.o                    src/8502/app_gateway.s(30)
+_udeks_banked_graphics_installed (traps.o):
+    gate.o                    src/8502/syscall_gate.s(24)
+_udeks_banked_graphics_request (traps.o):
+    gate.o                    src/8502/syscall_gate.s(24)
+_udeks_bootfs_finish_error (bootfs.o):
+    router.o                  /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/cpu/disk-loader-bindings.inc(2)
+    ipc.o                     src/kernel/ipc.s(9)
+    gate.o                    src/8502/syscall_gate.s(25)
+_udeks_bootfs_finish_ok (bootfs.o):
+    ipc.o                     src/kernel/ipc.s(9)
+    gate.o                    src/8502/syscall_gate.s(25)
+_udeks_ipc_request (ipc.o):
+    router.o                  /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/cpu/disk-loader-bindings.inc(2)
+_udeks_ipc_retire (ipc.o):
+    router.o                  /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/cpu/disk-loader-bindings.inc(2)
+_udeks_ipc_serial (ipc.o):
+    [linker generated]       
+_udeks_ipc_state (ipc.o):
+    [linker generated]       
+_udeks_line_editor_read (traps.o):
+    gate.o                    src/8502/syscall_gate.s(16)
+_udeks_root_terminal_prompt (traps.o):
+    gate.o                    src/8502/syscall_gate.s(19)
+_udeks_root_terminal_write_request (traps.o):
+    gate.o                    src/8502/syscall_gate.s(18)
+_udeks_service_control_request (traps.o):
+    gate.o                    src/8502/syscall_gate.s(22)
+_udeks_shell_command_line (traps.o):
+    gate.o                    src/8502/syscall_gate.s(20)
+_udeks_shell_foreground_job (traps.o):
+    gate.o                    src/8502/syscall_gate.s(21)
+_udeks_stream_write (traps.o):
+    gate.o                    src/8502/syscall_gate.s(15)
+_udeks_stream_write_byte (traps.o):
+    gate.o                    src/8502/syscall_gate.s(14)
+_udeks_task_worker_request (traps.o):
+    gate.o                    src/8502/syscall_gate.s(23)
+_udeks_terminal_input_access (traps.o):
+    gate.o                    src/8502/syscall_gate.s(17)
+_udeks_time_now (traps.o):
+    gate.o                    src/8502/app_gateway.s(10)
+_udeks_time_slot_control (traps.o):
+    gate.o                    src/8502/../services/module/request.inc(6)
+_udeks_time_slot_request (gate.o):
+    router.o                  /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/cpu/disk-loader-bindings.inc(2)
+_udeks_time_slot_reset (traps.o):
+    gate.o                    src/8502/../services/module/request.inc(7)
+_udeks_time_slot_set (traps.o):
+    gate.o                    src/8502/syscall_gate.s(28)
+_udeks_time_slot_state (traps.o):
+    gate.o                    src/8502/../services/module/request.inc(6)
+_udeks_vic_bitmap_fill (traps.o):
+    gate.o                    src/8502/app_gateway.s(11)
+_udeks_vic_bitmap_line (traps.o):
+    gate.o                    src/8502/app_gateway.s(12)
+_udeks_vic_bitmap_pixel (traps.o):
+    gate.o                    src/8502/app_gateway.s(13)
+_udeks_vic_graphics_is_active (traps.o):
+    gate.o                    src/8502/app_gateway.s(14)
+_udeks_window_begin_paint (traps.o):
+    gate.o                    src/8502/app_gateway.s(22)
+_udeks_window_create (traps.o):
+    gate.o                    src/8502/app_gateway.s(15)
+_udeks_window_destroy (traps.o):
+    gate.o                    src/8502/app_gateway.s(16)
+_udeks_window_end_paint (traps.o):
+    gate.o                    src/8502/app_gateway.s(22)
+_udeks_window_get_geometry (traps.o):
+    gate.o                    src/8502/app_gateway.s(17)
+_udeks_window_image_complete (traps.o):
+    gate.o                    src/8502/app_gateway.s(23)
+_udeks_window_is_dragging (traps.o):
+    gate.o                    src/8502/app_gateway.s(18)
+_udeks_window_is_focused (traps.o):
+    gate.o                    src/8502/app_gateway.s(19)
+_udeks_window_repaint (traps.o):
+    gate.o                    src/8502/app_gateway.s(20)
+_udeks_window_take_click (traps.o):
+    gate.o                    src/8502/app_gateway.s(24)
+_udeks_z80_submit (traps.o):
+    gate.o                    src/8502/app_gateway.s(21)
+addeqysp (addeqsp.o):
+    gate.o                    src/8502/app_gateway.s(35)
+addysp (addysp.o):
+    incsp7.o                  runtime/incsp7.s(8)
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    gate.o                    src/8502/app_gateway.s(35)
+addysp1 (addysp.o):
+    sub.o                     runtime/sub.s(8)
+aslax2 (aslax2.o):
+    gate.o                    src/8502/app_gateway.s(35)
+decsp1 (decsp1.o):
+    gate.o                    src/8502/app_gateway.s(36)
+decsp2 (decsp2.o):
+    gate.o                    src/8502/app_gateway.s(36)
+decsp3 (decsp3.o):
+    gate.o                    src/8502/app_gateway.s(36)
+decsp4 (decsp4.o):
+    gate.o                    src/8502/app_gateway.s(36)
+decsp5 (decsp5.o):
+    gate.o                    src/8502/app_gateway.s(36)
+decsp6 (decsp6.o):
+    gate.o                    src/8502/app_gateway.s(36)
+decsp7 (decsp7.o):
+    gate.o                    src/8502/app_gateway.s(36)
+decsp8 (decsp8.o):
+    gate.o                    src/8502/app_gateway.s(36)
+incsp1 (incsp1.o):
+    gate.o                    src/8502/app_gateway.s(37)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    popptr1.o                 runtime/popptr1.s(8)
+    gate.o                    src/8502/app_gateway.s(37)
+incsp3 (incsp3.o):
+    gate.o                    src/8502/app_gateway.s(37)
+incsp4 (incsp4.o):
+    gate.o                    src/8502/app_gateway.s(37)
+incsp5 (incsp5.o):
+    gate.o                    src/8502/app_gateway.s(37)
+incsp6 (incsp6.o):
+    gate.o                    src/8502/app_gateway.s(37)
+incsp7 (incsp7.o):
+    gate.o                    src/8502/app_gateway.s(37)
+ldaidx (ldai.o):
+    gate.o                    src/8502/app_gateway.s(38)
+mul8x16 (mul8.o):
+    mul.o                     runtime/mul.s(8)
+mul8x16a (mul8.o):
+    mul.o                     runtime/mul.s(8)
+mulax5 (mulax5.o):
+    gate.o                    src/8502/app_gateway.s(38)
+popptr1 (popptr1.o):
+    umod.o                    runtime/umod.s(8)
+    udiv.o                    runtime/udiv.s(9)
+    mul8.o                    runtime/mul8.s(9)
+    mul.o                     runtime/mul.s(9)
+ptr1 (zeropage.o):
+    udiv.o                    runtime/udiv.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    popptr1.o                 runtime/popptr1.s(9)
+    mulax5.o                  runtime/mulax5.s(9)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+    ldai.o                    runtime/ldai.s(8)
+    gate.o                    src/8502/syscall_gate.s(37)
+ptr2 (zeropage.o):
+    gate.o                    src/8502/app_gateway.s(48)
+ptr3 (zeropage.o):
+    gate.o                    src/8502/app_gateway.s(48)
+ptr4 (zeropage.o):
+    umod.o                    runtime/umod.s(9)
+    udiv.o                    runtime/udiv.s(10)
+    mul8.o                    runtime/mul8.s(10)
+    mul.o                     runtime/mul.s(10)
+    gate.o                    src/8502/app_gateway.s(48)
+pusha (pusha.o):
+    gate.o                    src/8502/syscall_gate.s(35)
+pusha0 (pushax.o):
+    gate.o                    src/8502/app_gateway.s(38)
+pushax (pushax.o):
+    gate.o                    src/8502/syscall_gate.s(36)
+pushwysp (pushwsp.o):
+    gate.o                    src/8502/app_gateway.s(38)
+regbank (zeropage.o):
+    gate.o                    src/8502/app_gateway.s(47)
+regsave (zeropage.o):
+    gate.o                    src/8502/app_gateway.s(47)
+shrax1 (shrax1.o):
+    gate.o                    src/8502/app_gateway.s(39)
+shrax2 (shrax2.o):
+    gate.o                    src/8502/app_gateway.s(39)
+shrax4 (shrax4.o):
+    gate.o                    src/8502/app_gateway.s(39)
+sp (zeropage.o):
+    subysp.o                  runtime/subysp.s(9)
+    sub.o                     runtime/sub.s(9)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    popptr1.o                 runtime/popptr1.s(9)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp8.o                  runtime/decsp8.s(8)
+    decsp7.o                  runtime/decsp7.s(8)
+    decsp6.o                  runtime/decsp6.s(8)
+    decsp5.o                  runtime/decsp5.s(8)
+    decsp4.o                  runtime/decsp4.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    add.o                     runtime/add.s(12)
+    gate.o                    src/8502/app_gateway.s(47)
+sreg (zeropage.o):
+    umod.o                    runtime/umod.s(9)
+    udiv.o                    runtime/udiv.s(10)
+    icmp.o                    runtime/icmp.s(9)
+    gate.o                    src/8502/app_gateway.s(47)
+staspidx (staspidx.o):
+    gate.o                    src/8502/app_gateway.s(40)
+stax0sp (staxsp.o):
+    gate.o                    src/8502/app_gateway.s(40)
+staxysp (staxsp.o):
+    gate.o                    src/8502/app_gateway.s(40)
+subysp (subysp.o):
+    gate.o                    src/8502/app_gateway.s(40)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    shrax4.o                  runtime/shrax4.s(8)
+    shrax2.o                  runtime/shrax2.s(8)
+    shrax1.o                  runtime/shrax1.s(8)
+    mul.o                     runtime/mul.s(10)
+    aslax2.o                  runtime/aslax2.s(8)
+    add.o                     runtime/add.s(12)
+    gate.o                    src/8502/syscall_gate.s(37)
+tmp2 (zeropage.o):
+    gate.o                    src/8502/app_gateway.s(49)
+tmp3 (zeropage.o):
+    gate.o                    src/8502/app_gateway.s(49)
+tmp4 (zeropage.o):
+    gate.o                    src/8502/app_gateway.s(49)
+tosaddax (add.o):
+    gate.o                    src/8502/app_gateway.s(41)
+tosicmp (icmp.o):
+    gate.o                    src/8502/app_gateway.s(41)
+tossuba0 (sub.o):
+    gate.o                    src/8502/app_gateway.s(41)
+tossubax (sub.o):
+    gate.o                    src/8502/app_gateway.s(41)
+tosudiva0 (udiv.o):
+    gate.o                    src/8502/app_gateway.s(42)
+tosumoda0 (umod.o):
+    gate.o                    src/8502/app_gateway.s(42)
+tosumula0 (mul8.o):
+    gate.o                    src/8502/app_gateway.s(42)
+tosumulax (mul.o):
+    gate.o                    src/8502/app_gateway.s(42)
+udiv16 (udiv.o):
+    umod.o                    runtime/umod.s(8)
+

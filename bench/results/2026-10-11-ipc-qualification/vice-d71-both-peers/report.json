@@ -1,0 +1,499 @@
+{
+  "format": "d71",
+  "scope": "Cold-boot public IPC examples through ordinary shell/disk/native SDK paths.\n\nKeyboard events launch each program. A temporary pointer-getter patch exercises\nwindow movement, and an acknowledged WM click exercises drawing. No IPC reply,\nendpoint, task or application state is fabricated by the monitor.\n",
+  "disk_sha256": "49fef4277a56f1031a2a67475be95e3dd95acbfa5a033860081294909cad7409",
+  "programs": {
+    "server": "ef076a7dff3e0e379e9bde2f9682faaa47ca6227ab4c67b2e880b519f7647b06",
+    "client": "2dc27bcd2203134b623d88984ca5a5e8425e8fbd2bd5ec2ce406282a1970324c",
+    "orphan": "ce3baefd78e2a1b0aae7c1ae7fb0e5db2864e0a5e129d4d76a41b2f4a8ab3a14"
+  },
+  "records": [
+    {
+      "command": "xclock &",
+      "console": "BASE RAM : 128 KB                                         [ OK ]\nVDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~>"
+    },
+    {
+      "command": "xdraw &",
+      "console": "VDC RAM : 64 KB                                           [ OK ]\nINITIALIZING CONSOLE ...                                  [ OK ]\nVIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~>"
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "VIDEO : PAL / VDC 8568                                    [ OK ]\nREU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping CancelMe",
+      "console": "REU : NOT PRESENT                                         [ -- ]\nGEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\n"
+    },
+    {
+      "input": "Ctrl-C",
+      "console": "GEORAM : NOT PRESENT                                      [ -- ]\n8502 EXECUTIVE : 1 MHZ                                    [ OK ]\nZ80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~>",
+      "input_queued_while_request_pending": true,
+      "exit_status": 130
+    },
+    {
+      "command": "ipcping AfterCancel",
+      "console": "Z80 WORKER : READY                                        [ OK ]\nIEC DRIVER HEADER ...                                     [ OK ]\nBOOTFS HEADER ...                                         [ OK ]\n\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "AfterCancel",
+      "authenticated_source": 1,
+      "reply_hex": "02414654455243414e43454c",
+      "client_task": 3
+    },
+    {
+      "check": "cancel-client-during-request",
+      "server_handle": 1,
+      "recovered": true
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "\nSYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 1,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "command": "waitping &",
+      "console": "SYSTEM READY.\n\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> waitping &\nUDEKS:~>"
+    },
+    {
+      "command": "ipcsrv",
+      "console": "\nWELCOME TO UDEKS.\n\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> waitping &\nUDEKS:~> ipcsrv\n"
+    },
+    {
+      "input": "Ctrl-C server",
+      "console": "\n\nsvc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> waitping &\nUDEKS:~> ipcsrv\nipcsrv: ready\nInterrupted\nUDEKS:~>",
+      "input_queued_while_request_pending": true,
+      "exit_status": 130
+    },
+    {
+      "check": "cancel-server-during-request",
+      "client_errno": 11,
+      "stale_send_errno": 9,
+      "wait_bound": 600
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "svc load /TIME.SVC\n\nUDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> waitping &\nUDEKS:~> ipcsrv\nipcsrv: ready\nInterrupted\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Recovered",
+      "console": "UDEKS:~> time: ready\nUDEKS:~> xclock &\nUDEKS:~> xdraw &\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> waitping &\nUDEKS:~> ipcsrv\nipcsrv: ready\nInterrupted\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Recovered\nreply: RECOVERED\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Recovered",
+      "authenticated_source": 7,
+      "reply_hex": "025245434f5645524544",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "UDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> waitping &\nUDEKS:~> ipcsrv\nipcsrv: ready\nInterrupted\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Recovered\nreply: RECOVERED\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 7,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "UDEKS:~> ipcping CancelMe\nInterrupted\nUDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> waitping &\nUDEKS:~> ipcsrv\nipcsrv: ready\nInterrupted\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Recovered\nreply: RECOVERED\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Cycle0",
+      "console": "UDEKS:~> ipcping AfterCancel\nreply: AFTERCANCEL\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> waitping &\nUDEKS:~> ipcsrv\nipcsrv: ready\nInterrupted\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Recovered\nreply: RECOVERED\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Cycle0",
+      "authenticated_source": 10,
+      "reply_hex": "024359434c4530",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "ipcsrv: stopped\nipcping: server stopped\nUDEKS:~> waitping &\nUDEKS:~> ipcsrv\nipcsrv: ready\nInterrupted\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Recovered\nreply: RECOVERED\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 10,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "check": "restart-cycle",
+      "cycle": 0,
+      "server_handle": 10
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "UDEKS:~> waitping &\nUDEKS:~> ipcsrv\nipcsrv: ready\nInterrupted\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Recovered\nreply: RECOVERED\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Cycle1",
+      "console": "ipcsrv: ready\nInterrupted\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Recovered\nreply: RECOVERED\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Cycle1",
+      "authenticated_source": 13,
+      "reply_hex": "024359434c4531",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "ipcsrv: ready\nUDEKS:~> ipcping Recovered\nreply: RECOVERED\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 13,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "check": "restart-cycle",
+      "cycle": 1,
+      "server_handle": 13
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "reply: RECOVERED\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Cycle2",
+      "console": "ipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle2\nreply: CYCLE2\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Cycle2",
+      "authenticated_source": 16,
+      "reply_hex": "024359434c4532",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "ipcsrv: ready\nUDEKS:~> ipcping Cycle0\nreply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle2\nreply: CYCLE2\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 16,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "check": "restart-cycle",
+      "cycle": 2,
+      "server_handle": 16
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "reply: CYCLE0\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle2\nreply: CYCLE2\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Cycle3",
+      "console": "ipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle2\nreply: CYCLE2\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle3\nreply: CYCLE3\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Cycle3",
+      "authenticated_source": 19,
+      "reply_hex": "024359434c4533",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "ipcsrv: ready\nUDEKS:~> ipcping Cycle1\nreply: CYCLE1\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle2\nreply: CYCLE2\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle3\nreply: CYCLE3\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 19,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "check": "restart-cycle",
+      "cycle": 3,
+      "server_handle": 19
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "reply: CYCLE1\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle2\nreply: CYCLE2\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle3\nreply: CYCLE3\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Cycle4",
+      "console": "ipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle2\nreply: CYCLE2\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle3\nreply: CYCLE3\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle4\nreply: CYCLE4\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Cycle4",
+      "authenticated_source": 22,
+      "reply_hex": "024359434c4534",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "ipcsrv: ready\nUDEKS:~> ipcping Cycle2\nreply: CYCLE2\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle3\nreply: CYCLE3\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle4\nreply: CYCLE4\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 22,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "check": "restart-cycle",
+      "cycle": 4,
+      "server_handle": 22
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "reply: CYCLE2\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle3\nreply: CYCLE3\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle4\nreply: CYCLE4\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Cycle5",
+      "console": "ipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle3\nreply: CYCLE3\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle4\nreply: CYCLE4\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle5\nreply: CYCLE5\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Cycle5",
+      "authenticated_source": 25,
+      "reply_hex": "024359434c4535",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "ipcsrv: ready\nUDEKS:~> ipcping Cycle3\nreply: CYCLE3\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle4\nreply: CYCLE4\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle5\nreply: CYCLE5\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 25,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "check": "restart-cycle",
+      "cycle": 5,
+      "server_handle": 25
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "reply: CYCLE3\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle4\nreply: CYCLE4\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle5\nreply: CYCLE5\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Cycle6",
+      "console": "ipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle4\nreply: CYCLE4\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle5\nreply: CYCLE5\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle6\nreply: CYCLE6\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Cycle6",
+      "authenticated_source": 28,
+      "reply_hex": "024359434c4536",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "ipcsrv: ready\nUDEKS:~> ipcping Cycle4\nreply: CYCLE4\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle5\nreply: CYCLE5\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle6\nreply: CYCLE6\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 28,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "check": "restart-cycle",
+      "cycle": 6,
+      "server_handle": 28
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "reply: CYCLE4\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle5\nreply: CYCLE5\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle6\nreply: CYCLE6\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Cycle7",
+      "console": "ipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle5\nreply: CYCLE5\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle6\nreply: CYCLE6\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle7\nreply: CYCLE7\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Cycle7",
+      "authenticated_source": 31,
+      "reply_hex": "024359434c4537",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "ipcsrv: ready\nUDEKS:~> ipcping Cycle5\nreply: CYCLE5\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle6\nreply: CYCLE6\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle7\nreply: CYCLE7\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 31,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "check": "restart-cycle",
+      "cycle": 7,
+      "server_handle": 31
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "reply: CYCLE5\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle6\nreply: CYCLE6\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle7\nreply: CYCLE7\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Cycle8",
+      "console": "ipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle6\nreply: CYCLE6\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle7\nreply: CYCLE7\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle8\nreply: CYCLE8\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Cycle8",
+      "authenticated_source": 34,
+      "reply_hex": "024359434c4538",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "ipcsrv: ready\nUDEKS:~> ipcping Cycle6\nreply: CYCLE6\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle7\nreply: CYCLE7\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle8\nreply: CYCLE8\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 34,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "check": "restart-cycle",
+      "cycle": 8,
+      "server_handle": 34
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "reply: CYCLE6\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle7\nreply: CYCLE7\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle8\nreply: CYCLE8\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Cycle9",
+      "console": "ipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle7\nreply: CYCLE7\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle8\nreply: CYCLE8\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle9\nreply: CYCLE9\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Cycle9",
+      "authenticated_source": 37,
+      "reply_hex": "024359434c4539",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "ipcsrv: ready\nUDEKS:~> ipcping Cycle7\nreply: CYCLE7\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle8\nreply: CYCLE8\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle9\nreply: CYCLE9\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 37,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "check": "restart-cycle",
+      "cycle": 9,
+      "server_handle": 37
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "reply: CYCLE7\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle8\nreply: CYCLE8\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle9\nreply: CYCLE9\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Cycle10",
+      "console": "ipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle8\nreply: CYCLE8\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle9\nreply: CYCLE9\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle10\nreply: CYCLE10\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Cycle10",
+      "authenticated_source": 40,
+      "reply_hex": "024359434c453130",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "ipcsrv: ready\nUDEKS:~> ipcping Cycle8\nreply: CYCLE8\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle9\nreply: CYCLE9\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle10\nreply: CYCLE10\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 40,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "check": "restart-cycle",
+      "cycle": 10,
+      "server_handle": 40
+    },
+    {
+      "command": "ipcsrv &",
+      "console": "reply: CYCLE8\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle9\nreply: CYCLE9\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle10\nreply: CYCLE10\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~>"
+    },
+    {
+      "command": "ipcping Cycle11",
+      "console": "ipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle9\nreply: CYCLE9\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle10\nreply: CYCLE10\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle11\nreply: CYCLE11\nUDEKS:~>"
+    },
+    {
+      "check": "request-reply",
+      "text": "Cycle11",
+      "authenticated_source": 43,
+      "reply_hex": "024359434c453131",
+      "client_task": 3
+    },
+    {
+      "command": "ipcping --stop",
+      "console": "ipcsrv: ready\nUDEKS:~> ipcping Cycle9\nreply: CYCLE9\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle10\nreply: CYCLE10\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle11\nreply: CYCLE11\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~>"
+    },
+    {
+      "check": "shutdown",
+      "text": "",
+      "authenticated_source": 43,
+      "reply_hex": "04",
+      "client_task": 3
+    },
+    {
+      "check": "restart-cycle",
+      "cycle": 11,
+      "server_handle": 43
+    },
+    {
+      "command": "xdraw -q",
+      "console": "UDEKS:~> ipcping Cycle9\nreply: CYCLE9\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle10\nreply: CYCLE10\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle11\nreply: CYCLE11\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> xdraw -q\nUDEKS:~>"
+    },
+    {
+      "command": "xclock -q",
+      "console": "reply: CYCLE9\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle10\nreply: CYCLE10\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle11\nreply: CYCLE11\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> xdraw -q\nUDEKS:~> xclock -q\nUDEKS:~>"
+    },
+    {
+      "command": "echo IPC demo returned",
+      "console": "ipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle10\nreply: CYCLE10\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> ipcsrv &\nipcsrv: ready\nUDEKS:~> ipcping Cycle11\nreply: CYCLE11\nUDEKS:~> ipcping --stop\nipcsrv: stopped\nipcping: server stopped\nUDEKS:~> xdraw -q\nUDEKS:~> xclock -q\nUDEKS:~> echo IPC demo returned\nIPC demo returned\nUDEKS:~>"
+    }
+  ],
+  "native_1986": false,
+  "physical_c128": false,
+  "public_sdk": true,
+  "independent_programs": true,
+  "lifecycle": true,
+  "restart_cycles": 12,
+  "server_cancel": true,
+  "base_disk_sha256": "cb014060fa75a3315500196df71020343b214bb90fa3f26c6273afa3c314522a"
+}

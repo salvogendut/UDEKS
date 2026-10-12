@@ -5,7 +5,7 @@ $(error DISK_TIME is retired: normal make boot now loads TIME.SVC)
 endif
 TIME_RESIDENT_OBJECTS := $(BUILD_8502)/time-slot.o $(BUILD_8502)/time-resident.o
 TIME_LINK_IMPORTS := -u _udeks_time_slot_request -u _udeks_time_slot_state -u _udeks_service_start_phase -u _udeks_service_start_result
-TIME_ROUTER_FLAGS := -D UDEKS_DISK_TIME
+TIME_ROUTER_FLAGS := -D UDEKS_DISK_TIME -D UDEKS_IPC
 TIME_BINDING_FLAGS := --kernel-map $(KERNEL_MAP)
 BOOT_RC := user/etc/rc
 SERVICE_BOOT_FILES := build/services/command/SVC.BIN build/services/time/TIME.SVC

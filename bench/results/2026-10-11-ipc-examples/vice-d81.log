@@ -1,0 +1,22 @@
+PASS ipcping hello
+PASS echo $?
+PASS xclock &
+PASS xdraw &
+PASS ipcsrv &
+PASS ipcping Mixed-case &
+PASS ipcping 1234567890abcde
+PASS echo $?
+PASS ipcping 1234567890abcdef
+PASS echo $?
+PASS ipcping Again
+PASS echo IPC and graphics alive
+PASS ipcping --stop
+PASS ipcping hello
+PASS echo $?
+PASS ipcsrv demo &
+PASS ipcping demo Zebra
+PASS ipcping demo --stop
+PASS xdraw -q
+PASS xclock -q
+PASS echo IPC demo returned
+PASS IPC demo: /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/demo-vice/d81-osrofa1_

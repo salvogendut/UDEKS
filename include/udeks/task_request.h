@@ -40,7 +40,7 @@
 #define UDEKS_TREQ_PAYLOAD               14u
 
 #define UDEKS_TASK_REQUEST_ABI_MAJOR     0u
-#define UDEKS_TASK_REQUEST_ABI_MINOR     20u
+#define UDEKS_TASK_REQUEST_ABI_MINOR     21u
 
 #define UDEKS_TREQ_STATE_IDLE            0u
 #define UDEKS_TREQ_STATE_REQUEST         1u
@@ -95,6 +95,8 @@
 /* ABI 0.11: synchronous bounded Z80 lease, four input / three result bytes.
  * Result data at $F300 is borrowed until the next request or yield. */
 #define UDEKS_TREQ_OP_WORKER            24u
+/* ABI 0.21: bounded copied messages; see ipc.h and abi/ipc.md. */
+#define UDEKS_TREQ_OP_IPC               29u
 /* OPEN descriptor 2 requests a UDEX candidate, not a script/config file. */
 #define UDEKS_TREQ_OPEN_EXEC             2u
 /* ABI 0.14: create a NEW ordinary data file; never replace or append. */

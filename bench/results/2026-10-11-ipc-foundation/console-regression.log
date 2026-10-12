@@ -1,0 +1,11 @@
+PASS ticker Alpha mixed-case 37
+PASS echo $?
+PASS echo $?
+PASS xclock &
+PASS quiet &
+PASS pulse a B c D e F last
+PASS echo native console returned
+PASS ticker 1 2 3 4 5 6 7 8
+PASS echo $?
+PASS xclock -q
+PASS native console; evidence: /home/sbognann/Development/UDEKS/build/ipc-foundation/build/native-console/vice/d81-9ncpgp5h

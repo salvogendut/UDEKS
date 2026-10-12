@@ -36,7 +36,8 @@ def main():
     objects=[]
     for label,source in (('program',args.source),('runtime',ROOT/'user/lib/native_console.c'),
                          ('input',ROOT/'user/lib/native_input.c'),
-                         ('files',ROOT/'user/lib/native_files.c')):
+                         ('files',ROOT/'user/lib/native_files.c'),
+                         ('ipc',ROOT/'user/lib/native_ipc.c')):
         run('cc65','-t','none','--cpu','6502','--standard','c99','-Os',
             '-I','user/include','-I','include','-o',str(out/(label+'.s')),str(source.resolve()))
         run('ca65','--cpu','6502','-o',str(out/(label+'.o')),str(out/(label+'.s')))

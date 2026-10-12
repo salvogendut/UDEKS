@@ -1,0 +1,17 @@
+{
+  "engine": "native 1986",
+  "revision": "d360c114e33216bf38a086f65af27533f581f6ba",
+  "checks": [
+    "exact replies",
+    "maximum payload",
+    "parent client CANCEL",
+    "3 restarts",
+    "1351 clock drag",
+    "1351 drawing",
+    "code/stack guards",
+    "cleanup"
+  ],
+  "disk_sha256": "b87c0d09721f3a4667ecc1b6443211e0c160f3c609115480486bc5f7897105f2",
+  "flatpak_qualified": false,
+  "physical_c128": false
+}

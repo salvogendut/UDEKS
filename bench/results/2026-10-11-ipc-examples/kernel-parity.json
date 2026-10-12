@@ -1,0 +1,8 @@
+{
+  "unchanged_from_slice_1": true,
+  "sha256": {
+    "build/8502/udeks-8502.bin": "24a06c7b21b4dba49d868716a486a779b1ed219c3039dbcf4c304d58dd1cb194",
+    "build/8502/udeks-8502-panic-probe.bin": "bd4909e4c31a6e1576f59a270e7d70b8f53ba76c0151a152b12eeb29cc4dc70e",
+    "build/8502/bitmap-hidden-sealed.bin": "be43a3cde0d28d811b76476426f9f634d8e69efb5c0aa51fa11e677fe1f54a7f"
+  }
+}

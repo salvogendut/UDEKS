@@ -1,0 +1,53 @@
+1986 IPC: raw-IEC boot started
+boot frame 0 PC=FF74 startup=0 drive=AF5F
+1986 IPC: typing BOOT through the BASIC keyboard
+                                                                                
+                     COMMODORE BASIC V7.0 122365 BYTES FREE                     
+                       (C)1986 COMMODORE ELECTRONICS, LTD.                      
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                             (C)1977 MICROSOFT C
+boot frame 2500 PC=E4B1 startup=0 drive=AE14
+boot frame 5000 PC=E496 startup=0 drive=AD12
+boot frame 7500 PC=E3B6 startup=0 drive=CD1A
+command: xclock &
+command: xdraw &
+command: ipcsrv &
+command: ipcping hello
+PASS reply: hello
+command: ipcping 1234567890abcde
+PASS reply: 1234567890abcde
+command: ipcping cancelme
+command: ipcping recovered
+PASS reply: recovered
+command: ipcping --stop
+command: ipcsrv &
+command: ipcping restart
+PASS reply: restart
+command: ipcping --stop
+command: ipcsrv &
+command: ipcping restart
+PASS reply: restart
+command: ipcping --stop
+command: ipcsrv &
+command: ipcping restart
+PASS reply: restart
+command: ipcping --stop
+command: ipcsrv &
+FAIL: clock drag missing (frame 60245, PC $444D, request 00/0D/00)
+trace PC=$320E drag=0 buttons=0 moves=0 finishes=0
+trace PC=$70C6 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$E41D drag=0 buttons=0 moves=0 finishes=0
+trace PC=$2545 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$1F0C drag=0 buttons=0 moves=0 finishes=0
+trace PC=$94D6 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$4438 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$31A2 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$3174 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$6DFE drag=0 buttons=0 moves=0 finishes=0
+trace PC=$3188 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$72EF drag=0 buttons=0 moves=0 finishes=0

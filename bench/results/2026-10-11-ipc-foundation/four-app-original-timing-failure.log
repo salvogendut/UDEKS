@@ -1,0 +1,19 @@
+PASS xclock &
+PASS xwave &
+PASS initial-wave
+PASS moved-wave
+PASS before-resize
+PASS resized-wave
+PASS before-resize
+PASS resized-wave
+PASS xcalc &
+Traceback (most recent call last):
+  File "/home/sbognann/Development/UDEKS/build/ipc-foundation/tools/four_native_probe.py", line 305, in <module>
+    if __name__=='__main__': main()
+                             ^^^^^^
+  File "/home/sbognann/Development/UDEKS/build/ipc-foundation/tools/four_native_probe.py", line 238, in main
+    wait_value('calc-46',app_address('xcalc','_udeks_calc_value',3),(4600).to_bytes(4,'little'))
+  File "/home/sbognann/Development/UDEKS/build/ipc-foundation/tools/four_native_probe.py", line 210, in wait_value
+    if time.monotonic()>deadline: raise AssertionError((tag,expected))
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('calc-46', b'\xf8\x11\x00\x00')
