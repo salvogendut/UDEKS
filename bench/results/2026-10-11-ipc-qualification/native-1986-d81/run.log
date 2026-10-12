@@ -1,0 +1,32 @@
+1986 IPC: resumed local cold-boot checkpoint
+1986 IPC: raw-IEC boot started
+command: xclock &
+command: xdraw &
+command: ipcsrv &
+command: ipcping hello
+PASS reply: hello
+command: ipcping 1234567890abcde
+PASS reply: 1234567890abcde
+command: ipcping cancelme
+command: ipcping recovered
+PASS reply: recovered
+command: ipcping --stop
+command: ipcsrv &
+command: ipcping restart
+PASS reply: restart
+command: ipcping --stop
+command: ipcsrv &
+command: ipcping restart
+PASS reply: restart
+command: ipcping --stop
+command: ipcsrv &
+command: ipcping restart
+PASS reply: restart
+command: ipcping --stop
+command: ipcsrv &
+command: ipcping graphics
+PASS reply: graphics
+command: ipcping --stop
+command: xdraw -q
+command: xclock -q
+PASS native 1986 IPC: exact replies, parent cancellation, restart, graphics and cleanup

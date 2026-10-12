@@ -1,0 +1,8 @@
+1986 IPC: raw-IEC boot started
+boot frame 0 PC=FF74 startup=0 drive=AF5F
+boot frame 2500 PC=E44D startup=0 drive=AE3C
+boot frame 5000 PC=E4B0 startup=0 drive=AD3B
+boot frame 7500 PC=E3BA startup=0 drive=CD1D
+boot frame 10000 PC=E571 startup=0 drive=CD1D
+boot frame 12500 PC=E4B1 startup=0 drive=AD37
+boot frame 15000 PC=E6F2 startup=0 drive=ADEE

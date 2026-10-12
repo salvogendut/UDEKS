@@ -30,6 +30,20 @@ ipc-demo-probe:
 	$(PYTHON) tools/ipc_demo_probe.py --format d81
 
 .PHONY: ipc-lifecycle-probe
-ipc-lifecycle-probe:
-	$(PYTHON) tools/ipc_demo_probe.py --format d81 --lifecycle-only --restart-cycles 3
-	$(PYTHON) tools/ipc_demo_probe.py --format d71 --lifecycle-only --restart-cycles 3
+ipc-lifecycle-probe: ipc-waiting-peer
+	$(PYTHON) tools/ipc_demo_probe.py --format d81 --server-cancel --restart-cycles 12
+	$(PYTHON) tools/ipc_demo_probe.py --format d71 --server-cancel --restart-cycles 12
+
+.PHONY: ipc-waiting-peer
+ipc-waiting-peer:
+	$(PYTHON) tools/build_native_console.py --source bench/ipc/waiting_client.c --name WAITPING --output build/ipc/orphan \
+		--export _ipc_orphan_state --export _ipc_orphan_error --export _ipc_orphan_stale --export _ipc_orphan_handle --export _ipc_orphan_peer
+
+.PHONY: ipc-native-1986-probe
+ipc-native-1986-probe:
+	$(PYTHON) tools/ipc_1986_probe.py
+
+.PHONY: ipc-boundary-probe
+ipc-boundary-probe: ipc-fixture
+	$(PYTHON) tools/ipc_probe.py --format d81
+	$(PYTHON) tools/ipc_probe.py --format d71

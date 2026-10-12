@@ -1,0 +1,6 @@
+{
+  "emulator_revision": "d360c114e33216bf38a086f65af27533f581f6ba",
+  "sdl_release": "3.2.26",
+  "sdl_archive_sha256": "7f5901a607c26735d5c6f1bb6bbec83295bd3e862b83fede09d106a41f912b20",
+  "note": "Qualification status is recorded in the final native report, not these build inputs."
+}

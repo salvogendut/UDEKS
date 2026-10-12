@@ -19,7 +19,7 @@ ROOT=Path(__file__).resolve().parents[1]
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--format',choices=('d64','d81'),default='d81');args=parser.parse_args()
+    parser.add_argument('--format',choices=('d64','d71','d81'),default='d81');args=parser.parse_args()
     out=ROOT/'build/ipc/vice';out.mkdir(parents=True,exist_ok=True)
     work=Path(tempfile.mkdtemp(prefix=args.format+'-',dir=out))
     source=(ROOT/f'build/boot/udeks.{args.format}').read_bytes()
@@ -32,9 +32,10 @@ def main():
     symbols=map_exports((ROOT/'build/ipc/native/program.map').read_text())
     port=choose_port();records=[]
     proc,master=sp.launch_vice(disk,port,'net.sf.VICE',
-        ('-console','-jamaction','5','-drive8truedrive','-drive8type','1541' if args.format=='d64' else '1581'),log_path=work/'vice.log')
+        ('-console','-jamaction','5','-drive8truedrive','-drive8type',dict(d64='1541',d71='1571',d81='1581')[args.format]),log_path=work/'vice.log')
     def capture(tag,address,size,bank='kernel'):
         return sp.capture_blocks(port,[(work/(tag+'.bin'),address,address+size-1,bank)])[0]
+    def common(where):return capture('common-'+hex(where),where,1,'kernel-flat')[0]
     def screen():
         data=capture('console',segments['LOWBSS'][0],0x558)
         return '\n'.join(data[i:i+64].decode('ascii',errors='replace').rstrip() for i in range(0,1365,65))
@@ -44,10 +45,10 @@ def main():
             if proc.poll() is not None:raise AssertionError(('VICE exited',work/'vice.log'))
             if time.monotonic()>deadline:raise AssertionError((label,screen()))
             time.sleep(.05)
-    def prompt():wait(lambda:byte(port,0xf184)==0 and capture('prompt',slots+1,2)==b'\4\2','prompt')
+    def prompt():wait(lambda:common(0xf184)==0 and capture('prompt',slots+1,2)==b'\4\2','prompt')
     def command(line,foreground=False):
-        prompt();before=byte(port,0xf3d8);type_command(port,queue,line,time.monotonic()+120)
-        sp.wait_for_byte(port,0xf3d8,(before+1)&255,time.monotonic()+120)
+        prompt();before=common(0xf3d8);type_command(port,queue,line,time.monotonic()+120)
+        wait(lambda:common(0xf3d8)==((before+1)&255),'shell command accepted')
         if not foreground:prompt()
         print('PASS',line,flush=True)
     def pool():return capture('ipc-state',state,62,'kernel-flat')
@@ -69,7 +70,8 @@ def main():
     try:
         sp.wait_for_byte(port,0xf3e0,2,time.monotonic()+240);prompt()
         if owners()!=b'\0\0':raise AssertionError('IPC not zero initialized')
-        command('xclock &');clock=byte(port,0xf247)
+        command('xclock &');clock=common(0xf247)
+        command('xdraw &');draw=common(0xf247)
         command('ipctest hold &');hold=holder();old=value(hold,'handle',2)
         free=[r[0] for r in ALLOCATIONS if r[0] in fitting_allocations(image) and r[0]!=hold]
         command('ipctest')
@@ -87,13 +89,13 @@ def main():
         if '\n130\n' not in screen():raise AssertionError('cancel status')
         command('ipctest solo')
         if owners()!=b'\0\0':raise AssertionError('reuse cleanup')
-        if byte(port,0xf246)!=1 or byte(port,0xf247)!=clock:raise AssertionError('clock lost during IPC')
-        command('xclock -q');command('xinit -q');command('ipctest solo')
+        if common(0xf246)!=2 or common(0xf247)!=draw:raise AssertionError('clock lost during IPC')
+        command('xdraw -q');command('xclock -q');command('xinit -q');command('ipctest solo')
         if owners()!=b'\0\0':raise AssertionError('IPC coupled to graphics stop')
         command('echo IPC returned')
-        if byte(port,0xf11b):raise AssertionError('task canary')
+        if common(0xf11b):raise AssertionError('task canary')
         if (ROOT/f'build/boot/udeks.{args.format}').read_bytes()!=source:raise AssertionError('source disk changed')
-        report=dict(format=args.format,scope=__doc__,checks=['foreign access','16 exact copied bytes','full/empty/short receive','stale handle','sender EXIT purges peer queue','normal EXIT','foreground CANCEL','reuse','clock coexistence','graphics stopped'],disk_sha256=hashlib.sha256(disk.read_bytes()).hexdigest(),fixture_sha256=hashlib.sha256(image).hexdigest())
+        report=dict(format=args.format,scope=__doc__,checks=['duplicate names','overlong name','unknown operation','endpoint pool full','invalid receive capacity','foreign access','16 exact copied bytes','full/empty/short receive','stale handle','sender EXIT purges peer queue','normal EXIT','foreground CANCEL','reuse','clock/drawing coexistence','graphics stopped'],disk_sha256=hashlib.sha256(disk.read_bytes()).hexdigest(),fixture_sha256=hashlib.sha256(image).hexdigest())
         (work/'result.json').write_text(json.dumps(report,indent=2)+'\n');print('PASS IPC:',work,flush=True)
     finally:
         if proc.poll() is None:

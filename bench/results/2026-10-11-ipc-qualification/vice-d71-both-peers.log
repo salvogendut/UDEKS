@@ -1,0 +1,53 @@
+PASS xclock &
+PASS xdraw &
+PASS ipcsrv &
+PASS ipcping CancelMe
+PASS Ctrl-C during pending request
+PASS ipcping AfterCancel
+PASS ipcping --stop
+PASS waitping &
+PASS ipcsrv
+PASS Ctrl-C server during pending request
+PASS ipcsrv &
+PASS ipcping Recovered
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle0
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle1
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle2
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle3
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle4
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle5
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle6
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle7
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle8
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle9
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle10
+PASS ipcping --stop
+PASS ipcsrv &
+PASS ipcping Cycle11
+PASS ipcping --stop
+PASS xdraw -q
+PASS xclock -q
+PASS echo IPC demo returned
+PASS IPC demo: /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/demo-vice/d71-mvq6pafy

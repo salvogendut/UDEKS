@@ -1,0 +1,39 @@
+1986 IPC: resumed local cold-boot checkpoint
+1986 IPC: raw-IEC boot started
+command: xclock &
+command: xdraw &
+command: ipcsrv &
+command: ipcping hello
+PASS reply: hello
+command: ipcping 1234567890abcde
+PASS reply: 1234567890abcde
+command: ipcping cancelme
+command: ipcping recovered
+PASS reply: recovered
+command: ipcping --stop
+command: ipcsrv &
+command: ipcping restart
+PASS reply: restart
+command: ipcping --stop
+command: ipcsrv &
+command: ipcping restart
+PASS reply: restart
+command: ipcping --stop
+command: ipcsrv &
+command: ipcping restart
+PASS reply: restart
+command: ipcping --stop
+command: ipcsrv &
+FAIL: clock drag missing (frame 43256, PC $31E5, request 00/0D/00)
+trace PC=$3191 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$319D drag=0 buttons=0 moves=0 finishes=0
+trace PC=$C48D drag=0 buttons=0 moves=0 finishes=0
+trace PC=$87D9 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$88C2 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$E408 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$72EB drag=0 buttons=0 moves=0 finishes=0
+trace PC=$31B7 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$8AD6 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$963E drag=0 buttons=0 moves=0 finishes=0
+trace PC=$94F3 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$E408 drag=0 buttons=0 moves=0 finishes=0

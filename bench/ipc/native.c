@@ -42,14 +42,19 @@ unsigned char udeks_program_main(unsigned char argc,unsigned char **argv)
         CHECK(!named(0,"solo"));ipc_handle=get();put(0,ipc_handle);CHECK(!request(4,2));ipc_phase=3;return 0;
     }
     CHECK(!named(1,"held"));ipc_peer=get();
+    CHECK(named(0,"held")==17); /* duplicate name, even for a foreign owner */
+    CHECK(named(0,"ninechars")==22);
+    CHECK(request(5,0)==22); /* unknown IPC suboperation */
     put(0,ipc_peer);P[2]=16;CHECK(request(3,3)==13);
     put(0,ipc_peer);CHECK(request(4,2)==13);
     CHECK(!named(0,"probe"));ipc_handle=get();CHECK(ipc_handle!=ipc_peer);
+    CHECK(named(0,"third")==28); /* full endpoint pool must stay usable */
     put(0,ipc_handle);P[2]=16;CHECK(request(3,3)==11);
     put(0,ipc_peer);put(2,ipc_peer);P[4]=1;CHECK(request(2,5)==13);
     put(0,ipc_handle);put(2,ipc_handle);for(i=0;i<16;++i)P[4+i]=i*17;
     CHECK(!request(2,20));
     put(0,ipc_handle);put(2,ipc_handle);P[4]=255;CHECK(request(2,5)==11);
+    put(0,ipc_handle);P[2]=17;CHECK(request(3,3)==22);
     put(0,ipc_handle);P[2]=15;CHECK(request(3,3)==90);
     put(0,ipc_handle);P[2]=16;CHECK(!request(3,3));CHECK(R[10]==18 && get()==ipc_handle);
     for(i=0;i<16;++i)CHECK(P[2+i]==(unsigned char)(i*17));

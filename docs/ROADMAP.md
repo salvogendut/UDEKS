@@ -20,15 +20,19 @@ named endpoints, copied 16-byte messages and EXIT/CANCEL cleanup with handles
 that never repeat within a boot. Normal/panic placement and VICE D64/D81
 raw-gate checks pass; 1,735 host tests pass. Slice 2 implements the [SDK and public request/reply demo](IPC-SDK.md),
 with passing VICE D71/D81 checks and 1,746 host tests; D64 lacks room for both
-programs and is skipped. [Slice-2 evidence](../bench/results/2026-10-11-ipc-examples/README.md). Broader
-acceptance remains slice 3. Native 1986 IPC
-and physical-C128 qualification remain open. [Contract](../abi/ipc.md),
+programs and is skipped. [Slice-2 evidence](../bench/results/2026-10-11-ipc-examples/README.md). Slice 3 completes automated
+qualification; manual emulator acceptance and physical-C128 testing are
+separate follow-up runs by user agreement. [Contract](../abi/ipc.md),
 [plan](IPC.md), [candidate disks and evidence](../bench/results/2026-10-11-ipc-foundation/README.md).
 
-Slice 3 has started under [#58](https://github.com/salvogendut/UDEKS/issues/58)
-on `ipc-0.1-qualification`, worktree `build/ipc-foundation`. The first increment
-covers cancellation of each public peer during a pending request and repeated
-restarts. [Qualification status and remaining gates](IPC-QUALIFICATION.md).
+**Slice 3 automated qualification complete:**
+[#58](https://github.com/salvogendut/UDEKS/issues/58), branch
+`ipc-0.1-qualification`, worktree `build/ipc-foundation`. VICE D71/D81 pass
+cancellation of either peer, recovery, twelve restarts each and expanded raw
+boundaries. Native 1986 D81 passes IPC, cancellation, three restarts and actual
+keyboard/1351 input with graphics. Kernel/SDK binaries are unchanged; 1,750 host tests and placement/app/layout
+gates pass.
+[Qualification evidence and separate acceptance runs](IPC-QUALIFICATION.md).
 
 **Implemented and user-accepted — optional REU graphics backing storage (2026-10-09):**
 the user selected REU and VICE. Branch `graphics-reu`, worktree
@@ -142,9 +146,10 @@ two named endpoints, copied 16-byte messages, nonblocking operations and trusted
 EXIT/CANCEL cleanup, with handles that never repeat during a boot. Normal/panic
 placement preserves all allocations and leaves 24 resident and 68 hidden bytes
 free. The raw-gate VICE D64/D81 checks and host suite pass. Slice 2 implements the [SDK and public request/reply demo](IPC-SDK.md)
-on D71/D81 media, with passing VICE probes and 1,746 host tests; slice 3 supplies
-broader acceptance. Native 1986
-IPC and physical-C128 qualification remain open.
+on D71/D81 media, with passing VICE probes and 1,746 host tests. Slice 3
+completes automated VICE lifecycle/boundary and native 1986 IPC/input
+qualification. Manual emulator acceptance and physical-C128 testing are
+separate follow-up runs.
 General task allocation, message/handle IPC and further service extraction remain open;
 preemption, scripting and app-specific optimization are separate work. Do not
 turn the completed time-service slice into an indefinite loader-tuning project.

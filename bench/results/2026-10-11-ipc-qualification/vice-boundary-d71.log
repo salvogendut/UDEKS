@@ -1,0 +1,13 @@
+PASS xclock &
+PASS xdraw &
+PASS ipctest hold &
+PASS ipctest
+PASS ipctest hold
+PASS echo $?
+PASS ipctest solo
+PASS xdraw -q
+PASS xclock -q
+PASS xinit -q
+PASS ipctest solo
+PASS echo IPC returned
+PASS IPC: /home/sbognann/Development/UDEKS/build/ipc-foundation/build/ipc/vice/d71-vi73zgj6

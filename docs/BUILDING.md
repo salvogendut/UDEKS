@@ -426,3 +426,12 @@ full D71/D81 demonstration disks. D64 is skipped because both programs do not
 fit alongside the standard applications. `make ipc-demo-probe` qualifies both
 formats in VICE. See the [SDK guide and manual commands](IPC-SDK.md) and
 [slice-2 candidate evidence](../bench/results/2026-10-11-ipc-examples/README.md).
+
+`make ipc-boundary-probe` exercises the expanded raw fixture on D71/D81.
+`make ipc-lifecycle-probe` checks actual parent cancellation of both peers,
+orphan timeout/stale handles, recovery and twelve restarts per medium. Its
+WAITPING fixture is added only to disposable test disks.
+`make ipc-native-1986-probe` builds the pinned installed-version emulator
+source against local static SDL3 and runs native D81 IPC/keyboard/1351 checks.
+See [source setup, evidence and separate acceptance runs](IPC-QUALIFICATION.md).
+ROMs and ROM-bearing boot checkpoints stay private under ignored `build/`.
