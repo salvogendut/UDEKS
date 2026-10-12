@@ -21,18 +21,20 @@ that never repeat within a boot. Normal/panic placement and VICE D64/D81
 raw-gate checks pass; 1,735 host tests pass. Slice 2 implements the [SDK and public request/reply demo](IPC-SDK.md),
 with passing VICE D71/D81 checks and 1,746 host tests; D64 lacks room for both
 programs and is skipped. [Slice-2 evidence](../bench/results/2026-10-11-ipc-examples/README.md). Slice 3 completes automated
-qualification; manual emulator acceptance and physical-C128 testing are
-separate follow-up runs by user agreement. [Contract](../abi/ipc.md),
+qualification, and the user confirmed manual emulator acceptance on
+2026-10-12. Physical-C128 testing remains a separate pending run. [Contract](../abi/ipc.md),
 [plan](IPC.md), [candidate disks and evidence](../bench/results/2026-10-11-ipc-foundation/README.md).
 
-**Slice 3 automated qualification complete:**
+**IPC slices 1–3 implemented and emulator-accepted:**
 [#58](https://github.com/salvogendut/UDEKS/issues/58), branch
 `ipc-0.1-qualification`, worktree `build/ipc-foundation`. VICE D71/D81 pass
 cancellation of either peer, recovery, twelve restarts each and expanded raw
 boundaries. Native 1986 D81 passes IPC, cancellation, three restarts and actual
 keyboard/1351 input with graphics. Kernel/SDK binaries are unchanged; 1,750 host tests and placement/app/layout
 gates pass.
-[Qualification evidence and separate acceptance runs](IPC-QUALIFICATION.md).
+The user reported “all is well” after the manual emulator instructions and
+authorized PR/merge on 2026-10-12. Physical-C128 testing remains pending.
+[Qualification evidence and acceptance status](IPC-QUALIFICATION.md).
 
 **Implemented and user-accepted — optional REU graphics backing storage (2026-10-09):**
 the user selected REU and VICE. Branch `graphics-reu`, worktree
@@ -138,7 +140,7 @@ The user authorized merge after these automated gates. No new physical-C128
 test is inferred. This is one provisional fixed slot, not an arbitrary module
 allocator or daemon framework.
 
-**Active architectural work ([plan](IPC.md), [#57](https://github.com/salvogendut/UDEKS/issues/57)):** a bounded message/handle IPC slice
+**Implemented and emulator-accepted ([plan](IPC.md), [#57](https://github.com/salvogendut/UDEKS/issues/57)):** a bounded message/handle IPC slice
 under milestone 3: two independently loaded programs exchange requests and
 replies, with endpoint ownership and cleanup when either exits or is cancelled.
 Slice 1 is implemented on `ipc-0.1-foundation`, worktree `build/ipc-foundation`:
@@ -148,9 +150,9 @@ placement preserves all allocations and leaves 24 resident and 68 hidden bytes
 free. The raw-gate VICE D64/D81 checks and host suite pass. Slice 2 implements the [SDK and public request/reply demo](IPC-SDK.md)
 on D71/D81 media, with passing VICE probes and 1,746 host tests. Slice 3
 completes automated VICE lifecycle/boundary and native 1986 IPC/input
-qualification. Manual emulator acceptance and physical-C128 testing are
-separate follow-up runs.
-General task allocation, message/handle IPC and further service extraction remain open;
+qualification. The user confirmed manual emulator acceptance on 2026-10-12;
+physical-C128 testing remains pending separately.
+General task allocation, broader IPC capacity and further service extraction remain open;
 preemption, scripting and app-specific optimization are separate work. Do not
 turn the completed time-service slice into an indefinite loader-tuning project.
 

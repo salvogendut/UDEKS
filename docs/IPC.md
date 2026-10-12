@@ -3,8 +3,8 @@
 The next architectural slice lets two independently disk-loaded native C
 programs exchange requests and replies while the shell and graphical peers
 remain usable. The baseline is merged REU graphics (`4644a4c`). Slice 1
-implements the foundation described in [the wire contract](../abi/ipc.md). Slice 2 adds the [native SDK and public server/client demo](IPC-SDK.md). Slice 3 completes automated qualification. Manual emulator acceptance and
-physical C128 tests are separate follow-up runs by user agreement.
+implements the foundation described in [the wire contract](../abi/ipc.md). Slice 2 adds the [native SDK and public server/client demo](IPC-SDK.md). Slice 3 completes automated qualification. The user confirmed the manual emulator check on 2026-10-12. Physical C128
+testing remains a separate follow-up run.
 
 ## First increment
 
@@ -88,5 +88,5 @@ D64 lacks space and is skipped by user agreement.
 [SDK usage](IPC-SDK.md) and [candidate media/evidence](../bench/results/2026-10-11-ipc-examples/README.md).
 Slice 3 completes both-peer cancellation, twelve restarts per medium and
 expanded boundary checks on VICE D71/D81, plus native 1986 D81 IPC/input
-qualification. Manual emulator acceptance and physical-C128 tests will be
-performed separately. [Qualification evidence and reproduction](IPC-QUALIFICATION.md).
+qualification. The user confirmed manual emulator acceptance on 2026-10-12; physical-C128
+testing remains pending for a separate run. [Qualification evidence and reproduction](IPC-QUALIFICATION.md).

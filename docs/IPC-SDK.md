@@ -73,7 +73,7 @@ clock scheduling, window movement and drawing. It never fabricates IPC or task
 state. Host SDK tests cover malformed replies, argument bounds and output
 preservation. Slice 3 adds both-peer cancellation and twelve restarts per
 medium, expanded raw boundaries and native 1986 D81 IPC/input checks.
-[Automated qualification](IPC-QUALIFICATION.md) is complete; manual emulator
-acceptance and physical C128 testing are separate follow-up runs.
+[Automated qualification](IPC-QUALIFICATION.md) is complete; the user confirmed manual emulator
+acceptance on 2026-10-12. Physical C128 testing remains pending separately.
 
 [Passing D71/D81 VICE evidence and preserved candidate disks](../bench/results/2026-10-11-ipc-examples/README.md).

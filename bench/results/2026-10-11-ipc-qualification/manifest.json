@@ -13,7 +13,6 @@
     "native pinned-source 1986 D81 IPC and real keyboard/1351 input"
   ],
   "open": [
-    "manual emulator acceptance (separate run)",
     "physical C128 testing (separate run)"
   ],
   "flatpak_qualified": false,
@@ -44,5 +43,11 @@
     "udeks-8502.bin": "24a06c7b21b4dba49d868716a486a779b1ed219c3039dbcf4c304d58dd1cb194",
     "udeks-8502-panic-probe.bin": "bd4909e4c31a6e1576f59a270e7d70b8f53ba76c0151a152b12eeb29cc4dc70e",
     "bitmap-hidden-sealed.bin": "be43a3cde0d28d811b76476426f9f634d8e69efb5c0aa51fa11e677fe1f54a7f"
+  },
+  "manual_acceptance": {
+    "date": "2026-10-12",
+    "result": "user reports all is well after installed 1986 instructions",
+    "record": "manual-acceptance.md",
+    "merge_authorized": true
   }
 }

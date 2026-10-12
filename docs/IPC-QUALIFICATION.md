@@ -62,8 +62,10 @@ claimed by an automated emulator result.
 
 Automated VICE D71/D81 and native 1986 D81 qualification is complete. The
 evidence checks bind reports to actual disks, programs and machine captures.
-Manual emulator acceptance and physical C128 testing remain separate follow-up
-runs; no result here claims either one.
+On 2026-10-12, after the installed 1986 manual-check instructions, the user
+reported “all is well” and authorized PR/merge. Manual emulator acceptance is
+complete. Physical C128 testing remains pending for a separate run.
+[Recorded user acceptance](../bench/results/2026-10-11-ipc-qualification/manual-acceptance.md).
 
 ## 1986 on this machine
 

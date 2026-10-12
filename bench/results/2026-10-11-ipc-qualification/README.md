@@ -2,8 +2,9 @@
 
 Base: pushed `1de24a4`; first increment `0a696a3`;
 [issue #58](https://github.com/salvogendut/UDEKS/issues/58), branch
-`ipc-0.1-qualification`. Manual emulator acceptance and physical C128 testing
-are separate runs by user agreement and are not claimed here.
+`ipc-0.1-qualification`. The user confirmed manual emulator acceptance on 2026-10-12 and authorized
+PR/merge. Physical C128 testing remains pending for a separate run.
+[User acceptance record](manual-acceptance.md).
 
 VICE D71 and D81 pass cancellation of each public peer during a pending
 request, recovery, and twelve complete restart cycles per medium. Client
