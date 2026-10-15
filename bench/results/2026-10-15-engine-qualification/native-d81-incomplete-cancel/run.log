@@ -1,0 +1,11 @@
+1986 engine: resumed local cold-boot checkpoint
+1986 engine: raw-IEC boot started
+command: engtest
+missing: exit=2 state=3 error=2
+command: xclock &
+command: xdraw &
+command: engine &
+command: engpeer abandon
+foreground: engtest
+command: engtest
+PASS engine exact exchange and guards

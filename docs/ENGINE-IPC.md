@@ -33,9 +33,10 @@ make engine-contract-check engine-placement
 make check
 ```
 
-Slice 3 will broaden live peer cancellation, errors, restart soak and
-D71/D81 cross-emulator qualification before deciding on existing-client
-migration. Native emulator checks use
+Slices 1–2 are committed as `9d109fa` on `services-engine-ipc`.
+Slice 3 qualification is recorded in [ENGINE-QUALIFICATION.md](ENGINE-QUALIFICATION.md),
+including cancellation fixtures, protocol bounds, restart soak, migration and
+separate manual/physical acceptance. Native emulator checks use
 the sibling `../1986`, currently clean revision
 `65c1fe660ce2b04b785937550d521614544f808d`, rather than the Flatpak. Its existing
 binary is built with `-O3 -march=native -mtune=native -flto=2` and its local SDL3.
@@ -78,8 +79,8 @@ clock drag with the service alive, code/stack guards and final cleanup. The
 passing run resumes a verified local initial boot checkpoint; the prior cold
 boot and diagnosis exposed the CLI error-output bug, whose logs are preserved.
 That bug is fixed and regression-tested. No emulator core patches or fabricated
-IPC/task state were used. Native D71, VICE runtime, live peer cancellation,
-extended restart soak, manual acceptance and physical C128 remain slice-3 work.
+IPC/task state were used. Those are the preserved slice-2 results; see the
+qualification document for subsequent slice-3 results and open checks.
 
 ```sh
 make engine-programs

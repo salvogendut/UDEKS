@@ -1,0 +1,5 @@
+{
+  "qualified": false,
+  "reason": "wrapper wall-clock timeout",
+  "stage": "after first recovered exchange; no final PASS"
+}

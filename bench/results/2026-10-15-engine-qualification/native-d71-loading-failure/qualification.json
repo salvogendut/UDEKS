@@ -1,0 +1,10 @@
+{
+  "qualified": false,
+  "stage": "pre-engine disk loading",
+  "observed": [
+    "TIME.SVC Input/output error",
+    "engtest loader error 13",
+    "client state 0"
+  ],
+  "physical_c128": false
+}

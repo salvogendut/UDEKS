@@ -1,0 +1,65 @@
+{
+  "format": "d71",
+  "disk_sha256": "797c6c694d56a47ca63f852513d9f9a0b7c7ca8d46ef48e17a3362f76fa76e68",
+  "base_disk_sha256": "1adc942a05935c2b11562ee1232995184cc3754e8ae4f0b838707fa26a929f6b",
+  "records": [
+    {
+      "check": "Ctrl-C-input-while-blocked",
+      "peer_app": "client",
+      "exit": 130,
+      "server_state": 2,
+      "peer_state": 1,
+      "owners": [
+        3,
+        5
+      ],
+      "server_task": 5,
+      "peer_task": 3
+    },
+    {
+      "check": "cancel-public-client-during-orphaned-STOP",
+      "exit": 130,
+      "recovered": true
+    },
+    {
+      "check": "Ctrl-C-input-while-blocked",
+      "peer_app": "peer",
+      "exit": 130,
+      "server_state": 2,
+      "peer_state": 2,
+      "owners": [
+        3,
+        5
+      ],
+      "server_task": 3,
+      "peer_task": 5
+    },
+    {
+      "check": "cancel-public-server-during-STOP-ACK-wait",
+      "exit": 130,
+      "stale_send_errno": 9
+    },
+    {
+      "check": "raw-wire-bounds",
+      "checks": 104,
+      "exact_waves": 96,
+      "invalid_requests": 7
+    },
+    {
+      "cycle": 1,
+      "handle": 12,
+      "exact_wave": true,
+      "clean_stop": true
+    }
+  ],
+  "physical_c128": false,
+  "live_cancellation": true,
+  "bounds": true,
+  "harness_sha256": "d8cfc38e5d0b142491a19f979f06b97facccf85621868fbdf23697ba7c077c5e",
+  "program_sha256": {
+    "client": "7dde07d34fbb97ca39aaa853520610b2883b5bce97b17506f48abc71dcf1ccc5",
+    "server": "776b01e6f51748e4f84e3a3e27e77d6193c85bfb1c9c7850889b51540da211bc",
+    "peer": "d43b2df55d518ef4222b2b0306a465d20e594dc3b5d95e516eb7ba4799ea9806",
+    "bounds": "6dcf3c33bee6abb7daa85d8742691192ed5bfffa9a072a4bd9da450c9f85bdae"
+  }
+}

@@ -445,4 +445,11 @@ opt into `--counted-output-only`, which omits unused text/byte convenience
 wrappers; the default native SDK and existing binaries are preserved.
 `make engine-native-probe` builds an observable harness against the unmodified
 sibling `../1986`, using its local SDL3 pkg-config and supplied ROM bundle.
+`make engine-vice-probe` builds test-only peers and cold-boots D71/D81 for
+protocol bounds, live parent cancellation and twelve restart cycles.
+`make engine-native-lifecycle-probe` runs native D81 cancellation, real input
+and three restart cycles. Both expect `make engine-demo` to have completed.
+Private initial-boot checkpoints may be passed via the Python wrapper's
+`--resume` option, and are recorded in provenance.
+See [qualification, known native D71 loading failure and separate acceptance](ENGINE-QUALIFICATION.md).
 See [the engine plan, instructions and limits](ENGINE-IPC.md).

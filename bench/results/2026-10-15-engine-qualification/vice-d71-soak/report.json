@@ -1,0 +1,105 @@
+{
+  "format": "d71",
+  "disk_sha256": "797c6c694d56a47ca63f852513d9f9a0b7c7ca8d46ef48e17a3362f76fa76e68",
+  "base_disk_sha256": "1adc942a05935c2b11562ee1232995184cc3754e8ae4f0b838707fa26a929f6b",
+  "records": [
+    {
+      "check": "cancel-public-client-during-orphaned-STOP",
+      "exit": 130,
+      "recovered": true
+    },
+    {
+      "check": "cancel-public-server-during-STOP-ACK-wait",
+      "exit": 130,
+      "stale_send_errno": 9
+    },
+    {
+      "check": "raw-wire-bounds",
+      "checks": 104,
+      "exact_waves": 96,
+      "invalid_requests": 7
+    },
+    {
+      "cycle": 1,
+      "handle": 12,
+      "exact_wave": true,
+      "clean_stop": true
+    },
+    {
+      "cycle": 2,
+      "handle": 16,
+      "exact_wave": true,
+      "clean_stop": true
+    },
+    {
+      "cycle": 3,
+      "handle": 20,
+      "exact_wave": true,
+      "clean_stop": true
+    },
+    {
+      "cycle": 4,
+      "handle": 24,
+      "exact_wave": true,
+      "clean_stop": true
+    },
+    {
+      "cycle": 5,
+      "handle": 28,
+      "exact_wave": true,
+      "clean_stop": true
+    },
+    {
+      "cycle": 6,
+      "handle": 32,
+      "exact_wave": true,
+      "clean_stop": true
+    },
+    {
+      "cycle": 7,
+      "handle": 36,
+      "exact_wave": true,
+      "clean_stop": true
+    },
+    {
+      "cycle": 8,
+      "handle": 40,
+      "exact_wave": true,
+      "clean_stop": true
+    },
+    {
+      "cycle": 9,
+      "handle": 44,
+      "exact_wave": true,
+      "clean_stop": true
+    },
+    {
+      "cycle": 10,
+      "handle": 48,
+      "exact_wave": true,
+      "clean_stop": true
+    },
+    {
+      "cycle": 11,
+      "handle": 52,
+      "exact_wave": true,
+      "clean_stop": true
+    },
+    {
+      "cycle": 12,
+      "handle": 56,
+      "exact_wave": true,
+      "clean_stop": true
+    }
+  ],
+  "physical_c128": false,
+  "live_cancellation": true,
+  "bounds": true,
+  "harness_sha256": "8d0fb35aca0ee3e2f2c4568e2fba28024a365bc9e2dee134c734433bdaeb3abf",
+  "program_sha256": {
+    "client": "7dde07d34fbb97ca39aaa853520610b2883b5bce97b17506f48abc71dcf1ccc5",
+    "server": "776b01e6f51748e4f84e3a3e27e77d6193c85bfb1c9c7850889b51540da211bc",
+    "peer": "d43b2df55d518ef4222b2b0306a465d20e594dc3b5d95e516eb7ba4799ea9806",
+    "bounds": "6dcf3c33bee6abb7daa85d8742691192ed5bfffa9a072a4bd9da450c9f85bdae"
+  }
+}

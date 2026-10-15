@@ -1,0 +1,393 @@
+{
+  "base_commit": "9d109fa",
+  "issue": 60,
+  "physical_c128": false,
+  "manual_acceptance": false,
+  "native_d71_qualified": false,
+  "production_programs": {
+    "ENGINE.BIN": "776b01e6f51748e4f84e3a3e27e77d6193c85bfb1c9c7850889b51540da211bc",
+    "ENGTEST.BIN": "7dde07d34fbb97ca39aaa853520610b2883b5bce97b17506f48abc71dcf1ccc5"
+  },
+  "reports": {
+    "native-1986-d81": {
+      "engine": "sibling native 1986",
+      "revision": "65c1fe660ce2b04b785937550d521614544f808d",
+      "format": "d81",
+      "restart_cycles": 3,
+      "live_cancellation": true,
+      "disk_sha256": "d33784763c64261fe772d8cb2178bd2d5a633b74943dd797646394aadb78b7bc",
+      "checks": [
+        "exact max wave",
+        "NOP",
+        "missing server",
+        "acknowledged stop",
+        "restart",
+        "1351 drawing and clock drag",
+        "code/stack guards",
+        "cleanup"
+      ],
+      "physical_c128": false
+    },
+    "vice-d71-cancel": {
+      "format": "d71",
+      "disk_sha256": "797c6c694d56a47ca63f852513d9f9a0b7c7ca8d46ef48e17a3362f76fa76e68",
+      "base_disk_sha256": "1adc942a05935c2b11562ee1232995184cc3754e8ae4f0b838707fa26a929f6b",
+      "records": [
+        {
+          "check": "Ctrl-C-input-while-blocked",
+          "peer_app": "client",
+          "exit": 130,
+          "server_state": 2,
+          "peer_state": 1,
+          "owners": [
+            3,
+            5
+          ],
+          "server_task": 5,
+          "peer_task": 3
+        },
+        {
+          "check": "cancel-public-client-during-orphaned-STOP",
+          "exit": 130,
+          "recovered": true
+        },
+        {
+          "check": "Ctrl-C-input-while-blocked",
+          "peer_app": "peer",
+          "exit": 130,
+          "server_state": 2,
+          "peer_state": 2,
+          "owners": [
+            3,
+            5
+          ],
+          "server_task": 3,
+          "peer_task": 5
+        },
+        {
+          "check": "cancel-public-server-during-STOP-ACK-wait",
+          "exit": 130,
+          "stale_send_errno": 9
+        },
+        {
+          "check": "raw-wire-bounds",
+          "checks": 104,
+          "exact_waves": 96,
+          "invalid_requests": 7
+        },
+        {
+          "cycle": 1,
+          "handle": 12,
+          "exact_wave": true,
+          "clean_stop": true
+        }
+      ],
+      "physical_c128": false,
+      "live_cancellation": true,
+      "bounds": true,
+      "harness_sha256": "d8cfc38e5d0b142491a19f979f06b97facccf85621868fbdf23697ba7c077c5e",
+      "program_sha256": {
+        "client": "7dde07d34fbb97ca39aaa853520610b2883b5bce97b17506f48abc71dcf1ccc5",
+        "server": "776b01e6f51748e4f84e3a3e27e77d6193c85bfb1c9c7850889b51540da211bc",
+        "peer": "d43b2df55d518ef4222b2b0306a465d20e594dc3b5d95e516eb7ba4799ea9806",
+        "bounds": "6dcf3c33bee6abb7daa85d8742691192ed5bfffa9a072a4bd9da450c9f85bdae"
+      }
+    },
+    "vice-d71-soak": {
+      "format": "d71",
+      "disk_sha256": "797c6c694d56a47ca63f852513d9f9a0b7c7ca8d46ef48e17a3362f76fa76e68",
+      "base_disk_sha256": "1adc942a05935c2b11562ee1232995184cc3754e8ae4f0b838707fa26a929f6b",
+      "records": [
+        {
+          "check": "cancel-public-client-during-orphaned-STOP",
+          "exit": 130,
+          "recovered": true
+        },
+        {
+          "check": "cancel-public-server-during-STOP-ACK-wait",
+          "exit": 130,
+          "stale_send_errno": 9
+        },
+        {
+          "check": "raw-wire-bounds",
+          "checks": 104,
+          "exact_waves": 96,
+          "invalid_requests": 7
+        },
+        {
+          "cycle": 1,
+          "handle": 12,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 2,
+          "handle": 16,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 3,
+          "handle": 20,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 4,
+          "handle": 24,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 5,
+          "handle": 28,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 6,
+          "handle": 32,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 7,
+          "handle": 36,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 8,
+          "handle": 40,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 9,
+          "handle": 44,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 10,
+          "handle": 48,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 11,
+          "handle": 52,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 12,
+          "handle": 56,
+          "exact_wave": true,
+          "clean_stop": true
+        }
+      ],
+      "physical_c128": false,
+      "live_cancellation": true,
+      "bounds": true,
+      "harness_sha256": "8d0fb35aca0ee3e2f2c4568e2fba28024a365bc9e2dee134c734433bdaeb3abf",
+      "program_sha256": {
+        "client": "7dde07d34fbb97ca39aaa853520610b2883b5bce97b17506f48abc71dcf1ccc5",
+        "server": "776b01e6f51748e4f84e3a3e27e77d6193c85bfb1c9c7850889b51540da211bc",
+        "peer": "d43b2df55d518ef4222b2b0306a465d20e594dc3b5d95e516eb7ba4799ea9806",
+        "bounds": "6dcf3c33bee6abb7daa85d8742691192ed5bfffa9a072a4bd9da450c9f85bdae"
+      }
+    },
+    "vice-d81-cancel": {
+      "format": "d81",
+      "disk_sha256": "b6a1cd23da544ae96e89d1d936fc5e213acae492992f128aaf26faa3b9ce8a2a",
+      "base_disk_sha256": "cc520982baa1d0302cc325510051069543485418faa9f154ac0d5988b197db42",
+      "records": [
+        {
+          "check": "Ctrl-C-input-while-blocked",
+          "peer_app": "client",
+          "exit": 130,
+          "server_state": 2,
+          "peer_state": 1,
+          "owners": [
+            3,
+            5
+          ],
+          "server_task": 5,
+          "peer_task": 3
+        },
+        {
+          "check": "cancel-public-client-during-orphaned-STOP",
+          "exit": 130,
+          "recovered": true
+        },
+        {
+          "check": "Ctrl-C-input-while-blocked",
+          "peer_app": "peer",
+          "exit": 130,
+          "server_state": 2,
+          "peer_state": 2,
+          "owners": [
+            3,
+            5
+          ],
+          "server_task": 3,
+          "peer_task": 5
+        },
+        {
+          "check": "cancel-public-server-during-STOP-ACK-wait",
+          "exit": 130,
+          "stale_send_errno": 9
+        },
+        {
+          "check": "raw-wire-bounds",
+          "checks": 104,
+          "exact_waves": 96,
+          "invalid_requests": 7
+        },
+        {
+          "cycle": 1,
+          "handle": 12,
+          "exact_wave": true,
+          "clean_stop": true
+        }
+      ],
+      "physical_c128": false,
+      "live_cancellation": true,
+      "bounds": true,
+      "harness_sha256": "d8cfc38e5d0b142491a19f979f06b97facccf85621868fbdf23697ba7c077c5e",
+      "program_sha256": {
+        "client": "7dde07d34fbb97ca39aaa853520610b2883b5bce97b17506f48abc71dcf1ccc5",
+        "server": "776b01e6f51748e4f84e3a3e27e77d6193c85bfb1c9c7850889b51540da211bc",
+        "peer": "d43b2df55d518ef4222b2b0306a465d20e594dc3b5d95e516eb7ba4799ea9806",
+        "bounds": "6dcf3c33bee6abb7daa85d8742691192ed5bfffa9a072a4bd9da450c9f85bdae"
+      }
+    },
+    "vice-d81-soak": {
+      "format": "d81",
+      "disk_sha256": "b6a1cd23da544ae96e89d1d936fc5e213acae492992f128aaf26faa3b9ce8a2a",
+      "base_disk_sha256": "cc520982baa1d0302cc325510051069543485418faa9f154ac0d5988b197db42",
+      "records": [
+        {
+          "check": "cancel-public-client-during-orphaned-STOP",
+          "exit": 130,
+          "recovered": true
+        },
+        {
+          "check": "cancel-public-server-during-STOP-ACK-wait",
+          "exit": 130,
+          "stale_send_errno": 9
+        },
+        {
+          "check": "raw-wire-bounds",
+          "checks": 104,
+          "exact_waves": 96,
+          "invalid_requests": 7
+        },
+        {
+          "cycle": 1,
+          "handle": 12,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 2,
+          "handle": 16,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 3,
+          "handle": 20,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 4,
+          "handle": 24,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 5,
+          "handle": 28,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 6,
+          "handle": 32,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 7,
+          "handle": 36,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 8,
+          "handle": 40,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 9,
+          "handle": 44,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 10,
+          "handle": 48,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 11,
+          "handle": 52,
+          "exact_wave": true,
+          "clean_stop": true
+        },
+        {
+          "cycle": 12,
+          "handle": 56,
+          "exact_wave": true,
+          "clean_stop": true
+        }
+      ],
+      "physical_c128": false,
+      "live_cancellation": true,
+      "bounds": true,
+      "harness_sha256": "8d0fb35aca0ee3e2f2c4568e2fba28024a365bc9e2dee134c734433bdaeb3abf",
+      "program_sha256": {
+        "client": "7dde07d34fbb97ca39aaa853520610b2883b5bce97b17506f48abc71dcf1ccc5",
+        "server": "776b01e6f51748e4f84e3a3e27e77d6193c85bfb1c9c7850889b51540da211bc",
+        "peer": "d43b2df55d518ef4222b2b0306a465d20e594dc3b5d95e516eb7ba4799ea9806",
+        "bounds": "6dcf3c33bee6abb7daa85d8742691192ed5bfffa9a072a4bd9da450c9f85bdae"
+      }
+    }
+  },
+  "failed_or_incomplete": [
+    "native-d71-loading-failure",
+    "native-d81-incomplete-cancel",
+    "native-d81-incomplete-soak"
+  ],
+  "final_source_sha256": {
+    "bench/engine/bounds_client.c": "6fed6ff0711d2d52378cf9cdf073a65f5a6e4d57ee0fc629ede2bc6045134f49",
+    "bench/engine/lifecycle_peer.c": "0d2434dc179426702865e3cf60b39ccd96ca222bde879839bf7dd5ac91ba798e",
+    "docs/BUILDING.md": "8b286fbaec244573ac435bb8b9d31f3c63a226ef445e22fe56220014371736fc",
+    "docs/ENGINE-IPC.md": "ecfda4b911492d2e3b852101cce7aa39c0fa9dd67a4f5172b81b1607434542cd",
+    "docs/ENGINE-QUALIFICATION.md": "81fd06f4d6b8bba9fc91cacf2fa30c00b1604bc727d8bb1f2088389f406f9835",
+    "docs/ROADMAP.md": "b9c8c8156d64ddf6e452388975d1230d1bad2e23cb8e0bbaf33797d23ddcb16f",
+    "mk/engine.mk": "2d9215dd6c1870c2af799884bb1cd2ba3c13bda157faabab5377aa18eff572ef",
+    "tests/fixtures/engine_bounds.c": "0c61b0ded55a3c2612a6365357fa56907548f163125612ce27ca43efaf13ed8d",
+    "tests/test_engine_bounds.py": "73e37416a89227b998395e75782a841b3bba63138f52b79fb3539738916e55c7",
+    "tests/test_engine_qualification_evidence.py": "9a0ec65d3c2457ee7da2effdee2aa1efbe901f26ba772c99f7437953beb7a9bf",
+    "tools/1986_engine_smoke.c": "a128d5980f23018b61c5e545a0d146f8d1a3f70ff8b030fb64fe9951a5ff622c",
+    "tools/1986_input_smoke.c": "254daae37a479a9a8466351e1dd52bc740acb2c54a04f4cfa3c3e5d33b89d63b",
+    "tools/engine_1986_probe.py": "0f8656ced1358f14edf0fb85952b0fa3ff693e25ba2d3070431e069c81f6989e",
+    "tools/engine_vice_probe.py": "5fc52baeeaf7c56d9c9744e4b1b1a63f5041f2b7b8386dceeca6c145f1f0dfbd"
+  }
+}

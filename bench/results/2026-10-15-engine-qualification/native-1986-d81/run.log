@@ -1,0 +1,49 @@
+1986 engine: resumed local cold-boot checkpoint
+1986 engine: raw-IEC boot started
+command: engtest
+missing: exit=2 state=3 error=2
+command: xclock &
+command: xdraw &
+command: engine &
+command: engpeer abandon
+foreground: engtest
+command: engtest
+PASS engine exact exchange and guards
+command: engtest --stop
+PASS native public client CANCEL and ACK timeout recovery
+command: engpeer &
+foreground: engine
+PASS native public server CANCEL and stale handle cleanup
+command: engine &
+command: engtest --nop
+PASS engine exact exchange and guards
+command: engtest
+PASS engine exact exchange and guards
+command: engtest
+PASS engine exact exchange and guards
+command: engtest --stop
+command: engine &
+command: engtest --nop
+PASS engine exact exchange and guards
+command: engtest
+PASS engine exact exchange and guards
+command: engtest --stop
+PASS engine restart cycle 1/3 handle=13
+command: engine &
+command: engtest --nop
+PASS engine exact exchange and guards
+command: engtest
+PASS engine exact exchange and guards
+command: engtest --stop
+PASS engine restart cycle 2/3 handle=17
+command: engine &
+command: engtest --nop
+PASS engine exact exchange and guards
+command: engtest
+PASS engine exact exchange and guards
+command: engtest --stop
+PASS engine restart cycle 3/3 handle=21
+command: xdraw -q
+command: xclock -q
+command: engtest
+PASS native 1986 engine: samples, NOP, missing server, restart, mouse, code/stack guards, stop and cleanup

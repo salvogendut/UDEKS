@@ -44,17 +44,49 @@ static void stop(void) {
     submit("engtest --stop");wait_byte(app(0x8000,SERVER_STATE),4,"shutdown not complete");idle();empty();require(byte(app(0x8000,SERVER_STATE))==4,"server shutdown");
     require(byte(app(0x2300,CLIENT_STATE))==2 && !byte(0xf17a),"stop client");
 }
+#if ENGINE_LIFECYCLE
+static void pending(const char *line) {
+    unsigned before=byte(0xf3d8);text(line);key(SDL_SCANCODE_RETURN);
+    wait_byte(0xf3d8,(before+1)&255,"foreground command not accepted");
+    printf("foreground: %s\n",line);fflush(stdout);
+}
+static void cancel(void) {
+    c128_key_event(machine,SDL_SCANCODE_LCTRL,true);frames(2);
+    key(SDL_SCANCODE_C);c128_key_event(machine,SDL_SCANCODE_LCTRL,false);
+    idle();require(byte(0xf17a)==130,"foreground CANCEL status");require(!byte(0xf11b),"cancel canary");
+}
+static void lifecycle(void) {
+    submit("engine &");wait_byte(app(0x8000,SERVER_STATE),1,"cancellation server ready");
+    submit("engpeer abandon");wait_byte(app(0x8000,SERVER_STATE),2,"orphaned ACK wait");
+    pending("engtest");wait_byte(app(0x2300,CLIENT_STATE),1,"public client waiting");
+    for(unsigned waited=0;waited<600 && byte(IPC_STATE)!=3 && byte(IPC_STATE+1)!=3;++waited)frames(1);
+    require(byte(IPC_STATE)==3 || byte(IPC_STATE+1)==3,"public client reply endpoint not created");
+    require(byte(app(0x8000,SERVER_STATE))==2,"client cancellation lost ACK wait");cancel();
+    require((byte(IPC_STATE)==5 && !byte(IPC_STATE+1)) || (!byte(IPC_STATE) && byte(IPC_STATE+1)==5),"cancelled client endpoint");
+    require(!byte(IPC_STATE+6) && !byte(IPC_STATE+7),"cancelled client queue");
+    wait_byte(app(0x8000,SERVER_STATE),1,"ACK timeout recovery");client("engtest",1);stop();
+    puts("PASS native public client CANCEL and ACK timeout recovery");fflush(stdout);
+    submit("engpeer &");wait_byte(app(0x8000,PEER_STATE),1,"waiting peer ready");
+    pending("engine");wait_byte(app(0x2300,SERVER_STATE),2,"foreground server ACK wait");
+    wait_byte(app(0x8000,PEER_STATE),2,"peer consumed STOP reply");cancel();
+    wait_byte(app(0x8000,PEER_STATE),3,"orphaned peer completed");
+    require(!byte(app(0x8000,PEER_ERROR)) && byte(app(0x8000,PEER_STALE))==9,"stale server handle");empty();
+    guards(0x2300,0x3400,server_fg_image,sizeof(server_fg_image));guards(0x8000,0x8f00,peer_image,sizeof(peer_image));
+    dump("server_fg-code",0x12300,sizeof(server_fg_image));dump("peer-code",0x18000,sizeof(peer_image));
+    puts("PASS native public server CANCEL and stale handle cleanup");fflush(stdout);
+}
+#endif
 int main(int argc,char **argv) {
     require(argc==5 || argc==6,"usage: engine-smoke ROMDIR DISK SLOTADDR OUTPUT [BOOT_SNAPSHOT]");
     Config config;config_set_defaults(&config);config.col_mode_80=true;
     config.joy_port_mode[0]=JOYPORT_MOUSE;config.joy_port_mode[1]=JOYPORT_JOYSTICK;
-    config.real_disk_drive=true;config.drive_type=1581;config.notify_mode=NOTIFY_MODE_CONSOLE;
+    config.real_disk_drive=true;config.drive_type=ENGINE_DRIVE;config.notify_mode=NOTIFY_MODE_CONSOLE;
     output=argv[4];slots=strtoul(argv[3],NULL,0);snapshot_path=NULL;
     machine=calloc(1,sizeof(*machine));require(machine!=NULL,"allocate emulator");
     c128_init(machine,&config);require(mem_load_c128_roms(&machine->mem,argv[1]),"load machine ROMs");
-    char rom[1024];snprintf(rom,sizeof(rom),"%s/dos1581.bin",argv[1]);
-    require(drive1581_load_rom(&machine->real1581[0],rom),"load 1581 ROM");
-    require(!drive_attach_disk(&machine->drive,argv[2]),"attach D81");machine->col_mode_80=true;
+    char rom[1024];snprintf(rom,sizeof(rom),"%s/%s",argv[1],ENGINE_DRIVE==1581?"dos1581.bin":"dos1571cr.bin");
+    require(ENGINE_DRIVE==1581?drive1581_load_rom(&machine->real1581[0],rom):drive1571cr_load_rom(&machine->integrated_drive,rom),"load drive ROM");
+    require(!drive_attach_disk(&machine->drive,argv[2]),"attach engine disk");machine->col_mode_80=true;
     require(c128_configure_real_drives(machine),"configure real drive");c128_power_cycle(machine);
     if(argc==6) {
         require(snapshot_load(machine,argv[5])==SNAPSHOT_OK,"restore local cold-boot checkpoint");
@@ -71,7 +103,7 @@ int main(int argc,char **argv) {
             }
             fflush(stdout);paste_text(&boot_keys,"boot");
         }
-        paste_tick(&boot_keys,&machine->kbd);frames(1);if(!(n%2500)) { printf("boot frame %u PC=%04X startup=%u drive=%04X\n",n,machine->cpu.pc,byte(0xf3e0),machine->real1581[0].cpu.pc);fflush(stdout); }
+        paste_tick(&boot_keys,&machine->kbd);frames(1);if(!(n%2500)) { printf("boot frame %u PC=%04X startup=%u drive=%04X\n",n,machine->cpu.pc,byte(0xf3e0),ENGINE_DRIVE==1581?machine->real1581[0].cpu.pc:machine->integrated_drive.cpu.pc);fflush(stdout); }
     }
     paste_free(&boot_keys);wait_byte(0xf3e0,2,"startup did not finish");idle();empty();
     if(argc==5) {
@@ -86,6 +118,9 @@ int main(int argc,char **argv) {
     require(byte(0xf17a)==2 && byte(app(0x2300,CLIENT_ERROR))==2,"missing server");empty();
     submit("xclock &");wait_byte(0xf246,1,"clock missing");unsigned clock=byte(0xf247);
     submit("xdraw &");wait_byte(0xf246,2,"draw missing");
+#if ENGINE_LIFECYCLE
+    lifecycle();
+#endif
     submit("engine &");wait_byte(app(0x8000,SERVER_STATE),1,"server missing");
     unsigned first=word(app(0x8000,SERVER_HANDLE));client("engtest --nop",0);client("engtest",1);
     pointer_to(238,129);joyports_mouse_button(&machine->joyports,0,false,true);
@@ -95,8 +130,15 @@ int main(int argc,char **argv) {
     wait_byte(0xf248,clock,"clock drag");pointer_to(162,111);
     joyports_mouse_button(&machine->joyports,0,false,false);wait_byte(0xf248,0,"clock release");
     require(word(0xf256)>moves,"clock movement");client("engtest",1);stop();
-    submit("engine &");wait_byte(app(0x8000,SERVER_STATE),1,"restart missing");
-    require(word(app(0x8000,SERVER_HANDLE))>first,"handle reused");client("engtest",1);stop();
+    for(unsigned cycle=0;cycle<RESTART_CYCLES;++cycle) {
+        submit("engine &");wait_byte(app(0x8000,SERVER_STATE),1,"restart missing");
+        unsigned fresh=word(app(0x8000,SERVER_HANDLE));
+        require(fresh>first,"handle reused");first=fresh;
+        client("engtest --nop",0);client("engtest",1);stop();
+        require(byte(0xf246)==2,"graphics lost during restart");
+        require(byte(app(0xc600,DRAW_CELLS))==1,"drawing lost during restart");
+        printf("PASS engine restart cycle %u/%u handle=%u\n",cycle+1,RESTART_CYCLES,fresh);fflush(stdout);
+    }
     dump("client-code",0x12300,sizeof(client_image));dump("server-code",0x18000,sizeof(server_image));
     dump("ipc-final",IPC_STATE,62);dump("console-final",CONSOLE_BASE,0x558);
     submit("xdraw -q");submit("xclock -q");require(!byte(0xf246),"window cleanup");empty();
