@@ -1,0 +1,25 @@
+{
+  "issue": 60,
+  "branch": "services-engine-ipc",
+  "baseline": "923e4a4aa6cc2a92ad4943ba53fd911af49f8697",
+  "scope": "slice-1 contract and compiler placement; no live service or emulator qualification",
+  "host_tests": 1754,
+  "wave_combinations": 8192,
+  "emulator_for_future_checks": {
+    "source": "../1986",
+    "revision": "65c1fe660ce2b04b785937550d521614544f808d",
+    "qualified": false
+  },
+  "cc65": "cc65 V2.18 - Debian 2.19-1",
+  "sources_sha256": {
+    "abi/engine-ipc.md": "3199c94874e8537feaf62da177e58fe69393f6f3004fc1c101cbc74693986b38",
+    "bench/engine/placement_server.c": "cf62dd175d997762e3cdb77594fe37182766d06d0c72f33f0a9c525283036e02",
+    "bench/engine/placement_client.c": "d4584c36f4c07eccb3aeec0ef9c77428019386b7c2db8afd446485128f5c344f",
+    "user/services/engine/protocol.h": "ccfd6fa12beaa5e13c33abc4357b1f869b19c690db2df5954970c465e9e99d11",
+    "tests/fixtures/engine_protocol.c": "97b500b5409889df6871dd7766f1d3970cacbd700ad0bc74adfb8fbf078b84fc",
+    "tests/test_engine_protocol.py": "cb34a7a9451017d48f3b5916fc875e88450ea72f2381940896d180505bfe603e",
+    "tools/engine_placement.py": "9b3aa9681a1bced1f1e6cc6d0410bf189f36bec6504a703efaab6102a24846ad",
+    "mk/engine.mk": "9c0b53ebe7a24df9a5bdf51455d26eba0c32f044b0ad6429514c7a701ca7c8c3"
+  },
+  "worker_sha256": "dd45cf38a436e1d74b937b72319fc64bb386f9f37eb899ceee8f17f51947034f"
+}

@@ -1,0 +1,312 @@
+Modules list:
+-------------
+entry.o:
+    CODE              Offs=000000  Size=000003  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000027  Align=00001  Fill=0000
+program.o:
+    CODE              Offs=000003  Size=000413  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000067  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=00001C  Align=00001  Fill=0000
+/home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.lib(runtime.o):
+    CODE              Offs=000416  Size=000240  Align=00001  Fill=0000
+    BSS               Offs=00001C  Size=000002  Align=00001  Fill=0000
+/home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.lib(ipc.o):
+    CODE              Offs=000656  Size=00046D  Align=00001  Fill=0000
+    BSS               Offs=00001E  Size=000001  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=000AC3  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000AD4  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=000AE2  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=000AEB  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp3.o):
+    CODE              Offs=000AF8  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp4.o):
+    CODE              Offs=000B05  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=000B12  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax1.o):
+    CODE              Offs=000B40  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax2.o):
+    CODE              Offs=000B47  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax8.o):
+    CODE              Offs=000B4E  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=000B53  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000B5E  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000B65  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=000B7B  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=000B80  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=000B85  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=000B8A  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(leaaxsp.o):
+    CODE              Offs=000B93  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(or.o):
+    CODE              Offs=000B9F  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000BB1  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000BC7  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000BE1  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=000BF7  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               001000  001026  000027  00001
+CODE                  001027  001C28  000C02  00001
+RODATA                001C29  001C8F  000067  00001
+BSS                   001C90  001CAE  00001F  00001
+
+
+Exports list by name:
+---------------------
+_engine_bounds_checks     001C92 RLA    _engine_bounds_error      001C91 RLA    
+_engine_bounds_state      001C90 RLA    _udeks_errno              001CAC RLA    
+_udeks_ipc_close          001860 RLA    _udeks_ipc_create         00167D RLA    
+_udeks_ipc_lookup         001690 RLA    _udeks_ipc_receive        001764 RLA    
+_udeks_ipc_send           0016A3 RLA    _udeks_native_console_gate 001027 RLA    
+_udeks_native_console_record 00F359 REA    _udeks_program_entry      001000 RLA    
+_udeks_program_main       00102A RLA    _udeks_sleep              0014FD RLA    
+addeqysp                  001AEC RLA    addysp                    001AFC RLA    
+addysp1                   001AFB RLA    decsp1                    001B09 RLA    
+decsp2                    001B12 RLA    decsp3                    001B1F RLA    
+decsp4                    001B2C RLA    incax1                    001B67 RLA    
+incax2                    001B6E RLA    incax4                    001B7A RLA    
+incax8                    001B75 RLA    incaxy                    001B7C RLA    
+incsp1                    001B85 RLA    incsp2                    001B94 RLA    
+incsp3                    001BA2 RLA    incsp5                    001BA7 RLA    
+incsp6                    001BAC RLA    ldax0sp                   001BB1 RLA    
+ldaxysp                   001BB3 RLA    leaa0sp                   001BBA RLA    
+ptr1                      00000A RLZ    pusha                     001BDC RLA    
+pusha0                    001BF0 RLA    pushax                    001BF2 RLA    
+sp                        000002 RLZ    sreg                      000004 RLZ    
+staspidx                  001C08 RLA    stax0sp                   001C1E RLA    
+staxysp                   001C20 RLA    tmp1                      000012 RLZ    
+tosicmp                   001B3B RLA    tosorax                   001BC8 RLA    
+
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+ptr1                      00000A RLZ    tmp1                      000012 RLZ    
+_udeks_program_entry      001000 RLA    _udeks_native_console_gate 001027 RLA    
+_udeks_program_main       00102A RLA    _udeks_sleep              0014FD RLA    
+_udeks_ipc_create         00167D RLA    _udeks_ipc_lookup         001690 RLA    
+_udeks_ipc_send           0016A3 RLA    _udeks_ipc_receive        001764 RLA    
+_udeks_ipc_close          001860 RLA    addeqysp                  001AEC RLA    
+addysp1                   001AFB RLA    addysp                    001AFC RLA    
+decsp1                    001B09 RLA    decsp2                    001B12 RLA    
+decsp3                    001B1F RLA    decsp4                    001B2C RLA    
+tosicmp                   001B3B RLA    incax1                    001B67 RLA    
+incax2                    001B6E RLA    incax8                    001B75 RLA    
+incax4                    001B7A RLA    incaxy                    001B7C RLA    
+incsp1                    001B85 RLA    incsp2                    001B94 RLA    
+incsp3                    001BA2 RLA    incsp5                    001BA7 RLA    
+incsp6                    001BAC RLA    ldax0sp                   001BB1 RLA    
+ldaxysp                   001BB3 RLA    leaa0sp                   001BBA RLA    
+tosorax                   001BC8 RLA    pusha                     001BDC RLA    
+pusha0                    001BF0 RLA    pushax                    001BF2 RLA    
+staspidx                  001C08 RLA    stax0sp                   001C1E RLA    
+staxysp                   001C20 RLA    _engine_bounds_state      001C90 RLA    
+_engine_bounds_error      001C91 RLA    _engine_bounds_checks     001C92 RLA    
+_udeks_errno              001CAC RLA    _udeks_native_console_record 00F359 REA    
+
+
+
+Imports list:
+-------------
+_engine_bounds_checks (program.o):
+    [linker generated]       
+_engine_bounds_error (program.o):
+    [linker generated]       
+_engine_bounds_state (program.o):
+    [linker generated]       
+_udeks_errno (runtime.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(13)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(13)
+_udeks_ipc_close (ipc.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(20)
+_udeks_ipc_create (ipc.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(16)
+_udeks_ipc_lookup (ipc.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(17)
+_udeks_ipc_receive (ipc.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(19)
+_udeks_ipc_send (ipc.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(18)
+_udeks_native_console_gate (entry.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(20)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(17)
+_udeks_native_console_record (entry.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(19)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(16)
+_udeks_program_entry (entry.o):
+    [linker generated]       
+_udeks_program_main (program.o):
+    entry.o                   user/lib/native_console_entry.s(8)
+_udeks_sleep (runtime.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(15)
+addeqysp (addeqsp.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(622)
+addysp (addysp.o):
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(622)
+addysp1 (addysp.o):
+    or.o                      runtime/or.s(9)
+decsp1 (decsp1.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+decsp2 (decsp2.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(622)
+decsp3 (decsp3.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(622)
+decsp4 (decsp4.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(622)
+incax1 (incax1.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+incax2 (incax2.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+incax4 (incaxy.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+incax8 (incax8.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(622)
+incaxy (incaxy.o):
+    incax8.o                  runtime/incax8.s(8)
+incsp1 (incsp1.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+incsp3 (incsp3.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+incsp5 (incsp5.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+incsp6 (incsp6.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(622)
+ldax0sp (ldaxsp.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(622)
+ldaxysp (ldaxsp.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+leaa0sp (leaaxsp.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(622)
+ptr1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(11)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(11)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(11)
+pusha (pusha.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(622)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(622)
+    entry.o                   user/lib/native_console_entry.s(8)
+pusha0 (pushax.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+pushax (pushax.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(622)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(622)
+sp (zeropage.o):
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    or.o                      runtime/or.s(10)
+    leaaxsp.o                 runtime/leaaxsp.s(8)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp4.o                  runtime/decsp4.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(10)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(10)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(10)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(10)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(10)
+staspidx (staspidx.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(348)
+stax0sp (staxsp.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+staxysp (staxsp.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/program.s(622)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    or.o                      runtime/or.s(10)
+    incaxy.o                  runtime/incaxy.s(8)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(11)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/runtime.s(11)
+tosicmp (icmp.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+tosorax (or.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/bounds/ipc.s(673)
+

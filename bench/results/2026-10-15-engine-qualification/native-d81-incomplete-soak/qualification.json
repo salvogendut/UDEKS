@@ -1,0 +1,6 @@
+{
+  "qualified": false,
+  "reason": "wrapper wall-clock timeout",
+  "complete_restart_cycles": 7,
+  "requested_restart_cycles": 12
+}

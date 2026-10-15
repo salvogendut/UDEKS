@@ -1,0 +1,63 @@
+1986 engine: resumed local cold-boot checkpoint
+1986 engine: raw-IEC boot started
+command: engtest
+missing: exit=2 state=3 error=2
+command: xclock &
+command: xdraw &
+command: engine &
+command: engtest --nop
+PASS engine exact exchange and guards
+command: engtest
+PASS engine exact exchange and guards
+command: engtest
+PASS engine exact exchange and guards
+command: engtest --stop
+command: engine &
+command: engtest --nop
+PASS engine exact exchange and guards
+command: engtest
+PASS engine exact exchange and guards
+command: engtest --stop
+PASS engine restart cycle 1/12 handle=6
+command: engine &
+command: engtest --nop
+PASS engine exact exchange and guards
+command: engtest
+PASS engine exact exchange and guards
+command: engtest --stop
+PASS engine restart cycle 2/12 handle=10
+command: engine &
+command: engtest --nop
+PASS engine exact exchange and guards
+command: engtest
+PASS engine exact exchange and guards
+command: engtest --stop
+PASS engine restart cycle 3/12 handle=14
+command: engine &
+command: engtest --nop
+PASS engine exact exchange and guards
+command: engtest
+PASS engine exact exchange and guards
+command: engtest --stop
+PASS engine restart cycle 4/12 handle=18
+command: engine &
+command: engtest --nop
+PASS engine exact exchange and guards
+command: engtest
+PASS engine exact exchange and guards
+command: engtest --stop
+PASS engine restart cycle 5/12 handle=22
+command: engine &
+command: engtest --nop
+PASS engine exact exchange and guards
+command: engtest
+PASS engine exact exchange and guards
+command: engtest --stop
+PASS engine restart cycle 6/12 handle=26
+command: engine &
+command: engtest --nop
+PASS engine exact exchange and guards
+command: engtest
+PASS engine exact exchange and guards
+command: engtest --stop
+PASS engine restart cycle 7/12 handle=30

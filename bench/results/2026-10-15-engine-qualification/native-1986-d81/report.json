@@ -1,0 +1,19 @@
+{
+  "engine": "sibling native 1986",
+  "revision": "65c1fe660ce2b04b785937550d521614544f808d",
+  "format": "d81",
+  "restart_cycles": 3,
+  "live_cancellation": true,
+  "disk_sha256": "d33784763c64261fe772d8cb2178bd2d5a633b74943dd797646394aadb78b7bc",
+  "checks": [
+    "exact max wave",
+    "NOP",
+    "missing server",
+    "acknowledged stop",
+    "restart",
+    "1351 drawing and clock drag",
+    "code/stack guards",
+    "cleanup"
+  ],
+  "physical_c128": false
+}

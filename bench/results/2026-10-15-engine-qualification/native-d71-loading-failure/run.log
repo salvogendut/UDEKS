@@ -1,0 +1,31 @@
+1986 engine: raw-IEC boot started
+boot frame 0 PC=FF74 startup=0 drive=EAB7
+1986 engine: typing BOOT through the BASIC keyboard
+                                                                                
+                     COMMODORE BASIC V7.0 122365 BYTES FREE                     
+                       (C)1986 COMMODORE ELECTRONICS, LTD.                      
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                             (C)1977 MICROSOFT C
+boot frame 2500 PC=E3B7 startup=0 drive=D5C5
+boot frame 5000 PC=E4AE startup=0 drive=E9B7
+boot frame 7500 PC=E3C4 startup=0 drive=F55D
+command: engtest
+missing: exit=13 state=0 error=0
+FAIL: missing-server client not complete (frame 28619, PC $72F1, request 00/10/00)
+trace PC=$C445 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$C6AB drag=0 buttons=0 moves=0 finishes=0
+trace PC=$60D2 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$60D2 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$8ABD drag=0 buttons=0 moves=0 finishes=0
+trace PC=$8ABF drag=0 buttons=0 moves=0 finishes=0
+trace PC=$326D drag=0 buttons=0 moves=0 finishes=0
+trace PC=$638E drag=0 buttons=0 moves=0 finishes=0
+trace PC=$60D0 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$72E4 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$C25B drag=0 buttons=0 moves=0 finishes=0
+trace PC=$C23B drag=0 buttons=0 moves=0 finishes=0

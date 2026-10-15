@@ -1,0 +1,33 @@
+{
+  "scope": "independent engine IPC server/client; unchanged kernel and standard apps",
+  "programs": {
+    "ENGINE": {
+      "sha256": "776b01e6f51748e4f84e3a3e27e77d6193c85bfb1c9c7850889b51540da211bc",
+      "fits": [
+        3,
+        5
+      ]
+    },
+    "ENGTEST": {
+      "sha256": "7dde07d34fbb97ca39aaa853520610b2883b5bce97b17506f48abc71dcf1ccc5",
+      "fits": [
+        3
+      ]
+    }
+  },
+  "launch_orders": 24,
+  "disks": {
+    "d71": {
+      "source_sha256": "347106b99f8b39509c0cdeaa5c4bb3df773b6c120cb79966689e36196ec2fe4b",
+      "sha256": "1adc942a05935c2b11562ee1232995184cc3754e8ae4f0b838707fa26a929f6b"
+    },
+    "d81": {
+      "source_sha256": "dc6f08069b71bcb59630e22b76679564a9f34378c69afaada46eb4624a9b383e",
+      "sha256": "cc520982baa1d0302cc325510051069543485418faa9f154ac0d5988b197db42"
+    }
+  },
+  "d64": {
+    "skipped": "side one has no room for disk PRG",
+    "program_blocks": 34
+  }
+}

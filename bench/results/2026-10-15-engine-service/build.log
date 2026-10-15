@@ -1,0 +1,32 @@
+python3 tools/build_native_console.py --counted-output-only --source user/services/engine/server.c --name ENGINE --output build/engine/server \
+	--export _engine_server_state --export _engine_server_error --export _engine_server_jobs --export _engine_server_handle
+{
+  "file": 3938,
+  "image": 3200,
+  "bss": 29,
+  "fits": [
+    3,
+    5
+  ],
+  "joined_fits": [
+    3,
+    5
+  ],
+  "resident_bytes": 0,
+  "scope": "native arguments/streams/sleep/foreground stdin/task-owned mounted-file I/O"
+}
+python3 tools/build_native_console.py --counted-output-only --source user/examples/engine/client.c --name ENGTEST --output build/engine/client \
+	--export _engine_client_state --export _engine_client_error --export _engine_client_samples --export _engine_client_result
+{
+  "file": 4536,
+  "image": 3656,
+  "bss": 43,
+  "fits": [
+    3
+  ],
+  "joined_fits": [
+    3
+  ],
+  "resident_bytes": 0,
+  "scope": "native arguments/streams/sleep/foreground stdin/task-owned mounted-file I/O"
+}
