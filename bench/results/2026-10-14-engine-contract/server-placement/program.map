@@ -1,0 +1,331 @@
+Modules list:
+-------------
+entry.o:
+    CODE              Offs=000000  Size=000003  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000027  Align=00001  Fill=0000
+program.o:
+    CODE              Offs=000003  Size=00039F  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=00001E  Align=00001  Fill=0000
+    BSS               Offs=000000  Size=00001E  Align=00001  Fill=0000
+/home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.lib(runtime.o):
+    CODE              Offs=0003A2  Size=000311  Align=00001  Fill=0000
+    BSS               Offs=00001E  Size=000002  Align=00001  Fill=0000
+/home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.lib(ipc.o):
+    CODE              Offs=0006B3  Size=00046D  Align=00001  Fill=0000
+    BSS               Offs=000020  Size=000001  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addeqsp.o):
+    CODE              Offs=000B20  Size=000011  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(addysp.o):
+    CODE              Offs=000B31  Size=00000E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp1.o):
+    CODE              Offs=000B3F  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp2.o):
+    CODE              Offs=000B48  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp4.o):
+    CODE              Offs=000B55  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(decsp6.o):
+    CODE              Offs=000B62  Size=00000D  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(icmp.o):
+    CODE              Offs=000B6F  Size=00002E  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax1.o):
+    CODE              Offs=000B9D  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax2.o):
+    CODE              Offs=000BA4  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incax8.o):
+    CODE              Offs=000BAB  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incaxy.o):
+    CODE              Offs=000BB0  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp1.o):
+    CODE              Offs=000BBB  Size=000007  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp2.o):
+    CODE              Offs=000BC2  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp3.o):
+    CODE              Offs=000BD8  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp4.o):
+    CODE              Offs=000BDD  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp5.o):
+    CODE              Offs=000BE2  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(incsp6.o):
+    CODE              Offs=000BE7  Size=000005  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(ldaxsp.o):
+    CODE              Offs=000BEC  Size=000009  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(leaaxsp.o):
+    CODE              Offs=000BF5  Size=00000C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(or.o):
+    CODE              Offs=000C01  Size=000012  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pusha.o):
+    CODE              Offs=000C13  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushax.o):
+    CODE              Offs=000C29  Size=00001A  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(pushwsp.o):
+    CODE              Offs=000C43  Size=00001C  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staspidx.o):
+    CODE              Offs=000C5F  Size=000016  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(staxsp.o):
+    CODE              Offs=000C75  Size=00000B  Align=00001  Fill=0000
+/usr/share/cc65/lib/none.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000002  00001B  00001A  00001
+STARTUP               001000  001026  000027  00001
+CODE                  001027  001CA6  000C80  00001
+RODATA                001CA7  001CC4  00001E  00001
+BSS                   001CC5  001CE5  000021  00001
+
+
+Exports list by name:
+---------------------
+_udeks_errno              001CE3 RLA    _udeks_ipc_close          0018BD RLA    
+_udeks_ipc_create         0016DA RLA    _udeks_ipc_receive        0017C1 RLA    
+_udeks_ipc_send           001700 RLA    _udeks_native_console_gate 001027 RLA    
+_udeks_native_console_record 00F359 REA    _udeks_native_request_version 0015C6 RLA    
+_udeks_program_entry      001000 RLA    _udeks_program_main       00102A RLA    
+_udeks_sleep              00155A RLA    _udeks_write              0013F1 RLA    
+addeq0sp                  001B47 RLA    addeqysp                  001B49 RLA    
+addysp                    001B59 RLA    addysp1                   001B58 RLA    
+decsp1                    001B66 RLA    decsp2                    001B6F RLA    
+decsp4                    001B7C RLA    decsp6                    001B89 RLA    
+incax1                    001BC4 RLA    incax2                    001BCB RLA    
+incax4                    001BD7 RLA    incax8                    001BD2 RLA    
+incaxy                    001BD9 RLA    incsp1                    001BE2 RLA    
+incsp2                    001BF1 RLA    incsp3                    001BFF RLA    
+incsp4                    001C04 RLA    incsp5                    001C09 RLA    
+incsp6                    001C0E RLA    ldax0sp                   001C13 RLA    
+ldaxysp                   001C15 RLA    leaa0sp                   001C1C RLA    
+ptr1                      00000A RLZ    pusha                     001C3E RLA    
+pusha0                    001C52 RLA    pushax                    001C54 RLA    
+pushwysp                  001C6C RLA    sp                        000002 RLZ    
+sreg                      000004 RLZ    staspidx                  001C86 RLA    
+stax0sp                   001C9C RLA    tmp1                      000012 RLZ    
+tosicmp                   001B98 RLA    tosora0                   001C28 RLA    
+tosorax                   001C2A RLA    
+
+
+Exports list by value:
+----------------------
+sp                        000002 RLZ    sreg                      000004 RLZ    
+ptr1                      00000A RLZ    tmp1                      000012 RLZ    
+_udeks_program_entry      001000 RLA    _udeks_native_console_gate 001027 RLA    
+_udeks_program_main       00102A RLA    _udeks_write              0013F1 RLA    
+_udeks_sleep              00155A RLA    _udeks_native_request_version 0015C6 RLA    
+_udeks_ipc_create         0016DA RLA    _udeks_ipc_send           001700 RLA    
+_udeks_ipc_receive        0017C1 RLA    _udeks_ipc_close          0018BD RLA    
+addeq0sp                  001B47 RLA    addeqysp                  001B49 RLA    
+addysp1                   001B58 RLA    addysp                    001B59 RLA    
+decsp1                    001B66 RLA    decsp2                    001B6F RLA    
+decsp4                    001B7C RLA    decsp6                    001B89 RLA    
+tosicmp                   001B98 RLA    incax1                    001BC4 RLA    
+incax2                    001BCB RLA    incax8                    001BD2 RLA    
+incax4                    001BD7 RLA    incaxy                    001BD9 RLA    
+incsp1                    001BE2 RLA    incsp2                    001BF1 RLA    
+incsp3                    001BFF RLA    incsp4                    001C04 RLA    
+incsp5                    001C09 RLA    incsp6                    001C0E RLA    
+ldax0sp                   001C13 RLA    ldaxysp                   001C15 RLA    
+leaa0sp                   001C1C RLA    tosora0                   001C28 RLA    
+tosorax                   001C2A RLA    pusha                     001C3E RLA    
+pusha0                    001C52 RLA    pushax                    001C54 RLA    
+pushwysp                  001C6C RLA    staspidx                  001C86 RLA    
+stax0sp                   001C9C RLA    _udeks_errno              001CE3 RLA    
+_udeks_native_console_record 00F359 REA    
+
+
+Imports list:
+-------------
+_udeks_errno (runtime.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(13)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(13)
+_udeks_ipc_close (ipc.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(20)
+_udeks_ipc_create (ipc.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(17)
+_udeks_ipc_receive (ipc.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(19)
+_udeks_ipc_send (ipc.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(18)
+_udeks_native_console_gate (entry.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(20)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(19)
+_udeks_native_console_record (entry.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(19)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(18)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(22)
+_udeks_native_request_version (runtime.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(21)
+_udeks_program_entry (entry.o):
+    [linker generated]       
+_udeks_program_main (program.o):
+    entry.o                   user/lib/native_console_entry.s(8)
+_udeks_sleep (runtime.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(16)
+_udeks_write (runtime.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(14)
+addeq0sp (addeqsp.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(489)
+addeqysp (addeqsp.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+addysp (addysp.o):
+    incsp6.o                  runtime/incsp6.s(8)
+    incsp5.o                  runtime/incsp5.s(8)
+    incsp4.o                  runtime/incsp4.s(8)
+    incsp3.o                  runtime/incsp3.s(8)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(489)
+addysp1 (addysp.o):
+    or.o                      runtime/or.s(9)
+decsp1 (decsp1.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+decsp2 (decsp2.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+decsp4 (decsp4.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+decsp6 (decsp6.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(489)
+incax1 (incax1.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+incax2 (incax2.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+incax4 (incaxy.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(489)
+incax8 (incax8.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(489)
+incaxy (incaxy.o):
+    incax8.o                  runtime/incax8.s(8)
+incsp1 (incsp1.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+incsp2 (incsp2.o):
+    staspidx.o                runtime/staspidx.s(8)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+incsp3 (incsp3.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(489)
+incsp4 (incsp4.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+incsp5 (incsp5.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+incsp6 (incsp6.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+ldax0sp (ldaxsp.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+ldaxysp (ldaxsp.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(489)
+leaa0sp (leaaxsp.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+ptr1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(11)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(11)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(11)
+pusha (pusha.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(489)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(489)
+    entry.o                   user/lib/native_console_entry.s(8)
+pusha0 (pushax.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(489)
+pushax (pushax.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(489)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(489)
+pushwysp (pushwsp.o):
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+sp (zeropage.o):
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushwsp.o                 runtime/pushwsp.s(8)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    or.o                      runtime/or.s(10)
+    leaaxsp.o                 runtime/leaaxsp.s(8)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    incsp2.o                  runtime/incsp2.s(8)
+    incsp1.o                  runtime/incsp1.s(8)
+    icmp.o                    runtime/icmp.s(9)
+    decsp6.o                  runtime/decsp6.s(8)
+    decsp4.o                  runtime/decsp4.s(8)
+    decsp2.o                  runtime/decsp2.s(8)
+    decsp1.o                  runtime/decsp1.s(8)
+    addysp.o                  runtime/addysp.s(8)
+    addeqsp.o                 runtime/addeqsp.s(8)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(10)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(10)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(10)
+sreg (zeropage.o):
+    icmp.o                    runtime/icmp.s(9)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(10)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(10)
+staspidx (staspidx.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(472)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(489)
+stax0sp (staxsp.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(489)
+tmp1 (zeropage.o):
+    staspidx.o                runtime/staspidx.s(9)
+    or.o                      runtime/or.s(10)
+    incaxy.o                  runtime/incaxy.s(8)
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(11)
+    runtime.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/runtime.s(11)
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(11)
+tosicmp (icmp.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+tosora0 (or.o):
+    program.o                 /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/program.s(489)
+tosorax (or.o):
+    ipc.o                     /home/sbognann/Development/UDEKS/build/engine-ipc/build/engine/server-placement/ipc.s(673)
+

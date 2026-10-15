@@ -1,0 +1,50 @@
+{
+  "scope": "compile/link placement only; not runnable service or runtime qualification",
+  "programs": {
+    "server": {
+      "file": 3955,
+      "image": 3269,
+      "bss": 33,
+      "fits": [
+        3,
+        5
+      ],
+      "sha256": "a0f41b5b61cabc99799ef8f1cf2160f986fc654cd3671cb78cfe8f4eb5a97f49"
+    },
+    "client": {
+      "file": 3177,
+      "image": 2631,
+      "bss": 9,
+      "fits": [
+        3,
+        5
+      ],
+      "sha256": "236dd22e8c928172b4c346cd05a5284318b66f437ee86ced1d0adee8cbf06223"
+    },
+    "clock": {
+      "file": 2775,
+      "image": 2189,
+      "bss": 369,
+      "fits": [
+        3,
+        4,
+        5
+      ],
+      "sha256": "f44a740aeb49d7e2bc4172bcbdf91b20134cb7d478f83954feb2bd3128ac5968"
+    },
+    "draw": {
+      "file": 1781,
+      "image": 1479,
+      "bss": 354,
+      "fits": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "sha256": "49bd1da2105e6da906354ad5c42692ff97eea964e4115b35bb0399ae4e07502b"
+    }
+  },
+  "launch_orders": 24,
+  "resident_bytes_added": 0
+}

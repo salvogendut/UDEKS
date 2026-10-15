@@ -435,3 +435,14 @@ WAITPING fixture is added only to disposable test disks.
 source against local static SDL3 and runs native D81 IPC/keyboard/1351 checks.
 See [source setup, evidence and separate acceptance runs](IPC-QUALIFICATION.md).
 ROMs and ROM-bearing boot checkpoints stay private under ignored `build/`.
+
+## Engine IPC service candidate
+
+`make engine-programs` builds independent ENGINE/ENGTEST executables.
+`make engine-demo` adds them to full D71/D81 copies, preserving standard apps.
+The D64 full demo is skipped when there is insufficient space. Both programs
+opt into `--counted-output-only`, which omits unused text/byte convenience
+wrappers; the default native SDK and existing binaries are preserved.
+`make engine-native-probe` builds an observable harness against the unmodified
+sibling `../1986`, using its local SDL3 pkg-config and supplied ROM bundle.
+See [the engine plan, instructions and limits](ENGINE-IPC.md).

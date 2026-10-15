@@ -1,0 +1,85 @@
+{
+  "issue": 60,
+  "branch": "services-engine-ipc",
+  "baseline": "923e4a4",
+  "scope": "slice 2 useful native engine IPC server/client; broader lifecycle qualification remains slice 3",
+  "qualified": [
+    "sibling native 1986 D81 basic server/client and real input"
+  ],
+  "unqualified": [
+    "VICE D71/D81 engine runtime",
+    "native D71 engine runtime",
+    "live peer cancellation and extended restart soak",
+    "physical C128 engine service",
+    "manual acceptance"
+  ],
+  "source_sha256": {
+    "abi/engine-ipc.md": "3199c94874e8537feaf62da177e58fe69393f6f3004fc1c101cbc74693986b38",
+    "user/services/engine/server.c": "52a80a4ef7ffb6fb3acd5e29a940bbf28fe7849dfa0a15ad7aa14f38b2c32396",
+    "user/services/engine/protocol.h": "7d30f178bfd8382cc3c8b6d55854f148674e361aa263c7a0e4b581652c0e5612",
+    "user/lib/native_engine.c": "a54c329614153941cbf0d74aa82fda4989130402b566c00ef4efa56c66f962a9",
+    "user/lib/native_console.c": "40aa73ce089fc63cf060309a49e80f41ad898a8c057194026f06a5ab4a779bd4",
+    "user/include/udeks/native_engine.h": "6de45ebe4bc264802ade1ba91b7ca179a9c7c6bbd5511804482bc295d91ba6fd",
+    "user/examples/engine/client.c": "d99d0a971e91e4a983e124a28832baf4be40f838cc460fc7050ef3ce417c83dc",
+    "tools/build_native_console.py": "6d33f543c87cb1f2dbab415d60ff3e566bb91c8bd80f3d846214a047591fd2b9",
+    "tools/build_engine_demo.py": "200a7883d384dc21bbbdf327c74e0570fae2dc4c222cb0f1a9955d58dda388b4",
+    "tools/engine_1986_probe.py": "6f359e5763a37ebe87274a56a7e7b23766401fc99b3175ae048bac2c11da4c8d",
+    "tools/1986_engine_smoke.c": "b6defe3b8e3f27b2f886402943f01787d61641d5945f31f8ebc3459d4392ace2",
+    "tools/1986_input_smoke.c": "254daae37a479a9a8466351e1dd52bc740acb2c54a04f4cfa3c3e5d33b89d63b",
+    "mk/engine.mk": "5cfc1eaa2e3e4d4ca1b8f32591811a92992c0ed62e3429274911e8986dcc435e",
+    "tests/test_native_engine.py": "76fa8babb97166ef2ee0f440b6158bb629d3f4dfe9092ee9441647735e43f8e8",
+    "tests/test_engine_server.py": "ad817d7462b47cfded0150297ed5e782bf32a54f539742ae92b68f364030e779",
+    "tests/test_engine_client.py": "1e215970284d00cfb7cecfd690b3a6337b20149951f364d0b562dce80c3fae8b",
+    "tests/fixtures/native_engine.c": "648c7865faab3281352b9a05251e3644c8632f9bc1ae3b31e98d5a7f4d2540af",
+    "tests/fixtures/engine_server.c": "5d142c4c5316d60aa3879ffb46daf580011c8e307e599f18beceb5fd1c4e4226",
+    "tests/fixtures/engine_client.c": "96e186d317def4127cb2249c133e1f78768f2a88aa88f791e491b29ad16b2cd4",
+    "tests/test_engine_evidence.py": "1d71b2ff4227feb8c786609b1ae10d5929c9a84ed6458d5f09677574e2e09aa2"
+  },
+  "kernel_sha256": {
+    "udeks-8502.bin": "24a06c7b21b4dba49d868716a486a779b1ed219c3039dbcf4c304d58dd1cb194",
+    "udeks-8502-panic-probe.bin": "bd4909e4c31a6e1576f59a270e7d70b8f53ba76c0151a152b12eeb29cc4dc70e",
+    "bitmap-hidden-sealed.bin": "be43a3cde0d28d811b76476426f9f634d8e69efb5c0aa51fa11e677fe1f54a7f"
+  },
+  "ipc_binary_sha256": {
+    "IPCPING": "2dc27bcd2203134b623d88984ca5a5e8425e8fbd2bd5ec2ce406282a1970324c",
+    "IPCSRV": "ef076a7dff3e0e379e9bde2f9682faaa47ca6227ab4c67b2e880b519f7647b06"
+  },
+  "programs": {
+    "ENGINE": {
+      "sha256": "776b01e6f51748e4f84e3a3e27e77d6193c85bfb1c9c7850889b51540da211bc",
+      "fits": [
+        3,
+        5
+      ]
+    },
+    "ENGTEST": {
+      "sha256": "7dde07d34fbb97ca39aaa853520610b2883b5bce97b17506f48abc71dcf1ccc5",
+      "fits": [
+        3
+      ]
+    }
+  },
+  "host_tests": 1768,
+  "final_source_sha256": {
+    "AGENTS.md": "1954894acefd6e7d6e7c6df7c04f88c5f7374942ac6d41cce06a41e9938cc1d3",
+    "Makefile": "4f44adfaf5240367c4df037b5e3889f7a90e1cec87d95b166e50eaf7f056186b",
+    "docs/ENGINE-IPC.md": "0a6feaba98b6739a121670bcc5af8176e0f031470917e9277e63d30498fee83b",
+    "docs/ROADMAP.md": "6b45cc37c6798c836d312e87c3b67b1008bfeb0f19390d15b49ddfadf312a311",
+    "docs/BUILDING.md": "b6a7e3b8e4667fc98a90c523f5a4f685f7857ecd090be65c43e12ecec388622d",
+    "abi/engine-ipc.md": "59e4718ec390e8eb28717939fd85d4124de4671f35a39063d1f6d33123d5db9e",
+    "mk/engine.mk": "6de4e73ee6401ef9df87f9bc2a4e36afba88e6c1e87d370835afddf176a8f62d",
+    "tools/engine_1986_probe.py": "4af717bfd7d799591ce0e487a6ba5101eb61a822f6fe6981a0f3bbf4e71f0d3c",
+    "tools/build_engine_demo.py": "200a7883d384dc21bbbdf327c74e0570fae2dc4c222cb0f1a9955d58dda388b4",
+    "tools/build_native_console.py": "6d33f543c87cb1f2dbab415d60ff3e566bb91c8bd80f3d846214a047591fd2b9",
+    "tools/1986_engine_smoke.c": "b6defe3b8e3f27b2f886402943f01787d61641d5945f31f8ebc3459d4392ace2",
+    "user/lib/native_engine.c": "a54c329614153941cbf0d74aa82fda4989130402b566c00ef4efa56c66f962a9",
+    "user/lib/native_console.c": "40aa73ce089fc63cf060309a49e80f41ad898a8c057194026f06a5ab4a779bd4",
+    "user/include/udeks/native_engine.h": "6de45ebe4bc264802ade1ba91b7ca179a9c7c6bbd5511804482bc295d91ba6fd",
+    "user/services/engine/protocol.h": "7d30f178bfd8382cc3c8b6d55854f148674e361aa263c7a0e4b581652c0e5612",
+    "user/services/engine/server.c": "52a80a4ef7ffb6fb3acd5e29a940bbf28fe7849dfa0a15ad7aa14f38b2c32396",
+    "user/examples/engine/client.c": "d99d0a971e91e4a983e124a28832baf4be40f838cc460fc7050ef3ce417c83dc",
+    "tests/test_engine_client.py": "1e215970284d00cfb7cecfd690b3a6337b20149951f364d0b562dce80c3fae8b",
+    "tests/fixtures/engine_client.c": "96e186d317def4127cb2249c133e1f78768f2a88aa88f791e491b29ad16b2cd4",
+    "tests/test_engine_evidence.py": "1d71b2ff4227feb8c786609b1ae10d5929c9a84ed6458d5f09677574e2e09aa2"
+  }
+}

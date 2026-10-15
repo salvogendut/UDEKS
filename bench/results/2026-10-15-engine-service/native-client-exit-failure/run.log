@@ -1,0 +1,30 @@
+1986 engine: raw-IEC boot started
+boot frame 0 PC=FF74 startup=0 drive=AF5F
+1986 engine: typing BOOT through the BASIC keyboard
+                                                                                
+                     COMMODORE BASIC V7.0 122365 BYTES FREE                     
+                       (C)1986 COMMODORE ELECTRONICS, LTD.                      
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                             (C)1977 MICROSOFT C
+boot frame 2500 PC=E4B1 startup=0 drive=AE14
+boot frame 5000 PC=E496 startup=0 drive=AD12
+boot frame 7500 PC=E3B6 startup=0 drive=CD1A
+command: engtest
+FAIL: missing server (frame 21516, PC $6032, request 00/10/00)
+trace PC=$8AC7 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$29EE drag=0 buttons=0 moves=0 finishes=0
+trace PC=$95B3 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$8BFB drag=0 buttons=0 moves=0 finishes=0
+trace PC=$626C drag=0 buttons=0 moves=0 finishes=0
+trace PC=$60D2 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$72EB drag=0 buttons=0 moves=0 finishes=0
+trace PC=$C258 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$31A8 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$88B1 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$1FF2 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$6248 drag=0 buttons=0 moves=0 finishes=0

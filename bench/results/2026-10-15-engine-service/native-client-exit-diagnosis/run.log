@@ -1,0 +1,17 @@
+1986 engine: resumed local cold-boot checkpoint
+1986 engine: raw-IEC boot started
+command: engtest
+missing: exit=1 state=3 error=2
+FAIL: missing server (frame 4616, PC $31A0, request 00/10/00)
+trace PC=$8ABF drag=0 buttons=0 moves=0 finishes=0
+trace PC=$31D6 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$60D2 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$72D6 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$8ABF drag=0 buttons=0 moves=0 finishes=0
+trace PC=$60D2 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$72E4 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$1FF2 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$6EDC drag=0 buttons=0 moves=0 finishes=0
+trace PC=$6093 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$8AC1 drag=0 buttons=0 moves=0 finishes=0
+trace PC=$29C8 drag=0 buttons=0 moves=0 finishes=0

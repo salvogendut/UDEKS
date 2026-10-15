@@ -249,6 +249,7 @@ include mk/reu.mk
 include mk/reu_store.mk
 include mk/reu_graphics.mk
 include mk/ipc.mk
+include mk/engine.mk
 
 # Storage 0.2 positive/negative files live on DOS media, never in bootfs.
 .PHONY: disk-exec-image

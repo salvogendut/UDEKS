@@ -23,6 +23,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source',type=Path,default=ROOT/'user/examples/ticker.c')
     parser.add_argument('--name',default='TICKER')
+    parser.add_argument('--counted-output-only',action='store_true',help='omit text/byte convenience output wrappers')
     parser.add_argument('--output',type=Path,default=ROOT/'build/native-console/ticker')
     parser.add_argument('--export',action='append',default=[],dest='exports')
     args=parser.parse_args()
@@ -37,8 +38,10 @@ def main():
     for label,source in (('program',args.source),('runtime',ROOT/'user/lib/native_console.c'),
                          ('input',ROOT/'user/lib/native_input.c'),
                          ('files',ROOT/'user/lib/native_files.c'),
-                         ('ipc',ROOT/'user/lib/native_ipc.c')):
+                         ('ipc',ROOT/'user/lib/native_ipc.c'),
+                         ('engine',ROOT/'user/lib/native_engine.c')):
         run('cc65','-t','none','--cpu','6502','--standard','c99','-Os',
+            *(['-DUDEKS_NATIVE_COUNTED_OUTPUT_ONLY'] if args.counted_output_only and label=='runtime' else []),
             '-I','user/include','-I','include','-o',str(out/(label+'.s')),str(source.resolve()))
         run('ca65','--cpu','6502','-o',str(out/(label+'.o')),str(out/(label+'.s')))
         objects.append(str(out/(label+'.o')))

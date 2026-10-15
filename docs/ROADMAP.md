@@ -13,6 +13,24 @@ preserved fallback—not a prerequisite for unrelated OS capabilities.
 
 ## Current baseline
 
+**Engine service slices 1–2 implemented — [#60](https://github.com/salvogendut/UDEKS/issues/60):**
+branch `services-engine-ipc`, worktree `build/engine-ipc`. Disk-loaded
+ENGINE/ENGTEST exchange NOP and 1–8 wave samples using IPC, with authenticated
+replies, output preservation, bounded waits and acknowledged stop. Both fit
+ordinary allocations, and server/client plus clock/draw fit all 24 launch
+orders. No resident bytes or permanent service slot are added. Normal kernel
+and old IPC example binaries are unchanged. D71/D81 demo disks preserve
+standard apps; D64 lacks space. Native sibling 1986 D81 passes exact samples,
+NOP, missing/stopped service, stop/restart, real drawing/clock dragging, guards
+and cleanup. This is an IPC broker checkpoint; kernel worker transport remains.
+All 1,768 host tests and layout/placement/app gates pass.
+Slice 3 will broaden cancellation/soak and cross-emulator/media qualification,
+then decide on existing-client migration. Surface rows need chunking and are
+deferred. Manual and physical C128 acceptance remain open.
+[Plan and measured limits](ENGINE-IPC.md),
+[slice-1 evidence](../bench/results/2026-10-14-engine-contract/README.md),
+[slice-2 source and machine evidence](../bench/results/2026-10-15-engine-service/README.md).
+
 **IPC slices 1–2 committed and pushed (2026-10-11):**
 [#57](https://github.com/salvogendut/UDEKS/issues/57), branch
 `ipc-0.1-foundation`, commit `1de24a4`. Slice 1 provides two

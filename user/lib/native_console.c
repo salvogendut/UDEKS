@@ -67,6 +67,7 @@ unsigned char udeks_write_bytes(unsigned char fd, const unsigned char *buffer,
     if(result!=UDEKS_IO_ERROR && result>count) return failure(UDEKS_TREQ_EPROTO);
     return result;
 }
+#ifndef UDEKS_NATIVE_COUNTED_OUTPUT_ONLY
 unsigned char udeks_write_byte(unsigned char fd, unsigned char value)
 {
     return udeks_write_bytes(fd,&value,1)==1 ? 0 : 1;
@@ -90,6 +91,7 @@ unsigned char udeks_write(unsigned char fd, const unsigned char *text)
     return 0;
 }
 
+#endif
 unsigned char udeks_sleep(unsigned int ticks)
 {
     unsigned char result;
